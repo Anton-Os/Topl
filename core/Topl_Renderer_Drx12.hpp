@@ -45,7 +45,7 @@ private:
 
     DRX12_INIT_STATUS initStatus;
 public:
-    Topl_Drx12(void){ initStatus = init(); }
+    Topl_Drx12(void){ initStatus = init(HWND hwnd); }
 
     DRX12_INIT_STATUS init(void);
     void print(void);

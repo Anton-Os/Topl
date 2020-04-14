@@ -3,4 +3,4 @@ project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
 
 add_subdirectory(Rasteron)
 
-add_subdirectory(core)
+# add_subdirectory(core)

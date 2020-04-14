@@ -1,7 +1,7 @@
 #include "Topl_Renderer_Drx12.hpp"
 
-DRX12_INIT_STATUS Topl_Renderer_Drx12::init(void){
-    HRESULT hr;
+DRX12_INIT_STATUS Topl_Drx12::init(HWND hwnd){
+	HRESULT hr;
 
 	IDXGIFactory4* dxgiFactory;
 	hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
@@ -70,8 +70,8 @@ DRX12_INIT_STATUS Topl_Renderer_Drx12::init(void){
 
 	IDXGISwapChain* tmpSwapChain;
 	dxgiFactory->CreateSwapChain(m_cmdQueue, &swapChainDesc, &tmpSwapChain);
-	m_swapChian = static_cast<IDXGISwapChain3*>(tmpSwapChain); // Cast the temp structure
-	m_frameIndex = m_swapChian->GetCurrentBackBufferIndex();
+	m_swapChain = static_cast<IDXGISwapChain3*>(tmpSwapChain); // Cast the temp structure
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 	
 	// Descriptor Heap Time!
@@ -88,7 +88,7 @@ DRX12_INIT_STATUS Topl_Renderer_Drx12::init(void){
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescriptHeap->GetCPUDescriptorHandleForHeapStart());
 
 	for (short b = 0; b < m_frameBuffCount; b++) {
-		hr = m_swapChian->GetBuffer(b, IID_PPV_ARGS(&m_renderTargets[b]));
+		hr = m_swapChain->GetBuffer(b, IID_PPV_ARGS(&m_renderTargets[b]));
 		if (FAILED(hr)) return DRX12_Init_Fail_SwpChainGetBuffer;
 
 		m_device->CreateRenderTargetView(m_renderTargets[b], nullptr, rtvHandle);
@@ -112,16 +112,18 @@ DRX12_INIT_STATUS Topl_Renderer_Drx12::init(void){
 
 	// Fence Time!
 
+	ID3D12Fence* fence[3] = { m_fence[0], m_fence[1], m_fence[2] }; // For Testing
+
 	for (short f = 0; f < m_frameBuffCount; f++) {
+		// hr = m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence[f])); // For Testing
 		hr = m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence[f]));
 		if (FAILED(hr)) return DRX12_Init_Fail_CreateFence;
 
-		m_fence[f] = 0; // Starting value of fence
+		m_fenceValue[f] = 0; // Starting value of fence
 	}
 
 	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	if (m_fenceEvent == nullptr) return DRX12_Init_Fail_CreateFenceEvent;
 
-    // Everything went fine...
 	return DRX12_Init_Good;
 }
