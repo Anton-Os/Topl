@@ -44,8 +44,9 @@ private:
 	int m_rtvDescriptorSize; // Size of rtv descriptor on the device (front/back buffers will be same size)
 
     DRX12_INIT_STATUS initStatus;
+    HWND hwnd;
 public:
-    Topl_Drx12(void){ initStatus = init(HWND hwnd); }
+    Topl_Drx12(HWND hwnd){ initStatus = init(hwnd); }
 
     DRX12_INIT_STATUS init(void);
     void print(void);
