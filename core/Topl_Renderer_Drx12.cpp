@@ -1,6 +1,47 @@
 #include "Topl_Renderer_Drx12.hpp"
 
-DRX12_INIT_STATUS Topl_Drx12::init(HWND hwnd){
+namespace Drx12_Util {
+	/* static DRX12_INIT_STATUS create_Factory_Device(IDXGIFactory4* dxgiFactory, ID3D12Device* device){
+		HRESULT hr;
+
+		IDXGIFactory4* dxgiFactory;
+		hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
+		if (FAILED(hr)) return DRX12_Init_Fail_CreateFactory;
+
+		IDXGIAdapter1* drxAdapter;
+		int drxAdapterIdx = 0;
+		bool drxAdapterFound = false;
+
+		while (dxgiFactory->EnumAdapters1(drxAdapterIdx, &drxAdapter) != DXGI_ERROR_NOT_FOUND) {
+			DXGI_ADAPTER_DESC1 drxAdapterDesc;
+			drxAdapter->GetDesc1(&drxAdapterDesc);
+			
+			if (drxAdapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+				drxAdapterIdx++;
+				continue; // Adapter not found
+			} else {
+				hr = D3D12CreateDevice(drxAdapter, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+				// DOES NOT CREATE DEVICE, JUST TESTS FOR D3D12 SUPPORT
+				if (SUCCEEDED(hr)) {
+					drxAdapterFound = true;
+					break; // Adapter found!!!
+				}
+				else {
+					drxAdapterIdx++;
+					continue; // Adapter does not support DirectX 12
+				}
+				// OPTIMIZE THIS CODE!!!!!!!!
+			}
+		}
+
+		if (!drxAdapterFound) return DRX12_Init_Fail_NoAdapter;
+
+		hr = D3D12CreateDevice(drxAdapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device));
+		if (FAILED(hr)) return DRX12_Init_Fail_CreateDevice;
+	} */
+}
+
+DRX12_INIT_STATUS Topl_Drx12::init(NATIVE_WINDOW hwnd){
 	HRESULT hr;
 
 	IDXGIFactory4* dxgiFactory;

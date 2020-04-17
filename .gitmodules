@@ -1,0 +1,3 @@
+[submodule "Rasteron"]
+	path = Rasteron
+	url = https://github.com/Anton-Os/Rasteron.git
