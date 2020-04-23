@@ -17,5 +17,6 @@ public:
     virtual void render(void);
 private:
     virtual void init(NATIVE_WINDOW hwnd);
+    virtual void cleanup(void);
 };
 

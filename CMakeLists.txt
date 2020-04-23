@@ -24,7 +24,7 @@ if(FALSE) # need to fix Rasteron
     find_package(Rasteron)
 endif()
 
-add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
+# add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
 
 target_include_directories(Topl PUBLIC core helper)
 # target_link_libraries(Topl Rasteron) # need to fix Rasteron
