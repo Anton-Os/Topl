@@ -18,6 +18,7 @@ typedef enum {
 class Topl_Drx12 {
 private:
     static const int m_frameBuffCount = 3; // For triple buffering
+    IDXGIFactory4* m_factory;
 	ID3D12Device* m_device;
 	IDXGISwapChain3* m_swapChain; // For switching between render targets
 	ID3D12CommandQueue* m_cmdQueue; // contatiner of command list
