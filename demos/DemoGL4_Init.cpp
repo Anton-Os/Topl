@@ -1,5 +1,5 @@
 #include "native_os_def.h"
-#include "Topl_Renderer_Drx11.hpp"
+#include "Topl_Renderer_GL4.hpp"
 
 //#pragma comment(lib, "D3d12.lib")
 //#pragma comment(lib, "d3dcompiler.lib")
@@ -44,9 +44,9 @@ int main(int argc, char** argv) {
 	MSG wndMessage;
 	BOOL bRet;
 
-    Topl_Renderer_Drx11 renderer(wndWindow);
-    for(unsigned t = 0; t < 99999; t++)
-        renderer.render();
+    Topl_Renderer_GL4 renderer(wndWindow);
+    // for(unsigned t = 0; t < 99999; t++)
+        //renderer.render();
 
 	return 0;
 }

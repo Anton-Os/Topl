@@ -1,5 +1,4 @@
 #include "native_os_def.h"
-
 #include "Geometry.hpp"
 
 // Virutal class
@@ -13,10 +12,9 @@ private:
 
 class Topl_Renderer {
 public:
-    virtual void buildScene(Topl_SceneGraph sceneGraph);
-    virtual void render(void);
+    virtual void buildScene(Topl_SceneGraph sceneGraph) = 0;
+    virtual void render(void) = 0;
 private:
-    virtual void init(NATIVE_WINDOW hwnd);
-    virtual void cleanup(void);
+    virtual void init(NATIVE_WINDOW hwnd) = 0;
+    virtual void cleanup(void) = 0;
 };
-

@@ -33,15 +33,19 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd){
     
     ID3D11Texture2D* backBuffer;
     if(FAILED(
-        m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+        m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)
     ))
         return; // Provide error handling code
 
     m_device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
     backBuffer->Release();
 
-    m_deviceCtx->OMSetRenderTargets(1, &rtv, NULL);
+    m_deviceCtx->OMSetRenderTargets(1, &m_rtv, NULL);
 
+    return;
+}
+
+void Topl_Renderer_Drx11::buildScene(Topl_SceneGraph sceneGraph){
     return;
 }
 

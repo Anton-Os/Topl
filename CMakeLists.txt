@@ -24,7 +24,39 @@ if(FALSE) # need to fix Rasteron
     find_package(Rasteron)
 endif()
 
-# add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
+ExternalProject_Add(DXSDK
+        GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
+        GIT_TAG "5fbd5e1158db72421bc32709136131451e6c8c37"
 
-target_include_directories(Topl PUBLIC core helper)
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/dxsdk
+        # SOURCE_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
+        # BINARY_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
+        # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
+    )
+
+# add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
+#target_include_directories(Topl PUBLIC core helper) # for local dependencies
 # target_link_libraries(Topl Rasteron) # need to fix Rasteron
+
+add_executable(DemoDrx11 
+    demos/DemoDrx11_Init.cpp 
+    core/Topl_Renderer_Drx11.cpp
+)
+
+target_include_directories(DemoDrx11 PUBLIC core helper)
+
+find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
+target_include_directories(DemoDrx11 PUBLIC ${CMAKE_INSTALL_PREFIX}/include/dxsdk) # UPDATE THIS
+target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface) # FIX THIS
+
+add_executable(DemoGL4 
+    demos/DemoGL4_Init.cpp 
+    core/Topl_Renderer_GL4.cpp
+)
+
+target_include_directories(DemoGL4 PUBLIC core helper)
+target_include_directories(DemoGL4 PUBLIC ${CMAKE_INSTALL_PREFIX}/include/dxsdk) # REMOVE THIS LATER
+target_link_libraries(DemoGL4 INTERFACE dxsdk_interface) # REMOVE THIS LATER
+
