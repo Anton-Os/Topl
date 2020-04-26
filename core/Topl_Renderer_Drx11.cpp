@@ -1,6 +1,8 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd){
+	m_native.window = &hwnd; // Supplying platform specific stuff
+
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 
@@ -21,7 +23,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd){
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.BufferCount = 1;
-    swapChainDesc.OutputWindow = hwnd; 
+    swapChainDesc.OutputWindow = *(m_native.window); 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 

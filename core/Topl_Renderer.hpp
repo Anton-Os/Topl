@@ -14,6 +14,9 @@ class Topl_Renderer {
 public:
     virtual void buildScene(Topl_SceneGraph sceneGraph) = 0;
     virtual void render(void) = 0;
+	
+	NATIVE_PLATFORM_ELEM m_native;
+	// NATIVE_WINDOW* m_window; // Renderer is associated to a window
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void cleanup(void) = 0;

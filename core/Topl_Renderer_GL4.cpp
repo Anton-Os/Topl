@@ -14,9 +14,9 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 } */
 
 #ifdef _WIN32
-static void init_win(HWND hwnd, HGLRC hglrc){
+static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     // Creates an HDC based on the window
-    HDC windowDC = GetDC(hwnd);
+    *(windowDC) = GetDC(*(hwnd));
 
     // Pixel format descriptor stuff
     PIXELFORMATDESCRIPTOR pixDescript, *pixDescript_ptr;
@@ -30,17 +30,30 @@ static void init_win(HWND hwnd, HGLRC hglrc){
 	pixDescript.iPixelType = PFD_TYPE_RGBA;
 	pixDescript.cColorBits = 24;
 
-	pixFrmt = ChoosePixelFormat(windowDC, pixDescript_ptr);
-	BOOL pixFrmtChk = SetPixelFormat(windowDC, pixFrmt, pixDescript_ptr);
+	pixFrmt = ChoosePixelFormat(*(windowDC), pixDescript_ptr);
+	BOOL pixFrmtChk = SetPixelFormat(*(windowDC), pixFrmt, pixDescript_ptr);
 
     // wgl initialization functions
-    hglrc = wglCreateContext(windowDC);
-    wglMakeCurrent(windowDC, hglrc);
+    *(hglrc) = wglCreateContext(*(windowDC));
+    wglMakeCurrent(*(windowDC), *(hglrc));
+
+	glEnable(GL_DEPTH_TEST); // Make these customizable
+	glDepthFunc(GL_LESS); // Make these customizable
+	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 }
 
-static void cleanup_win(HGLRC hglrc){
+static void render_win(HDC* windowDC) {
+	//HDC windowDC = GetDC(hwnd); // Probably have to save the old HDC!!! This wont work
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	SwapBuffers(*(windowDC));
+}
+
+static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(hglrc);
+	wglDeleteContext(*(hglrc));
+
+	ReleaseDC(*(hwnd), *(windowDC));
 }
 
 // #define GL_INIT_FUNC(NATIVE_WINDOW hwnd, NATIVE_GL_CONTEXT gContext) init_win(hwnd, gContext);
@@ -50,8 +63,10 @@ static void cleanup_win(HGLRC hglrc){
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
     // GL_INIT_FUNC(hwnd, m_GL4_Ctx)
+
+	m_native.window = &hwnd;
 #ifdef _WIN32
-    init_win(hwnd, m_GL4_Ctx);
+    init_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
 #endif    
 }
 
@@ -60,12 +75,14 @@ void Topl_Renderer_GL4::buildScene(Topl_SceneGraph sceneGraph){
 }
 
 void Topl_Renderer_GL4::render(void){
-    return;
+#ifdef _WIN32
+	render_win(&m_native.windowDevice_Ctx);
+#endif  
 }
 
 void Topl_Renderer_GL4::cleanup(void){
     // GL_CLEANUP_FUNC(m_GL4_Ctx)
 #ifdef _WIN32
-    cleanup_win(m_GL4_Ctx);
+    cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
 #endif
 }

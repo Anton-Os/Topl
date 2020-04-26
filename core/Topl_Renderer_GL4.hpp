@@ -11,5 +11,5 @@ private:
     void init(NATIVE_WINDOW hwnd);
     void cleanup(void);
 
-    NATIVE_GL_CONEXT m_GL4_Ctx;
+    //NATIVE_GL_CONEXT m_GL4_Ctx;
 };

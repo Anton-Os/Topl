@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_GL4 renderer(wndWindow);
-    // for(unsigned t = 0; t < 99999; t++)
-        //renderer.render();
+    for(unsigned t = 0; t < 99999; t++)
+        renderer.render();
 
 	return 0;
 }
