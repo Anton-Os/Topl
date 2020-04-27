@@ -45,6 +45,12 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_Drx11 renderer(wndWindow);
+	
+	// renderer.createPipeline();
+
+	Topl_SceneGraph emptySceneGraph; // REMOVE LATER
+	renderer.buildScene();
+
     for(unsigned t = 0; t < 99999; t++)
         renderer.render();
 

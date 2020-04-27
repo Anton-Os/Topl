@@ -70,8 +70,16 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 #endif    
 }
 
-void Topl_Renderer_GL4::buildScene(Topl_SceneGraph sceneGraph){
-    return;
+/* void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
+    return; // To be continued
+} */
+
+void Topl_Renderer_GL4::buildScene(void){
+    return; // To be continued
+}
+
+void Topl_Renderer_GL4::createPipeline(void){
+	return;
 }
 
 void Topl_Renderer_GL4::render(void){
