@@ -41,7 +41,9 @@ ExternalProject_Add(DXSDK
 # target_link_libraries(Topl Rasteron) # need to fix Rasteron
 
 add_executable(DemoDrx11 
-    demos/DemoDrx11_Init.cpp 
+    core/Geometry.cpp
+
+    demos/DemoDrx11_Init.cpp
     core/Topl_Renderer_Drx11.cpp
 )
 
@@ -52,6 +54,8 @@ target_include_directories(DemoDrx11 PUBLIC ${CMAKE_INSTALL_PREFIX}/include/dxsd
 target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface) # FIX THIS
 
 add_executable(DemoGL4 
+    core/Geometry.cpp
+    
     demos/DemoGL4_Init.cpp 
     core/Topl_Renderer_GL4.cpp
 )
