@@ -106,17 +106,27 @@ void Topl_Renderer_Drx11::createPipeline(void){
 void Topl_Renderer_Drx11::buildScene(void){
     // Build a scene based on scene graph NEXT IMPLEMENTATION
     
-	float verticesTest[3][3] = {
+	/* float verticesTest[3][3] = {
 		{0.1f, 0.7f, 0.5f},
 		{0.4f, 0.7f, 0.5f},
 		{0.9f, 0.5f, 0.5f}
-	}; 
+	}; */
+
+    float verticesTest[6][3] = {
+        {0.2f, 0.2f, 0.5},
+        {0.2f, 0.8f, 0.5},
+        {0.8f, 0.2f, 0.5},
+        {0.6f, -0.3f, 0.5},
+        {0.1f, 0.1f, 0.5},
+        {0.4f, 0.4f, 0.5},
+    };
 
     D3D11_BUFFER_DESC vertexBuffDesc;
     ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
 
     vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBuffDesc.ByteWidth = sizeof(float) * 9;
+    // vertexBuffDesc.ByteWidth = sizeof(float) * 9;
+    vertexBuffDesc.ByteWidth = sizeof(float) * 18; // For 6 points drawing
     vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexBuffDesc.CPUAccessFlags = 0;
     vertexBuffDesc.MiscFlags = 0;
@@ -124,6 +134,8 @@ void Topl_Renderer_Drx11::buildScene(void){
     D3D11_SUBRESOURCE_DATA vertexBuffData;
     ZeroMemory(&vertexBuffData, sizeof(vertexBuffData));
     vertexBuffData.pSysMem = verticesTest;
+    vertexBuffData.SysMemPitch = 0; // Look up 
+    vertexBuffData.SysMemSlicePitch = 0; // Look up
 
 	if (FAILED(
 		m_device->CreateBuffer(&vertexBuffDesc, &vertexBuffData, &m_pipeline.vertexDataBuff)
@@ -175,7 +187,7 @@ void Topl_Renderer_Drx11::render(void){
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
     if(m_pipelineReady && m_sceneReady)
-        m_deviceCtx->Draw(3, 0);
+        m_deviceCtx->Draw(6, 0);
 
     m_swapChain->Present(0, 0);
 }
