@@ -40,6 +40,9 @@ ExternalProject_Add(DXSDK
 #target_include_directories(Topl PUBLIC core helper) # for local dependencies
 # target_link_libraries(Topl Rasteron) # need to fix Rasteron
 
+add_executable(DemoTickTick  demos/DemoTickTick.cpp)
+target_include_directories(DemoTickTick PUBLIC core helper)
+
 add_executable(DemoDrx11 
     core/Geometry.cpp
 

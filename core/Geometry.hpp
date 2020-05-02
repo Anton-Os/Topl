@@ -40,7 +40,12 @@ struct Topl_BaseEntity { // Acts as a node
 	~Topl_BaseEntity() { mId_count--; }
 
 	// const unsigned const* mId_ref = &mId;
-	unsigned get_Id() const { return mId; }
+	unsigned getId() const { return mId; }
+    Topl_BaseEntity* getParent() const { return mParent; }
+    Topl_BaseEntity* getChild(unsigned childNum) const {
+        if(childNum > mChildCount) return nullptr;
+        else return *(mChild + childNum - 1);
+    }
 
     void updateLocation(float loc[3]); // Follow by more spatial update things
     // ADD CHILD FUNCTION
@@ -48,9 +53,9 @@ private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
 	unsigned mId; // Each object has a unique id
 
-    Topl_BaseEntity* parent = nullptr;
-    unsigned childCount = 0;
-    Topl_BaseEntity** child = nullptr;
+    Topl_BaseEntity* mParent = nullptr;
+    unsigned mChildCount = 0;
+    Topl_BaseEntity** mChild = nullptr;
 
     float mRelLocation[3]; // Replace with eigen datatype
 };
