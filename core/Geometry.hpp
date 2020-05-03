@@ -61,7 +61,9 @@ private:
 };
 
 struct Topl_GeoEntity : Topl_BaseEntity {
-	Topl_GeoEntity(const Topl_RectSprite* geoObj) { mType.rectSprite = geoObj; }
+	Topl_GeoEntity(const Topl_RectSprite* geoObj) { // RectSprite implementation
+        mType.rectSprite = geoObj; 
+    }
     // A unique constructor must exist for every geometry type
     enum GeoBehavior {
         GEO_Fixed = 1,

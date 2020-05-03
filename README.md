@@ -2,4 +2,6 @@
 
 ![](res/ToplLogo.png)
 
-Skeleton code for a small game engine, using OpenGL 4.x and Direct X 11
+Skeleton code for a small renderer, using OpenGL 4.x and Direct X 11.
+
+Test build on Visual Studio for now
