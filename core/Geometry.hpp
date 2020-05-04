@@ -1,14 +1,16 @@
 #include <vector>
 #include <map>
 
+#include <Eigen/Dense>
+
 // Simple Primitive Types
 
-struct Topl_Circle {
+struct Circle {
     float radius;
     float segments;
 };
 
-struct Topl_Rect {
+struct Rect {
     float width;
     float height;
 };
@@ -16,13 +18,17 @@ struct Topl_Rect {
 // Objects that are candidates for Topl_GeoEntity::GeoType
 // Topl_BallSprite should be added
 
-struct Topl_RectSprite{
+class Topl_RectSprite{ // Rectangle with an image mapped
     // Topl_RectSprite(const Rasteron_Sprite(const*) s){}
-private:
     // const Rasteron_Sprite(const*) sprite; // BUILD RASTERON
-    unsigned color; // For now for testing
     int drawOrder; // To create a draw order
-    Topl_Rect rect;
+    Rect rect;
+};
+
+class Topl_RectSolid { // Rectangle of a solid color
+    unsigned color;
+    int drawOrder;
+    Rect rect;
 };
 
 // More Complex types

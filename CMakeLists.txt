@@ -36,6 +36,18 @@ ExternalProject_Add(DXSDK
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
     )
 
+    ExternalProject_Add(Eigen
+        GIT_REPOSITORY "https://github.com/eigenteam/eigen-git-mirror.git"
+        GIT_TAG "36b95962756c1fce8e29b1f8bc45967f30773c00"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/Eigen
+        # SOURCE_DIR ${EXTERNAL_PROJ_DIR}/Eigen
+        # BINARY_DIR ${EXTERNAL_PROJ_DIR}/Eigen
+        # STAMP_DIR ${EXTERNAL_PROJ_DIR}/Eigen
+    )
+
 # add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
 #target_include_directories(Topl PUBLIC core helper) # for local dependencies
 # target_link_libraries(Topl Rasteron) # need to fix Rasteron
@@ -59,12 +71,16 @@ add_executable(DemoDrx11
     demos/DemoDrx11_Init.cpp
     core/Topl_Renderer_Drx11.cpp
 )
-
 target_include_directories(DemoDrx11 PUBLIC core helper)
 
 find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
-target_include_directories(DemoDrx11 PUBLIC ${CMAKE_INSTALL_PREFIX}/include/dxsdk) # UPDATE THIS
-target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface) # FIX THIS
+find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
+
+target_include_directories(DemoDrx11 PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+) # REMOVE THIS LATER
+target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
 add_executable(DemoGL4 
     core/Geometry.cpp
@@ -74,8 +90,11 @@ add_executable(DemoGL4
 )
 
 target_include_directories(DemoGL4 PUBLIC core helper)
-target_include_directories(DemoGL4 PUBLIC ${CMAKE_INSTALL_PREFIX}/include/dxsdk) # REMOVE THIS LATER
-target_link_libraries(DemoGL4 INTERFACE dxsdk_interface) # REMOVE THIS LATER
+target_include_directories(DemoGL4 PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+) # REMOVE THIS LATER
+target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 
 if(WIN32)
     file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
