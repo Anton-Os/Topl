@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 	// renderer.createPipeline();
 
 	Topl_SceneGraph emptySceneGraph; // REMOVE LATER
-	renderer.buildScene();
+	renderer.buildScene(&emptySceneGraph);
 
     for(unsigned t = 0; t < 99999; t++)
         renderer.render();

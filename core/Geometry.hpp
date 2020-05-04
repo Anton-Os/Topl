@@ -5,38 +5,42 @@
 
 // Simple Primitive Types
 
-struct Circle {
-    float radius;
-    float segments;
-};
-
 struct Rect {
     float width;
     float height;
 };
 
+struct Circle {
+    float radius;
+    unsigned segments;
+};
+
 // Objects that are candidates for Topl_GeoEntity::GeoType
 // Topl_BallSprite should be added
 
-class Topl_RectSprite{ // Rectangle with an image mapped
-    // Topl_RectSprite(const Rasteron_Sprite(const*) s){}
-    // const Rasteron_Sprite(const*) sprite; // BUILD RASTERON
-    int drawOrder; // To create a draw order
-    Rect rect;
+struct Geo_RenderObj {
+    unsigned vCount;
+    unsigned iCount;
+
+    // Eigen::Vector3d vec; // Work plz
+    virtual Eigen::Vector3d* genVertices() = 0;
+    virtual unsigned* genIndices() = 0;
 };
 
-class Topl_RectSolid { // Rectangle of a solid color
-    unsigned color;
+// Override the virtual functions above
+class Geo_Rect2D : Geo_RenderObj {
+    //unsigned color;
     int drawOrder;
     Rect rect;
 };
 
-// More Complex types
+class Geo_Sphere2D : Geo_RenderObj {
+    //unsigned color;
+    int drawOrder;
+    Circle circle;
+};
 
-/* struct Topl_Object : Topl_BaseEntity{};
-struct Topl_Character : Topl_BaseEntity{};
-struct Topl_Terrain : Topl_BaseEntity{};
-struct Topl_Light : Topl_BaseEntity{}; */
+// More Complex types
 
 struct Topl_BaseEntity { // Acts as a node
 	Topl_BaseEntity() {
@@ -63,35 +67,24 @@ private:
     unsigned mChildCount = 0;
     Topl_BaseEntity** mChild = nullptr;
 
-    float mRelLocation[3]; // Replace with eigen datatype
+    Eigen::Vector3d relWorldPos; // Positions by which to offset
+    Eigen::Vector3d objOrientAngl; // Angles by which to rotate
 };
 
 struct Topl_GeoEntity : Topl_BaseEntity {
-	Topl_GeoEntity(const Topl_RectSprite* geoObj) { // RectSprite implementation
-        mType.rectSprite = geoObj; 
-    }
+	Topl_GeoEntity(const Geo_Rect2D* geoObj) { mType.gRect = geoObj; }
+    Topl_GeoEntity(const Geo_Sphere2D* geoObj) { mType.gSphere = geoObj; }
     // A unique constructor must exist for every geometry type
     enum GeoBehavior {
         GEO_Fixed = 1,
         GEO_Dynamic = 2
     } mBehavior;
     union GeoType {
-        const Topl_RectSprite* rectSprite;
+        const Geo_Rect2D* gRect;
+        const Geo_Sphere2D* gSphere;
         // ADD MORE TYPES OF GEOMETRY
     } mType;
 };
-
-/* struct Topl_Plane {
-    float xLen;
-    unsigned short xDiv;
-    float yLen;
-    unsigned short yDiv;
-    float zLen;
-    unsigned short zDiv;
-    
-    float hSlope; // Horizontal slope
-    float vSlope; // Vertical slope
-}; // TOO EARLY TO IMPLEMENT */
 
 class Topl_SceneGraph {
 public:
@@ -108,4 +101,4 @@ private:
     // std::map<unsigned, const bool*> mIdToUpdateStat; // DOES OBJECT REQUIRE UPDATING
     // std::map<unsigned, const Topl_Texture**> mIdToTextures_map // WILL MAP TEXTURES TO OBJECTS
     // std::map<unsigned, const Topl_Shader**> mIdToShaders_map // WILL MAP SHADERS TO OBJECTS
-}; // It is very bare-bones at the moment
+}; 

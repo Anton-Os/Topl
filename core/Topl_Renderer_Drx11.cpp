@@ -1,6 +1,50 @@
 #include "Topl_Renderer_Drx11.hpp"
 
-void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd){
+namespace _Drx11 {
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, float* vData, unsigned vCount) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DEFAULT;
+		buffDesc.ByteWidth = sizeof(float) * vCount;
+		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffDesc.CPUAccessFlags = 0;
+		buffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = vData;
+
+		if (FAILED(
+			(*(device))->CreateBuffer(&buffDesc, &buffData, vBuff)
+		))
+			return false; // Provide error handling code
+
+		return true;
+	}
+
+	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DEFAULT;
+		buffDesc.ByteWidth = sizeof(DWORD) * iCount;
+		buffDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		buffDesc.CPUAccessFlags = 0;
+		buffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = iData;
+
+		if (FAILED(
+			(*(device))->CreateBuffer(&buffDesc, &buffData, iBuff)
+		))
+			return false; // Provide error handling code
+
+		return true;
+	}
+}
+
+void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	m_native.window = &hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
@@ -102,47 +146,34 @@ void Topl_Renderer_Drx11::createPipeline(void){
     // Think that is all for now...
 }
 
-//void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph){
-void Topl_Renderer_Drx11::buildScene(void){
+void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     // Build a scene based on scene graph NEXT IMPLEMENTATION
-    
-	/* float verticesTest[3][3] = {
-		{0.1f, 0.7f, 0.5f},
-		{0.4f, 0.7f, 0.5f},
-		{0.9f, 0.5f, 0.5f}
-	}; */
 
-    float verticesTest[6][3] = {
-        {0.2f, 0.2f, 0.5},
-        {0.2f, 0.8f, 0.5},
-        {0.8f, 0.2f, 0.5},
-        {0.6f, -0.3f, 0.5},
-        {0.1f, 0.1f, 0.5},
-        {0.4f, 0.4f, 0.5},
+	float verticesTest[] = {
+		0.5f, 0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.1f, 0.1f, 0.5f,
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
+		0.1f, 0.1f, 0.5f
+	};
+
+    float verticesBox[] = {
+        0.5f, 0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f
     };
 
-    D3D11_BUFFER_DESC vertexBuffDesc;
-    ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
+	DWORD indexBox[] = {
+		0, 1, 2,
+		3, 1, 2
+	};
 
-    vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-    // vertexBuffDesc.ByteWidth = sizeof(float) * 9;
-    vertexBuffDesc.ByteWidth = sizeof(float) * 18; // For 6 points drawing
-    vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vertexBuffDesc.CPUAccessFlags = 0;
-    vertexBuffDesc.MiscFlags = 0;
+    m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexDataBuff, &verticesTest[0], 18);
+    m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexBoxBuff, &verticesBox[0], 12);
 
-    D3D11_SUBRESOURCE_DATA vertexBuffData;
-    ZeroMemory(&vertexBuffData, sizeof(vertexBuffData));
-    vertexBuffData.pSysMem = verticesTest;
-    vertexBuffData.SysMemPitch = 0; // Look up 
-    vertexBuffData.SysMemSlicePitch = 0; // Look up
-
-	if (FAILED(
-		m_device->CreateBuffer(&vertexBuffDesc, &vertexBuffData, &m_pipeline.vertexDataBuff)
-    )) {
-        m_sceneReady = false;
-        return; // Provide error handling code
-    }
+    // Relates to sending data to the input assembler
 
     UINT stride = sizeof(float) * 3;
     UINT offset = 0;

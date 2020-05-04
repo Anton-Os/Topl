@@ -1,18 +1,5 @@
 #include "Topl_Renderer_GL4.hpp"
 
-/*#ifdef _WIN32
-    static void setupPixFrmt_win(HWND hwnd){
-
-    }
-#endif
-
-void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-
-#ifdef _WIN32
-    setupPixFrmt_win(hwnd);
-#endif
-} */
-
 #ifdef _WIN32
 static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     // Creates an HDC based on the window
@@ -56,23 +43,17 @@ static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 	ReleaseDC(*(hwnd), *(windowDC));
 }
 
-// #define GL_INIT_FUNC(NATIVE_WINDOW hwnd, NATIVE_GL_CONTEXT gContext) init_win(hwnd, gContext);
-// #define GL_CLEANUP_FUNC(NATIVE_GL_CONEXT GL_Ctx) cleanup_win(GL_Ctx);
-
 #endif
 
-void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-    // GL_INIT_FUNC(hwnd, m_GL4_Ctx)
 
+
+
+void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	m_native.window = &hwnd;
 #ifdef _WIN32
     init_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
 #endif    
 }
-
-/* void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
-    return; // To be continued
-} */
 
 void Topl_Renderer_GL4::buildScene(void){
     return; // To be continued
@@ -89,7 +70,6 @@ void Topl_Renderer_GL4::render(void){
 }
 
 void Topl_Renderer_GL4::cleanup(void){
-    // GL_CLEANUP_FUNC(m_GL4_Ctx)
 #ifdef _WIN32
     cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
 #endif

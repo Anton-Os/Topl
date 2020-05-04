@@ -6,6 +6,9 @@
 
 struct Topl_Pipeline_Drx11 {
 	ID3D11Buffer* vertexDataBuff; // Move out of here, NEXT IMPLEMENTATION
+    ID3D11Buffer* vertexBoxBuff;
+	ID3D11Buffer* indexBoxBuff;
+
 	ID3D11InputLayout* vertexDataLayout; // Move out of here, NEXT IMPLEMENTATION
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -20,12 +23,12 @@ public:
 
     //void buildScene(const Topl_SceneGraph* sceneGraph) override;
     // void buildScene(void) override;
-	void buildScene(void);
+	void buildScene(const Topl_SceneGraph* sceneGraph) override;
 	void render(void) override;
 private:
-    void init(NATIVE_WINDOW hwnd);
-    void createPipeline(void);
-    void cleanup(void);
+    void init(NATIVE_WINDOW hwnd) override;
+    void createPipeline(void) override;
+    void cleanup(void) override;
 
     bool m_pipelineReady = false;
     Topl_Pipeline_Drx11 m_pipeline;
