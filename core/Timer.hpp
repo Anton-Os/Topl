@@ -6,19 +6,16 @@ struct Timestamp {
     Timestamp(unsigned long s, unsigned long mil, unsigned long mic){
         secs = s; millisecs = mil; microsecs = mic;
     }
-    // std::chrono::seconds secs = 0;
-    // std::chrono::milliseconds millisecs = 0;
-    //std::chrono::microseconds microsecs = 0;
 
     unsigned long secs;
     unsigned long millisecs;
     unsigned long microsecs;
 };
 
-class Topl_Countup { // Returns whether enough time has passed to trigger an event (i.e draw 60 fps)
+class Timer_Event { // Returns whether enough time has passed to trigger an event (i.e draw 60 fps)
 public:
-    Topl_Countup(unsigned long secs){ mElapseTime = secs * 1000; }
-    Topl_Countup(double milSecs){ mElapseTime = milSecs; }
+    Timer_Event(unsigned long secs){ mElapseTime = secs * 1000; }
+    Timer_Event(double milSecs){ mElapseTime = milSecs; }
 
     unsigned long long getEventCount(){ return mEventCount; }
     unsigned isTrigger(double milSecsPass); // How many times triggered since last call
@@ -29,9 +26,9 @@ private:
 };
 
 
-class Topl_Timer { // Get number of millisecs between two invocations of getSecsPassed()
+class Timer_Interval { // Get number of millisecs between two invocations of getSecsPassed()
 public:
-    Topl_Timer(){ 
+    Timer_Interval(){ 
         mStartSec = std::chrono::steady_clock::now();
     }
     // Timestamp getTimeAbs();

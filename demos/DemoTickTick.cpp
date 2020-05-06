@@ -32,10 +32,10 @@
 int main(void){
     double secsBetween;
 	unsigned trigCount;
-    Topl_Timer timer;
-    Topl_Countup tCounter_secs((unsigned long)(2)); // Sets it for 2 seconds
-    Topl_Countup tCounter_frac(0.1);
-    Topl_Countup tCounter_rend((double) 1 / (double) 60);
+    Timer_Interval timer;
+    Timer_Event tCounter_secs((unsigned long)(2)); // Sets it for 2 seconds
+    Timer_Event tCounter_frac(0.1);
+    Timer_Event tCounter_rend((double) 1 / (double) 60);
 
     /* timer.getSecsPassed();
     while(tCounter_secs.getEventCount() < 20){ // Twenty event triggers happens

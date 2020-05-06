@@ -2,7 +2,7 @@
 
 #include <ratio>
 
-unsigned Topl_Countup::isTrigger(double milSecsPass) { // Sees if over milliseconds some event triggered
+unsigned Timer_Event::isTrigger(double milSecsPass) { // Sees if over milliseconds some event triggered
     mTimeBuff += milSecsPass;
 
     if(mTimeBuff < mElapseTime) return 0; // Nothing triggered, not enough time passed
@@ -19,7 +19,19 @@ unsigned Topl_Countup::isTrigger(double milSecsPass) { // Sees if over milliseco
 
 using namespace std::chrono;
 
-/* Timestamp Topl_Timer::getTimeAbs(){
+/* Timestamp Timer_Interval::getTimeAbs(){
+    Timestamp tStamp;
+    steady_clock::time_point timePt = steady_clock::now();
+    
+    // std::chrono::duration<double> secs = duration_cast<duration<double>>(time_point_cast<seconds>(timePt));
+    //steady_clock::time_point secs = time_point_cast<seconds>(timePt);
+
+    //duration<double, std::deca> secs = timePt;
+    //seconds secs;
+    return tStamp;
+} */
+
+/* Timestamp Timer_Interval::getTimeAbs(){
     auto time = steady_clock::now();
     //duration<long, std::deca> durSecs = time;
 	seconds durSecs = time;
@@ -30,7 +42,7 @@ using namespace std::chrono;
     return timestamp;
 } */
 
-double Topl_Timer::getSecsPassed(){ // Retrieves seconds passed since last invocation
+double Timer_Interval::getSecsPassed(){ // Retrieves seconds passed since last invocation
     mEndSec = steady_clock::now(); // Gets current time
     mSecTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec); // Computes difference
     mStartSec = mEndSec; // Sets the new start time
