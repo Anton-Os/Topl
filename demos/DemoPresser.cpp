@@ -4,6 +4,27 @@
 
 #include "Input.hpp"
 
+#include <cstdio>
+
+void k1_Press(){  puts("Key 2 Pressed!");  }
+void k1_Release(){  puts("Key 2 Released!");  }
+void k2_Press(){  puts("Key 2 Pressed!");  }
+void k2_Release(){  puts("Key 2 Released!");  }
+
+void callback1(const std::vector<KeyState>& states){
+	if(states.size() != 2){
+		puts("Incorrect number of inputs");
+		return;
+	}
+
+	const KeyState(const*) k1 = &states[0];
+	if(k1->event == KEY_press) k1_Press();
+	else if(k1->event == KEY_release) k1_Release();
+
+	const KeyState(const*) k2 = &states[1];
+	if(k2->event == KEY_press) k2_Press();
+	else if(k2->event == KEY_release) k2_Release();
+}
 
 char kc = '\0';
 enum KEY_Event event = KEY_none;
@@ -14,6 +35,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
     static Input_KeyLogger keyLogger;
+	if(keyLogger.getCallbackCount() == 0){
+		// Initialize all the callback stuff
+	}
 
 	switch (message) {
 	case (WM_CREATE): {

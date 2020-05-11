@@ -55,7 +55,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 #endif    
 }
 
-void Topl_Renderer_GL4::buildScene(void){
+void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
     return; // To be continued
 }
 

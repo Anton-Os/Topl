@@ -32,8 +32,10 @@ namespace _Drx11 {
 		buffDesc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
+		// ZeroMemory(&buffData, sizeof(buffData)); // Maybe solution??
 		buffData.pSysMem = iData;
+		buffData.SysMemPitch = 0;
+		buffData.SysMemSlicePitch = 0;
 
 		if (FAILED(
 			(*(device))->CreateBuffer(&buffDesc, &buffData, iBuff)
@@ -159,25 +161,31 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 	};
 
     float verticesBox[] = {
-        0.5f, 0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f
+		-0.5f, -0.5f, 0.5f, 
+		-0.5f,  0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f
     };
 
 	DWORD indexBox[] = {
 		0, 1, 2,
-		3, 1, 2
+		0, 2, 3
 	};
 
-    m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexDataBuff, &verticesTest[0], 18);
-    m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexBoxBuff, &verticesBox[0], 12);
+	// Index creation procedures
+	m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexBoxBuff, &indexBox[0], 6);
+	m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
 
-    // Relates to sending data to the input assembler
+    // Vertex creation procedures
+
+	// m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexDataBuff, &verticesTest[0], 18);
+	m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexBoxBuff, &verticesBox[0], 12);
 
     UINT stride = sizeof(float) * 3;
     UINT offset = 0;
-    m_deviceCtx->IASetVertexBuffers(0, 1, &m_pipeline.vertexDataBuff, &stride, &offset);
+    m_deviceCtx->IASetVertexBuffers(0, 1, &m_pipeline.vertexBoxBuff, &stride, &offset); // Use the correct vertex buff
+
+	// Input assembler inputs to pipeline
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
@@ -217,8 +225,9 @@ void Topl_Renderer_Drx11::render(void){
 
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
-    if(m_pipelineReady && m_sceneReady)
-        m_deviceCtx->Draw(6, 0);
+	if (m_pipelineReady && m_sceneReady)
+		m_deviceCtx->DrawIndexed(6, 0, 0);
+        // m_deviceCtx->Draw(6, 0);
 
     m_swapChain->Present(0, 0);
 }

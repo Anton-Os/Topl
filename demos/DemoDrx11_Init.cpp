@@ -48,8 +48,13 @@ int main(int argc, char** argv) {
 	
 	// renderer.createPipeline();
 
-	Topl_SceneGraph emptySceneGraph; // REMOVE LATER
-	renderer.buildScene(&emptySceneGraph);
+	Geo_Rect2D gRect1(1.0f, 1.0f);
+
+	Topl_GeoEntity gEntity1(&gRect1);
+
+	Topl_SceneGraph sGraph1; // REMOVE LATER
+	sGraph1.addGeometry("basicRect", &gEntity1);
+	renderer.buildScene(&sGraph1);
 
     for(unsigned t = 0; t < 99999; t++)
         renderer.render();

@@ -6,12 +6,18 @@ public:
     ~Topl_Renderer_GL4(){ cleanup(); }
 
     // void buildScene(const Topl_SceneGraph* sceneGraph);
-    void buildScene(void);
-    void render(void);
+    void buildScene(const Topl_SceneGraph* sceneGraph) override;
+    void render(void) override;
 private:
-    void init(NATIVE_WINDOW hwnd);
-    void createPipeline(void);
-    void cleanup(void);
+    void init(NATIVE_WINDOW hwnd) override;
+    void createPipeline(void) override;
+    void cleanup(void) override;
+
+	GLuint vertexBuff; // One buffer for now
+	GLuint vertexArray;
+	GLuint vShader; // Vertex Shader
+	GLuint fShader; // Fragment Shader
+	GLuint shaderProg;
 
     //NATIVE_GL_CONEXT m_GL4_Ctx;
 };

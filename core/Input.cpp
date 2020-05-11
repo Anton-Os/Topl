@@ -7,6 +7,7 @@
     state.mTimestamp = mTimer.
 } */
 
+/*
 void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KEY_Event event){
     KeyState kState(keyCode, event, mTimer.getSecsPassed());
     mStates.push(kState);
@@ -30,4 +31,17 @@ unsigned short Input_KeyLogger::updateKeyStates(){
     }
 
     return expiredKeys;
+} */
+
+KeyState Input_KeyLogger::getKeyState(char c) {
+	KeyState temp('\0', KEY_none, 0.0);
+	return temp;
+}
+
+void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KEY_Event event){
+	return;
+}
+
+void Input_KeyLogger::addCallback(keyCallback callback) {
+	return;
 }

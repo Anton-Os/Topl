@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <vector>
 #include <map>
 
@@ -18,20 +19,50 @@ struct Circle {
 // Objects that are candidates for Topl_GeoEntity::GeoType
 // Topl_BallSprite should be added
 
-struct Geo_RenderObj {
-    unsigned vCount;
-    unsigned iCount;
+class Geo_RenderObj {
+public:
+    ~Geo_RenderObj(){
+        if(mVData != nullptr) free(mVData);
+        if(mIData != nullptr) free(mIData);
+    }
 
-    // Eigen::Vector3d vec; // Work plz
-    virtual Eigen::Vector3d* genVertices() = 0;
+    unsigned getVCount() const { return mVCount; }
+    unsigned getICount() const { return mICount; }
+
+    // const Eigen::Vector3f(const*) vData_refPtr = mVData;
+    // const unsigned(const*) iData_refPtr = mIData;
+    // Eigen::Vector3f(const*) getVData() const { return mVData; }
+    // unsigned(const*) getIData() const { return mIData; }
+protected:
+    // Eigen::Vector3f vec; // Work plz
+    virtual Eigen::Vector3f* genVertices() = 0;
     virtual unsigned* genIndices() = 0;
+
+    const unsigned short mPerVertex = 3; // Elements per vertex, should be configurable later
+    unsigned mVCount;
+    unsigned mICount;
+    Eigen::Vector3f* mVData = nullptr;
+    unsigned* mIData = nullptr;
 };
 
 // Override the virtual functions above
 class Geo_Rect2D : Geo_RenderObj {
+public:
+    Geo_Rect2D(float width, float height){
+        mVCount = 4; // Rectangle has 4 vertices
+        mICount = 6; // Rectangle has 6 indices
+        mRect.width = width;
+        mRect.height = height;
+
+        mVData = genVertices();
+        mIData = genIndices();
+    }
+private:
+    Eigen::Vector3f* genVertices() override;
+    unsigned* genIndices() override;
     //unsigned color;
-    int drawOrder;
-    Rect rect;
+    int drawOrder = 0;
+    Rect mRect;
 };
 
 class Geo_Sphere2D : Geo_RenderObj {
@@ -57,7 +88,7 @@ struct Topl_BaseEntity { // Acts as a node
         else return *(mChild + childNum - 1);
     }
 
-    void updateLocation(float loc[3]); // Follow by more spatial update things
+    void updateLocation(Eigen::Vector3f vec); // Follow by more spatial update things
     // ADD CHILD FUNCTION
 private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
@@ -67,8 +98,8 @@ private:
     unsigned mChildCount = 0;
     Topl_BaseEntity** mChild = nullptr;
 
-    Eigen::Vector3d relWorldPos; // Positions by which to offset
-    Eigen::Vector3d objOrientAngl; // Angles by which to rotate
+    Eigen::Vector3f relWorldPos; // Positions by which to offset
+    Eigen::Vector3f objOrientAngl; // Angles by which to rotate
 };
 
 struct Topl_GeoEntity : Topl_BaseEntity {
