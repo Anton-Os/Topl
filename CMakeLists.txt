@@ -8,6 +8,12 @@ include(ExternalProject)
 
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
+# NOT SURE THIS IS A FIX TO BUILD DURING CONFIG TIME
+execute_process(
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/Rasteron
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Rasteron
+)
+
 if(FALSE) # need to fix Rasteron
     ExternalProject_Add(Rasteron
         GIT_REPOSITORY "https://github.com/Anton-Os/Rasteron.git"

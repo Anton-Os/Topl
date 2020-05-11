@@ -43,6 +43,26 @@ void Topl_BaseEntity::updateLocation(Eigen::Vector3f vec){
     return;
 }
 
+const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(unsigned index) const {
+    // std::map<const char*, unsigned>::iterator nameToId_iter;
+    // nameToId_iter = mNameToId_map.find(name);
+
+    return nullptr;
+}
+
+const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(const char* name) const {
+    // std::map<const char*, unsigned>::iterator nameToId_iter;
+    // nameToId_iter = mNameToId_map.find(name);
+
+    if(mNameToId_map.find(name) == mNameToId_map.end()){
+        puts("Name provided cannot be found");
+        return nullptr;
+    } 
+
+    unsigned gIndex = mNameToId_map.at(name);
+    return mIdToGeo_map.at(gIndex);
+}
+
 void Topl_SceneGraph::addGeometry(const char* name, const Topl_GeoEntity* geoEntity){
     // std::map<const char*, unsigned>::iterator nameToId_it = mNameToId_map.begin() + mKeyCount;
     // mNameToId_map.insert(name, static_cast<Topl_BaseEntity*>(geoEntity)->get_Id());

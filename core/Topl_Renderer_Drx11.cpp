@@ -22,6 +22,27 @@ namespace _Drx11 {
 		return true;
 	}
 
+    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, Eigen::Vector3f* vData, unsigned vCount) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DEFAULT;
+		buffDesc.ByteWidth = sizeof(Eigen::Vector3f) * vCount;
+		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffDesc.CPUAccessFlags = 0;
+		buffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = vData;
+
+		if (FAILED(
+			(*(device))->CreateBuffer(&buffDesc, &buffData, vBuff)
+		))
+			return false; // Provide error handling code
+
+		return true;
+	}
+
 	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
@@ -151,15 +172,6 @@ void Topl_Renderer_Drx11::createPipeline(void){
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     // Build a scene based on scene graph NEXT IMPLEMENTATION
 
-	float verticesTest[] = {
-		0.5f, 0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.1f, 0.1f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		0.1f, 0.1f, 0.5f
-	};
-
     float verticesBox[] = {
 		-0.5f, -0.5f, 0.5f, 
 		-0.5f,  0.5f, 0.5f,
@@ -172,7 +184,12 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		0, 2, 3
 	};
 
+    const Topl_GeoEntity *const gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
+    const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
+    const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
+
 	// Index creation procedures
+
 	m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexBoxBuff, &indexBox[0], 6);
 	m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
 

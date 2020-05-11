@@ -14,18 +14,22 @@ enum KEY_Event {
 struct KeyState {
     // KeyState(){}
     // KeyState(const char* kc, enum KEY_Event ke, double ts, double te){
-    KeyState(const char* kc, enum KEY_Event ke, double lt){
+    KeyState(char kc, enum KEY_Event ke){
+        keyCode = kc; event = ke;
+    }
+    KeyState(char kc, enum KEY_Event ke, double lt){
         keyCode = kc; event = ke; tsampMil = lt;
     }
-    const char* keyCode;
+    char keyCode;
     // int keyID;
     KEY_Event event;
 
-	double tsampMil; // Timestamp in milliseconds when event triggered
-	double holdTime; // Duration the key was held
+	double tsampMil = 0.0f; // Timestamp in milliseconds when event triggered
+	double holdTime = 0.0f; // Duration the key was held
 };
 
-typedef void (*keyCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
+typedef void (*keyComboCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
+typedef void (*keyCallback)(void); // Simply trigger on a certain
 
 class Input_KeyLogger {
 public: 
@@ -36,11 +40,13 @@ public:
     unsigned short getCallbackCount(){ return mCallbacks.size();}
 
     void addKeyEvent(const char* keyCode, enum KEY_Event event); // Searches for callback and triggers it
-	void addCallback(keyCallback callback);
+	void addCallback(const KeyState* state, keyCallback callback);
+    void addComboCallback(const std::vector<KeyState>& states, keyComboCallback callback); // States and the callback are closely tied 
     // void addCallback(keyCallback callback, std::vector<KeyState> states);
 private:
     // std::queue<KeyState> mStates;
-    std::vector<keyCallback> mCallbacks; // Populates vectors below
+    std::vector<keyCallback> mCallbacks;
+    std::vector<keyComboCallback> mComboCallbacks; // Populates vectors below
 
 	std::vector<KeyState> mStates;
 	std::vector<char> mSupportKeys;

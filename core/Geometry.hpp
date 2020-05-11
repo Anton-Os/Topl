@@ -21,6 +21,7 @@ struct Circle {
 
 class Geo_RenderObj {
 public:
+    Geo_RenderObj(){}
     ~Geo_RenderObj(){
         if(mVData != nullptr) free(mVData);
         if(mIData != nullptr) free(mIData);
@@ -31,8 +32,8 @@ public:
 
     // const Eigen::Vector3f(const*) vData_refPtr = mVData;
     // const unsigned(const*) iData_refPtr = mIData;
-    // Eigen::Vector3f(const*) getVData() const { return mVData; }
-    // unsigned(const*) getIData() const { return mIData; }
+    const Eigen::Vector3f *const getVData() const { return mVData; }
+    const unsigned *const getIData() const { return mIData; }
 protected:
     // Eigen::Vector3f vec; // Work plz
     virtual Eigen::Vector3f* genVertices() = 0;
@@ -46,9 +47,9 @@ protected:
 };
 
 // Override the virtual functions above
-class Geo_Rect2D : Geo_RenderObj {
+class Geo_Rect2D : public Geo_RenderObj {
 public:
-    Geo_Rect2D(float width, float height){
+    Geo_Rect2D(float width, float height) : Geo_RenderObj() {
         mVCount = 4; // Rectangle has 4 vertices
         mICount = 6; // Rectangle has 6 indices
         mRect.width = width;
@@ -123,6 +124,8 @@ public:
     ~Topl_SceneGraph(){}
 
     void addGeometry(const char* name, const Topl_GeoEntity* geoEntity);
+    const Topl_GeoEntity *const getGeoEntity(unsigned index) const;
+    const Topl_GeoEntity *const getGeoEntity(const char* name) const;
     // void addTextures(const char* name, const Topl_Texture** textures);
     // void addShaders(const char* name, const Topl_Shader** shaders);
 private:

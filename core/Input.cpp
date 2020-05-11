@@ -42,6 +42,6 @@ void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KEY_Event event){
 	return;
 }
 
-void Input_KeyLogger::addCallback(keyCallback callback) {
+void Input_KeyLogger::addCallback(const KeyState* state, keyCallback callback) {
 	return;
 }
