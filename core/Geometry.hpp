@@ -19,6 +19,11 @@ struct Circle {
 // Objects that are candidates for Topl_GeoEntity::GeoType
 // Topl_BallSprite should be added
 
+
+// Typedefs
+typedef const Eigen::Vector3f *const vec3f_cptr;
+typedef const unsigned *const ui_cptr;
+
 class Geo_RenderObj {
 public:
     Geo_RenderObj(){}
@@ -34,6 +39,9 @@ public:
     // const unsigned(const*) iData_refPtr = mIData;
     const Eigen::Vector3f *const getVData() const { return mVData; }
     const unsigned *const getIData() const { return mIData; }
+
+	Eigen::Vector3f* mVData = nullptr;
+	unsigned* mIData = nullptr;
 protected:
     // Eigen::Vector3f vec; // Work plz
     virtual Eigen::Vector3f* genVertices() = 0;
@@ -42,8 +50,9 @@ protected:
     const unsigned short mPerVertex = 3; // Elements per vertex, should be configurable later
     unsigned mVCount;
     unsigned mICount;
-    Eigen::Vector3f* mVData = nullptr;
-    unsigned* mIData = nullptr;
+
+	// Eigen::Vector3f* mVData = nullptr;
+	// unsigned* mIData = nullptr;
 };
 
 // Override the virtual functions above
@@ -118,12 +127,14 @@ struct Topl_GeoEntity : Topl_BaseEntity {
     } mType;
 };
 
+typedef const Topl_GeoEntity *const tpl_gEntity_cptr;
+
 class Topl_SceneGraph {
 public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
 
-    void addGeometry(const char* name, const Topl_GeoEntity* geoEntity);
+    void addGeometry(const char* name, const Topl_GeoEntity *const geoEntity);
     const Topl_GeoEntity *const getGeoEntity(unsigned index) const;
     const Topl_GeoEntity *const getGeoEntity(const char* name) const;
     // void addTextures(const char* name, const Topl_Texture** textures);
@@ -131,7 +142,7 @@ public:
 private:
     // unsigned mKeyCount = 0;
     std::map<const char*, unsigned> mNameToId_map; // Associates names to object by IDs
-    std::map<unsigned, const Topl_GeoEntity*> mIdToGeo_map;
+    std::map<unsigned, const Topl_GeoEntity *const> mIdToGeo_map;
     // std::map<unsigned, const bool*> mIdToUpdateStat; // DOES OBJECT REQUIRE UPDATING
     // std::map<unsigned, const Topl_Texture**> mIdToTextures_map // WILL MAP TEXTURES TO OBJECTS
     // std::map<unsigned, const Topl_Shader**> mIdToShaders_map // WILL MAP SHADERS TO OBJECTS

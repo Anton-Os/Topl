@@ -1,47 +1,38 @@
 #include "Input.hpp"
 
-/* void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KeyState::KEY_Event event){
-    KeyState state; // Replace the following code with a constructor invocation
-    state.mKeyCode = keyCode;
-    state.mEvent = event;
-    state.mTimestamp = mTimer.
-} */
-
-/*
-void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KEY_Event event){
-    KeyState kState(keyCode, event, mTimer.getSecsPassed());
-    mStates.push(kState);
-
-    updateKeyStates();
-}
-
-unsigned short Input_KeyLogger::updateKeyStates(){
-    double strokeTimeBuff = 0.0f;
-    unsigned short expiredKeys = 0;
-
-    // Make sure to check for "prolonged" key presses in next implementation
-    // A keypress has to be followed by a release for mStates to pop
-    for(unsigned k = 0; k < mStates.size(); k++){
-        if(strokeTimeBuff >= mExpireMil){
-            mStates.pop(); // Keystroke time expired!
-            expiredKeys++;
-        }
-        else
-            strokeTimeBuff += mStates.back().lastStrokeT;
-    }
-
-    return expiredKeys;
-} */
+#include <cstdio>
 
 KeyState Input_KeyLogger::getKeyState(char c) {
-	KeyState temp('\0', KEY_none, 0.0);
+	KeyState temp('\0', KEY_none, 0.0); // Improve this
 	return temp;
 }
 
-void Input_KeyLogger::addKeyEvent(const char* keyCode, enum KEY_Event event){
-	return;
+void Input_KeyLogger::addKeyEvent(char keyCode, enum KEY_Event event){
+    if(mCodeToKey_map.find(&keyCode) == mCodeToKey_map.end()) // No callback associated
+	    return;
+    
+    KeyState* currentState = mCodeToKey_map.at(&keyCode);
+    currentState->event = event;
+
+    // Make this better
+    currentState->tstampMil = mTimer.getAbsMillsecs();
+
+    // For now just compare the event types
+    const KeyState* triggerState = mCodeToTrigger_map.at(&keyCode);
+
+    if(triggerState->event == currentState->event)
+        puts("Event Match!");
 }
 
 void Input_KeyLogger::addCallback(const KeyState* state, keyCallback callback) {
+
+    mTriggerStates.push_back(state); // Adds the trigger state
+    KeyState kState(state->keyCode, KEY_none);
+    mStates.push_back(kState); // Adds the current state
+
+    mCodeToKey_map.insert(  {&state->keyCode, &mStates.at(mStates.size() - 1)}  );
+    mCodeToTrigger_map.insert(  {&state->keyCode, mTriggerStates.at(mTriggerStates.size() - 1)}  );
+
+    mCallbacks.push_back(callback);
 	return;
 }

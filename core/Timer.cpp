@@ -42,9 +42,27 @@ using namespace std::chrono;
     return timestamp;
 } */
 
-double Timer_Interval::getSecsPassed(){ // Retrieves seconds passed since last invocation
+/* double Timer_Interval::getRelMillsecs(){ // Retrieves seconds passed since last invocation
     mEndSec = steady_clock::now(); // Gets current time
-    mSecTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec); // Computes difference
+    mRelTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec); // Computes difference
+    mAbsTimeSpan += mRelTimeSpan;
     mStartSec = mEndSec; // Sets the new start time
-    return mSecTimeSpan.count();
+    return mRelTimeSpan.count();
+} */
+
+double Timer_Interval::getRelMillsecs(){
+    updateTimer();
+    return mRelTimeSpan.count();
+}
+
+double Timer_Interval::getAbsMillsecs(){
+    updateTimer();
+    return mAbsTimeSpan.count();
+}
+
+void Timer_Interval::updateTimer(){
+    mEndSec = steady_clock::now(); // Gets current time
+    mRelTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec);
+    mAbsTimeSpan += mRelTimeSpan;
+    mStartSec = mEndSec;
 }

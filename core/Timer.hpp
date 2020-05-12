@@ -1,4 +1,5 @@
 #include <chrono>
+#include <ratio>
 #include <cmath>
 
 struct Timestamp {
@@ -25,16 +26,19 @@ private:
     double mElapseTime = 0.0; // Time needed for event to go go off
 };
 
-
 class Timer_Interval { // Get number of millisecs between two invocations of getSecsPassed()
 public:
     Timer_Interval(){ 
         mStartSec = std::chrono::steady_clock::now();
     }
     // Timestamp getTimeAbs();
-    double getSecsPassed();
+    double getRelMillsecs(); // Gets secs since last call
+    double getAbsMillsecs(); // Gets secs since timer object construction
 private:
-    std::chrono::duration<double> mSecTimeSpan;
+    void updateTimer();
+
+    std::chrono::duration<double, std::milli> mRelTimeSpan;
+    std::chrono::duration<double, std::milli> mAbsTimeSpan = std::chrono::milliseconds(0);
     std::chrono::steady_clock::time_point mStartSec;
     std::chrono::steady_clock::time_point mEndSec;
 };

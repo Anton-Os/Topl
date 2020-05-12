@@ -185,13 +185,18 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 	};
 
     const Topl_GeoEntity *const gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
-    const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
-    const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
+    // const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
+    // const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
+	Eigen::Vector3f* gRec1_vData = gRect1_ptr->mType.gRect->mVData;
+	const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->mIData;
 
 	// Index creation procedures
 
 	m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexBoxBuff, &indexBox[0], 6);
-	m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
+    m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexRectBuff, (DWORD*)gRec1_iData, 6); // Scared of casting
+
+	// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
+    m_deviceCtx->IASetIndexBuffer(m_pipeline.indexRectBuff, DXGI_FORMAT_R32_UINT, 0);
 
     // Vertex creation procedures
 

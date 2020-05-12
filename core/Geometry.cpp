@@ -50,7 +50,7 @@ const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(unsigned index) const 
     return nullptr;
 }
 
-const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(const char* name) const {
+const Topl_GeoEntity *const Topl_SceneGraph::getGeoEntity(const char* name) const {
     // std::map<const char*, unsigned>::iterator nameToId_iter;
     // nameToId_iter = mNameToId_map.find(name);
 
@@ -63,7 +63,7 @@ const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(const char* name) cons
     return mIdToGeo_map.at(gIndex);
 }
 
-void Topl_SceneGraph::addGeometry(const char* name, const Topl_GeoEntity* geoEntity){
+void Topl_SceneGraph::addGeometry(const char* name, const Topl_GeoEntity *const geoEntity){
     // std::map<const char*, unsigned>::iterator nameToId_it = mNameToId_map.begin() + mKeyCount;
     // mNameToId_map.insert(name, static_cast<Topl_BaseEntity*>(geoEntity)->get_Id());
     if(mNameToId_map.find(name) != mNameToId_map.end()){
