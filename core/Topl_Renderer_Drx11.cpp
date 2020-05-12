@@ -22,7 +22,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, Eigen::Vector3f* vData, unsigned vCount) {
+    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, const Eigen::Vector3f *const vData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -185,10 +185,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 	};
 
     const Topl_GeoEntity *const gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
-    // const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
-    // const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
-	Eigen::Vector3f* gRec1_vData = gRect1_ptr->mType.gRect->mVData;
-	const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->mIData;
+    const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
+    const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
+	// Eigen::Vector3f* gRec1_vData = gRect1_ptr->mType.gRect->mVData;
+	// const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->mIData;
 
 	// Index creation procedures
 
@@ -201,11 +201,12 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     // Vertex creation procedures
 
 	// m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexDataBuff, &verticesTest[0], 18);
-	m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexBoxBuff, &verticesBox[0], 12);
+	m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexRectBuff, gRec1_vData, 4);
 
-    UINT stride = sizeof(float) * 3;
+    UINT strideTest = sizeof(float) * 3;
+    UINT stride = sizeof(Eigen::Vector3f);
     UINT offset = 0;
-    m_deviceCtx->IASetVertexBuffers(0, 1, &m_pipeline.vertexBoxBuff, &stride, &offset); // Use the correct vertex buff
+    m_deviceCtx->IASetVertexBuffers(0, 1, &m_pipeline.vertexRectBuff, &stride, &offset); // Use the correct vertex buff
 
 	// Input assembler inputs to pipeline
 

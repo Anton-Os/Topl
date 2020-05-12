@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <string> // For the scenegraph
 
 #include <Eigen/Dense>
 
@@ -35,13 +36,8 @@ public:
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
 
-    // const Eigen::Vector3f(const*) vData_refPtr = mVData;
-    // const unsigned(const*) iData_refPtr = mIData;
     const Eigen::Vector3f *const getVData() const { return mVData; }
     const unsigned *const getIData() const { return mIData; }
-
-	Eigen::Vector3f* mVData = nullptr;
-	unsigned* mIData = nullptr;
 protected:
     // Eigen::Vector3f vec; // Work plz
     virtual Eigen::Vector3f* genVertices() = 0;
@@ -51,8 +47,8 @@ protected:
     unsigned mVCount;
     unsigned mICount;
 
-	// Eigen::Vector3f* mVData = nullptr;
-	// unsigned* mIData = nullptr;
+    Eigen::Vector3f* mVData = nullptr;
+	unsigned* mIData = nullptr;
 };
 
 // Override the virtual functions above
@@ -134,14 +130,14 @@ public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
 
-    void addGeometry(const char* name, const Topl_GeoEntity *const geoEntity);
+    void addGeometry(const std::string& name, const Topl_GeoEntity *const geoEntity);
     const Topl_GeoEntity *const getGeoEntity(unsigned index) const;
-    const Topl_GeoEntity *const getGeoEntity(const char* name) const;
+    const Topl_GeoEntity *const getGeoEntity(const std::string& name) const;
     // void addTextures(const char* name, const Topl_Texture** textures);
     // void addShaders(const char* name, const Topl_Shader** shaders);
 private:
     // unsigned mKeyCount = 0;
-    std::map<const char*, unsigned> mNameToId_map; // Associates names to object by IDs
+    std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
     std::map<unsigned, const Topl_GeoEntity *const> mIdToGeo_map;
     // std::map<unsigned, const bool*> mIdToUpdateStat; // DOES OBJECT REQUIRE UPDATING
     // std::map<unsigned, const Topl_Texture**> mIdToTextures_map // WILL MAP TEXTURES TO OBJECTS

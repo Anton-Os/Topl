@@ -42,7 +42,7 @@ ExternalProject_Add(DXSDK
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
     )
 
-    ExternalProject_Add(Eigen
+ExternalProject_Add(Eigen
         GIT_REPOSITORY "https://github.com/eigenteam/eigen-git-mirror.git"
         GIT_TAG "36b95962756c1fce8e29b1f8bc45967f30773c00"
 
