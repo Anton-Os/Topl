@@ -22,7 +22,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, const Eigen::Vector3f *const vData, unsigned vCount) {
+    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec3f_cptr vData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -170,37 +170,19 @@ void Topl_Renderer_Drx11::createPipeline(void){
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
-    // Build a scene based on scene graph NEXT IMPLEMENTATION
 
-    float verticesBox[] = {
-		-0.5f, -0.5f, 0.5f, 
-		-0.5f,  0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f
-    };
-
-	DWORD indexBox[] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-    const Topl_GeoEntity *const gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
-    const Eigen::Vector3f *const gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
-    const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->getIData();
-	// Eigen::Vector3f* gRec1_vData = gRect1_ptr->mType.gRect->mVData;
-	// const unsigned *const gRec1_iData = gRect1_ptr->mType.gRect->mIData;
+    tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
+    vec3f_cptr gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
+    ui_cptr gRec1_iData = gRect1_ptr->mType.gRect->getIData();
 
 	// Index creation procedures
 
-	m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexBoxBuff, &indexBox[0], 6);
     m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexRectBuff, (DWORD*)gRec1_iData, 6); // Scared of casting
 
 	// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
     m_deviceCtx->IASetIndexBuffer(m_pipeline.indexRectBuff, DXGI_FORMAT_R32_UINT, 0);
 
     // Vertex creation procedures
-
-	// m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexDataBuff, &verticesTest[0], 18);
 	m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexRectBuff, gRec1_vData, 4);
 
     UINT strideTest = sizeof(float) * 3;
@@ -248,9 +230,10 @@ void Topl_Renderer_Drx11::render(void){
 
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
+    // if(mPrimDraw < 12) mPrimDraw++;
 	if (m_pipelineReady && m_sceneReady)
 		m_deviceCtx->DrawIndexed(6, 0, 0);
-        // m_deviceCtx->Draw(6, 0);
+        // m_deviceCtx->Draw(4, 0);
 
     m_swapChain->Present(0, 0);
 }
@@ -260,7 +243,9 @@ void Topl_Renderer_Drx11::cleanup(void){
     m_device->Release();
     m_deviceCtx->Release();
 
-	m_pipeline.vertexDataBuff->Release();
+	m_pipeline.vertexRectBuff->Release();
+    m_pipeline.indexRectBuff->Release();
+
 	m_pipeline.vertexShader->Release();
 	m_pipeline.pixelShader->Release();
 	m_pipeline.vsBuff->Release();

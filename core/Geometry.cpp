@@ -24,7 +24,7 @@ unsigned* Geo_Rect2D::genIndices(){
 
     unsigned indicesArray[6] = { 
         0, 1, 2, 
-        0, 2, 3
+        3, 2, 1
     };
 
     // Simply copies from array to to the allocated data
@@ -50,9 +50,7 @@ const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(unsigned index) const 
     return nullptr;
 }
 
-const Topl_GeoEntity *const Topl_SceneGraph::getGeoEntity(const std::string& name) const {
-    // std::map<const char*, unsigned>::iterator nameToId_iter;
-    // nameToId_iter = mNameToId_map.find(name);
+tpl_gEntity_cptr Topl_SceneGraph::getGeoEntity(const std::string& name) const {
 
     if(mNameToId_map.find(name) == mNameToId_map.end()){
         puts("Name provided cannot be found");
@@ -63,9 +61,7 @@ const Topl_GeoEntity *const Topl_SceneGraph::getGeoEntity(const std::string& nam
     return mIdToGeo_map.at(gIndex);
 }
 
-void Topl_SceneGraph::addGeometry(const std::string& name, const Topl_GeoEntity *const geoEntity){
-    // std::map<const char*, unsigned>::iterator nameToId_it = mNameToId_map.begin() + mKeyCount;
-    // mNameToId_map.insert(name, static_cast<Topl_BaseEntity*>(geoEntity)->get_Id());
+void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr geoEntity){
     if(mNameToId_map.find(name) != mNameToId_map.end()){
         puts("Duplicate names not allowed in scene graph");
         return;
