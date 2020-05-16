@@ -1,6 +1,7 @@
 
 #include <vector>
 #include <map>
+#include <cctype>
 
 #include "Timer.hpp"
 
@@ -13,13 +14,13 @@ enum KEY_Event {
 
 struct KeyState {
     // KeyState(){}
-    // KeyState(const char* kc, enum KEY_Event ke, double ts, double te){
+    // KeyState(const char kc, enum KEY_Event ke, double ts, double te){
     KeyState(){}
     KeyState(char kc, enum KEY_Event ke){
-        keyCode = kc; event = ke;
+        keyCode = toupper(kc); event = ke;
     }
     KeyState(char kc, enum KEY_Event ke, double lt){
-        keyCode = kc; event = ke; tstampMil = lt;
+        keyCode = toupper(kc); event = ke; tstampMil = lt;
     }
     char keyCode = '\0';
     // int keyID;
@@ -52,8 +53,8 @@ private:
     std::vector<keyCallback> mCallbacks;
 	std::vector<KeyState> mStates;
     std::vector<const KeyState*> mTriggerStates; // Fed in by the add callback function
-	std::map<const char*, KeyState*> mCodeToKey_map; // Associates a character with a keyState, should be modifiable
-    std::map<const char*, const KeyState*> mCodeToTrigger_map; // Associates a character with a keyTrigger, IMPROVE!
+	std::map<const char, KeyState*> mCodeToKey_map; // Associates a character with a keyState, should be modifiable
+    std::map<const char, const KeyState*> mCodeToTrigger_map; // Associates a character with a keyTrigger, IMPROVE!
 
     Timer_Interval mTimer;
     //double mExpireMil = 2.0; // How long do key events stay in the queue?
@@ -79,4 +80,4 @@ private:
     KeyState mRButton;
     float xScreenPos;
     float yScreenPos;
-}
+};

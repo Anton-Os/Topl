@@ -67,7 +67,7 @@ namespace _Drx11 {
 	}
 
     static bool createConstBuff_Vec3(ID3D11Device** device, ID3D11Buffer** cBuff, vec3f_cptr vector) {
-		D3D11_BUFFER_DESC buffDesc;
+        D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DYNAMIC; // Note that this may need frequent updating
 		buffDesc.ByteWidth = sizeof(Eigen::Vector3f);
@@ -193,8 +193,8 @@ void Topl_Renderer_Drx11::createPipeline(void){
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
     tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
-    vec3f_cptr gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
-    ui_cptr gRec1_iData = gRect1_ptr->mType.gRect->getIData();
+    vec3f_cptr gRec1_vData = gRect1_ptr->mRenderObj->getVData(); // Fix this access
+    ui_cptr gRec1_iData = gRect1_ptr->mRenderObj->getIData();
 
     // Constant values procedures
 
@@ -212,7 +212,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     m_sceneReady = _Drx11::createIndexBuff(&m_device, 
                                            &m_pipeline.indexRectBuff, 
                                            (DWORD*)gRec1_iData, 
-                                           gRect1_ptr->mType.gRect->getICount() ); 
+                                           gRect1_ptr->mRenderObj->getICount() ); 
 
 	// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
     m_deviceCtx->IASetIndexBuffer(m_pipeline.indexRectBuff, DXGI_FORMAT_R32_UINT, 0);
@@ -221,7 +221,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 	m_sceneReady = _Drx11::createVertexBuff(&m_device, 
                                             &m_pipeline.vertexRectBuff, 
                                             gRec1_vData,
-                                            gRect1_ptr->mType.gRect->getVCount());
+                                            gRect1_ptr->mRenderObj->getVCount());
 
     UINT strideTest = sizeof(float) * 3;
     UINT stride = sizeof(Eigen::Vector3f);

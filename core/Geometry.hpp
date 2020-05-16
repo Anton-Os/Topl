@@ -112,6 +112,7 @@ private:
 };
 
 struct Topl_GeoEntity : Topl_BaseEntity {
+    Topl_GeoEntity(const Geo_RenderObj* renderObj){ mRenderObj = renderObj; }
 	Topl_GeoEntity(const Geo_Rect2D* geoObj) { mType.gRect = geoObj; }
     Topl_GeoEntity(const Geo_Sphere2D* geoObj) { mType.gSphere = geoObj; }
     // A unique constructor must exist for every geometry type
@@ -124,6 +125,8 @@ struct Topl_GeoEntity : Topl_BaseEntity {
         const Geo_Sphere2D* gSphere;
         // ADD MORE TYPES OF GEOMETRY
     } mType;
+
+    const Geo_RenderObj* mRenderObj; // Trying to eliminate the mType
 };
 
 

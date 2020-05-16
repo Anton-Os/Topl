@@ -120,12 +120,18 @@ target_include_directories(DemoGL4 PUBLIC
 ) # REMOVE THIS LATER
 target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 
-if(WIN32)
-    file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
 
+
+file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
+add_custom_target(ShaderCopy 
+                  SOURCES ${drx11_Shaders} )
+                  # Add GLSL shaders too 
+if(WIN32)
     foreach(file IN ITEMS ${drx11_Shaders})
         add_custom_command(TARGET DemoDrx11 PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy 
             "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
     endforeach()
 endif()
+
+add_dependencies(DemoDrx11 ShaderCopy) # Repeat for all targets

@@ -6,16 +6,12 @@
 
 #include <cstdio>
 
-/* void k1_Press(){  puts("Key 2 Pressed!");  }
-void k1_Release(){  puts("Key 2 Released!");  }
-void k2_Press(){  puts("Key 2 Pressed!");  }
-void k2_Release(){  puts("Key 2 Released!");  } */
-
 void callback1(void){
 	puts("Key k Pressed!");
 }
 
-KeyState kState('k', KEY_press);
+KeyState kState('k', KEY_release);
+// Lowercase k becomes uppercase 
 
 char kc = '\0';
 enum KEY_Event event = KEY_none;
@@ -25,9 +21,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	HDC hDC = GetDC(hwnd);
 	RECT rect;
 
-    static Input_KeyLogger keyLogger;
-	if(keyLogger.getCallbackCount() == 0){
-		// Initialize all the callback stuff
+	static Input_KeyLogger keyLogger;
+	if (keyLogger.getCallbackCount() == 0) {
 		keyLogger.addCallback(&kState, callback1);
 	}
 
@@ -36,30 +31,28 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 	}
-    case(WM_KEYDOWN): {
-        event = KEY_press;
-        puts("Key pressed \n");
-    }
-    case(WM_KEYUP): {
-        event = KEY_release;
-        puts("Key released");
-    }
-    case (WM_CHAR): {
-        char ch = (char)wParam;
-        putchar(ch);
-        putchar('\n');
-        //keyLogger.addKeyEvent(&ch, )
-    }
+	case(WM_KEYDOWN): {
+		event = KEY_press;
+		puts("Key pressed \n");
+	}
+	case(WM_KEYUP): {
+		event = KEY_release;
+		puts("Key released");
+	}
+	case (WM_CHAR): {
+		char ch = (char)wParam;
+		putchar(ch);
+		putchar('\n');
+
+		kc = ch;
+		if (kc != '\0' && event != KEY_none) {
+			keyLogger.addKeyEvent(kc, event);
+			kc = '\0'; event = KEY_none;
+		}
+	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
-
-    if(kc != '\0' && event != KEY_none){
-        keyLogger.addKeyEvent(kc, event);
-
-        kc = '\0'; // Resetting default key state
-        event = KEY_none; // Resetting default key event
-    }
 
 	return 0;
 }
