@@ -65,6 +65,27 @@ namespace _Drx11 {
 
 		return true;
 	}
+
+    static bool createConstBuff_Vec3(ID3D11Device** device, ID3D11Buffer** cBuff, vec3f_cptr vector) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DYNAMIC; // Note that this may need frequent updating
+		buffDesc.ByteWidth = sizeof(Eigen::Vector3f);
+		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		buffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = vector;
+
+		if (FAILED(
+			(*(device))->CreateBuffer(&buffDesc, &buffData, cBuff)
+		))
+			return false; // Provide error handling code
+
+		return true;
+	}
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -175,15 +196,32 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     vec3f_cptr gRec1_vData = gRect1_ptr->mType.gRect->getVData(); // Fix this access
     ui_cptr gRec1_iData = gRect1_ptr->mType.gRect->getIData();
 
+    // Constant values procedures
+
+    // Attempting to update a relative screen location!
+    vec3f_cptr gRec1_position = gRect1_ptr->getLocation();
+
+    m_sceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
+                                           &m_pipeline.constPosBuff, 
+                                           gRec1_position );
+
+    m_deviceCtx->VSSetConstantBuffers(0, 1, &m_pipeline.constPosBuff);
+
 	// Index creation procedures
 
-    m_sceneReady = _Drx11::createIndexBuff(&m_device, &m_pipeline.indexRectBuff, (DWORD*)gRec1_iData, 6); // Scared of casting
+    m_sceneReady = _Drx11::createIndexBuff(&m_device, 
+                                           &m_pipeline.indexRectBuff, 
+                                           (DWORD*)gRec1_iData, 
+                                           gRect1_ptr->mType.gRect->getICount() ); 
 
 	// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
     m_deviceCtx->IASetIndexBuffer(m_pipeline.indexRectBuff, DXGI_FORMAT_R32_UINT, 0);
 
     // Vertex creation procedures
-	m_sceneReady = _Drx11::createVertexBuff(&m_device, &m_pipeline.vertexRectBuff, gRec1_vData, 4);
+	m_sceneReady = _Drx11::createVertexBuff(&m_device, 
+                                            &m_pipeline.vertexRectBuff, 
+                                            gRec1_vData,
+                                            gRect1_ptr->mType.gRect->getVCount());
 
     UINT strideTest = sizeof(float) * 3;
     UINT stride = sizeof(Eigen::Vector3f);

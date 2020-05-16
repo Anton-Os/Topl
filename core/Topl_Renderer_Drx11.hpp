@@ -10,6 +10,7 @@ struct Topl_Pipeline_Drx11 {
     ID3D11Buffer* vertexRectBuff;
 	// ID3D11Buffer* indexBoxBuff;
     ID3D11Buffer* indexRectBuff;
+    ID3D11Buffer* constPosBuff;
 
 	ID3D11InputLayout* vertexDataLayout; // Move out of here, NEXT IMPLEMENTATION
 	ID3D11VertexShader* vertexShader;

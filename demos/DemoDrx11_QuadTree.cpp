@@ -1,9 +1,7 @@
 #include "native_os_def.h"
 #include "Topl_Renderer_Drx11.hpp"
 
-//#pragma comment(lib, "D3d12.lib")
-//#pragma comment(lib, "d3dcompiler.lib")
-//#pragma comment(lib, "dxgi.lib")
+#include "Geometry/QuadTileTree.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -45,25 +43,19 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_Drx11 renderer(wndWindow);
-	
-	// renderer.createPipeline();
-
 	Geo_Rect2D gRect1(1.0f, 1.0f);
-
 	Topl_GeoEntity gEntity1(&gRect1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
 	sGraph1.addGeometry("basicRect", &gEntity1);
+
+	// Quad tree stuff
+	createQuadTree(&sGraph1, 4);
+
 	renderer.buildScene(&sGraph1);
 
-    for(unsigned t = 0; t < 99999; t++){
-		renderer.render();
-
-        while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-    	}	// This might solve the "hang up" issue
-	}
+    for(unsigned t = 0; t < 99999; t++)
+        renderer.render();
 
 	return 0;
 }

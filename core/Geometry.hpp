@@ -1,3 +1,5 @@
+#ifndef GEOMETRY_H
+
 #include <cstdlib>
 #include <vector>
 #include <map>
@@ -94,6 +96,7 @@ struct Topl_BaseEntity { // Acts as a node
         else return *(mChild + childNum - 1);
     }
 
+    vec3f_cptr getLocation() const { return &relWorldPos; }
     void updateLocation(Eigen::Vector3f vec); // Follow by more spatial update things
     // ADD CHILD FUNCTION
 private:
@@ -143,4 +146,7 @@ private:
     // std::map<unsigned, const bool*> mIdToUpdateStat; // DOES OBJECT REQUIRE UPDATING
     // std::map<unsigned, const Topl_Texture**> mIdToTextures_map // WILL MAP TEXTURES TO OBJECTS
     // std::map<unsigned, const Topl_Shader**> mIdToShaders_map // WILL MAP SHADERS TO OBJECTS
-}; 
+};
+
+#define GEOMETRY_H
+#endif

@@ -1,5 +1,16 @@
 #include "Topl_Renderer_GL4.hpp"
 
+#include <string>
+
+// This code is platform independent
+
+namespace _GL4 {
+	void readShader(const std::string& filePath, GLchar** shaderStr){
+		// Needs to be compatible with glShaderSource
+		return;
+	}
+}
+
 #ifdef _WIN32
 static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     // Creates an HDC based on the window
