@@ -1,6 +1,11 @@
 #include "Geometry.hpp"
 
+#include <cmath>
+// #include <math.h>
+#include <cstdlib>
 #include <cstdio>
+
+// Geo_Rect2D Implementation
 
 Eigen::Vector3f* Geo_Rect2D::genVertices(){
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
@@ -34,14 +39,46 @@ unsigned* Geo_Rect2D::genIndices(){
     return data;
 }
 
+Eigen::Vector3f* Geo_Sphere2D::genVertices(){
+    Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
+
+	const double fullAngle = TOPL_PI * 2;
+	const double incAngle = fullAngle / mCircle.segments;
+	const double startAngle = fullAngle / 4; // Start at 90 degrees, pointing vertically
+
+    *(data + 0) = Eigen::Vector3f(0.0f, 0.0f, 0.0f); // Circle origin
+    for(unsigned v = 1; v < mVCount; v++) // We have already created
+        *(data + v) = Eigen::Vector3f(
+								sin(startAngle + (v * incAngle)) * mCircle.radius, 
+								cos(startAngle + (v * incAngle)) * mCircle.radius, 
+								0.5f);
+
+    return data;
+}
+
+unsigned* Geo_Sphere2D::genIndices(){
+    unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
+
+	unsigned startCVert = 1; // I increment this after every assignment
+	for (unsigned i = 0; i < mICount; i += 3) { // We are setting 3 indices in one go
+		*(data + i + 0) = 0; // Origin point
+		*(data + i + 1) = startCVert; // Take the start vertex
+		*(data + i + 2) = startCVert + 1; // Connect to next vertex
+
+		startCVert++;
+	}
+
+    return data;
+}
+
+// Geo_Sphere2D Implementation
+
+
+
+
 // More complex types
 
 unsigned Topl_BaseEntity::mId_count = 0;
-
-void Topl_BaseEntity::updateLocation(Eigen::Vector3f vec){
-    //mRelLocation = loc;
-    return;
-}
 
 const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(unsigned index) const {
     // std::map<const char*, unsigned>::iterator nameToId_iter;

@@ -1,5 +1,6 @@
 #include "Topl_Renderer_Drx11.hpp"
 
+
 namespace _Drx11 {
 	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, float* vData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
@@ -14,10 +15,8 @@ namespace _Drx11 {
 		ZeroMemory(&buffData, sizeof(buffData));
 		buffData.pSysMem = vData;
 
-		if (FAILED(
-			(*(device))->CreateBuffer(&buffDesc, &buffData, vBuff)
-		))
-			return false; // Provide error handling code
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
+		if (FAILED(hr)) return false;
 
 		return true;
 	}
@@ -35,10 +34,8 @@ namespace _Drx11 {
 		ZeroMemory(&buffData, sizeof(buffData));
 		buffData.pSysMem = vData;
 
-		if (FAILED(
-			(*(device))->CreateBuffer(&buffDesc, &buffData, vBuff)
-		))
-			return false; // Provide error handling code
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
+		if (FAILED(hr)) return false;
 
 		return true;
 	}
@@ -58,10 +55,8 @@ namespace _Drx11 {
 		buffData.SysMemPitch = 0;
 		buffData.SysMemSlicePitch = 0;
 
-		if (FAILED(
-			(*(device))->CreateBuffer(&buffDesc, &buffData, iBuff)
-		))
-			return false; // Provide error handling code
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, iBuff);
+		if (FAILED(hr)) return false;
 
 		return true;
 	}
@@ -70,19 +65,21 @@ namespace _Drx11 {
         D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DYNAMIC; // Note that this may need frequent updating
-		buffDesc.ByteWidth = sizeof(Eigen::Vector3f);
+		// buffDesc.ByteWidth = sizeof(Eigen::Vector3f);
+		buffDesc.ByteWidth = 16 * sizeof(BYTE);
 		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		buffDesc.MiscFlags = 0;
+		buffDesc.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA buffData;
 		ZeroMemory(&buffData, sizeof(buffData));
 		buffData.pSysMem = vector;
+		buffData.SysMemPitch = 0;
+		buffData.SysMemSlicePitch = 0;
 
-		if (FAILED(
-			(*(device))->CreateBuffer(&buffDesc, &buffData, cBuff)
-		))
-			return false; // Provide error handling code
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
+		if (FAILED(hr)) return false;
 
 		return true;
 	}
@@ -115,17 +112,15 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-    if(FAILED(   
-        D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL,  D3D11_SDK_VERSION,
-                                      &swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceCtx )   
-    ))
-        return; // Provide error handling code
+	HRESULT hr; // Error handler
+
+	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
+		&swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceCtx);
+	if (FAILED(hr)) return;
     
     ID3D11Texture2D* backBuffer;
-    if(FAILED(
-        m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)
-    ))
-        return; // Provide error handling code
+	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	if(FAILED(hr)) return; // Provide error handling code
 
     m_device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
     backBuffer->Release();
@@ -140,6 +135,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 void Topl_Renderer_Drx11::createPipeline(void){
 	ID3DBlob* errorBuff;
+	HRESULT hr;
 
 	if (FAILED(
 		D3DCompileFromFile(L"C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Vertex_MostBasic.hlsl", 
@@ -148,7 +144,7 @@ void Topl_Renderer_Drx11::createPipeline(void){
 	)) {
 		m_pipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		return; // Provide error handling code
+		return;
 	}
 
 	if (FAILED(
@@ -158,29 +154,21 @@ void Topl_Renderer_Drx11::createPipeline(void){
 	)) {
 		m_pipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		return; // Provide error handling code
+		return;
 	} 
 
-    if(FAILED(
-        m_device->CreateVertexShader(
-            m_pipeline.vsBuff->GetBufferPointer(), 
-            m_pipeline.vsBuff->GetBufferSize(),
-            NULL, &m_pipeline.vertexShader
-        )
-    )) {
+	hr = m_device->CreateVertexShader( m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
+		NULL, &m_pipeline.vertexShader);
+    if(FAILED(hr)){
         m_pipelineReady = false;
-        return; // Provide error handling code
+        return;
     }
 
-    if(FAILED(
-        m_device->CreatePixelShader(
-            m_pipeline.psBuff->GetBufferPointer(), 
-            m_pipeline.psBuff->GetBufferSize(),
-            NULL, &m_pipeline.pixelShader
-        )
-    )) {
+	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
+		NULL, &m_pipeline.pixelShader);
+	if (FAILED(hr)){
         m_pipelineReady = false;
-        return; // Provide error handling code
+        return;
     }
 
     m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
@@ -193,17 +181,17 @@ void Topl_Renderer_Drx11::createPipeline(void){
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
     tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
-    vec3f_cptr gRec1_vData = gRect1_ptr->mRenderObj->getVData(); // Fix this access
-    ui_cptr gRec1_iData = gRect1_ptr->mRenderObj->getIData();
+    vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
+    ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
+
 
     // Constant values procedures
 
-    // Attempting to update a relative screen location!
-    vec3f_cptr gRec1_position = gRect1_ptr->getLocation();
+    vec3f_cptr gRect1_position = gRect1_ptr->getLocation();
 
     m_sceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
                                            &m_pipeline.constPosBuff, 
-                                           gRec1_position );
+                                           gRect1_position );
 
     m_deviceCtx->VSSetConstantBuffers(0, 1, &m_pipeline.constPosBuff);
 
@@ -211,7 +199,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
     m_sceneReady = _Drx11::createIndexBuff(&m_device, 
                                            &m_pipeline.indexRectBuff, 
-                                           (DWORD*)gRec1_iData, 
+                                           (DWORD*)gRect1_iData, 
                                            gRect1_ptr->mRenderObj->getICount() ); 
 
 	// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
@@ -220,7 +208,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     // Vertex creation procedures
 	m_sceneReady = _Drx11::createVertexBuff(&m_device, 
                                             &m_pipeline.vertexRectBuff, 
-                                            gRec1_vData,
+                                            gRect1_vData,
                                             gRect1_ptr->mRenderObj->getVCount());
 
     UINT strideTest = sizeof(float) * 3;
@@ -283,6 +271,7 @@ void Topl_Renderer_Drx11::cleanup(void){
 
 	m_pipeline.vertexRectBuff->Release();
     m_pipeline.indexRectBuff->Release();
+	m_pipeline.constPosBuff->Release();
 
 	m_pipeline.vertexShader->Release();
 	m_pipeline.pixelShader->Release();

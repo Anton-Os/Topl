@@ -1,11 +1,14 @@
 #ifndef GEOMETRY_H
 
 #include <cstdlib>
+#include <cmath>
+
 #include <vector>
 #include <map>
 #include <string> // For the scenegraph
 
-#include <Eigen/Dense>
+#define TOPL_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406
+#include <Eigen/Dense> // Examine documentation
 
 // Simple Primitive Types
 
@@ -19,9 +22,7 @@ struct Circle {
     unsigned segments;
 };
 
-// Objects that are candidates for Topl_GeoEntity::GeoType
-// Topl_BallSprite should be added
-
+// Renderable primitive types
 
 // Typedefs for "safe" types
 typedef const Eigen::Vector3f* const vec3f_cptr;
@@ -69,15 +70,29 @@ private:
     Eigen::Vector3f* genVertices() override;
     unsigned* genIndices() override;
     //unsigned color;
-    int drawOrder = 0;
+    int mDrawOrder = 0;
     Rect mRect;
 };
 
 class Geo_Sphere2D : Geo_RenderObj {
+    Geo_Sphere2D(float radius, unsigned segments) : Geo_RenderObj() {
+        mVCount = segments + 1; // Number of segments + center point
+        mICount = segments * 3; // Rectangle has 6 indices
+        mCircle.radius = radius;
+        mCircle.segments = segments;
+
+        mVData = genVertices();
+        mIData = genIndices();
+    }
+private:
+    Eigen::Vector3f* genVertices() override;
+    unsigned* genIndices() override;
     //unsigned color;
-    int drawOrder;
-    Circle circle;
+    int mDrawOrder = 0;
+    Circle mCircle;
 };
+
+
 
 // More Complex types
 
@@ -96,8 +111,8 @@ struct Topl_BaseEntity { // Acts as a node
         else return *(mChild + childNum - 1);
     }
 
-    vec3f_cptr getLocation() const { return &relWorldPos; }
-    void updateLocation(Eigen::Vector3f vec); // Follow by more spatial update things
+    vec3f_cptr getLocation() const { return &mRelWorldPos; }
+	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos += vec; }; // Follow by more spatial update things
     // ADD CHILD FUNCTION
 private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
@@ -107,8 +122,9 @@ private:
     unsigned mChildCount = 0;
     Topl_BaseEntity** mChild = nullptr;
 
-    Eigen::Vector3f relWorldPos; // Positions by which to offset
-    Eigen::Vector3f objOrientAngl; // Angles by which to rotate
+    // Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
+	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.43, 0.3, 0.0); // Testing only!!!
+    Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
 };
 
 struct Topl_GeoEntity : Topl_BaseEntity {
