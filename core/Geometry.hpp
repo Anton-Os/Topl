@@ -96,66 +96,64 @@ private:
 
 // More Complex types
 
-struct Topl_BaseEntity { // Acts as a node
-	Topl_BaseEntity() {
+class Topl_Node { // Acts as a node
+public:
+	Topl_Node() {
 		mId_count++;
 		mId = mId_count;
 	}
-	~Topl_BaseEntity() { mId_count--; }
+	~Topl_Node() { mId_count--; }
 
 	// const unsigned const* mId_ref = &mId;
 	unsigned getId() const { return mId; }
-    Topl_BaseEntity* getParent() const { return mParent; }
-    Topl_BaseEntity* getChild(unsigned childNum) const {
+    Topl_Node* getParent() const { return mParent; }
+    Topl_Node* getChild(unsigned childNum) const {
         if(childNum > mChildCount) return nullptr;
         else return *(mChild + childNum - 1);
     }
 
-    vec3f_cptr getLocation() const { return &mRelWorldPos; }
-	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos += vec; }; // Follow by more spatial update things
     // ADD CHILD FUNCTION
 private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
 	unsigned mId; // Each object has a unique id
 
-    Topl_BaseEntity* mParent = nullptr;
+    Topl_Node* mParent = nullptr;
     unsigned mChildCount = 0;
-    Topl_BaseEntity** mChild = nullptr;
+    Topl_Node** mChild = nullptr;
 
-    // Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
-	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.43, 0.3, 0.0); // Testing only!!!
-    Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
 };
 
-struct Topl_GeoEntity : Topl_BaseEntity {
-    Topl_GeoEntity(const Geo_RenderObj* renderObj){ mRenderObj = renderObj; }
-	Topl_GeoEntity(const Geo_Rect2D* geoObj) { mType.gRect = geoObj; }
-    Topl_GeoEntity(const Geo_Sphere2D* geoObj) { mType.gSphere = geoObj; }
-    // A unique constructor must exist for every geometry type
+class Topl_GeoNode : Topl_Node {
+public:    
+    Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
+    
+    vec3f_cptr getLocation() const { return &mRelWorldPos; }
+	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos = vec; }; // Follow by more spatial update things
+
+	const Geo_RenderObj* mRenderObj; // Trying to eliminate the mType
+private:
     enum GeoBehavior {
         GEO_Fixed = 1,
         GEO_Dynamic = 2
     } mBehavior;
-    union GeoType {
-        const Geo_Rect2D* gRect;
-        const Geo_Sphere2D* gSphere;
-        // ADD MORE TYPES OF GEOMETRY
-    } mType;
 
-    const Geo_RenderObj* mRenderObj; // Trying to eliminate the mType
+	// Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
+	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.43, 0.3, 0.0); // Testing only!!!
+	Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
 };
 
 
-typedef const Topl_GeoEntity* const tpl_gEntity_cptr;
+#include "Physics.hpp"
+typedef const Topl_GeoNode* const tpl_gEntity_cptr;
 
 class Topl_SceneGraph {
 public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
 
-    void addGeometry(const std::string& name, tpl_gEntity_cptr geoEntity);
-    tpl_gEntity_cptr getGeoEntity(unsigned index) const;
-    tpl_gEntity_cptr getGeoEntity(const std::string& name) const;
+    void addGeometry(const std::string& name, tpl_gEntity_cptr GeoNode);
+    tpl_gEntity_cptr getGeoNode(unsigned index) const;
+    tpl_gEntity_cptr getGeoNode(const std::string& name) const;
     // void addTextures(const char* name, const Topl_Texture** textures);
     // void addShaders(const char* name, const Topl_Shader** shaders);
 private:

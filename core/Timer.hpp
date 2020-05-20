@@ -18,12 +18,12 @@ public:
     Timer_Event(unsigned long secs){ mElapseTime = secs * 1000; }
     Timer_Event(double milSecs){ mElapseTime = milSecs; }
 
-    unsigned long long getEventCount(){ return mEventCount; }
+    double getEventCount(){ return mEventCount; }
     unsigned isTrigger(double milSecsPass); // How many times triggered since last call
 private:
-    unsigned long long mEventCount = 0; // Number of times trigger went off
+    double mEventCount = 0.0f; // Number of times trigger went off
     double mTimeBuff = 0.0f; // Time incrementor
-    double mElapseTime = 0.0; // Time needed for event to go go off
+    double mElapseTime = 0.0f; // Time needed for event to go go off
 };
 
 class Timer_Interval { // Get number of millisecs between two invocations of getSecsPassed()
@@ -32,12 +32,13 @@ public:
         mStartSec = std::chrono::steady_clock::now();
     }
     // Timestamp getTimeAbs();
+    void reset();
     double getRelMillsecs(); // Gets secs since last call
     double getAbsMillsecs(); // Gets secs since timer object construction
 private:
     void updateTimer();
 
-    std::chrono::duration<double, std::milli> mRelTimeSpan;
+    std::chrono::duration<double, std::milli> mRelTimeSpan = std::chrono::milliseconds(0);
     std::chrono::duration<double, std::milli> mAbsTimeSpan = std::chrono::milliseconds(0);
     std::chrono::steady_clock::time_point mStartSec;
     std::chrono::steady_clock::time_point mEndSec;

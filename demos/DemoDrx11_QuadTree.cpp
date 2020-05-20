@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 	Geo_Rect2D gRect1(1.0f, 1.0f);
-	Topl_GeoEntity gEntity1(&gRect1);
+	Topl_GeoNode gEntity1(&gRect1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
 	sGraph1.addGeometry("basicRect", &gEntity1);

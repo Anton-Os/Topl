@@ -78,16 +78,16 @@ unsigned* Geo_Sphere2D::genIndices(){
 
 // More complex types
 
-unsigned Topl_BaseEntity::mId_count = 0;
+unsigned Topl_Node::mId_count = 0;
 
-const Topl_GeoEntity* const Topl_SceneGraph::getGeoEntity(unsigned index) const {
+const Topl_GeoNode* const Topl_SceneGraph::getGeoNode(unsigned index) const {
     // std::map<const char*, unsigned>::iterator nameToId_iter;
     // nameToId_iter = mNameToId_map.find(name);
 
     return nullptr;
 }
 
-tpl_gEntity_cptr Topl_SceneGraph::getGeoEntity(const std::string& name) const {
+tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(const std::string& name) const {
 
     if(mNameToId_map.find(name) == mNameToId_map.end()){
         puts("Name provided cannot be found");
@@ -98,12 +98,12 @@ tpl_gEntity_cptr Topl_SceneGraph::getGeoEntity(const std::string& name) const {
     return mIdToGeo_map.at(gIndex);
 }
 
-void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr geoEntity){
+void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr GeoNode){
     if(mNameToId_map.find(name) != mNameToId_map.end()){
         puts("Duplicate names not allowed in scene graph");
         return;
     }
 
-    mNameToId_map.insert({ name, geoEntity->getId() });
-    mIdToGeo_map.insert({ geoEntity->getId(), geoEntity  });
+    mNameToId_map.insert({ name, ((Topl_Node*)GeoNode)->getId() });
+    mIdToGeo_map.insert({ ((Topl_Node*)GeoNode)->getId(), GeoNode  });
 }

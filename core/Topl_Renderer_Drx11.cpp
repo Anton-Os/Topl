@@ -180,7 +180,7 @@ void Topl_Renderer_Drx11::createPipeline(void){
 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
-    tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoEntity("basicRect");
+    tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode("basicRect");
     vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
     ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
 
