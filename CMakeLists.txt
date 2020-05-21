@@ -73,9 +73,10 @@ target_include_directories(DemoPresser PUBLIC core helper)
 
 add_executable(DemoDrx11 
     core/Geometry.cpp
+    core/Topl_SceneGraph.cpp
+    core/Topl_Renderer_Drx11.cpp
 
     demos/DemoDrx11_Init.cpp
-    core/Topl_Renderer_Drx11.cpp
 )
 target_include_directories(DemoDrx11 PUBLIC core helper)
 
@@ -88,23 +89,7 @@ target_include_directories(DemoDrx11 PUBLIC
 ) # REMOVE THIS LATER
 target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
-add_executable(DemoDrx11_QuadTree
-    core/Geometry.cpp
-    core/Geometry/QuadTileTree.cpp
 
-    demos/DemoDrx11_QuadTree.cpp
-    core/Topl_Renderer_Drx11.cpp
-)
-target_include_directories(DemoDrx11_QuadTree PUBLIC core helper)
-
-find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
-find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
-
-target_include_directories(DemoDrx11_QuadTree PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
-target_link_libraries(DemoDrx11_QuadTree INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
 add_executable(DemoGL4 
     core/Geometry.cpp

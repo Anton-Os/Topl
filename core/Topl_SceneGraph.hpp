@@ -30,9 +30,9 @@ private:
 
 #include "Geometry.hpp"
 
-class Topl_GeoEntity : Topl_Node {
+class Topl_GeoNode : Topl_Node {
 public:    
-    Topl_GeoEntity(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
+    Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
     
     vec3f_cptr getLocation() const { return &mRelWorldPos; }
 	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos = vec; }; // Follow by more spatial update things
@@ -50,17 +50,16 @@ private:
 };
 
 
-#include "Physics.hpp"
-typedef const Topl_GeoEntity* const tpl_gEntity_cptr;
+typedef const Topl_GeoNode* const tpl_gEntity_cptr;
 
 class Topl_SceneGraph {
 public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
 
-    void addGeometry(const std::string& name, tpl_gEntity_cptr geoEntity);
-    tpl_gEntity_cptr getGeoEntity(unsigned index) const;
-    tpl_gEntity_cptr getGeoEntity(const std::string& name) const;
+    void addGeometry(const std::string& name, tpl_gEntity_cptr geoNode);
+    tpl_gEntity_cptr getGeoNode(unsigned index) const;
+    tpl_gEntity_cptr getGeoNode(const std::string& name) const;
     // void addTextures(const char* name, const Topl_Texture** textures);
     // void addShaders(const char* name, const Topl_Shader** shaders);
 private:
