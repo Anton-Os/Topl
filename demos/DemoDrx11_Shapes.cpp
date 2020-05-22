@@ -1,7 +1,7 @@
 #include "native_os_def.h"
 #include "Topl_Renderer_Drx11.hpp"
 
-#include "Geometry/QuadTileTree.hpp"
+#include "Geometry/Geometry_Constructs.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -47,10 +47,8 @@ int main(int argc, char** argv) {
 	Topl_GeoNode gEntity1(&gRect1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
-	sGraph1.addGeometry("basicRect", &gEntity1);
-
-	// Quad tree stuff
-	createQuadTree(&sGraph1, 4);
+	
+	createRandShapes(&sGraph1);
 
 	renderer.buildScene(&sGraph1);
 
