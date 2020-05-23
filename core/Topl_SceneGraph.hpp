@@ -1,4 +1,7 @@
 // More Complex types
+#ifndef TOPL_SCENEGRAPH_H
+
+#include <memory>
 
 class Topl_Node { // Acts as a node
 public:
@@ -52,7 +55,7 @@ private:
 
 typedef const Topl_GeoNode* const tpl_gEntity_cptr;
 
-class Topl_SceneGraph {
+/* class Topl_SceneGraph {
 public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
@@ -69,4 +72,20 @@ private:
     // std::map<unsigned, const bool*> mIdToUpdateStat; // DOES OBJECT REQUIRE UPDATING
     // std::map<unsigned, const Topl_Texture**> mIdToTextures_map // WILL MAP TEXTURES TO OBJECTS
     // std::map<unsigned, const Topl_Shader**> mIdToShaders_map // WILL MAP SHADERS TO OBJECTS
+}; */
+
+class Topl_SceneGraph {
+public:
+    Topl_SceneGraph(){}
+    ~Topl_SceneGraph(){}
+
+    void addGeometry(const std::string& name, tpl_gEntity_cptr geoNode);
+    tpl_gEntity_cptr getGeoNode(unsigned index) const;
+    tpl_gEntity_cptr getGeoNode(const std::string& name) const;
+private:
+    std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
+    std::map<unsigned, tpl_gEntity_cptr> mIdToGeo_map;
 };
+
+#define TOPL_SCENEGRAPH_H
+#endif

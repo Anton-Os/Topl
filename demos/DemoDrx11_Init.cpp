@@ -60,10 +60,10 @@ int main(int argc, char** argv) {
     for(unsigned t = 0; t < 99999; t++){
 		renderer.render();
 
-        while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
+        /* while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
-    	}	// This might solve the "hang up" issue
+    	}	// This might solve the "hang up" issue */
 	}
 
 	return 0;

@@ -7,9 +7,9 @@ int main(void){
     double secsBetween = 0.0;
 	unsigned trigCount;
     Timer_Interval timer;
-    Timer_Event tCounter_secs((unsigned long)(2)); // Sets it for 2 seconds
-    Timer_Event tCounter_frac(1000.0f); // 1000 Milliseconds = 1 Second
-    Timer_Event tCounter_rend((double) 1 / (double) 60);
+    /* Timer_EventRatio tCounter_secs((unsigned long)(2)); // Sets it for 2 seconds
+    Timer_EventRatio tCounter_frac(1000.0f); // 1000 Milliseconds = 1 Second
+    Timer_EventRatio tCounter_rend((double) 1 / (double) 60); */
 
 
 	timer.reset();

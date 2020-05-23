@@ -85,6 +85,22 @@ namespace _Drx11 {
 	}
 }
 
+Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
+	m_swapChain->Release();
+	m_device->Release();
+	m_deviceCtx->Release();
+
+	m_pipeline.vertexRectBuff->Release();
+	m_pipeline.indexRectBuff->Release();
+	m_pipeline.constPosBuff->Release();
+
+	m_pipeline.vertexShader->Release();
+	m_pipeline.pixelShader->Release();
+	m_pipeline.vsBuff->Release();
+	m_pipeline.psBuff->Release();
+	m_pipeline.vertexDataLayout->Release();
+}
+
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	m_native.window = &hwnd; // Supplying platform specific stuff
 
@@ -264,7 +280,7 @@ void Topl_Renderer_Drx11::render(void){
     m_swapChain->Present(0, 0);
 }
 
-void Topl_Renderer_Drx11::cleanup(void){
+/* void Topl_Renderer_Drx11::cleanup(void){
     m_swapChain->Release();
     m_device->Release();
     m_deviceCtx->Release();
@@ -278,4 +294,4 @@ void Topl_Renderer_Drx11::cleanup(void){
 	m_pipeline.vsBuff->Release();
 	m_pipeline.psBuff->Release();
 	m_pipeline.vertexDataLayout->Release();
-}
+} */

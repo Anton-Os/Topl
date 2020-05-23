@@ -3,7 +3,7 @@
 class Topl_Renderer_GL4 : Topl_Renderer {
 public:
     Topl_Renderer_GL4(HWND hwnd){ init(hwnd); }
-    ~Topl_Renderer_GL4(){ cleanup(); }
+	~Topl_Renderer_GL4();
 
     // void buildScene(const Topl_SceneGraph* sceneGraph);
     void buildScene(const Topl_SceneGraph* sceneGraph) override;
@@ -11,7 +11,7 @@ public:
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override;
-    void cleanup(void) override;
+    // void cleanup(void) override;
 
 	GLuint vertexBuff; // One buffer for now
 	GLuint vertexArray;

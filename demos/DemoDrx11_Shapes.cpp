@@ -43,12 +43,9 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_Drx11 renderer(wndWindow);
-	Geo_Rect2D gRect1(1.0f, 1.0f);
-	Topl_GeoNode gEntity1(&gRect1);
-
 	Topl_SceneGraph sGraph1; // REMOVE LATER
 	
-	createRandShapes(&sGraph1);
+	createRandShapes(&sGraph1); // Populates scene graph with data
 
 	renderer.buildScene(&sGraph1);
 

@@ -22,7 +22,7 @@ struct Topl_Pipeline_Drx11 {
 class Topl_Renderer_Drx11 : Topl_Renderer {
 public:
     Topl_Renderer_Drx11(HWND hwnd){ init(hwnd); }
-    ~Topl_Renderer_Drx11(){ cleanup(); }
+	~Topl_Renderer_Drx11();
 
     //void buildScene(const Topl_SceneGraph* sceneGraph) override;
     // void buildScene(void) override;
@@ -31,7 +31,7 @@ public:
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override;
-    void cleanup(void) override;
+    // void cleanup(void) override;
 
     bool m_pipelineReady = false;
     Topl_Pipeline_Drx11 m_pipeline;

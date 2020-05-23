@@ -3,8 +3,10 @@ project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
 
 include(ExternalProject)
 
-#include(Rasteron/InitProject.cmake) # need to fix Rasteron 
-#add_subdirectory(Rasteron) # need to fix Rasteron
+if(NOT Rasteron_Install_Path)
+    set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
+    set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
+endif()
 
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
@@ -71,6 +73,9 @@ add_executable(DemoPresser
 )
 target_include_directories(DemoPresser PUBLIC core helper)
 
+find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
+find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
+
 add_executable(DemoDrx11 
     core/Geometry.cpp
     core/Topl_SceneGraph.cpp
@@ -80,14 +85,29 @@ add_executable(DemoDrx11
 )
 target_include_directories(DemoDrx11 PUBLIC core helper)
 
-find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
-find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
-
 target_include_directories(DemoDrx11 PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
+
+add_executable(DemoDrx11_Shapes
+    core/Geometry.cpp
+    core/Geometry/RandShapes.cpp
+    core/Physics.cpp
+    core/Topl_SceneGraph.cpp
+    core/Topl_Renderer_Drx11.cpp
+
+    demos/DemoDrx11_Shapes.cpp
+)
+target_include_directories(DemoDrx11_Shapes PUBLIC core helper)
+
+target_include_directories(DemoDrx11_Shapes PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+) # REMOVE THIS LATER
+target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
+
 
 
 

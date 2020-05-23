@@ -80,8 +80,14 @@ void Topl_Renderer_GL4::render(void){
 #endif  
 }
 
-void Topl_Renderer_GL4::cleanup(void){
+Topl_Renderer_GL4::~Topl_Renderer_GL4() {
+#ifdef _WIN32
+	cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
+#endif
+}
+
+/* void Topl_Renderer_GL4::cleanup(void){
 #ifdef _WIN32
     cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
 #endif
-}
+} */

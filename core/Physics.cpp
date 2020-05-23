@@ -9,6 +9,6 @@ void Physics_MoveAbs::updatePos(unsigned reps){
     }
 }
 
-void Physics_MoveAbs::updatePos(const Timer_EventRatio& timeEvent){
+void Physics_MoveTimed::updatePos(const Timer_EventRatio& timeEvent){
     mPos = mTimedMove(mPos, timeEvent);
 }
