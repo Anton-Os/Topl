@@ -1,3 +1,5 @@
+#ifndef PHYSICS_H
+
 #include <vector>
 
 #include <Eigen/Dense>
@@ -39,3 +41,6 @@ private:
     updatePos_timed mTimedMove;
 	Timer_EventRatio mActionTimes;
 };
+
+#define PHYSICS_H
+#endif

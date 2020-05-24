@@ -1,3 +1,5 @@
+#ifndef TIMER_H
+
 #include <chrono>
 #include <ratio>
 #include <cmath>
@@ -24,3 +26,6 @@ private:
     std::chrono::steady_clock::time_point mStartSec;
     std::chrono::steady_clock::time_point mEndSec;
 };
+
+#define TIMER_H
+#endif

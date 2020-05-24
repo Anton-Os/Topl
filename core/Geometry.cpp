@@ -13,15 +13,15 @@ Eigen::Vector3f* Geo_Rect2D::genVertices(){
     // The depth position of the vector is arbitrary for now
     Eigen::Vector3f topRight(mRect.height / 2.0f, mRect.width / 2.0f, 0.5f);
     Eigen::Vector3f topLeft(mRect.height / 2.0f, -1 * (mRect.width / 2.0f), 0.5f);
-    Eigen::Vector3f botRight(-1 * (mRect.width / 2.0f), mRect.height / 2.0f, 0.5f);
-    Eigen::Vector3f botLeft(-1 * (mRect.width / 2.0f), -1 * (mRect.width / 2.0f), 0.5f); 
+    Eigen::Vector3f botRight(-1 * (mRect.height / 2.0f), mRect.width / 2.0f, 0.5f);
+    Eigen::Vector3f botLeft(-1 * (mRect.height / 2.0f), -1 * (mRect.width / 2.0f), 0.5f); 
 
     *(data + 0) = botLeft;
     *(data + 1) = botRight;
     *(data + 2) = topLeft;
     *(data + 3) = topRight;
 
-    return data;
+    return data; // FIX! FIX! FIX!
 }
 
 unsigned* Geo_Rect2D::genIndices(){

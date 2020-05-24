@@ -54,16 +54,16 @@ int main(int argc, char** argv) {
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
-	sGraph1.addGeometry("basicRect", &gEntity1);
+	sGraph1.addGeometry("box", &gEntity1);
 	renderer.buildScene(&sGraph1);
 
     for(unsigned t = 0; t < 99999; t++){
 		renderer.render();
 
-        /* while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
+        while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
-    	}	// This might solve the "hang up" issue */
+    	}
 	}
 
 	return 0;

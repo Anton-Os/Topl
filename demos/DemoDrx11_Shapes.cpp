@@ -45,7 +45,8 @@ int main(int argc, char** argv) {
     Topl_Renderer_Drx11 renderer(wndWindow);
 	Topl_SceneGraph sGraph1; // REMOVE LATER
 	
-	createRandShapes(&sGraph1); // Populates scene graph with data
+	// createRandShapes(&sGraph1); // Populates scene graph with data
+	Geo_RandShapes randShapes(&sGraph1);
 
 	renderer.buildScene(&sGraph1);
 
