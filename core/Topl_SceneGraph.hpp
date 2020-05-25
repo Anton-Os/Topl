@@ -38,7 +38,7 @@ public:
     Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
     
     vec3f_cptr getLocation() const { return &mRelWorldPos; }
-	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos = vec; }; // Follow by more spatial update things
+	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos = vec; } // Follow by more spatial update things
 
 	const Geo_RenderObj* mRenderObj; // Trying to eliminate the mType
 private:
@@ -47,8 +47,7 @@ private:
         GEO_Dynamic = 2
     } mBehavior;
 
-	// Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
-	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.43, 0.3, 0.0); // Testing only!!!
+	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
 	Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
 };
 
@@ -61,6 +60,8 @@ public:
     ~Topl_SceneGraph(){}
 
     void addGeometry(const std::string& name, tpl_gEntity_cptr geoNode);
+
+    unsigned getGeoCount() const { return mIdToGeo_map.size(); }
     tpl_gEntity_cptr getGeoNode(unsigned index) const;
     tpl_gEntity_cptr getGeoNode(const std::string& name) const;
 private:

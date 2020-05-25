@@ -57,6 +57,11 @@ static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 #endif
 
 
+Topl_Renderer_GL4::~Topl_Renderer_GL4() {
+#ifdef _WIN32
+	cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
+#endif
+}
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
@@ -79,15 +84,3 @@ void Topl_Renderer_GL4::render(void){
 	render_win(&m_native.windowDevice_Ctx);
 #endif  
 }
-
-Topl_Renderer_GL4::~Topl_Renderer_GL4() {
-#ifdef _WIN32
-	cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
-#endif
-}
-
-/* void Topl_Renderer_GL4::cleanup(void){
-#ifdef _WIN32
-    cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
-#endif
-} */

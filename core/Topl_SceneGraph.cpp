@@ -4,11 +4,13 @@
 
 unsigned Topl_Node::mId_count = 0;
 
-const Topl_GeoNode* const Topl_SceneGraph::getGeoNode(unsigned index) const {
-    // std::map<const char*, unsigned>::iterator nameToId_iter;
-    // nameToId_iter = mNameToId_map.find(name);
+tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(unsigned index) const {
+    if(mIdToGeo_map.find(index) == mIdToGeo_map.end()){
+        puts("Index provided cannot be found");
+        return nullptr;
+    }
 
-    return nullptr;
+    return mIdToGeo_map.at(index);
 }
 
 tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(const std::string& name) const {

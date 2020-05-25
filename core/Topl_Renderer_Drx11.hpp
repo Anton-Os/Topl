@@ -1,14 +1,12 @@
 #include "Topl_Renderer.hpp"
 
-/* typedef enum {
-
-} DRX11_Init_Status; */
 
 struct Topl_Pipeline_Drx11 {
-	// ID3D11Buffer* vertexDataBuff; // Move out of here, NEXT IMPLEMENTATION
-    // ID3D11Buffer* vertexBoxBuff;
+    std::vector<ID3D11Buffer*> vertexBuffs_3f;
+    std::vector<ID3D11Buffer*> indexBuffs_ui;
+    std::vector<ID3D11Buffer*> constBuffs_vec3f;
+	
     ID3D11Buffer* vertexRectBuff;
-	// ID3D11Buffer* indexBoxBuff;
     ID3D11Buffer* indexRectBuff;
     ID3D11Buffer* constPosBuff;
 
