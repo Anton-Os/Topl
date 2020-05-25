@@ -1,11 +1,13 @@
-#include "Topl_Renderer_GL4.hpp"
+#include "FileIO.hpp"
 
-#include <string>
+#include "Topl_Renderer_GL4.hpp"
 
 // This code is platform independent
 
 namespace _GL4 {
-	void readShader(const std::string& filePath, GLchar** shaderStr){
+
+	// GLChar** error
+	static void readShader(const std::string& filePath, const char** shaderStr){
 		// Needs to be compatible with glShaderSource
 		return;
 	}
@@ -34,10 +36,6 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     // wgl initialization functions
     *(hglrc) = wglCreateContext(*(windowDC));
     wglMakeCurrent(*(windowDC), *(hglrc));
-
-	glEnable(GL_DEPTH_TEST); // Make these customizable
-	glDepthFunc(GL_LESS); // Make these customizable
-	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 }
 
 static void render_win(HDC* windowDC) {
@@ -68,7 +66,12 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	m_native.window = &hwnd;
 #ifdef _WIN32
     init_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
-#endif    
+#endif
+	glEnable(GL_DEPTH_TEST); // Make these customizable
+	glDepthFunc(GL_LESS); // Make these customizable
+	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
+
+	// (GL4_BUFFER_CAPACITY, &m_bufferData.slots[0]) // Might need glew
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){

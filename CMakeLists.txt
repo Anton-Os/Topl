@@ -111,11 +111,13 @@ target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX T
 
 
 
-add_executable(DemoGL4 
+add_executable(DemoGL4
+    core/FileIO.cpp
     core/Geometry.cpp
+    core/Topl_SceneGraph.cpp
+    core/Topl_Renderer_GL4.cpp
     
     demos/DemoGL4_Init.cpp 
-    core/Topl_Renderer_GL4.cpp
 )
 
 target_include_directories(DemoGL4 PUBLIC core helper)
