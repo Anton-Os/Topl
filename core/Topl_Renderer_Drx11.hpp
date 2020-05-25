@@ -1,15 +1,13 @@
 #include "Topl_Renderer.hpp"
 
 
-struct Topl_Pipeline_Drx11 {
+struct Topl_Data_Drx11 {
     std::vector<ID3D11Buffer*> vertexBuffs_3f;
     std::vector<ID3D11Buffer*> indexBuffs_ui;
     std::vector<ID3D11Buffer*> constBuffs_vec3f;
-	
-    ID3D11Buffer* vertexRectBuff;
-    ID3D11Buffer* indexRectBuff;
-    ID3D11Buffer* constPosBuff;
+};
 
+struct Topl_Pipeline_Drx11 {
 	ID3D11InputLayout* vertexDataLayout; // Move out of here, NEXT IMPLEMENTATION
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -29,15 +27,9 @@ public:
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override;
-    // void cleanup(void) override;
 
-    bool m_pipelineReady = false;
     Topl_Pipeline_Drx11 m_pipeline;
-    // unsigned m_pipelineCount // NEXT IMPLEMENTATION
-    // Topl_Pipeline_Drx11* m_pipelines(unsigned count) // NEXT IMPLEMENTATION
-
-    bool m_sceneReady = false;
-    // Build up using the build scene method
+    Topl_Data_Drx11 m_bufferData;
 
     IDXGISwapChain* m_swapChain;
     ID3D11Device* m_device;

@@ -7,6 +7,7 @@ enum SHDR_Type {
 
 
 // Shaders need to be aware of their imput layouts and have some default value prepared
+
 struct Topl_Shader {
     Topl_Shader(enum SHDR_Type type, const char* filePath){
         mShaderType = type;

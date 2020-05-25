@@ -67,13 +67,18 @@ namespace _Drx11 {
 }
 
 Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
+	for(unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) // Release all vertex buffers
+		m_bufferData.vertexBuffs_3f.at(b)->Release(); 
+
+	for(unsigned b = 0; b < m_bufferData.indexBuffs_ui.size(); b++) // Release all index buffers
+		m_bufferData.indexBuffs_ui.at(b)->Release();
+	
+	for(unsigned b = 0; b < m_bufferData.constBuffs_vec3f.size(); b++) // Release all constant buffers
+		m_bufferData.constBuffs_vec3f.at(b)->Release();
+
 	m_swapChain->Release();
 	m_device->Release();
 	m_deviceCtx->Release();
-
-	m_pipeline.vertexRectBuff->Release();
-	m_pipeline.indexRectBuff->Release();
-	m_pipeline.constPosBuff->Release();
 
 	m_pipeline.vertexShader->Release();
 	m_pipeline.pixelShader->Release();
@@ -139,7 +144,7 @@ void Topl_Renderer_Drx11::createPipeline(void){
 		nullptr, nullptr, "main", "vs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.vsBuff, &errorBuff)
 	)) {
-		m_pipelineReady = false;
+		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
 		return;
 	}
@@ -149,7 +154,7 @@ void Topl_Renderer_Drx11::createPipeline(void){
 			nullptr, nullptr, "main", "ps_5_0",
 			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
 	)) {
-		m_pipelineReady = false;
+		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
 		return;
 	} 
@@ -157,21 +162,21 @@ void Topl_Renderer_Drx11::createPipeline(void){
 	hr = m_device->CreateVertexShader( m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
 		NULL, &m_pipeline.vertexShader);
     if(FAILED(hr)){
-        m_pipelineReady = false;
+        mPipelineReady = false;
         return;
     }
 
 	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
 		NULL, &m_pipeline.pixelShader);
 	if (FAILED(hr)){
-        m_pipelineReady = false;
+        mPipelineReady = false;
         return;
     }
 
     m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
     m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
 
-    m_pipelineReady = true;
+    mPipelineReady = true;
     // Think that is all for now...
 }
 
@@ -179,40 +184,51 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
 
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
+		unsigned lastIndex;
+
 		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
 		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
 
 		// Constant values procedures
+		ID3D11Buffer* constBuff_vec3f; m_bufferData.constBuffs_vec3f.push_back(constBuff_vec3f);
+		lastIndex = m_bufferData.constBuffs_vec3f.size() - 1;
 
 		vec3f_cptr gRect1_position = gRect1_ptr->getLocation();
 
-		m_sceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
-											&m_pipeline.constPosBuff, 
+		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
+											&m_bufferData.constBuffs_vec3f.at(lastIndex),
 											gRect1_position );
-
-		m_deviceCtx->VSSetConstantBuffers(0, 1, &m_pipeline.constPosBuff);
+		if(!mSceneReady) return; // Error
+		else m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(lastIndex));
 
 		// Index creation procedures
+		ID3D11Buffer* indexBuff; m_bufferData.indexBuffs_ui.push_back(indexBuff);
+		lastIndex = m_bufferData.indexBuffs_ui.size() - 1;
 
-		m_sceneReady = _Drx11::createIndexBuff(&m_device, 
-											&m_pipeline.indexRectBuff, 
+		mSceneReady = _Drx11::createIndexBuff(&m_device, 
+											&m_bufferData.indexBuffs_ui.at(lastIndex),
 											(DWORD*)gRect1_iData, 
 											gRect1_ptr->mRenderObj->getICount() ); 
 
-		// m_deviceCtx->IASetIndexBuffer(m_pipeline.indexBoxBuff, DXGI_FORMAT_R32_UINT, 0);
-		m_deviceCtx->IASetIndexBuffer(m_pipeline.indexRectBuff, DXGI_FORMAT_R32_UINT, 0);
+		if(!mSceneReady) return; // Error
+		else m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(lastIndex), DXGI_FORMAT_R32_UINT, 0);
 
 		// Vertex creation procedures
-		m_sceneReady = _Drx11::createVertexBuff(&m_device, 
-												&m_pipeline.vertexRectBuff, 
+		ID3D11Buffer* vertexBuff; m_bufferData.vertexBuffs_3f.push_back(vertexBuff);
+		lastIndex = m_bufferData.vertexBuffs_3f.size() - 1;
+
+		mSceneReady = _Drx11::createVertexBuff(&m_device, 
+												&m_bufferData.vertexBuffs_3f.at(lastIndex), // Last element
 												gRect1_vData,
 												gRect1_ptr->mRenderObj->getVCount());
 
 		UINT strideTest = sizeof(float) * 3;
 		UINT stride = sizeof(Eigen::Vector3f);
 		UINT offset = 0;
-		m_deviceCtx->IASetVertexBuffers(0, 1, &m_pipeline.vertexRectBuff, &stride, &offset); // Use the correct vertex buff
+
+		if(!mSceneReady) return;
+		else m_deviceCtx->IASetVertexBuffers(0, 1, &m_bufferData.vertexBuffs_3f.at(lastIndex), &stride, &offset); // Use the correct vertex buff
 	}
 
 	// Input assembler inputs to pipeline
@@ -246,7 +262,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
 	m_deviceCtx->RSSetViewports(1, &viewport);
 
-    m_sceneReady = true;
+    mSceneReady = true;
     return;
 }
 
@@ -256,7 +272,7 @@ void Topl_Renderer_Drx11::render(void){
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
     // if(mPrimDraw < 12) mPrimDraw++;
-	if (m_pipelineReady && m_sceneReady)
+	if (mPipelineReady && mSceneReady)
 		m_deviceCtx->DrawIndexed(6, 0, 0);
         // m_deviceCtx->Draw(4, 0);
 

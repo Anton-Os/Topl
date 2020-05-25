@@ -51,6 +51,13 @@ private:
 	Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
 };
 
+typedef unsigned geoUpdateFlags_t;
+
+enum GEO_UpdateFlags {
+	GEO_DataChange = 0,
+	GEO_Transposed = 1,
+	GEO_Rotated = 2,
+};
 
 typedef const Topl_GeoNode* const tpl_gEntity_cptr;
 
@@ -67,6 +74,7 @@ public:
 private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
     std::map<unsigned, tpl_gEntity_cptr> mIdToGeo_map;
+    std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map;
 };
 
 #define TOPL_SCENEGRAPH_H
