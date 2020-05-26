@@ -8,29 +8,15 @@ if(NOT Rasteron_Install_Path)
     set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
 endif()
 
+find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
+if(Rasteron_FOUND)
+    message(STATUS "Rasteron loadding success!")
+else()
+    message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
+endif()
+
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
-# NOT SURE THIS IS A FIX TO BUILD DURING CONFIG TIME
-execute_process(
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/Rasteron
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Rasteron
-)
-
-if(FALSE) # need to fix Rasteron
-    ExternalProject_Add(Rasteron
-        GIT_REPOSITORY "https://github.com/Anton-Os/Rasteron.git"
-        GIT_TAG "3045e0303332f122905a6014fac83688204c7f87" # Not important
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        DOWNLOAD_COMMAND "" 
-
-        PREFIX ${CMAKE_SOURCE_DIR}/Rasteron
-        SOURCE_DIR ${CMAKE_SOURCE_DIR}/Rasteron
-        BINARY_DIR ${CMAKE_BINARY_DIR}/Rasteron
-    )
-    find_package(Rasteron)
-endif()
 
 ExternalProject_Add(DXSDK
         GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
@@ -56,9 +42,22 @@ ExternalProject_Add(Eigen
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/Eigen
     )
 
-# add_library(Topl STATIC core/Topl_Renderer_Drx12.cpp)
-#target_include_directories(Topl PUBLIC core helper) # for local dependencies
-# target_link_libraries(Topl Rasteron) # need to fix Rasteron
+#ExternalProject_Add(GLEW
+#        GIT_REPOSITORY "https://github.com/Perlmint/glew-cmake.git"
+#        GIT_TAG "c4c1fd4fece3c8ebb3b69985fbb1656052e552bd"
+#
+#        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+#
+#        PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
+#        BINARY_DIR ${EXTERNAL_PROJ_DIR}/GLEW/Build
+#    )
+
+find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
+find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
+
+
+
+
 
 add_executable(DemoTickTick  
     core/Timer.cpp
@@ -72,9 +71,6 @@ add_executable(DemoPresser
     demos/DemoPresser.cpp
 )
 target_include_directories(DemoPresser PUBLIC core helper)
-
-find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
-find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 
 add_executable(DemoDrx11 
     core/Geometry.cpp
