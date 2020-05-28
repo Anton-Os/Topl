@@ -42,15 +42,12 @@ ExternalProject_Add(Eigen
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/Eigen
     )
 
-#ExternalProject_Add(GLEW
-#        GIT_REPOSITORY "https://github.com/Perlmint/glew-cmake.git"
-#        GIT_TAG "c4c1fd4fece3c8ebb3b69985fbb1656052e552bd"
-#
-#        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-#
-#        PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
-#        BINARY_DIR ${EXTERNAL_PROJ_DIR}/GLEW/Build
-#    )
+add_library(GLEW
+    STATIC
+    helper/glew.c
+)
+
+target_include_directories(GLEW PUBLIC helper)
 
 find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
 find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
@@ -121,7 +118,7 @@ target_include_directories(DemoGL4 PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
-target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
+target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3 GLEW) # REMOVE THIS LATER
 
 
 

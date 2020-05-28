@@ -3,9 +3,12 @@
 #define WIN_HEIGHT 500
 #define WIN_WIDTH 500
 
+#include "GL/glew.h"
+
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
+
     // OpenGL support
     #include <GL/gl.h>
     #include <GL/glu.h>

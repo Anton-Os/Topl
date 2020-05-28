@@ -6,7 +6,7 @@
 
 namespace _GL4 {
 
-	// GLChar** error
+	// GLChar** error;
 	static void readShader(const std::string& filePath, const char** shaderStr){
 		// Needs to be compatible with glShaderSource
 		return;
@@ -71,6 +71,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glDepthFunc(GL_LESS); // Make these customizable
 	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 
+	// glGenBuffers()
 	// (GL4_BUFFER_CAPACITY, &m_bufferData.slots[0]) // Might need glew
 }
 
