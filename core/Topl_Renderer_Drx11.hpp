@@ -27,6 +27,7 @@ public:
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override;
+    void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 
     Topl_Pipeline_Drx11 m_pipeline;
     Topl_Data_Drx11 m_bufferData;

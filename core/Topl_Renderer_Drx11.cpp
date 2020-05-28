@@ -180,6 +180,10 @@ void Topl_Renderer_Drx11::createPipeline(void){
     // Think that is all for now...
 }
 
+void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
+	return;
+}
+
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
 

@@ -3,6 +3,8 @@
 #define WIN_HEIGHT 500
 #define WIN_WIDTH 500
 
+#define GLEW_STATIC
+//#define GLEWAPI extern
 #include "GL/glew.h"
 
 #ifdef _WIN32

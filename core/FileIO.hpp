@@ -3,6 +3,7 @@
 #include <string>
 
 #include <cstring>
+#include <cstdio>
 
-std::string readFile(const char* source);
+const char* readFile(const char* source);
 std::string getParentDir(const char* arg);

@@ -118,13 +118,15 @@ target_include_directories(DemoGL4 PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
-target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3 GLEW) # REMOVE THIS LATER
+target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
+target_link_libraries(DemoGL4 PRIVATE GLEW)
 
 
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
+file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.glsl)
 add_custom_target(ShaderCopy 
-                  SOURCES ${drx11_Shaders} )
+                  SOURCES ${drx11_Shaders} ${gl4_Shaders})
                   # Add GLSL shaders too 
 if(WIN32)
     foreach(file IN ITEMS ${drx11_Shaders})
@@ -134,4 +136,12 @@ if(WIN32)
     endforeach()
 endif()
 
+foreach(file IN ITEMS ${gl4_Shaders})
+    add_custom_command(TARGET DemoGL4 PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy 
+        "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
+endforeach()
+
+
 add_dependencies(DemoDrx11 ShaderCopy) # Repeat for all targets
+add_dependencies(DemoGL4 ShaderCopy)
