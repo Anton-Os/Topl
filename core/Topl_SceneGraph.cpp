@@ -1,5 +1,12 @@
 #include "Topl_SceneGraph.hpp"
 
+void Topl_GeoNode::updatePos(Eigen::Vector3f vec){
+    mRelWorldPos += vec;
+    for(unsigned c = 0; c < getChildCount(); c++)
+        ((Topl_GeoNode*)getChild(c))->updatePos(vec); // Move all children as well
+}
+
+
 // More complex types
 
 unsigned Topl_Node::mId_count = 0;
@@ -33,3 +40,7 @@ void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr GeoN
     mNameToId_map.insert({ name, ((Topl_Node*)GeoNode)->getId() });
     mIdToGeo_map.insert({ ((Topl_Node*)GeoNode)->getId(), GeoNode  });
 }
+
+/* void Topl_SceneGraph::updateGeoPos(const Eigen::Vector3f* pos){
+    mRelWorldPos += pos;
+} */

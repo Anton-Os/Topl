@@ -2,6 +2,7 @@
 #ifndef TOPL_SCENEGRAPH_H
 
 #include <memory>
+#include <vector>
 
 class Topl_Node { // Acts as a node
 public:
@@ -11,23 +12,24 @@ public:
 	}
 	~Topl_Node() { mId_count--; }
 
+    void addChild(Topl_Node* child){ mChildren.push_back(child); }
+
 	// const unsigned const* mId_ref = &mId;
 	unsigned getId() const { return mId; }
     Topl_Node* getParent() const { return mParent; }
     Topl_Node* getChild(unsigned childNum) const {
-        if(childNum > mChildCount) return nullptr;
-        else return *(mChild + childNum - 1);
+        if(childNum > mChildren.size()) return nullptr;
+        else return mChildren.at(childNum - 1);
     }
+    unsigned getChildCount(){ return mChildren.size(); } 
 
-    // ADD CHILD FUNCTION
 private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
 	unsigned mId; // Each object has a unique id
 
     Topl_Node* mParent = nullptr;
-    unsigned mChildCount = 0;
-    Topl_Node** mChild = nullptr;
-
+    std::vector<Topl_Node*> mChildren;
+    // Topl_Node** mChild = nullptr;
 };
 
 
@@ -37,10 +39,11 @@ class Topl_GeoNode : Topl_Node {
 public:    
     Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
     
-    vec3f_cptr getLocation() const { return &mRelWorldPos; }
-	void updateLocation(Eigen::Vector3f vec) { mRelWorldPos = vec; } // Follow by more spatial update things
+    void updatePos(Eigen::Vector3f vec); // Follow by more spatial update things
 
-	const Geo_RenderObj* mRenderObj; // Trying to eliminate the mType
+    vec3f_cptr getPos() const { return &mRelWorldPos; }
+
+    const Geo_RenderObj* mRenderObj;
 private:
     enum GeoBehavior {
         GEO_Fixed = 1,
@@ -67,6 +70,7 @@ public:
     ~Topl_SceneGraph(){}
 
     void addGeometry(const std::string& name, tpl_gEntity_cptr geoNode);
+    // void updateGeoPos(const Eigen::Vector3f* pos);
 
     unsigned getGeoCount() const { return mIdToGeo_map.size(); }
     tpl_gEntity_cptr getGeoNode(unsigned index) const;

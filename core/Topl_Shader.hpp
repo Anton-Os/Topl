@@ -45,8 +45,8 @@ struct Topl_Shader {
         mShaderType = type;
         mShaderSrcPath = filePath;
     }
-    enum SHDR_Type getType(){ return mShaderType; }
-    const char* getFilePath(){ return mShaderSrcPath; }
+    enum SHDR_Type getType() const{ return mShaderType; }
+    const char* getFilePath() const{ return mShaderSrcPath; }
 private:
     std::vector<Shader_Input> mInputs;
     enum SHDR_Type mShaderType;

@@ -181,7 +181,67 @@ void Topl_Renderer_Drx11::createPipeline(void){
 }
 
 void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
-	return;
+	ID3DBlob* errorBuff;
+	HRESULT hr;
+
+	// Check for correct type
+	if (vertexShader->getType() != SHDR_Vertex) {
+		mPipelineReady = false;
+		OutputDebugStringA("Incorrect shader type provided for vertex shader");
+		return;
+	}
+
+	// Check for valid source
+	LPCWSTR vertexShaderSrc = (LPCWSTR)vertexShader->getFilePath();
+	if (FAILED(
+		D3DCompileFromFile(vertexShaderSrc,
+			nullptr, nullptr, "main", "vs_5_0",
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.vsBuff, &errorBuff)
+	)) {
+		mPipelineReady = false;
+		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		return;
+	}
+
+	// Check for correct type
+	if (fragShader->getType() != SHDR_Fragment) {
+		mPipelineReady = false;
+		OutputDebugStringA("Incorrect shader type provided for fragment shader");
+		return;
+	}
+
+	// Check for valid source
+	LPCWSTR fragShaderSrc = (LPCWSTR)fragShader->getFilePath();
+	if (FAILED(
+		D3DCompileFromFile(fragShaderSrc,
+			nullptr, nullptr, "main", "ps_5_0",
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
+	)) {
+		mPipelineReady = false;
+		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		return;
+	}
+
+	// Creation methods
+
+	hr = m_device->CreateVertexShader(m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
+		NULL, &m_pipeline.vertexShader);
+	if (FAILED(hr)) {
+		mPipelineReady = false;
+		return;
+	}
+
+	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
+		NULL, &m_pipeline.pixelShader);
+	if (FAILED(hr)) {
+		mPipelineReady = false;
+		return;
+	}
+
+	m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
+	m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
+
+	mPipelineReady = true;
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
@@ -198,7 +258,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		ID3D11Buffer* constBuff_vec3f; m_bufferData.constBuffs_vec3f.push_back(constBuff_vec3f);
 		lastIndex = m_bufferData.constBuffs_vec3f.size() - 1;
 
-		vec3f_cptr gRect1_position = gRect1_ptr->getLocation();
+		vec3f_cptr gRect1_position = gRect1_ptr->getPos();
 
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
 											&m_bufferData.constBuffs_vec3f.at(lastIndex),

@@ -89,50 +89,203 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 }
 
 void Topl_Renderer_GL4::createPipeline(void){
-	//glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
-	//glBindVertexArray(m_pipeline.vertexDataLayouts[0]); // Make this scalable
-
 	GLint result;
+	const char* sourceStr_ptr;
 
 	m_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertexShaderSrc = readFile("C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\VertexShader.glsl");
-	if(vertexShaderSrc != nullptr) glShaderSource(m_pipeline.vShader, 1, &vertexShaderSrc, NULL);
+
+	std::string vertexShaderSrc = readFile("C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\VertexShader.glsl");
+	sourceStr_ptr = vertexShaderSrc.c_str();
+	if (!vertexShaderSrc.empty()) glShaderSource(m_pipeline.vShader, 1, &sourceStr_ptr, NULL);
 	else {
-		mSceneReady = false;
+		mPipelineReady = false;
 		puts("Vertex shader file not found");
 		return;
 	}
 
 	glCompileShader(m_pipeline.vShader);
+
 	glGetShaderiv(m_pipeline.vShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) {
-		mSceneReady = false;
-		puts("Vertex shader compilation failed"); // Add more robust error checking
+		mPipelineReady = false;
+		puts("Vertex shader compilation failed\n"); // Add more robust error checking
+		
+		GLint maxLen;
+		glGetShaderiv(m_pipeline.vShader, GL_INFO_LOG_LENGTH, &maxLen);
+		
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetShaderInfoLog(m_pipeline.vShader, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
 		return;
 	}
 
 	m_pipeline.fShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragShaderSrc = readFile("C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\FragShader.glsl");
-	if (fragShaderSrc != nullptr) glShaderSource(m_pipeline.fShader, 1, &fragShaderSrc, NULL);
+
+	std::string fragShaderSrc = readFile("C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\FragShader.glsl");
+	sourceStr_ptr = fragShaderSrc.c_str();
+	if (!fragShaderSrc.empty()) glShaderSource(m_pipeline.fShader, 1, &sourceStr_ptr, NULL);
 	else {
-		mSceneReady = false;
+		mPipelineReady = false;
 		puts("Fragment shader file not found");
 		return;
 	}
 
 	glCompileShader(m_pipeline.fShader);
+
 	glGetShaderiv(m_pipeline.fShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) {
-		mSceneReady = false;
+		mPipelineReady = false;
 		puts("Fragment shader compilation failed"); // Add more robust error checking
+
+		GLint maxLen;
+		glGetShaderiv(m_pipeline.fShader, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetShaderInfoLog(m_pipeline.fShader, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
 		return;
 	}
 
-	// m_pipeline.fShader = glCreateShader();
+	// Program creation code
+
+	m_pipeline.shaderProg = glCreateProgram();
+	glAttachShader(m_pipeline.shaderProg, m_pipeline.vShader);
+	glAttachShader(m_pipeline.shaderProg, m_pipeline.fShader);
+	glLinkProgram(m_pipeline.shaderProg);
+
+	glGetProgramiv(m_pipeline.shaderProg, GL_LINK_STATUS, &result);
+	if (result == GL_FALSE) {
+		mPipelineReady = false;
+		puts("Shader program failed to link"); // Add more robust error checking
+
+		GLint maxLen;
+		glGetProgramiv(m_pipeline.shaderProg, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetProgramInfoLog(m_pipeline.shaderProg, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
+		return;
+	} else {
+		// Always detach after successful link
+		glDetachShader(m_pipeline.shaderProg, m_pipeline.vShader);
+		glDetachShader(m_pipeline.shaderProg, m_pipeline.fShader);
+	}
+
 }
 
 void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
-	return;
+	GLint result;
+	const char* sourceStr_ptr;
+
+	// Check for correct type
+	if (vertexShader->getType() != SHDR_Vertex) {
+		mPipelineReady = false;
+		puts("Incorrect shader type provided for vertex shader");
+		return;
+	}
+
+	// Vertex shader creation and valid file checking
+	m_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
+
+	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	sourceStr_ptr = vertexShaderSrc.c_str();
+	if (!vertexShaderSrc.empty()) glShaderSource(m_pipeline.vShader, 1, &sourceStr_ptr, NULL);
+	else {
+		mPipelineReady = false;
+		puts("Vertex shader file not found");
+		return;
+	}
+
+	// Vertex shader compilation and syntax checking
+	glCompileShader(m_pipeline.vShader);
+
+	glGetShaderiv(m_pipeline.vShader, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE) {
+		mPipelineReady = false;
+		puts("Vertex shader compilation failed\n"); // Add more robust error checking
+
+		GLint maxLen;
+		glGetShaderiv(m_pipeline.vShader, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetShaderInfoLog(m_pipeline.vShader, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
+		return;
+	}
+
+	// Check for correct type
+	if (fragShader->getType() != SHDR_Fragment) {
+		mPipelineReady = false;
+		puts("Incorrect shader type provided for fragment shader");
+		return;
+	}
+
+	// Fragment shader creation and valid file checking
+	m_pipeline.fShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	std::string fragShaderSrc = readFile(fragShader->getFilePath());
+	sourceStr_ptr = fragShaderSrc.c_str();
+	if (!fragShaderSrc.empty()) glShaderSource(m_pipeline.fShader, 1, &sourceStr_ptr, NULL);
+	else {
+		mPipelineReady = false;
+		puts("Fragment shader file not found");
+		return;
+	}
+
+	// Fragment shader compilation and syntax checking
+	glCompileShader(m_pipeline.fShader);
+
+	glGetShaderiv(m_pipeline.fShader, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE) {
+		mPipelineReady = false;
+		puts("Fragment shader compilation failed"); // Add more robust error checking
+
+		GLint maxLen;
+		glGetShaderiv(m_pipeline.fShader, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetShaderInfoLog(m_pipeline.fShader, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
+		return;
+	}
+
+	// Program creation code
+
+	m_pipeline.shaderProg = glCreateProgram();
+	glAttachShader(m_pipeline.shaderProg, m_pipeline.vShader);
+	glAttachShader(m_pipeline.shaderProg, m_pipeline.fShader);
+	glLinkProgram(m_pipeline.shaderProg);
+
+	glGetProgramiv(m_pipeline.shaderProg, GL_LINK_STATUS, &result);
+	if (result == GL_FALSE) {
+		mPipelineReady = false;
+		puts("Shader program failed to link"); // Add more robust error checking
+
+		GLint maxLen;
+		glGetProgramiv(m_pipeline.shaderProg, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetProgramInfoLog(m_pipeline.shaderProg, maxLen, &maxLen, errorLog);
+		puts(errorLog);
+		free(errorLog);
+
+		return;
+	}
+	else {
+		// Always detach after successful link
+		glDetachShader(m_pipeline.shaderProg, m_pipeline.vShader);
+		glDetachShader(m_pipeline.shaderProg, m_pipeline.fShader);
+	}
 }
 
 void Topl_Renderer_GL4::render(void){

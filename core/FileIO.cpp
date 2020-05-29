@@ -1,6 +1,6 @@
 #include "FileIO.hpp"
 
-const char* readFile(const char* source){
+std::string readFile(const char* source){
     std::ifstream file(source);
     if(! file) return nullptr;
 
@@ -12,8 +12,7 @@ const char* readFile(const char* source){
     strStream << file.rdbuf();
     file.close();
 
-    std::string str = strStream.str();
-    return str.c_str();
+    return strStream.str();
 }
 
 std::string getParentDir(const char* str){

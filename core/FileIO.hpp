@@ -5,5 +5,5 @@
 #include <cstring>
 #include <cstdio>
 
-const char* readFile(const char* source);
+std::string readFile(const char* source);
 std::string getParentDir(const char* arg);
