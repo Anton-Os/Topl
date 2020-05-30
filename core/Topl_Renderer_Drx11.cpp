@@ -264,7 +264,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 											&m_bufferData.constBuffs_vec3f.at(lastIndex),
 											gRect1_position );
 		if(!mSceneReady) return; // Error
-		else m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(lastIndex));
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff; m_bufferData.indexBuffs_ui.push_back(indexBuff);
@@ -276,7 +275,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 											gRect1_ptr->mRenderObj->getICount() ); 
 
 		if(!mSceneReady) return; // Error
-		else m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(lastIndex), DXGI_FORMAT_R32_UINT, 0);
 
 		// Vertex creation procedures
 		ID3D11Buffer* vertexBuff; m_bufferData.vertexBuffs_3f.push_back(vertexBuff);
@@ -287,15 +285,11 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 												gRect1_vData,
 												gRect1_ptr->mRenderObj->getVCount());
 
-		UINT strideTest = sizeof(float) * 3;
-		UINT stride = sizeof(Eigen::Vector3f);
-		UINT offset = 0;
-
 		if(!mSceneReady) return;
-		else m_deviceCtx->IASetVertexBuffers(0, 1, &m_bufferData.vertexBuffs_3f.at(lastIndex), &stride, &offset); // Use the correct vertex buff
 	}
 
 	// Input assembler inputs to pipeline
+	// These procedures belong inside the pipeline creation
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
@@ -330,15 +324,24 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     return;
 }
 
-void Topl_Renderer_Drx11::render(void){
+void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
-
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
-    // if(mPrimDraw < 12) mPrimDraw++;
+	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		m_deviceCtx->DrawIndexed(6, 0, 0);
-        // m_deviceCtx->Draw(4, 0);
+		for (unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) {
+			m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(b));
+			m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(b), DXGI_FORMAT_R32_UINT, 0);
+
+			UINT strideTest = sizeof(float) * 3;
+			UINT stride = sizeof(Eigen::Vector3f);
+			UINT offset = 0;
+			m_deviceCtx->IASetVertexBuffers(0, 1, &m_bufferData.vertexBuffs_3f.at(b), &stride, &offset);
+
+			m_deviceCtx->DrawIndexed(6, 0, 0);
+		}
+      
 
     m_swapChain->Present(0, 0);
 }

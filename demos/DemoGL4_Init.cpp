@@ -45,6 +45,17 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_GL4 renderer(wndWindow);
+
+
+	Geo_Rect2D gRect1(1.0f, 1.0f);
+
+	// Topl_GeoNode gEntity1(&gRect1);
+	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
+
+	Topl_SceneGraph sGraph1; // REMOVE LATER
+	sGraph1.addGeometry("box", &gEntity1);
+	renderer.buildScene(&sGraph1);
+
     for(unsigned t = 0; t < 99999; t++)
         renderer.render();
 

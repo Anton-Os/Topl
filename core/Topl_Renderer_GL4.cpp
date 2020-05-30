@@ -34,9 +34,8 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 }
 
 static void render_win(HDC* windowDC) {
-	//HDC windowDC = GetDC(hwnd); // Probably have to save the old HDC!!! This wont work
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	SwapBuffers(*(windowDC));
 }
 
@@ -82,8 +81,14 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[0]); // Make this scalable
-		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(float), gRect1_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
 	}
+
+	// This is part of pipeline generation, relocate later
+	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
+	glBindVertexArray(m_pipeline.vertexDataLayouts[0]);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
     return; // To be continued
 }
@@ -177,6 +182,7 @@ void Topl_Renderer_GL4::createPipeline(void){
 		glDetachShader(m_pipeline.shaderProg, m_pipeline.fShader);
 	}
 
+	glUseProgram(m_pipeline.shaderProg); // Move this later
 }
 
 void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
@@ -286,6 +292,8 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 		glDetachShader(m_pipeline.shaderProg, m_pipeline.vShader);
 		glDetachShader(m_pipeline.shaderProg, m_pipeline.fShader);
 	}
+
+	glUseProgram(m_pipeline.shaderProg); // Move this later
 }
 
 void Topl_Renderer_GL4::render(void){
