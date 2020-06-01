@@ -20,8 +20,6 @@ public:
     Topl_Renderer_Drx11(HWND hwnd){ init(hwnd); }
 	~Topl_Renderer_Drx11();
 
-    //void buildScene(const Topl_SceneGraph* sceneGraph) override;
-    // void buildScene(void) override;
 	void buildScene(const Topl_SceneGraph* sceneGraph) override;
 	void render(void) override;
 private:

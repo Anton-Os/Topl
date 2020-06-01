@@ -21,7 +21,6 @@ tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(unsigned index) const {
 }
 
 tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(const std::string& name) const {
-
     if(mNameToId_map.find(name) == mNameToId_map.end()){
         puts("Name provided cannot be found");
         return nullptr;
@@ -33,8 +32,8 @@ tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(const std::string& name) const {
 
 void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr GeoNode){
     if(mNameToId_map.find(name) != mNameToId_map.end()){
-        puts("Duplicate names not allowed in scene graph");
-        return;
+        puts("Overriding geometry object:");
+        puts(name.c_str());
     }
 
     mNameToId_map.insert({ name, ((Topl_Node*)GeoNode)->getId() });
