@@ -15,17 +15,17 @@ struct Topl_Pipeline_Drx11 {
 	ID3DBlob* psBuff;
 };
 
-class Topl_Renderer_Drx11 : Topl_Renderer {
+class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
     Topl_Renderer_Drx11(HWND hwnd){ init(hwnd); }
 	~Topl_Renderer_Drx11();
 
     void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void buildScene(const Topl_SceneGraph* sceneGraph) override;
-	void render(void) override;
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override; // Marked for removal
+    void render(void) override;
 
     Topl_Pipeline_Drx11 m_pipeline;
     Topl_Data_Drx11 m_bufferData;

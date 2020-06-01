@@ -18,17 +18,17 @@ struct Topl_Pipeline_GL4 {
 	GLuint shaderProg;
 };
 
-class Topl_Renderer_GL4 : Topl_Renderer {
+class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
     Topl_Renderer_GL4(HWND hwnd){ init(hwnd); }
 	~Topl_Renderer_GL4();
 
     void buildScene(const Topl_SceneGraph* sceneGraph) override;
-    void render(void) override;
+	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 private:
     void init(NATIVE_WINDOW hwnd) override;
-    void createPipeline(void) override;
-	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
+    void createPipeline(void) override; // Marked for removal
+	void render(void) override;
 
     Topl_Pipeline_GL4 m_pipeline;
     Topl_Data_GL4 m_bufferData;

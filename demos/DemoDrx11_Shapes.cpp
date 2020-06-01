@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sGraph1);
 
     for(unsigned t = 0; t < 99999; t++)
-        renderer.render();
+        renderer.renderScene(DRAW_Triangles);
 
 	return 0;
 }

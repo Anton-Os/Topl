@@ -46,6 +46,10 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_GL4 renderer(wndWindow);
 
+	Topl_Shader vertexShader(SHDR_Vertex, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\VertexShader.glsl");
+	Topl_Shader fragmentShader(SHDR_Fragment, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\FragShader.glsl");
+
+	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Geo_Rect2D gRect1(1.0f, 1.0f);
 
@@ -56,8 +60,12 @@ int main(int argc, char** argv) {
 	sGraph1.addGeometry("box", &gEntity1);
 	renderer.buildScene(&sGraph1);
 
-    for(unsigned t = 0; t < 99999; t++)
-        renderer.render();
+    /* for(unsigned t = 0; t < 99999; t++)
+        renderer.renderScene(DRAW_Triangles); */
+
+	while ( renderer.renderScene(DRAW_Triangles)) {
+		// Process input and other things, on successful rendering
+	}
 
 	return 0;
 }

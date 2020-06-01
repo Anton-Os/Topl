@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sGraph1);
 
     for(unsigned t = 0; t < 99999; t++){
-		renderer.render();
+		renderer.renderScene(DRAW_Triangles);
 
         while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
 			TranslateMessage(&wndMessage);

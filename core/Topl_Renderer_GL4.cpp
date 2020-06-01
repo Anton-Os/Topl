@@ -68,7 +68,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glDepthFunc(GL_LESS); // Make these customizable
 	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 
-	Topl_Renderer_GL4::createPipeline(); // Remove from here
+	// Topl_Renderer_GL4::createPipeline(); // Remove from here
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
@@ -89,6 +89,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 	glBindVertexArray(m_pipeline.vertexDataLayouts[0]);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	mSceneReady = true;
 
     return; // To be continued
 }
@@ -183,6 +185,7 @@ void Topl_Renderer_GL4::createPipeline(void){
 	}
 
 	glUseProgram(m_pipeline.shaderProg); // Move this later
+	mPipelineReady = true;
 }
 
 void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
@@ -294,6 +297,7 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 	}
 
 	glUseProgram(m_pipeline.shaderProg); // Move this later
+	mPipelineReady = true;
 }
 
 void Topl_Renderer_GL4::render(void){
