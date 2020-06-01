@@ -46,11 +46,13 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 	
-	// renderer.createPipeline();
+	Topl_Shader vertexShader(SHDR_Vertex, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Vertex_MostBasic.hlsl");
+	Topl_Shader fragmentShader(SHDR_Fragment, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Pixel_MostBasic.hlsl");
+
+	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Geo_Rect2D gRect1(1.0f, 1.0f);
 
-	// Topl_GeoNode gEntity1(&gRect1);
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER

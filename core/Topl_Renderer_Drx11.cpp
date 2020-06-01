@@ -1,5 +1,6 @@
-#include "Topl_Renderer_Drx11.hpp"
+#include "FileIO.hpp"
 
+#include "Topl_Renderer_Drx11.hpp"
 
 namespace _Drx11 {
     static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec3f_cptr vData, unsigned vCount) {
@@ -129,9 +130,20 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
     m_deviceCtx->OMSetRenderTargets(1, &m_rtv, NULL);
 
-    // Creates pipeline items
-    Topl_Renderer_Drx11::createPipeline();
+	// Viewport Creation
 
+    RECT windowRect;
+    GetWindowRect(*(m_native.window), &windowRect);
+
+    D3D11_VIEWPORT viewport;
+	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Height = 500; // REPLACE WITH DETERMINED HEIGHT
+    viewport.Width = 500; // REPLACE WITH DETERMINED WIDTH
+
+	m_deviceCtx->RSSetViewports(1, &viewport);
     return;
 }
 
@@ -183,6 +195,7 @@ void Topl_Renderer_Drx11::createPipeline(void){
 void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
 	ID3DBlob* errorBuff;
 	HRESULT hr;
+	size_t sourceSize;
 
 	// Check for correct type
 	if (vertexShader->getType() != SHDR_Vertex) {
@@ -192,7 +205,9 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 	}
 
 	// Check for valid source
-	LPCWSTR vertexShaderSrc = (LPCWSTR)vertexShader->getFilePath();
+	sourceSize = strlen(vertexShader->getFilePath()) + 1;
+	wchar_t* vertexShaderSrc = new wchar_t[sourceSize];
+	mbstowcs(vertexShaderSrc, vertexShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
 	if (FAILED(
 		D3DCompileFromFile(vertexShaderSrc,
 			nullptr, nullptr, "main", "vs_5_0",
@@ -200,8 +215,10 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 	)) {
 		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		delete vertexShaderSrc; // Proper deallocation of the source string
 		return;
 	}
+	delete vertexShaderSrc; // Proper deallocation of the source string
 
 	// Check for correct type
 	if (fragShader->getType() != SHDR_Fragment) {
@@ -211,16 +228,20 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 	}
 
 	// Check for valid source
-	LPCWSTR fragShaderSrc = (LPCWSTR)fragShader->getFilePath();
+	sourceSize = strlen(fragShader->getFilePath()) + 1;
+	wchar_t* fragmentShaderSrc = new wchar_t[sourceSize];
+	mbstowcs(fragmentShaderSrc, fragShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
 	if (FAILED(
-		D3DCompileFromFile(fragShaderSrc,
+		D3DCompileFromFile(fragmentShaderSrc,
 			nullptr, nullptr, "main", "ps_5_0",
 			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
 	)) {
 		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		delete fragmentShaderSrc; // Proper deallocation of the source string
 		return;
 	}
+	delete fragmentShaderSrc; // Proper deallocation of the source string
 
 	// Creation methods
 
@@ -304,21 +325,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
     m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    // Viewport Creation
-
-    RECT windowRect;
-    GetWindowRect(*(m_native.window), &windowRect);
-
-    D3D11_VIEWPORT viewport;
-	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Height = 500; // REPLACE WITH DETERMINED HEIGHT
-    viewport.Width = 500; // REPLACE WITH DETERMINED WIDTH
-
-	m_deviceCtx->RSSetViewports(1, &viewport);
 
     mSceneReady = true;
     return;

@@ -43,9 +43,13 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
     Topl_Renderer_Drx11 renderer(wndWindow);
-	Topl_SceneGraph sGraph1; // REMOVE LATER
-	
-	// createRandShapes(&sGraph1); // Populates scene graph with data
+
+	Topl_Shader vertexShader(SHDR_Vertex, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Vertex_MostBasic.hlsl");
+	Topl_Shader fragmentShader(SHDR_Fragment, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Pixel_MostBasic.hlsl");
+
+	renderer.createPipeline(&vertexShader, &fragmentShader);
+
+	Topl_SceneGraph sGraph1;
 	Geo_RandShapes randShapes(&sGraph1);
 
 	renderer.buildScene(&sGraph1);
