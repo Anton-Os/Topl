@@ -32,6 +32,4 @@ private:
 
     Topl_Pipeline_GL4 m_pipeline;
     Topl_Data_GL4 m_bufferData;
-
-    //NATIVE_GL_CONEXT m_GL4_Ctx;
 };

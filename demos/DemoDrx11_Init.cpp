@@ -59,13 +59,8 @@ int main(int argc, char** argv) {
 	sGraph1.addGeometry("box", &gEntity1);
 	renderer.buildScene(&sGraph1);
 
-    for(unsigned t = 0; t < 99999; t++){
-		renderer.renderScene(DRAW_Triangles);
-
-        while(PeekMessage(&wndMessage, 0, 0, 0, PM_REMOVE)){
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-    	}
+	while (renderer.renderScene(DRAW_Triangles)) {
+		// Process input and other things, on successful rendering
 	}
 
 	return 0;

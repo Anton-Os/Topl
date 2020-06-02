@@ -324,7 +324,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
-    m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     mSceneReady = true;
     return;
@@ -333,6 +332,15 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
+
+	switch(mDrawType) {
+	case DRAW_Triangles:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		break;
+	default:
+		OutputDebugStringA("Draw type not supported yet!");
+		return;
+	}
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)

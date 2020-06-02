@@ -54,8 +54,9 @@ int main(int argc, char** argv) {
 
 	renderer.buildScene(&sGraph1);
 
-    for(unsigned t = 0; t < 99999; t++)
-        renderer.renderScene(DRAW_Triangles);
+	while (renderer.renderScene(DRAW_Triangles)) {
+		// Process input and other things, on successful rendering
+	}
 
 	return 0;
 }

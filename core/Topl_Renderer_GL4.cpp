@@ -34,10 +34,15 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 }
 
 static void render_win(HDC* windowDC) {
+
+	// Need to loop through all created objects
+	// for(unsigned b = 0; b )
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	SwapBuffers(*(windowDC));
 }
+
+static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
 
 static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     wglMakeCurrent(NULL, NULL);
@@ -74,21 +79,27 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 
 	glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferData.slots[0]);
-	// Move this data to the buffer vector
+	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
 
-	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Scalable version soon
-		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1);
+	while(m_bufferData.slotIndex < sceneGraph->getGeoCount()) { // Slot index will signify how many buffers exist
+		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(m_bufferData.slotIndex + 1); // ID values begin at 1
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
 
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[0]); // Make this scalable
+		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[m_bufferData.slotIndex]); // Make this scalable
 		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
+
+		glBindVertexArray(m_pipeline.vertexDataLayouts[m_bufferData.slotIndex]); // Testing
+		glEnableVertexAttribArray(0); // Testing
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // Testing
+
+		m_bufferData.slotIndex++; // Increment the used buffer count
 	}
 
 	// This is part of pipeline generation, relocate later
-	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
-	glBindVertexArray(m_pipeline.vertexDataLayouts[0]);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	// glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
+	// glBindVertexArray(m_pipeline.vertexDataLayouts[0]);
+	//glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	mSceneReady = true;
 
@@ -301,7 +312,13 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 }
 
 void Topl_Renderer_GL4::render(void){
-#ifdef _WIN32
-	render_win(&m_native.windowDevice_Ctx);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	for (unsigned b = 0; b < m_bufferData.slotIndex; b++) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[b]);
+		glBindVertexArray(m_pipeline.vertexDataLayouts[b]); // For testing
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+#ifdef _WIN32 // Swap buffers in windows
+	swapBuffers_win(&m_native.windowDevice_Ctx);
 #endif  
 }

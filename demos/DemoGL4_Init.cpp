@@ -52,16 +52,17 @@ int main(int argc, char** argv) {
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Geo_Rect2D gRect1(1.0f, 1.0f);
+	Geo_Rect2D gRect2(2.0f, 0.2f);
 
 	// Topl_GeoNode gEntity1(&gRect1);
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
+	Topl_GeoNode gEntity2((Geo_RenderObj*)&gRect2);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
 	sGraph1.addGeometry("box", &gEntity1);
-	renderer.buildScene(&sGraph1);
+	sGraph1.addGeometry("box2", &gEntity2);
 
-    /* for(unsigned t = 0; t < 99999; t++)
-        renderer.renderScene(DRAW_Triangles); */
+	renderer.buildScene(&sGraph1);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		// Process input and other things, on successful rendering
