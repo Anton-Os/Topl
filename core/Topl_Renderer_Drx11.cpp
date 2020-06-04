@@ -353,7 +353,8 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &m_bufferData.vertexBuffs_3f.at(b), &stride, &offset);
 
-			m_deviceCtx->DrawIndexed(6, 0, 0); // This is not yet scalable
+			// m_deviceCtx->DrawIndexed(6, 0, 0); // For the rectangular
+			m_deviceCtx->DrawIndexed(60, 0, 0); // For the sphere
 		}
       
 

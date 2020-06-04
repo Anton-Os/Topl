@@ -75,6 +75,7 @@ private:
 };
 
 class Geo_Sphere2D : Geo_RenderObj {
+public:
     Geo_Sphere2D(float radius, unsigned segments) : Geo_RenderObj() {
         mVCount = segments + 1; // Number of segments + center point
         mICount = segments * 3; // Rectangle has 6 indices

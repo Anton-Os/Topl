@@ -8,6 +8,7 @@ Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos){
 void Geo_RandShapes::fillSceneGraph(Topl_SceneGraph* sceneGraph){
     sceneGraph->addGeometry("box", mGeoNode1);
     sceneGraph->addGeometry("box2", mGeoNode2);
+	// sceneGraph->addGeometry("sphere1", mGeoNode3);
 }
 
 void Geo_RandShapes::updateSceneGraph(Topl_SceneGraph* sceneGraph, Timer_EventRatio event){

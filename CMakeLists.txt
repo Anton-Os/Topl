@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
 
-include(ExternalProject)
 
 if(NOT Rasteron_Install_Path)
     set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
@@ -15,8 +14,9 @@ else()
     message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
 endif()
 
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
+include(ExternalProject)
+set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
 ExternalProject_Add(DXSDK
         GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
@@ -46,8 +46,8 @@ add_library(GLEW
     STATIC
     helper/glew.c
 )
-
 target_include_directories(GLEW PUBLIC helper)
+
 
 find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
 find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)

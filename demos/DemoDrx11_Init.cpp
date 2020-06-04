@@ -51,12 +51,13 @@ int main(int argc, char** argv) {
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
-	Geo_Rect2D gRect1(1.0f, 1.0f);
+	// Geo_Rect2D gRect1(1.0f, 1.0f);
+	Geo_Sphere2D gSphere1(0.4f, 20);
 
-	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
+	Topl_GeoNode gEntity1((Geo_RenderObj*)&gSphere1);
 
 	Topl_SceneGraph sGraph1; // REMOVE LATER
-	sGraph1.addGeometry("box", &gEntity1);
+	sGraph1.addGeometry("sphere", &gEntity1);
 	renderer.buildScene(&sGraph1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
