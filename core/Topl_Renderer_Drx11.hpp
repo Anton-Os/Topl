@@ -1,10 +1,22 @@
 #include "Topl_Renderer.hpp"
 
 
+enum BUFF_Type {
+    BUFF_Vertex_3F,
+    BUFF_Index_UI,
+    BUFF_Const_vec3f
+};
+
+struct Buffer_Drx11 {
+    enum BUFF_Type type;
+    ID3D11Buffer* buffer;
+    unsigned count = 1;
+};
+
 struct Topl_Data_Drx11 {
-    std::vector<ID3D11Buffer*> vertexBuffs_3f;
-    std::vector<ID3D11Buffer*> indexBuffs_ui;
-    std::vector<ID3D11Buffer*> constBuffs_vec3f;
+    std::vector<Buffer_Drx11> vertexBuffs_3f;
+    std::vector<Buffer_Drx11> indexBuffs_ui;
+    std::vector<Buffer_Drx11> constBuffs_vec3f;
 };
 
 struct Topl_Pipeline_Drx11 {

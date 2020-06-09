@@ -1,7 +1,9 @@
 #include "native_os_def.h"
-#include "Topl_Renderer_Drx11.hpp"
 
+#include "FileIO.hpp"
 #include "Geometry/Geometry_Constructs.hpp"
+
+#include "Topl_Renderer_Drx11.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -44,8 +46,10 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 
-	Topl_Shader vertexShader(SHDR_Vertex, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Vertex_MostBasic.hlsl");
-	Topl_Shader fragmentShader(SHDR_Fragment, "C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Pixel_MostBasic.hlsl");
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
+	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 

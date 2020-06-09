@@ -78,7 +78,8 @@ add_executable(DemoPresser
 )
 target_include_directories(DemoPresser PUBLIC core helper)
 
-add_executable(DemoDrx11 
+add_executable(DemoDrx11
+    core/FileIO.cpp
     core/Geometry.cpp
     core/Topl_SceneGraph.cpp
     core/Topl_Renderer_Drx11.cpp
@@ -94,6 +95,7 @@ target_include_directories(DemoDrx11 PUBLIC
 target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
 add_executable(DemoDrx11_Shapes
+    core/FileIO.cpp
     core/Geometry.cpp
     core/Geometry/RandShapes.cpp
     core/Physics.cpp
