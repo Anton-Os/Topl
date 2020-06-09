@@ -9,6 +9,8 @@ endif()
 
 find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
 if(Rasteron_FOUND)
+    include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
+
     message(STATUS "Rasteron loadding success!")
 else()
     message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
@@ -55,6 +57,13 @@ find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 
 
 
+if(Rasteron_FOUND)
+
+    add_executable(DemoImg
+        demos/DemoImg.cpp
+    )   
+    target_link_libraries(DemoImg RasteronLib) # finding Rasteron but not tiff
+endif()
 
 add_executable(DemoTickTick  
     core/Timer.cpp
@@ -100,7 +109,7 @@ target_include_directories(DemoDrx11_Shapes PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
-
+ 
 
 
 
