@@ -11,10 +11,10 @@ void callback1(void){
 }
 
 KeyState kState('k', KEY_release);
-// Lowercase k becomes uppercase 
+// Lowercase k becomes uppercase --
 
 char kc = '\0';
-enum KEY_Event event = KEY_none;
+enum KEY_Event kEvent = KEY_none;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -32,11 +32,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_PAINT): {
 	}
 	case(WM_KEYDOWN): {
-		event = KEY_press;
+		kEvent = KEY_press;
 		puts("Key pressed \n");
 	}
 	case(WM_KEYUP): {
-		event = KEY_release;
+		kEvent = KEY_release;
 		puts("Key released");
 	}
 	case (WM_CHAR): {
@@ -45,9 +45,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		putchar('\n');
 
 		kc = ch;
-		if (kc != '\0' && event != KEY_none) {
-			keyLogger.addKeyEvent(kc, event);
-			kc = '\0'; event = KEY_none;
+		if (kc != '\0' && kEvent != KEY_none) {
+			keyLogger.addKeyEvent(kc, kEvent);
+			kc = '\0'; kEvent = KEY_none;
 		}
 	}
 	default:

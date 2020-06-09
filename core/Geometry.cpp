@@ -61,14 +61,6 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
 unsigned* Geo_Sphere2D::genIndices(){
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 
-	/* for (unsigned i = 0; i < mICount; i += 3) { // We are setting 3 indices in one go
-		*(data + i + 0) = 0; // Origin point
-		*(data + i + 1) = startCVert; // Take the start vertex
-		*(data + i + 2) = startCVert + 1; // Connect to next vertex
-
-		startCVert++;
-	} */
-
 	unsigned startCVert = 1; // Starting from index 1, which is the rightmost point
 	unsigned currentIdx; // Will use this in the for loop
 	for (currentIdx = 0; currentIdx < mICount - 3; currentIdx += 3) { // Iterate to all but last trig!!!

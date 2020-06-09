@@ -13,8 +13,6 @@ enum KEY_Event {
 };
 
 struct KeyState {
-    // KeyState(){}
-    // KeyState(const char kc, enum KEY_Event ke, double ts, double te){
     KeyState(){}
     KeyState(char kc, enum KEY_Event ke){
         keyCode = toupper(kc); event = ke;
@@ -23,7 +21,6 @@ struct KeyState {
         keyCode = toupper(kc); event = ke; tstampMil = lt;
     }
     char keyCode = '\0';
-    // int keyID;
     KEY_Event event = KEY_none;
 
 	double tstampMil = 0.0f; // Timestamp in milliseconds when event triggered
@@ -44,19 +41,18 @@ public:
     void addKeyEvent(char keyCode, enum KEY_Event event); // Searches for callback and triggers it
 
 	void addCallback(const KeyState* state, keyCallback callback);
-    void addComboCallback(const std::vector<KeyState>& states, keyComboCallback callback); // States and the callback are closely tied 
-    // void addCallback(keyCallback callback, std::vector<KeyState> states);
 private:
-    // std::queue<KeyState> mStates;
-    std::vector<keyComboCallback> mComboCallbacks; // Populates vectors below
 
     std::vector<keyCallback> mCallbacks;
 	std::vector<KeyState> mStates;
     std::vector<const KeyState*> mTriggerStates; // Fed in by the add callback function
+
 	std::map<const char, KeyState*> mCodeToKey_map; // Associates a character with a keyState, should be modifiable
     std::map<const char, const KeyState*> mCodeToTrigger_map; // Associates a character with a keyTrigger, IMPROVE!
+    std::map<const KeyState*, keyCallback> mTriggerToCallback_map; // Associates a trigger state with a callback
 
-    Timer_Interval mTimer;
+
+    Timer_Ticker mTicker;
     //double mExpireMil = 2.0; // How long do key events stay in the queue?
 };
 

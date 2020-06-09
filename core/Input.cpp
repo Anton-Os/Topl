@@ -14,27 +14,32 @@ void Input_KeyLogger::addKeyEvent(char keyCode, enum KEY_Event event){
 	// Update current key status // Update hold time-
     KeyState* currentState = mCodeToKey_map.at(keyCode);
     currentState->event = event;
-    currentState->tstampMil = mTimer.getAbsMillsecs();
+    currentState->tstampMil = mTicker.getAbsMillsecs();
 
     const KeyState* triggerState = mCodeToTrigger_map.at(keyCode);
 
-	bool statesMatch = (triggerState->event == currentState->event
-		&& triggerState->keyCode == currentState->keyCode)
-		? true : false; // Test for events matching up
+	bool statesMatch = 
+        (triggerState->event == currentState->event && 
+        (char)toupper(triggerState->keyCode) == (char)toupper(currentState->keyCode))
+		? true : false; // Test for keycode and event matchup
 
-    if(triggerState->event == currentState->event)
-        puts("Event Match! Key Released!");
+    if(statesMatch) 
+		mTriggerToCallback_map.at(triggerState)(); // Execute correct callback
+        // puts("Key events match");
 }
 
 void Input_KeyLogger::addCallback(const KeyState* state, keyCallback callback) {
 
-    mTriggerStates.push_back(state); // Adds the trigger state
     KeyState kState(state->keyCode, KEY_none);
+
     mStates.push_back(kState); // Adds the current state
+    mCodeToKey_map.insert(  { state->keyCode, &mStates.at(mStates.size() - 1) }  );
 
-    mCodeToKey_map.insert(  {state->keyCode, &mStates.at(mStates.size() - 1)}  );
-    mCodeToTrigger_map.insert(  {state->keyCode, mTriggerStates.at(mTriggerStates.size() - 1)}  );
+    mTriggerStates.push_back(state); // Adds the trigger state
+    mCodeToTrigger_map.insert(  { state->keyCode, mTriggerStates.at(mTriggerStates.size() - 1) }  );
 
-    mCallbacks.push_back(callback);
+    mCallbacks.push_back(callback); // Adds a callback
+    mTriggerToCallback_map.insert(  { mTriggerStates.at(mTriggerStates.size() - 1), mCallbacks.at(mCallbacks.size() - 1)} );
+
 	return;
 }

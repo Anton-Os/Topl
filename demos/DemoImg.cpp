@@ -5,6 +5,7 @@
 int main(void){
 
 	Image img2;
+
 	loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 	// loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult3.bmp", &img2);
 

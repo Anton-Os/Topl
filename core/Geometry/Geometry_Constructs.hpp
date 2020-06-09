@@ -5,8 +5,6 @@
 
 /* This header defines geometry creation mechanisms */
 
-// void createRandShapes(Topl_SceneGraph* sceneGraph);
-
 Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos);
 
 
@@ -36,7 +34,7 @@ public:
         // delete mSphere1;
         // delete mGeoNode3;
     }
-    void updateSceneGraph(Topl_SceneGraph* Topl_SceneGraph, Timer_EventRatio event); // Should probably make private
+    void updateSceneGraph(Topl_SceneGraph* Topl_SceneGraph, Timer_DiscreteEvent timerEvent); // Should probably make private
 private:
     void fillSceneGraph(Topl_SceneGraph* sceneGraph);
     

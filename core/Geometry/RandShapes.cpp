@@ -11,7 +11,7 @@ void Geo_RandShapes::fillSceneGraph(Topl_SceneGraph* sceneGraph){
 	// sceneGraph->addGeometry("sphere1", mGeoNode3);
 }
 
-void Geo_RandShapes::updateSceneGraph(Topl_SceneGraph* sceneGraph, Timer_EventRatio event){
+void Geo_RandShapes::updateSceneGraph(Topl_SceneGraph* sceneGraph, Timer_DiscreteEvent timerEvent){
     tpl_gEntity_cptr geoNode1 = sceneGraph->getGeoNode("box"); // Get current state, copying over is required
 	mGeoNode1 = (Topl_GeoNode*)(geoNode1); // Dont know if this casting is safe!!!
 

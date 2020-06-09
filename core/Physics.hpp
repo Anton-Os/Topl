@@ -29,17 +29,17 @@ private:
 	unsigned mActionRepeats; // Negative moves in other direction
 };
 
-typedef Eigen::Vector3f (*updatePos_timed)(const Eigen::Vector3f& pos, const Timer_EventRatio& timeEvent);
+typedef Eigen::Vector3f (*updatePos_timed)(const Eigen::Vector3f& pos, const Timer_DiscreteEvent& timeDiscreteEvent);
 
 class Physics_MoveTimed : Physics_Move {
 public:
     Physics_MoveTimed(updatePos_timed updateFunc) : Physics_Move() {
         mTimedMove = updateFunc;
     }
-	void updatePos(const Timer_EventRatio& timeEvent);
+	// void updatePos(const Timer_DiscreteEvent& timeDiscreteEvent);
 private:
     updatePos_timed mTimedMove;
-	Timer_EventRatio mActionTimes;
+	// Timer_DiscreteEvent mActionTimes(1000.0f, &timerCallback1);
 };
 
 #define PHYSICS_H
