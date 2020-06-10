@@ -81,25 +81,28 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 	glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferData.slots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
 
-	while(m_bufferData.slotIndex < sceneGraph->getGeoCount()) { // Slot index will signify how many buffers exist
-		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(m_bufferData.slotIndex + 1); // ID values begin at 1
+	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
+		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
+		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferData.slots[m_bufferData.slotIndex]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getICount() * sizeof(unsigned), gRect1_iData, GL_STATIC_DRAW);
+
+		m_bufferData.slotIndex++;
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[m_bufferData.slotIndex]); // Make this scalable
 		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
 
-		glBindVertexArray(m_pipeline.vertexDataLayouts[m_bufferData.slotIndex]); // Testing
+		m_bufferData.slotIndex++;
+
+		glBindVertexArray(m_pipeline.vertexDataLayouts[m_pipeline.layoutIndex]); // Testing
 		glEnableVertexAttribArray(0); // Testing
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // Testing
 
-		m_bufferData.slotIndex++; // Increment the used buffer count
+		m_pipeline.layoutIndex++;
 	}
 
-	// This is part of pipeline generation, relocate later
-	// glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
-	// glBindVertexArray(m_pipeline.vertexDataLayouts[0]);
-	//glEnableVertexAttribArray(0);
-	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	mSceneReady = true;
 
@@ -313,10 +316,12 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 
 void Topl_Renderer_GL4::render(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	for (unsigned b = 0; b < m_bufferData.slotIndex; b++) {
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[b]);
-		glBindVertexArray(m_pipeline.vertexDataLayouts[b]); // For testing
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	for (unsigned b = 0; b < m_bufferData.slotIndex; b += 2) { // FIX THE += 2 NOW!!!!!
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferData.slots[b]);
+		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[b + 1]);
+		glBindVertexArray(m_pipeline.vertexDataLayouts[b / 2]); // For testing
+		// glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 	}
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&m_native.windowDevice_Ctx);
