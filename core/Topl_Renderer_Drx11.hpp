@@ -1,22 +1,14 @@
 #include "Topl_Renderer.hpp"
 
 
-enum BUFF_Type {
-    BUFF_Vertex_3F,
-    BUFF_Index_UI,
-    BUFF_Const_vec3f
-};
+#define MAX_BUFFER_TYPES 3
 
+// Make this derived from Buffer within Renderer header
 struct Buffer_Drx11 {
+    unsigned targetID;
     enum BUFF_Type type;
     ID3D11Buffer* buffer;
     unsigned count = 1;
-};
-
-struct Topl_Data_Drx11 {
-    std::vector<Buffer_Drx11> vertexBuffs_3f;
-    std::vector<Buffer_Drx11> indexBuffs_ui;
-    std::vector<Buffer_Drx11> constBuffs_vec3f;
 };
 
 struct Topl_Pipeline_Drx11 {
@@ -40,7 +32,8 @@ private:
     void render(void) override;
 
     Topl_Pipeline_Drx11 m_pipeline;
-    Topl_Data_Drx11 m_bufferData;
+    std::vector<Buffer_Drx11> mBuffers;
+    unsigned mMaxBuffID = 1;
 
     IDXGISwapChain* m_swapChain;
     ID3D11Device* m_device;

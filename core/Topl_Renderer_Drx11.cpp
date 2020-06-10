@@ -65,17 +65,32 @@ namespace _Drx11 {
 
 		return true;
 	}
+
+	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** bufferPtrs, unsigned short count) {
+		Buffer_Drx11* currentBuff = nullptr;
+
+		for (unsigned short b = 0; b < count; b++) {
+			currentBuff = *(bufferPtrs + b);
+			if (currentBuff->type == type) break; // Correct buffer was found
+			else currentBuff = nullptr;
+		}
+
+		return currentBuff; // Try to optimize the code above
+	}
 }
 
 Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
-	for(unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) // Release all vertex buffers
+	/* for(unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) // Release all vertex buffers
 		m_bufferData.vertexBuffs_3f.at(b).buffer->Release(); 
 
 	for(unsigned b = 0; b < m_bufferData.indexBuffs_ui.size(); b++) // Release all index buffers
 		m_bufferData.indexBuffs_ui.at(b).buffer->Release();
 	
 	for(unsigned b = 0; b < m_bufferData.constBuffs_vec3f.size(); b++) // Release all constant buffers
-		m_bufferData.constBuffs_vec3f.at(b).buffer->Release();
+		m_bufferData.constBuffs_vec3f.at(b).buffer->Release(); */
+
+	for(unsigned b = 0; b < mBuffers.size(); b++)
+		mBuffers.at(b).buffer->Release();
 
 	m_swapChain->Release();
 	m_device->Release();
@@ -284,7 +299,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 											&constBuff_vec3f,
 											gRect1_position );
 
-		m_bufferData.constBuffs_vec3f.push_back({ BUFF_Const_vec3f, constBuff_vec3f, 1 });
+		//m_bufferData.constBuffs_vec3f.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
+		
+		// Replacement vector
+		mBuffers.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
 
 		if(!mSceneReady) return; // Error
 
@@ -294,7 +312,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
 											(DWORD*)gRect1_iData, gRect1_ptr->mRenderObj->getICount() );
 
-		m_bufferData.indexBuffs_ui.push_back({ BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
+		//m_bufferData.indexBuffs_ui.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
+
+		// Replacement vector
+		mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
 
 		if(!mSceneReady) return; // Error
 
@@ -304,7 +325,11 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												gRect1_vData, gRect1_ptr->mRenderObj->getVCount());
 
-		m_bufferData.vertexBuffs_3f.push_back({ BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
+		// m_bufferData.vertexBuffs_3f.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
+
+		mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
+
+		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
 
 		if(!mSceneReady) return;
 	}
@@ -344,17 +369,40 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) {
-			m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(b).buffer);
-			m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(b).buffer, DXGI_FORMAT_R32_UINT, 0);
+		for (unsigned id = 1; id <= mMaxBuffID; id++) {
+			Buffer_Drx11** bufferPtrs = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
+
+			unsigned bOffset = 0; // Populates the bufferPtrs structure
+			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+				if (currentBuff->targetID == id)
+					if (bOffset >= MAX_BUFFER_TYPES) break;
+					else {
+						*(bufferPtrs + bOffset) = &(*currentBuff);
+						bOffset++;
+					} // bOffset will finally indicate how many buffers were located
+
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, bufferPtrs, bOffset);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
+			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
+				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
+				return;
+			}
+
+			// m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(id - 1).buffer);
+			// m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(id - 1).buffer, DXGI_FORMAT_R32_UINT, 0);
+
+			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
+			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT strideTest = sizeof(float) * 3;
 			UINT stride = sizeof(Eigen::Vector3f);
 			UINT offset = 0;
-			m_deviceCtx->IASetVertexBuffers(0, 1, &m_bufferData.vertexBuffs_3f.at(b).buffer, &stride, &offset);
+			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
-			// m_deviceCtx->DrawIndexed(6, 0, 0); // For the rectangular
-			m_deviceCtx->DrawIndexed(m_bufferData.indexBuffs_ui.at(b).count, 0, 0);
+			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+			
+			free(bufferPtrs);
 		}
       
 

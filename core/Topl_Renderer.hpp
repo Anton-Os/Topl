@@ -13,6 +13,20 @@ enum DRAW_Type {
     DRAW_Strip
 };
 
+#define MAX_BUFFER_TYPES 3
+
+enum BUFF_Type {
+    BUFF_Vertex_3F,
+    BUFF_Index_UI,
+    BUFF_Const_vec3f
+};
+
+struct Buffer {
+    unsigned targetID; // Multiple buffers share a target for binding before draw
+    enum BUFF_Type type; // Type of buffer 
+    unsigned count = 1; // No. of primitives
+};
+
 class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
