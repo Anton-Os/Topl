@@ -1,8 +1,5 @@
 #include "Topl_Renderer.hpp"
 
-
-#define MAX_BUFFER_TYPES 3
-
 // Make this derived from Buffer within Renderer header
 struct Buffer_Drx11 {
     unsigned targetID;

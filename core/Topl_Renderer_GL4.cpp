@@ -4,8 +4,32 @@
 
 // This code is platform independent
 
-namespace _GL4 {
+GLuint Topl_BufferAlloc_GL4::getAvailableBuff() {
+	if (!mIsInit) init();
+	GLuint targetBuff = 0;
 
+	if (slotIndex > GL4_BUFFER_MAX)
+		puts("Maximum buffer capacity exceeded!");
+	else {
+		targetBuff = slots[slotIndex];
+		slotIndex++;
+	}
+
+	return targetBuff;
+}
+
+namespace _GL4 {
+	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
+		Buffer_GL4* currentBuff = nullptr;
+
+		for (unsigned short b = 0; b < count; b++) {
+			currentBuff = *(bufferPtrs + b);
+			if (currentBuff->type == type) break; // Correct buffer was found
+			else currentBuff = nullptr;
+		}
+
+		return currentBuff; // Try to optimize the code above
+	}
 }
 
 #ifdef _WIN32
@@ -78,7 +102,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 
-	glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferData.slots[0]);
+	// glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferAlloc.slots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
@@ -86,23 +110,26 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
 		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferData.slots[m_bufferData.slotIndex]);
+		mBuffers.push_back({ g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailableBuff(), gRect1_ptr->mRenderObj->getICount() });
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getICount() * sizeof(unsigned), gRect1_iData, GL_STATIC_DRAW);
 
-		m_bufferData.slotIndex++;
+		// m_bufferAlloc.slotIndex++;
 
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[m_bufferData.slotIndex]); // Make this scalable
+		mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailableBuff(), gRect1_ptr->mRenderObj->getVCount() });
+		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
 
-		m_bufferData.slotIndex++;
+		// m_bufferAlloc.slotIndex++;
 
 		glBindVertexArray(m_pipeline.vertexDataLayouts[m_pipeline.layoutIndex]); // Testing
 		glEnableVertexAttribArray(0); // Testing
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // Testing
 
 		m_pipeline.layoutIndex++;
-	}
 
+		mMaxBuffID = g + 1;
+	}
 
 	mSceneReady = true;
 
@@ -316,13 +343,37 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 
 void Topl_Renderer_GL4::render(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	for (unsigned b = 0; b < m_bufferData.slotIndex; b += 2) { // FIX THE += 2 NOW!!!!!
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferData.slots[b]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufferData.slots[b + 1]);
+	/* for (unsigned b = 0; b < m_bufferAlloc.slotIndex; b += 2) { // FIX THE += 2 NOW!!!!!
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferAlloc.slots[b]);
+		glBindBuffer(GL_ARRAY_BUFFER, m_bufferAlloc.slots[b + 1]);
 		glBindVertexArray(m_pipeline.vertexDataLayouts[b / 2]); // For testing
 		// glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+	} */
+
+	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
+
+	for (unsigned id = 1; id <= mMaxBuffID; id++) { // FIX THE += 2 NOW!!!!!
+		unsigned bOffset = 0; // Populates the bufferPtrs structure
+		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == id)
+				if (bOffset >= MAX_BUFFER_TYPES) break;
+				else {
+					*(bufferPtrs + bOffset) = &(*currentBuff);
+					bOffset++;
+				} // bOffset will finally indicate how many buffers were located
+
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
+		glBindVertexArray(m_pipeline.vertexDataLayouts[id / 2]); // FIX THIS SOON!!!
+
+		glDrawElements(GL_TRIANGLES, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 	}
+
+	free(bufferPtrs);
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&m_native.windowDevice_Ctx);
 #endif  

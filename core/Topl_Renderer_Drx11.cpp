@@ -367,10 +367,11 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 		return;
 	}
 
+	Buffer_Drx11** bufferPtrs = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
+
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
 		for (unsigned id = 1; id <= mMaxBuffID; id++) {
-			Buffer_Drx11** bufferPtrs = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
 
 			unsigned bOffset = 0; // Populates the bufferPtrs structure
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
@@ -389,8 +390,6 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 				return;
 			}
 
-			// m_deviceCtx->VSSetConstantBuffers(0, 1, &m_bufferData.constBuffs_vec3f.at(id - 1).buffer);
-			// m_deviceCtx->IASetIndexBuffer(m_bufferData.indexBuffs_ui.at(id - 1).buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
@@ -402,9 +401,9 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 			
-			free(bufferPtrs);
 		}
-      
+
+	free(bufferPtrs);
 
     m_swapChain->Present(0, 0);
 }

@@ -1,9 +1,25 @@
 #include "Topl_Renderer.hpp"
 
-#define GL4_BUFFER_CAPACITY 1024
+struct Buffer_GL4 {
+	unsigned targetID;
+	enum BUFF_Type type;
+	GLuint buffer;
+	unsigned count = 1;
+};
 
-struct Topl_Data_GL4 {
-	GLuint slots[GL4_BUFFER_CAPACITY];
+#define GL4_BUFFER_MAX 1024
+
+class Topl_BufferAlloc_GL4 {
+public:
+	Topl_BufferAlloc_GL4(){}
+
+	GLuint getAvailableBuff();
+// private:
+public:
+	bool mIsInit = false;
+	void init() { glGenBuffers(GL4_BUFFER_MAX, &slots[0]); mIsInit = true; }
+
+	GLuint slots[GL4_BUFFER_MAX];
 	unsigned slotIndex = 0; // May need to be zero
 };
 
@@ -31,5 +47,7 @@ private:
 	void render(void) override;
 
     Topl_Pipeline_GL4 m_pipeline;
-    Topl_Data_GL4 m_bufferData;
+	Topl_BufferAlloc_GL4 m_bufferAlloc;
+	std::vector<Buffer_GL4> mBuffers;
+	unsigned mMaxBuffID = 1;
 };
