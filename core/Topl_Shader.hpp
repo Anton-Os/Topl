@@ -18,6 +18,8 @@ enum SHDR_Input_Type {
 
 typedef void* (*allocDefaultData)(void); // Default data needs memory allocation within the Shader_Input
 
+#define SHADER_MAX_INPUTS 120 // Arbitrary for now
+
 struct Shader_Input {
     Shader_Input(enum SHDR_Input_Type i, char* t, char* n, allocDefaultData a){ 
         inputType = i;

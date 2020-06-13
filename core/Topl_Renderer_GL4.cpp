@@ -4,7 +4,7 @@
 
 // This code is platform independent
 
-GLuint Topl_BufferAlloc_GL4::getAvailableBuff() {
+GLuint Topl_BufferAlloc_GL4::getAvailable() {
 	if (!mIsInit) init();
 	GLuint targetBuff = 0;
 
@@ -16,6 +16,20 @@ GLuint Topl_BufferAlloc_GL4::getAvailableBuff() {
 	}
 
 	return targetBuff;
+}
+
+GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
+	if (!mIsInit) init();
+	GLuint targetVAO = 0;
+
+	if (slotIndex > GL4_VERTEX_ARRAY_MAX)
+		puts("Maximum VAO capacity exceeded!");
+	else {
+		targetVAO = slots[slotIndex];
+		slotIndex++;
+	}
+
+	return targetVAO;
 }
 
 namespace _GL4 {
@@ -103,28 +117,33 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 
 	// glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferAlloc.slots[0]);
-	glGenVertexArrays(GL4_VERTEX_ARRAY_CAPACITY, &m_pipeline.vertexDataLayouts[0]);
+	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
 		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
 		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
 
-		mBuffers.push_back({ g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailableBuff(), gRect1_ptr->mRenderObj->getICount() });
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getICount() * sizeof(unsigned), gRect1_iData, GL_STATIC_DRAW);
 
-		// m_bufferAlloc.slotIndex++;
-
-		mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailableBuff(), gRect1_ptr->mRenderObj->getVCount() });
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getVCount()));
+		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getVCount() });
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
 
-		// m_bufferAlloc.slotIndex++;
-
-		glBindVertexArray(m_pipeline.vertexDataLayouts[m_pipeline.layoutIndex]); // Testing
-		glEnableVertexAttribArray(0); // Testing
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // Testing
+		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable(), 3, GL_FLOAT));
+		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
+		glBindVertexArray(currentVAO_ptr->vao);
+		glEnableVertexAttribArray(currentVAO_ptr->index);
+		glVertexAttribPointer( currentVAO_ptr->index, 
+							   currentVAO_ptr->size, 
+							   currentVAO_ptr->type, 
+							   currentVAO_ptr->normalized, 
+							   currentVAO_ptr->stride, 
+							   NULL
+		);
 
 		m_pipeline.layoutIndex++;
 
@@ -343,17 +362,11 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 
 void Topl_Renderer_GL4::render(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	/* for (unsigned b = 0; b < m_bufferAlloc.slotIndex; b += 2) { // FIX THE += 2 NOW!!!!!
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferAlloc.slots[b]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufferAlloc.slots[b + 1]);
-		glBindVertexArray(m_pipeline.vertexDataLayouts[b / 2]); // For testing
-		// glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
-	} */
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
 
-	for (unsigned id = 1; id <= mMaxBuffID; id++) { // FIX THE += 2 NOW!!!!!
+	for (unsigned id = 1; id <= mMaxBuffID; id++) { 
+		
 		unsigned bOffset = 0; // Populates the bufferPtrs structure
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 			if (currentBuff->targetID == id)
@@ -368,7 +381,12 @@ void Topl_Renderer_GL4::render(void){
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-		glBindVertexArray(m_pipeline.vertexDataLayouts[id / 2]); // FIX THIS SOON!!!
+
+		for(std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
+			if(currentVAO->targetID == id)
+				glBindVertexArray(currentVAO->vao);
+			else
+				continue; // If it continues all the way through error has occured
 
 		glDrawElements(GL_TRIANGLES, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 	}
