@@ -21,8 +21,21 @@ enum BUFF_Type {
     BUFF_Const_vec3f
 };
 
-struct Buffer {
-    unsigned targetID; // Multiple buffers share a target for binding before draw
+struct RenderTargetObject {
+	RenderTargetObject() {}
+	RenderTargetObject(unsigned id) { targetID = id; }
+	unsigned targetID;
+};
+
+
+struct Buffer : public RenderTargetObject {
+    Buffer() : RenderTargetObject(){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderTargetObject(id){
+        type = t;
+    }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTargetObject(id){
+        type = t; count = c;
+    }
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
 };

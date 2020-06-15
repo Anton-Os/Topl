@@ -302,7 +302,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		//m_bufferData.constBuffs_vec3f.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
 		
 		// Replacement vector
-		mBuffers.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
+		// mBuffers.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_vec3f, constBuff_vec3f));
 
 		if(!mSceneReady) return; // Error
 
@@ -315,7 +316,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		//m_bufferData.indexBuffs_ui.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
 
 		// Replacement vector
-		mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
+		// mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount()));
 
 		if(!mSceneReady) return; // Error
 
@@ -325,9 +327,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												gRect1_vData, gRect1_ptr->mRenderObj->getVCount());
 
-		// m_bufferData.vertexBuffs_3f.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
-
-		mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
+		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount()));
 
 		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
 

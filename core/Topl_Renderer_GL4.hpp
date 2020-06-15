@@ -1,11 +1,5 @@
 #include "Topl_Renderer.hpp"
 
-struct Data_GL4 {
-	Data_GL4() {}
-	Data_GL4(unsigned id) { targetID = id; }
-	unsigned targetID;
-};
-
 class Topl_DataAlloc_GL4 {
 public:
 	Topl_DataAlloc_GL4() {}
@@ -19,18 +13,16 @@ protected:
 
 // Buffer Object Allocation Helpers
 
-struct Buffer_GL4 : public Data_GL4 {
-	Buffer_GL4() : Data_GL4() {}
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Data_GL4(id){
-		type = t; buffer = b;
+struct Buffer_GL4 : public Buffer {
+	Buffer_GL4() : Buffer() {}
+	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){
+		buffer = b;
 	}
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Data_GL4(id){
-		type = t; buffer = b; count = c;
+	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) {
+		buffer = b;
 	}
 
-	enum BUFF_Type type;
-	GLuint buffer;
-	unsigned count = 1; // Number of primitives
+	GLuint buffer; // OpenGL specific
 };
 
 #define GL4_BUFFER_MAX 1024
@@ -49,12 +41,12 @@ private:
 
 // Vertex Array Object Allocation Helpers
 
-struct VertexArray_GL4 : public Data_GL4 {
-	VertexArray_GL4() : Data_GL4() {}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t) : Data_GL4(id){
+struct VertexArray_GL4 : public RenderTargetObject {
+	VertexArray_GL4() : RenderTargetObject() {}
+	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t) : RenderTargetObject(id){
 		vao = v; size = sz; type = t;
 	}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : Data_GL4(id){
+	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : RenderTargetObject(id){
 		vao = v; size = sz; type = t; index = i; normalized = n; stride = st;
 	}
 
