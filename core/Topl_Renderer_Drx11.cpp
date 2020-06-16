@@ -80,15 +80,6 @@ namespace _Drx11 {
 }
 
 Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
-	/* for(unsigned b = 0; b < m_bufferData.vertexBuffs_3f.size(); b++) // Release all vertex buffers
-		m_bufferData.vertexBuffs_3f.at(b).buffer->Release(); 
-
-	for(unsigned b = 0; b < m_bufferData.indexBuffs_ui.size(); b++) // Release all index buffers
-		m_bufferData.indexBuffs_ui.at(b).buffer->Release();
-	
-	for(unsigned b = 0; b < m_bufferData.constBuffs_vec3f.size(); b++) // Release all constant buffers
-		m_bufferData.constBuffs_vec3f.at(b).buffer->Release(); */
-
 	for(unsigned b = 0; b < mBuffers.size(); b++)
 		mBuffers.at(b).buffer->Release();
 
@@ -282,22 +273,21 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
-
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
 		unsigned lastIndex;
 
-		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
-		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
-		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
+		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
+		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 
 		// Constant values procedures
 
-		vec3f_cptr gRect1_position = gRect1_ptr->getPos();
+		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
 		ID3D11Buffer* constBuff_vec3f;
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
 											&constBuff_vec3f,
-											gRect1_position );
+											geoTarget_position );
 
 		//m_bufferData.constBuffs_vec3f.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
 		
@@ -311,13 +301,13 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		ID3D11Buffer* indexBuff;
 
 		mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
-											(DWORD*)gRect1_iData, gRect1_ptr->mRenderObj->getICount() );
+											(DWORD*)geoTarget_iData, geoTarget_ptr->mRenderObj->getICount() );
 
-		//m_bufferData.indexBuffs_ui.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
+		//m_bufferData.indexBuffs_ui.push_back({ g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount() });
 
 		// Replacement vector
-		// mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount() });
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, gRect1_ptr->mRenderObj->getICount()));
+		// mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount() });
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount()));
 
 		if(!mSceneReady) return; // Error
 
@@ -325,10 +315,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		ID3D11Buffer* vertexBuff;
 
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												gRect1_vData, gRect1_ptr->mRenderObj->getVCount());
+												geoTarget_vData, geoTarget_ptr->mRenderObj->getVCount());
 
-		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount() });
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, gRect1_ptr->mRenderObj->getVCount()));
+		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount() });
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount()));
 
 		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
 
@@ -353,6 +343,36 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
     mSceneReady = true;
     return;
+}
+
+void Topl_Renderer_Drx11::update(const Topl_SceneGraph* sceneGraph){
+	Buffer_Drx11* targetBuff = nullptr;
+
+	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
+		unsigned lastIndex;
+
+		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+
+		// Interested in the constant pos buffer, we have to find it
+		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_vec3f){
+				targetBuff = &(*currentBuff);
+				break;
+			}
+
+		if(targetBuff == nullptr){
+			OutputDebugStringA("Position const buffer could not be located! ");
+			return;
+		}
+
+		// mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &targetBuff->buffer, geoTarget_position );
+
+		if(!mSceneReady) return;
+	}
+
+    mSceneReady = true;
+	return;
 }
 
 void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?

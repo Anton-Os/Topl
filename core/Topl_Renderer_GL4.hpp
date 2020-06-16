@@ -91,6 +91,7 @@ public:
 private:
     void init(NATIVE_WINDOW hwnd) override;
     void createPipeline(void) override; // Marked for removal
+	void update(const Topl_SceneGraph* sceneGraph) override;
 	void render(void) override;
 
     Topl_Pipeline_GL4 m_pipeline;

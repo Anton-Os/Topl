@@ -1,5 +1,5 @@
 #include "Geometry.hpp"
-#include "Physics.hpp"
+// #include "Timer.hpp"
 
 #include "Topl_SceneGraph.hpp"
 
@@ -20,9 +20,9 @@ public:
         mGeoNode2 = new Topl_GeoNode((Geo_RenderObj*)mBox2);
         mGeoNode2->updatePos(Eigen::Vector3f(0.6f, -0.55f, 0.0f));
 
-		// mSphere1 = new Geo_Sphere2D(1.0f, 20);
-        // mGeoNode3 = new Topl_GeoNode((Geo_RenderObj*)mSphere1);
-        // mGeoNode3->updatePos(Eigen::Vector3f(-0.2f, -0.4f, 0.0f));
+		mSphere1 = new Geo_Sphere2D(0.2f, 20);
+        mGeoNode3 = new Topl_GeoNode((Geo_RenderObj*)mSphere1);
+        mGeoNode3->updatePos(Eigen::Vector3f(-0.2f, -0.4f, 0.0f));
 
         fillSceneGraph(sceneGraph);
     }
@@ -31,10 +31,10 @@ public:
         delete mGeoNode1;
         delete mBox2;
         delete mGeoNode2;
-        // delete mSphere1;
-        // delete mGeoNode3;
+        delete mSphere1;
+        delete mGeoNode3;
     }
-    void updateSceneGraph(Topl_SceneGraph* Topl_SceneGraph, Timer_DiscreteEvent timerEvent); // Should probably make private
+    // void updateSceneGraph(Topl_SceneGraph* Topl_SceneGraph, Timer_DiscreteEvent timerEvent); // Should probably make private
 private:
     void fillSceneGraph(Topl_SceneGraph* sceneGraph);
     
@@ -44,7 +44,7 @@ private:
     Topl_GeoNode* mGeoNode1;
     Topl_GeoNode* mGeoNode2;
     Topl_GeoNode* mGeoNode3;
-    Physics_MoveAbs mUpMovement = Physics_MoveAbs(&updatePosAbs);
+    // Physics_MoveAbs mUpMovement = Physics_MoveAbs(&updatePosAbs);
 };
 
 void createQuadTree(Topl_SceneGraph* sceneGraph, unsigned divs);

@@ -120,18 +120,18 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
-		tpl_gEntity_cptr gRect1_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
-		vec3f_cptr gRect1_vData = gRect1_ptr->mRenderObj->getVData();
-		ui_cptr gRect1_iData = gRect1_ptr->mRenderObj->getIData();
+		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
+		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
+		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getICount()));
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getICount() * sizeof(unsigned), gRect1_iData, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getVCount()));
-		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), gRect1_ptr->mRenderObj->getVCount() });
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getVCount()));
+		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getVCount() });
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, gRect1_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), gRect1_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), geoTarget_vData, GL_STATIC_DRAW);
 
 		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable(), 3, GL_FLOAT));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
@@ -153,6 +153,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 	mSceneReady = true;
 
     return; // To be continued
+}
+
+void Topl_Renderer_GL4::update(const Topl_SceneGraph* sceneGraph){
+	// Some buffers need clearing and updating
+	return;
 }
 
 void Topl_Renderer_GL4::createPipeline(void){

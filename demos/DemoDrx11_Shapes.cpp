@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sGraph1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
+		renderer.updateScene(&sGraph1);
 		// Process input and other things, on successful rendering
 	}
 
