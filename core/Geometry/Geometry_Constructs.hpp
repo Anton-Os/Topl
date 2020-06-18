@@ -1,14 +1,127 @@
+#include <initializer_list>
+#include <utility>
+#include <cstdlib> // May be redundant
+#include <vector> // May be redundant
+#include <string>
+
 #include "Geometry.hpp"
-// #include "Timer.hpp"
+#include "Timer.hpp"
 
 #include "Topl_SceneGraph.hpp"
 
-/* This header defines geometry creation mechanisms */
+// Geometry wrapper class that can manage its states
+
+typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
+
+class Geo_Construct {
+public:
+	// TODO: construct using initializer list rather than node count
+	// TODO: initializer list can be of type Geo_RenderObj
+	Geo_Construct(const std::string& prefix, Topl_SceneGraph* sGraph, unsigned nodeCount) {
+		mNodeData = (Topl_GeoNode**)malloc(nodeCount * sizeof(Topl_GeoNode*));
+		mNodeCount = nodeCount;
+	}
+	~Geo_Construct() { free(mNodeData); }
+
+	virtual void updateSceneGraph(Topl_SceneGraph* sGraph) = 0;
+protected:
+	virtual void fillSceneGraph(Topl_SceneGraph* sGraph) = 0;
+
+	std::vector<geoName_pair> mNamedNodes;
+	unsigned mNodeCount = 0;
+	Topl_GeoNode** mNodeData;
+
+}; // Needs work, could use more abstraction
+
+class Geo_CircleUp : public Geo_Construct {
+public:
+	Geo_CircleUp(const std::string& prefix, Topl_SceneGraph* sGraph) : Geo_Construct(prefix, sGraph, 3) {
+		// TODO: Move this all to the parent class possibly
+		// for (unsigned g = 0; g < mNodeCount; g++)
+		*(mNodeData + 0) = new Topl_GeoNode((Geo_RenderObj*)&sphere1);
+		*(mNodeData + 1) = new Topl_GeoNode((Geo_RenderObj*)&sphere2);
+		*(mNodeData + 2) = new Topl_GeoNode((Geo_RenderObj*)&sphere3);
+		
+		fillSceneGraph(sGraph);
+	}
+	~Geo_CircleUp() {
+		for (unsigned g = 0; g < mNodeCount; g++)
+			delete *(mNodeData + g);
+	}
+	void updateSceneGraph(Topl_SceneGraph* sGraph) override;
+private:
+	void fillSceneGraph(Topl_SceneGraph* sGraph) override;
+
+	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
+	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
+	Geo_Sphere2D sphere3 = Geo_Sphere2D(0.333f, 42);
+};
+
+/* class Geo_Construct {
+public:
+    // TODO: construct using initializer list rather than node count
+    Geo_Construct(const std::string& prefix, Topl_SceneGraph* sGraph, unsigned nodeCount){
+        mNodeData = (Topl_GeoNode**)malloc(nodeCount * sizeof(Topl_GeoNode*));
+        // for(mNodeCount = 0; mNodeCount < nodeCount; mNodeCount++)
+        mNodeCount = nodeCount;
+    }
+    ~Geo_Construct(){ free(mNodeData); }
+
+    virtual void updateSceneGraph(Topl_SceneGraph* sGraph) = 0;
+protected:
+    virtual void fillSceneGraph(Topl_SceneGraph* sGraph) = 0;
+
+    std::vector<geoName_pair> mNamedNodes;
+    unsigned mNodeCount = 0;
+    Topl_GeoNode** mNodeData;
+	// std::vector<Topl_GeoNode> mNodes; // Problem with constructing the elements
+
+}; // Needs work, could use more abstraction
+
+class Geo_CircleUp : public Geo_Construct {
+public:
+	Geo_CircleUp(const std::string& prefix, Topl_SceneGraph* sGraph) : Geo_Construct(prefix, sGraph, 3) {
+        // TODO: Move this all to the parent class possibly
+        // Allocate data
+        for(unsigned g = 0; g < mNodeCount; g++)
+            *(mNodeData + g) = (Topl_GeoNode*)malloc(sizeof(Topl_GeoNode));
+
+		fillSceneGraph(sGraph);
+	}
+    ~Geo_CircleUp(){
+        for(unsigned g = 0; g < mNodeCount; g++)
+            free(*(mNodeData + g));
+    }
+	void updateSceneGraph(Topl_SceneGraph* sGraph) override;
+private:
+	void fillSceneGraph(Topl_SceneGraph* sGraph) override;
+
+	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
+	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
+	Geo_Sphere2D sphere3 = Geo_Sphere2D(0.333f, 42);
+}; */
+
+/* class Geo_Construct {
+public:
+	Geo_Construct(const std::string& prefix, std::initializer_list<geoName_pair> nodes){
+        // mNodes.push_back(Topl_GeoNode((Geo_RenderObj*)&sphere1));
+		// mNodes.push_back(Topl_GeoNode((Geo_RenderObj*)&sphere2));
+
+		// mNamedNodes.push_back(std::make_pair(std::string("sphere1"), Topl_GeoNode((Geo_RenderObj*)&sphere1)));
+		// mNamedNodes.push_back(std::make_pair(std::string("sphere2"), Topl_GeoNode((Geo_RenderObj*)&sphere2)));
+		// mNamedNodes.push_back(std::make_pair(std::string("sphere3"), Topl_GeoNode((Geo_RenderObj*)&sphere3)));
+    }
+	void fillSceneGraph(Topl_SceneGraph* sGraph); // feeds existing nodes to scene graph
+	// void fillSceneGraph(Topl_SceneGraph* sGraph, std::initializer_list<std::pair<std::string, Topl_GeoNode*>> nodes); // feeds new nodes to scene graph
+    void getUpdates(Topl_SceneGraph* sGraph);
+private:
+	static std::vector<std::string> mReservedPrefixes;
+    unsigned mPrefixIndex;
+	std::vector<geoName_pair> mNodes;
+}; */
+
 
 Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos);
-
-
-// Implement a Geo_Constructs base class that has a name prefix generator
 
 class Geo_RandShapes {
 public:

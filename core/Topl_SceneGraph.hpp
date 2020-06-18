@@ -69,7 +69,8 @@ public:
     Topl_SceneGraph(){}
     ~Topl_SceneGraph(){}
 
-    void addGeometry(const std::string& name, tpl_gEntity_cptr geoNode);
+    void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
+    void addForce(const std::string& name, const Eigen::Vector3f& vec);
     // void updateGeoPos(const Eigen::Vector3f* pos);
 
     unsigned getGeoCount() const { return mIdToGeo_map.size(); }
@@ -77,7 +78,7 @@ public:
     tpl_gEntity_cptr getGeoNode(const std::string& name) const;
 private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
-    std::map<unsigned, tpl_gEntity_cptr> mIdToGeo_map;
+    std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
     std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map;
 };
 

@@ -30,16 +30,22 @@ tpl_gEntity_cptr Topl_SceneGraph::getGeoNode(const std::string& name) const {
     return mIdToGeo_map.at(gIndex);
 }
 
-void Topl_SceneGraph::addGeometry(const std::string& name, tpl_gEntity_cptr GeoNode){
+void Topl_SceneGraph::addGeometry(const std::string& name, Topl_GeoNode* geoNode){
     if(mNameToId_map.find(name) != mNameToId_map.end()){
         puts("Overriding geometry object:");
         puts(name.c_str());
     }
 
-    mNameToId_map.insert({ name, ((Topl_Node*)GeoNode)->getId() });
-    mIdToGeo_map.insert({ ((Topl_Node*)GeoNode)->getId(), GeoNode  });
+    mNameToId_map.insert({ name, ((Topl_Node*)geoNode)->getId() });
+    mIdToGeo_map.insert({ ((Topl_Node*)geoNode)->getId(), geoNode });
 }
 
-/* void Topl_SceneGraph::updateGeoPos(const Eigen::Vector3f* pos){
-    mRelWorldPos += pos;
-} */
+void Topl_SceneGraph::addForce(const std::string& name, const Eigen::Vector3f& vec){
+    if(mNameToId_map.find(name) == mNameToId_map.end()){
+        puts("Could not find geometry object:");
+        puts(name.c_str());
+        return;
+    }
+
+    (mIdToGeo_map.at(mNameToId_map.at(name)))->updatePos(vec);
+}

@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Topl_SceneGraph sGraph1;
-	Geo_RandShapes randShapes(&sGraph1);
+	// Geo_RandShapes randShapes(&sGraph1);
+	Geo_CircleUp circleUp("prefix", &sGraph1);
 
 	renderer.buildScene(&sGraph1);
 

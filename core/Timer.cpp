@@ -10,12 +10,12 @@ void Timer_Ticker::reset(){
     mStartSec = steady_clock::now();
 }
 
-double Timer_Ticker::getRelMillsecs(){
+double Timer_Ticker::getRelMillsecs() {
     updateTimer();
     return mRelTimeSpan.count();
 }
 
-double Timer_Ticker::getAbsMillsecs(){
+double Timer_Ticker::getAbsMillsecs() {
     updateTimer();
     return mAbsTimeSpan.count();
 }

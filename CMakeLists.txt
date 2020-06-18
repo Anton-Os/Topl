@@ -98,6 +98,7 @@ add_executable(DemoDrx11_Shapes
     core/FileIO.cpp
     core/Geometry.cpp
     core/Geometry/RandShapes.cpp
+    core/Geometry/CircleUp.cpp
     core/Topl_SceneGraph.cpp
     core/Topl_Renderer_Drx11.cpp
 
