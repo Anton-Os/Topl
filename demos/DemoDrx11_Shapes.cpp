@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sGraph1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
+		circleUp.updateSceneGraph(&sGraph1);
 		renderer.updateScene(&sGraph1);
 		// Process input and other things, on successful rendering
 	}

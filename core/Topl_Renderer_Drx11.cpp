@@ -288,11 +288,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
 											&constBuff_vec3f,
 											geoTarget_position );
-
-		//m_bufferData.constBuffs_vec3f.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
-		
-		// Replacement vector
-		// mBuffers.push_back({ g + 1, BUFF_Const_vec3f, constBuff_vec3f, 1 });
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_vec3f, constBuff_vec3f));
 
 		if(!mSceneReady) return; // Error
@@ -303,10 +298,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
 											(DWORD*)geoTarget_iData, geoTarget_ptr->mRenderObj->getICount() );
 
-		//m_bufferData.indexBuffs_ui.push_back({ g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount() });
-
-		// Replacement vector
-		// mBuffers.push_back({ g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount() });
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount()));
 
 		if(!mSceneReady) return; // Error
@@ -317,7 +308,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												geoTarget_vData, geoTarget_ptr->mRenderObj->getVCount());
 
-		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount() });
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount()));
 
 		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
@@ -366,7 +356,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneGraph* sceneGraph){
 			return;
 		}
 
-		// mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &targetBuff->buffer, geoTarget_position );
+		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &targetBuff->buffer, geoTarget_position );
 
 		if(!mSceneReady) return;
 	}
