@@ -15,17 +15,23 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
-	// TODO: construct using initializer list rather than node count
-	// TODO: initializer list can be of type Geo_RenderObj
-	Geo_Construct(const std::string& prefix, Topl_SceneGraph* sGraph, unsigned nodeCount) {
-		mNodeData = (Topl_GeoNode**)malloc(nodeCount * sizeof(Topl_GeoNode*));
-		mNodeCount = nodeCount;
+    Geo_Construct(const std::string& prefix, Topl_SceneGraph* sGraph, std::initializer_list<Geo_RenderObj*> renderObjs) {
+		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
+        for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
+            *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
+            mNodeCount++;
+        }
+        // fillSceneGraph(sGraph);
 	}
-	~Geo_Construct() { free(mNodeData); }
-
+	~Geo_Construct() { 
+        for (unsigned g = 0; g < mNodeCount; g++)
+			delete *(mNodeData + g);
+        free(mNodeData);
+    }
 	virtual void updateSceneGraph(Topl_SceneGraph* sGraph) = 0;
 protected:
 	virtual void fillSceneGraph(Topl_SceneGraph* sGraph) = 0;
+    std::string genUniqueName();
 
 	std::vector<geoName_pair> mNamedNodes;
 	unsigned mNodeCount = 0;
@@ -35,20 +41,11 @@ protected:
 
 class Geo_CircleUp : public Geo_Construct {
 public:
-	Geo_CircleUp(const std::string& prefix, Topl_SceneGraph* sGraph) : Geo_Construct(prefix, sGraph, 3) {
-		// TODO: Move this all to the parent class possibly
-		// for (unsigned g = 0; g < mNodeCount; g++)
-		*(mNodeData + 0) = new Topl_GeoNode((Geo_RenderObj*)&sphere1);
-		*(mNodeData + 1) = new Topl_GeoNode((Geo_RenderObj*)&sphere2);
-		*(mNodeData + 2) = new Topl_GeoNode((Geo_RenderObj*)&sphere3);
-		
-		fillSceneGraph(sGraph);
-	}
-	~Geo_CircleUp() {
-		for (unsigned g = 0; g < mNodeCount; g++)
-			delete *(mNodeData + g);
-	}
-	void updateSceneGraph(Topl_SceneGraph* sGraph) override;
+	Geo_CircleUp(const std::string& prefix, Topl_SceneGraph* sGraph) : 
+    Geo_Construct(prefix, sGraph, { (Geo_RenderObj*)&sphere1, (Geo_RenderObj*)&sphere2, (Geo_RenderObj*)&sphere3 }) 
+		{ fillSceneGraph(sGraph); }
+	
+    void updateSceneGraph(Topl_SceneGraph* sGraph) override;
 private:
 	void fillSceneGraph(Topl_SceneGraph* sGraph) override;
 

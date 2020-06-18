@@ -72,7 +72,12 @@ protected:
     enum DRAW_Type mDrawType = DRAW_Triangles;
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void createPipeline(void) = 0; // Mark for deletion!
     virtual void update(const Topl_SceneGraph* sceneGraph) = 0;
 	virtual void render(void) = 0;
+
+#ifdef RASTERON_H
+    virtual Rasteron_Image* getFrame() = 0;
+    // May need a renderer specific texture type here
+    virtual void genTexture(const Rasteron_Image*) genTexture() = 0;
+#endif
 };

@@ -153,51 +153,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     return;
 }
 
-void Topl_Renderer_Drx11::createPipeline(void){
-	ID3DBlob* errorBuff;
-	HRESULT hr;
-
-	if (FAILED(
-		D3DCompileFromFile(L"C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Vertex_MostBasic.hlsl", 
-		nullptr, nullptr, "main", "vs_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.vsBuff, &errorBuff)
-	)) {
-		mPipelineReady = false;
-		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		return;
-	}
-
-	if (FAILED(
-		D3DCompileFromFile(L"C:\\AntonDocs\\Codex\\Ao-Project\\Topl-Skeleton\\MSVC_BUILD_2\\Debug\\Pixel_MostBasic.hlsl", 
-			nullptr, nullptr, "main", "ps_5_0",
-			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
-	)) {
-		mPipelineReady = false;
-		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		return;
-	} 
-
-	hr = m_device->CreateVertexShader( m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
-		NULL, &m_pipeline.vertexShader);
-    if(FAILED(hr)){
-        mPipelineReady = false;
-        return;
-    }
-
-	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
-		NULL, &m_pipeline.pixelShader);
-	if (FAILED(hr)){
-        mPipelineReady = false;
-        return;
-    }
-
-    m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
-    m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
-
-    mPipelineReady = true;
-    // Think that is all for now...
-}
-
 void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
 	ID3DBlob* errorBuff;
 	HRESULT hr;
