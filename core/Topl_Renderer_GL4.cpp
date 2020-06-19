@@ -129,7 +129,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getVCount()));
-		// mBuffers.push_back({ g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getVCount() });
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), geoTarget_vData, GL_STATIC_DRAW);
 
@@ -277,7 +276,8 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
 
-	for (unsigned id = 1; id <= mMaxBuffID; id++) { 
+	// for (unsigned id = 1; id <= mMaxBuffID; id++) { 
+	for (unsigned id = 1; id <= 1; id++) {
 		
 		unsigned bOffset = 0; // Populates the bufferPtrs structure
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
@@ -300,6 +300,8 @@ void Topl_Renderer_GL4::render(void){
 			else
 				continue; // If it continues all the way through error has occured
 
+		glPointSize(10.0f); // For testing
+		// glDrawArrays(GL_POINTS, 0, vertexBuff->count);
 		glDrawElements(GL_TRIANGLES, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 	}
 

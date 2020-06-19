@@ -132,6 +132,25 @@ target_include_directories(DemoGL4 PUBLIC
 target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 target_link_libraries(DemoGL4 PRIVATE GLEW)
 
+add_executable(DemoGL4_Shapes
+    core/FileIO.cpp
+    core/Geometry.cpp
+    core/Geometry/RandShapes.cpp
+    core/Geometry/CircleUp.cpp
+    core/Topl_SceneGraph.cpp
+    core/Topl_Renderer_GL4.cpp
+    
+    demos/DemoGL4_Shapes.cpp 
+)
+
+target_include_directories(DemoGL4_Shapes PUBLIC core helper)
+target_include_directories(DemoGL4_Shapes PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+) # REMOVE THIS LATER
+target_link_libraries(DemoGL4_Shapes INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
+target_link_libraries(DemoGL4_Shapes PRIVATE GLEW)
+
 
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)

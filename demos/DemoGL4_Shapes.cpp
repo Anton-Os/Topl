@@ -1,6 +1,7 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+#include "Geometry/Geometry_Constructs.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
 
@@ -53,20 +54,15 @@ int main(int argc, char** argv) {
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
-	Geo_Rect2D gRect1(1.0f, 1.0f);
-	Geo_Rect2D gRect2(2.0f, 0.2f);
-
-	// Topl_GeoNode gEntity1(&gRect1);
-	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
-	Topl_GeoNode gEntity2((Geo_RenderObj*)&gRect2);
-
 	Topl_SceneGraph sGraph1; // REMOVE LATER
-	sGraph1.addGeometry("box", &gEntity1);
-	sGraph1.addGeometry("box2", &gEntity2);
+	// Geo_RandShapes randShapes(&sGraph1);
+	Geo_CircleUp circleUp("prefix", &sGraph1);
 
 	renderer.buildScene(&sGraph1);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
+		circleUp.updateSceneGraph(&sGraph1);
+		renderer.updateScene(&sGraph1);
 		// Process input and other things, on successful rendering
 	}
 
