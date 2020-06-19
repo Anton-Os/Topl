@@ -71,7 +71,9 @@ public:
 
     void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
     void addForce(const std::string& name, const Eigen::Vector3f& vec);
-    // void updateGeoPos(const Eigen::Vector3f* pos);
+#ifdef RASTERON_H
+	void addTexture(const std::string& name, Rasteron_Image* rstnImage);
+#endif
 
     unsigned getGeoCount() const { return mIdToGeo_map.size(); }
     tpl_gEntity_cptr getGeoNode(unsigned index) const;
@@ -80,6 +82,9 @@ private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
     std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
     std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map;
+#ifdef RASTERON_H
+	std::map<unsigned, Rasteron_Image*> mIdToTexture_map;
+#endif
 };
 
 #define TOPL_SCENEGRAPH_H

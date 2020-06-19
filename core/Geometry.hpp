@@ -69,8 +69,6 @@ public:
 private:
     Eigen::Vector3f* genVertices() override;
     unsigned* genIndices() override;
-    //unsigned color;
-    int mDrawOrder = 0;
     Rect mRect;
 };
 
@@ -88,8 +86,6 @@ public:
 private:
     Eigen::Vector3f* genVertices() override;
     unsigned* genIndices() override;
-    //unsigned color;
-    int mDrawOrder = 0;
     Circle mCircle;
 };
 

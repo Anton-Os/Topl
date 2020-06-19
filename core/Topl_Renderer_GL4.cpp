@@ -276,9 +276,15 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
 
-	// for (unsigned id = 1; id <= mMaxBuffID; id++) { 
-	for (unsigned id = 1; id <= 1; id++) {
-		
+	for (unsigned id = 1; id <= mMaxBuffID; id++) {
+		// Vertex array must be bound first! Ha!
+		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
+			if (currentVAO->targetID == id)
+				glBindVertexArray(currentVAO->vao);
+			else
+				continue; // If it continues all the way through error has occured
+
+		// Buffer binding step
 		unsigned bOffset = 0; // Populates the bufferPtrs structure
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 			if (currentBuff->targetID == id)
@@ -291,18 +297,18 @@ void Topl_Renderer_GL4::render(void){
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-
-		for(std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
-			if(currentVAO->targetID == id)
-				glBindVertexArray(currentVAO->vao);
-			else
-				continue; // If it continues all the way through error has occured
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 		glPointSize(10.0f); // For testing
-		// glDrawArrays(GL_POINTS, 0, vertexBuff->count);
+		glLineWidth(3.0f); // For testing
+		// glDrawArrays(GL_LINES, 0, vertexBuff->count);
 		glDrawElements(GL_TRIANGLES, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+
+		// Unbinding
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	free(bufferPtrs);

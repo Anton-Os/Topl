@@ -13,6 +13,12 @@ enum DRAW_Type {
     DRAW_Strip
 };
 
+struct RenderTargetObject {
+	RenderTargetObject() {}
+	RenderTargetObject(unsigned id) { targetID = id; }
+	unsigned targetID;
+};
+
 #define MAX_BUFFER_TYPES 3
 
 enum BUFF_Type {
@@ -20,13 +26,6 @@ enum BUFF_Type {
     BUFF_Index_UI,
     BUFF_Const_vec3f
 };
-
-struct RenderTargetObject {
-	RenderTargetObject() {}
-	RenderTargetObject(unsigned id) { targetID = id; }
-	unsigned targetID;
-};
-
 
 struct Buffer : public RenderTargetObject {
     Buffer() : RenderTargetObject(){}
@@ -38,6 +37,46 @@ struct Buffer : public RenderTargetObject {
     }
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
+};
+
+enum UNIFORM_Type {
+    UNIFORM_F,
+    UNIFORM_2F,
+    UNIFORM_3F,
+    UNIFORM_4F,
+    UNIFORM_UI,
+    UNIFORM_2UI,
+    UNIFORM_3UI,
+    UNIFORM_4UI,
+    UNIFORM_I,
+    UNIFORM_2I,
+    UNIFORM_3I,
+    UNIFORM_4I,
+    // More complex
+    UNIFORM_FV,
+    UNIFORM_2FV,
+    UNIFORM_3FV,
+    UNIFORM_4FV,
+    UNIFORM_2x2M,
+    UNIFORM_3x3M,
+    UNIFORM_4x4M,
+};
+
+struct Uniform : public RenderTargetObject {
+	Uniform() : RenderTargetObject() {}
+	/* Uniform(unsigned id, enum UNIFORM_Type t, void* d, size_t s) : RenderTargetObject(id) {
+		data = malloc(s); // make it the size of target data d
+		*(data) = *(d); // Copying step
+	}
+	Uniform(unsigned id, enum UNIFORM_Type t, unsigned c, void* d, size_t s) : RenderTargetObject(id) {
+		data = malloc(s); // make it the size of target data d
+		*(data) = *(d); // Copying step
+
+	}
+	~Uniform() { if (data != nullptr) free(data); } */
+	enum UNIFORM_Type type;
+	void* data = nullptr;
+	unsigned count = 1;
 };
 
 class Topl_Renderer {
