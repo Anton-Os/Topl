@@ -229,8 +229,6 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
 
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
-		unsigned lastIndex;
-
 		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
@@ -294,8 +292,6 @@ void Topl_Renderer_Drx11::update(const Topl_SceneGraph* sceneGraph){
 	Buffer_Drx11* targetBuff = nullptr;
 
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
-		unsigned lastIndex;
-
 		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 

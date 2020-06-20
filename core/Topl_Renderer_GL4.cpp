@@ -32,7 +32,16 @@ GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
 	return targetVAO;
 }
 
+#define DEFAULT_BLOCK_BINDING 0
+
 namespace _GL4 {
+	struct UniformBlock {
+		UniformBlock(vec3f_cptr v) {
+			offset = *(v);
+		}
+		Eigen::Vector3f offset;
+	};
+
 	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
 		Buffer_GL4* currentBuff = nullptr;
 
@@ -123,6 +132,16 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
+		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+
+		// mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_vec3f, m_bufferAlloc.getAvailable(), 1));
+		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_vec3f, m_bufferAlloc.getAvailable()));
+		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
+		// GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "ShaderBlock");
+		// glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
+		// glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, mBuffers[mBuffers.size() - 1].buffer);
 
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
@@ -140,7 +159,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 							   currentVAO_ptr->size, 
 							   currentVAO_ptr->type, 
 							   currentVAO_ptr->normalized, 
-							   currentVAO_ptr->stride, 
+							   currentVAO_ptr->stride,
 							   NULL
 		);
 
@@ -155,7 +174,30 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
 }
 
 void Topl_Renderer_GL4::update(const Topl_SceneGraph* sceneGraph){
-	// Some buffers need clearing and updating
+	Buffer_GL4* targetBuff = nullptr;
+
+	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
+		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+
+		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
+
+		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_vec3f) {
+				targetBuff = &(*currentBuff);
+				break;
+			}
+
+		if (targetBuff == nullptr) {
+			puts("Position const buffer could not be located! ");
+			return;
+		}
+
+		glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
+	}
+
+	mSceneReady = true;
 	return;
 }
 
@@ -296,6 +338,12 @@ void Topl_Renderer_GL4::render(void){
 
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
+		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_vec3f, bufferPtrs, bOffset);
+
+		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
+			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
+			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, blockBuff->buffer);
+		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
