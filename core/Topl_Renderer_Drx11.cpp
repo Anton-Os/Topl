@@ -226,7 +226,7 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 	mPipelineReady = true;
 }
 
-void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
+void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
 
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
@@ -288,7 +288,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneGraph* sceneGraph) {
     return;
 }
 
-void Topl_Renderer_Drx11::update(const Topl_SceneGraph* sceneGraph){
+void Topl_Renderer_Drx11::update(const Topl_SceneManager* sceneGraph){
 	Buffer_Drx11* targetBuff = nullptr;
 
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {

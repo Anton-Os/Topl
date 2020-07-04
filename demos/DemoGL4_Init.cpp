@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
 	Topl_GeoNode gEntity2((Geo_RenderObj*)&gRect2);
 
-	Topl_SceneGraph sGraph1; // REMOVE LATER
+	Topl_SceneManager sGraph1; // REMOVE LATER
 	sGraph1.addGeometry("box", &gEntity1);
 	sGraph1.addGeometry("box2", &gEntity2);
 

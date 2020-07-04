@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
-void createQuadTree(Topl_SceneGraph* sceneGraph, unsigned divs){
+void createQuadTree(Topl_SceneManager* sceneGraph, unsigned divs){
     // Creation code
     return;
 }

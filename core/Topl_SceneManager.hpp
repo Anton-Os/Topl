@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "Timer.hpp"
+
 class Topl_Node { // Acts as a node
 public:
 	Topl_Node() {
@@ -38,20 +40,44 @@ private:
 class Topl_GeoNode : Topl_Node {
 public:    
     Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
+    /* Topl_GeoNode(const Geo_RenderObj* renderObj, float weight) : Topl_Node() {
+        mRenderObj = renderObj;
+        mWeight = weight; 
+    } */
     
     void updatePos(Eigen::Vector3f vec); // Follow by more spatial update things
 
     vec3f_cptr getPos() const { return &mRelWorldPos; }
+    // float getWeight() const { return mWeight; }
 
     const Geo_RenderObj* mRenderObj;
-private:
+protected:
     enum GeoBehavior {
-        GEO_Fixed = 1,
-        GEO_Dynamic = 2
+        GEO_Fixed = 0, // Should be the default
+        GEO_Dynamic = 1
     } mBehavior;
-
+private:
 	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
-	Eigen::Vector3f mObjOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
+	Eigen::Vector3f mOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
+    // float mWeight = 1.0f;
+};
+
+class Topl_GeoDynamicNode : public Topl_GeoNode {
+public:
+	Topl_GeoDynamicNode(const Geo_RenderObj* renderObj) : Topl_GeoNode(renderObj) { mBehavior = GEO_Dynamic; }
+	Topl_GeoDynamicNode(const Geo_RenderObj* renderObj, float weight) : Topl_GeoNode(renderObj) {
+		// This is a custom physics object, all params must be set
+		mBehavior = GEO_Dynamic;
+		mWeight = weight;
+	}
+
+	float getWeight() const { return mWeight; }
+	vec3f_cptr getVelocity() const { return &mVelocity; }
+	vec3f_cptr getAccel() const { return &mAccel; }
+private:
+	float mWeight = 1.0f;
+	Eigen::Vector3f mVelocity = Eigen::Vector3f(0.0, 0.0, 0.0);
+	Eigen::Vector3f mAccel = Eigen::Vector3f(0.0, 0.0, 0.0);
 };
 
 typedef unsigned geoUpdateFlags_t;
@@ -64,12 +90,15 @@ enum GEO_UpdateFlags {
 
 typedef const Topl_GeoNode* const tpl_gEntity_cptr;
 
-class Topl_SceneGraph {
+class Topl_SceneManager {
 public:
-    Topl_SceneGraph(){}
-    ~Topl_SceneGraph(){}
+    Topl_SceneManager(){
+        mTicker.reset();
+    }
+    ~Topl_SceneManager(){}
 
     void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
+    void addGeometry(const std::string& name, Topl_GeoNode* geoNode, const Eigen::Vector3f& vec);
     void addForce(const std::string& name, const Eigen::Vector3f& vec);
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, Rasteron_Image* rstnImage);
@@ -82,6 +111,8 @@ private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
     std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
     std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map;
+
+    Timer_Ticker mTicker;
 #ifdef RASTERON_H
 	std::map<unsigned, Rasteron_Image*> mIdToTexture_map;
 #endif

@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gSphere1);
 
-	Topl_SceneGraph sGraph1; // REMOVE LATER
+	Topl_SceneManager sGraph1; // REMOVE LATER
 	sGraph1.addGeometry("sphere", &gEntity1);
 	renderer.buildScene(&sGraph1);
 

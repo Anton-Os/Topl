@@ -81,7 +81,7 @@ target_include_directories(DemoPresser PUBLIC core helper)
 add_executable(DemoDrx11
     core/FileIO.cpp
     core/Geometry.cpp
-    core/Topl_SceneGraph.cpp
+    core/Topl_SceneManager.cpp
     core/Topl_Renderer_Drx11.cpp
 
     demos/DemoDrx11_Init.cpp
@@ -99,7 +99,7 @@ add_executable(DemoDrx11_Shapes
     core/Geometry.cpp
     core/Geometry/RandShapes.cpp
     core/Geometry/CircleUp.cpp
-    core/Topl_SceneGraph.cpp
+    core/Topl_SceneManager.cpp
     core/Topl_Renderer_Drx11.cpp
 
     demos/DemoDrx11_Shapes.cpp
@@ -118,7 +118,7 @@ target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX T
 add_executable(DemoGL4
     core/FileIO.cpp
     core/Geometry.cpp
-    core/Topl_SceneGraph.cpp
+    core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
     
     demos/DemoGL4_Init.cpp 
@@ -137,7 +137,7 @@ add_executable(DemoGL4_Shapes
     core/Geometry.cpp
     core/Geometry/RandShapes.cpp
     core/Geometry/CircleUp.cpp
-    core/Topl_SceneGraph.cpp
+    core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
     
     demos/DemoGL4_Shapes.cpp 

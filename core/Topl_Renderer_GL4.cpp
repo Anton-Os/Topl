@@ -123,7 +123,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	// Topl_Renderer_GL4::createPipeline(); // Remove from here
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
+void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sceneGraph){
 
 	// glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferAlloc.slots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
@@ -173,7 +173,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneGraph* sceneGraph){
     return; // To be continued
 }
 
-void Topl_Renderer_GL4::update(const Topl_SceneGraph* sceneGraph){
+void Topl_Renderer_GL4::update(const Topl_SceneManager* sceneGraph){
 	Buffer_GL4* targetBuff = nullptr;
 
 	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {

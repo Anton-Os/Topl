@@ -7,7 +7,7 @@
 #include "Geometry.hpp"
 #include "Timer.hpp"
 
-#include "Topl_SceneGraph.hpp"
+#include "Topl_SceneManager.hpp"
 
 // Geometry wrapper class that can manage its states
 
@@ -15,22 +15,22 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
-    Geo_Construct(const std::string& prefix, Topl_SceneGraph* sGraph, std::initializer_list<Geo_RenderObj*> renderObjs) {
+    Geo_Construct(const std::string& prefix, Topl_SceneManager* sGraph, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
             *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
             mNodeCount++;
         }
-        // fillSceneGraph(sGraph);
+        // fillSceneManager(sGraph);
 	}
 	~Geo_Construct() { 
         for (unsigned g = 0; g < mNodeCount; g++)
 			delete *(mNodeData + g);
         free(mNodeData);
     }
-	virtual void updateSceneGraph(Topl_SceneGraph* sGraph) = 0;
+	virtual void updateSceneManager(Topl_SceneManager* sGraph) = 0;
 protected:
-	virtual void fillSceneGraph(Topl_SceneGraph* sGraph) = 0;
+	virtual void fillSceneManager(Topl_SceneManager* sGraph) = 0;
     std::string genUniqueName();
 
 	std::vector<geoName_pair> mNamedNodes;
@@ -41,13 +41,13 @@ protected:
 
 class Geo_CircleUp : public Geo_Construct {
 public:
-	Geo_CircleUp(const std::string& prefix, Topl_SceneGraph* sGraph) : 
+	Geo_CircleUp(const std::string& prefix, Topl_SceneManager* sGraph) : 
     Geo_Construct(prefix, sGraph, { (Geo_RenderObj*)&sphere1, (Geo_RenderObj*)&sphere2, (Geo_RenderObj*)&sphere3 }) 
-		{ fillSceneGraph(sGraph); }
+		{ fillSceneManager(sGraph); }
 	
-    void updateSceneGraph(Topl_SceneGraph* sGraph) override;
+    void updateSceneManager(Topl_SceneManager* sGraph) override;
 private:
-	void fillSceneGraph(Topl_SceneGraph* sGraph) override;
+	void fillSceneManager(Topl_SceneManager* sGraph) override;
 
 	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
 	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
@@ -59,7 +59,7 @@ Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos);
 
 class Geo_RandShapes {
 public:
-    Geo_RandShapes(Topl_SceneGraph* sceneGraph){
+    Geo_RandShapes(Topl_SceneManager* sceneGraph){
         mBox1 = new Geo_Rect2D(0.8f, 0.6f);
         mGeoNode1 = new Topl_GeoNode((Geo_RenderObj*)mBox1);
 
@@ -71,7 +71,7 @@ public:
         mGeoNode3 = new Topl_GeoNode((Geo_RenderObj*)mSphere1);
         mGeoNode3->updatePos(Eigen::Vector3f(-0.2f, -0.4f, 0.0f));
 
-        fillSceneGraph(sceneGraph);
+        fillSceneManager(sceneGraph);
     }
     ~Geo_RandShapes(){
         delete mBox1;
@@ -81,9 +81,9 @@ public:
         delete mSphere1;
         delete mGeoNode3;
     }
-    // void updateSceneGraph(Topl_SceneGraph* Topl_SceneGraph, Timer_DiscreteEvent timerEvent); // Should probably make private
+    // void updateSceneManager(Topl_SceneManager* Topl_SceneManager, Timer_DiscreteEvent timerEvent); // Should probably make private
 private:
-    void fillSceneGraph(Topl_SceneGraph* sceneGraph);
+    void fillSceneManager(Topl_SceneManager* sceneGraph);
     
     Geo_Rect2D* mBox1;
     Geo_Rect2D* mBox2;
@@ -94,4 +94,4 @@ private:
     // Physics_MoveAbs mUpMovement = Physics_MoveAbs(&updatePosAbs);
 };
 
-void createQuadTree(Topl_SceneGraph* sceneGraph, unsigned divs);
+void createQuadTree(Topl_SceneManager* sceneGraph, unsigned divs);

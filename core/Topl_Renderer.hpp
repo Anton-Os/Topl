@@ -3,7 +3,7 @@
 #include "native_os_def.h"
 
 #include "Topl_Shader.hpp"
-#include "Topl_SceneGraph.hpp"
+#include "Topl_SceneManager.hpp"
 
 enum DRAW_Type {
     DRAW_Points,
@@ -85,8 +85,8 @@ public:
 
     virtual void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
     // virtual void genTexture(const Rasteron_Image* rstn_image) // Needs to be renderer specific
-    virtual void buildScene(const Topl_SceneGraph* sceneGraph) = 0;
-    void updateScene(const Topl_SceneGraph* sceneGraph){
+    virtual void buildScene(const Topl_SceneManager* sceneGraph) = 0;
+    void updateScene(const Topl_SceneManager* sceneGraph){
         // if(!mPipelineReady) puts("Pipeline not ready");
         if(!mSceneReady){
             puts("Scene not built for update call!");
@@ -111,7 +111,7 @@ protected:
     enum DRAW_Type mDrawType = DRAW_Triangles;
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void update(const Topl_SceneGraph* sceneGraph) = 0;
+    virtual void update(const Topl_SceneManager* sceneGraph) = 0;
 	virtual void render(void) = 0;
 
 #ifdef RASTERON_H

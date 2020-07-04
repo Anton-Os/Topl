@@ -54,14 +54,14 @@ int main(int argc, char** argv) {
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
-	Topl_SceneGraph sGraph1; // REMOVE LATER
+	Topl_SceneManager sGraph1; // REMOVE LATER
 	// Geo_RandShapes randShapes(&sGraph1);
 	Geo_CircleUp circleUp("prefix", &sGraph1);
 
 	renderer.buildScene(&sGraph1);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		circleUp.updateSceneGraph(&sGraph1);
+		circleUp.updateSceneManager(&sGraph1);
 		renderer.updateScene(&sGraph1);
 		// Process input and other things, on successful rendering
 	}
