@@ -120,12 +120,10 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glDepthFunc(GL_LESS); // Make these customizable
 	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 
-	// Topl_Renderer_GL4::createPipeline(); // Remove from here
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sceneGraph){
 
-	// glGenBuffers(GL4_BUFFER_CAPACITY, &m_bufferAlloc.slots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
@@ -134,14 +132,10 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sceneGraph){
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
-		// mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_vec3f, m_bufferAlloc.getAvailable(), 1));
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_vec3f, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
-		// GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "ShaderBlock");
-		// glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
-		// glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, mBuffers[mBuffers.size() - 1].buffer);
 
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
