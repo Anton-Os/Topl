@@ -101,7 +101,7 @@ public:
     void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
     void addGeometry(const std::string& name, Topl_GeoNode* geoNode, const Eigen::Vector3f& vec);
     void addForce(const std::string& name, const Eigen::Vector3f& vec);
-    void addConnector(const Phys_Connector* connector, const std::string& name1, const std::striing& name2);
+    void addConnector(const Phys_Connector* connector, const std::string& name1, const std::string& name2);
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, Rasteron_Image* rstnImage);
 #endif

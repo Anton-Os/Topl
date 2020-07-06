@@ -1,8 +1,9 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+#include "Geometry_Constructs.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Renderer_Drx11.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -43,30 +44,25 @@ int main(int argc, char** argv) {
 	MSG wndMessage;
 	BOOL bRet;
 
+    Topl_Renderer_Drx11 renderer(wndWindow);
 
-    Topl_Renderer_GL4 renderer(wndWindow);
-
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl"; // Make unix fix
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
 	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl"; // Make unix fix
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
-	Geo_Rect2D gRect1(1.0f, 1.0f);
-	Geo_Rect2D gRect2(2.0f, 0.2f);
-
-	// Topl_GeoNode gEntity1(&gRect1);
-	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
-	Topl_GeoNode gEntity2((Geo_RenderObj*)&gRect2);
-
-	Topl_SceneManager sMan1; // REMOVE LATER
-	sMan1.addGeometry("box", &gEntity1);
-	sMan1.addGeometry("box2", &gEntity2);
+	Topl_SceneManager sMan1;
+	// Geo_RandShapes randShapes(&sMan1);
+	// Geo_CircleUp circleUp("prefix", &sMan1);
+	Geo_Character1 avatar("avatar", &sMan1);
 
 	renderer.buildScene(&sMan1);
 
-	while ( renderer.renderScene(DRAW_Triangles)) {
+	while (renderer.renderScene(DRAW_Triangles)) {
+		// circleUp.updateSceneManager(&sMan1);
+		renderer.updateScene(&sMan1);
 		// Process input and other things, on successful rendering
 	}
 

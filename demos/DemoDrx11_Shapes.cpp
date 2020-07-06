@@ -1,7 +1,7 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
-#include "Geometry/Geometry_Constructs.hpp"
+#include "Geometry_Constructs.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
@@ -53,15 +53,15 @@ int main(int argc, char** argv) {
 
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
-	Topl_SceneManager sGraph1;
-	// Geo_RandShapes randShapes(&sGraph1);
-	Geo_CircleUp circleUp("prefix", &sGraph1);
+	Topl_SceneManager sMan1;
+	// Geo_RandShapes randShapes(&sMan1);
+	Geo_CircleUp circleUp("prefix", &sMan1);
 
-	renderer.buildScene(&sGraph1);
+	renderer.buildScene(&sMan1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		circleUp.updateSceneManager(&sGraph1);
-		renderer.updateScene(&sGraph1);
+		circleUp.updateSceneManager(&sMan1);
+		renderer.updateScene(&sMan1);
 		// Process input and other things, on successful rendering
 	}
 

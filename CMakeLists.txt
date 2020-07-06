@@ -69,14 +69,14 @@ add_executable(DemoTickTick
     core/Timer.cpp
     demos/DemoTickTick.cpp
 )
-target_include_directories(DemoTickTick PUBLIC core helper)
+target_include_directories(DemoTickTick PUBLIC core helper geo)
 
 add_executable(DemoPresser
     core/Timer.cpp
     core/Input.cpp
     demos/DemoPresser.cpp
 )
-target_include_directories(DemoPresser PUBLIC core helper)
+target_include_directories(DemoPresser PUBLIC core helper geo)
 
 add_executable(DemoDrx11
     core/FileIO.cpp
@@ -87,7 +87,7 @@ add_executable(DemoDrx11
 
     demos/DemoDrx11_Init.cpp
 )
-target_include_directories(DemoDrx11 PUBLIC core helper)
+target_include_directories(DemoDrx11 PUBLIC core helper geo)
 
 target_include_directories(DemoDrx11 PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
@@ -99,20 +99,38 @@ add_executable(DemoDrx11_Shapes
     core/FileIO.cpp
     core/Geometry.cpp
     core/Timer.cpp
-    core/Geometry/RandShapes.cpp
-    core/Geometry/CircleUp.cpp
+    geo/CircleUp.cpp
     core/Topl_SceneManager.cpp
     core/Topl_Renderer_Drx11.cpp
 
     demos/DemoDrx11_Shapes.cpp
 )
-target_include_directories(DemoDrx11_Shapes PUBLIC core helper)
+target_include_directories(DemoDrx11_Shapes PUBLIC core helper geo)
 
 target_include_directories(DemoDrx11_Shapes PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
+
+add_executable(DemoDrx11_MovingSprite
+    core/FileIO.cpp
+    core/Geometry.cpp
+    core/Timer.cpp
+    geo/Character1.cpp
+    core/Topl_SceneManager.cpp
+    core/Topl_Renderer_Drx11.cpp
+
+    demos/DemoDrx11_MovingSprite.cpp
+)
+target_include_directories(DemoDrx11_MovingSprite PUBLIC core helper geo)
+
+target_include_directories(DemoDrx11_MovingSprite PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+) # REMOVE THIS LATER
+target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
+target_link_libraries(DemoDrx11_MovingSprite RasteronLib)
  
 
 
@@ -127,7 +145,7 @@ add_executable(DemoGL4
     demos/DemoGL4_Init.cpp 
 )
 
-target_include_directories(DemoGL4 PUBLIC core helper)
+target_include_directories(DemoGL4 PUBLIC core helper geo)
 target_include_directories(DemoGL4 PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -139,15 +157,14 @@ add_executable(DemoGL4_Shapes
     core/FileIO.cpp
     core/Geometry.cpp
     core/Timer.cpp
-    core/Geometry/RandShapes.cpp
-    core/Geometry/CircleUp.cpp
+    geo/CircleUp.cpp
     core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
     
     demos/DemoGL4_Shapes.cpp 
 )
 
-target_include_directories(DemoGL4_Shapes PUBLIC core helper)
+target_include_directories(DemoGL4_Shapes PUBLIC core helper geo)
 target_include_directories(DemoGL4_Shapes PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3

@@ -15,15 +15,15 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sGraph, std::initializer_list<Geo_RenderObj*> renderObjs) {
+    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
             *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
             mNodeCount++;
         }
-        // fillSceneManager(sGraph);
+        // fillSceneManager(sMan);
 	}
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sGraph, Topl_GeoNode* rootNode) {
+    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
 	}
 	~Geo_Construct() { 
@@ -31,17 +31,17 @@ public:
 			delete *(mNodeData + g);
         free(mNodeData);
     }
-    void fillSceneManager(Topl_SceneManager* sGraph){
-        fill(sGraph); // Calls virtual function
+    void fillSceneManager(Topl_SceneManager* sMan){
+        fill(); // Calls virtual function
 
         for(std::vector<geoName_pair>::iterator currentGeo = mNamedNodes.begin();
             currentGeo < mNamedNodes.end(); currentGeo++)
-            sGraph->addGeometry(currentGeo->first, currentGeo->second, Eigen::Vector3f(0.0, 0.2, 0.0));
+            sMan->addGeometry(currentGeo->first, currentGeo->second, Eigen::Vector3f(0.0, 0.2, 0.0));
     }
 
-	virtual void updateSceneManager(Topl_SceneManager* sGraph) = 0;
+	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
 protected:
-	virtual void fill(Topl_SceneManager* sGraph) = 0; // Job is to fill the mNamedNodes structure
+	virtual void fill() = 0; // Job is to fill the mNamedNodes structure
     void addGeometry(const std::string& str, Topl_GeoNode* node){
         mNamedNodes.push_back(std::make_pair(str, node)); // Add the prefix relationship
     }
@@ -62,13 +62,13 @@ private:
 
 class Geo_CircleUp : public Geo_Construct {
 public:
-	Geo_CircleUp(const std::string& prefix, Topl_SceneManager* sGraph) : 
-    Geo_Construct(prefix, sGraph, { (Geo_RenderObj*)&sphere1, (Geo_RenderObj*)&sphere2, (Geo_RenderObj*)&sphere3 }) 
-		{ fillSceneManager(sGraph); }
+	Geo_CircleUp(const std::string& prefix, Topl_SceneManager* sMan) : 
+    Geo_Construct(prefix, sMan, { (Geo_RenderObj*)&sphere1, (Geo_RenderObj*)&sphere2, (Geo_RenderObj*)&sphere3 }) 
+		{ fillSceneManager(sMan); }
 	
-    void updateSceneManager(Topl_SceneManager* sGraph) override;
+    void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
-	void fill(Topl_SceneManager* sGraph) override;
+	void fill() override;
 
 	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
 	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
@@ -77,13 +77,13 @@ private:
 
 class Geo_Character1 : public Geo_Construct { // Consists of sprites
 public:
-	Geo_Character1(const std::string& prefix, Topl_SceneManager* sGraph) : 
-    Geo_Construct(prefix, sGraph, {(Geo_RenderObj*)&mHead, (Geo_RenderObj*)&mTorso, (Geo_RenderObj*)&mLeftArm, (Geo_RenderObj*)&mRightArm, (Geo_RenderObj*)&mLeftLeg, (Geo_RenderObj*)&mRightLeg,}) 
-		{ fillSceneManager(sGraph); }
+	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : 
+    Geo_Construct(prefix, sMan, {(Geo_RenderObj*)&mHead, (Geo_RenderObj*)&mTorso, (Geo_RenderObj*)&mLeftArm, (Geo_RenderObj*)&mRightArm, (Geo_RenderObj*)&mLeftLeg, (Geo_RenderObj*)&mRightLeg,}) 
+		{ fillSceneManager(sMan); }
 	
-    void updateSceneManager(Topl_SceneManager* sGraph) override;
+    void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
-	void fill(Topl_SceneManager* sGraph) override;
+	void fill() override;
 
     Geo_Rect2D mTorso = Geo_Rect2D(0.1f, 0.1f); // Should be the parent node!!!
 
@@ -92,7 +92,6 @@ private:
     Geo_Rect2D mRightArm = Geo_Rect2D(0.1f, 0.1f);
     Geo_Rect2D mLeftLeg = Geo_Rect2D(0.1f, 0.1f);
     Geo_Rect2D mRightLeg = Geo_Rect2D(0.1f, 0.1f);
-
 };
 
 

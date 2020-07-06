@@ -57,9 +57,9 @@ int main(int argc, char** argv) {
 
 	Topl_GeoNode gEntity1((Geo_RenderObj*)&gSphere1);
 
-	Topl_SceneManager sGraph1; // REMOVE LATER
-	sGraph1.addGeometry("sphere", &gEntity1);
-	renderer.buildScene(&sGraph1);
+	Topl_SceneManager sMan1; // REMOVE LATER
+	sMan1.addGeometry("sphere", &gEntity1);
+	renderer.buildScene(&sMan1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
 		// Process input and other things, on successful rendering
