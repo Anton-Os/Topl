@@ -26,6 +26,7 @@ struct Circle {
 
 // Typedefs for "safe" types
 typedef const Eigen::Vector3f* const vec3f_cptr;
+typedef const Eigen::Vector2f* const vec2f_cptr;
 typedef const unsigned* const ui_cptr;
 
 class Geo_RenderObj {
@@ -40,18 +41,20 @@ public:
     unsigned getICount() const { return mICount; }
 
     vec3f_cptr getVData() const { return mVData; }
+    vec2f_cptr getTData() const { return mTData; }
     ui_cptr getIData() const { return mIData; }
 protected:
-    // Eigen::Vector3f vec; // Work plz
     virtual Eigen::Vector3f* genVertices() = 0;
+    virtual Eigen::Vector2f* genTexCoords() = 0;
     virtual unsigned* genIndices() = 0;
 
     const unsigned short mPerVertex = 3; // Elements per vertex, should be configurable later
     unsigned mVCount;
     unsigned mICount;
 
-    Eigen::Vector3f* mVData = nullptr;
-	unsigned* mIData = nullptr;
+    Eigen::Vector3f* mVData = nullptr; // Vertex data
+    Eigen::Vector2f* mTData = nullptr; // Texture coordinate data
+	unsigned* mIData = nullptr; // Index data
 };
 
 // Override the virtual functions above
@@ -68,6 +71,7 @@ public:
     }
 private:
     Eigen::Vector3f* genVertices() override;
+	Eigen::Vector2f* genTexCoords() override;
     unsigned* genIndices() override;
     Rect mRect;
 };
@@ -85,6 +89,7 @@ public:
     }
 private:
     Eigen::Vector3f* genVertices() override;
+	Eigen::Vector2f* genTexCoords() override;
     unsigned* genIndices() override;
     Circle mCircle;
 };

@@ -24,6 +24,10 @@ Eigen::Vector3f* Geo_Rect2D::genVertices(){
     return data; // FIX! FIX! FIX!
 }
 
+Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
+	return nullptr;
+}
+
 unsigned* Geo_Rect2D::genIndices(){
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 
@@ -56,6 +60,10 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
 								0.5f);
 
     return data;
+}
+
+Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
+	return nullptr;
 }
 
 unsigned* Geo_Sphere2D::genIndices(){

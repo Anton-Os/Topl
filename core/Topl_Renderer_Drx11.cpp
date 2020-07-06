@@ -22,6 +22,25 @@ namespace _Drx11 {
 		return true;
 	}
 
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec2f_cptr vData, unsigned vCount) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DEFAULT;
+		buffDesc.ByteWidth = sizeof(Eigen::Vector2f) * vCount; // Code could be more reusable
+		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffDesc.CPUAccessFlags = 0;
+		buffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = vData;
+
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
+		if (FAILED(hr)) return false;
+
+		return true;
+	}
+
 	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
@@ -231,6 +250,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
 	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
+		vec2f_cptr geoTarget_tData = geoTarget_ptr->mRenderObj->getTData();
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 
 		// Constant values procedures
@@ -247,13 +267,22 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff;
+		if(geoTarget_iData != nullptr) { // Check if index data exists for render object
+			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
+												(DWORD*)geoTarget_iData, geoTarget_ptr->mRenderObj->getICount() );
 
-		mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
-											(DWORD*)geoTarget_iData, geoTarget_ptr->mRenderObj->getICount() );
+			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount()));
 
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount()));
+			if(!mSceneReady) return; // Error
+		}
 
-		if(!mSceneReady) return; // Error
+		ID3D11Buffer* texcoordBuff;
+		if(geoTarget_tData != nullptr){ // Check if texture data exists for the render object
+			mSceneReady = _Drx11::createVertexBuff(&m_device, &texcoordBuff,
+												geoTarget_vData, geoTarget_ptr->mRenderObj->getVCount());
+
+			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_TexCoord_2F, texcoordBuff, geoTarget_ptr->mRenderObj->getVCount()));
+		}
 
 		// Vertex creation procedures
 		ID3D11Buffer* vertexBuff;
@@ -263,9 +292,9 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
 
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount()));
 
-		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
-
 		if(!mSceneReady) return;
+
+		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
 	}
 
 	// Input assembler inputs to pipeline
@@ -346,6 +375,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, bufferPtrs, bOffset);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
+			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, bufferPtrs, bOffset);
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
@@ -356,7 +386,6 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			UINT strideTest = sizeof(float) * 3;
 			UINT stride = sizeof(Eigen::Vector3f);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);

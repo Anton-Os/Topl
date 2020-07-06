@@ -19,10 +19,11 @@ struct RenderTargetObject {
 	unsigned targetID;
 };
 
-#define MAX_BUFFER_TYPES 3
+#define MAX_BUFFER_TYPES 4
 
 enum BUFF_Type {
     BUFF_Vertex_3F,
+    BUFF_TexCoord_2F,
     BUFF_Index_UI,
     BUFF_Const_vec3f
 };

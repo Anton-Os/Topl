@@ -21,6 +21,10 @@ struct Topl_Pipeline_Drx11 {
 	ID3D11PixelShader* pixelShader;
 	ID3DBlob* vsBuff;
 	ID3DBlob* psBuff;
+
+	// Texturing things
+	ID3D11ShaderResourceView* texture; // Expand this code
+	ID3D11SamplerState* samplerState;
 };
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {

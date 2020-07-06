@@ -85,13 +85,13 @@ public:
 private:
 	void fill(Topl_SceneManager* sGraph) override;
 
-    Geo_Rect2D* mTorso = Geo_Rect2D(0.1f, 0.1f); // Should be the parent node!!!
+    Geo_Rect2D mTorso = Geo_Rect2D(0.1f, 0.1f); // Should be the parent node!!!
 
-	Geo_Rect2D* mHead = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D* mLeftArm = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D* mRightArm = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D* mLeftLeg = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D* mRightLeg = Geo_Rect2D(0.1f, 0.1f);
+	Geo_Rect2D mHead = Geo_Rect2D(0.1f, 0.1f);
+    Geo_Rect2D mLeftArm = Geo_Rect2D(0.1f, 0.1f);
+    Geo_Rect2D mRightArm = Geo_Rect2D(0.1f, 0.1f);
+    Geo_Rect2D mLeftLeg = Geo_Rect2D(0.1f, 0.1f);
+    Geo_Rect2D mRightLeg = Geo_Rect2D(0.1f, 0.1f);
 
 };
 
