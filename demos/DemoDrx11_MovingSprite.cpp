@@ -1,5 +1,6 @@
 #include "native_os_def.h"
 
+#include "Rasteron.h"
 #include "FileIO.hpp"
 #include "Geometry_Constructs.hpp"
 
@@ -54,8 +55,6 @@ int main(int argc, char** argv) {
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Topl_SceneManager sMan1;
-	// Geo_RandShapes randShapes(&sMan1);
-	// Geo_CircleUp circleUp("prefix", &sMan1);
 	Geo_Character1 avatar("avatar", &sMan1);
 
 	renderer.buildScene(&sMan1);

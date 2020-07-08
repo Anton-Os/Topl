@@ -25,7 +25,19 @@ Eigen::Vector3f* Geo_Rect2D::genVertices(){
 }
 
 Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
-	return nullptr;
+	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
+
+	Eigen::Vector2f topRight(1.0f, 0.0f);
+	Eigen::Vector2f topLeft(0.0f, 0.0f);
+	Eigen::Vector2f botRight(1.0f, 1.0f);
+	Eigen::Vector2f botLeft(0.0f, 1.0f);
+
+	*(data + 0) = botLeft;
+	*(data + 1) = botRight;
+	*(data + 2) = topLeft;
+	*(data + 3) = topRight;
+
+	return data;
 }
 
 unsigned* Geo_Rect2D::genIndices(){

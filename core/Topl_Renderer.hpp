@@ -106,6 +106,13 @@ public:
     }
 	
 	NATIVE_PLATFORM_ELEM m_native; // Native Platform Element required to create a renderer
+
+#ifdef RASTERON_H
+    virtual Rasteron_Image* getFrame() = 0;
+    // May need a renderer specific texture type here
+    virtual void genTexture(const Rasteron_Image* image) = 0;
+#endif
+
 protected:
     bool mPipelineReady = false;
     bool mSceneReady = false;
@@ -114,10 +121,4 @@ private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void update(const Topl_SceneManager* sceneGraph) = 0;
 	virtual void render(void) = 0;
-
-#ifdef RASTERON_H
-    virtual Rasteron_Image* getFrame() = 0;
-    // May need a renderer specific texture type here
-    virtual void genTexture(const Rasteron_Image*) genTexture() = 0;
-#endif
 };

@@ -34,6 +34,7 @@ public:
     Geo_RenderObj(){}
     ~Geo_RenderObj(){
         if(mVData != nullptr) free(mVData);
+		if(mTData != nullptr) free(mTData);
         if(mIData != nullptr) free(mIData);
     }
 

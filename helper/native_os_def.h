@@ -3,6 +3,8 @@
 #define WIN_HEIGHT 500
 #define WIN_WIDTH 500
 
+#include "Rasteron.h" // TODO: Make this inclusion conditional
+
 #define GLEW_STATIC
 //#define GLEWAPI extern
 #include "GL/glew.h"

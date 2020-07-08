@@ -21,7 +21,14 @@ void Geo_Character1::fill() {
     Topl_GeoNode* gRightLeg = getNextNode();
     addGeometry("rightLeg", gRightLeg);
     
-    // Code for adding textures
+	Image headImg, torsoImg, leftArmImg, rightArmImg, leftLegImg, rightLegImg;
+
+	rstnLoad("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", &headImg);
+	Rasteron_Image* headRstnImg = rstnCreate_ImgBase(&headImg);
+	// Scene manager should add the texture here
+	rstnDel_Img(headRstnImg);
+	rstnDel(&headImg);
+
     // Possibly code for adding connectors
 }
 

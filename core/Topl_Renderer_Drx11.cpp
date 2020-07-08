@@ -318,6 +318,38 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
     return;
 }
 
+
+#ifdef RASTERON_H
+
+Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
+	return nullptr;
+}
+
+void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image){
+	// TODO: Uncomment and fix
+	D3D11_TEXTURE2D_DESC desc;
+    desc.Width = image->width;
+    desc.Height = image->height;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA imgData;
+    imgData.pSysMem = image->data;
+	imgData.SysMemPitch = sizeof(uint32_t) * image->width;
+	imgData.SysMemSlicePitch = 0; // Hope this works for a 2D image
+
+    m_device->CreateTexture2D( &desc, &imgData, &m_pipeline.texture);
+}
+
+#endif
+
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sceneGraph){
 	Buffer_Drx11* targetBuff = nullptr;
 

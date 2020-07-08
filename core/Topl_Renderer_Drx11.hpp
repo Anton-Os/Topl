@@ -23,8 +23,10 @@ struct Topl_Pipeline_Drx11 {
 	ID3DBlob* psBuff;
 
 	// Texturing things
-	ID3D11ShaderResourceView* texture; // Expand this code
-	ID3D11SamplerState* samplerState;
+	// ID3D11ShaderResourceView* texture; // Expand this code
+	// ID3D11SamplerState* samplerState;
+
+	ID3D11Texture2D* texture = nullptr;
 };
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
@@ -34,6 +36,11 @@ public:
 
 	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void buildScene(const Topl_SceneManager* sceneGraph) override;
+
+#ifdef RASTERON_H
+    Rasteron_Image* getFrame() override;
+    void genTexture(const Rasteron_Image* image) override;
+#endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_SceneManager* sceneGraph) override;
