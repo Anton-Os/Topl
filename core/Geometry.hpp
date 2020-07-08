@@ -74,16 +74,9 @@ public:
         mIData = genIndices();
 		// Add texture coordinate call
     }
-	Geo_Rect2D& operator=(const Geo_Rect2D& rect) {
-		/* mRect.width = rect.getWidth();
-		mRect.height = rect.getHeight();
-
-		mVData = genVertices();
-		mIData = genIndices();
-		// Add texture coordinate call */
-
+	/* Geo_Rect2D& operator=(const Geo_Rect2D& rect) {
 		return Geo_Rect2D(rect.getWidth(), rect.getHeight());
-	}
+	} */
 
 	float getWidth() const { return mRect.width; }
 	float getHeight() const { return mRect.height; }

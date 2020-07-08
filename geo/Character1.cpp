@@ -12,9 +12,9 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) {
 	Rasteron_Sprite* headSprite = rstnCreate_Sprite(headRstnImg);
 	width = headSprite->bounds.topRight_Pt[0] * 2;
 	height = headSprite->bounds.topRight_Pt[1] * 2;
-	mHead_rect = Geo_Rect2D(width, height);
-	mHead_gNode = Topl_GeoNode((Geo_RenderObj*)&mHead_rect);
-	// addGeometry("head", &mHead_gNode); // TODO: Fix code above to get this working
+	mHead_rect = new Geo_Rect2D(width, height);
+	mHead_gNode = new Topl_GeoNode((Geo_RenderObj*)mHead_rect);
+	addGeometry("head", mHead_gNode); // TODO: Fix code above to get this working
 	rstnDel_Img(headRstnImg);
 	rstnDelFromFile(&headImg);
 

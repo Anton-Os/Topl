@@ -84,13 +84,19 @@ class Geo_Character1 : public Geo_Construct { // Consists of sprites
 public:
 	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : Geo_Construct() 
 	{ fillSceneManager(sMan); }
+	~Geo_Character1() {
+		if (mHead_rect != nullptr) delete mHead_rect;
+		if (mHead_gNode != nullptr) delete mHead_gNode;
+	}
 	
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
 
-	Geo_Rect2D mTorso_rect, mHead_rect, mLeftArm_rect, mRightArm_rect, mLeftLeg_rect, mRightLeg_rect;
-	Topl_GeoNode mTorso_gNode, mHead_gNode, mLeftArm_gNode, mRightArm_gNode, mLeftLeg_gNode, mRightLeg_gNode;
+	// Geo_Rect2D *mTorso_rect, *mHead_rect, *mLeftArm_rect, *mRightArm_rect, *mLeftLeg_rect, *mRightLeg_rect;
+	// Topl_GeoNode *mTorso_gNode, *mHead_gNode, *mLeftArm_gNode, *mRightArm_gNode, *mLeftLeg_gNode, *mRightLeg_gNode;
+	Geo_Rect2D* mHead_rect;
+	Topl_GeoNode* mHead_gNode;
 };
 
 
