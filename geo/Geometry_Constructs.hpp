@@ -15,6 +15,7 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
+    Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
@@ -26,22 +27,26 @@ public:
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
 	}
-	~Geo_Construct() { 
-        for (unsigned g = 0; g < mNodeCount; g++)
-			delete *(mNodeData + g);
-        free(mNodeData);
+	~Geo_Construct() { // Precaution for custom geo objects
+        if(mNamedNodes.size() != 0 && mNodeData != nullptr) { 
+            for (unsigned g = 0; g < mNodeCount; g++)
+                delete *(mNodeData + g);
+            free(mNodeData);
+        }
     }
     void fillSceneManager(Topl_SceneManager* sMan){
-        fill(); // Calls virtual function
+        fill(sMan); // Calls virtual function
 
-        for(std::vector<geoName_pair>::iterator currentGeo = mNamedNodes.begin();
-            currentGeo < mNamedNodes.end(); currentGeo++)
-            sMan->addGeometry(currentGeo->first, currentGeo->second, Eigen::Vector3f(0.0, 0.2, 0.0));
+        if(mNamedNodes.size() != 0 && mNodeData != nullptr) { // Precaution for custom geo objects
+            for(std::vector<geoName_pair>::iterator currentGeo = mNamedNodes.begin();
+                currentGeo < mNamedNodes.end(); currentGeo++)
+                sMan->addGeometry(currentGeo->first, currentGeo->second, Eigen::Vector3f(0.0, 0.4, 0.0));
+        }
     }
 
 	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
 protected:
-	virtual void fill() = 0; // Job is to fill the mNamedNodes structure
+	virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedNodes structure
     void addGeometry(const std::string& str, Topl_GeoNode* node){
         mNamedNodes.push_back(std::make_pair(str, node)); // Add the prefix relationship
     }
@@ -68,7 +73,7 @@ public:
 	
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
-	void fill() override;
+	void fill(Topl_SceneManager* sMan) override;
 
 	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
 	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
@@ -77,21 +82,15 @@ private:
 
 class Geo_Character1 : public Geo_Construct { // Consists of sprites
 public:
-	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : 
-    Geo_Construct(prefix, sMan, {(Geo_RenderObj*)&mHead, (Geo_RenderObj*)&mTorso, (Geo_RenderObj*)&mLeftArm, (Geo_RenderObj*)&mRightArm, (Geo_RenderObj*)&mLeftLeg, (Geo_RenderObj*)&mRightLeg,}) 
-		{ fillSceneManager(sMan); }
+	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : Geo_Construct() 
+	{ fillSceneManager(sMan); }
 	
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
-	void fill() override;
+	void fill(Topl_SceneManager* sMan) override;
 
-    Geo_Rect2D mTorso = Geo_Rect2D(0.1f, 0.1f); // Should be the parent node!!!
-
-	Geo_Rect2D mHead = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D mLeftArm = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D mRightArm = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D mLeftLeg = Geo_Rect2D(0.1f, 0.1f);
-    Geo_Rect2D mRightLeg = Geo_Rect2D(0.1f, 0.1f);
+	Geo_Rect2D mTorso_rect, mHead_rect, mLeftArm_rect, mRightArm_rect, mLeftLeg_rect, mRightLeg_rect;
+	Topl_GeoNode mTorso_gNode, mHead_gNode, mLeftArm_gNode, mRightArm_gNode, mLeftLeg_gNode, mRightLeg_gNode;
 };
 
 

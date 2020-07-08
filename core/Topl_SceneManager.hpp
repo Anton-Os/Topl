@@ -39,12 +39,9 @@ private:
 #include "Geometry.hpp"
 
 class Topl_GeoNode : Topl_Node {
-public:    
+public:
+	Topl_GeoNode() : Topl_Node() {}
     Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
-    /* Topl_GeoNode(const Geo_RenderObj* renderObj, float weight) : Topl_Node() {
-        mRenderObj = renderObj;
-        mWeight = weight; 
-    } */
     
     void updatePos(Eigen::Vector3f vec); // Follow by more spatial update things
 

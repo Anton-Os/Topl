@@ -1,6 +1,6 @@
 #include "Geometry_Constructs.hpp"
 
-void Geo_CircleUp::fill() {
+void Geo_CircleUp::fill(Topl_SceneManager* sMan) {
     Topl_GeoNode* gSphere1 = getNextNode();
     gSphere1->updatePos(Eigen::Vector3f(-0.4, -0.24, 0.0));
 	// mNamedNodes.push_back(std::make_pair(std::string("sphere1"), gSphere1));

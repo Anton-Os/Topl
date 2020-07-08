@@ -32,11 +32,13 @@ typedef const unsigned* const ui_cptr;
 class Geo_RenderObj {
 public:
     Geo_RenderObj(){}
-    ~Geo_RenderObj(){
-        if(mVData != nullptr) free(mVData);
-		if(mTData != nullptr) free(mTData);
-        if(mIData != nullptr) free(mIData);
-    }
+    ~Geo_RenderObj(){ cleanup(); }
+
+	void cleanup() {
+		if (mVData != nullptr) free(mVData);
+		if (mTData != nullptr) free(mTData);
+		if (mIData != nullptr) free(mIData);
+	}
 
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
@@ -61,6 +63,7 @@ protected:
 // Override the virtual functions above
 class Geo_Rect2D : public Geo_RenderObj {
 public:
+	Geo_Rect2D() : Geo_RenderObj() {}
     Geo_Rect2D(float width, float height) : Geo_RenderObj() {
         mVCount = 4; // Rectangle has 4 vertices
         mICount = 6; // Rectangle has 6 indices
@@ -69,7 +72,21 @@ public:
 
         mVData = genVertices();
         mIData = genIndices();
+		// Add texture coordinate call
     }
+	Geo_Rect2D& operator=(const Geo_Rect2D& rect) {
+		/* mRect.width = rect.getWidth();
+		mRect.height = rect.getHeight();
+
+		mVData = genVertices();
+		mIData = genIndices();
+		// Add texture coordinate call */
+
+		return Geo_Rect2D(rect.getWidth(), rect.getHeight());
+	}
+
+	float getWidth() const { return mRect.width; }
+	float getHeight() const { return mRect.height; }
 private:
     Eigen::Vector3f* genVertices() override;
 	Eigen::Vector2f* genTexCoords() override;

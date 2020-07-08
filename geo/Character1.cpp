@@ -2,32 +2,21 @@
 
 #include "Geometry_Constructs.hpp"
 
-void Geo_Character1::fill() {
-    Topl_GeoNode* gHead = getNextNode();
-    addGeometry("head", gHead);
+void Geo_Character1::fill(Topl_SceneManager* sMan) {
 
-    Topl_GeoNode* gTorso = getNextNode();
-    addGeometry("torso", gTorso);
-    
-    Topl_GeoNode* gLeftArm = getNextNode();
-    addGeometry("leftArm", gLeftArm);
-    
-    Topl_GeoNode* gRightArm = getNextNode();
-    addGeometry("rightArm", gRightArm);
-    
-    Topl_GeoNode* gLeftLeg = getNextNode();
-    addGeometry("leftLeg", gLeftLeg);
-    
-    Topl_GeoNode* gRightLeg = getNextNode();
-    addGeometry("rightLeg", gRightLeg);
-    
-	Image headImg, torsoImg, leftArmImg, rightArmImg, leftLegImg, rightLegImg;
+	FileImage headImg, torsoImg, leftArmImg, rightArmImg, leftLegImg, rightLegImg;
+	float width, height; // I will use topRight_Pt as reference for now, update Rasteron for macros and width/height
 
-	rstnLoad("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", &headImg);
+	rstnLoadFromFile("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", &headImg);
 	Rasteron_Image* headRstnImg = rstnCreate_ImgBase(&headImg);
-	// Scene manager should add the texture here
+	Rasteron_Sprite* headSprite = rstnCreate_Sprite(headRstnImg);
+	width = headSprite->bounds.topRight_Pt[0] * 2;
+	height = headSprite->bounds.topRight_Pt[1] * 2;
+	mHead_rect = Geo_Rect2D(width, height);
+	mHead_gNode = Topl_GeoNode((Geo_RenderObj*)&mHead_rect);
+	// addGeometry("head", &mHead_gNode); // TODO: Fix code above to get this working
 	rstnDel_Img(headRstnImg);
-	rstnDel(&headImg);
+	rstnDelFromFile(&headImg);
 
     // Possibly code for adding connectors
 }

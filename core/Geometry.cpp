@@ -7,7 +7,10 @@
 
 // Geo_Rect2D Implementation
 
-Eigen::Vector3f* Geo_Rect2D::genVertices(){
+Eigen::Vector3f* Geo_Rect2D::genVertices() {
+	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+	
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
     
     // The depth position of the vector is arbitrary for now
@@ -25,6 +28,9 @@ Eigen::Vector3f* Geo_Rect2D::genVertices(){
 }
 
 Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
+	if (getTData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+
 	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
 
 	Eigen::Vector2f topRight(1.0f, 0.0f);
@@ -41,6 +47,9 @@ Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
 }
 
 unsigned* Geo_Rect2D::genIndices(){
+	if (getIData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 
     unsigned indicesArray[6] = { 
@@ -58,6 +67,9 @@ unsigned* Geo_Rect2D::genIndices(){
 // Geo_Sphere2D Implementation
 
 Eigen::Vector3f* Geo_Sphere2D::genVertices(){
+	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
 
 	const double fullAngle = TOPL_PI * 2;
@@ -75,10 +87,16 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
 }
 
 Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
+	if (getTData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+
 	return nullptr;
 }
 
 unsigned* Geo_Sphere2D::genIndices(){
+	if (getIData() != nullptr) cleanup();  // This means an attempt was made to override code
+	// TODO: This code should be in the base class!!!!
+
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 
 	unsigned startCVert = 1; // Starting from index 1, which is the rightmost point
