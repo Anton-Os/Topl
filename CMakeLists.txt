@@ -32,6 +32,16 @@ ExternalProject_Add(DXSDK
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
     )
 
+ExternalProject_Add(GLEW
+        GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
+        GIT_TAG "6de325e4393213d703483e3acd52e8890fd4b191"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
+    )
+
+
 ExternalProject_Add(Eigen
         GIT_REPOSITORY "https://github.com/eigenteam/eigen-git-mirror.git"
         GIT_TAG "36b95962756c1fce8e29b1f8bc45967f30773c00"
@@ -44,16 +54,10 @@ ExternalProject_Add(Eigen
         # STAMP_DIR ${EXTERNAL_PROJ_DIR}/Eigen
     )
 
-add_library(GLEW
-    STATIC
-    helper/glew.c
-)
-target_include_directories(GLEW PUBLIC helper)
-
 
 find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
 find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
-
+find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 
 
@@ -151,7 +155,7 @@ target_include_directories(DemoGL4 PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
-target_link_libraries(DemoGL4 PRIVATE GLEW)
+target_link_libraries(DemoGL4 PRIVATE GLEW_lib)
 
 add_executable(DemoGL4_Shapes
     core/FileIO.cpp
@@ -170,7 +174,7 @@ target_include_directories(DemoGL4_Shapes PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoGL4_Shapes INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
-target_link_libraries(DemoGL4_Shapes PRIVATE GLEW)
+target_link_libraries(DemoGL4_Shapes PRIVATE GLEW_lib)
 
 
 
