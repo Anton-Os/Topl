@@ -8,6 +8,7 @@
 #include "Timer.hpp"
 
 #include "Topl_SceneManager.hpp"
+#include "Geo_SpriteTable.hpp"
 
 // Geometry wrapper class that can manage its states
 
@@ -27,7 +28,7 @@ public:
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
 	}
-	~Geo_Construct() { // Precaution for custom geo objects
+	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
         if(mNamedNodes.size() != 0 && mNodeData != nullptr) { 
             for (unsigned g = 0; g < mNodeCount; g++)
                 delete *(mNodeData + g);
@@ -61,7 +62,7 @@ protected:
 private:
 	unsigned mNodeCount = 0;
     unsigned mCurrentNodeOffset = 0;
-	Topl_GeoNode** mNodeData;
+	Topl_GeoNode** mNodeData = nullptr;
 
 }; // Needs work, could use more abstraction
 
@@ -92,6 +93,8 @@ public:
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
+
+	Geo_SpriteTable mSpriteTable = Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" });
 
 	// Geo_Rect2D *mTorso_rect, *mHead_rect, *mLeftArm_rect, *mRightArm_rect, *mLeftLeg_rect, *mRightLeg_rect;
 	// Topl_GeoNode *mTorso_gNode, *mHead_gNode, *mLeftArm_gNode, *mRightArm_gNode, *mLeftLeg_gNode, *mRightLeg_gNode;

@@ -2,7 +2,7 @@
 
 #include "Rasteron.h"
 #include "FileIO.hpp"
-#include "Geometry_Constructs.hpp"
+#include "Geo_Constructs.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
@@ -56,6 +56,10 @@ int main(int argc, char** argv) {
 
 	Topl_SceneManager sMan1;
 	Geo_Character1 avatar("avatar", &sMan1);
+
+	{ // Test case
+		Geo_Character1 deadAvatar("deadAvatar", &sMan1);
+	}
 
 	renderer.buildScene(&sMan1);
 

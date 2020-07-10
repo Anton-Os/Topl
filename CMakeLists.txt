@@ -134,7 +134,7 @@ target_include_directories(DemoDrx11_MovingSprite PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 ) # REMOVE THIS LATER
 target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
-target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib)
+target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
  
 
 
