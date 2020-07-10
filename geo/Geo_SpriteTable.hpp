@@ -1,4 +1,5 @@
 #include <initializer_list>
+#include <cassert> // Might meed error handling library
 #include <utility>
 #include <cstdlib>
 #include <vector>
@@ -19,7 +20,6 @@ static float getSpriteHeight(const Rasteron_Sprite* sprite) { // TODO: Replace w
 class Geo_SpriteTable {
 public:
     Geo_SpriteTable(std::initializer_list<const char*> filePaths){
-        // mSpriteCount = 1; // Test case
         mSpriteCount = filePaths.size(); // TODO: Uncomment this and use
 
         // Fill data
@@ -36,6 +36,7 @@ public:
 
 			// Followed by geometric code
 			*(mRects + dataOffset) = new Geo_Rect2D(getSpriteWidth(*(mRstnSprites + dataOffset)), getSpriteHeight(*(mRstnSprites + dataOffset)));
+			mSpriteBoxes.push_back(std::make_pair(*(mRstnSprites + dataOffset), *(mRects + dataOffset)));
 
 			dataOffset++;
 		}
@@ -57,15 +58,27 @@ public:
 			delete (*(mRects + i));
 		if (mRects != nullptr) free(mRects);
     }
+	
+	Rasteron_Sprite* getSprite(unsigned index) {
+		assert(index < mSpriteBoxes.size());
+		return (Rasteron_Sprite*)mSpriteBoxes.at(index).first;
+	}
+
+	Geo_Rect2D* getRect(unsigned index) {
+		assert(index < mSpriteBoxes.size());
+		return (Geo_Rect2D*)mSpriteBoxes.at(index).second;
+	}
+
+	unsigned getCount() { return mSpriteBoxes.size(); }
 private:
+	bool isInit = false;
+
     std::vector<spriteRect_pair> mSpriteBoxes;
 
     unsigned mSpriteCount;
 
     FileImage* mFileImages = nullptr;
-
     Rasteron_Image** mRstnImages = nullptr;
     Rasteron_Sprite** mRstnSprites = nullptr;
-
 	Geo_Rect2D** mRects = nullptr;
 };

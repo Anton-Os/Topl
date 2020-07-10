@@ -16,14 +16,20 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
-    Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-            *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
+            *(mNodeData + mNodeCount) = new Topl_GeoNode(*(currentRenderObj));
             mNodeCount++;
         }
         // fillSceneManager(sMan);
+	}
+	Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Geo_SpriteTable* spriteTable) {
+		mNodeData = (Topl_GeoNode**)malloc(spriteTable->getCount() * sizeof(Topl_GeoNode*));
+		for (unsigned i = 0; i < spriteTable->getCount(); i++) {
+			*(mNodeData + mNodeCount) = new Topl_GeoNode((Geo_RenderObj*)spriteTable->getRect(i));
+			mNodeCount++;
+		}
 	}
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
@@ -83,7 +89,8 @@ private:
 
 class Geo_Character1 : public Geo_Construct { // Consists of sprites
 public:
-	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : Geo_Construct() 
+	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : 
+	Geo_Construct(prefix, sMan, &mSpriteTable)
 	{ fillSceneManager(sMan); }
 	~Geo_Character1() {
 		if (mHead_rect != nullptr) delete mHead_rect;
