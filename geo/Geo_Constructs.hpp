@@ -16,20 +16,14 @@ typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
 public:
+    Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-            *(mNodeData + mNodeCount) = new Topl_GeoNode(*(currentRenderObj));
+            *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
             mNodeCount++;
         }
         // fillSceneManager(sMan);
-	}
-	Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Geo_SpriteTable* spriteTable) {
-		mNodeData = (Topl_GeoNode**)malloc(spriteTable->getCount() * sizeof(Topl_GeoNode*));
-		for (unsigned i = 0; i < spriteTable->getCount(); i++) {
-			*(mNodeData + mNodeCount) = new Topl_GeoNode((Geo_RenderObj*)spriteTable->getRect(i));
-			mNodeCount++;
-		}
 	}
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
@@ -87,26 +81,27 @@ private:
 	Geo_Sphere2D sphere3 = Geo_Sphere2D(0.333f, 42);
 };
 
-class Geo_Character1 : public Geo_Construct { // Consists of sprites
+class Geo_Character1 : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
-	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) : 
-	Geo_Construct(prefix, sMan, &mSpriteTable)
+	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) :
+	Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" }),
+	Geo_Construct(prefix, sMan, { (Geo_RenderObj*)getRect(0) }) // Inherited from Sprite table
 	{ fillSceneManager(sMan); }
 	~Geo_Character1() {
-		if (mHead_rect != nullptr) delete mHead_rect;
-		if (mHead_gNode != nullptr) delete mHead_gNode;
+		// if (mHead_rect != nullptr) delete mHead_rect;
+		// if (mHead_gNode != nullptr) delete mHead_gNode;
 	}
 	
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
 
-	Geo_SpriteTable mSpriteTable = Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" });
+	// Geo_SpriteTable mSpriteTable = Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" });
 
 	// Geo_Rect2D *mTorso_rect, *mHead_rect, *mLeftArm_rect, *mRightArm_rect, *mLeftLeg_rect, *mRightLeg_rect;
 	// Topl_GeoNode *mTorso_gNode, *mHead_gNode, *mLeftArm_gNode, *mRightArm_gNode, *mLeftLeg_gNode, *mRightLeg_gNode;
-	Geo_Rect2D* mHead_rect;
-	Topl_GeoNode* mHead_gNode;
+	// Geo_Rect2D* mHead_rect;
+	// Topl_GeoNode* mHead_gNode;
 };
 
 
