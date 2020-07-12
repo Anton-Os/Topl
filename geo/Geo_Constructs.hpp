@@ -84,24 +84,38 @@ private:
 class Geo_Character1 : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
 	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) :
-	Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" }),
-	Geo_Construct(prefix, sMan, { (Geo_RenderObj*)getRect(0) }) // Inherited from Sprite table
+	Geo_SpriteTable({ 
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png",
+	}),
+	Geo_Construct(prefix, sMan, { 
+		(Geo_RenderObj*)getRect(CHAR_Head),
+		(Geo_RenderObj*)getRect(CHAR_Body),
+		(Geo_RenderObj*)getRect(CHAR_LeftArm),
+		(Geo_RenderObj*)getRect(CHAR_RightArm),
+		(Geo_RenderObj*)getRect(CHAR_LeftLeg),
+		(Geo_RenderObj*)getRect(CHAR_RightLeg),
+	}) // Inherited from Sprite table
 	{ fillSceneManager(sMan); }
-	~Geo_Character1() {
-		// if (mHead_rect != nullptr) delete mHead_rect;
-		// if (mHead_gNode != nullptr) delete mHead_gNode;
-	}
+
+	~Geo_Character1() {}
 	
+	enum CHAR_Anatomy {
+		CHAR_Head = 0,
+		CHAR_Body = 1,
+		CHAR_LeftArm = 2,
+		CHAR_RightArm = 3,
+		CHAR_LeftLeg = 4,
+		CHAR_RightLeg = 5
+	} anatomyIndex;
+
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
-
-	// Geo_SpriteTable mSpriteTable = Geo_SpriteTable({ "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png" });
-
-	// Geo_Rect2D *mTorso_rect, *mHead_rect, *mLeftArm_rect, *mRightArm_rect, *mLeftLeg_rect, *mRightLeg_rect;
-	// Topl_GeoNode *mTorso_gNode, *mHead_gNode, *mLeftArm_gNode, *mRightArm_gNode, *mLeftLeg_gNode, *mRightLeg_gNode;
-	// Geo_Rect2D* mHead_rect;
-	// Topl_GeoNode* mHead_gNode;
 };
 
 
