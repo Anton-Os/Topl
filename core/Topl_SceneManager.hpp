@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "Timer.hpp"
 #include "Physics.hpp"
@@ -13,8 +14,11 @@ public:
 		mId_count++;
 		mId = mId_count;
 	}
-	~Topl_Node() { mId_count--; }
+	~Topl_Node() { 
+        mId_count--; 
+    }
 
+    void setName(const std::string& name){ mName = '_' + name; }
     void addChild(Topl_Node* child){ mChildren.push_back(child); }
 
 	// const unsigned const* mId_ref = &mId;
@@ -29,6 +33,7 @@ public:
 private:
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
 	unsigned mId; // Each object has a unique id
+    std::string mName = "_"; // Default is just an underscore
 
     Topl_Node* mParent = nullptr;
     std::vector<Topl_Node*> mChildren;
@@ -38,7 +43,7 @@ private:
 
 #include "Geometry.hpp"
 
-class Topl_GeoNode : Topl_Node {
+class Topl_GeoNode : public Topl_Node {
 public:
 	Topl_GeoNode() : Topl_Node() {}
     Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
@@ -60,7 +65,7 @@ private:
     // float mWeight = 1.0f;
 };
 
-class Topl_GeoDynamicNode : public Topl_GeoNode {
+/* class Topl_GeoDynamicNode : public Topl_GeoNode {
 public:
 	Topl_GeoDynamicNode(const Geo_RenderObj* renderObj) : Topl_GeoNode(renderObj) { mBehavior = GEO_Dynamic; }
 	Topl_GeoDynamicNode(const Geo_RenderObj* renderObj, float weight) : Topl_GeoNode(renderObj) {
@@ -76,7 +81,7 @@ private:
 	float mWeight = 1.0f;
 	Eigen::Vector3f mVelocity = Eigen::Vector3f(0.0, 0.0, 0.0);
 	Eigen::Vector3f mAccel = Eigen::Vector3f(0.0, 0.0, 0.0);
-};
+}; */
 
 typedef unsigned geoUpdateFlags_t;
 

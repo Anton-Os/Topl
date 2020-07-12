@@ -20,7 +20,7 @@ public:
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-            *(mNodeData + mNodeCount) = new  Topl_GeoNode(*(currentRenderObj));
+            *(mNodeData + mNodeCount) = new Topl_GeoNode(*(currentRenderObj));
             mNodeCount++;
         }
         // fillSceneManager(sMan);
@@ -29,7 +29,7 @@ public:
 		// Implement logic for allocating mNodeData to size of children
 	}
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
-        if(mNamedNodes.size() != 0 && mNodeData != nullptr) { 
+        if(mNodeData != nullptr) { 
             for (unsigned g = 0; g < mNodeCount; g++)
                 delete *(mNodeData + g);
             free(mNodeData);
@@ -41,16 +41,13 @@ public:
         if(mNamedNodes.size() != 0 && mNodeData != nullptr) { // Precaution for custom geo objects
             for(std::vector<geoName_pair>::iterator currentGeo = mNamedNodes.begin();
                 currentGeo < mNamedNodes.end(); currentGeo++)
-                sMan->addGeometry(currentGeo->first, currentGeo->second, Eigen::Vector3f(0.0, 0.4, 0.0));
+                sMan->addGeometry(currentGeo->first, currentGeo->second);
         }
     }
 
 	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
 protected:
 	virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedNodes structure
-    void addGeometry(const std::string& str, Topl_GeoNode* node){
-        mNamedNodes.push_back(std::make_pair(str, node)); // Add the prefix relationship
-    }
     Topl_GeoNode* getNextNode(){
         if(mCurrentNodeOffset <= mNodeCount){
             mCurrentNodeOffset++;   
@@ -123,7 +120,7 @@ Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos);
 
 class Geo_RandShapes {
 public:
-    Geo_RandShapes(Topl_SceneManager* sceneGraph){
+    Geo_RandShapes(Topl_SceneManager* sMan){
         mBox1 = new Geo_Rect2D(0.8f, 0.6f);
         mGeoNode1 = new Topl_GeoNode((Geo_RenderObj*)mBox1);
 
@@ -135,7 +132,7 @@ public:
         mGeoNode3 = new Topl_GeoNode((Geo_RenderObj*)mSphere1);
         mGeoNode3->updatePos(Eigen::Vector3f(-0.2f, -0.4f, 0.0f));
 
-        fillSceneManager(sceneGraph);
+        fillSceneManager(sMan);
     }
     ~Geo_RandShapes(){
         delete mBox1;
@@ -147,7 +144,7 @@ public:
     }
     // void updateSceneManager(Topl_SceneManager* Topl_SceneManager, Timer_DiscreteEvent timerEvent); // Should probably make private
 private:
-    void fillSceneManager(Topl_SceneManager* sceneGraph);
+    void fillSceneManager(Topl_SceneManager* sMan);
     
     Geo_Rect2D* mBox1;
     Geo_Rect2D* mBox2;
@@ -158,4 +155,4 @@ private:
     // Physics_MoveAbs mUpMovement = Physics_MoveAbs(&updatePosAbs);
 };
 
-void createQuadTree(Topl_SceneManager* sceneGraph, unsigned divs);
+void createQuadTree(Topl_SceneManager* sMan, unsigned divs);

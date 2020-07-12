@@ -2,22 +2,22 @@
 
 void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
 	Topl_GeoNode* gHead = getNextNode();
-	sMan->addGeometry("head", gHead, Eigen::Vector3f(0.0f, 0.4f, 0.0));
+	sMan->addGeometry("head", gHead);
 
 	Topl_GeoNode* gBody = getNextNode();
 	sMan->addGeometry("body", gBody);
 
 	Topl_GeoNode* gLeftArm = getNextNode();
-	sMan->addGeometry("leftArm", gLeftArm, Eigen::Vector3f(-0.5f, 0.5f, 0.0));
+	sMan->addGeometry("leftArm", gLeftArm);
 
 	Topl_GeoNode* gRightArm = getNextNode();
-	sMan->addGeometry("rightArm", gRightArm, Eigen::Vector3f(0.5f, 0.5f, 0.0));
+	sMan->addGeometry("rightArm", gRightArm);
 
 	Topl_GeoNode* gLeftLeg = getNextNode();
-	sMan->addGeometry("leftLeg", gLeftLeg, Eigen::Vector3f(-1.0f, -0.4f, 0.0));
+	sMan->addGeometry("leftLeg", gLeftLeg);
 
 	Topl_GeoNode* gRightLeg = getNextNode();
-	sMan->addGeometry("rightLeg", gRightLeg, Eigen::Vector3f(1.0f, -0.4f, 0.0));
+	sMan->addGeometry("rightLeg", gRightLeg);
 
     // Possibly code for adding connectors
 }

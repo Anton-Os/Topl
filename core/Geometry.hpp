@@ -72,11 +72,8 @@ public:
 
         mVData = genVertices();
         mIData = genIndices();
-		// Add texture coordinate call
+		mTData = genTexCoords();
     }
-	/* Geo_Rect2D& operator=(const Geo_Rect2D& rect) {
-		return Geo_Rect2D(rect.getWidth(), rect.getHeight());
-	} */
 
 	float getWidth() const { return mRect.width; }
 	float getHeight() const { return mRect.height; }

@@ -36,18 +36,12 @@ void Topl_SceneManager::addGeometry(const std::string& name, Topl_GeoNode* geoNo
         puts(name.c_str());
     }
 
-    mNameToId_map.insert({ name, ((Topl_Node*)geoNode)->getId() });
-    mIdToGeo_map.insert({ ((Topl_Node*)geoNode)->getId(), geoNode });
-}
+    geoNode->setName(name);
 
-void Topl_SceneManager::addGeometry(const std::string& name, Topl_GeoNode* geoNode, const Eigen::Vector3f& vec){
-    if(mNameToId_map.find(name) != mNameToId_map.end()){
-        puts("Overriding geometry object:");
-        puts(name.c_str());
-    }
 
-    geoNode->updatePos(vec); // First offset the geometry to argument position
-    mNameToId_map.insert({ name, ((Topl_Node*)geoNode)->getId() });
+    std::string targetName = (geoNode->getParent() == nullptr) ? name : "_parent_child"; // TODO: Fix the association
+
+    mNameToId_map.insert({ targetName, ((Topl_Node*)geoNode)->getId() });
     mIdToGeo_map.insert({ ((Topl_Node*)geoNode)->getId(), geoNode });
 }
 

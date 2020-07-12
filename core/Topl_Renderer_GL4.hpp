@@ -86,11 +86,11 @@ public:
     Topl_Renderer_GL4(HWND hwnd){ init(hwnd); }
 	~Topl_Renderer_GL4();
 
-    void buildScene(const Topl_SceneManager* sceneGraph) override;
+    void buildScene(const Topl_SceneManager* sMan) override;
 	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 private:
     void init(NATIVE_WINDOW hwnd) override;
-	void update(const Topl_SceneManager* sceneGraph) override;
+	void update(const Topl_SceneManager* sMan) override;
 	void render(void) override;
 
     Topl_Pipeline_GL4 m_pipeline;

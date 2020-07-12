@@ -85,16 +85,27 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** bufferPtrs, unsigned short count) {
+	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
 		Buffer_Drx11* currentBuff = nullptr;
 
 		for (unsigned short b = 0; b < count; b++) {
-			currentBuff = *(bufferPtrs + b);
+			currentBuff = *(dBuffers + b);
 			if (currentBuff->type == type) break; // Correct buffer was found
 			else currentBuff = nullptr;
 		}
 
 		return currentBuff; // Try to optimize the code above
+	}
+
+	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
+		unsigned bOffset = 0; // Populates the dBuffers structure
+		for (std::vector<Buffer_Drx11>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
+			if (currentBuff->targetID == id)
+				if (bOffset >= MAX_BUFFER_TYPES) break;
+				else {
+					*(dBuffers + bOffset) = &(*currentBuff);
+					bOffset++;
+				} // bOffset will finally indicate how many buffers were located
 	}
 }
 
@@ -245,10 +256,10 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 	mPipelineReady = true;
 }
 
-void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sceneGraph) {
+void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
-	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
 		vec2f_cptr geoTarget_tData = geoTarget_ptr->mRenderObj->getTData();
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
@@ -350,11 +361,11 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image){
 
 #endif
 
-void Topl_Renderer_Drx11::update(const Topl_SceneManager* sceneGraph){
+void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	Buffer_Drx11* targetBuff = nullptr;
 
-	for(unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
 		// Interested in the constant pos buffer, we have to find it
@@ -391,25 +402,25 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 		return;
 	}
 
-	Buffer_Drx11** bufferPtrs = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
 		for (unsigned id = 1; id <= mMaxBuffID; id++) {
 
-			unsigned bOffset = 0; // Populates the bufferPtrs structure
+			unsigned bOffset = 0; // Populates the dBuffers structure
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == id)
 					if (bOffset >= MAX_BUFFER_TYPES) break;
 					else {
-						*(bufferPtrs + bOffset) = &(*currentBuff);
+						*(dBuffers + bOffset) = &(*currentBuff);
 						bOffset++;
 					} // bOffset will finally indicate how many buffers were located
 
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, bufferPtrs, bOffset);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
-			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, bufferPtrs, bOffset);
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, bOffset);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, bOffset);
+			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, dBuffers, bOffset);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, bOffset);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
@@ -427,7 +438,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			
 		}
 
-	free(bufferPtrs);
+	free(dBuffers);
 
     m_swapChain->Present(0, 0);
 }

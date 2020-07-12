@@ -86,14 +86,14 @@ public:
 
     virtual void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
     // virtual void genTexture(const Rasteron_Image* rstn_image) // Needs to be renderer specific
-    virtual void buildScene(const Topl_SceneManager* sceneGraph) = 0;
-    void updateScene(const Topl_SceneManager* sceneGraph){
+    virtual void buildScene(const Topl_SceneManager* sMan) = 0;
+    void updateScene(const Topl_SceneManager* sMan){
         // if(!mPipelineReady) puts("Pipeline not ready");
         if(!mSceneReady){
             puts("Scene not built for update call!");
             return;
         }
-        update(sceneGraph);
+        update(sMan);
     }
     bool renderScene(enum DRAW_Type drawType){
         if(!mPipelineReady) puts("Pipeline not ready for draw call!");
@@ -119,6 +119,6 @@ protected:
     enum DRAW_Type mDrawType = DRAW_Triangles;
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void update(const Topl_SceneManager* sceneGraph) = 0;
+    virtual void update(const Topl_SceneManager* sMan) = 0;
 	virtual void render(void) = 0;
 };

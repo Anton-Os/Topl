@@ -122,12 +122,12 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sceneGraph){
+void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
-	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) { // Slot index will signify how many buffers exist
-		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ID values begin at 1
+	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
+		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ID values begin at 1
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
 		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
@@ -167,11 +167,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sceneGraph){
     return; // To be continued
 }
 
-void Topl_Renderer_GL4::update(const Topl_SceneManager* sceneGraph){
+void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	Buffer_GL4* targetBuff = nullptr;
 
-	for (unsigned g = 0; g < sceneGraph->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sceneGraph->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
+		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
