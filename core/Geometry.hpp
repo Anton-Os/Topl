@@ -29,6 +29,13 @@ typedef const Eigen::Vector3f* const vec3f_cptr;
 typedef const Eigen::Vector2f* const vec2f_cptr;
 typedef const unsigned* const ui_cptr;
 
+struct Geo_PerVertexData {
+	vec3f_cptr position;
+	vec2f_cptr texcoord;
+};
+
+typedef const Geo_PerVertexData* const perVertex_cptr;
+
 class Geo_RenderObj {
 public:
     Geo_RenderObj(){}
@@ -42,6 +49,10 @@ public:
 
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
+	perVertex_cptr getPerVertexData() {
+		if (mPerVertexData.size() == 0) return nullptr; // TODO: replace with code to fill the mPerVertexData struct
+		return mPerVertexData.data();
+	}
 
     vec3f_cptr getVData() const { return mVData; }
     vec2f_cptr getTData() const { return mTData; }
@@ -51,9 +62,11 @@ protected:
     virtual Eigen::Vector2f* genTexCoords() = 0;
     virtual unsigned* genIndices() = 0;
 
-    const unsigned short mPerVertex = 3; // Elements per vertex, should be configurable later
+    const unsigned short mPerVertex = 5; // Elements per vertex, should be configurable later
     unsigned mVCount;
     unsigned mICount;
+
+	std::vector<Geo_PerVertexData> mPerVertexData;
 
     Eigen::Vector3f* mVData = nullptr; // Vertex data
     Eigen::Vector2f* mTData = nullptr; // Texture coordinate data

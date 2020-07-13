@@ -285,7 +285,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		ID3D11Buffer* texcoordBuff;
 		if(geoTarget_tData != nullptr){ // Check if texture data exists for the render object
 			mSceneReady = _Drx11::createVertexBuff(&m_device, &texcoordBuff,
-												geoTarget_vData, geoTarget_ptr->mRenderObj->getVCount());
+												geoTarget_tData, geoTarget_ptr->mRenderObj->getVCount());
 
 			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_TexCoord_2F, texcoordBuff, geoTarget_ptr->mRenderObj->getVCount()));
 		}
@@ -308,7 +308,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0} 
+		{ "TEXCOORD0", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0} 
     };
     UINT layoutElemCount = ARRAYSIZE(layoutTest); // REFINE THIS
 
@@ -417,11 +417,14 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			UINT strides[] = { sizeof(Eigen::Vector3f), sizeof(Eigen::Vector2f) };
-			UINT offset = 0;
+			/* UINT strides[] = { sizeof(Eigen::Vector3f), sizeof(Eigen::Vector2f) };
+			UINT offsets[] = { 0, 0 };
 			ID3D11Buffer* perVertexData[] = { vertexBuff->buffer, texcoordBuff->buffer };
-			// m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
-			m_deviceCtx->IASetVertexBuffers(0, 2, perVertexData, &strides[0], &offset);
+			m_deviceCtx->IASetVertexBuffers(0, 2, perVertexData, &strides[0], &offsets[0]); */
+
+			UINT stride = sizeof(Eigen::Vector3f);
+			UINT offset = 0;
+			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
 			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 			
