@@ -8,6 +8,7 @@ namespace _Drx11 {
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
 		buffDesc.ByteWidth = sizeof(Geo_PerVertexData) * vCount;
+		// buffDesc.ByteWidth = 28 * vCount;
 		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffDesc.CPUAccessFlags = 0;
 		buffDesc.MiscFlags = 0;
@@ -268,11 +269,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
+		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-
-		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
-		vec2f_cptr geoTarget_tData = geoTarget_ptr->mRenderObj->getTData();
-
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData(); // TODO: Keep these, remove other getters
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
 
@@ -288,28 +286,19 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		ID3D11Buffer* indexBuff;
 		if(geoTarget_iData != nullptr) { // Check if index data exists for render object
 			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
-												(DWORD*)geoTarget_iData, geoTarget_ptr->mRenderObj->getICount() );
+												(DWORD*)geoTarget_iData, geoTarget_renderObj->getICount() );
 
-			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_ptr->mRenderObj->getICount()));
+			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
 
 			if(!mSceneReady) return; // Error
 		}
 
-		/* ID3D11Buffer* texcoordBuff;
-		if(geoTarget_tData != nullptr){ // Check if texture data exists for the render object
-			mSceneReady = _Drx11::createVertexBuff(&m_device, &texcoordBuff,
-												geoTarget_tData, geoTarget_ptr->mRenderObj->getVCount());
-
-			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_TexCoord_2F, texcoordBuff, geoTarget_ptr->mRenderObj->getVCount()));
-		} */
-
-		// Vertex creation procedures
 		ID3D11Buffer* vertexBuff;
 
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												geoTarget_perVertexData, geoTarget_ptr->mRenderObj->getVCount());
+												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
 
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
 
 		if(!mSceneReady) return;
 
@@ -321,7 +310,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
     };
     UINT layoutElemCount = ARRAYSIZE(layoutTest); // REFINE THIS
 
@@ -414,13 +403,13 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = 1; id <= mMaxBuffID; id++) { // ID signifies graphics target id
+		// for (unsigned id = 1; id <= mMaxBuffID; id++) { // ID signifies graphics target id
+		for (unsigned id = 1; id < 2; id++) { // ID signifies graphics target id
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
 			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, MAX_BUFFER_TYPES);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFER_TYPES);
-			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, dBuffers, MAX_BUFFER_TYPES);
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, MAX_BUFFER_TYPES);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
@@ -430,13 +419,14 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-
 			UINT stride = sizeof(Eigen::Vector3f);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
-			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
-			
+			//m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+
+			m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			m_deviceCtx->Draw(vertexBuff->count, 0);
 		}
 
 	free(dBuffers);
