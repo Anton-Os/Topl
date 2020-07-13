@@ -3,6 +3,26 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 namespace _Drx11 {
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, perVertex_cptr pvData, unsigned vCount) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DEFAULT;
+		buffDesc.ByteWidth = sizeof(Geo_PerVertexData) * vCount;
+		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffDesc.CPUAccessFlags = 0;
+		buffDesc.MiscFlags = 0;
+		buffDesc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = pvData;
+
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
+		if (FAILED(hr)) return false;
+
+		return true;
+	}
+
     static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec3f_cptr vData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
@@ -86,15 +106,7 @@ namespace _Drx11 {
 	}
 
 	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
-		Buffer_Drx11* currentBuff = nullptr;
-
-		for (unsigned short b = 0; b < count; b++) {
-			currentBuff = *(dBuffers + b);
-			if (currentBuff->type == type) break; // Correct buffer was found
-			else currentBuff = nullptr;
-		}
-
-		return currentBuff; // Try to optimize the code above
+		return *(dBuffers + type); // Going to return proper index
 	}
 
 	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
@@ -283,19 +295,19 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 			if(!mSceneReady) return; // Error
 		}
 
-		ID3D11Buffer* texcoordBuff;
+		/* ID3D11Buffer* texcoordBuff;
 		if(geoTarget_tData != nullptr){ // Check if texture data exists for the render object
 			mSceneReady = _Drx11::createVertexBuff(&m_device, &texcoordBuff,
 												geoTarget_tData, geoTarget_ptr->mRenderObj->getVCount());
 
 			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_TexCoord_2F, texcoordBuff, geoTarget_ptr->mRenderObj->getVCount()));
-		}
+		} */
 
 		// Vertex creation procedures
 		ID3D11Buffer* vertexBuff;
 
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												geoTarget_vData, geoTarget_ptr->mRenderObj->getVCount());
+												geoTarget_perVertexData, geoTarget_ptr->mRenderObj->getVCount());
 
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_ptr->mRenderObj->getVCount()));
 
@@ -309,7 +321,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0} 
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
     };
     UINT layoutElemCount = ARRAYSIZE(layoutTest); // REFINE THIS
 
@@ -418,10 +430,6 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			/* UINT strides[] = { sizeof(Eigen::Vector3f), sizeof(Eigen::Vector2f) };
-			UINT offsets[] = { 0, 0 };
-			ID3D11Buffer* perVertexData[] = { vertexBuff->buffer, texcoordBuff->buffer };
-			m_deviceCtx->IASetVertexBuffers(0, 2, perVertexData, &strides[0], &offsets[0]); */
 
 			UINT stride = sizeof(Eigen::Vector3f);
 			UINT offset = 0;

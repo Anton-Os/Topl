@@ -3,7 +3,7 @@ cbuffer CONST_DISPLACE_BUFF : register(b0) {
 }
 
 struct VS_INPUT {
-	float4 pos : POSITION;
+	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 };
 
@@ -15,7 +15,7 @@ struct VS_OUTPUT {
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
 
-	output.pos = float4(offset.x + input.pos.x, offset.y + input.pos.y, offset.z + input.pos.z, 0.0 + input.pos.w);
+	output.pos = float4(offset.x + input.pos.x, offset.y + input.pos.y, offset.z + input.pos.z, 1.0);
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 
 	return output;

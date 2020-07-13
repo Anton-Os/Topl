@@ -2,7 +2,7 @@
 
 void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
 	Topl_GeoNode* gHead = getNextNode();
-O	sMan->addGeometry("head", gHead);
+	sMan->addGeometry("head", gHead);
 
 	Topl_GeoNode* gBody = getNextNode();
 	sMan->addGeometry("body", gBody);

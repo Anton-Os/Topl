@@ -30,15 +30,17 @@ typedef const Eigen::Vector2f* const vec2f_cptr;
 typedef const unsigned* const ui_cptr;
 
 struct Geo_PerVertexData {
-	Geo_PerVertexData() : position(nullptr), texcoord(nullptr) {} // Empty constructor
+	Geo_PerVertexData(){} // Empty constructor
 
-	Geo_PerVertexData(vec3f_cptr p, vec2f_cptr t) : position(p), texcoord(t) {}
-
-	Geo_PerVertexData Geo_PerVertexData::operator=(const Geo_PerVertexData& data) {
-		return Geo_PerVertexData( data.position, data.texcoord );
+	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){
+		/* position[0] = *(p->data + 0); position[1] = *(p->data + 1); position[2] = *(p->data + 2);
+		texCoord[0] = t->data + 0; texCoord[1] = t->data + 1; */
+		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
+		texCoord[0] = t[0]; texCoord[1] = t[1];
 	}
-	vec3f_cptr position;
-	vec2f_cptr texcoord;
+
+	float position[3]; // For xyz elements
+	float texCoord[2]; // For uv texture coordinates */
 };
 
 typedef const Geo_PerVertexData* const perVertex_cptr;
@@ -65,7 +67,7 @@ public:
 			} */
 
 			for (unsigned vOffset = 0; vOffset < mVCount; vOffset++)
-				mPerVertexData.push_back(Geo_PerVertexData(mVData + vOffset, mTData + vOffset));
+				mPerVertexData.push_back(Geo_PerVertexData(*(mVData + vOffset), *(mTData + vOffset)));
 		}
 		return mPerVertexData.data();
 	}
