@@ -30,6 +30,13 @@ typedef const Eigen::Vector2f* const vec2f_cptr;
 typedef const unsigned* const ui_cptr;
 
 struct Geo_PerVertexData {
+	Geo_PerVertexData() : position(nullptr), texcoord(nullptr) {} // Empty constructor
+
+	Geo_PerVertexData(vec3f_cptr p, vec2f_cptr t) : position(p), texcoord(t) {}
+
+	Geo_PerVertexData Geo_PerVertexData::operator=(const Geo_PerVertexData& data) {
+		return Geo_PerVertexData( data.position, data.texcoord );
+	}
 	vec3f_cptr position;
 	vec2f_cptr texcoord;
 };
@@ -50,7 +57,16 @@ public:
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
 	perVertex_cptr getPerVertexData() {
-		if (mPerVertexData.size() == 0) return nullptr; // TODO: replace with code to fill the mPerVertexData struct
+		if (mPerVertexData.size() == 0) {
+			// mPerVertexData.resize(mVCount);
+			/* for (std::vector<Geo_PerVertexData>::iterator currentElem = mPerVertexData.begin(); currentElem < mPerVertexData.end(); currentElem++) {
+				*(currentElem) = { mVData + vOffset, mTData + vOffset };
+				vOffset++;
+			} */
+
+			for (unsigned vOffset = 0; vOffset < mVCount; vOffset++)
+				mPerVertexData.push_back(Geo_PerVertexData(mVData + vOffset, mTData + vOffset));
+		}
 		return mPerVertexData.data();
 	}
 

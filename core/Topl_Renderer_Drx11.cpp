@@ -255,13 +255,14 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
+		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
+
 		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
 		vec2f_cptr geoTarget_tData = geoTarget_ptr->mRenderObj->getTData();
-		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
 
-		// Constant values procedures
-
-		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData(); // TODO: Keep these, remove other getters
+		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
 
 		ID3D11Buffer* constBuff_vec3f;
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
@@ -308,7 +309,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD0", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0} 
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0} 
     };
     UINT layoutElemCount = ARRAYSIZE(layoutTest); // REFINE THIS
 
