@@ -57,10 +57,6 @@ int main(int argc, char** argv) {
 	Topl_SceneManager sMan1;
 	Geo_Character1 avatar("avatar", &sMan1);
 
-	/* { // Test case
-		Geo_Character1 deadAvatar("deadAvatar", &sMan1);
-	} */
-
 	renderer.buildScene(&sMan1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {

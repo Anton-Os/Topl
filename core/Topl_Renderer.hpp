@@ -13,27 +13,29 @@ enum DRAW_Type {
     DRAW_Strip
 };
 
-struct RenderTargetObject {
-	RenderTargetObject() {}
-	RenderTargetObject(unsigned id) { targetID = id; }
+struct GraphicsTargetObject {
+	GraphicsTargetObject() {}
+	GraphicsTargetObject(unsigned id) { targetID = id; }
 	unsigned targetID;
 };
 
-#define MAX_BUFFER_TYPES 4
+#define MAX_BUFFER_TYPES 4 // Keep this value udated
 
 enum BUFF_Type {
-    BUFF_Vertex_3F,
-    BUFF_TexCoord_2F,
-    BUFF_Index_UI,
-    BUFF_Const_vec3f
+	// Per-vertex data
+    BUFF_Vertex_3F = 0,
+    BUFF_TexCoord_2F = 1,
+	// Additional data
+    BUFF_Index_UI = 2,
+    BUFF_Const_vec3f = 3
 };
 
-struct Buffer : public RenderTargetObject {
-    Buffer() : RenderTargetObject(){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderTargetObject(id){
+struct Buffer : public GraphicsTargetObject {
+    Buffer() : GraphicsTargetObject(){}
+    Buffer(unsigned id, enum BUFF_Type t) : GraphicsTargetObject(id){
         type = t;
     }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTargetObject(id){
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : GraphicsTargetObject(id){
         type = t; count = c;
     }
     enum BUFF_Type type; // Type of buffer 
@@ -63,13 +65,13 @@ enum UNIFORM_Type {
     UNIFORM_4x4M,
 };
 
-struct Uniform : public RenderTargetObject {
-	Uniform() : RenderTargetObject() {}
-	/* Uniform(unsigned id, enum UNIFORM_Type t, void* d, size_t s) : RenderTargetObject(id) {
+struct Uniform : public GraphicsTargetObject {
+	Uniform() : GraphicsTargetObject() {}
+	/* Uniform(unsigned id, enum UNIFORM_Type t, void* d, size_t s) : GraphicsTargetObject(id) {
 		data = malloc(s); // make it the size of target data d
 		*(data) = *(d); // Copying step
 	}
-	Uniform(unsigned id, enum UNIFORM_Type t, unsigned c, void* d, size_t s) : RenderTargetObject(id) {
+	Uniform(unsigned id, enum UNIFORM_Type t, unsigned c, void* d, size_t s) : GraphicsTargetObject(id) {
 		data = malloc(s); // make it the size of target data d
 		*(data) = *(d); // Copying step
 

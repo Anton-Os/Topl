@@ -98,14 +98,9 @@ namespace _Drx11 {
 	}
 
 	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
-		unsigned bOffset = 0; // Populates the dBuffers structure
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
-				if (bOffset >= MAX_BUFFER_TYPES) break;
-				else {
-					*(dBuffers + bOffset) = &(*currentBuff);
-					bOffset++;
-				} // bOffset will finally indicate how many buffers were located
+				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
 	}
 }
 
@@ -406,33 +401,27 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = 1; id <= mMaxBuffID; id++) {
+		for (unsigned id = 1; id <= mMaxBuffID; id++) { // ID signifies graphics target id
 
-			unsigned bOffset = 0; // Populates the dBuffers structure
-			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-				if (currentBuff->targetID == id)
-					if (bOffset >= MAX_BUFFER_TYPES) break;
-					else {
-						*(dBuffers + bOffset) = &(*currentBuff);
-						bOffset++;
-					} // bOffset will finally indicate how many buffers were located
+			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, bOffset);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, bOffset);
-			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, dBuffers, bOffset);
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, bOffset);
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, MAX_BUFFER_TYPES);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFER_TYPES);
+			Buffer_Drx11* texcoordBuff = _Drx11::findBuffer(BUFF_TexCoord_2F, dBuffers, MAX_BUFFER_TYPES);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, MAX_BUFFER_TYPES);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			UINT stride = sizeof(Eigen::Vector3f);
+			UINT strides[] = { sizeof(Eigen::Vector3f), sizeof(Eigen::Vector2f) };
 			UINT offset = 0;
-			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			ID3D11Buffer* perVertexData[] = { vertexBuff->buffer, texcoordBuff->buffer };
+			// m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			m_deviceCtx->IASetVertexBuffers(0, 2, perVertexData, &strides[0], &offset);
 
 			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 			
