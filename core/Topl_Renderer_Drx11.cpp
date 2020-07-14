@@ -321,6 +321,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
+	m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     mSceneReady = true;
     return;
@@ -403,8 +404,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		// for (unsigned id = 1; id <= mMaxBuffID; id++) { // ID signifies graphics target id
-		for (unsigned id = 1; id < 2; id++) { // ID signifies graphics target id
+		for (unsigned id = mMaxBuffID; id >= 1; id--) { // ID signifies graphics target id
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
@@ -419,14 +419,14 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			UINT stride = sizeof(Eigen::Vector3f);
+			UINT stride = sizeof(Geo_PerVertexData);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
-			//m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 
-			m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-			m_deviceCtx->Draw(vertexBuff->count, 0);
+			// m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			//m_deviceCtx->Draw(vertexBuff->count, 0);
 		}
 
 	free(dBuffers);

@@ -47,7 +47,7 @@
     #include <dxgi1_4.h>
     #include <d3dcompiler.h>
     //#include <xnamath.h>
-    #include <DirectXMath.h>
+	#include <d3dx10math.h>
 
     #pragma comment(lib, "d3d11.lib")
     #pragma comment(lib, "d3dcompiler.lib")

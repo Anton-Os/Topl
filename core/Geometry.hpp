@@ -39,7 +39,7 @@ struct Geo_PerVertexData { // TODO: Fix this class
 		texCoord[0] = t[0]; texCoord[1] = t[1];
 	}
 
-	float position[3]; // For xyz elements
+	float position[3]; // For xyzw elements
 	float texCoord[2]; // For uv texture coordinates */
 };
 
@@ -51,6 +51,8 @@ public:
     ~Geo_RenderObj(){ cleanup(); }
 
 	void cleanup() {
+		if (mPerVertexData != nullptr) free(mPerVertexData);
+
 		if (mVData != nullptr) free(mVData);
 		if (mTData != nullptr) free(mTData);
 		if (mIData != nullptr) free(mIData);
@@ -59,12 +61,19 @@ public:
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
 	perVertex_cptr getPerVertexData() { // TODO: Fix this
-		if (mPerVertexData.size() == 0) {
+		/* if (mPerVertexData.size() == 0) {
 
 			for (unsigned vOffset = 0; vOffset < mVCount; vOffset++)
 				mPerVertexData.push_back(Geo_PerVertexData(*(mVData + vOffset), *(mTData + vOffset)));
 		}
-		return mPerVertexData.data();
+		return mPerVertexData.data(); */
+
+		if (mPerVertexData == nullptr) {
+			mPerVertexData = (Geo_PerVertexData*)malloc(mVCount * sizeof(Geo_PerVertexData));
+			for (unsigned v = 0; v < mVCount; v++)
+				*(mPerVertexData + v) = Geo_PerVertexData(*(mVData + v), *(mTData + v));
+		}
+		return mPerVertexData;
 	}
 
     vec3f_cptr getVData() const { return mVData; }
@@ -79,7 +88,8 @@ protected:
     unsigned mVCount;
     unsigned mICount;
 
-	std::vector<Geo_PerVertexData> mPerVertexData;
+	//std::vector<Geo_PerVertexData> mPerVertexData;
+	Geo_PerVertexData* mPerVertexData = nullptr;
 
     Eigen::Vector3f* mVData = nullptr; // Vertex data
     Eigen::Vector2f* mTData = nullptr; // Texture coordinate data
