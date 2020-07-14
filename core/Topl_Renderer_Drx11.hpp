@@ -14,6 +14,18 @@ struct Buffer_Drx11 : public Buffer {
 	ID3D11Buffer* buffer; // DirectX specific
 };
 
+struct TextureData_Drx11 : public TextureData {
+	TextureData_Drx11() : TextureData() {}
+	TextureData_Drx11(unsigned id, enum TEX_Mode m, ID3D11Texture2D* t, ID3D11SamplerState* s)
+		: TextureData(id, m) {
+			texture = t;
+			sampler = s;
+		}
+
+	ID3D11Texture2D* texture = nullptr;
+	ID3D11SamplerState* sampler = nullptr;
+};
+
 
 struct Topl_Pipeline_Drx11 {
 	ID3D11InputLayout* vertexDataLayout; // Move out of here, NEXT IMPLEMENTATION
@@ -25,8 +37,6 @@ struct Topl_Pipeline_Drx11 {
 	// Texturing things
 	// ID3D11ShaderResourceView* texture; // Expand this code
 	// ID3D11SamplerState* samplerState;
-
-	ID3D11Texture2D* texture = nullptr;
 };
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
@@ -39,7 +49,7 @@ public:
 
 #ifdef RASTERON_H
     Rasteron_Image* getFrame() override;
-    void genTexture(const Rasteron_Image* image) override;
+    void genTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
@@ -48,7 +58,7 @@ private:
 
 	Topl_Pipeline_Drx11 m_pipeline;
 	std::vector<Buffer_Drx11> mBuffers;
-	unsigned mMaxBuffID = 1;
+	std::vector<TextureData_Drx11> mTextures;
 
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;

@@ -22,7 +22,6 @@ struct GraphicsTargetObject {
 #define MAX_BUFFER_TYPES 4 // Keep this value udated
 
 enum BUFF_Type {
-	// Per-vertex data
     BUFF_Vertex_3F = 0,
     BUFF_TexCoord_2F = 1,
 	// Additional data
@@ -42,45 +41,22 @@ struct Buffer : public GraphicsTargetObject {
     unsigned count = 1; // No. of primitives
 };
 
-enum UNIFORM_Type {
-    UNIFORM_F,
-    UNIFORM_2F,
-    UNIFORM_3F,
-    UNIFORM_4F,
-    UNIFORM_UI,
-    UNIFORM_2UI,
-    UNIFORM_3UI,
-    UNIFORM_4UI,
-    UNIFORM_I,
-    UNIFORM_2I,
-    UNIFORM_3I,
-    UNIFORM_4I,
-    // More complex
-    UNIFORM_FV,
-    UNIFORM_2FV,
-    UNIFORM_3FV,
-    UNIFORM_4FV,
-    UNIFORM_2x2M,
-    UNIFORM_3x3M,
-    UNIFORM_4x4M,
+enum TEX_Mode {
+	TEX_Wrap,
+	TEX_Mirror,
+	TEX_Clamp
 };
 
-struct Uniform : public GraphicsTargetObject {
-	Uniform() : GraphicsTargetObject() {}
-	/* Uniform(unsigned id, enum UNIFORM_Type t, void* d, size_t s) : GraphicsTargetObject(id) {
-		data = malloc(s); // make it the size of target data d
-		*(data) = *(d); // Copying step
+struct TextureData : public GraphicsTargetObject {
+	TextureData() : GraphicsTargetObject(){}
+	TextureData(unsigned id, enum TEX_Mode m) : GraphicsTargetObject(id) {
+		mode = m;
 	}
-	Uniform(unsigned id, enum UNIFORM_Type t, unsigned c, void* d, size_t s) : GraphicsTargetObject(id) {
-		data = malloc(s); // make it the size of target data d
-		*(data) = *(d); // Copying step
-
-	}
-	~Uniform() { if (data != nullptr) free(data); } */
-	enum UNIFORM_Type type;
-	void* data = nullptr;
-	unsigned count = 1;
+		// Additional data fields when needed and Derived texture object types
+	enum TEX_Mode mode;
 };
+
+
 
 class Topl_Renderer {
 public:
@@ -111,13 +87,14 @@ public:
 
 #ifdef RASTERON_H
     virtual Rasteron_Image* getFrame() = 0;
-    // May need a renderer specific texture type here
-    virtual void genTexture(const Rasteron_Image* image) = 0;
+    // May need a renderer specific texture type here // Texture should be linked to graphics object id!!!
+    virtual void genTexture(const Rasteron_Image* image, unsigned id) = 0;
 #endif
 
 protected:
     bool mPipelineReady = false;
     bool mSceneReady = false;
+	unsigned mMaxGraphicsID = 1;
     enum DRAW_Type mDrawType = DRAW_Triangles;
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;

@@ -121,6 +121,11 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	for(unsigned b = 0; b < mBuffers.size(); b++)
 		mBuffers.at(b).buffer->Release();
 
+	for (unsigned t = 0; t < mTextures.size(); t++) {
+		mTextures.at(t).texture->Release();
+		mTextures.at(t).sampler->Release();
+	}
+
 	m_swapChain->Release();
 	m_device->Release();
 	m_deviceCtx->Release();
@@ -130,6 +135,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	m_pipeline.vsBuff->Release();
 	m_pipeline.psBuff->Release();
 	m_pipeline.vertexDataLayout->Release();
+
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -302,7 +308,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 		if(!mSceneReady) return;
 
-		mMaxBuffID = g + 1; // Gives us the greatest buffer ID number
+		mMaxGraphicsID = g + 1; // Gives us the greatest buffer ID number
 	}
 
 	// Input assembler inputs to pipeline
@@ -334,27 +340,43 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	return nullptr;
 }
 
-void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image){
+void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Uncomment and fix
-	D3D11_TEXTURE2D_DESC desc;
-    desc.Width = image->width;
-    desc.Height = image->height;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
+	D3D11_TEXTURE2D_DESC texDesc;
+    texDesc.Width = image->width;
+    texDesc.Height = image->height;
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA imgData;
-    imgData.pSysMem = image->data;
-	imgData.SysMemPitch = sizeof(uint32_t) * image->width;
-	imgData.SysMemSlicePitch = 0; // Hope this works for a 2D image
+    D3D11_SUBRESOURCE_DATA texData;
+    texData.pSysMem = image->data;
+	texData.SysMemPitch = sizeof(uint32_t) * image->width;
+	texData.SysMemSlicePitch = 0; // Hope this works for a 2D image
 
-    m_device->CreateTexture2D( &desc, &imgData, &m_pipeline.texture);
+	ID3D11Texture2D* texture;
+    m_device->CreateTexture2D( &texDesc, &texData, &texture);
+
+	// TODO: Some parameters should be customizable
+	D3D11_SAMPLER_DESC sampleDesc;
+	sampleDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampleDesc.MinLOD = 0;
+	sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ID3D11SamplerState* sampler;
+	m_device->CreateSamplerState(&sampleDesc, &sampler);
+
+	mTextures.push_back(TextureData_Drx11(id, TEX_Wrap, texture, sampler));
 }
 
 #endif
@@ -404,7 +426,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = mMaxBuffID; id >= 1; id--) { // ID signifies graphics target id
+		for (unsigned id = mMaxGraphicsID; id >= 1; id--) { // ID signifies graphics target id
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
@@ -424,9 +446,6 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
 			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
-
-			// m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			//m_deviceCtx->Draw(vertexBuff->count, 0);
 		}
 
 	free(dBuffers);

@@ -41,12 +41,12 @@ private:
 
 // Vertex Array Object Allocation Helpers
 
-struct VertexArray_GL4 : public RenderTargetObject {
-	VertexArray_GL4() : RenderTargetObject() {}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t) : RenderTargetObject(id){
+struct VertexArray_GL4 : public GraphicsTargetObject {
+	VertexArray_GL4() : GraphicsTargetObject() {}
+	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t) : GraphicsTargetObject(id){
 		vao = v; size = sz; type = t;
 	}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : RenderTargetObject(id){
+	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : GraphicsTargetObject(id){
 		vao = v; size = sz; type = t; index = i; normalized = n; stride = st;
 	}
 
@@ -86,8 +86,13 @@ public:
     Topl_Renderer_GL4(HWND hwnd){ init(hwnd); }
 	~Topl_Renderer_GL4();
 
-    void buildScene(const Topl_SceneManager* sMan) override;
 	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
+    void buildScene(const Topl_SceneManager* sMan) override;
+
+#ifdef RASTERON_H
+	Rasteron_Image* getFrame() override;
+	void genTexture(const Rasteron_Image* image, unsigned id) override;
+#endif
 private:
     void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_SceneManager* sMan) override;
@@ -98,5 +103,4 @@ private:
 	std::vector<Buffer_GL4> mBuffers;
 	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc;
 	std::vector<VertexArray_GL4> mVAOs;
-	unsigned mMaxBuffID = 1;
 };

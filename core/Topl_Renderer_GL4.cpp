@@ -159,7 +159,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 		m_pipeline.layoutIndex++;
 
-		mMaxBuffID = g + 1;
+		mMaxGraphicsID = g + 1;
 	}
 
 	mSceneReady = true;
@@ -312,7 +312,7 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
 
-	for (unsigned id = 1; id <= mMaxBuffID; id++) {
+	for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
 		// Vertex array must be bound first! Ha!
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
