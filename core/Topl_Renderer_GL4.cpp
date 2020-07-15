@@ -43,15 +43,14 @@ namespace _GL4 {
 	};
 
 	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
-		Buffer_GL4* currentBuff = nullptr;
+		return *(bufferPtrs + type); // We know the offset with the type argument
+	}
 
-		for (unsigned short b = 0; b < count; b++) {
-			currentBuff = *(bufferPtrs + b);
-			if (currentBuff->type == type) break; // Correct buffer was found
-			else currentBuff = nullptr;
-		}
-
-		return currentBuff; // Try to optimize the code above
+	static void discoverBuffers(Buffer_GL4** dBuffers, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
+		//TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
+		for (std::vector<Buffer_GL4>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
+			if (currentBuff->targetID == id)
+				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
 	}
 }
 
@@ -310,7 +309,7 @@ void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const To
 void Topl_Renderer_GL4::render(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_GL4*));
+	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
 		// Vertex array must be bound first! Ha!
@@ -321,18 +320,11 @@ void Topl_Renderer_GL4::render(void){
 				continue; // If it continues all the way through error has occured
 
 		// Buffer binding step
-		unsigned bOffset = 0; // Populates the bufferPtrs structure
-		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == id)
-				if (bOffset >= MAX_BUFFER_TYPES) break;
-				else {
-					*(bufferPtrs + bOffset) = &(*currentBuff);
-					bOffset++;
-				} // bOffset will finally indicate how many buffers were located
+		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, bOffset);
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, bOffset);
-		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_vec3f, bufferPtrs, bOffset);
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_vec3f, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);

@@ -19,14 +19,12 @@ struct GraphicsTargetObject {
 	unsigned targetID;
 };
 
-#define MAX_BUFFER_TYPES 4 // Keep this value udated
+#define MAX_BUFFERS_PER_TARGET 3 // Keep this value updated
 
 enum BUFF_Type {
     BUFF_Vertex_3F = 0,
-    BUFF_TexCoord_2F = 1,
-	// Additional data
-    BUFF_Index_UI = 2,
-    BUFF_Const_vec3f = 3
+    BUFF_Index_UI = 1,
+    BUFF_Const_vec3f = 2
 };
 
 struct Buffer : public GraphicsTargetObject {
@@ -40,6 +38,8 @@ struct Buffer : public GraphicsTargetObject {
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
 };
+
+#define MAX_TEXTURES_PER_TARGET 12
 
 enum TEX_Mode {
 	TEX_Wrap,

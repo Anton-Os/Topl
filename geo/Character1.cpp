@@ -1,8 +1,12 @@
 #include "Geo_Constructs.hpp"
 
 void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
+	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
+	
 	Topl_GeoNode* gHead = getNextNode();
 	sMan->addGeometry("head", gHead);
+	sprite = getSprite(CHAR_Head);
+	sMan->addTexture("head", sprite->image);
 
 	Topl_GeoNode* gBody = getNextNode();
 	sMan->addGeometry("body", gBody);

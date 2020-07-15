@@ -107,10 +107,11 @@ namespace _Drx11 {
 	}
 
 	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
-		return *(dBuffers + type); // Going to return proper index
+		return *(dBuffers + type); // We know the offset with the type argument
 	}
 
 	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
+		//TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
 				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
@@ -306,8 +307,9 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
 
-		if(!mSceneReady) return;
+		// TODO: Texture retrieval should go here!!!
 
+		if(!mSceneReady) return;
 		mMaxGraphicsID = g + 1; // Gives us the greatest buffer ID number
 	}
 
@@ -422,7 +424,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 		return;
 	}
 
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFER_TYPES * sizeof(Buffer_Drx11*));
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
@@ -430,9 +432,9 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, MAX_BUFFER_TYPES);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFER_TYPES);
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, MAX_BUFFER_TYPES);
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;

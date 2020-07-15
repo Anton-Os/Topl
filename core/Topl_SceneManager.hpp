@@ -1,9 +1,12 @@
 // More Complex types
 #ifndef TOPL_SCENEGRAPH_H
 
+#include "native_os_def.h" // This includes the Rasteron.h header, TODO Fix This!!!
+
 #include <memory>
 #include <vector>
 #include <string>
+#include <utility>
 
 #include "Timer.hpp"
 #include "Physics.hpp"
@@ -92,6 +95,9 @@ enum GEO_UpdateFlags {
 };
 
 typedef const Topl_GeoNode* const tpl_gEntity_cptr;
+#ifdef RASTERON_H
+	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
+#endif
 
 class Topl_SceneManager {
 public:
@@ -101,24 +107,27 @@ public:
     ~Topl_SceneManager(){}
 
     void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
-    void addGeometry(const std::string& name, Topl_GeoNode* geoNode, const Eigen::Vector3f& vec);
+    // void addGeometry(const std::string& name, Topl_GeoNode* geoNode, const Eigen::Vector3f& vec);
     void addForce(const std::string& name, const Eigen::Vector3f& vec);
     void addConnector(const Phys_Connector* connector, const std::string& name1, const std::string& name2);
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, Rasteron_Image* rstnImage);
+	void addTexture(const std::string& name, const Rasteron_Image* rstnImage) { mNameToTex.push_back(std::make_pair(mNameToId_map.at(name), rstnImage)); }
 #endif
 
     unsigned getGeoCount() const { return mIdToGeo_map.size(); }
-    tpl_gEntity_cptr getGeoNode(unsigned index) const;
-    tpl_gEntity_cptr getGeoNode(const std::string& name) const;
+    tpl_gEntity_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
+    tpl_gEntity_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
+#ifdef RASTERON_H
+	unsigned getTextures(unsigned index, const Rasteron_Image* const* images); // Sequential access, see 
+#endif
 private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
     std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
-    std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map;
+    std::map<unsigned, geoUpdateFlags_t> mIdToUpdate_map; // Three-fold Id association exists for unnamed geometries
 
     Timer_Ticker mTicker;
 #ifdef RASTERON_H
-	std::map<unsigned, Rasteron_Image*> mIdToTexture_map;
+	std::vector<idToImage_pair> mNameToTex; // Multiple textures could be associated to a geometry node
 #endif
 };
 
