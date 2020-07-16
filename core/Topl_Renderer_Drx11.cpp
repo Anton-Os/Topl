@@ -136,7 +136,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	m_pipeline.vsBuff->Release();
 	m_pipeline.psBuff->Release();
 	m_pipeline.vertexDataLayout->Release();
-
+	m_pipeline.resourceView->Release();
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -441,7 +441,8 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = mMaxGraphicsID; id >= 1; id--) { // ID signifies graphics target id
+		// for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
+		for (unsigned id = 1; id <= 1; id++) {
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
@@ -459,6 +460,28 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			UINT stride = sizeof(Geo_PerVertexData);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+
+			for (unsigned t = 0; t < mTextures.size(); t++) {
+				if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
+				else if (mTextures.at(t).targetID == id) {
+					ID3D11Texture2D* baseTex = mTextures.at(t).texture;
+					ID3D11SamplerState* baseSampler = mTextures.at(t).sampler;
+					// TODO: Need a getter function for resource view as well
+
+					D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+					ZeroMemory(&desc, sizeof(desc));
+					desc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+					desc.Texture2D.MostDetailedMip = 0;
+					desc.Texture2D.MipLevels = -1; // Customize these values if needed
+					
+					m_device->CreateShaderResourceView(baseTex, &desc, &m_pipeline.resourceView);
+
+					m_deviceCtx->PSSetShaderResources(0, 1, &m_pipeline.resourceView);
+					m_deviceCtx->PSSetSamplers(0, 1, &baseSampler);
+					break;
+				}
+			}
 
 			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 		}
