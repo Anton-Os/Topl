@@ -12,6 +12,7 @@
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
+	#include <windowsx.h>
 
     // OpenGL support
     #include <GL/gl.h>
@@ -40,19 +41,21 @@
 
     // #include "d3dx12.h" // Helper that also includes d3d12.h
     
-    #include <d3d11.h>
+    #include <d3d11_1.h>
+	#include <dxgi.h> // additional
+    #include <wrl/client.h> // additional
     #include "d3dx10.h"
     #include "d3dx11.h"
 
     #include <dxgi1_4.h>
     #include <d3dcompiler.h>
-    //#include <xnamath.h>
+    // #include <xnamath.h>
 	#include <d3dx10math.h>
 
     #pragma comment(lib, "d3d11.lib")
     #pragma comment(lib, "d3dcompiler.lib")
-    //#pragma comment(lib, "d3dx11.lib")
-    //#pragma comment(lib, "d3dx10.lib")
+    // #pragma comment(lib, "d3dx11.lib")
+    // #pragma comment(lib, "d3dx10.lib")
 #endif
 
 #define NATIVE_OS_DEF

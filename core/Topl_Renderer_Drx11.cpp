@@ -354,13 +354,28 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 }
 
 void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
-	// TODO: Uncomment and fix
+	HRESULT hrCode; // For viewing potential issues
+
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
+	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.MinLOD = 0;
+	sd.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ID3D11SamplerState* sampler;
+	hrCode = m_device->CreateSamplerState(&sd, &sampler);
+	
 	D3D11_TEXTURE2D_DESC texDesc;
+	ZeroMemory(&texDesc, sizeof(texDesc));
     texDesc.Width = image->width;
     texDesc.Height = image->height;
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
-    texDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
     texDesc.SampleDesc.Count = 1;
     texDesc.SampleDesc.Quality = 0;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -370,24 +385,11 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 
     D3D11_SUBRESOURCE_DATA texData;
     texData.pSysMem = image->data;
-	texData.SysMemPitch = sizeof(uint32_t) * image->width;
-	texData.SysMemSlicePitch = 0; // Hope this works for a 2D image
+	texData.SysMemPitch = (sizeof(uint32_t) * image->width) / sizeof(BYTE);
+	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
-    m_device->CreateTexture2D( &texDesc, &texData, &texture);
-
-	// TODO: Some parameters should be customizable
-	D3D11_SAMPLER_DESC sampleDesc;
-	sampleDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampleDesc.MinLOD = 0;
-	sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	ID3D11SamplerState* sampler;
-	m_device->CreateSamplerState(&sampleDesc, &sampler);
+    hrCode = m_device->CreateTexture2D( &texDesc, &texData, &texture);
 
 	mTextures.push_back(TextureData_Drx11(id, TEX_Wrap, texture, sampler));
 }
