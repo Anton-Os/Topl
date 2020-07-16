@@ -60,3 +60,23 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
     // float accel, velocity, pos;
     targetNode->updatePos(vec);
 }
+
+#ifdef RASTERON_H
+	unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
+		// Dummy check if textures exist at all.
+		unsigned texCount = 0;
+
+		for (unsigned t = 0; t < mIdToTex.size(); t++)
+			if (index == mIdToTex.at(t).first) texCount++;
+
+		// Check if images has members
+		if (images == nullptr) return texCount;
+
+		unsigned iOffset = 0;
+		for (unsigned t = 0; t < mIdToTex.size(); t++)
+			if (index == mIdToTex.at(t).first) {
+				*(images + iOffset) = mIdToTex.at(t).second;
+				iOffset++;
+			}
+	}
+#endif

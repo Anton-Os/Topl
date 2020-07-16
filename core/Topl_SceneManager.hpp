@@ -111,14 +111,14 @@ public:
     void addForce(const std::string& name, const Eigen::Vector3f& vec);
     void addConnector(const Phys_Connector* connector, const std::string& name1, const std::string& name2);
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, const Rasteron_Image* rstnImage) { mNameToTex.push_back(std::make_pair(mNameToId_map.at(name), rstnImage)); }
+	void addTexture(const std::string& name, const Rasteron_Image* rstnImage) { mIdToTex.push_back(std::make_pair(mNameToId_map.at(name), rstnImage)); }
 #endif
 
     unsigned getGeoCount() const { return mIdToGeo_map.size(); }
     tpl_gEntity_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
     tpl_gEntity_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
 #ifdef RASTERON_H
-	unsigned getTextures(unsigned index, const Rasteron_Image* const* images); // Sequential access, see 
+	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
 #endif
 private:
     std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
@@ -127,7 +127,7 @@ private:
 
     Timer_Ticker mTicker;
 #ifdef RASTERON_H
-	std::vector<idToImage_pair> mNameToTex; // Multiple textures could be associated to a geometry node
+	std::vector<idToImage_pair> mIdToTex; // Multiple textures could be associated to a geometry node
 #endif
 };
 

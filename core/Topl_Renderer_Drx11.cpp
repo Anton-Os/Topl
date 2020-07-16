@@ -307,7 +307,18 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
 
-		// TODO: Texture retrieval should go here!!!
+#ifdef RASTERON_H
+		unsigned texCount = sMan->getTextures(g + 1, nullptr);
+		if (texCount > 0) {
+			const Rasteron_Image** textures = (const Rasteron_Image**)malloc(sizeof(Rasteron_Image*) * texCount);
+			sMan->getTextures(g + 1, textures);
+
+			// Generating a texture from the first entry for now
+			genTexture(*(textures), g + 1);
+
+			free(textures);
+		}
+#endif
 
 		if(!mSceneReady) return;
 		mMaxGraphicsID = g + 1; // Gives us the greatest buffer ID number
