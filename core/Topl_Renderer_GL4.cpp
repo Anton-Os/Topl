@@ -186,16 +186,48 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 							   currentVAO_ptr->stride,
 							   NULL
 		);
+		m_pipeline.layoutIndex++; // TODO: Figure this part out, mark for deletion
 
-		m_pipeline.layoutIndex++;
+#ifdef RASTERON_H
+	unsigned texCount = sMan->getTextures(g + 1, nullptr);
+	if(texCount > 0){
+		const Rasteron_Image* baseTex = sMan->getFirstTexture(g + 1);
 
+		genTexture(baseTex, g + 1); // Add the method definition
+	}
+#endif
 		mMaxGraphicsID = g + 1;
 	}
 
 	mSceneReady = true;
-
     return; // To be continued
 }
+
+#ifdef RASTERON_H
+
+Rasteron_Image* Topl_Renderer_GL4::getFrame(){
+	return nullptr;
+}
+
+void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
+	// TODO: Check for format compatablitiy before this call, TEX_2D
+	GLuint texture = m_textureBindingsAlloc.getAvailable();
+
+	glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level
+	glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
+
+	GLuint sampler = m_samplerBindingsAlloc.getAvailable();
+
+	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameterf(sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+
+	mTextures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture, sampler));
+}
+
+#endif
 
 void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	Buffer_GL4* targetBuff = nullptr;

@@ -308,7 +308,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
 
 #ifdef RASTERON_H
-		unsigned texCount = sMan->getTextures(g + 1, nullptr); //TODO: Fix this
+		unsigned texCount = sMan->getTextures(g + 1, nullptr); 
 		if (texCount > 0) {
 			const Rasteron_Image* baseTex = sMan->getFirstTexture(g + 1);
 

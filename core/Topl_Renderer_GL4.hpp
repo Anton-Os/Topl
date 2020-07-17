@@ -93,6 +93,7 @@ public:
 		allocFrmt = f;
 	}
 	GLuint getAvailable() override;
+	enum TEX_Frmt getFormat(){ return TEX_2D; } // Set to default, use switch case statement
 private:
 	void init() override { glCreateTextures(allocFrmt, GL4_TEXTURE_BINDINGS_MAX, &slots[0]); }
 
@@ -107,7 +108,6 @@ private:
 class Topl_SamplerBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
 public:
 	Topl_SamplerBindingAlloc_GL4(){}
-	GLuint getAvailable() override;
 private:
 	void init() override { glGenSamplers(GL4_SAMPLER_BINDINGS_MAX, &slots[0]); }
 
@@ -148,8 +148,7 @@ private:
 	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc;
 	std::vector<VertexArray_GL4> mVAOs;
 
-	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc // good idea to initialize now
-		= Topl_TextureBindingAlloc_GL4(TEX_2D);
-	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc;
+	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc = Topl_TextureBindingAlloc_GL4(TEX_2D);
+	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc = Topl_SamplerBindingAlloc_GL4(TEX_Wrap);
 	std::vector<Texture_GL4> mTextures;
 };
