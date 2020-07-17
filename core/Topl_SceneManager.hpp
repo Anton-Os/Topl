@@ -118,6 +118,7 @@ public:
     tpl_gEntity_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
     tpl_gEntity_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
 #ifdef RASTERON_H
+	const Rasteron_Image* getFirstTexture(unsigned index) const;
 	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
 #endif
 private:

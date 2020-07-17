@@ -308,15 +308,11 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
 
 #ifdef RASTERON_H
-		unsigned texCount = sMan->getTextures(g + 1, nullptr);
+		unsigned texCount = sMan->getTextures(g + 1, nullptr); //TODO: Fix this
 		if (texCount > 0) {
-			const Rasteron_Image** textures = (const Rasteron_Image**)malloc(sizeof(Rasteron_Image*) * texCount);
-			sMan->getTextures(g + 1, textures);
+			const Rasteron_Image* baseTex = sMan->getFirstTexture(g + 1);
 
-			// Generating a texture from the first entry for now
-			genTexture(*(textures), g + 1);
-
-			free(textures);
+			genTexture(baseTex, g + 1);
 		}
 #endif
 
@@ -375,17 +371,21 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
     texDesc.Height = image->height;
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.SampleDesc.Count = 1;
     texDesc.SampleDesc.Quality = 0;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
+    texDesc.MiscFlags = 0; 
+	/* texDesc.Usage = D3D11_USAGE_DYNAMIC;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	texDesc.MiscFlags = 0; */
 
     D3D11_SUBRESOURCE_DATA texData;
-    texData.pSysMem = image->data;
-	texData.SysMemPitch = (sizeof(uint32_t) * image->width) / sizeof(BYTE);
+    texData.pSysMem = /* (const void*) */image->data;
+	texData.SysMemPitch = sizeof(uint32_t) * image->width;
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
@@ -470,10 +470,10 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 					D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 					ZeroMemory(&desc, sizeof(desc));
-					desc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 					desc.Texture2D.MostDetailedMip = 0;
-					desc.Texture2D.MipLevels = -1; // Customize these values if needed
+					desc.Texture2D.MipLevels = 1; // Customize these values if needed
 					
 					m_device->CreateShaderResourceView(baseTex, &desc, &m_pipeline.resourceView);
 

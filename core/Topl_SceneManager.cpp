@@ -62,6 +62,12 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 }
 
 #ifdef RASTERON_H
+	const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
+		for (unsigned t = 0; t < mIdToTex.size(); t++)
+			if (index == mIdToTex.at(t).first)
+				return mIdToTex.at(t).second;
+	}
+
 	unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
 		// Dummy check if textures exist at all.
 		unsigned texCount = 0;
