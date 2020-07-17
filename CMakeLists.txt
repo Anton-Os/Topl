@@ -91,7 +91,7 @@ add_executable(DemoDrx11
 
     demos/DemoDrx11_Init.cpp
 )
-target_include_directories(DemoDrx11 PUBLIC core helper geo)
+target_include_directories(DemoDrx11 PUBLIC core geo)
 
 target_include_directories(DemoDrx11 PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
@@ -109,7 +109,7 @@ add_executable(DemoDrx11_Shapes
 
     demos/DemoDrx11_Shapes.cpp
 )
-target_include_directories(DemoDrx11_Shapes PUBLIC core helper geo)
+target_include_directories(DemoDrx11_Shapes PUBLIC core geo)
 
 target_include_directories(DemoDrx11_Shapes PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
@@ -127,7 +127,7 @@ add_executable(DemoDrx11_MovingSprite
 
     demos/DemoDrx11_MovingSprite.cpp
 )
-target_include_directories(DemoDrx11_MovingSprite PUBLIC core helper geo)
+target_include_directories(DemoDrx11_MovingSprite PUBLIC core geo)
 
 target_include_directories(DemoDrx11_MovingSprite PUBLIC 
     ${CMAKE_INSTALL_PREFIX}/include/dxsdk
@@ -149,11 +149,11 @@ add_executable(DemoGL4
     demos/DemoGL4_Init.cpp 
 )
 
-target_include_directories(DemoGL4 PUBLIC core helper geo)
+target_include_directories(DemoGL4 PUBLIC core geo)
 target_include_directories(DemoGL4 PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
+)
 target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 target_link_libraries(DemoGL4 PRIVATE GLEW_lib)
 
@@ -168,13 +168,33 @@ add_executable(DemoGL4_Shapes
     demos/DemoGL4_Shapes.cpp 
 )
 
-target_include_directories(DemoGL4_Shapes PUBLIC core helper geo)
+target_include_directories(DemoGL4_Shapes PUBLIC core geo)
 target_include_directories(DemoGL4_Shapes PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
+)
 target_link_libraries(DemoGL4_Shapes INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 target_link_libraries(DemoGL4_Shapes PRIVATE GLEW_lib)
+
+add_executable(DemoGL4_MovingSprite
+    core/FileIO.cpp
+    core/Geometry.cpp
+    core/Timer.cpp
+    geo/Character1.cpp
+    core/Topl_SceneManager.cpp
+    core/Topl_Renderer_GL4.cpp
+    
+    demos/DemoGL4_MovingSprite.cpp 
+)
+target_include_directories(DemoGL4_MovingSprite PUBLIC core geo)
+
+target_include_directories(DemoGL4_MovingSprite PUBLIC 
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+)
+target_link_libraries(DemoGL4_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
+target_link_libraries(DemoGL4_MovingSprite PRIVATE RasteronLib GLEW_lib)
+ 
 
 
 

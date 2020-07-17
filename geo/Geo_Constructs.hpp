@@ -8,7 +8,10 @@
 #include "Timer.hpp"
 
 #include "Topl_SceneManager.hpp"
-#include "Geo_SpriteTable.hpp"
+
+#ifdef RASTERON_H
+	#include "Geo_SpriteTable.hpp"
+#endif
 
 // Geometry wrapper class that can manage its states
 
@@ -78,6 +81,7 @@ private:
 	Geo_Sphere2D sphere3 = Geo_Sphere2D(0.333f, 42);
 };
 
+#ifdef RASTERON_H
 class Geo_Character1 : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
 	Geo_Character1(const std::string& prefix, Topl_SceneManager* sMan) :
@@ -114,6 +118,7 @@ public:
 private:
 	void fill(Topl_SceneManager* sMan) override;
 };
+#endif
 
 
 Eigen::Vector3f updatePosAbs(const Eigen::Vector3f& pos);

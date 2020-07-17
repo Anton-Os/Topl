@@ -14,10 +14,10 @@ struct Buffer_Drx11 : public Buffer {
 	ID3D11Buffer* buffer; // DirectX specific
 };
 
-struct TextureData_Drx11 : public TextureData {
-	TextureData_Drx11() : TextureData() {}
-	TextureData_Drx11(unsigned id, enum TEX_Mode m, ID3D11Texture2D* t, ID3D11SamplerState* s)
-		: TextureData(id, m) {
+struct Texture_Drx11 : public Texture {
+	Texture_Drx11() : Texture() {}
+	Texture_Drx11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11Texture2D* t, ID3D11SamplerState* s)
+		: Texture(id, f, m) {
 			texture = t;
 			sampler = s;
 		}
@@ -58,7 +58,7 @@ private:
 
 	Topl_Pipeline_Drx11 m_pipeline;
 	std::vector<Buffer_Drx11> mBuffers;
-	std::vector<TextureData_Drx11> mTextures;
+	std::vector<Texture_Drx11> mTextures;
 
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;

@@ -391,7 +391,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	ID3D11Texture2D* texture;
     hrCode = m_device->CreateTexture2D( &texDesc, &texData, &texture);
 
-	mTextures.push_back(TextureData_Drx11(id, TEX_Wrap, texture, sampler));
+	mTextures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler));
 }
 
 #endif

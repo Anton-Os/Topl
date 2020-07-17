@@ -70,6 +70,49 @@ private:
 
 	GLuint slots[GL4_VERTEX_ARRAY_MAX];
 	unsigned slotIndex = 0; // May need to be zero
+	
+};
+
+struct Texture_GL4 : public Texture {
+	Texture_GL4() : Texture() {}
+	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t, GLuint s)
+		: Texture(id, f, m) {
+			texture = t;
+			sampler = s;
+		}
+
+	GLuint texture;
+	GLuint sampler;
+};
+
+#define GL4_TEXTURE_BINDINGS_MAX 1024
+
+class Topl_TextureBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
+public:
+	Topl_TextureBindingAlloc_GL4(GLenum f){
+		allocFrmt = f;
+	}
+	GLuint getAvailable() override;
+private:
+	void init() override { glCreateTextures(allocFrmt, GL4_TEXTURE_BINDINGS_MAX, &slots[0]); }
+
+	GLenum allocFrmt;
+	GLuint slots[GL4_TEXTURE_BINDINGS_MAX];
+	unsigned slotIndex = 0;
+};
+
+#define GL4_SAMPLER_BINDINGS_MAX 1024
+#define GL4_DEFAULT_TEXTURE_UNIT 0
+
+class Topl_SamplerBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
+public:
+	Topl_SamplerBindingAlloc_GL4(){}
+	GLuint getAvailable() override;
+private:
+	void init() override { glGenSamplers(GL4_SAMPLER_BINDINGS_MAX, &slots[0]); }
+
+	GLuint slots[GL4_SAMPLER_BINDINGS_MAX];
+	unsigned slotIndex = 0;
 };
 
 struct Topl_Pipeline_GL4 {
@@ -99,8 +142,14 @@ private:
 	void render(void) override;
 
     Topl_Pipeline_GL4 m_pipeline;
+
 	Topl_BufferAlloc_GL4 m_bufferAlloc;
 	std::vector<Buffer_GL4> mBuffers;
 	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc;
 	std::vector<VertexArray_GL4> mVAOs;
+
+	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc // good idea to initialize now
+		= Topl_TextureBindingAlloc_GL4(TEX_2D);
+	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc;
+	std::vector<Texture_GL4> mTextures;
 };

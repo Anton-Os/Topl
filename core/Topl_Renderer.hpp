@@ -41,18 +41,25 @@ struct Buffer : public GraphicsTargetObject {
 
 #define MAX_TEXTURES_PER_TARGET 12
 
+enum TEX_Frmt {
+    TEX_1D,
+    TEX_2D,
+    TEX_3D
+};
+
 enum TEX_Mode {
 	TEX_Wrap,
 	TEX_Mirror,
 	TEX_Clamp
 };
 
-struct TextureData : public GraphicsTargetObject {
-	TextureData() : GraphicsTargetObject(){}
-	TextureData(unsigned id, enum TEX_Mode m) : GraphicsTargetObject(id) {
-		mode = m;
+struct Texture : public GraphicsTargetObject {
+	Texture() : GraphicsTargetObject(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : GraphicsTargetObject(id) {
+		format = f; mode = m;
 	}
 		// Additional data fields when needed and Derived texture object types
+    enum TEX_Frmt format;
 	enum TEX_Mode mode;
 };
 

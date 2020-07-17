@@ -32,6 +32,34 @@ GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
 	return targetVAO;
 }
 
+GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
+	if (!mIsInit) init();
+	GLuint targetTextureB = 0;
+
+	if (slotIndex > GL4_TEXTURE_BINDINGS_MAX)
+		puts("Maximum Texture Bindings capacity exceeded!");
+	else {
+		targetTextureB = slots[slotIndex];
+		slotIndex++;
+	}
+
+	return targetTextureB;
+}
+
+GLuint Topl_SamplerBindingAlloc_GL4::getAvailable(){
+	if (!mIsInit) init();
+	GLuint targetSamplerB = 0;
+
+	if (slotIndex > GL4_SAMPLER_BINDINGS_MAX)
+		puts("Maximum Sampler Bindings capacity exceeded!");
+	else {
+		targetSamplerB = slots[slotIndex];
+		slotIndex++;
+	}
+
+	return targetSamplerB;
+}
+
 #define DEFAULT_BLOCK_BINDING 0
 
 namespace _GL4 {
@@ -127,8 +155,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ID values begin at 1
-		vec3f_cptr geoTarget_vData = geoTarget_ptr->mRenderObj->getVData();
-		ui_cptr geoTarget_iData = geoTarget_ptr->mRenderObj->getIData();
+		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
+		
+		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
+		vec3f_cptr geoTarget_vData = geoTarget_renderObj->getVData();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
@@ -136,13 +167,13 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getICount()));
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_ptr->mRenderObj->getVCount()));
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, geoTarget_ptr->mRenderObj->getVCount() * sizeof(Eigen::Vector3f), geoTarget_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Eigen::Vector3f), geoTarget_vData, GL_STATIC_DRAW);
 
 		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable(), 3, GL_FLOAT));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
