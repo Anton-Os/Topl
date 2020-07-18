@@ -173,18 +173,22 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Eigen::Vector3f), geoTarget_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
-		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable(), 3, GL_FLOAT));
+		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
-		glEnableVertexAttribArray(currentVAO_ptr->index);
-		glVertexAttribPointer( currentVAO_ptr->index, 
-							   currentVAO_ptr->size, 
-							   currentVAO_ptr->type, 
-							   currentVAO_ptr->normalized, 
-							   currentVAO_ptr->stride,
-							   NULL
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0,3,
+							   GL_FLOAT, GL_FALSE,
+							   sizeof(Geo_PerVertexData), NULL
+		);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2,
+			GL_FLOAT, GL_FALSE,
+			sizeof(Geo_PerVertexData), GL4_BUFFER_OFFSET(12)
+			// &geoTarget_perVertexData->texCoord[0]
+			// geoTarget_perVertexData + offsetof(Geo_PerVertexData, texCoord)
 		);
 		m_pipeline.layoutIndex++; // TODO: Figure this part out, mark for deletion
 
@@ -213,16 +217,17 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Check for format compatablitiy before this call, TEX_2D
 	GLuint texture = m_textureBindingsAlloc.getAvailable();
 
-	glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level
+	glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level, second argument
 	glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
 
 	GLuint sampler = m_samplerBindingsAlloc.getAvailable();
 
-	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// As far as I can tell, sampler and texture are indestinct in the Fragment Shader!!!
+	/* glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glSamplerParameterf(sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+	glSamplerParameterf(sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f); */
 
 	mTextures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture, sampler));
 }
@@ -396,6 +401,17 @@ void Topl_Renderer_GL4::render(void){
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+
+		for (unsigned t = 0; t < mTextures.size(); t++) {
+			if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
+			else if (mTextures.at(t).targetID == id) {
+				glBindTexture(GL_TEXTURE_2D, mTextures.at(t).texture);
+
+				// Set texture parameters here!!! probably use helper func
+
+				break;
+			}
+		}
 
 		glPointSize(10.0f); // For testing
 		glLineWidth(3.0f); // For testing

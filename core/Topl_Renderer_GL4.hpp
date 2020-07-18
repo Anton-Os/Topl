@@ -1,5 +1,7 @@
 #include "Topl_Renderer.hpp"
 
+#define GL4_BUFFER_OFFSET(i) ((void*)(i))
+
 class Topl_DataAlloc_GL4 {
 public:
 	Topl_DataAlloc_GL4() {}
@@ -43,19 +45,14 @@ private:
 
 struct VertexArray_GL4 : public GraphicsTargetObject {
 	VertexArray_GL4() : GraphicsTargetObject() {}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t) : GraphicsTargetObject(id){
-		vao = v; size = sz; type = t;
+	VertexArray_GL4(unsigned id, GLuint v) : GraphicsTargetObject(id){
+		vao = v;
 	}
-	VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : GraphicsTargetObject(id){
+	/* VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : GraphicsTargetObject(id){
 		vao = v; size = sz; type = t; index = i; normalized = n; stride = st;
-	}
+	} */
 
 	GLuint vao;
-	GLuint index = 0;
-  	GLint size;
-  	GLenum type;
-  	GLboolean normalized = GL_FALSE;
-  	GLsizei stride = 0;
 };
 
 #define GL4_VERTEX_ARRAY_MAX 1024
@@ -108,6 +105,8 @@ private:
 class Topl_SamplerBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
 public:
 	Topl_SamplerBindingAlloc_GL4(){}
+
+	GLuint getAvailable() override;
 private:
 	void init() override { glGenSamplers(GL4_SAMPLER_BINDINGS_MAX, &slots[0]); }
 
@@ -149,6 +148,6 @@ private:
 	std::vector<VertexArray_GL4> mVAOs;
 
 	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc = Topl_TextureBindingAlloc_GL4(TEX_2D);
-	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc = Topl_SamplerBindingAlloc_GL4(TEX_Wrap);
+	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc;
 	std::vector<Texture_GL4> mTextures;
 };
