@@ -80,6 +80,20 @@ namespace _GL4 {
 			if (currentBuff->targetID == id)
 				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
 	}
+
+	static void setTextureProperties(GLenum type, TEX_Mode m) {
+		switch (m) {
+		case TEX_Wrap:
+			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		default:
+			break;
+		}
+		return;
+	}
 }
 
 #ifdef _WIN32
@@ -217,19 +231,12 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Check for format compatablitiy before this call, TEX_2D
 	GLuint texture = m_textureBindingsAlloc.getAvailable();
 
-	glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level, second argument
-	glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
+	// glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level, second argument
+	// glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
 
-	GLuint sampler = m_samplerBindingsAlloc.getAvailable();
+	glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 
-	// As far as I can tell, sampler and texture are indestinct in the Fragment Shader!!!
-	/* glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glSamplerParameterf(sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f); */
-
-	mTextures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture, sampler));
+	mTextures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
 }
 
 #endif
@@ -379,7 +386,8 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
-	for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
+	// for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
+	for (unsigned id = 1; id <= 1; id++) {
 		// Vertex array must be bound first! Ha!
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
@@ -407,7 +415,7 @@ void Topl_Renderer_GL4::render(void){
 			else if (mTextures.at(t).targetID == id) {
 				glBindTexture(GL_TEXTURE_2D, mTextures.at(t).texture);
 
-				// Set texture parameters here!!! probably use helper func
+				_GL4::setTextureProperties(GL_TEXTURE_2D, mTextures.at(t).mode);
 
 				break;
 			}

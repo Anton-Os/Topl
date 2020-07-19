@@ -72,27 +72,21 @@ private:
 
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
-	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t, GLuint s)
-		: Texture(id, f, m) {
-			texture = t;
-			sampler = s;
-		}
+	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t)
+		: Texture(id, f, m) { texture = t; }
 
 	GLuint texture;
-	GLuint sampler;
 };
 
 #define GL4_TEXTURE_BINDINGS_MAX 1024
 
 class Topl_TextureBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
 public:
-	Topl_TextureBindingAlloc_GL4(GLenum f){
-		allocFrmt = f;
-	}
+	Topl_TextureBindingAlloc_GL4(){}
 	GLuint getAvailable() override;
 	enum TEX_Frmt getFormat(){ return TEX_2D; } // Set to default, use switch case statement
 private:
-	void init() override { glCreateTextures(allocFrmt, GL4_TEXTURE_BINDINGS_MAX, &slots[0]); }
+	void init() override { glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &slots[0]); }
 
 	GLenum allocFrmt;
 	GLuint slots[GL4_TEXTURE_BINDINGS_MAX];
@@ -147,7 +141,7 @@ private:
 	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc;
 	std::vector<VertexArray_GL4> mVAOs;
 
-	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc = Topl_TextureBindingAlloc_GL4(TEX_2D);
+	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc;
 	Topl_SamplerBindingAlloc_GL4 m_samplerBindingsAlloc;
 	std::vector<Texture_GL4> mTextures;
 };
