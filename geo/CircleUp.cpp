@@ -15,7 +15,12 @@ void Geo_CircleUp::fill(Topl_SceneManager* sMan) {
 } // Should be a method of the base class
 
 void Geo_CircleUp::updateSceneManager(Topl_SceneManager* sMan) {
-    sMan->addForce("sphere1", Eigen::Vector3f(0.1f, 0.0f, 0.0), &mPhysProp1);
-    sMan->addForce("sphere2", Eigen::Vector3f(0.1f, 0.2f, 0.0), &mPhysProp2);
-    sMan->addForce("sphere3", Eigen::Vector3f(-0.1f, -0.08f, 0.0), &mPhysProp3);
+	sMan->addPhysics("sphere1", &mPhysProp1);
+    sMan->addForce("sphere1", Eigen::Vector3f(0.1f, 0.0f, 0.0));
+
+	sMan->addPhysics("sphere2", &mPhysProp2);
+    sMan->addForce("sphere2", Eigen::Vector3f(0.1f, 0.2f, 0.0));
+
+	sMan->addPhysics("sphere3", &mPhysProp3);
+    sMan->addForce("sphere3", Eigen::Vector3f(-0.1f, -0.08f, 0.0));
 }

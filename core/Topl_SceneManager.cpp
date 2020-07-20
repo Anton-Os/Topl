@@ -1,7 +1,7 @@
 #include "Topl_SceneManager.hpp"
 
-static void print_GeoNodeNotFound(const std::string& name) {
-	puts("Could not find geometry object: \n");
+static void print_ObjNotFound(const std::string& objTypeStr, const std::string& name) {
+	printf("Could not find %s object: \n", objTypeStr.c_str());
 	puts(name.c_str());
 	putchar('\n');
 }
@@ -30,7 +30,7 @@ tpl_gEntity_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
 
 tpl_gEntity_cptr Topl_SceneManager::getGeoNode(const std::string& name) const {
 	if (mNameToId_map.find(name) == mNameToId_map.end()) {
-		print_GeoNodeNotFound(name);
+		print_ObjNotFound("geometry", name);
 		return nullptr;
 	}
 
@@ -55,16 +55,13 @@ void Topl_SceneManager::addGeometry(const std::string& name, Topl_GeoNode* geoNo
 
 void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f& vec) {
 	if (mNameToId_map.find(name) == mNameToId_map.end())
-		return print_GeoNodeNotFound(name);
+		return print_ObjNotFound("geometry", name);
 
 	Topl_GeoNode* targetNode = mIdToGeo_map.at(mNameToId_map.at(name));
 	vec3f_cptr targetPos = targetNode->getPos();
 
-	/* if (mIdToPhysProp_map.find(mNameToId_map.at(name)) == mNameToId_map.end()) {
-		puts("Could not find geometry object:");
-		puts(name.c_str());
-		return;
-	} */ // TODO: Uncomment and fix
+	if (mIdToPhysProp_map.find(mNameToId_map.at(name)) == mIdToPhysProp_map.end())
+		return print_ObjNotFound("physics", name);
 
 	// pProp->acceleration = vec / pProp->mass;
 	// Integrate all the way to position
@@ -75,9 +72,15 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 
 void Topl_SceneManager::addPhysics(const std::string& name, Phys_Properties* pProp) {
 	if (mNameToId_map.find(name) == mNameToId_map.end())
-		return print_GeoNodeNotFound(name);
+		return print_ObjNotFound("geometry", name);
 
-	// mIdToPhysProp_map.insert(mNameToId_map.at(name), pProp); // TODO: Uncomment and fix
+	mIdToPhysProp_map.insert({ mNameToId_map.at(name), pProp });
+}
+
+void Topl_SceneManager::resolvePhysics() {
+	for (std::map<unsigned, Phys_Properties*>::iterator physCurrent = mIdToPhysProp_map.begin(); physCurrent != mIdToPhysProp_map.end(); physCurrent++) {
+		// Step through each, locate associated Topl_Geo node and update its position and orientation
+	}
 }
 
 #ifdef RASTERON_H
