@@ -230,11 +230,15 @@ Rasteron_Image* Topl_Renderer_GL4::getFrame(){
 void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Check for format compatablitiy before this call, TEX_2D
 	GLuint texture = m_textureBindingsAlloc.getAvailable();
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here 
 
 	// glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level, second argument
 	// glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
 
-	glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	mTextures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
 }
@@ -415,7 +419,7 @@ void Topl_Renderer_GL4::render(void){
 			else if (mTextures.at(t).targetID == id) {
 				glBindTexture(GL_TEXTURE_2D, mTextures.at(t).texture);
 
-				_GL4::setTextureProperties(GL_TEXTURE_2D, mTextures.at(t).mode);
+				// _GL4::setTextureProperties(GL_TEXTURE_2D, mTextures.at(t).mode);
 
 				break;
 			}
