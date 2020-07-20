@@ -10,18 +10,28 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacement
 
 	Topl_GeoNode* gBody = getNextNode();
 	sMan->addGeometry("body", gBody);
+	sprite = getSprite(CHAR_Body);
+	sMan->addTexture("body", sprite->image);
 
 	Topl_GeoNode* gLeftArm = getNextNode();
 	sMan->addGeometry("leftArm", gLeftArm);
+	sprite = getSprite(CHAR_LeftArm);
+	sMan->addTexture("leftArm", sprite->image);
 
 	Topl_GeoNode* gRightArm = getNextNode();
 	sMan->addGeometry("rightArm", gRightArm);
+	sprite = getSprite(CHAR_RightArm);
+	sMan->addTexture("rightArm", sprite->image);
 
 	Topl_GeoNode* gLeftLeg = getNextNode();
 	sMan->addGeometry("leftLeg", gLeftLeg);
+	sprite = getSprite(CHAR_LeftLeg);
+	sMan->addTexture("leftLeg", sprite->image);
 
 	Topl_GeoNode* gRightLeg = getNextNode();
 	sMan->addGeometry("rightLeg", gRightLeg);
+	sprite = getSprite(CHAR_LeftLeg);
+	sMan->addTexture("rightLeg", sprite->image);
 
     // Possibly code for adding connectors
 }

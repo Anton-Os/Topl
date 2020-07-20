@@ -46,20 +46,6 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 	return targetTextureB;
 }
 
-GLuint Topl_SamplerBindingAlloc_GL4::getAvailable(){
-	if (!mIsInit) init();
-	GLuint targetSamplerB = 0;
-
-	if (slotIndex > GL4_SAMPLER_BINDINGS_MAX)
-		puts("Maximum Sampler Bindings capacity exceeded!");
-	else {
-		targetSamplerB = slots[slotIndex];
-		slotIndex++;
-	}
-
-	return targetSamplerB;
-}
-
 #define DEFAULT_BLOCK_BINDING 0
 
 namespace _GL4 {
@@ -391,8 +377,7 @@ void Topl_Renderer_GL4::render(void){
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
-	for (unsigned id = 1; id <= 1; id++) {
-		// Vertex array must be bound first! Ha!
+	for (unsigned id = mMaxGraphicsID; id >= 1; id--) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);
@@ -418,9 +403,6 @@ void Topl_Renderer_GL4::render(void){
 			if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
 			else if (mTextures.at(t).targetID == id) {
 				glBindTexture(GL_TEXTURE_2D, mTextures.at(t).texture);
-
-				// _GL4::setTextureProperties(GL_TEXTURE_2D, mTextures.at(t).mode);
-
 				break;
 			}
 		}

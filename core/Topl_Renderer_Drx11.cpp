@@ -441,8 +441,8 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		// for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
-		for (unsigned id = 1; id <= 1; id++) {
+		for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
+		// for (unsigned id = mMaxGraphicsID; id >= 1; id--) {
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
