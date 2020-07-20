@@ -4,7 +4,7 @@
 #include <vector> // May be redundant
 #include <string>
 
-#include "Geometry.hpp"
+#include "Geometry.hpp" // Includes Physics.hpp as well
 #include "Timer.hpp"
 
 #include "Topl_SceneManager.hpp"
@@ -79,6 +79,10 @@ private:
 	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 4);
 	Geo_Sphere2D sphere2 = Geo_Sphere2D(0.4f, 200);
 	Geo_Sphere2D sphere3 = Geo_Sphere2D(0.333f, 42);
+
+    Phys_Properties mPhysProp1; // Initialized to defaults;
+    Phys_Properties mPhysProp2; // Initialized to defaults;
+    Phys_Properties mPhysProp3; // Initialized to defaults;
 };
 
 #ifdef RASTERON_H

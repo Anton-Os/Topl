@@ -1,3 +1,8 @@
+#include <cstdlib>
+#include <vector>
+
+#include <Eigen/Dense>
+
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
     CONNECT_Bungee, // Exerts pulling force, no push
@@ -10,4 +15,21 @@ struct Phys_Connector {
     CONNECT_Type type= CONNECT_Cable;
     double restLength = 0.5f;
     double deviation = 0.1f;
+};
+
+#define MAX_PHYS_FORCES 64
+
+struct Phys_Properties { // This binds to a Topl_GeoNode
+    Phys_Properties(){
+        forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
+        // Add the gravity force here, it will always be acting on the body
+    }
+    ~Phys_Properties(){ if(forces != nullptr) free(forces); }
+
+    float mass = 1.0;
+    Eigen::Vector3f velocity;
+    Eigen::Vector3f acceleration;
+
+    unsigned actingForceCount = 0; // Indicates the gravity force
+    Eigen::Vector3f* forces = nullptr;
 };
