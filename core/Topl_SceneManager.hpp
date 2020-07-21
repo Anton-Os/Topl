@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <cmath>
 
 #include "Timer.hpp"
 #include "Physics.hpp"
@@ -84,7 +85,7 @@ typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
 class Topl_SceneManager {
 public:
 	Topl_SceneManager() {
-		mTicker.reset(); // Resets timer for dynamic scene manager operations
+		mPhysTicker.reset(); // Resets timer for dynamic scene manager operations
 	}
 	~Topl_SceneManager() {}
 
@@ -112,8 +113,8 @@ private:
 	std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
 	std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
 	std::map<unsigned, Phys_Properties*> mIdToPhysProp_map;
+	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
 
-	Timer_Ticker mTicker;
 #ifdef RASTERON_H
 	std::vector<idToImage_pair> mIdToTex; // Multiple textures could be associated to a geometry node
 #endif
