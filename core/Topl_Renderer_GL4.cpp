@@ -158,7 +158,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		vec3f_cptr geoTarget_vData = geoTarget_renderObj->getVData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 

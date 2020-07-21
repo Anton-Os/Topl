@@ -15,6 +15,8 @@
 
 // Geometry wrapper class that can manage its states
 
+#define FIRST_UPDATE_NUM 0
+
 typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
 
 class Geo_Construct {
@@ -59,11 +61,11 @@ protected:
     }
 
 	std::vector<geoName_pair> mNamedNodes;
+	unsigned mUpdateCount = FIRST_UPDATE_NUM; // Probably needs to be private and a getter method
 private:
 	unsigned mNodeCount = 0;
     unsigned mCurrentNodeOffset = 0;
 	Topl_GeoNode** mNodeData = nullptr;
-
 }; // Needs work, could use more abstraction
 
 class Geo_CircleUp : public Geo_Construct {

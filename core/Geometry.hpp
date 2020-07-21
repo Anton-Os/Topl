@@ -33,8 +33,6 @@ struct Geo_PerVertexData { // TODO: Fix this class
 	Geo_PerVertexData(){} // Empty constructor
 
 	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){
-		/* position[0] = *(p->data + 0); position[1] = *(p->data + 1); position[2] = *(p->data + 2);
-		texCoord[0] = t->data + 0; texCoord[1] = t->data + 1; */
 		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
 		texCoord[0] = t[0]; texCoord[1] = t[1];
 	}
@@ -60,13 +58,7 @@ public:
 
     unsigned getVCount() const { return mVCount; }
     unsigned getICount() const { return mICount; }
-	perVertex_cptr getPerVertexData() { // TODO: Fix this
-		/* if (mPerVertexData.size() == 0) {
-
-			for (unsigned vOffset = 0; vOffset < mVCount; vOffset++)
-				mPerVertexData.push_back(Geo_PerVertexData(*(mVData + vOffset), *(mTData + vOffset)));
-		}
-		return mPerVertexData.data(); */
+	perVertex_cptr getPerVertexData() {
 
 		if (mPerVertexData == nullptr) {
 			mPerVertexData = (Geo_PerVertexData*)malloc(mVCount * sizeof(Geo_PerVertexData));
@@ -129,6 +121,7 @@ public:
         mCircle.segments = segments;
 
         mVData = genVertices();
+		mTData = genTexCoords();
         mIData = genIndices();
     }
 private:

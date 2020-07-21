@@ -90,7 +90,12 @@ Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
 	if (getTData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
 
-	return nullptr;
+	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
+
+	for (unsigned t = 0; t < mVCount; t++)
+		*(data + t) = Eigen::Vector2f(0.0f, 0.0f); 
+
+	return data;
 }
 
 unsigned* Geo_Sphere2D::genIndices(){
