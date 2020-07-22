@@ -22,7 +22,7 @@ void Geo_CircleUp::updateSceneManager(Topl_SceneManager* sMan) {
     sMan->addForce("sphere2", Eigen::Vector3f(0.1f, 0.2f, 0.0));
 
 	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addPhysics("sphere3", &mPhysProp3);
-    sMan->addForce("sphere3", Eigen::Vector3f(-0.1f, -0.08f, 0.0));
+    sMan->addForce("sphere3", Eigen::Vector3f(-0.01f, -0.008f, 0.0));
 
 	mUpdateCount++; // TODO: Make this increment a part of Geo_Construct
 }

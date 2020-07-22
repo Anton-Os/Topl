@@ -61,9 +61,13 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sMan1);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		circleUp.updateSceneManager(&sMan1);
-		renderer.updateScene(&sMan1);
-		// Process input and other things, on successful rendering
+		// Process input, this hould be the first update phase
+
+		circleUp.updateSceneManager(&sMan1); // First object specific updates occur
+
+		sMan1.resolvePhysics(); // Scene Manager needs to perform its internalized updates
+
+		renderer.updateScene(&sMan1); // Renderer specific updating is the last thing to take place
 	}
 
 	return 0;

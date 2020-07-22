@@ -12,9 +12,10 @@ enum CONNECT_Type {
 };
 
 struct Phys_Connector {
-    CONNECT_Type type= CONNECT_Cable;
+    CONNECT_Type type= CONNECT_Rod;
     double restLength = 0.5f;
-    double deviation = 0.1f;
+	double kVal = 0.88f; // Probably needs to be a constant
+    // double deviation = 0.1f;
 };
 
 #define MAX_PHYS_FORCES 64
@@ -26,9 +27,11 @@ struct Phys_Properties { // This binds to a Topl_GeoNode
     }
     ~Phys_Properties(){ if(forces != nullptr) free(forces); }
 
-    float mass = 1.0;
-    Eigen::Vector3f velocity;
-    Eigen::Vector3f acceleration;
+	const double damping = 0.98f;
+    double mass = 1.0;
+
+	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
+    Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
 
     unsigned actingForceCount = 0; // Indicates the gravity force
     Eigen::Vector3f* forces = nullptr;

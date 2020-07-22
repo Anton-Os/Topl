@@ -79,34 +79,32 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 	else
 		return; // Too many forces are acting on the object simultaneously
 
-	targetNode->updatePos(vec); // This code needs to be in the resolve physics method!!! REMOVE AND FIX
+	// targetNode->updatePos(vec); // This code needs to be in the resolve physics method!!! REMOVE AND FIX
 }
 
 void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
 
+	// const double magnifier = 1 / physElapseSecs; // Makes acceleration and force sync with each second!
+	const double magnifier = 1.0;
+
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
-		// TODO: make variables representing physCurrentMap->first and physCurrentMap->second
+		Phys_Properties* physProps = physCurrentMap->second;
 		
 		Topl_GeoNode* targetNode = mIdToGeo_map.at(physCurrentMap->first); // Gets the geometry node bound to the physics object
 		
-		if (physCurrentMap->second->actingForceCount == 0) {
-			// TODO: Update position based on current velocity of the object and exit
+		if (physProps->actingForceCount > 0) {
+			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++)
+				physProps->acceleration += (*(physProps->forces + forceIndex) * magnifier) / physProps->mass;
 		}
-		else {
-			// Adding forces to influence acceleration
-			for (unsigned forceIndex = 0; forceIndex < physCurrentMap->second->actingForceCount; forceIndex++)
-				physCurrentMap->second->acceleration += *(physCurrentMap->second->forces + forceIndex) / physCurrentMap->second->mass;
-
-			// Velocity Integrator
-			physCurrentMap->second->velocity += physCurrentMap->second->acceleration * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
-		}
+		// Velocity Integrator, 
+		physProps->velocity += (physProps->acceleration * magnifier) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
 
 		// Position integrator
-		targetNode->updatePos((physCurrentMap->second->velocity * physElapseSecs) + 0.5 * physCurrentMap->second->acceleration * pow(physElapseSecs, 2));
+		targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * physProps->acceleration * pow(physElapseSecs, 2));
 
-		physCurrentMap->second->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting
+		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
 }
 
