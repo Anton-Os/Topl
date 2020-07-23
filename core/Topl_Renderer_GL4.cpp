@@ -145,6 +145,10 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 	glEnable(GL_DEPTH_TEST); // Make these customizable
 	glDepthFunc(GL_LESS); // Make these customizable
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 
 }

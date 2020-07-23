@@ -34,9 +34,8 @@ struct Topl_Pipeline_Drx11 {
 	ID3DBlob* vsBuff;
 	ID3DBlob* psBuff;
 
-	// Texturing things
-	ID3D11ShaderResourceView* resourceView; // Expand this code
-	// ID3D11SamplerState* samplerState;
+	ID3D11ShaderResourceView* resourceView;
+	ID3D11BlendState* blendState;
 };
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {

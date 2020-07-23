@@ -18,10 +18,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	uint width;
 	baseTex.GetDimensions(width, height);
 
-	uint4 colorVec = baseTex.Sample(baseSampler, input.texcoord);
+	return baseTex.Sample(baseSampler, input.texcoord);
 
-	if (colorVec[3] == 0 && colorVec[2] == 0 && colorVec[1] == 0 && colorVec[0] == 0)
-		return float4(0.8f, 0.3f, 0.4f, 1.0f);
-	else
-		return float4(0.3f, 0.8f, 0.4f, 1.0f);
+	/* if(colorVec.a < 0.5f) discard;
+	else return colorVec; */
 }

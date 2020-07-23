@@ -195,7 +195,29 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     viewport.Width = 500; // REPLACE WITH DETERMINED WIDTH
 
 	m_deviceCtx->RSSetViewports(1, &viewport);
-    return;
+
+	// Blend State Functions
+
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	m_device->CreateBlendState(&blendStateDesc, &m_pipeline.blendState);
+    
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT blendMask = 0xffffffff;
+
+	m_deviceCtx->OMSetBlendState(m_pipeline.blendState, blendFactor, blendMask);
+
+	return;
 }
 
 void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
