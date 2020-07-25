@@ -12,71 +12,9 @@
 #include "Timer.hpp"
 #include "Physics.hpp"
 
-class Topl_Node { // Acts as a node
-public:
-	Topl_Node() {
-		mId_count++;
-		mId = mId_count;
-	}
-	~Topl_Node() {
-		mId_count--;
-	}
+#include "Geo_Component.hpp"
 
-	void setName(const std::string& name) { mName = '_' + name; }
-	void addChild(Topl_Node* child) { mChildren.push_back(child); }
-
-	// const unsigned const* mId_ref = &mId;
-	unsigned getId() const { return mId; }
-	Topl_Node* getParent() const { return mParent; }
-	Topl_Node* getChild(unsigned childNum) const {
-		if (childNum > mChildren.size()) return nullptr;
-		else return mChildren.at(childNum - 1);
-	}
-	unsigned getChildCount() { return mChildren.size(); }
-
-private:
-	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
-	unsigned mId; // Each object has a unique id
-	std::string mName = "_"; // Default is just an underscore
-
-	Topl_Node* mParent = nullptr;
-	std::vector<Topl_Node*> mChildren;
-};
-
-
-#include "Geometry.hpp"
-
-class Topl_GeoNode : public Topl_Node {
-public:
-	Topl_GeoNode() : Topl_Node() {}
-	Topl_GeoNode(const Geo_RenderObj* renderObj) : Topl_Node() { mRenderObj = renderObj; }
-
-	void updatePos(Eigen::Vector3f vec); // Follow by more spatial update things
-
-	vec3f_cptr getPos() const { return &mRelWorldPos; }
-	// float getWeight() const { return mWeight; }
-
-	const Geo_RenderObj* mRenderObj;
-protected:
-	enum GeoBehavior {
-		GEO_Fixed = 0, // Should be the default
-		GEO_Dynamic = 1
-	} mBehavior;
-private:
-	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
-	Eigen::Vector3f mOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
-	// float mWeight = 1.0f;
-};
-
-typedef unsigned geoUpdateFlags_t;
-
-enum GEO_UpdateFlags {
-	GEO_DataChange = 0,
-	GEO_Transposed = 1,
-	GEO_Rotated = 2,
-};
-
-typedef const Topl_GeoNode* const tpl_gEntity_cptr;
+typedef const Geo_Component* const tpl_gEntity_cptr;
 typedef std::pair<unsigned, Phys_Properties*> idToPhysProp_pair;
 #ifdef RASTERON_H
 typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
@@ -89,7 +27,7 @@ public:
 	}
 	~Topl_SceneManager() {}
 
-	void addGeometry(const std::string& name, Topl_GeoNode* geoNode);
+	void addGeometry(const std::string& name, Geo_Component* geoNode);
 #ifdef RASTERON_H
 	// TODO: Move definition to Topl_SceneManager.cpp and check for valid name input
 	void addTexture(const std::string& name, const Rasteron_Image* rstnImage) {
@@ -111,7 +49,7 @@ public:
 #endif
 private:
 	std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
-	std::map<unsigned, Topl_GeoNode*> mIdToGeo_map;
+	std::map<unsigned, Geo_Component*> mIdToGeo_map;
 	std::map<unsigned, Phys_Properties*> mIdToPhysProp_map;
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
 

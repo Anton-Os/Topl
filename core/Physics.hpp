@@ -22,7 +22,7 @@ struct Phys_Connector {
 
 #define MAX_PHYS_FORCES 64
 
-struct Phys_Properties { // This binds to a Topl_GeoNode
+struct Phys_Properties { // This binds to a Geo_Component
     Phys_Properties(){
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
         // Add the gravity force here, it will always be acting on the body

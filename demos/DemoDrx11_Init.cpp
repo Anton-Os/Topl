@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	// Geo_Rect2D gRect1(1.0f, 1.0f);
 	Geo_Sphere2D gSphere1(0.4f, 20);
 
-	Topl_GeoNode gEntity1((Geo_RenderObj*)&gSphere1);
+	Geo_Component gEntity1((Geo_RenderObj*)&gSphere1);
 
 	Topl_SceneManager sMan1; // REMOVE LATER
 	sMan1.addGeometry("sphere", &gEntity1);

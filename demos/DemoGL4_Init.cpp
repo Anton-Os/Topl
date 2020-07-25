@@ -56,9 +56,9 @@ int main(int argc, char** argv) {
 	Geo_Rect2D gRect1(1.0f, 1.0f);
 	Geo_Rect2D gRect2(2.0f, 0.2f);
 
-	// Topl_GeoNode gEntity1(&gRect1);
-	Topl_GeoNode gEntity1((Geo_RenderObj*)&gRect1);
-	Topl_GeoNode gEntity2((Geo_RenderObj*)&gRect2);
+	// Geo_Component gEntity1(&gRect1);
+	Geo_Component gEntity1((Geo_RenderObj*)&gRect1);
+	Geo_Component gEntity2((Geo_RenderObj*)&gRect2);
 
 	Topl_SceneManager sMan1; // REMOVE LATER
 	sMan1.addGeometry("box", &gEntity1);

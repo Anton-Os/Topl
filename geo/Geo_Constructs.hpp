@@ -17,20 +17,20 @@
 
 #define FIRST_UPDATE_NUM 0
 
-typedef std::pair<std::string, Topl_GeoNode*> geoName_pair;
+typedef std::pair<std::string, Geo_Component*> geoName_pair;
 
 class Geo_Construct {
 public:
     Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
-		mNodeData = (Topl_GeoNode**)malloc(renderObjs.size() * sizeof(Topl_GeoNode*));
+		mNodeData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-            *(mNodeData + mNodeCount) = new Topl_GeoNode(*(currentRenderObj));
+            *(mNodeData + mNodeCount) = new Geo_Component(*(currentRenderObj));
             mNodeCount++;
         }
         // fillSceneManager(sMan);
 	}
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Topl_GeoNode* rootNode) {
+    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Geo_Component* rootNode) {
 		// Implement logic for allocating mNodeData to size of children
 	}
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
@@ -53,7 +53,7 @@ public:
 	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
 protected:
 	virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedNodes structure
-    Topl_GeoNode* getNextNode(){
+    Geo_Component* getNextNode(){
         if(mCurrentNodeOffset <= mNodeCount){
             mCurrentNodeOffset++;   
             return *(mNodeData + mCurrentNodeOffset - 1); // To increment offset above in one line
@@ -65,7 +65,7 @@ protected:
 private:
 	unsigned mNodeCount = 0;
     unsigned mCurrentNodeOffset = 0;
-	Topl_GeoNode** mNodeData = nullptr;
+	Geo_Component** mNodeData = nullptr;
 }; // Needs work, could use more abstraction
 
 class Geo_CircleUp : public Geo_Construct {
@@ -133,14 +133,14 @@ class Geo_RandShapes {
 public:
     Geo_RandShapes(Topl_SceneManager* sMan){
         mBox1 = new Geo_Rect2D(0.8f, 0.6f);
-        mGeoNode1 = new Topl_GeoNode((Geo_RenderObj*)mBox1);
+        mGeoNode1 = new Geo_Component((Geo_RenderObj*)mBox1);
 
         mBox2 = new Geo_Rect2D(0.2f, 0.3f);
-        mGeoNode2 = new Topl_GeoNode((Geo_RenderObj*)mBox2);
+        mGeoNode2 = new Geo_Component((Geo_RenderObj*)mBox2);
         mGeoNode2->updatePos(Eigen::Vector3f(0.6f, -0.55f, 0.0f));
 
 		mSphere1 = new Geo_Sphere2D(0.2f, 20);
-        mGeoNode3 = new Topl_GeoNode((Geo_RenderObj*)mSphere1);
+        mGeoNode3 = new Geo_Component((Geo_RenderObj*)mSphere1);
         mGeoNode3->updatePos(Eigen::Vector3f(-0.2f, -0.4f, 0.0f));
 
         fillSceneManager(sMan);
@@ -160,9 +160,9 @@ private:
     Geo_Rect2D* mBox1;
     Geo_Rect2D* mBox2;
 	Geo_Sphere2D* mSphere1;
-    Topl_GeoNode* mGeoNode1;
-    Topl_GeoNode* mGeoNode2;
-    Topl_GeoNode* mGeoNode3;
+    Geo_Component* mGeoNode1;
+    Geo_Component* mGeoNode2;
+    Geo_Component* mGeoNode3;
     // Physics_MoveAbs mUpMovement = Physics_MoveAbs(&updatePosAbs);
 };
 

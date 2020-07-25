@@ -8,16 +8,14 @@ static void print_ObjNotFound(const std::string& objTypeStr, const std::string& 
 
 // Node implementation code
 
-void Topl_GeoNode::updatePos(Eigen::Vector3f vec) {
+void Geo_Component::updatePos(Eigen::Vector3f vec) {
 	mRelWorldPos += vec;
-	for (unsigned c = 0; c < getChildCount(); c++)
-		((Topl_GeoNode*)getChild(c))->updatePos(vec); // Move all children as well
 }
 
 
 // Scene Manager implementation code
 
-unsigned Topl_Node::mId_count = 0;
+unsigned Geo_Component::mId_count = 0;
 
 tpl_gEntity_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
 	if (mIdToGeo_map.find(index) == mIdToGeo_map.end()) {
@@ -38,7 +36,7 @@ tpl_gEntity_cptr Topl_SceneManager::getGeoNode(const std::string& name) const {
 	return mIdToGeo_map.at(gIndex);
 }
 
-void Topl_SceneManager::addGeometry(const std::string& name, Topl_GeoNode* geoNode) {
+void Topl_SceneManager::addGeometry(const std::string& name, Geo_Component* geoNode) {
 	if (mNameToId_map.find(name) != mNameToId_map.end()) {
 		puts("Overriding geometry object:");
 		puts(name.c_str());
@@ -46,11 +44,8 @@ void Topl_SceneManager::addGeometry(const std::string& name, Topl_GeoNode* geoNo
 
 	geoNode->setName(name);
 
-
-	std::string targetName = (geoNode->getParent() == nullptr) ? name : "_parent_child"; // TODO: Fix the association
-
-	mNameToId_map.insert({ targetName, ((Topl_Node*)geoNode)->getId() });
-	mIdToGeo_map.insert({ ((Topl_Node*)geoNode)->getId(), geoNode });
+	mNameToId_map.insert({ name, ((Geo_Component*)geoNode)->getId() });
+	mIdToGeo_map.insert({ ((Geo_Component*)geoNode)->getId(), geoNode });
 }
 
 void Topl_SceneManager::addPhysics(const std::string& name, Phys_Properties* pProp) {
@@ -64,7 +59,7 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 	if (mNameToId_map.find(name) == mNameToId_map.end())
 		return print_ObjNotFound("geometry", name);
 
-	Topl_GeoNode* targetNode = mIdToGeo_map.at(mNameToId_map.at(name));
+	Geo_Component* targetNode = mIdToGeo_map.at(mNameToId_map.at(name));
 	vec3f_cptr targetPos = targetNode->getPos();
 
 	if (mIdToPhysProp_map.find(mNameToId_map.at(name)) == mIdToPhysProp_map.end())
@@ -92,7 +87,7 @@ void Topl_SceneManager::resolvePhysics() {
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
 		Phys_Properties* physProps = physCurrentMap->second;
 		
-		Topl_GeoNode* targetNode = mIdToGeo_map.at(physCurrentMap->first); // Gets the geometry node bound to the physics object
+		Geo_Component* targetNode = mIdToGeo_map.at(physCurrentMap->first); // Gets the geometry node bound to the physics object
 		
 		if (physProps->actingForceCount > 0) {
 			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++)
