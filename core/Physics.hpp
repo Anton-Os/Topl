@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 
+// TODO: ADD DEFINITIONS TO SCALE PHYSICS REACTIONS
+
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
     CONNECT_Bungee, // Exerts pulling force, no push

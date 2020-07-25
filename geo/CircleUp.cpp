@@ -16,13 +16,13 @@ void Geo_CircleUp::fill(Topl_SceneManager* sMan) {
 
 void Geo_CircleUp::updateSceneManager(Topl_SceneManager* sMan) {
 	if(mUpdateCount == FIRST_UPDATE_NUM) sMan->addPhysics("sphere1", &mPhysProp1);
-    sMan->addForce("sphere1", Eigen::Vector3f(0.1f, 0.0f, 0.0));
+	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addForce("sphere1", Eigen::Vector3f(0.00024f, 0.00003f, 0.0));
 
 	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addPhysics("sphere2", &mPhysProp2);
-    sMan->addForce("sphere2", Eigen::Vector3f(0.1f, 0.2f, 0.0));
+	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addForce("sphere2", Eigen::Vector3f(0.00004f, 0.0009f, 0.0));
 
 	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addPhysics("sphere3", &mPhysProp3);
-    sMan->addForce("sphere3", Eigen::Vector3f(-0.01f, -0.008f, 0.0));
+	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addForce("sphere3", Eigen::Vector3f(-0.0001f, -0.00008f, 0.0));
 
 	mUpdateCount++; // TODO: Make this increment a part of Geo_Construct
 }
