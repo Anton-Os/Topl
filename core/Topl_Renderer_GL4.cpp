@@ -213,7 +213,17 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_GL4::getFrame(){
-	return nullptr;
+	// Custom Image format creation
+	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+
+	rstn_image->width = WIN_WIDTH; // defined in native_os_def
+	rstn_image->height = WIN_HEIGHT; // defined in native_os_def
+	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+
+	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+	glReadPixels(0, 0, rstn_image->width, rstn_image->height, GL_RGBA, GL_UNSIGNED_BYTE, rstn_image->data);
+
+	return rstn_image;
 }
 
 void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){

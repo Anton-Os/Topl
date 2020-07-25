@@ -368,7 +368,38 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
-	return nullptr;
+	HRESULT hr;
+
+	ID3D11Texture2D* framebuff;
+	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&framebuff);
+
+	D3D11_TEXTURE2D_DESC framebuffDesc;
+	framebuff->GetDesc(&framebuffDesc);
+	framebuffDesc.BindFlags = 0;
+	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+	framebuffDesc.Usage = D3D11_USAGE_STAGING;
+
+	ID3D11Texture2D* destTexture;
+	hr = m_device->CreateTexture2D(&framebuffDesc, NULL, &destTexture);
+	
+	// Copying phase and subresource mapping
+	m_deviceCtx->CopyResource(destTexture, framebuff);
+	D3D11_MAPPED_SUBRESOURCE resource;
+	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
+	hr = m_deviceCtx->Map(destTexture, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
+
+	// Custom Image format creation
+	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+
+	rstn_image->width = WIN_WIDTH; // defined in native_os_def
+	rstn_image->height = WIN_HEIGHT; // defined in native_os_def
+	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+
+	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+	// TODO: Perform memcpy instead of pointer assignment to resource data
+	// rstn_image->data = static_cast<uint32_t*>(resource.pData); // Copies from resource
+
+	return rstn_image;
 }
 
 void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
