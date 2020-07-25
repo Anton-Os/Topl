@@ -86,8 +86,8 @@ void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
 
-	const double magnifier = 1 / physElapseSecs; // Makes acceleration and force sync with each second!
-	// const double magnifier = 1.0;
+	// const double magnifier = 1 / physElapseSecs; // Makes acceleration and force sync with each second!
+	const double magnifier = 1.0;
 
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
 		Phys_Properties* physProps = physCurrentMap->second;
@@ -103,7 +103,7 @@ void Topl_SceneManager::resolvePhysics() {
 
 		// Position integrator
 		// targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * physProps->acceleration * pow(physElapseSecs, 2));
-		targetNode->updatePos(physProps->velocity * physElapseSecs); // For now not factoring in acceleration
+		targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
