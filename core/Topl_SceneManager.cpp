@@ -6,13 +6,6 @@ static void print_ObjNotFound(const std::string& objTypeStr, const std::string& 
 	putchar('\n');
 }
 
-// Node implementation code
-
-void Geo_Component::updatePos(Eigen::Vector3f vec) {
-	mRelWorldPos += vec;
-}
-
-
 // Scene Manager implementation code
 
 unsigned Geo_Component::mId_count = 0;
@@ -73,16 +66,11 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 	}
 	else
 		return; // Too many forces are acting on the object simultaneously
-
-	// targetNode->updatePos(vec); // This code needs to be in the resolve physics method!!! REMOVE AND FIX
 }
 
 void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
-
-	// const double magnifier = 1 / physElapseSecs; // Makes acceleration and force sync with each second!
-	const double magnifier = 1.0;
 
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
 		Phys_Properties* physProps = physCurrentMap->second;
@@ -91,17 +79,34 @@ void Topl_SceneManager::resolvePhysics() {
 		
 		if (physProps->actingForceCount > 0) {
 			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++)
-				physProps->acceleration += (*(physProps->forces + forceIndex) * magnifier) / physProps->mass;
+				physProps->acceleration += (*(physProps->forces + forceIndex)) / physProps->mass;
 		}
 		// Velocity Integrator, 
-		physProps->velocity += (physProps->acceleration * magnifier) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
+		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
 
 		// Position integrator
-		// targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * physProps->acceleration * pow(physElapseSecs, 2));
 		targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
+}
+
+void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2){
+	// TODO: Make sure a duplicate connector is not encountered in the mLinkedItems vector
+
+	if (mNameToId_map.find(name1) == mNameToId_map.end())
+		return print_ObjNotFound("geometry", name1);
+
+	if (mNameToId_map.find(name2) == mNameToId_map.end())
+		return print_ObjNotFound("geometry", name2);
+
+	mLinkedItems.push_back({ // Could instead be implemented as as a LinkedItems constructor
+			connector,
+			std::make_pair(
+				mIdToGeo_map.at(mNameToId_map.at(name1)),
+				mIdToGeo_map.at(mNameToId_map.at(name2))
+			)
+	});
 }
 
 #ifdef RASTERON_H

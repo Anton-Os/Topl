@@ -14,8 +14,10 @@ enum CONNECT_Type {
 };
 
 struct Phys_Connector {
-    CONNECT_Type type= CONNECT_Rod;
+    double currentLength = 0.5f;
     double restLength = 0.5f;
+
+    CONNECT_Type type = CONNECT_Rod;
 	double kVal = 0.88f; // Probably needs to be a constant
     // double deviation = 0.1f;
 };

@@ -17,7 +17,8 @@ public:
 	}
 
 	void setName(const std::string& name) { mName = '_' + name; }
-	void updatePos(Eigen::Vector3f vec); // Follow by more spatial update things
+	void updatePos(Eigen::Vector3f vec){ mRelWorldPos += vec; }
+	void updateRot(Eigen::Vector2f angles) { mRotAngles = angles; }
 
 	unsigned getId(){ return mId; }
 	vec3f_cptr getPos() const { return &mRelWorldPos; }
@@ -36,5 +37,5 @@ private:
 
 	// INTERNAL DATA TYPES
 	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
-	Eigen::Vector3f mOrientAngl = Eigen::Vector3f(0.0, 0.0, 0.0); // Angles by which to rotate
+	Eigen::Vector2f mRotAngles = Eigen::Vector2f(0.0, 0.0); // Angles by which to rotate
 };

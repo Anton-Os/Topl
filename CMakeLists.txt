@@ -82,79 +82,81 @@ add_executable(DemoPresser
 )
 target_include_directories(DemoPresser PUBLIC core helper geo)
 
-add_executable(DemoDrx11
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_Drx11.cpp
 
-    demos/DemoDrx11_Init.cpp
-)
-target_include_directories(DemoDrx11 PUBLIC core geo)
+if(WIN32) # DirectX Windows Dependent Examples
+    add_executable(DemoDrx11
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        core/Topl_SceneManager.cpp
+        core/Topl_Renderer_Drx11.cpp
 
-target_include_directories(DemoDrx11 PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
-target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
+        demos/DemoDrx11_Init.cpp
+    )
+    target_include_directories(DemoDrx11 PUBLIC core geo)
 
-add_executable(DemoDrx11_Shapes
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    geo/CircleUp.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_Drx11.cpp
+    target_include_directories(DemoDrx11 PUBLIC 
+        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+        ${CMAKE_INSTALL_PREFIX}/include/eigen3
+    ) # REMOVE THIS LATER
+    target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
-    demos/DemoDrx11_Shapes.cpp
-)
-target_include_directories(DemoDrx11_Shapes PUBLIC core geo)
+    add_executable(DemoDrx11_Shapes
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        geo/CircleUp.cpp
+        core/Topl_SceneManager.cpp
+        core/Topl_Renderer_Drx11.cpp
 
-target_include_directories(DemoDrx11_Shapes PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
-target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
+        demos/DemoDrx11_Shapes.cpp
+    )
+    target_include_directories(DemoDrx11_Shapes PUBLIC core geo)
 
-add_executable(DemoDrx11_MovingSprite
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    geo/Character1.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_Drx11.cpp
+    target_include_directories(DemoDrx11_Shapes PUBLIC 
+        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+        ${CMAKE_INSTALL_PREFIX}/include/eigen3
+    ) # REMOVE THIS LATER
+    target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
-    demos/DemoDrx11_MovingSprite.cpp
-)
-target_include_directories(DemoDrx11_MovingSprite PUBLIC core geo)
+    add_executable(DemoDrx11_MovingSprite
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        geo/Character1.cpp
+        core/Topl_SceneManager.cpp
+        core/Topl_Renderer_Drx11.cpp
 
-target_include_directories(DemoDrx11_MovingSprite PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
-target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
-target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
+        demos/DemoDrx11_MovingSprite.cpp
+    )
+    target_include_directories(DemoDrx11_MovingSprite PUBLIC core geo)
 
-add_executable(DemoDrx11_Capture
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    geo/Character1.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_Drx11.cpp
+    target_include_directories(DemoDrx11_MovingSprite PUBLIC 
+        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+        ${CMAKE_INSTALL_PREFIX}/include/eigen3
+    ) # REMOVE THIS LATER
+    target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
+    target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
 
-    demos/DemoDrx11_Capture.cpp
-)
-target_include_directories(DemoDrx11_Capture PUBLIC core geo)
+    add_executable(DemoDrx11_Capture
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        geo/Character1.cpp
+        core/Topl_SceneManager.cpp
+        core/Topl_Renderer_Drx11.cpp
 
-target_include_directories(DemoDrx11_Capture PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-) # REMOVE THIS LATER
-target_link_libraries(DemoDrx11_Capture INTERFACE dxsdk_interface Eigen3) # FIX THIS
-target_link_libraries(DemoDrx11_Capture PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
- 
+        demos/DemoDrx11_Capture.cpp
+    )
+    target_include_directories(DemoDrx11_Capture PUBLIC core geo)
+
+    target_include_directories(DemoDrx11_Capture PUBLIC 
+        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+        ${CMAKE_INSTALL_PREFIX}/include/eigen3
+    ) # REMOVE THIS LATER
+    target_link_libraries(DemoDrx11_Capture INTERFACE dxsdk_interface Eigen3) # FIX THIS
+    target_link_libraries(DemoDrx11_Capture PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
+ endif()
 
 
 
@@ -234,7 +236,7 @@ target_link_libraries(DemoGL4_Capture INTERFACE dxsdk_interface Eigen3) # FIX TH
 target_link_libraries(DemoGL4_Capture PRIVATE RasteronLib GLEW_lib)
  
 
-
+# Copying and managing implemented here with custom targets
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
 file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.glsl)
@@ -256,5 +258,4 @@ foreach(file IN ITEMS ${gl4_Shaders})
 endforeach()
 
 
-add_dependencies(DemoDrx11 ShaderCopy) # Repeat for all targets
-add_dependencies(DemoGL4 ShaderCopy)
+add_dependencies(ShaderCopy DemoDrx11 DemoGL4) # Two dependencies so far, could add more

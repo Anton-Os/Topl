@@ -28,10 +28,6 @@ public:
             *(mNodeData + mNodeCount) = new Geo_Component(*(currentRenderObj));
             mNodeCount++;
         }
-        // fillSceneManager(sMan);
-	}
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, Geo_Component* rootNode) {
-		// Implement logic for allocating mNodeData to size of children
 	}
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
         if(mNodeData != nullptr) { 
@@ -123,6 +119,11 @@ public:
     void updateSceneManager(Topl_SceneManager* sMan) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
+
+    Phys_Connector connector_bodyToHead;
+
+    Phys_Properties physProp_head;
+    Phys_Properties physProp_body;
 };
 #endif
 

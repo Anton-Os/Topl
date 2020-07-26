@@ -15,10 +15,19 @@
 #include "Geo_Component.hpp"
 
 typedef const Geo_Component* const tpl_gEntity_cptr;
-typedef std::pair<unsigned, Phys_Properties*> idToPhysProp_pair;
+typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;
+
+struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
+	Phys_Connector* connector;
+	geoComponent_pair linkedItems;
+};
+
 #ifdef RASTERON_H
 typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
 #endif
+
+// Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
+// --------------------------------------------------------------------------------------------------------------------
 
 class Topl_SceneManager {
 public:
@@ -38,7 +47,7 @@ public:
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Properties* pProp);
 	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
-	void addConnector(const Phys_Connector* connector, const std::string& name1, const std::string& name2);
+	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
 
 	unsigned getGeoCount() const { return mIdToGeo_map.size(); }
 	tpl_gEntity_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
@@ -51,6 +60,7 @@ private:
 	std::map<std::string, unsigned> mNameToId_map; // Associates names to object by IDs
 	std::map<unsigned, Geo_Component*> mIdToGeo_map;
 	std::map<unsigned, Phys_Properties*> mIdToPhysProp_map;
+	std::vector<LinkedItems> mLinkedItems;
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
 
 #ifdef RASTERON_H

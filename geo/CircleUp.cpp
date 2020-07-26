@@ -15,6 +15,8 @@ void Geo_CircleUp::fill(Topl_SceneManager* sMan) {
 } // Should be a method of the base class
 
 void Geo_CircleUp::updateSceneManager(Topl_SceneManager* sMan) {
+    // This stuff seems like one-time initialization so it probably belongs in CircleUp::fill
+    
 	if(mUpdateCount == FIRST_UPDATE_NUM) sMan->addPhysics("sphere1", &mPhysProp1);
 	if (mUpdateCount == FIRST_UPDATE_NUM) sMan->addForce("sphere1", Eigen::Vector3f(0.00024f, 0.00003f, 0.0));
 
