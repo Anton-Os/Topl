@@ -3,8 +3,10 @@
 void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 
-	const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.3f, 0.0);
+	const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.5f, 0.0);
 	const Eigen::Vector2f hardHeadRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0);
+	const Eigen::Vector3f hardBodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
+	const Eigen::Vector2f hardBodyRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0);
 	const Eigen::Vector3f hardArmOffset = Eigen::Vector3f(0.25f, 0.1f, 0.0);
 	const Eigen::Vector3f hardLegOffset = Eigen::Vector3f(0.25f, -0.2f, 0.0);
 	
@@ -16,6 +18,8 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacement
 	sMan->addTexture("head", sprite->image);
 
 	Geo_Component* gBody = getNextNode();
+	gBody->updatePos(hardBodyOffset);
+	gBody->updateRot(hardBodyRot);
 	sMan->addGeometry("body", gBody);
 	sprite = getSprite(CHAR_Body);
 	sMan->addTexture("body", sprite->image);
@@ -43,7 +47,10 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacement
 
     sMan->addPhysics("head", &physProp_head);
 	sMan->addPhysics("body", &physProp_body);
+
 	sMan->addConnector(&connector_bodyToHead, "head", "body");
+	
+	sMan->addForce("head", Eigen::Vector3f(0.0f, 0.014f, 0.0)); // Connector needs to counter-act this force
 }
 
 void Geo_Character1::updateSceneManager(Topl_SceneManager* sMan) {

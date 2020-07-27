@@ -1,5 +1,9 @@
-cbuffer CONST_DISPLACE_BUFF : register(b0) {
+cbuffer CONST_OFFSET_BUFF : register(b0) {
 	float3 offset;
+}
+
+cbuffer CONST_ROTATION_BUFF : register(b1) {
+	float2 rotation;
 }
 
 struct VS_INPUT {
@@ -15,13 +19,22 @@ struct VS_OUTPUT {
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
 
-	// output.pos = float4(offset.x + input.pos.x, offset.y + input.pos.y, offset.z + input.pos.z, input.pos.w);
-	output.pos = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
+	output.pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0); // Initial assignment
+
+	if (rotation.x != 0.0) { // Rotation operations
+		float2x2 rotMatrix = {
+			cos(rotation.x), sin(rotation.x),
+			-1 * sin(rotation.x), cos(rotation.x)
+		};
+
+		float2 rotCoords = mul(rotMatrix, float2(input.pos.x, input.pos.y));
+		output.pos.x = rotCoords.x;
+		output.pos.y = rotCoords.y;
+	}
+
+	float4 fullOffset = (offset.x, offset.y, offset.z, 0.0); // Making to vec4
+	output.pos += fullOffset; // Adding displacement
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
+
 	return output;
 }
-
-/* float4 main(VS_INPUT input): SV_POSITION{
-	float4 pos = { offset.x, offset.y, offset.z, 0.0 };
-	return float4(input.pos.x, input.pos.y, input.pos.z, 1.0) + pos;
-} */

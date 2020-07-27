@@ -59,8 +59,9 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&sMan1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		// circleUp.updateSceneManager(&sMan1);
 		renderer.updateScene(&sMan1);
+
+		sMan1.resolvePhysics();
 		// Process input and other things, on successful rendering
 	}
 

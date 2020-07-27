@@ -524,19 +524,24 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
+		// for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
+		for (unsigned id = 2; id >= 1; id--) {
+
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* angleBuff = _Drx11::findBuffer(BUFF_Const_rot_2F, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-			m_deviceCtx->VSSetConstantBuffers(0, 1, &posBuff->buffer);
+			ID3D11Buffer* constBuffs[] = { posBuff->buffer, angleBuff->buffer }; // Includes all constant buffers
+
+			m_deviceCtx->VSSetConstantBuffers(0, 2, &constBuffs[0]);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT stride = sizeof(Geo_PerVertexData);
