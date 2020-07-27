@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cmath>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -14,7 +15,8 @@ enum CONNECT_Type {
 };
 
 struct Phys_Connector {
-    double currentLength = 0.5f;
+	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    double length = 0.5f;
     double restLength = 0.5f;
 
     CONNECT_Type type = CONNECT_Rod;
@@ -31,7 +33,7 @@ struct Phys_Properties { // This binds to a Geo_Component
     }
     ~Phys_Properties(){ if(forces != nullptr) free(forces); }
 
-	const double damping = 0.98f;
+	const double damping = 0.99f;
     double mass = 1.0;
 
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);

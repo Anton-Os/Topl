@@ -86,9 +86,30 @@ namespace _Drx11 {
     static bool createConstBuff_Vec3(ID3D11Device** device, ID3D11Buffer** cBuff, vec3f_cptr vector) {
         D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DYNAMIC; // Note that this may need frequent updating
-		// buffDesc.ByteWidth = sizeof(Eigen::Vector3f);
+		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
 		buffDesc.ByteWidth = 16 * sizeof(BYTE);
+		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		buffDesc.MiscFlags = 0;
+		buffDesc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA buffData;
+		ZeroMemory(&buffData, sizeof(buffData));
+		buffData.pSysMem = vector;
+		buffData.SysMemPitch = 0;
+		buffData.SysMemSlicePitch = 0;
+
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
+		if (FAILED(hr)) return false;
+
+		return true;
+	}
+
+	static bool createConstBuff_Vec2(ID3D11Device** device, ID3D11Buffer** cBuff, vec2f_cptr vector) {
+		D3D11_BUFFER_DESC buffDesc;
+		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
+		buffDesc.ByteWidth = 16 * sizeof(BYTE); // Check for proper byte width!
 		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		buffDesc.MiscFlags = 0;
@@ -302,14 +323,23 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData(); // TODO: Keep these, remove other getters
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
+		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		ID3D11Buffer* constBuff_vec3f;
+		ID3D11Buffer* constBuff_offset;
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
-											&constBuff_vec3f,
+											&constBuff_offset,
 											geoTarget_position );
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_vec3f, constBuff_vec3f));
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_off_3F, constBuff_offset));
 
 		if(!mSceneReady) return; // Error
+
+		ID3D11Buffer* constBuff_rotation;
+		mSceneReady = _Drx11::createConstBuff_Vec2(&m_device,
+			&constBuff_rotation,
+			geoTarget_angles);
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_rot_2F, constBuff_rotation));
+
+		if (!mSceneReady) return; // Error
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff;
@@ -327,7 +357,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
 
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_3F, vertexBuff, geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
 
 #ifdef RASTERON_H
 		unsigned texCount = sMan->getTextures(g + 1, nullptr); 
@@ -458,7 +488,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 
 		// Interested in the constant pos buffer, we have to find it
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_vec3f){
+			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F){
 				targetBuff = &(*currentBuff);
 				break;
 			}
@@ -495,13 +525,12 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
 		for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
-		// for (unsigned id = mMaxGraphicsID; id >= 1; id--) {
 
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_vec3f, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;

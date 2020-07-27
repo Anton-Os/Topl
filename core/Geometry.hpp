@@ -7,7 +7,8 @@
 #include <map>
 #include <string> // For the scenegraph
 
-#define TOPL_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406
+#define TOPL_PI 3.141592653
+#define TOPL_HALF_PI 1.57079633
 #include <Eigen/Dense> // Examine documentation
 
 // Simple Primitive Types

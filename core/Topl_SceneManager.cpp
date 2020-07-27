@@ -68,6 +68,43 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 		return; // Too many forces are acting on the object simultaneously
 }
 
+void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
+	// TODO: Make sure a duplicate connector is not encountered in the mLinkedItems vector
+
+	if (mNameToId_map.find(name1) == mNameToId_map.end())
+		return print_ObjNotFound("geometry", name1);
+
+	if (mNameToId_map.find(name2) == mNameToId_map.end())
+		return print_ObjNotFound("geometry", name2);
+
+	LinkedItems items = { // Could instead be implemented as as a LinkedItems constructor
+			connector,
+			std::make_pair(
+				mIdToGeo_map.at(mNameToId_map.at(name1)),
+				mIdToGeo_map.at(mNameToId_map.at(name2))
+			)
+	};
+
+	const Geo_Component* link1 = items.linkedItems.first;
+	const Geo_Component* link2 = items.linkedItems.second;
+
+	vec3f_cptr pos1 = link1->getPos();
+	vec3f_cptr pos2 = link2->getPos();
+
+	// Compute the length of the distance between both vectors
+	Eigen::Vector3f diffPos = *pos1 - *pos2;
+	connector->length = sqrt(pow(diffPos.x(), 2) + pow(diffPos.y(), 2) + pow(diffPos.z(), 2));
+
+	// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
+	connector->restLength = connector->length;
+
+	// Compute the center point which needs to be updated in the resolvePhysics() method
+	connector->centerPoint = (*pos1 + *pos2) / 2;
+
+	// Add the new linked items to the scene manager data
+	mLinkedItems.push_back(items);
+}
+
 void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
@@ -81,32 +118,16 @@ void Topl_SceneManager::resolvePhysics() {
 			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++)
 				physProps->acceleration += (*(physProps->forces + forceIndex)) / physProps->mass;
 		}
-		// Velocity Integrator, 
+		// Velocity Integrator,
 		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
+		// Velocity Damping, to avoid infinite displacement
+		physProps->velocity *= physProps->damping;
 
 		// Position integrator
 		targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
-}
-
-void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2){
-	// TODO: Make sure a duplicate connector is not encountered in the mLinkedItems vector
-
-	if (mNameToId_map.find(name1) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name1);
-
-	if (mNameToId_map.find(name2) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name2);
-
-	mLinkedItems.push_back({ // Could instead be implemented as as a LinkedItems constructor
-			connector,
-			std::make_pair(
-				mIdToGeo_map.at(mNameToId_map.at(name1)),
-				mIdToGeo_map.at(mNameToId_map.at(name2))
-			)
-	});
 }
 
 #ifdef RASTERON_H

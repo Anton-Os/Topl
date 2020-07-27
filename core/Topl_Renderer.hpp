@@ -19,12 +19,13 @@ struct GraphicsTargetObject {
 	unsigned targetID;
 };
 
-#define MAX_BUFFERS_PER_TARGET 3 // Keep this value updated
+#define MAX_BUFFERS_PER_TARGET 4 // KEEP THIS UPDATED ALWAYS!
 
 enum BUFF_Type {
-    BUFF_Vertex_3F = 0,
-    BUFF_Index_UI = 1,
-    BUFF_Const_vec3f = 2
+    BUFF_Vertex_Type = 0, // custom vertex format
+    BUFF_Index_UI = 1, // unsigned int Index Type
+    BUFF_Const_off_3F = 2, // stores 3F offset
+	BUFF_Const_rot_2F = 3 // stores 2F rotation
 };
 
 struct Buffer : public GraphicsTargetObject {

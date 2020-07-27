@@ -166,7 +166,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_vec3f, m_bufferAlloc.getAvailable()));
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
 
@@ -174,7 +174,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_3F, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
@@ -254,7 +254,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
 
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_vec3f) {
+			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F) {
 				targetBuff = &(*currentBuff);
 				break;
 			}
@@ -401,8 +401,8 @@ void Topl_Renderer_GL4::render(void){
 		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_3F, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_vec3f, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_off_3F, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);

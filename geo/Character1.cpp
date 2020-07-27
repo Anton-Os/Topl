@@ -4,11 +4,13 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacement
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 
 	const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.3f, 0.0);
+	const Eigen::Vector2f hardHeadRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0);
 	const Eigen::Vector3f hardArmOffset = Eigen::Vector3f(0.25f, 0.1f, 0.0);
 	const Eigen::Vector3f hardLegOffset = Eigen::Vector3f(0.25f, -0.2f, 0.0);
 	
 	Geo_Component* gHead = getNextNode();
 	gHead->updatePos(hardHeadOffset);
+	gHead->updateRot(hardHeadRot);
 	sMan->addGeometry("head", gHead);
 	sprite = getSprite(CHAR_Head);
 	sMan->addTexture("head", sprite->image);
