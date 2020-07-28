@@ -50,9 +50,11 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 
 namespace _GL4 {
 	struct UniformBlock {
-		UniformBlock(vec3f_cptr v) {
+		UniformBlock(vec3f_cptr v, vec2f_cptr a) {
 			offset = *(v);
+			rotation = *(a);
 		}
+		Eigen::Vector2f rotation;
 		Eigen::Vector3f offset;
 	};
 
@@ -164,8 +166,9 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
+		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
@@ -190,8 +193,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glVertexAttribPointer(1, 2,
 			GL_FLOAT, GL_FALSE,
 			sizeof(Geo_PerVertexData), GL4_BUFFER_OFFSET(12)
-			// &geoTarget_perVertexData->texCoord[0]
-			// geoTarget_perVertexData + offsetof(Geo_PerVertexData, texCoord)
 		);
 		m_pipeline.layoutIndex++; // TODO: Figure this part out, mark for deletion
 
@@ -233,9 +234,6 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 
 	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here 
 
-	// glTextureStorage2D(texture, 1, GL_RGBA32UI, image->width, image->height); // 1 mip level, second argument
-	// glTextureSubImage2D(texture, 0, 0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_INT, image->data);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -250,8 +248,9 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position);
+		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
 
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F) {
@@ -400,8 +399,9 @@ void Topl_Renderer_GL4::render(void){
 		// Buffer binding step
 		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		// TODO: Because Const_off_3F also contains rotation data, create a new buffer type that conjoins the two!
 		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_off_3F, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {

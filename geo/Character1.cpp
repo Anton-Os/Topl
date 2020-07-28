@@ -40,8 +40,9 @@ void Geo_Character1::fill(Topl_SceneManager* sMan) { // Trying with displacement
 	sMan->addTexture("leftLeg", sprite->image);
 
 	Geo_Component* gRightLeg = getNextNode();
+	// gRightLeg->updateRot(hardHeadRot); // Testing! Should Rotate head instead
 	sMan->addGeometry("rightLeg", gRightLeg);
-	sprite = getSprite(CHAR_LeftLeg);
+	sprite = getSprite(CHAR_RightLeg);
 	sMan->addTexture("rightLeg", sprite->image);
 
 
