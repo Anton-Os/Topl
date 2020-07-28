@@ -480,25 +480,30 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
-	Buffer_Drx11* targetBuff = nullptr;
+	Buffer_Drx11* posBuff = nullptr;
+	Buffer_Drx11* angleBuff = nullptr;
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		// Interested in the constant pos buffer, we have to find it
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F){
-				targetBuff = &(*currentBuff);
+				posBuff = &(*currentBuff);
 				break;
 			}
 
-		if(targetBuff == nullptr){
-			OutputDebugStringA("Position const buffer could not be located! ");
-			return;
-		}
+		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_rot_2F) {
+				angleBuff = &(*currentBuff);
+				break;
+			}
 
-		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &targetBuff->buffer, geoTarget_position );
+		if(posBuff != nullptr)
+			mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &posBuff->buffer, geoTarget_position);
+		if (angleBuff != nullptr)
+			mSceneReady = _Drx11::createConstBuff_Vec2(&m_device, &angleBuff->buffer, geoTarget_angles);
 
 		if(!mSceneReady) return;
 	}

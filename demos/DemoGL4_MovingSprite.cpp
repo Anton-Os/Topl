@@ -61,6 +61,8 @@ int main(int argc, char** argv) {
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		renderer.updateScene(&sMan1);
+
+		sMan1.resolvePhysics();
 		// Process input and other things, on successful rendering
 	}
 

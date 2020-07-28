@@ -50,12 +50,13 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 
 namespace _GL4 {
 	struct UniformBlock {
+		// Uniform Block contains padding data, try to minimize the data types
 		UniformBlock(vec3f_cptr v, vec2f_cptr a) {
-			offset = *(v);
-			rotation = *(a);
+			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
+			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
 		}
-		Eigen::Vector2f rotation;
-		Eigen::Vector3f offset;
+		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
+		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
 	};
 
 	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
@@ -171,7 +172,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
+		unsigned blockSize = sizeof(_GL4::UniformBlock);
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
 
 		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
