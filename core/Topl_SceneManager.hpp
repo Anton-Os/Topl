@@ -14,7 +14,7 @@
 
 #include "Geo_Component.hpp"
 
-typedef const Geo_Component* const tpl_gEntity_cptr;
+typedef const Geo_Component* const topl_geoComponent_cptr;
 typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;
 
 struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
@@ -23,8 +23,19 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 };
 
 #ifdef RASTERON_H
-typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
+	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
 #endif
+
+class Topl_Camera {
+public:
+	vec3f_cptr getPos() const { return &pos; }
+	vec3f_cptr getDirection() const { return &direction; }
+private:
+	Eigen::Vector3f pos = Eigen::Vector3f(0.0, 0.0, -1.0);
+	Eigen::Vector3f direction = Eigen::Vector3f(0.0, 0.0, 0.0);;
+};
+
+typedef const Topl_Camera* const topl_camera_cptr;
 
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------
@@ -50,8 +61,9 @@ public:
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
 
 	unsigned getGeoCount() const { return mIdToGeo_map.size(); }
-	tpl_gEntity_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
-	tpl_gEntity_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
+	topl_camera_cptr getCamera() const { return &mCamera; }
+	topl_geoComponent_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
+	topl_geoComponent_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(unsigned index) const;
 	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
@@ -62,6 +74,8 @@ private:
 	std::map<unsigned, Phys_Properties*> mIdToPhysProp_map;
 	std::vector<LinkedItems> mLinkedItems;
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
+
+	Topl_Camera mCamera;
 
 #ifdef RASTERON_H
 	std::vector<idToImage_pair> mIdToTex; // Multiple textures could be associated to a geometry node

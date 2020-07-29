@@ -317,7 +317,7 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -484,7 +484,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	Buffer_Drx11* angleBuff = nullptr;
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 

@@ -161,7 +161,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
-		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ID values begin at 1
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ID values begin at 1
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -248,7 +248,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	Buffer_GL4* targetBuff = nullptr;
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		tpl_gEntity_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 

@@ -10,7 +10,7 @@ static void print_ObjNotFound(const std::string& objTypeStr, const std::string& 
 
 unsigned Geo_Component::mId_count = 0;
 
-tpl_gEntity_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
+topl_geoComponent_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
 	if (mIdToGeo_map.find(index) == mIdToGeo_map.end()) {
 		puts("Index for geometry provided cannot be found");
 		return nullptr;
@@ -19,7 +19,7 @@ tpl_gEntity_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
 	return mIdToGeo_map.at(index);
 }
 
-tpl_gEntity_cptr Topl_SceneManager::getGeoNode(const std::string& name) const {
+topl_geoComponent_cptr Topl_SceneManager::getGeoNode(const std::string& name) const {
 	if (mNameToId_map.find(name) == mNameToId_map.end()) {
 		print_ObjNotFound("geometry", name);
 		return nullptr;
