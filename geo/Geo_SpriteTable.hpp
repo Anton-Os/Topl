@@ -41,6 +41,28 @@ public:
 			dataOffset++;
 		}
     }
+	Geo_SpriteTable(std::initializer_list<const char*> filePaths, float scaleFactor){
+        mSpriteCount = filePaths.size(); // TODO: Uncomment this and use
+
+        // Fill data
+        mFileImages = (FileImage*)malloc(mSpriteCount * sizeof(FileImage));
+        mRects = (Geo_Rect2D**)malloc(mSpriteCount * sizeof(Geo_Rect2D*));
+        mRstnImages = (Rasteron_Image**)malloc(mSpriteCount * sizeof(Rasteron_Image*));
+        mRstnSprites = (Rasteron_Sprite**)malloc(mSpriteCount * sizeof(Rasteron_Sprite*));
+
+		unsigned dataOffset = 0;
+		for (std::initializer_list<const char*>::iterator currentFileName = filePaths.begin(); currentFileName < filePaths.end(); currentFileName++) {
+			rstnLoadFromFile(*(currentFileName), &(*(mFileImages + dataOffset)));
+			*(mRstnImages + dataOffset) = rstnCreate_ImgBase(&(*(mFileImages + dataOffset)));
+			*(mRstnSprites + dataOffset) = rstnCreate_Sprite(*(mRstnImages + dataOffset));
+
+			// Followed by geometric code
+			*(mRects + dataOffset) = new Geo_Rect2D(getSpriteWidth(*(mRstnSprites + dataOffset)) * scaleFactor, getSpriteHeight(*(mRstnSprites + dataOffset)) * scaleFactor);
+			mSpriteBoxes.push_back(std::make_pair(*(mRstnSprites + dataOffset), *(mRects + dataOffset)));
+
+			dataOffset++;
+		}
+    }
     ~Geo_SpriteTable(){
         for(unsigned i = 0; i < mSpriteCount; i++)
             rstnDelFromFile(mFileImages + i); // Get rid of all file images, POINTER PROVIDED!!!
@@ -68,6 +90,11 @@ public:
 		assert(index < mSpriteBoxes.size());
 		return (Geo_Rect2D*)mSpriteBoxes.at(index).second;
 	}
+
+	/* Geo_Rect2D* getRect(unsigned index, float scaling) {
+		assert(index < mSpriteBoxes.size());
+		return (Geo_Rect2D*)mSpriteBoxes.at(index).second;
+	} */
 
 	unsigned getCount() { return mSpriteBoxes.size(); }
 private:

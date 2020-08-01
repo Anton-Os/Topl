@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	renderer.createPipeline(&vertexShader, &fragmentShader);
 
 	Topl_SceneManager sMan1;
-	Geo_Character1 avatar("avatar", &sMan1);
+	Geo_Humanoid avatar("avatar", &sMan1);
 
 	renderer.buildScene(&sMan1);
 

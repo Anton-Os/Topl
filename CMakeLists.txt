@@ -123,7 +123,7 @@ if(WIN32) # DirectX Windows Dependent Examples
         core/FileIO.cpp
         core/Geometry.cpp
         core/Timer.cpp
-        geo/Character1.cpp
+        geo/Humanoid.cpp
         core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
 
@@ -142,7 +142,7 @@ if(WIN32) # DirectX Windows Dependent Examples
         core/FileIO.cpp
         core/Geometry.cpp
         core/Timer.cpp
-        geo/Character1.cpp
+        geo/Humanoid.cpp
         core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
 
@@ -201,7 +201,7 @@ add_executable(DemoGL4_MovingSprite
     core/FileIO.cpp
     core/Geometry.cpp
     core/Timer.cpp
-    geo/Character1.cpp
+    geo/Humanoid.cpp
     core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
     
@@ -220,7 +220,7 @@ add_executable(DemoGL4_Capture
     core/FileIO.cpp
     core/Geometry.cpp
     core/Timer.cpp
-    geo/Character1.cpp
+    geo/Humanoid.cpp
     core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
     

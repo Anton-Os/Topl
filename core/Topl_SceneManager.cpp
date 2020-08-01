@@ -109,6 +109,32 @@ void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
 
+	// Resolve connector forces here
+	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){
+		Phys_Connector* connector = currentLink->connector;
+		const Geo_Component* linkItem1 = currentLink->linkedItems.first;
+		const Geo_Component* linkItem2 = currentLink->linkedItems.second;
+
+		if (connector->length != connector->restLength) { // No forces occur if the length and rest length match
+			// Determines direction of force for first geometry link
+			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
+				? *(linkItem1->getPos()) - connector->centerPoint // Outward push because length is shorter
+				: connector->centerPoint - *(linkItem1->getPos()); // Inward pull because length is longer
+			forceDirection1.norm(); // Normalizing for directional unit vector
+
+			// Determines direction of force for second geometry link
+			Eigen::Vector3f forceDirection2 = (connector->length < connector->restLength)
+				? *(linkItem2->getPos()) - connector->centerPoint // Outward push because length is shorter
+				: connector->centerPoint - *(linkItem2->getPos()); // Inward pull because length is longer
+			forceDirection2.norm(); // Normalizing for directional unit vector
+
+			double lengthDiff = abs(connector->length - connector->restLength); // Get how much displacement occured
+			
+			const Eigen::Vector3f forceFinal1 = forceDirection1 * ((lengthDiff * connector->kVal) * 0.5f);
+			const Eigen::Vector3f forceFinal2 = forceDirection2 * ((lengthDiff * connector->kVal) * 0.5f);
+		}
+	}
+
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
 		Phys_Properties* physProps = physCurrentMap->second;
 		
