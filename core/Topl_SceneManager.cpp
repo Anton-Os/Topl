@@ -115,6 +115,12 @@ void Topl_SceneManager::resolvePhysics() {
 		const Geo_Component* linkItem1 = currentLink->linkedItems.first;
 		const Geo_Component* linkItem2 = currentLink->linkedItems.second;
 
+		connector->length = sqrt( // Length needs to be updated
+			pow(linkItem1->getPos()->x() - linkItem2->getPos()->x(), 2)
+			+ pow(linkItem1->getPos()->y() - linkItem2->getPos()->y(), 2)
+			+ pow(linkItem1->getPos()->z() - linkItem2->getPos()->z(), 2)
+		);
+
 		if (connector->length != connector->restLength) { // No forces occur if the length and rest length match
 			// Determines direction of force for first geometry link
 			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
@@ -132,6 +138,9 @@ void Topl_SceneManager::resolvePhysics() {
 			
 			const Eigen::Vector3f forceFinal1 = forceDirection1 * ((lengthDiff * connector->kVal) * 0.5f);
 			const Eigen::Vector3f forceFinal2 = forceDirection2 * ((lengthDiff * connector->kVal) * 0.5f);
+
+			addForce("head", forceFinal1); // invoke getName for geometry
+			addForce("body", forceFinal2); // invoke getName for geometry
 		}
 	}
 
@@ -140,10 +149,13 @@ void Topl_SceneManager::resolvePhysics() {
 		
 		Geo_Component* targetNode = mIdToGeo_map.at(physCurrentMap->first); // Gets the geometry node bound to the physics object
 		
-		if (physProps->actingForceCount > 0) {
-			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++)
+		if (physProps->actingForceCount > 0) 
+			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++) {
 				physProps->acceleration += (*(physProps->forces + forceIndex)) / physProps->mass;
-		}
+				*(physProps->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // Disabling current force
+			}
+		physProps->actingForceCount = 0; // We have resolved all the forces, resetting force count
+		
 		// Velocity Integrator,
 		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
 		// Velocity Damping, to avoid infinite displacement

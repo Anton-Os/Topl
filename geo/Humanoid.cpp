@@ -56,7 +56,7 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 
 	sMan->addConnector(&connector_bodyToHead, "head", "body");
 	
-	sMan->addForce("head", Eigen::Vector3f(0.0f, 0.0035f, 0.0)); // Connector needs to counter-act this force
+	sMan->addForce("head", Eigen::Vector3f(0.0f, 0.03f, 0.0)); // Connector needs to counter-act this force
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {
