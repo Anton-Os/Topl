@@ -20,7 +20,7 @@ struct Phys_Connector {
     double restLength = 0.5f;
 
     CONNECT_Type type = CONNECT_Rod;
-	double kVal = 0.88f; // Probably needs to be a constant
+	double kVal = 1000.0f; // 100.0 seems to be normal
     // double deviation = 0.1f;
 };
 

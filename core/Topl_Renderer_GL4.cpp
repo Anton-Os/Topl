@@ -390,8 +390,8 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
-	// for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
-	for (unsigned id = mMaxGraphicsID; id >= 1; id--) {
+	for (unsigned id = 1; id <= mMaxGraphicsID; id++) {
+	// for (unsigned id = mMaxGraphicsID; id >= 1; id--) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);

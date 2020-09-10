@@ -1,62 +1,120 @@
 #include "Geo_Constructs.hpp"
 
+namespace _Humanoid {
+	// TODO: Replace hard offsets, offsets need to vary depending on object constructor!
+	const Eigen::Vector2f hardQuartRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0); // Hardcoded quarter rotation
+	const Eigen::Vector2f hardHalfRot = Eigen::Vector2f(-1.0 * TOPL_PI, 0.0); // Hardcoded half rotation
+
+	static void createHead(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.09f, 0.0);
+
+		geoc->updatePos(hardHeadOffset);
+		geoc->updateRot(hardQuartRot);
+		sMan->addGeometry(name, geoc);
+
+		if(sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+
+	static void createBody (Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardBodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
+
+		geoc->updatePos(hardBodyOffset);
+		geoc->updateRot(hardQuartRot);
+		sMan->addGeometry(name, geoc);
+
+		if (sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+
+	static void createLeftArm(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardArmOffset = Eigen::Vector3f(0.12f, -0.14f, 0.0);
+
+		geoc->updatePos(hardArmOffset);
+		sMan->addGeometry(name, geoc);
+
+		if (sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+
+	static void createRightArm(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardArmOffset = Eigen::Vector3f(-0.12f, -0.14f, 0.0);
+
+		geoc->updatePos(hardArmOffset);
+		geoc->updateRot(hardHalfRot);
+		sMan->addGeometry(name, geoc);
+
+		if (sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+
+	static void createLeftLeg(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardLegOffset = Eigen::Vector3f(0.06f, -0.35f, 0.0);
+
+		geoc->updatePos(hardLegOffset);
+		sMan->addGeometry(name, geoc);
+
+		if (sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+
+	static void createRightLeg(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
+		const Eigen::Vector3f hardLegOffset = Eigen::Vector3f(-0.06f, -0.35f, 0.0);
+
+		geoc->updatePos(hardLegOffset);
+		geoc->updateRot(hardHalfRot);
+		sMan->addGeometry(name, geoc);
+
+		if (sprite != nullptr) // Check if a texture is associated
+			sMan->addTexture(name, sprite->image);
+	}
+}
+
 void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
-
-	const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.09f, 0.0);
-	const Eigen::Vector2f hardHeadRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0);
-	const Eigen::Vector3f hardBodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
-	const Eigen::Vector2f hardBodyRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0);
-	const Eigen::Vector3f hardArmOffset1 = Eigen::Vector3f(0.09f, 0.1f, 0.0);
-	const Eigen::Vector3f hardArmOffset2 = Eigen::Vector3f(-0.09f, 0.1f, 0.0);
-	const Eigen::Vector3f hardLegOffset1 = Eigen::Vector3f(0.09f, -0.2f, 0.0);
-	const Eigen::Vector3f hardLegOffset2 = Eigen::Vector3f(-0.09f, -0.2f, 0.0);
+	const Eigen::Vector3f hardLegOffset1 = Eigen::Vector3f(0.06f, -0.35f, 0.0);
+	const Eigen::Vector3f hardLegOffset2 = Eigen::Vector3f(-0.06f, -0.35f, 0.0);
 	
-	Geo_Component* gHead = getNextNode();
-	gHead->updatePos(hardHeadOffset);
-	gHead->updateRot(hardHeadRot);
-	sMan->addGeometry("head", gHead);
+	Geo_Component* geocHead = getNextNode();
 	sprite = getSprite(HUMANOID_Head);
-	sMan->addTexture("head", sprite->image);
+	_Humanoid::createHead(geocHead, "head", sprite, sMan);
 
-	Geo_Component* gBody = getNextNode();
-	gBody->updatePos(hardBodyOffset);
-	gBody->updateRot(hardBodyRot);
-	sMan->addGeometry("body", gBody);
+	Geo_Component* geocBody = getNextNode();
 	sprite = getSprite(HUMANOID_Body);
-	sMan->addTexture("body", sprite->image);
+	_Humanoid::createBody(geocBody, "body", sprite, sMan);
 
-	Geo_Component* gLeftArm = getNextNode();
-	gLeftArm->updatePos(hardArmOffset1);
-	sMan->addGeometry("leftArm", gLeftArm);
+	Geo_Component* geocLeftArm = getNextNode();
 	sprite = getSprite(HUMANOID_LeftArm);
-	sMan->addTexture("leftArm", sprite->image);
+	_Humanoid::createLeftArm(geocLeftArm, "leftArm", sprite, sMan);
 
-	Geo_Component* gRightArm = getNextNode();
-	gRightArm->updatePos(hardArmOffset2);
-	sMan->addGeometry("rightArm", gRightArm);
+	Geo_Component* geocRightArm = getNextNode();
 	sprite = getSprite(HUMANOID_RightArm);
-	sMan->addTexture("rightArm", sprite->image);
+	_Humanoid::createRightArm(geocRightArm, "rightArm", sprite, sMan);
 
-	Geo_Component* gLeftLeg = getNextNode();
-	gLeftLeg->updatePos(hardLegOffset1);
-	sMan->addGeometry("leftLeg", gLeftLeg);
+	Geo_Component* geocLeftLeg = getNextNode();
 	sprite = getSprite(HUMANOID_LeftLeg);
-	sMan->addTexture("leftLeg", sprite->image);
+	_Humanoid::createLeftLeg(geocLeftLeg, "leftLeg", sprite, sMan);
 
-	Geo_Component* gRightLeg = getNextNode();
-	gRightLeg->updatePos(hardLegOffset2);
-	sMan->addGeometry("rightLeg", gRightLeg);
+	Geo_Component* geocRightLeg = getNextNode();
 	sprite = getSprite(HUMANOID_RightLeg);
-	sMan->addTexture("rightLeg", sprite->image);
+	_Humanoid::createRightLeg(geocRightLeg, "rightLeg", sprite, sMan);
 
+	// All physics relevant functionality goes here
 
-    sMan->addPhysics("head", &physProp_head);
-	sMan->addPhysics("body", &physProp_body);
+	sMan->addPhysics("head", &head_phys);
+	sMan->addPhysics("body", &body_phys);
+	sMan->addPhysics("leftArm", &leftArm_phys);
+	sMan->addPhysics("rightArm", &rightArm_phys);
+	sMan->addPhysics("leftLeg", &leftLeg_phys);
+	sMan->addPhysics("rightLeg", &rightLeg_phys);
 
-	sMan->addConnector(&connector_bodyToHead, "head", "body");
+	sMan->addConnector(&body_head_link, "body", "head");
+	sMan->addConnector(&body_leftArm_link, "body", "leftArm");
+	sMan->addConnector(&body_rightArm_link, "body", "rightArm");
+	sMan->addConnector(&body_leftLeg_link, "body", "leftLeg");
+	sMan->addConnector(&body_rightLeg_link, "body", "rightLeg");
 	
-	sMan->addForce("head", Eigen::Vector3f(0.0f, 0.03f, 0.0)); // Connector needs to counter-act this force
+	// sMan->addForce("leftLeg", Eigen::Vector3f(0.015f, -0.02f, 0.0)); // Connector needs to counter-act this force
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {
