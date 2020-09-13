@@ -89,18 +89,18 @@ public:
 	Geo_Humanoid(const std::string& prefix, Topl_SceneManager* sMan) :
 	Geo_SpriteTable({ 
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png",
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png",
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png",
+		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png",
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png",
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png"
 	    }, 0.2f // Scaling the sprites to 20% original size
     ),
 	Geo_Construct(prefix, sMan, { 
 		(Geo_RenderObj*)getRect(HUMANOID_Head),
-		(Geo_RenderObj*)getRect(HUMANOID_Body),
 		(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
 		(Geo_RenderObj*)getRect(HUMANOID_RightArm),
+		(Geo_RenderObj*)getRect(HUMANOID_Body),
 		(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
 		(Geo_RenderObj*)getRect(HUMANOID_RightLeg),
 	}) // Inherited from Sprite table
@@ -110,9 +110,9 @@ public:
 	
 	enum HUMANOID_Anatomy {
 		HUMANOID_Head = 0,
-		HUMANOID_Body = 1,
-		HUMANOID_LeftArm = 2,
-		HUMANOID_RightArm = 3,
+		HUMANOID_LeftArm = 1,
+		HUMANOID_RightArm = 2,
+		HUMANOID_Body = 3,
 		HUMANOID_LeftLeg = 4,
 		HUMANOID_RightLeg = 5
 	} anatomyIndex;

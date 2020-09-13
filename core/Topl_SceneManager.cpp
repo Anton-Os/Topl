@@ -139,8 +139,12 @@ void Topl_SceneManager::resolvePhysics() {
 			const Eigen::Vector3f forceFinal1 = forceDirection1 * ((lengthDiff * connector->kVal) * 0.5f);
 			const Eigen::Vector3f forceFinal2 = forceDirection2 * ((lengthDiff * connector->kVal) * 0.5f);
 
-			addForce("head", forceFinal1); // invoke getName for geometry
-			addForce("body", forceFinal2); // invoke getName for geometry
+			// FOR TESTING, DELETE LATER
+			const char* name1 = (linkItem1->getName()).c_str();
+			const char* name2 = (linkItem1->getName()).c_str();
+
+			addForce(linkItem1->getName(), forceFinal1);
+			addForce(linkItem2->getName(), forceFinal2);
 		}
 	}
 

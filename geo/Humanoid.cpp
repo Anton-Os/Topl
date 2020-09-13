@@ -6,7 +6,7 @@ namespace _Humanoid {
 	const Eigen::Vector2f hardHalfRot = Eigen::Vector2f(-1.0 * TOPL_PI, 0.0); // Hardcoded half rotation
 
 	static void createHead(Geo_Component* geoc, std::string name, Rasteron_Sprite* sprite, Topl_SceneManager* sMan) {
-		const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.09f, 0.0);
+		const Eigen::Vector3f hardHeadOffset = Eigen::Vector3f(0.0f, 0.11f, 0.0);
 
 		geoc->updatePos(hardHeadOffset);
 		geoc->updateRot(hardQuartRot);
@@ -79,10 +79,6 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	sprite = getSprite(HUMANOID_Head);
 	_Humanoid::createHead(geocHead, "head", sprite, sMan);
 
-	Geo_Component* geocBody = getNextNode();
-	sprite = getSprite(HUMANOID_Body);
-	_Humanoid::createBody(geocBody, "body", sprite, sMan);
-
 	Geo_Component* geocLeftArm = getNextNode();
 	sprite = getSprite(HUMANOID_LeftArm);
 	_Humanoid::createLeftArm(geocLeftArm, "leftArm", sprite, sMan);
@@ -90,6 +86,10 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	Geo_Component* geocRightArm = getNextNode();
 	sprite = getSprite(HUMANOID_RightArm);
 	_Humanoid::createRightArm(geocRightArm, "rightArm", sprite, sMan);
+
+	Geo_Component* geocBody = getNextNode();
+	sprite = getSprite(HUMANOID_Body);
+	_Humanoid::createBody(geocBody, "body", sprite, sMan);
 
 	Geo_Component* geocLeftLeg = getNextNode();
 	sprite = getSprite(HUMANOID_LeftLeg);
@@ -114,7 +114,11 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	sMan->addConnector(&body_leftLeg_link, "body", "leftLeg");
 	sMan->addConnector(&body_rightLeg_link, "body", "rightLeg");
 	
-	// sMan->addForce("leftLeg", Eigen::Vector3f(0.015f, -0.02f, 0.0)); // Connector needs to counter-act this force
+	// sMan->addForce("head", Eigen::Vector3f(0.0f, TOPL_FORCE_UNIT, 0.0));
+	sMan->addForce("leftArm", Eigen::Vector3f(0.0, -1 * TOPL_FORCE_UNIT * 0.5, 0.0));
+	sMan->addForce("rightArm", Eigen::Vector3f(0.0, TOPL_FORCE_UNIT * 0.5, 0.0));
+	sMan->addForce("leftLeg", Eigen::Vector3f(0.0, TOPL_FORCE_UNIT * 0.5, 0.0));
+	sMan->addForce("rightLeg", Eigen::Vector3f(0.0, -1 * TOPL_FORCE_UNIT * 0.5, 0.0));
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {

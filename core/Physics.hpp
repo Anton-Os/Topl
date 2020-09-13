@@ -6,6 +6,8 @@
 
 // TODO: ADD DEFINITIONS TO SCALE PHYSICS REACTIONS
 
+#define TOPL_FORCE_UNIT 0.027
+
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
     CONNECT_Bungee, // Exerts pulling force, no push
