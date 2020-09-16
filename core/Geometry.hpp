@@ -11,20 +11,6 @@
 #define TOPL_HALF_PI 1.57079633
 #include <Eigen/Dense> // Examine documentation
 
-// Simple Primitive Types
-
-struct Rect {
-    float width;
-    float height;
-};
-
-struct Circle {
-    float radius;
-    unsigned segments;
-};
-
-// Renderable primitive types
-
 // Typedefs for "safe" types
 typedef const Eigen::Vector3f* const vec3f_cptr;
 typedef const Eigen::Vector2f* const vec2f_cptr;
@@ -89,48 +75,9 @@ protected:
 	unsigned* mIData = nullptr; // Index data
 };
 
-// Override the virtual functions above
-class Geo_Rect2D : public Geo_RenderObj {
-public:
-	Geo_Rect2D() : Geo_RenderObj() {}
-    Geo_Rect2D(float width, float height) : Geo_RenderObj() {
-        mVCount = 4; // Rectangle has 4 vertices
-        mICount = 6; // Rectangle has 6 indices
-        mRect.width = width;
-        mRect.height = height;
+#include "primitives/Geo_Rect2D.hpp"
 
-        mVData = genVertices();
-        mIData = genIndices();
-		mTData = genTexCoords();
-    }
-
-	float getWidth() const { return mRect.width; }
-	float getHeight() const { return mRect.height; }
-private:
-    Eigen::Vector3f* genVertices() override;
-	Eigen::Vector2f* genTexCoords() override;
-    unsigned* genIndices() override;
-    Rect mRect;
-};
-
-class Geo_Sphere2D : Geo_RenderObj {
-public:
-    Geo_Sphere2D(float radius, unsigned segments) : Geo_RenderObj() {
-        mVCount = segments + 1; // Number of segments + center point
-        mICount = segments * 3; // Rectangle has 6 indices
-        mCircle.radius = radius;
-        mCircle.segments = segments;
-
-        mVData = genVertices();
-		mTData = genTexCoords();
-        mIData = genIndices();
-    }
-private:
-    Eigen::Vector3f* genVertices() override;
-	Eigen::Vector2f* genTexCoords() override;
-    unsigned* genIndices() override;
-    Circle mCircle;
-};
+#include "primitives/Geo_Sphere2D.hpp" // Definition of Sphere2D class
 
 #define GEOMETRY_H
 #endif
