@@ -24,7 +24,8 @@ class Geo_Construct {
 public:
     Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
-		mGeoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
+		mPrefix = prefix;
+        mGeoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
             *(mGeoData + mGeoCount) = new Geo_Component(*(currentRenderObj));
             mGeoCount++;
@@ -37,7 +38,7 @@ public:
             free(mGeoData);
         }
     }
-    
+
     void fillSceneManager(Topl_SceneManager* sMan){
         fill(sMan); // Calls virtual function
 

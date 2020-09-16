@@ -38,6 +38,8 @@ public:
 	} anatomyIndex;
 
     void updateSceneManager(Topl_SceneManager* sMan) override;
+	// Moves the object in the given direction, TODO: Make this a base class virtual function
+	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec);
 private:
 	void fill(Topl_SceneManager* sMan) override;
 
