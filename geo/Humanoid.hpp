@@ -42,6 +42,7 @@ private:
 	void fill(Topl_SceneManager* sMan) override;
 
 	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link; // Links to all relevant body parts
+	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link; // Stability links
 
     Phys_Properties head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys; // Physics properties for all relevant body parts
 };

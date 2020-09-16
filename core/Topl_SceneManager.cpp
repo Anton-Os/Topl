@@ -101,6 +101,8 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	// Compute the center point which needs to be updated in the resolvePhysics() method
 	connector->centerPoint = (*pos1 + *pos2) / 2;
 
+	// TODO: COMPUTE THE ANGLE BETWEEN TWO LINKED ITEMS
+
 	// Add the new linked items to the scene manager data
 	mLinkedItems.push_back(items);
 }
@@ -139,10 +141,7 @@ void Topl_SceneManager::resolvePhysics() {
 			const Eigen::Vector3f forceFinal1 = forceDirection1 * ((lengthDiff * connector->kVal) * 0.5f);
 			const Eigen::Vector3f forceFinal2 = forceDirection2 * ((lengthDiff * connector->kVal) * 0.5f);
 
-			// FOR TESTING, DELETE LATER
-			const char* name1 = (linkItem1->getName()).c_str();
-			const char* name2 = (linkItem1->getName()).c_str();
-
+			// Adding forces to target objects, most important step!
 			addForce(linkItem1->getName(), forceFinal1);
 			addForce(linkItem2->getName(), forceFinal2);
 		}

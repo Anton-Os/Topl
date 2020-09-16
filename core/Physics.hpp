@@ -6,7 +6,10 @@
 
 // TODO: ADD DEFINITIONS TO SCALE PHYSICS REACTIONS
 
-#define TOPL_FORCE_UNIT 0.027
+#define TOPL_FORCE_UNIT 0.04
+#define TOPL_DEFAULT_DAMPING 0.9999
+#define TOPL_DEFAULT_MASS 7.0
+#define TOPL_DEFAULT_K 3000.0
 
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
@@ -18,11 +21,13 @@ enum CONNECT_Type {
 
 struct Phys_Connector {
 	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
-    double length = 0.5f;
-    double restLength = 0.5f;
+    double length = 0.5f; // Tries to reach rest length from here
+    double restLength = 0.5f; // Zero forces act at this length
+	double angle = 0.0f; // Tries to reach rest angle from here
+	double restAngle = 0.0;
 
     CONNECT_Type type = CONNECT_Rod;
-	double kVal = 1000.0f; // 100.0 seems to be normal
+	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal
     // double deviation = 0.1f;
 };
 
@@ -35,8 +40,8 @@ struct Phys_Properties { // This binds to a Geo_Component
     }
     ~Phys_Properties(){ if(forces != nullptr) free(forces); }
 
-	const double damping = 0.99999f;
-    double mass = 1.0;
+	const double damping = TOPL_DEFAULT_DAMPING;
+    double mass = TOPL_DEFAULT_MASS;
 
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
     Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
