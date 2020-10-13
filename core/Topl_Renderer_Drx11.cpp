@@ -317,7 +317,8 @@ void Topl_Renderer_Drx11::createPipeline(const Topl_Shader* vertexShader, const 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		unsigned currentGraphicsID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -329,7 +330,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
 											&constBuff_offset,
 											geoTarget_position );
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_off_3F, constBuff_offset));
+		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_off_3F, constBuff_offset));
 
 		if(!mSceneReady) return; // Error
 
@@ -337,7 +338,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mSceneReady = _Drx11::createConstBuff_Vec2(&m_device,
 			&constBuff_rotation,
 			geoTarget_angles);
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Const_rot_2F, constBuff_rotation));
+		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_rot_2F, constBuff_rotation));
 
 		if (!mSceneReady) return; // Error
 
@@ -347,7 +348,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
 												(DWORD*)geoTarget_iData, geoTarget_renderObj->getICount() );
 
-			mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
+			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
 
 			if(!mSceneReady) return; // Error
 		}
@@ -357,19 +358,19 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
 
-		mBuffers.push_back(Buffer_Drx11(g + 1, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
 
 #ifdef RASTERON_H
-		unsigned texCount = sMan->getTextures(g + 1, nullptr); 
+		unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); 
 		if (texCount > 0) {
-			const Rasteron_Image* baseTex = sMan->getFirstTexture(g + 1);
+			const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
 
-			genTexture(baseTex, g + 1);
+			genTexture(baseTex, currentGraphicsID);
 		}
 #endif
 
 		if(!mSceneReady) return;
-		mMainGraphicsIDs = g + 1; // Gives us the greatest buffer ID number
+		mMainGraphicsIDs = currentGraphicsID; // Gives us the greatest buffer ID number
 	}
 
 	// Input assembler inputs to pipeline
@@ -389,9 +390,11 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
 
-	if(mDrawSupports){ // Additional background drawables, connectors, or supports
-		// Add support drawables to the scene
-	}
+	if(mDrawSupports)
+		for (unsigned l = 0; l < sMan->getLinkedItemsCount(); l++){
+			unsigned currentGraphicsID = mMainGraphicsIDs + l + 1; // Starts off one after Main graphics object ids
+			topl_linkedItems_cptr linkTarget_ptr = sMan->getLink(l);
+		}
 
     mSceneReady = true;
     return;
@@ -487,18 +490,19 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	Buffer_Drx11* angleBuff = nullptr;
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		unsigned currentGraphicsID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F){
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_off_3F){
 				posBuff = &(*currentBuff);
 				break;
 			}
 
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_rot_2F) {
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_rot_2F) {
 				angleBuff = &(*currentBuff);
 				break;
 			}
@@ -530,9 +534,9 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
-	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
+	// Iterate through the main graphics objects that make up the scene
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = mMainGraphicsIDs - mSupportsGraphicsIDs; id >= 1; id--) {
+		for (unsigned id = mMainGraphicsIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);

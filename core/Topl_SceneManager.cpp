@@ -29,6 +29,15 @@ topl_geoComponent_cptr Topl_SceneManager::getGeoNode(const std::string& name) co
 	return mIdToGeo_map.at(gIndex);
 }
 
+topl_linkedItems_cptr Topl_SceneManager::getLink(unsigned index) const {
+	if(index > mLinkedItems.size()){
+		puts("Index for linked items is out of range!");
+		return nullptr;
+	}
+
+	return &mLinkedItems.at(index);
+}
+
 void Topl_SceneManager::addGeometry(const std::string& name, Geo_Component* geoNode) {
 	if (mNameToId_map.find(name) != mNameToId_map.end()) {
 		puts("Overriding geometry object:");

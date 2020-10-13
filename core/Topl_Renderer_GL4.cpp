@@ -161,7 +161,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ID values begin at 1
+		unsigned currentGraphicsID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ID values begin at 1
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -170,20 +171,20 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
+		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		unsigned blockSize = sizeof(_GL4::UniformBlock);
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
+		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
-		mBuffers.push_back(Buffer_GL4(g + 1, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
-		mVAOs.push_back(VertexArray_GL4(g + 1, m_vertexArrayAlloc.getAvailable()));
+		mVAOs.push_back(VertexArray_GL4(currentGraphicsID, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 		glEnableVertexAttribArray(0);
@@ -199,19 +200,21 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		m_pipeline.layoutIndex++; // TODO: Figure this part out, mark for deletion
 
 #ifdef RASTERON_H
-	unsigned texCount = sMan->getTextures(g + 1, nullptr);
+	unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr);
 	if(texCount > 0){
-		const Rasteron_Image* baseTex = sMan->getFirstTexture(g + 1);
+		const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
 
-		genTexture(baseTex, g + 1); // Add the method definition
+		genTexture(baseTex, currentGraphicsID); // Add the method definition
 	}
 #endif
-		mMainGraphicsIDs = g + 1;
+		mMainGraphicsIDs = currentGraphicsID;
 	}
 
-	if(mDrawSupports){ // Additional background drawables, connectors, or supports
-		// Add support drawables to the scene
-	}
+	if(mDrawSupports)
+		for (unsigned l = 0; l < sMan->getLinkedItemsCount(); l++){
+			unsigned currentGraphicsID = mMainGraphicsIDs + l + 1; // Starts off one after Main graphics object ids
+			topl_linkedItems_cptr linkTarget_ptr = sMan->getLink(l);
+		}
 
 	mSceneReady = true;
     return; // To be continued
@@ -252,14 +255,15 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	Buffer_GL4* targetBuff = nullptr;
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(g + 1); // ids begin at 1 // Add safeguards!
+		unsigned currentGraphicsID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
 
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == g + 1 && currentBuff->type == BUFF_Const_off_3F) {
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_off_3F) {
 				targetBuff = &(*currentBuff);
 				break;
 			}
@@ -394,7 +398,7 @@ void Topl_Renderer_GL4::render(void){
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
-	for (unsigned id = 1; id <= mMainGraphicsIDs - mSupportsGraphicsIDs; id++) {
+	for (unsigned id = 1; id <= mMainGraphicsIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);

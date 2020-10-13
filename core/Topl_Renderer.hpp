@@ -101,7 +101,7 @@ public:
 protected:
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned mMainGraphicsIDs = 1; // Indicator for number of graphics objects
+	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects
     bool mDrawSupports = true; // Draws physics components and additional supports when true
     unsigned mSupportsGraphicsIDs = 0; // Reserved graphics ID's for physics components and additional supports
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects

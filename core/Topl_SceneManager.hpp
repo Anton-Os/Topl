@@ -22,6 +22,8 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 	geoComponent_pair linkedItems;
 };
 
+typedef const LinkedItems* const topl_linkedItems_cptr;
+
 #ifdef RASTERON_H
 	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
 #endif
@@ -61,9 +63,13 @@ public:
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
 
 	unsigned getGeoCount() const { return mIdToGeo_map.size(); }
-	topl_camera_cptr getCamera() const { return &mCamera; }
-	topl_geoComponent_cptr getGeoNode(unsigned index) const; // For sequential access, beginning to end
+	topl_geoComponent_cptr getGeoNode(unsigned index) const; // Access to geometry sequentially
 	topl_geoComponent_cptr getGeoNode(const std::string& name) const; // Access to geometry by name
+
+	unsigned getLinkedItemsCount() const { return mLinkedItems.size(); }
+	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
+
+	topl_camera_cptr getCamera() const { return &mCamera; }
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(unsigned index) const;
 	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
