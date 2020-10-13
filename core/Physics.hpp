@@ -21,10 +21,12 @@ enum CONNECT_Type {
 
 struct Phys_Connector {
 	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    Eigen::Vector3f restAngleVec1, restAngleVec2; // Normalized vectors that point to first and second linked items respectively AT REST!
+    Eigen::Vector3f angleVec1, angleVec2; // Normalized vectors that point to first and second linked items respectively UPDATED!
+
     double length = 0.5f; // Tries to reach rest length from here
     double restLength = 0.5f; // Zero forces act at this length
 	double angle = 0.0f; // Tries to reach rest angle from here
-	double restAngle = 0.0;
 
     CONNECT_Type type = CONNECT_Rod;
 	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal

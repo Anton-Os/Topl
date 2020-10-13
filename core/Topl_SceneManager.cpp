@@ -101,7 +101,11 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	// Compute the center point which needs to be updated in the resolvePhysics() method
 	connector->centerPoint = (*pos1 + *pos2) / 2;
 
-	// TODO: COMPUTE THE ANGLE BETWEEN TWO LINKED ITEMS
+	// Compute the initial NORMALIZED angle vector between the center and linked items
+	connector->restAngleVec1 = *pos1 - connector->centerPoint;
+	connector->restAngleVec1.normalize();
+	connector->restAngleVec2 = *pos2 - connector->centerPoint;
+	connector->restAngleVec2.normalize();
 
 	// Add the new linked items to the scene manager data
 	mLinkedItems.push_back(items);

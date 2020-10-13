@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
 
 	// Geo_Humanoid humanoid1("humanoid1", &sMan1);
 	Geo_Humanoid humanoid2("humanoid2", &sMan1);
-	// humanoid2.move(&sMan1, Eigen::Vector3f(0.011f, 0.011f, 0.0)); // Moving humanoid
--
+	humanoid2.move(&sMan1, Eigen::Vector3f(0.0f, 0.4, 0.0)); // Moving humanoid
+
 	renderer.buildScene(&sMan1);
 
 	while (renderer.renderScene(DRAW_Triangles)) {

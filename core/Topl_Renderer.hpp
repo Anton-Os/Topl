@@ -71,7 +71,6 @@ public:
 	virtual ~Topl_Renderer() {};
 
     virtual void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
-    // virtual void genTexture(const Rasteron_Image* rstn_image) // Needs to be renderer specific
     virtual void buildScene(const Topl_SceneManager* sMan) = 0;
     void updateScene(const Topl_SceneManager* sMan){
         // if(!mPipelineReady) puts("Pipeline not ready");
@@ -100,10 +99,12 @@ public:
 #endif
 
 protected:
-    bool mPipelineReady = false;
-    bool mSceneReady = false;
-	unsigned mMaxGraphicsID = 1;
-    enum DRAW_Type mDrawType = DRAW_Triangles;
+    bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
+    bool mSceneReady = false; // Switch to true when elements of the scene are built
+	unsigned mMainGraphicsIDs = 1; // Indicator for number of graphics objects
+    bool mDrawSupports = true; // Draws physics components and additional supports when true
+    unsigned mSupportsGraphicsIDs = 0; // Reserved graphics ID's for physics components and additional supports
+    enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void update(const Topl_SceneManager* sMan) = 0;

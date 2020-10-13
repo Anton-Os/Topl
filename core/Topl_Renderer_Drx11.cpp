@@ -369,7 +369,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 #endif
 
 		if(!mSceneReady) return;
-		mMaxGraphicsID = g + 1; // Gives us the greatest buffer ID number
+		mMainGraphicsIDs = g + 1; // Gives us the greatest buffer ID number
 	}
 
 	// Input assembler inputs to pipeline
@@ -388,7 +388,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
-	m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	if(mDrawSupports){ // Additional background drawables, connectors, or supports
+		// Add support drawables to the scene
+	}
 
     mSceneReady = true;
     return;
@@ -529,10 +532,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 	// Vertex buffers are used as reference for loop, assumes all vectors have same number of buffers
 	if (mPipelineReady && mSceneReady)
-		// for (unsigned id = 1; id <= mMaxGraphicsID; id++) { // ID signifies graphics target id
-		for (unsigned id = 2; id >= 1; id--) {
-
-
+		for (unsigned id = mMainGraphicsIDs - mSupportsGraphicsIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
