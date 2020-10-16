@@ -373,6 +373,25 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mMainGraphicsIDs = currentGraphicsID; // Gives us the greatest buffer ID number
 	}
 
+	if (mDrawSupports)
+		for (unsigned l = 0; l < sMan->getLinkedItemsCount(); l++) {
+			unsigned currentGraphicsID = mMainGraphicsIDs + l + 1; // Starts off one after Main graphics object ids
+			const unsigned linkVertexCount = 2;
+
+			topl_linkedItems_cptr linkTarget_ptr = sMan->getLink(l);
+
+			Geo_PerVertexData linkVertices[] = {
+				Geo_PerVertexData(Eigen::Vector3f(*linkTarget_ptr->linkedItems.first->getPos())),
+				Geo_PerVertexData(Eigen::Vector3f(*linkTarget_ptr->linkedItems.second->getPos())),
+			};
+
+			ID3D11Buffer* linkVertexBuff;
+			mSceneReady = _Drx11::createVertexBuff(&m_device, &linkVertexBuff, &linkVertices[0], linkVertexCount);
+			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, linkVertexBuff, linkVertexCount));
+
+			mSupportsGraphicsIDs = currentGraphicsID - mMainGraphicsIDs;
+		}
+
 	// Input assembler inputs to pipeline
 	// These procedures belong inside the pipeline creation
 
@@ -389,12 +408,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
-
-	if(mDrawSupports)
-		for (unsigned l = 0; l < sMan->getLinkedItemsCount(); l++){
-			unsigned currentGraphicsID = mMainGraphicsIDs + l + 1; // Starts off one after Main graphics object ids
-			topl_linkedItems_cptr linkTarget_ptr = sMan->getLink(l);
-		}
 
     mSceneReady = true;
     return;

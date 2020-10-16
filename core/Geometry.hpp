@@ -19,12 +19,15 @@ typedef const unsigned* const ui_cptr;
 struct Geo_PerVertexData { // TODO: Fix this class
 	Geo_PerVertexData(){} // Empty constructor
 
-	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){
+	Geo_PerVertexData(Eigen::Vector3f p){ // Position Parameter
+		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
+	}
+	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Position + Texture Coords + Other Params
 		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
 		texCoord[0] = t[0]; texCoord[1] = t[1];
 	}
 
-	float position[3]; // For xyzw elements
+	float position[3]; // For xyz
 	float texCoord[2]; // For uv texture coordinates */
 };
 
