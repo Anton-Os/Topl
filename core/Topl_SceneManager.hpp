@@ -9,6 +9,7 @@
 #include <utility>
 #include <cmath>
 
+#include "FileIO.hpp" // REMOVE THIS!!! DEBUGGING ONLY!!!
 #include "Timer.hpp"
 #include "Physics.hpp"
 
@@ -59,8 +60,8 @@ public:
 
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Properties* pProp);
-	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
+	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
 
 	unsigned getGeoCount() const { return mIdToGeo_map.size(); }
 	topl_geoComponent_cptr getGeoNode(unsigned index) const; // Access to geometry sequentially

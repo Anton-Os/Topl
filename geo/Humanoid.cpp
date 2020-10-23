@@ -115,18 +115,12 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	sMan->addConnector(&body_leftLeg_link, getPrefix() + "body", getPrefix() + "leftLeg");
 	sMan->addConnector(&body_rightLeg_link, getPrefix() + "body", getPrefix() + "rightLeg");
 
-	// Stability links "pentagon"
+	/* // Stability links "pentagon"
 	sMan->addConnector(&head_leftArm_link, getPrefix() + "head", getPrefix() + "leftArm");
 	sMan->addConnector(&head_rightArm_link, getPrefix() + "head", getPrefix() + "rightArm");
 	sMan->addConnector(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	sMan->addConnector(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
-	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg");
-	
-	// sMan->addForce("head", Eigen::Vector3f(0.0f, TOPL_FORCE_UNIT, 0.0));
-	//sMan->addForce("leftArm", Eigen::Vector3f(0.0, -1 * TOPL_FORCE_UNIT, 0.0));
-	// sMan->addForce("rightArm", Eigen::Vector3f(0.0, TOPL_FORCE_UNIT, 0.0));
-	// sMan->addForce(getPrefix() + "leftLeg", Eigen::Vector3f(0.0, TOPL_FORCE_UNIT * 2, 0.0));
-	// sMan->addForce(getPrefix() + "rightLeg", Eigen::Vector3f(0.0, -1 * TOPL_FORCE_UNIT * 2, 0.0));
+	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); */
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {

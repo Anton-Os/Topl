@@ -24,3 +24,11 @@ std::string getParentDir(const char* str){
 
     return parentDir;
 }
+
+void logToFile(const char* fileName, std::string logMessage){
+    std::ofstream file(fileName, std::ofstream::out | std::ofstream::app);
+
+    file << logMessage << "\n\n";
+
+    file.close();
+}

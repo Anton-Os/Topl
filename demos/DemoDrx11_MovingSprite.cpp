@@ -21,6 +21,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+void resolvePhysicsCallback() {
+	int i = 1 + 1;
+}
+
+
 int main(int argc, char** argv) {
 
 	WNDCLASS wndClass = { 0 };
@@ -57,14 +62,17 @@ int main(int argc, char** argv) {
 
 	// Geo_Humanoid humanoid1("humanoid1", &sMan1);
 	Geo_Humanoid humanoid2("humanoid2", &sMan1);
-	humanoid2.move(&sMan1, Eigen::Vector3f(0.0f, 0.4, 0.0)); // Moving humanoid
+	humanoid2.move(&sMan1, Eigen::Vector3f(0.9f, 0.3, 0.0)); // Moving humanoid
 
 	renderer.buildScene(&sMan1);
 
+	//timerCallback resolvePhysicsCallback = &Topl_SceneManager::resolvePhysics;
+	//Timer_DiscreteEvent physicsLoop(1.0, &sMan1.resolvePhysics);
 	while (renderer.renderScene(DRAW_Triangles)) {
 		renderer.updateScene(&sMan1);
 
 		sMan1.resolvePhysics();
+		// physicsLoop.update();
 		// Process input and other things, on successful rendering
 	}
 

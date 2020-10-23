@@ -124,7 +124,7 @@ void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
 
-	// Resolve connector forces here
+	// Resolve connector and link forces here
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){
 		Phys_Connector* connector = currentLink->connector;
 		const Geo_Component* linkItem1 = currentLink->linkedItems.first;
@@ -160,6 +160,7 @@ void Topl_SceneManager::resolvePhysics() {
 		}
 	}
 
+	// Resolve general movement here
 	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
 		Phys_Properties* physProps = physCurrentMap->second;
 		
@@ -182,6 +183,17 @@ void Topl_SceneManager::resolvePhysics() {
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
+
+	// For testing, write connector data to log file!!!
+	// REMOVE THIS!!! DEBUGGING ONLY!!!
+	std::string linkStatusMsg = 
+		"Link1 Length: " + std::to_string(mLinkedItems[0].connector->length)
+		+ "\nLink2 Length: " + std::to_string(mLinkedItems[1].connector->length)
+		+ "\nLink3 Length: " + std::to_string(mLinkedItems[2].connector->length)
+		+ "\nLink4 Length: " + std::to_string(mLinkedItems[3].connector->length)
+		+ "\nLink5 Length: " + std::to_string(mLinkedItems[4].connector->length);
+	
+	logToFile("ConnectorData.txt", linkStatusMsg);
 }
 
 #ifdef RASTERON_H

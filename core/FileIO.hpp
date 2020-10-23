@@ -5,9 +5,9 @@
 #include <cstring>
 #include <cstdio>
 
+// Important file operations
 std::string readFile(const char* source);
 std::string getParentDir(const char* arg);
 
-/* #ifdef _WIN32
-    void convertTo_wchar(const wchar_t* wc, const char* c);
-#endif */
+// Create a log file for debugging purposes
+void logToFile(const char* fileName, std::string logMessage);
