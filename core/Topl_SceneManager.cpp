@@ -135,8 +135,8 @@ void Topl_SceneManager::resolvePhysics() {
 			+ pow(linkItem1->getPos()->y() - linkItem2->getPos()->y(), 2)
 			+ pow(linkItem1->getPos()->z() - linkItem2->getPos()->z(), 2)
 		);
-
-		if (connector->length != connector->restLength) { // No forces occur if the length and rest length match
+ 
+		if(abs(connector->length - connector->restLength) > TOPL_CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded
 			// Determines direction of force for first geometry link
 			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
 				? *(linkItem1->getPos()) - connector->centerPoint // Outward push because length is shorter
@@ -187,7 +187,8 @@ void Topl_SceneManager::resolvePhysics() {
 	// For testing, write connector data to log file!!!
 	// REMOVE THIS!!! DEBUGGING ONLY!!!
 	std::string linkStatusMsg = 
-		"Link1 Length: " + std::to_string(mLinkedItems[0].connector->length)
+		"Timestamp: " + std::to_string(mPhysTicker.getAbsMillsecs()) + " milliseconds"
+		+ "\nLink1 Length: " + std::to_string(mLinkedItems[0].connector->length)
 		+ "\nLink2 Length: " + std::to_string(mLinkedItems[1].connector->length)
 		+ "\nLink3 Length: " + std::to_string(mLinkedItems[2].connector->length)
 		+ "\nLink4 Length: " + std::to_string(mLinkedItems[3].connector->length)

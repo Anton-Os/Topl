@@ -6,10 +6,11 @@
 
 // TODO: ADD DEFINITIONS TO SCALE PHYSICS REACTIONS
 
-#define TOPL_FORCE_UNIT 0.04
-#define TOPL_DEFAULT_DAMPING 1
-#define TOPL_DEFAULT_MASS 7.0
-#define TOPL_DEFAULT_K 1000.0
+#define TOPL_FORCE_UNIT 0.04 // Easy unit to work in screen coordinates
+#define TOPL_DEFAULT_DAMPING 1 // 1 For Testing Purpose, no slow down
+#define TOPL_DEFAULT_MASS 7.0 // Default Mass of Entities
+#define TOPL_DEFAULT_K 1000.0 // K Value for Springs
+#define TOPL_CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
