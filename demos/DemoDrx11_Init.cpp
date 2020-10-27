@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
-	renderer.createPipeline(&vertexShader, &fragmentShader);
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	// Geo_Rect2D gRect1(1.0f, 1.0f);
 	Geo_Sphere2D gSphere1(0.4f, 20);

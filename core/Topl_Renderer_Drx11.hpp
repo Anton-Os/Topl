@@ -43,7 +43,6 @@ public:
 	Topl_Renderer_Drx11(HWND hwnd) { init(hwnd); }
 	~Topl_Renderer_Drx11();
 
-	void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void buildScene(const Topl_SceneManager* sMan) override;
 
 #ifdef RASTERON_H
@@ -52,6 +51,7 @@ public:
 #endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
+	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void update(const Topl_SceneManager* sMan) override;
 	void render(void) override;
 

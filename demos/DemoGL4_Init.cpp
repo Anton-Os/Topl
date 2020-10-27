@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl"; // Make unix fix
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
-	renderer.createPipeline(&vertexShader, &fragmentShader);
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	Geo_Rect2D gRect1(1.0f, 1.0f);
 	Geo_Rect2D gRect2(2.0f, 0.2f);

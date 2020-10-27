@@ -209,25 +209,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		mMainGraphicsIDs = currentGraphicsID; // Sets main graphics ID's to max value of currentGraphicsID
 	}
 
-	if(mDrawSupports)
-		for (unsigned l = 0; l < sMan->getLinkedItemsCount(); l++){
-			unsigned currentGraphicsID = mMainGraphicsIDs + l + 1; // Starts off 1 + Main graphics object ids
-			const unsigned linkVertexCount = 2;
-
-			topl_linkedItems_cptr linkTarget_ptr = sMan->getLink(l);
-
-			Geo_PerVertexData linkVertices[] = {
-				Geo_PerVertexData(Eigen::Vector3f(*linkTarget_ptr->linkedItems.first->getPos())),
-				Geo_PerVertexData(Eigen::Vector3f(*linkTarget_ptr->linkedItems.second->getPos())),
-			};
-
-			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), linkVertexCount));
-			glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
-			glBufferData(GL_ARRAY_BUFFER, linkVertexCount * sizeof(Geo_PerVertexData), &linkVertices[0], GL_STATIC_DRAW);
-
-			mSupportsGraphicsIDs = currentGraphicsID - mMainGraphicsIDs; // Sets support graphics ID's to maximum for support graphics
-		}
-
 	mSceneReady = true;
     return; // To be continued
 }
@@ -293,7 +274,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	return;
 }
 
-void Topl_Renderer_GL4::createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
+void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
 	GLint result;
 	const char* sourceStr_ptr;
 

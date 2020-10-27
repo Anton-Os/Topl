@@ -5,6 +5,8 @@
 #include "Topl_Shader.hpp"
 #include "Topl_SceneManager.hpp"
 
+typedef const Topl_Shader* const topl_shader_cptr;
+
 enum DRAW_Type {
     DRAW_Points,
     DRAW_Lines,
@@ -64,24 +66,28 @@ struct Texture : public GraphicsTargetObject {
 	enum TEX_Mode mode;
 };
 
-
-
 class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
 
-    virtual void createPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
+    void setPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
+        // TODO: Improve code to perform checks on mShaders
+        // TODO: Complete code here to be efficient
+
+        mShaders.push_back(vertexShader);
+        mShaders.push_back(fragShader);
+        pipeline(vertexShader, fragShader);
+    }
     virtual void buildScene(const Topl_SceneManager* sMan) = 0;
-    void updateScene(const Topl_SceneManager* sMan){
-        // if(!mPipelineReady) puts("Pipeline not ready");
-        if(!mSceneReady){
-            puts("Scene not built for update call!");
-            return;
-        }
+    bool updateScene(const Topl_SceneManager* sMan){
+        if(!mPipelineReady) puts("Pipeline not set for update call");
+        if(!mSceneReady) puts("Scene not built for update call!");
+        if(!mPipelineReady || !mSceneReady) return false;
+
         update(sMan);
     }
     bool renderScene(enum DRAW_Type drawType){
-        if(!mPipelineReady) puts("Pipeline not ready for draw call!");
+        if(!mPipelineReady) puts("Pipeline not set for draw call!");
         if(!mSceneReady) puts("Scene not built for draw call!");
         if(!mPipelineReady || !mSceneReady) return false; // Rendering failed
 
@@ -99,14 +105,14 @@ public:
 #endif
 
 protected:
+    std::vector<const Topl_Shader*> mShaders;
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
 	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects
-    bool mDrawSupports = true; // Draws physics components and additional supports when true
-    unsigned mSupportsGraphicsIDs = 0; // Reserved graphics ID's for physics components and additional supports
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
+    virtual void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
     virtual void update(const Topl_SceneManager* sMan) = 0;
 	virtual void render(void) = 0;
 };

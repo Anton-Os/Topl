@@ -184,17 +184,16 @@ void Topl_SceneManager::resolvePhysics() {
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
 
-	// For testing, write connector data to log file!!!
-	// REMOVE THIS!!! DEBUGGING ONLY!!!
+	// ------------------------------------------------ Debugging Section------------------------------------------------ //
+
 	std::string linkStatusMsg = 
 		"Timestamp: " + std::to_string(mPhysTicker.getAbsMillsecs()) + " milliseconds"
-		+ "\nLink1 Length: " + std::to_string(mLinkedItems[0].connector->length)
-		+ "\nLink2 Length: " + std::to_string(mLinkedItems[1].connector->length)
-		+ "\nLink3 Length: " + std::to_string(mLinkedItems[2].connector->length)
-		+ "\nLink4 Length: " + std::to_string(mLinkedItems[3].connector->length)
-		+ "\nLink5 Length: " + std::to_string(mLinkedItems[4].connector->length);
-	
+		+ "\nBody to head link restAngleVec1: " + std::to_string(mLinkedItems[0].connector->restAngleVec1.x()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec1.y()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec1.z())
+		+ "\nBody to head link restAngleVec2: " + std::to_string(mLinkedItems[0].connector->restAngleVec2.x()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec2.y()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec2.z());
+
 	logToFile("ConnectorData.txt", linkStatusMsg);
+
+	// ------------------------------------------------------ END ------------------------------------------------------ //
 }
 
 #ifdef RASTERON_H
