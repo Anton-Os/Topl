@@ -110,11 +110,11 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	// Compute the center point which needs to be updated in the resolvePhysics() method
 	connector->centerPoint = (*pos1 + *pos2) / 2;
 
-	// Compute the initial NORMALIZED angle vector between the center and linked items
-	connector->restAngleVec1 = *pos1 - connector->centerPoint;
-	connector->restAngleVec1.normalize();
-	connector->restAngleVec2 = *pos2 - connector->centerPoint;
-	connector->restAngleVec2.normalize();
+	// Compute the INITIAL, NORMALIZED angle vector between the center and linked items
+	connector->restAngleNormVec1 = *pos1 - connector->centerPoint;
+	connector->restAngleNormVec1.normalize();
+	connector->restAngleNormVec2 = *pos2 - connector->centerPoint;
+	connector->restAngleNormVec2.normalize();
 
 	// Add the new linked items to the scene manager data
 	mLinkedItems.push_back(items);
@@ -124,7 +124,7 @@ void Topl_SceneManager::resolvePhysics() {
 	double physElapseMils = mPhysTicker.getRelMillsecs();
 	double physElapseSecs = physElapseMils / 1000.0;
 
-	// Resolve connector and link forces here
+	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){
 		Phys_Connector* connector = currentLink->connector;
 		const Geo_Component* linkItem1 = currentLink->linkedItems.first;
@@ -135,8 +135,15 @@ void Topl_SceneManager::resolvePhysics() {
 			+ pow(linkItem1->getPos()->y() - linkItem2->getPos()->y(), 2)
 			+ pow(linkItem1->getPos()->z() - linkItem2->getPos()->z(), 2)
 		);
+
+		connector->centerPoint = (*linkItem1->getPos() + *linkItem2->getPos()) / 2;
+		connector->angleNormVec1 = *linkItem1->getPos() - connector->centerPoint;
+		connector->angleNormVec1.normalize();
+		connector->angleNormVec2 = *linkItem2->getPos() - connector->centerPoint;
+		connector->angleNormVec2.normalize();
  
-		if(abs(connector->length - connector->restLength) > TOPL_CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded
+		// Forces acting by length displacement
+		if(abs(connector->length - connector->restLength) > TOPL_CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
 			// Determines direction of force for first geometry link
 			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
 				? *(linkItem1->getPos()) - connector->centerPoint // Outward push because length is shorter
@@ -158,6 +165,11 @@ void Topl_SceneManager::resolvePhysics() {
 			addForce(linkItem1->getName(), forceFinal1);
 			addForce(linkItem2->getName(), forceFinal2);
 		}
+
+		// Forces acting by angular displacement // TODO: Add a Threshold value!!!
+		if (connector->restAngleNormVec1 != connector->angleNormVec1 && connector->restAngleNormVec2 != connector->angleNormVec2) {
+			
+		}
 	}
 
 	// Resolve general movement here
@@ -173,7 +185,7 @@ void Topl_SceneManager::resolvePhysics() {
 			}
 		physProps->actingForceCount = 0; // We have resolved all the forces, resetting force count
 		
-		// Velocity Integrator,
+		// Velocity Integrator
 		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
 		// Velocity Damping, to avoid infinite displacement
 		physProps->velocity *= physProps->damping;
@@ -188,8 +200,8 @@ void Topl_SceneManager::resolvePhysics() {
 
 	std::string linkStatusMsg = 
 		"Timestamp: " + std::to_string(mPhysTicker.getAbsMillsecs()) + " milliseconds"
-		+ "\nBody to head link restAngleVec1: " + std::to_string(mLinkedItems[0].connector->restAngleVec1.x()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec1.y()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec1.z())
-		+ "\nBody to head link restAngleVec2: " + std::to_string(mLinkedItems[0].connector->restAngleVec2.x()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec2.y()) + ", " + std::to_string(mLinkedItems[0].connector->restAngleVec2.z());
+		+ "\nLink1 vec1 points to body: " + std::to_string(mLinkedItems[0].connector->angleNormVec1.x()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec1.y()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec1.z())
+		+ "\nLink1 vec2 points to head: " + std::to_string(mLinkedItems[0].connector->angleNormVec2.x()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec2.y()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec2.z());
 
 	logToFile("ConnectorData.txt", linkStatusMsg);
 

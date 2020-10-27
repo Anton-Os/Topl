@@ -115,22 +115,20 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	sMan->addConnector(&body_leftLeg_link, getPrefix() + "body", getPrefix() + "leftLeg");
 	sMan->addConnector(&body_rightLeg_link, getPrefix() + "body", getPrefix() + "rightLeg");
 
-	/* // Stability links "pentagon"
+	// Stability links "pentagon"
 	sMan->addConnector(&head_leftArm_link, getPrefix() + "head", getPrefix() + "leftArm");
 	sMan->addConnector(&head_rightArm_link, getPrefix() + "head", getPrefix() + "rightArm");
 	sMan->addConnector(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	sMan->addConnector(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
-	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); */
+	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg");
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {
-    // sMan->addForce("sphere1", Eigen::Vector3f(0.1f, 0.0f, 0.0));
-    // sMan->addForce("sphere2", Eigen::Vector3f(0.1f, 0.2f, 0.0));
-    // sMan->addForce("sphere3", Eigen::Vector3f(-0.1f, -0.08f, 0.0));
     return;
 } 
 
 void Geo_Humanoid::move(Topl_SceneManager* sMan, Eigen::Vector3f vec){
+	sMan->addForce(getPrefix() + "head", vec);
 	sMan->addForce(getPrefix() + "head", vec);
 	sMan->addForce(getPrefix() + "body", vec);
 	sMan->addForce(getPrefix() + "leftArm", vec);
