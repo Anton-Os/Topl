@@ -168,7 +168,11 @@ void Topl_SceneManager::resolvePhysics() {
 
 		// Forces acting by angular displacement // TODO: Add a Threshold value!!!
 		if (connector->restAngleNormVec1 != connector->angleNormVec1 && connector->restAngleNormVec2 != connector->angleNormVec2) {
-			
+			const Eigen::Vector3f forceAngle1 = connector->restAngleNormVec1 - connector->angleNormVec1;
+			const Eigen::Vector3f forceAngle2 = connector->restAngleNormVec2 - connector->angleNormVec2;
+
+			addForce(linkItem1->getName(), forceAngle1 * TOPL_CONNECTOR_ANGLE_MULT);
+			addForce(linkItem2->getName(), forceAngle2 * TOPL_CONNECTOR_ANGLE_MULT);
 		}
 	}
 
