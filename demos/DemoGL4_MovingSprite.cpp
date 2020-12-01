@@ -1,6 +1,7 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+#include "Input.hpp"
 #include "Geo_Constructs.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
@@ -30,6 +31,7 @@ int main(int argc, char** argv) {
 	wndClass.lpszClassName = "Default Class";
 	RegisterClass(&wndClass);
 
+	// Windows specific code block
 	HWND wndWindow = CreateWindow(
 		"Default Class",
 		"Team Purple",
@@ -41,10 +43,7 @@ int main(int argc, char** argv) {
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
 
-	MSG wndMessage;
-	BOOL bRet;
-
-
+	// OpenGL Specific code block
     Topl_Renderer_GL4 renderer(wndWindow);
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl"; // Make unix fix
@@ -56,18 +55,30 @@ int main(int argc, char** argv) {
 
 	Topl_SceneManager sMan1;
 
+	// Generic code block
 	// Geo_Humanoid humanoid1("humanoid1", &sMan1);
 	Geo_Humanoid humanoid2("humanoid2", &sMan1);
 	humanoid2.move(&sMan1, Eigen::Vector3f(0.9f, 0.3, 0.0)); // Moving humanoid
 
 	renderer.buildScene(&sMan1);
 
+	// Windows specific rendering and input processing
+	MSG wndMessage;
+	BOOL bRet;
+
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		renderer.updateScene(&sMan1);
 
 		sMan1.resolvePhysics();
 
-		// Process input and other things, on successful rendering
+		// Input processing, check if it works unhinged
+		while((bRet = GetMessage(&wndMessage, (HWND)NULL, 0, 0)) != 0){
+			if(bRet == -1) return -1;
+			else {
+				TranslateMessage(&wndMessage);
+				DispatchMessage(&wndMessage);
+        	}
+    	}
 	}
 
 	return 0;

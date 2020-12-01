@@ -101,24 +101,6 @@ if(WIN32) # DirectX Windows Dependent Examples
     ) # REMOVE THIS LATER
     target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
 
-    add_executable(DemoDrx11_Shapes
-        core/FileIO.cpp
-        core/Geometry.cpp
-        core/Timer.cpp
-        geo/CircleUp.cpp
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_Drx11.cpp
-
-        demos/DemoDrx11_Shapes.cpp
-    )
-    target_include_directories(DemoDrx11_Shapes PUBLIC core geo)
-
-    target_include_directories(DemoDrx11_Shapes PUBLIC 
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    ) # REMOVE THIS LATER
-    target_link_libraries(DemoDrx11_Shapes INTERFACE dxsdk_interface Eigen3) # FIX THIS
-
     add_executable(DemoDrx11_MovingSprite
         core/FileIO.cpp
         core/Geometry.cpp
@@ -178,29 +160,11 @@ target_include_directories(DemoGL4 PUBLIC
 target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
 target_link_libraries(DemoGL4 PRIVATE GLEW_lib)
 
-add_executable(DemoGL4_Shapes
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    geo/CircleUp.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_GL4.cpp
-    
-    demos/DemoGL4_Shapes.cpp 
-)
-
-target_include_directories(DemoGL4_Shapes PUBLIC core geo)
-target_include_directories(DemoGL4_Shapes PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
-target_link_libraries(DemoGL4_Shapes INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
-target_link_libraries(DemoGL4_Shapes PRIVATE GLEW_lib)
-
 add_executable(DemoGL4_MovingSprite
     core/FileIO.cpp
     core/Geometry.cpp
     core/Timer.cpp
+    core/Input.cpp # Experimental
     geo/Humanoid.cpp
     core/Topl_SceneManager.cpp
     core/Topl_Renderer_GL4.cpp
