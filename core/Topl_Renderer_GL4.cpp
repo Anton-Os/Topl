@@ -49,9 +49,10 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 #define DEFAULT_BLOCK_BINDING 0
 
 namespace _GL4 {
-	struct UniformBlock {
+	// TODO: This needs to adapt to the presets within the current shader
+	struct DefaultUniformBlock {
 		// Uniform Block contains padding data, try to minimize the data types
-		UniformBlock(vec3f_cptr v, vec2f_cptr a) {
+		DefaultUniformBlock(vec3f_cptr v, vec2f_cptr a) {
 			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
 			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
 		}
@@ -170,10 +171,10 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
+		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
-		unsigned blockSize = sizeof(_GL4::UniformBlock);
+		unsigned blockSize = sizeof(_GL4::DefaultUniformBlock);
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
@@ -253,7 +254,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::UniformBlock block = _GL4::UniformBlock(geoTarget_position, geoTarget_angles);
+		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
 
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_off_3F) {
@@ -267,7 +268,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		}
 
 		glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::UniformBlock), &block, GL_STATIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::DefaultUniformBlock), &block, GL_STATIC_DRAW);
 	}
 
 	mSceneReady = true;

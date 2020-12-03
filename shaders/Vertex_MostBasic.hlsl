@@ -1,8 +1,13 @@
-cbuffer CONST_OFFSET_BUFF : register(b0) {
+/* cbuffer CONST_OFFSET_BUFF : register(b0) {
 	float3 offset;
 }
 
 cbuffer CONST_ROTATION_BUFF : register(b1) {
+	float2 rotation;
+} */
+
+cbuffer CONST_BLOCK : register(b0) {
+	float4 offset;
 	float2 rotation;
 }
 
