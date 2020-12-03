@@ -3,6 +3,16 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 namespace _Drx11 {
+	// TODO: This needs to adapt to the presets within the current shader
+	struct DefaultConstBlock {
+		DefaultConstBlock(vec3f_cptr v, vec2f_cptr a) {
+			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
+			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
+		}
+		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
+		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
+	};
+
 	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, perVertex_cptr pvData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
@@ -17,44 +27,6 @@ namespace _Drx11 {
 		D3D11_SUBRESOURCE_DATA buffData;
 		ZeroMemory(&buffData, sizeof(buffData));
 		buffData.pSysMem = pvData;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
-	}
-
-    static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec3f_cptr vData, unsigned vCount) {
-		D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Eigen::Vector3f) * vCount;
-		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffDesc.CPUAccessFlags = 0;
-		buffDesc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = vData;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
-	}
-
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vec2f_cptr vData, unsigned vCount) {
-		D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Eigen::Vector2f) * vCount; // Code could be more reusable
-		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffDesc.CPUAccessFlags = 0;
-		buffDesc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = vData;
 
 		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
 		if (FAILED(hr)) return false;
@@ -83,33 +55,11 @@ namespace _Drx11 {
 		return true;
 	}
 
-    static bool createConstBuff_Vec3(ID3D11Device** device, ID3D11Buffer** cBuff, vec3f_cptr vector) {
-        D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
-		buffDesc.ByteWidth = 16 * sizeof(BYTE);
-		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		buffDesc.MiscFlags = 0;
-		buffDesc.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = vector;
-		buffData.SysMemPitch = 0;
-		buffData.SysMemSlicePitch = 0;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
-	}
-
-	static bool createConstBuff_Vec2(ID3D11Device** device, ID3D11Buffer** cBuff, vec2f_cptr vector) {
+	static bool createConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const DefaultConstBlock *const block ) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
+		buffDesc.ByteWidth = sizeof(DefaultConstBlock);
 		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
-		buffDesc.ByteWidth = 16 * sizeof(BYTE); // Check for proper byte width!
 		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		buffDesc.MiscFlags = 0;
@@ -117,7 +67,7 @@ namespace _Drx11 {
 
 		D3D11_SUBRESOURCE_DATA buffData;
 		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = vector;
+		buffData.pSysMem = (const void*)block;
 		buffData.SysMemPitch = 0;
 		buffData.SysMemSlicePitch = 0;
 
@@ -326,19 +276,10 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		ID3D11Buffer* constBuff_offset;
-		mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, 
-											&constBuff_offset,
-											geoTarget_position );
-		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_off_3F, constBuff_offset));
-
-		if(!mSceneReady) return; // Error
-
-		ID3D11Buffer* constBuff_rotation;
-		mSceneReady = _Drx11::createConstBuff_Vec2(&m_device,
-			&constBuff_rotation,
-			geoTarget_angles);
-		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_rot_2F, constBuff_rotation));
+		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
+		ID3D11Buffer* constBlockBuff;
+		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &block);
+		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_rot_2F, constBlockBuff));
 
 		if (!mSceneReady) return; // Error
 
@@ -486,21 +427,15 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_off_3F){
-				posBuff = &(*currentBuff);
-				break;
-			}
-
-		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_rot_2F) {
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_rot_2F){
 				angleBuff = &(*currentBuff);
 				break;
 			}
 
-		if(posBuff != nullptr)
-			mSceneReady = _Drx11::createConstBuff_Vec3(&m_device, &posBuff->buffer, geoTarget_position);
+
+		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
 		if (angleBuff != nullptr)
-			mSceneReady = _Drx11::createConstBuff_Vec2(&m_device, &angleBuff->buffer, geoTarget_angles);
+			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &angleBuff->buffer, &block);
 
 		if(!mSceneReady) return;
 	}
@@ -531,16 +466,14 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
+			// Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* angleBuff = _Drx11::findBuffer(BUFF_Const_rot_2F, dBuffers, MAX_BUFFERS_PER_TARGET);
-			if (posBuff == nullptr || indexBuff == nullptr || vertexBuff == nullptr) {
+			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-			ID3D11Buffer* constBuffs[] = { posBuff->buffer, angleBuff->buffer }; // Includes all constant buffers
-
-			m_deviceCtx->VSSetConstantBuffers(0, 2, &constBuffs[0]);
+			m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT stride = sizeof(Geo_PerVertexData);
