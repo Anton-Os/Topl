@@ -69,9 +69,10 @@ int main(int argc, char** argv) {
 	//timerCallback resolvePhysicsCallback = &Topl_SceneManager::resolvePhysics;
 	//Timer_DiscreteEvent physicsLoop(1.0, &sMan1.resolvePhysics);
 	while (renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&sMan1);
+		// renderer.updateScene(&sMan1);
 
-		sMan1.resolvePhysics();
+		// sMan1.resolvePhysics();
+		
 		// physicsLoop.update();
 		// Process input and other things, on successful rendering
 	}

@@ -9,8 +9,9 @@ namespace _Drx11 {
 			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
 			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
 		}
-		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
 		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
+		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
+
 	};
 
 	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, perVertex_cptr pvData, unsigned vCount) {
@@ -74,6 +75,12 @@ namespace _Drx11 {
 		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
 		if (FAILED(hr)) return false;
 
+		return true;
+	}
+
+	static bool updateConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const DefaultConstBlock* const block) {
+		// TODO: Include update code here
+		
 		return true;
 	}
 
@@ -331,6 +338,15 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
 
+	// -------------------- Debuging Code Block ------------------ // REMOVE!
+
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
+	_Drx11::discoverBuffers(dBuffers, &mBuffers, 1); // Will always discover the same constant buffer
+	Buffer_Drx11* angleBuff = _Drx11::findBuffer(BUFF_Const_rot_2F, dBuffers, MAX_BUFFERS_PER_TARGET);
+	m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer); // Original
+
+	// -------------------- Debuging Code Block ------------------ // REMOVE!
+
     mSceneReady = true;
     return;
 }
@@ -473,7 +489,7 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 				return;
 			}
 
-			m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer);
+			// m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer); // Original
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT stride = sizeof(Geo_PerVertexData);

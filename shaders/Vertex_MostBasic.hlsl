@@ -1,14 +1,6 @@
-/* cbuffer CONST_OFFSET_BUFF : register(b0) {
-	float3 offset;
-}
-
-cbuffer CONST_ROTATION_BUFF : register(b1) {
-	float2 rotation;
-} */
-
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset;
-	float2 rotation;
+	float4 offset; // Does not work
+	float4 rotation; // Does not work
 }
 
 struct VS_INPUT {
@@ -37,9 +29,8 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 		output.pos.y = rotCoords.y;
 	}
 
-	float4 fullOffset = (offset.x, offset.y, offset.z, 0.0); // Making to vec4
-	output.pos += fullOffset; // Adding displacement
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
+	output.pos += offset;
 
 	return output;
 }

@@ -1,12 +1,10 @@
 #ifdef RASTERON_H
 
-// TODO: Reinclude code below when header is on its own
-// #include "Geo_Constructs.hpp"
-// #include "Geo_SpriteTable.hpp"
+#define ANATOMY_PARTS_COUNT 6 // There are 6 body parts total
 
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
-	// Easy preconfigured constructor
+	// Easy preconfigured constructor for Urkwin Alien
 	Geo_Humanoid(const std::string& prefix, Topl_SceneManager* sMan) :
 	Geo_SpriteTable({ 
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png",
@@ -29,6 +27,7 @@ public:
 	) { 
 		// Populated for Urkwin Alien with predefined values
 		headOffset = Eigen::Vector3f(0.0f, 0.11f, 0.0);
+		// headOffset = Eigen::Vector3f(0.0f, 0.5f, 0.0); // For testing
 		bodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
 		leftArmOffset = Eigen::Vector3f(0.12f, -0.14f, 0.0);
 		rightArmOffset = Eigen::Vector3f(-0.12f, -0.14f, 0.0);
@@ -38,18 +37,38 @@ public:
 		fillSceneManager(sMan); 
 	}
 
-	/* // Extensive configurable constructor
 	Geo_Humanoid(
-		const std::string& prefix, 
-		Topl_SceneManager* sMan, 
-		std::initializer_list<std::pair<const char*, Eigen::Vector3f>> properties,
-		float scaleFactor)
-	: Geo_SpriteTable({}, scaleFactor),
-	Geo_Construct(prefix, sMan, { }) {
+		const std::string& prefix,
+		Topl_SceneManager* sMan,
+		std::pair<const char*, Eigen::Vector3f> initProps[ANATOMY_PARTS_COUNT], // Filepaths and offsets for
+		float scaleFactor) :
+	Geo_SpriteTable({
+		initProps[HUMANOID_Head].first,
+		initProps[HUMANOID_LeftArm].first,
+		initProps[HUMANOID_RightArm].first,
+		initProps[HUMANOID_Body].first,
+		initProps[HUMANOID_LeftLeg].first,
+		initProps[HUMANOID_RightLeg].first
+		}, scaleFactor
+	),
+	Geo_Construct(prefix, sMan, {
+		(Geo_RenderObj*)getRect(HUMANOID_Head),
+		(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
+		(Geo_RenderObj*)getRect(HUMANOID_RightArm),
+		(Geo_RenderObj*)getRect(HUMANOID_Body),
+		(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
+		(Geo_RenderObj*)getRect(HUMANOID_RightLeg), }
+	) {
+		headOffset = initProps[HUMANOID_Head].second;
+		bodyOffset = initProps[HUMANOID_LeftArm].second;
+		leftArmOffset = initProps[HUMANOID_RightArm].second;
+		rightArmOffset = initProps[HUMANOID_Body].second;
+		leftLegOffset = initProps[HUMANOID_LeftLeg].second;
+		rightLegOffset = initProps[HUMANOID_RightLeg].second;
 
-		// TODO: Implement body here!
 		fillSceneManager(sMan);
-	} */
+	}
+
 
 	~Geo_Humanoid() {}
 	
