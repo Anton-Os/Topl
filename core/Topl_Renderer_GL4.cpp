@@ -172,7 +172,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
-		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_off_3F, m_bufferAlloc.getAvailable()));
+		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
 		unsigned blockSize = sizeof(_GL4::DefaultUniformBlock);
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
@@ -257,7 +257,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
 
 		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_off_3F) {
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
 				targetBuff = &(*currentBuff);
 				break;
 			}
@@ -405,7 +405,7 @@ void Topl_Renderer_GL4::render(void){
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 		// TODO: Because Const_off_3F also contains rotation data, create a new buffer type that conjoins the two!
-		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_off_3F, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);

@@ -72,13 +72,13 @@ int main(int argc, char** argv) {
 		sMan1.resolvePhysics();
 
 		// Input processing, check if it works unhinged
-		while((bRet = GetMessage(&wndMessage, (HWND)NULL, 0, 0)) != 0){
-			if(bRet == -1) return -1;
-			else {
-				TranslateMessage(&wndMessage);
-				DispatchMessage(&wndMessage);
-        	}
-    	}
+		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&wndMessage);
+			DispatchMessage(&wndMessage);
+		}
+
+		if (wndMessage.message == WM_QUIT) break;
 	}
 
 	return 0;

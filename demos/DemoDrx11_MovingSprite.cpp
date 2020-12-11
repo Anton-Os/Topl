@@ -46,8 +46,6 @@ int main(int argc, char** argv) {
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
 
-	MSG wndMessage;
-	BOOL bRet;
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 
@@ -60,21 +58,28 @@ int main(int argc, char** argv) {
 
 	Topl_SceneManager sMan1;
 
-	// Geo_Humanoid humanoid1("humanoid1", &sMan1);
 	Geo_Humanoid humanoid2("humanoid2", &sMan1);
 	humanoid2.move(&sMan1, Eigen::Vector3f(0.9f, 0.3, 0.0)); // Moving humanoid
 
 	renderer.buildScene(&sMan1);
 
-	//timerCallback resolvePhysicsCallback = &Topl_SceneManager::resolvePhysics;
-	//Timer_DiscreteEvent physicsLoop(1.0, &sMan1.resolvePhysics);
-	while (renderer.renderScene(DRAW_Triangles)) {
-		// renderer.updateScene(&sMan1);
+	MSG wndMessage;
+	BOOL bRet;
 
-		// sMan1.resolvePhysics();
+	while (renderer.renderScene(DRAW_Triangles)) {
+		renderer.updateScene(&sMan1);
+
+		sMan1.resolvePhysics();
 		
-		// physicsLoop.update();
-		// Process input and other things, on successful rendering
+		// Input processing, check if it works unhinged
+		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&wndMessage);
+			DispatchMessage(&wndMessage);
+		}
+		
+		if (wndMessage.message == WM_QUIT) break;
+
 	}
 
 	return 0;

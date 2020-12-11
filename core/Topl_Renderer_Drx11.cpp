@@ -78,12 +78,6 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static bool updateConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const DefaultConstBlock* const block) {
-		// TODO: Include update code here
-		
-		return true;
-	}
-
 	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
 		return *(dBuffers + type); // We know the offset with the type argument
 	}
@@ -286,7 +280,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
 		ID3D11Buffer* constBlockBuff;
 		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &block);
-		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_rot_2F, constBlockBuff));
+		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
 
 		if (!mSceneReady) return; // Error
 
@@ -337,15 +331,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
-
-	// -------------------- Debuging Code Block ------------------ // REMOVE!
-
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
-	_Drx11::discoverBuffers(dBuffers, &mBuffers, 1); // Will always discover the same constant buffer
-	Buffer_Drx11* angleBuff = _Drx11::findBuffer(BUFF_Const_rot_2F, dBuffers, MAX_BUFFERS_PER_TARGET);
-	m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer); // Original
-
-	// -------------------- Debuging Code Block ------------------ // REMOVE!
 
     mSceneReady = true;
     return;
@@ -433,8 +418,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
-	Buffer_Drx11* posBuff = nullptr;
-	Buffer_Drx11* angleBuff = nullptr;
+	Buffer_Drx11* constBlockBuff = nullptr;
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
@@ -443,15 +427,15 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_rot_2F){
-				angleBuff = &(*currentBuff);
+			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block){
+				constBlockBuff = &(*currentBuff);
 				break;
 			}
 
 
 		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
-		if (angleBuff != nullptr)
-			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &angleBuff->buffer, &block);
+		if (constBlockBuff != nullptr)
+			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff->buffer, &block);
 
 		if(!mSceneReady) return;
 	}
@@ -482,14 +466,13 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			// Buffer_Drx11* posBuff = _Drx11::findBuffer(BUFF_Const_off_3F, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* angleBuff = _Drx11::findBuffer(BUFF_Const_rot_2F, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* constBlockBuff = _Drx11::findBuffer(BUFF_Const_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-			// m_deviceCtx->VSSetConstantBuffers(0, 1, &angleBuff->buffer); // Original
+			m_deviceCtx->VSSetConstantBuffers(0, 1, &constBlockBuff->buffer); // Original
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT stride = sizeof(Geo_PerVertexData);
