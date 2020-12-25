@@ -339,6 +339,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 #ifdef RASTERON_H
 
+// EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	HRESULT hr;
 
@@ -400,19 +401,32 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
     texDesc.SampleDesc.Count = 1;
     texDesc.SampleDesc.Quality = 0;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
     texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
+    // texDesc.MiscFlags = 0;
+	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
     D3D11_SUBRESOURCE_DATA texData;
-    texData.pSysMem = /* (const void*) */image->data;
+    texData.pSysMem = image->data;
 	texData.SysMemPitch = sizeof(uint32_t) * image->width;
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
     hrCode = m_device->CreateTexture2D( &texDesc, &texData, &texture);
 
-	mTextures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler));
+	D3D11_SHADER_RESOURCE_VIEW_DESC resViewDesc;
+	ZeroMemory(&resViewDesc, sizeof(resViewDesc));
+	resViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	resViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	// resViewDesc.Texture2D.MostDetailedMip = 0;
+	resViewDesc.Texture2D.MipLevels = -1;
+	
+	ID3D11ShaderResourceView* resView;
+	m_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
+	m_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
+	m_deviceCtx->GenerateMips(resView);
+
+	mTextures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler, resView));
 }
 
 #endif
@@ -482,20 +496,10 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			for (unsigned t = 0; t < mTextures.size(); t++) {
 				if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
 				else if (mTextures.at(t).targetID == id) {
-					ID3D11Texture2D* baseTex = mTextures.at(t).texture;
 					ID3D11SamplerState* baseSampler = mTextures.at(t).sampler;
-					// TODO: Need a getter function for resource view as well
+					ID3D11ShaderResourceView* resView = mTextures.at(t).resView;
 
-					D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-					ZeroMemory(&desc, sizeof(desc));
-					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-					desc.Texture2D.MostDetailedMip = 0;
-					desc.Texture2D.MipLevels = 1; // Customize these values if needed
-					
-					m_device->CreateShaderResourceView(baseTex, &desc, &m_pipeline.resourceView);
-
-					m_deviceCtx->PSSetShaderResources(0, 1, &m_pipeline.resourceView);
+					m_deviceCtx->PSSetShaderResources(0, 1, &resView);
 					m_deviceCtx->PSSetSamplers(0, 1, &baseSampler);
 					break;
 				}

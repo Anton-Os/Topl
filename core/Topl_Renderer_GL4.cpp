@@ -216,6 +216,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 #ifdef RASTERON_H
 
+// EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_GL4::getFrame(){
 	// Custom Image format creation
 	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));

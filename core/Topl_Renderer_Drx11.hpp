@@ -16,14 +16,16 @@ struct Buffer_Drx11 : public Buffer {
 
 struct Texture_Drx11 : public Texture {
 	Texture_Drx11() : Texture() {}
-	Texture_Drx11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11Texture2D* t, ID3D11SamplerState* s)
+	Texture_Drx11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11Texture2D* t, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
 		: Texture(id, f, m) {
 			texture = t;
 			sampler = s;
+			resView = r;
 		}
 
 	ID3D11Texture2D* texture = nullptr;
 	ID3D11SamplerState* sampler = nullptr;
+	ID3D11ShaderResourceView* resView = nullptr;
 };
 
 
