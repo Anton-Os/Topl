@@ -10,7 +10,7 @@
 #include "Topl_SceneManager.hpp"
 
 #ifdef RASTERON_H
-	#include "Geo_SpriteTable.hpp"
+	#include "composites/Geo_SpriteTable.hpp"
 #endif
 
 // Geometry wrapper class that can manage its states
@@ -84,4 +84,4 @@ private:
 
 // ------- Follow up with concrete implementations of Geo_Construct Objects -------- // 
 
-#include "Humanoid.hpp"
+#include "../Humanoid.hpp"

@@ -1,4 +1,4 @@
-#include "Geo_Constructs.hpp"
+#include "composites/Geo_Construct.hpp"
 
 namespace _Humanoid {
 	// TODO: Replace hard offsets, offsets need to vary depending on object constructor!

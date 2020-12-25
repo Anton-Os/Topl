@@ -27,7 +27,6 @@ public:
 	) { 
 		// Populated for Urkwin Alien with predefined values
 		headOffset = Eigen::Vector3f(0.0f, 0.11f, 0.0);
-		// headOffset = Eigen::Vector3f(0.0f, 0.5f, 0.0); // For testing
 		bodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
 		leftArmOffset = Eigen::Vector3f(0.12f, -0.14f, 0.0);
 		rightArmOffset = Eigen::Vector3f(-0.12f, -0.14f, 0.0);

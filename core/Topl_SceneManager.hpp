@@ -13,7 +13,7 @@
 #include "Timer.hpp"
 #include "Physics.hpp"
 
-#include "Geo_Component.hpp"
+#include "composites/Geo_Component.hpp"
 
 typedef const Geo_Component* const topl_geoComponent_cptr;
 typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;

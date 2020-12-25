@@ -2,7 +2,7 @@
 
 #include "FileIO.hpp"
 #include "Input.hpp"
-#include "Geo_Constructs.hpp"
+#include "composites/Geo_Construct.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
 
