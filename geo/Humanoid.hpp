@@ -1,4 +1,5 @@
-#ifdef RASTERON_H
+#include "composites/Geo_Construct.hpp"
+#include "composites/Geo_SpriteTable.hpp"
 
 #define ANATOMY_PARTS_COUNT 6 // There are 6 body parts total
 
@@ -96,5 +97,3 @@ private:
 	// Physics properties associated with each body part
     Phys_Properties head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
 };
-
-#endif

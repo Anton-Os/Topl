@@ -79,7 +79,6 @@ protected:
 };
 
 #include "primitives/Geo_Rect2D.hpp"
-
 #include "primitives/Geo_Sphere2D.hpp" // Definition of Sphere2D class
 
 #define GEOMETRY_H

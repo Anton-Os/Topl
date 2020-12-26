@@ -1,5 +1,6 @@
-#include "composites/Geo_Construct.hpp"
+#include "Humanoid.hpp"
 
+/*
 namespace _Humanoid {
 	// TODO: Replace hard offsets, offsets need to vary depending on object constructor!
 	const Eigen::Vector2f hardQuartRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0); // Hardcoded quarter rotation
@@ -57,6 +58,7 @@ namespace _Humanoid {
 			sMan->addTexture(name, sprite->image);
 	}
 }
+*/
 
 void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
@@ -65,27 +67,27 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	
 	Geo_Component* geocHead = getNextGeo();
 	sprite = getSprite(HUMANOID_Head);
-	_Humanoid::createHead(geocHead, headOffset, getPrefix() + "head", sprite, sMan);
+	// _Humanoid::createHead(geocHead, headOffset, getPrefix() + "head", sprite, sMan);
 
 	Geo_Component* geocLeftArm = getNextGeo();
 	sprite = getSprite(HUMANOID_LeftArm);
-	_Humanoid::createLeftArm(geocLeftArm, leftArmOffset, getPrefix() + "leftArm", sprite, sMan);
+	// _Humanoid::createLeftArm(geocLeftArm, leftArmOffset, getPrefix() + "leftArm", sprite, sMan);
 
 	Geo_Component* geocRightArm = getNextGeo();
 	sprite = getSprite(HUMANOID_RightArm);
-	_Humanoid::createRightArm(geocRightArm, rightArmOffset, getPrefix() + "rightArm", sprite, sMan);
+	// _Humanoid::createRightArm(geocRightArm, rightArmOffset, getPrefix() + "rightArm", sprite, sMan);
 
 	Geo_Component* geocBody = getNextGeo();
 	sprite = getSprite(HUMANOID_Body);
-	_Humanoid::createBody(geocBody, bodyOffset, getPrefix() + "body", sprite, sMan);
+	// _Humanoid::createBody(geocBody, bodyOffset, getPrefix() + "body", sprite, sMan);
 
 	Geo_Component* geocLeftLeg = getNextGeo();
 	sprite = getSprite(HUMANOID_LeftLeg);
-	_Humanoid::createLeftLeg(geocLeftLeg, leftLegOffset, getPrefix() + "leftLeg", sprite, sMan);
+	// _Humanoid::createLeftLeg(geocLeftLeg, leftLegOffset, getPrefix() + "leftLeg", sprite, sMan);
 
 	Geo_Component* geocRightLeg = getNextGeo();
 	sprite = getSprite(HUMANOID_RightLeg);
-	_Humanoid::createRightLeg(geocRightLeg, rightLegOffset, getPrefix() + "rightLeg", sprite, sMan);
+	// _Humanoid::createRightLeg(geocRightLeg, rightLegOffset, getPrefix() + "rightLeg", sprite, sMan);
 
 	// All physics relevant functionality goes here
 

@@ -119,25 +119,6 @@ if(WIN32) # DirectX Windows Dependent Examples
     ) # REMOVE THIS LATER
     target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
     target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
-
-    add_executable(DemoDrx11_Capture
-        core/FileIO.cpp
-        core/Geometry.cpp
-        core/Timer.cpp
-        geo/Humanoid.cpp
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_Drx11.cpp
-
-        demos/DemoDrx11_Capture.cpp
-    )
-    target_include_directories(DemoDrx11_Capture PUBLIC core geo)
-
-    target_include_directories(DemoDrx11_Capture PUBLIC 
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    ) # REMOVE THIS LATER
-    target_link_libraries(DemoDrx11_Capture INTERFACE dxsdk_interface Eigen3) # FIX THIS
-    target_link_libraries(DemoDrx11_Capture PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
  endif()
 
 
@@ -179,26 +160,6 @@ target_include_directories(DemoGL4_MovingSprite PUBLIC
 )
 target_link_libraries(DemoGL4_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
 target_link_libraries(DemoGL4_MovingSprite PRIVATE RasteronLib GLEW_lib)
-
-add_executable(DemoGL4_Capture
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    geo/Humanoid.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_GL4.cpp
-    
-    demos/DemoGL4_Capture.cpp 
-)
-target_include_directories(DemoGL4_Capture PUBLIC core geo)
-
-target_include_directories(DemoGL4_Capture PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
-target_link_libraries(DemoGL4_Capture INTERFACE dxsdk_interface Eigen3) # FIX THIS
-target_link_libraries(DemoGL4_Capture PRIVATE RasteronLib GLEW_lib)
- 
 
 # Copying and managing implemented here with custom targets
 

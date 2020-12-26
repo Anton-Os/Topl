@@ -9,10 +9,6 @@
 
 #include "Topl_SceneManager.hpp"
 
-#ifdef RASTERON_H
-	#include "composites/Geo_SpriteTable.hpp"
-#endif
-
 // Geometry wrapper class that can manage its states
 
 #define FIRST_UPDATE_NUM 0
@@ -41,6 +37,9 @@ public:
             *(mGeoData + mGeoCount) = new Geo_Component(*(currentRenderObj));
             mGeoCount++;
         } */
+
+        mGeoCount = count;
+        mGeoData = (Geo_Component**)malloc(count * sizeof(Geo_Component));
 	}
 
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
@@ -84,4 +83,4 @@ private:
 
 // ------- Follow up with concrete implementations of Geo_Construct Objects -------- // 
 
-#include "../Humanoid.hpp"
+// #include "../Humanoid.hpp"

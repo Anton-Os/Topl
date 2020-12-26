@@ -1,9 +1,10 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
-#include "composites/Geo_Construct.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
+
+#include "Humanoid.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
