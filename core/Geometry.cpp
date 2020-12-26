@@ -1,11 +1,9 @@
 #include "Geometry.hpp"
 
 #include <cmath>
-// #include <math.h>
 #include <cstdlib>
-#include <cstdio>
 
-// Geo_Rect2D Implementation
+// ---------------------- Rect2D Implementation ---------------------- //
 
 Eigen::Vector3f* Geo_Rect2D::genVertices() {
 	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code
@@ -64,7 +62,7 @@ unsigned* Geo_Rect2D::genIndices(){
     return data;
 }
 
-// Geo_Sphere2D Implementation
+// ---------------------- Sphere2D Implementation ---------------------- //
 
 Eigen::Vector3f* Geo_Sphere2D::genVertices(){
 	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code

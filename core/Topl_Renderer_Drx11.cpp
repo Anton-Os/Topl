@@ -97,6 +97,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	for (unsigned t = 0; t < mTextures.size(); t++) {
 		mTextures.at(t).texture->Release();
 		mTextures.at(t).sampler->Release();
+		mTextures.at(t).resView->Release();
 	}
 
 	m_swapChain->Release();

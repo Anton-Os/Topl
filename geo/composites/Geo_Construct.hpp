@@ -18,8 +18,7 @@ typedef std::pair<std::string, Geo_Component*> geoName_pair;
 // TODO: Node data must be changed to geo data
 class Geo_Construct {
 public:
-    Geo_Construct(){ } // For more complex objects that interface directly with sceneManager
-    // Fixed constructor for instantiating a fixed number of dissimilar geo components
+    // Fixed items constructor
     Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mPrefix = prefix;
         mGeoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
@@ -28,18 +27,13 @@ public:
             mGeoCount++;
         }
 	}
-    // Spam constructor for instantiating multiple duplicate geo components
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, const Geo_Component* geocLink, unsigned count) {
+    // Duplicate items constructor
+    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, const Geo_Component* geoc, unsigned count) {
 		mPrefix = prefix;
-        // TODO: Populate mGeoData! Figure this crap out!
-        /*mGeoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
-        for(std::vector<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-            *(mGeoData + mGeoCount) = new Geo_Component(*(currentRenderObj));
-            mGeoCount++;
-        } */
-
         mGeoCount = count;
         mGeoData = (Geo_Component**)malloc(count * sizeof(Geo_Component));
+
+        for(unsigned g = 0; g < count; g++) *(mGeoData + g) = geoc;
 	}
 
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
@@ -80,7 +74,3 @@ private:
     unsigned mCurrentGeoOffset = 0;
 	Geo_Component** mGeoData = nullptr;
 }; // Needs work, could use more abstraction
-
-// ------- Follow up with concrete implementations of Geo_Construct Objects -------- // 
-
-// #include "../Humanoid.hpp"
