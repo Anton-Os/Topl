@@ -87,11 +87,11 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 		return print_ObjNotFound("geometry", name2);
 
 	LinkedItems items = { // Could instead be implemented as as a LinkedItems constructor
-			connector,
-			std::make_pair(
-				mIdToGeo_map.at(mNameToId_map.at(name1)),
-				mIdToGeo_map.at(mNameToId_map.at(name2))
-			)
+		connector,
+		std::make_pair(
+			mIdToGeo_map.at(mNameToId_map.at(name1)),
+			mIdToGeo_map.at(mNameToId_map.at(name2))
+		)
 	};
 
 	const Geo_Component* link1 = items.linkedItems.first;

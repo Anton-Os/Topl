@@ -5,7 +5,7 @@
 
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
-	// Easy preconfigured constructor for Urkwin Alien
+	// Preconfigured constructor, DEPRICATE!
 	Geo_Humanoid(const std::string& prefix, Topl_SceneManager* sMan) :
 	Geo_SpriteTable({ 
 		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png",
@@ -37,7 +37,7 @@ public:
 		fillSceneManager(sMan); 
 	}
 
-	Geo_Humanoid(
+	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_SceneManager* sMan,
 		std::pair<const char*, Eigen::Vector3f> initProps[ANATOMY_PARTS_COUNT], // Filepaths and offsets for

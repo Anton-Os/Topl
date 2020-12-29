@@ -13,7 +13,8 @@ void Geo_Chain::fill(Topl_SceneManager* sMan){
     for(unsigned c = 0; c < getGeoCount(); c++){
         currentGeoc = getNextGeo();
 
-        // TODO: Create Geometry Here
+        currentGeoc->updatePos(Eigen::Vector3f(chainProp.distance * c, chainProp.distance * c, 0.0f));
+        sMan->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), currentGeoc);
 
         if(prevGeoc != nullptr){ 
             connectors.push_back(Phys_Connector());

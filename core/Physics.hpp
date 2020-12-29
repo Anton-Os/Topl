@@ -23,6 +23,16 @@ enum CONNECT_Type {
 };
 
 struct Phys_Connector {
+    Phys_Connector(){ }
+    Phys_Connector(double l, double rl, double a, CONNECT_Type t, double k){
+        length = l;
+        restLength = rl;
+        angle = a;
+        type = t;
+        kVal = k;
+    }
+
+    // Updatable 
 	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
     Eigen::Vector3f restAngleNormVec1, restAngleNormVec2; // Normalized vectors that point to first and second linked items respectively AT REST!
     Eigen::Vector3f angleNormVec1, angleNormVec2; // Normalized vectors that point to first and second linked items respectively UPDATED!
@@ -30,26 +40,34 @@ struct Phys_Connector {
     double length = 0.5f; // Tries to reach rest length from here
     double restLength = 0.5f; // Zero forces act at this length
 	double angle = 0.0f; // Tries to reach rest angle from here
-
     CONNECT_Type type = CONNECT_Rod;
 	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal
 };
 
 #define MAX_PHYS_FORCES 64
 
-struct Phys_Properties { // This binds to a Geo_Component
-    Phys_Properties(){
+struct Phys_Properties { // A physics property that binds to a Geo_Component object
+
+    Phys_Properties(){ // Freeform constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
-        // Add the gravity force here, it will always be acting on the body
+    }
+    Phys_Properties(Eigen::Vector3f vec){ // Gravity constructor
+        forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
+        
+        *(forces + actingForceCount) = vec;
+        actingForceCount++;
+
+        isGravityEnabled = true;
     }
     ~Phys_Properties(){ if(forces != nullptr) free(forces); }
 
+    bool isGravityEnabled = false;
 	const double damping = TOPL_DEFAULT_DAMPING;
     double mass = TOPL_DEFAULT_MASS;
 
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
     Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
 
-    unsigned actingForceCount = 0; // Indicates the gravity force
+    unsigned short actingForceCount = 0; // Indicates the gravity force
     Eigen::Vector3f* forces = nullptr;
 };

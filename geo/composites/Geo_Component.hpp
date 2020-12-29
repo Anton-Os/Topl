@@ -7,7 +7,7 @@ public:
 		mId_count++;
 		mId = mId_count;
 	}
-	Geo_Component(const Geo_RenderObj* renderObj){
+	Geo_Component(const Geo_RenderObj* renderObj) {
 		mId_count++;
 		mId = mId_count;
 		mRenderObj = renderObj; 

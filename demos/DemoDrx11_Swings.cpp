@@ -59,15 +59,19 @@ int main(int argc, char** argv) {
 
 	Topl_SceneManager sMan1;
 
+	Geo_Sphere2D sphere = Geo_Sphere2D(0.6f, 12);
+	Geo_Component component = Geo_Component((Geo_RenderObj*)&sphere);
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.1f);
+	Geo_Chain chain = Geo_Chain("chain1", &sMan1, &component, &chainProps, 8);
+
 	renderer.buildScene(&sMan1);
 
 	MSG wndMessage;
 	BOOL bRet;
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&sMan1);
-
-		sMan1.resolvePhysics();
+		// renderer.updateScene(&sMan1);
+		// sMan1.resolvePhysics();
 		
 		// Input processing, check if it works unhinged
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))

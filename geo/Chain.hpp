@@ -1,8 +1,12 @@
 #include "composites/Geo_Construct.hpp"
 
 struct Geo_Chain_Properties {
-	Geo_Chain_Properties() { }
-	float distance = 1.0f;
+    Geo_Chain_Properties(){}
+	Geo_Chain_Properties(float d) { 
+        distance = d;
+        // TODO: Add more properties
+    }
+	float distance = 0.1f;
 };
 
 class Geo_Chain : public Geo_Construct {
