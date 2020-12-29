@@ -385,7 +385,9 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.MipLODBias = 0.0f;
+	sd.MaxAnisotropy = 1;
+	sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	sd.MinLOD = 0;
 	sd.MaxLOD = D3D11_FLOAT32_MAX;
 

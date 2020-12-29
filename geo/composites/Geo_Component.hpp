@@ -26,11 +26,6 @@ public:
 	vec2f_cptr getAngles() const { return &mRotAngles; }
 
 	const Geo_RenderObj* mRenderObj; // Could be a private member
-protected:
-	enum GeoBehavior {
-		GEO_Fixed = 0, // Should be the default
-		GEO_Dynamic = 1
-	} mBehavior;
 private:
 	// IDENTIFICATION TYPES
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted

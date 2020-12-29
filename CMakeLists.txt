@@ -119,6 +119,25 @@ if(WIN32) # DirectX Windows Dependent Examples
     ) # REMOVE THIS LATER
     target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
     target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
+
+    add_executable(DemoDrx11_Swings
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        geo/Chain.cpp
+        core/Topl_SceneManager.cpp
+        core/Topl_Renderer_Drx11.cpp
+
+        demos/DemoDrx11_Swings.cpp
+    )
+    target_include_directories(DemoDrx11_Swings PUBLIC core geo)
+
+    target_include_directories(DemoDrx11_Swings PUBLIC 
+        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+        ${CMAKE_INSTALL_PREFIX}/include/eigen3
+    ) # REMOVE THIS LATER
+    target_link_libraries(DemoDrx11_Swings INTERFACE dxsdk_interface Eigen3) # FIX THIS
+    target_link_libraries(DemoDrx11_Swings PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
  endif()
 
 

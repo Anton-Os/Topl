@@ -33,7 +33,7 @@ public:
         mGeoCount = count;
         mGeoData = (Geo_Component**)malloc(count * sizeof(Geo_Component));
 
-        for(unsigned g = 0; g < count; g++) *(mGeoData + g) = geoc;
+        for(unsigned g = 0; g < count; g++) *(mGeoData + g) = new Geo_Component(*geoc);
 	}
 
 	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
@@ -56,8 +56,12 @@ public:
 
     std::string getPrefix(){ return mPrefix + "_"; }
 	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
+    virtual void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) = 0;
+    virtual void rotate(Topl_SceneManager* sMan, Eigen::Vector3f) = 0;
+
 protected:
-	virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedGeos structure
+	unsigned getGeoCount(){ return mGeoCount; }
+    virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedGeos structure
     Geo_Component* getNextGeo(){
         if(mCurrentGeoOffset <= mGeoCount){
             mCurrentGeoOffset++;   
@@ -65,11 +69,10 @@ protected:
         } else return nullptr;
     }
 
+    unsigned mUpdateCount = FIRST_UPDATE_NUM; // Probably needs to be private and a getter method
 	std::vector<geoName_pair> mNamedGeos;
-	unsigned mUpdateCount = FIRST_UPDATE_NUM; // Probably needs to be private and a getter method
 private:
     std::string mPrefix;
-
 	unsigned mGeoCount = 0;
     unsigned mCurrentGeoOffset = 0;
 	Geo_Component** mGeoData = nullptr;

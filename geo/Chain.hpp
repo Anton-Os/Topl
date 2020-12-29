@@ -1,9 +1,9 @@
-#ifdef RASTERON_H
+#include "composites/Geo_Construct.hpp"
 
 struct Geo_Chain_Properties {
-    Geo_Chain_Properties(){ }
-    float distance = 1.0f;
-}
+	Geo_Chain_Properties() { }
+	float distance = 1.0f;
+};
 
 class Geo_Chain : public Geo_Construct {
 public:
@@ -14,10 +14,17 @@ public:
         const Geo_Chain_Properties* properties,
         unsigned linkCount)
     : Geo_Construct(prefix, sMan, geocLink, linkCount){
-        // TODO: Create chain over here
-
-        // fillSceneManager(sMan);
+        chainProp = *properties;
+        
+        fillSceneManager(sMan);
     }
-};
 
-#endif
+    void updateSceneManager(Topl_SceneManager* sMan) override;
+	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
+	void rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
+private:
+    void fill(Topl_SceneManager* sMan) override;
+
+    std::vector<Phys_Connector> connectors;
+    Geo_Chain_Properties chainProp;
+};

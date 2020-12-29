@@ -4,7 +4,7 @@
 
 #include "Topl_Renderer_Drx11.hpp"
 
-#include "Humanoid.hpp"
+#include "Chain.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -58,10 +58,6 @@ int main(int argc, char** argv) {
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	Topl_SceneManager sMan1;
-
-	Geo_Humanoid humanoid2("humanoid2", &sMan1);
-	humanoid2.move(&sMan1, Eigen::Vector3f(0.9f, 0.3f, 0.0f)); // Moving humanoid
-	// humanoid2.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
 
 	renderer.buildScene(&sMan1);
 

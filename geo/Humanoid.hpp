@@ -69,7 +69,6 @@ public:
 		fillSceneManager(sMan);
 	}
 
-
 	~Geo_Humanoid() {}
 	
 	enum HUMANOID_Anatomy {
@@ -82,8 +81,8 @@ public:
 	} anatomyIndex;
 
     void updateSceneManager(Topl_SceneManager* sMan) override;
-	// Moves the object in the given direction, TODO: Make this a base class virtual function
-	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec);
+	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
+	void rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
 private:
 	void fill(Topl_SceneManager* sMan) override;
 
@@ -91,7 +90,6 @@ private:
 	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
 	// Stability links "pentagon"
 	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
-
 	// Offsets associated with each body part to positon them appropriately
 	Eigen::Vector3f headOffset, bodyOffset, rightArmOffset, leftArmOffset, rightLegOffset, leftLegOffset;
 	// Physics properties associated with each body part
