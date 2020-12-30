@@ -5,38 +5,6 @@
 
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
-	// Preconfigured constructor, DEPRICATE!
-	Geo_Humanoid(const std::string& prefix, Topl_SceneManager* sMan) :
-	Geo_SpriteTable({ 
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png",
-		"C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png"
-	    }, 0.2f // Scaling the sprites to 20% original size
-    ),
-	Geo_Construct(prefix, sMan, { 
-		// getRect is inherited from the SpriteTable class, might rename the method for clarity
-		// HUMANOID_Head, HUMANOID_LeftArm, etc. are simply indexes 1 to 6 for proper loading
-		(Geo_RenderObj*)getRect(HUMANOID_Head),
-		(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
-		(Geo_RenderObj*)getRect(HUMANOID_RightArm),
-		(Geo_RenderObj*)getRect(HUMANOID_Body),
-		(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
-		(Geo_RenderObj*)getRect(HUMANOID_RightLeg), }
-	) { 
-		// Populated for Urkwin Alien with predefined values
-		headOffset = Eigen::Vector3f(0.0f, 0.11f, 0.0);
-		bodyOffset = Eigen::Vector3f(0.0f, -0.1f, 0.0);
-		leftArmOffset = Eigen::Vector3f(0.12f, -0.14f, 0.0);
-		rightArmOffset = Eigen::Vector3f(-0.12f, -0.14f, 0.0);
-		leftLegOffset = Eigen::Vector3f(0.06f, -0.35f, 0.0);
-		rightLegOffset = Eigen::Vector3f(-0.06f, -0.35f, 0.0);
-
-		fillSceneManager(sMan); 
-	}
-
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_SceneManager* sMan,

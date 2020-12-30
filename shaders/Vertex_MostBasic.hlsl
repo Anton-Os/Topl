@@ -1,6 +1,6 @@
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset; // Does not work
-	float4 rotation; // Does not work
+	float4 offset;
+	float4 rotation;
 }
 
 struct VS_INPUT {

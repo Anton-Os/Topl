@@ -58,9 +58,21 @@ int main(int argc, char** argv) {
 	Topl_SceneManager sMan1;
 
 	// Generic code block
-	// Geo_Humanoid humanoid1("humanoid1", &sMan1);
-	Geo_Humanoid humanoid2("humanoid2", &sMan1);
-	humanoid2.move(&sMan1, Eigen::Vector3f(0.9f, 0.3, 0.0)); // Moving humanoid
+
+	// TODO: Make these not device specific, relative file paths only!
+	std::pair<const char*, Eigen::Vector3f> humanoidProps[ANATOMY_PARTS_COUNT] = {
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
+	};
+
+	// Geo_Humanoid humanoid("humanoid", &sMan1);
+	Geo_Humanoid humanoid("humanoid", &sMan1, humanoidProps, 0.25f);
+	humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid
+	// humanoid.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
 
 	renderer.buildScene(&sMan1);
 

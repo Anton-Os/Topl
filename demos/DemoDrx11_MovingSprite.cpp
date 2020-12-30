@@ -23,10 +23,16 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
-void resolvePhysicsCallback() {
-	int i = 1 + 1;
-}
+// Callback function specific to Vertex_MostBasic.hlsl
+void vertexBlockCallback(const Geo_Component* component, std::vector<uint8_t>* bytes) {
+	bytes->resize(sizeof(float) * 8); // Size should be known
+	const unsigned short posOffset = 0;
+	const unsigned short angleOffset = 4;
 
+	// TODO: Fix this!!!
+	// bytes->at(posOffset) = component->getPos; // Set first 4 floats to contents of component position
+	// bytes->at(angleOffset) = component->getAngles; // Set remaining 4 floats to contents of component angles
+}
 
 int main(int argc, char** argv) {
 
@@ -51,8 +57,15 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
+	/* std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
 	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
+	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str()); */
+
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), vertexBlockCallback,
+		{ Shader_Input("pos", SHDR_float_vec4), Shader_Input("texcoord", SHDR_float_vec2) }
+	);
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
@@ -60,8 +73,19 @@ int main(int argc, char** argv) {
 
 	Topl_SceneManager sMan1;
 
-	Geo_Humanoid humanoid("humanoid", &sMan1);
-	humanoid.move(&sMan1, Eigen::Vector3f(0.1f, 0.1f, 0.0f)); // Moving humanoid
+	// TODO: Make these not device specific, relative file paths only!
+	std::pair<const char*, Eigen::Vector3f> humanoidProps[ANATOMY_PARTS_COUNT] = {
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
+	};
+
+	// Geo_Humanoid humanoid("humanoid", &sMan1);
+	Geo_Humanoid humanoid("humanoid", &sMan1, humanoidProps, 0.25f);
+	humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid
 	// humanoid.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
 
 	renderer.buildScene(&sMan1);
