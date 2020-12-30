@@ -1,3 +1,5 @@
+#ifndef GEO_CONSTRUCT_H
+
 #include <initializer_list>
 #include <utility>
 #include <cstdlib> // May be redundant
@@ -77,3 +79,6 @@ private:
     unsigned mCurrentGeoOffset = 0;
 	Geo_Component** mGeoData = nullptr;
 }; // Needs work, could use more abstraction
+
+#define GEO_CONSTRUCT_H
+#endif

@@ -1,7 +1,9 @@
+// #include <cstdint.h>
 #include <cstdlib>
 #include <cstring>
-
 #include <vector>
+
+#include "composites/Geo_Component.hpp"
 
 enum SHDR_Type {
     SHDR_Vertex,
@@ -41,7 +43,7 @@ enum SHDR_ValueType {
     SHDR_matrix_4x4,
 };
 
-typedef void* (*allocDefaultData)(void); // Default data needs memory allocation within the Shader_Input
+// typedef void (*bytesFromBlockCallback)(const Geo_Component* component, *std::vector<uint8_t>);
 
 struct Shader_Input {
     Shader_Input(const std::string& n, SHDR_ValueType t){
@@ -66,4 +68,5 @@ private:
     std::vector<Shader_Input> mInputs;
     enum SHDR_Type mShaderType;
     const char* mShaderSrcPath;
+    // bytesFromBlockCallback callback;
 };

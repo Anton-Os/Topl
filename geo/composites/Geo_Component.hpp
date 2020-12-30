@@ -1,3 +1,5 @@
+#ifndef GEO_COMPONENT_H
+
 #include "Geometry.hpp"
 #include <Eigen/Dense>
 
@@ -36,3 +38,6 @@ private:
 	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
 	Eigen::Vector2f mRotAngles = Eigen::Vector2f(0.0, 0.0); // Angles by which to rotate
 };
+
+#define GEO_COMPONENT_H
+#endif

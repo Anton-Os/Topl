@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
 
+# Extrenal Libraries
 
 if(NOT Rasteron_Install_Path)
     set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
@@ -59,15 +60,16 @@ find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
 find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
-
-
 if(Rasteron_FOUND)
-
     add_executable(DemoImg
         demos/DemoImg.cpp
     )   
     target_link_libraries(DemoImg RasteronLib) # finding Rasteron but not tiff
 endif()
+
+
+
+# Generic Features Demos
 
 add_executable(DemoTickTick  
     core/Timer.cpp
@@ -83,102 +85,86 @@ add_executable(DemoPresser
 target_include_directories(DemoPresser PUBLIC core helper geo)
 
 
-if(WIN32) # DirectX Windows Dependent Examples
-    add_executable(DemoDrx11
+# DirectX Windows Dependent Demos
+if(WIN32)
+
+    add_library(Drx11_Engine
         core/FileIO.cpp
         core/Geometry.cpp
         core/Timer.cpp
         core/Topl_SceneManager.cpp
+
         core/Topl_Renderer_Drx11.cpp
-
-        demos/DemoDrx11_Init.cpp
     )
-    target_include_directories(DemoDrx11 PUBLIC core geo)
-
-    target_include_directories(DemoDrx11 PUBLIC 
+    target_include_directories(Drx11_Engine PUBLIC core geo)
+    target_include_directories(Drx11_Engine PUBLIC 
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    ) # REMOVE THIS LATER
-    target_link_libraries(DemoDrx11 INTERFACE dxsdk_interface Eigen3) # FIX THIS
+    )
+    target_link_libraries(Drx11_Engine PUBLIC RasteronLib GLEW_lib) # GLEW lib shouldnt be linked
+    set_target_properties(Drx11_Engine
+        PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS ON
+    )
+
+    add_executable(DemoDrx11
+        demos/DemoDrx11_Init.cpp
+    )
+    target_link_libraries(DemoDrx11 PRIVATE Drx11_Engine)
 
     add_executable(DemoDrx11_MovingSprite
-        core/FileIO.cpp
-        core/Geometry.cpp
-        core/Timer.cpp
         geo/Humanoid.cpp
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_Drx11.cpp
 
         demos/DemoDrx11_MovingSprite.cpp
     )
-    target_include_directories(DemoDrx11_MovingSprite PUBLIC core geo)
-
-    target_include_directories(DemoDrx11_MovingSprite PUBLIC 
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    ) # REMOVE THIS LATER
-    target_link_libraries(DemoDrx11_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
-    target_link_libraries(DemoDrx11_MovingSprite PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
+    target_link_libraries(DemoDrx11_MovingSprite PRIVATE Drx11_Engine)
 
     add_executable(DemoDrx11_Swings
-        core/FileIO.cpp
-        core/Geometry.cpp
-        core/Timer.cpp
         geo/Chain.cpp
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_Drx11.cpp
 
         demos/DemoDrx11_Swings.cpp
     )
-    target_include_directories(DemoDrx11_Swings PUBLIC core geo)
+    target_link_libraries(DemoDrx11_Swings PRIVATE Drx11_Engine)
 
-    target_include_directories(DemoDrx11_Swings PUBLIC 
+endif()
+
+# OpenGL Rendering Demos
+
+add_library(GL4_Engine
+        core/FileIO.cpp
+        core/Geometry.cpp
+        core/Timer.cpp
+        core/Topl_SceneManager.cpp
+
+        core/Topl_Renderer_GL4.cpp
+    )
+    target_include_directories(GL4_Engine PUBLIC core geo)
+    target_include_directories(GL4_Engine PUBLIC 
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    ) # REMOVE THIS LATER
-    target_link_libraries(DemoDrx11_Swings INTERFACE dxsdk_interface Eigen3) # FIX THIS
-    target_link_libraries(DemoDrx11_Swings PRIVATE RasteronLib  GLEW_lib) # GLEW lib shouldnt be linked
- endif()
-
-
+    )
+    target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
+    set_target_properties(GL4_Engine
+        PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS ON
+)
 
 add_executable(DemoGL4
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_GL4.cpp
-    
     demos/DemoGL4_Init.cpp 
 )
-
-target_include_directories(DemoGL4 PUBLIC core geo)
-target_include_directories(DemoGL4 PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
-target_link_libraries(DemoGL4 INTERFACE dxsdk_interface Eigen3) # REMOVE THIS LATER
-target_link_libraries(DemoGL4 PRIVATE GLEW_lib)
+target_link_libraries(DemoGL4 PRIVATE GL4_Engine)
 
 add_executable(DemoGL4_MovingSprite
-    core/FileIO.cpp
-    core/Geometry.cpp
-    core/Timer.cpp
-    core/Input.cpp # Experimental
     geo/Humanoid.cpp
-    core/Topl_SceneManager.cpp
-    core/Topl_Renderer_GL4.cpp
-    
+
     demos/DemoGL4_MovingSprite.cpp 
 )
-target_include_directories(DemoGL4_MovingSprite PUBLIC core geo)
+target_link_libraries(DemoGL4_MovingSprite PRIVATE GL4_Engine)
 
-target_include_directories(DemoGL4_MovingSprite PUBLIC 
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk # REMOVE THIS LATER
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
-target_link_libraries(DemoGL4_MovingSprite INTERFACE dxsdk_interface Eigen3) # FIX THIS
-target_link_libraries(DemoGL4_MovingSprite PRIVATE RasteronLib GLEW_lib)
 
 # Copying and managing implemented here with custom targets
 

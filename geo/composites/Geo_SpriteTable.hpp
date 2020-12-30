@@ -1,3 +1,5 @@
+#ifndef GEO_SPRITE_TABLE_H
+
 #include <initializer_list>
 #include <cassert> // Might meed error handling library
 #include <utility>
@@ -109,3 +111,6 @@ private:
     Rasteron_Sprite** mRstnSprites = nullptr;
 	Geo_Rect2D** mRects = nullptr;
 };
+
+#define GEO_SPRITE_TABLE_H
+#endif
