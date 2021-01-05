@@ -43,7 +43,7 @@ enum SHDR_ValueType {
     SHDR_matrix_4x4,
 };
 
-typedef void (*bytesFromBlockCallback)(const Geo_Component* component, std::vector<uint8_t>*);
+typedef void (*bytesFromBlockCallback)(const Geo_Component*, std::vector<uint8_t>*);
 
 struct Shader_Input {
     Shader_Input(const std::string& n, SHDR_ValueType t){
@@ -56,19 +56,28 @@ struct Shader_Input {
 
 class Topl_Shader {
 public:
-    // Basic constructor
+    // Basic constructor, DEPRICATE!
     Topl_Shader(enum SHDR_Type type, const char* filePath){
         mShaderType = type;
         mShaderSrcPath = filePath;
     }
-    // Extensible constructor, with custom block callback
-    Topl_Shader(enum SHDR_Type type, const char* filePath, bytesFromBlockCallback callback, std::initializer_list<Shader_Input> inputs){
+    // Extensible constructor
+    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Input> inputs){
         mShaderType = type;
         mShaderSrcPath = filePath;
-        mCallback = callback;
         for(std::initializer_list<Shader_Input>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             mInputs.push_back(*currentInput);
     }
+    // Extensible constructor, with custom block callback
+    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Input> inputs, bytesFromBlockCallback callback){
+        mShaderType = type;
+        mShaderSrcPath = filePath;
+        mCallback = callback; 
+        for(std::initializer_list<Shader_Input>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            mInputs.push_back(*currentInput);
+    }
+    bool getIsCallback() const { return (mCallback != nullptr) ? true : false; }
+    void execCallback(const Geo_Component* component, std::vector<uint8_t>* bytes) const { mCallback(component, bytes); }
     enum SHDR_Type getType() const { return mShaderType; }
     const char* getFilePath() const { return mShaderSrcPath; }
 private:

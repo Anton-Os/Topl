@@ -4,8 +4,9 @@
 
 #include "Topl_Renderer_Drx11.hpp"
 
-
+#include "composites/Geo_Component.hpp"
 #include "composites/Geo_Construct.hpp"
+
 #include "Chain.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -24,10 +25,23 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
-void resolvePhysicsCallback() {
-	int i = 1 + 1;
-}
+void vertexShaderBlockCallback(const Geo_Component* component, std::vector<uint8_t>* bytes){
+	// Resize to contain the fields within constant shader block
+	bytes->resize((sizeof(float) * 4) + (sizeof(float) * 4) + sizeof(unsigned));
 
+	/* uint8_t* offsetPtr_x = (uint8_t*)(&((const Eigen::Vector3f*)component->getPos)->x());
+	uint8_t* offsetPtr_y = (uint8_t*)(&component->getPos.y());
+	uint8_t* offsetPtr_z = (uint8_t*)(&component->getPos.z());
+	uint8_t* rotationPtr_x = (uint8_t*)(&component->getAngles.x());
+	uint8_t* rotationPtr_y = (uint8_t*)(&component->getAngles.y()); */
+
+	vec3f_cptr offset = component->getPos();
+	vec2f_cptr rotation = component->getAngles();
+	uint8_t flatColor = 0xFF118833; // Arbitrary for now, change to configurable color
+
+	// bytes.insert(bytes.begin(),)
+	// TODO: Implement method to modify contents of bytes vector
+}
 
 int main(int argc, char** argv) {
 
@@ -52,9 +66,11 @@ int main(int argc, char** argv) {
 
     Topl_Renderer_Drx11 renderer(wndWindow);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.hlsl";
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), {
+		Shader_Input("pos", SHDR_float_vec4) // List of shader Input Values
+	}, vertexShaderBlockCallback);
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_Flat.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);

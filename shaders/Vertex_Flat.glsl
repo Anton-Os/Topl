@@ -3,12 +3,12 @@
 layout(packed) uniform Block{
 	vec2 rotation; // padding from vec2 to vec4
 	vec3 offset; // padding from vec3 to vec4
+    uint flatColor;
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out vec2 texcoord_out;
+layout(location = 0) out uint flatColor_out;
 
 void main() {
 	vec3 finalPos = pos;
@@ -23,6 +23,6 @@ void main() {
 		finalPos.y = rotCoords.y;
 	}
 
-	texcoord_out = texcoord;
+    flatColor_out = 0xFF884422; // Make this equal to flatColor input
 	gl_Position = vec4(finalPos + vec3(offset), 1.0);
 }

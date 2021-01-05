@@ -465,18 +465,29 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
-	switch(mDrawType) {
+	switch(mDrawType) { // Change draw type depending on what is configured
 	case DRAW_Triangles:
 		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		break;
+	case DRAW_Points:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		break;
+	case DRAW_Lines:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		break;
 	default:
 		OutputDebugStringA("Draw type not supported yet!");
 		return;
 	}
 
+	// Pipeline specific calls
+	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
+	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
+	// Start implementing more shader types...
+
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
-	// Iterate through the main graphics objects that make up the scene
+	// Rendering Loop!
 	if (mPipelineReady && mSceneReady)
 		for (unsigned id = mMainGraphicsIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
@@ -490,11 +501,11 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 			}
 
 			m_deviceCtx->VSSetConstantBuffers(0, 1, &constBlockBuff->buffer); // Original
-			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			UINT stride = sizeof(Geo_PerVertexData);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			for (unsigned t = 0; t < mTextures.size(); t++) {
 				if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence

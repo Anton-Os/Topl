@@ -69,15 +69,18 @@ class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
 
+    // Basic pipeline creation
     void setPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
-        // TODO: Improve code to perform checks on mShaders
-        // TODO: Complete code here to be efficient
+        mShaders.clear(); // Reset the pipeline values
+        if(vertexShader->getType() != SHDR_Vertex) return; // Error
+        if(fragShader->getType() != SHDR_Fragment) return; // Error
 
         mShaders.push_back(vertexShader);
         mShaders.push_back(fragShader);
         pipeline(vertexShader, fragShader);
     }
-    virtual void buildScene(const Topl_SceneManager* sMan) = 0;
+    void setDrawType(enum DRAW_Type type){ mDrawType = type; }
+    // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
     bool updateScene(const Topl_SceneManager* sMan){
         if(!mPipelineReady) puts("Pipeline not set for update call");
         if(!mSceneReady) puts("Scene not built for update call!");
@@ -94,6 +97,7 @@ public:
         render(); // Call virtual method
 		return true; // Randering success
     }
+    virtual void buildScene(const Topl_SceneManager* sMan) = 0;
 	
 	NATIVE_PLATFORM_ELEM m_native; // Native Platform Element required to create a renderer
 
@@ -104,11 +108,16 @@ public:
 #endif
 
 protected:
+    const Topl_Shader* findShader(SHDR_Type type){
+        for(std::vector<const Topl_Shader*>::iterator currentShader = mShaders.begin(); currentShader < mShaders.end(); currentShader++)
+            if((*currentShader)->getType() == type) return *currentShader;
+        return nullptr; // If shader is not found return null pointer
+    }
     std::vector<const Topl_Shader*> mShaders;
+    enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects
-    enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
+	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects    
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;

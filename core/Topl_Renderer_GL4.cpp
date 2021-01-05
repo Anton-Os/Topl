@@ -248,7 +248,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 
 void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	Buffer_GL4* targetBuff = nullptr;
-
+ 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
@@ -391,8 +391,30 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 void Topl_Renderer_GL4::render(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	GLenum drawType;
+	switch(mDrawType){
+	case DRAW_Triangles:
+		drawType = GL_TRIANGLES;
+		break;
+	case DRAW_Points:
+		drawType = GL_POINTS;
+		break;
+	case DRAW_Lines:
+		drawType = GL_LINES;
+		break;
+	default:
+		puts("Draw type not supported yet!");
+		return;
+	}
+
+	// Pipeline specific calls
+	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
+	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
+	// Start implementing more shader types...
+
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
+	// Rendering Loop!
 	for (unsigned id = 1; id <= mMainGraphicsIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
@@ -403,8 +425,6 @@ void Topl_Renderer_GL4::render(void){
 		// Buffer binding step
 		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 		// TODO: Because Const_off_3F also contains rotation data, create a new buffer type that conjoins the two!
 		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
@@ -412,6 +432,9 @@ void Topl_Renderer_GL4::render(void){
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
 			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, blockBuff->buffer);
 		}
+
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
@@ -424,7 +447,7 @@ void Topl_Renderer_GL4::render(void){
 			}
 		}
 
-		glDrawElements(GL_TRIANGLES, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(drawType, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 
 		// Unbinding
 		glBindVertexArray(0);
