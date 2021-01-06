@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.hlsl";
 	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), {
-		Shader_Input("pos", SHDR_float_vec4) // List of shader Input Values
+		Shader_Input("pos", "POSITION", SHDR_float_vec4) // List of shader Input Values
 	}, vertexShaderBlockCallback);
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_Flat.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());

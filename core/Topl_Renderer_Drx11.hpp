@@ -3,7 +3,7 @@
 // Make this derived from Buffer within Renderer header
 
 struct Buffer_Drx11 : public Buffer {
-	Buffer_Drx11() : Buffer() {}
+	// Buffer_Drx11() : Buffer() {}
 	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) {
 		buffer = b;
 	}

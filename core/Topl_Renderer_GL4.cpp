@@ -407,11 +407,6 @@ void Topl_Renderer_GL4::render(void){
 		return;
 	}
 
-	// Pipeline specific calls
-	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
-	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
-	// Start implementing more shader types...
-
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!

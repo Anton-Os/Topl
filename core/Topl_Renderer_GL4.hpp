@@ -16,7 +16,7 @@ protected:
 // Buffer Object Allocation Helpers
 
 struct Buffer_GL4 : public Buffer {
-	Buffer_GL4() : Buffer() {}
+	// Buffer_GL4() : Buffer() {}
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){
 		buffer = b;
 	}

@@ -63,9 +63,9 @@ int main(int argc, char** argv) {
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str()); */
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), vertexBlockCallback,
-		{ Shader_Input("pos", SHDR_float_vec4), Shader_Input("texcoord", SHDR_float_vec2) }
-	);
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), { 
+		Shader_Input("pos", "POSITION", SHDR_float_vec3), Shader_Input("texcoord", "TEXCOORD", SHDR_float_vec2) 
+	}, vertexBlockCallback);
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 

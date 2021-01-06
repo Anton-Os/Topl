@@ -50,7 +50,13 @@ struct Shader_Input {
         name = n;
         type = t;
     }
+    Shader_Input(const std::string& n, const std::string& s, SHDR_ValueType t){
+        name = n;
+        semantic = s;
+        type = t;
+    }
     std::string name;
+    std::string semantic = ""; // DirectX11 extensible 
     SHDR_ValueType type;
 };
 
@@ -76,8 +82,10 @@ public:
         for(std::initializer_list<Shader_Input>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             mInputs.push_back(*currentInput);
     }
+    const Shader_Input* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
     bool getIsCallback() const { return (mCallback != nullptr) ? true : false; }
     void execCallback(const Geo_Component* component, std::vector<uint8_t>* bytes) const { mCallback(component, bytes); }
+    unsigned short getInputCount() const { return mInputs.size(); }
     enum SHDR_Type getType() const { return mShaderType; }
     const char* getFilePath() const { return mShaderSrcPath; }
 private:

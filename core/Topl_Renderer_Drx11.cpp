@@ -14,6 +14,103 @@ namespace _Drx11 {
 
 	};
 
+	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
+		DXGI_FORMAT format;
+
+		switch(type) {
+		case SHDR_float_vec4:
+			format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			break;
+		case SHDR_float_vec3:
+			format = DXGI_FORMAT_R32G32B32_FLOAT;
+			break;
+		case SHDR_float_vec2:
+			format = DXGI_FORMAT_R32G32_FLOAT;
+			break;
+		case SHDR_float:
+			format = DXGI_FORMAT_R32_FLOAT;
+			break;
+		case SHDR_uint_vec4:
+			format = DXGI_FORMAT_R32G32B32A32_UINT;
+			break;
+		case SHDR_uint_vec3:
+			format = DXGI_FORMAT_R32G32B32_UINT;
+			break;
+		case SHDR_uint_vec2:
+			format = DXGI_FORMAT_R32G32_UINT;
+			break;
+		case SHDR_uint:
+			format = DXGI_FORMAT_R32_UINT;
+			break;
+		case SHDR_int_vec4:
+			format = DXGI_FORMAT_R32G32B32A32_SINT;
+			break;
+		case SHDR_int_vec3:
+			format = DXGI_FORMAT_R32G32B32_SINT;
+			break;
+		case SHDR_int_vec2:
+			format = DXGI_FORMAT_R32G32_SINT;
+			break;
+		case SHDR_int:
+			format = DXGI_FORMAT_R32_SINT;
+			break;
+		default:
+			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			break;
+		}
+
+		return format;
+	}
+
+	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
+		unsigned offset = 0;
+
+		switch(type) {
+		case SHDR_float_vec4:
+			offset = sizeof(float) * 4;
+			break;
+		case SHDR_float_vec3:
+			// offset = sizeof(float) * 4; // Padding results in an offset of 4
+			offset = sizeof(float) * 3;
+			break;
+		case SHDR_float_vec2:
+			offset = sizeof(float) * 2;
+			break;
+		case SHDR_float:
+			offset = sizeof(float);
+			break;
+		case SHDR_uint_vec4:
+			offset = sizeof(unsigned) * 4;
+			break;
+		case SHDR_uint_vec3:
+			offset = sizeof(unsigned) * 4; // Padding results in an offset of 4
+			break;
+		case SHDR_uint_vec2:
+			offset = sizeof(unsigned) * 2;
+			break;
+		case SHDR_uint:
+			offset = sizeof(unsigned);
+			break;
+		case SHDR_int_vec4:
+			offset = sizeof(int) * 4;
+			break;
+		case SHDR_int_vec3:
+			offset = sizeof(int) * 4; // Padding results in an offset of 4
+			break;
+		case SHDR_int_vec2:
+			offset = sizeof(int) * 2;
+			break;
+		case SHDR_int:
+			offset = sizeof(int);
+			break;
+		default:
+			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			break;
+		}
+
+		return offset;
+	}
+
 	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, perVertex_cptr pvData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
@@ -76,6 +173,19 @@ namespace _Drx11 {
 		if (FAILED(hr)) return false;
 
 		return true;
+	}
+
+	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Input* input, UINT offset){
+		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
+		inputElementDesc.SemanticName = input->semantic.c_str();
+		inputElementDesc.SemanticIndex = 0;
+		inputElementDesc.Format = _Drx11::getFormatFromShaderVal(input->type);
+		inputElementDesc.InputSlot = 0;
+		inputElementDesc.AlignedByteOffset = offset;
+		inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		inputElementDesc.InstanceDataStepRate = 0;
+
+		return inputElementDesc;
 	}
 
 	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
@@ -198,14 +308,7 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	HRESULT hr;
 	size_t sourceSize;
 
-	// Check for correct type
-	if (vertexShader->getType() != SHDR_Vertex) {
-		mPipelineReady = false;
-		OutputDebugStringA("Incorrect shader type provided for vertex shader");
-		return;
-	}
-
-	// Check for valid source
+	// Vertex shader compilation and creation code
 	sourceSize = strlen(vertexShader->getFilePath()) + 1;
 	wchar_t* vertexShaderSrc = new wchar_t[sourceSize];
 	mbstowcs(vertexShaderSrc, vertexShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
@@ -221,14 +324,14 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	}
 	delete vertexShaderSrc; // Proper deallocation of the source string
 
-	// Check for correct type
-	if (fragShader->getType() != SHDR_Fragment) {
+	hr = m_device->CreateVertexShader(m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
+		NULL, &m_pipeline.vertexShader);
+	if (FAILED(hr)) {
 		mPipelineReady = false;
-		OutputDebugStringA("Incorrect shader type provided for fragment shader");
 		return;
 	}
 
-	// Check for valid source
+	// Pixel shader compilation and creation code
 	sourceSize = strlen(fragShader->getFilePath()) + 1;
 	wchar_t* fragmentShaderSrc = new wchar_t[sourceSize];
 	mbstowcs(fragmentShaderSrc, fragShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
@@ -244,15 +347,6 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	}
 	delete fragmentShaderSrc; // Proper deallocation of the source string
 
-	// Creation methods
-
-	hr = m_device->CreateVertexShader(m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
-		NULL, &m_pipeline.vertexShader);
-	if (FAILED(hr)) {
-		mPipelineReady = false;
-		return;
-	}
-
 	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
 		NULL, &m_pipeline.pixelShader);
 	if (FAILED(hr)) {
@@ -263,10 +357,33 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
 	m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
 
+	// Updated successful layout code
+
+	D3D11_INPUT_ELEMENT_DESC* layoutPtr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
+	unsigned inputElementOffset = 0;
+	for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
+		*(layoutPtr + i) = _Drx11::getElementDescFromInput(vertexShader->getInputAtIndex(i), inputElementOffset);
+		inputElementOffset += _Drx11::getOffsetFromShaderVal(vertexShader->getInputAtIndex(i)->type);
+	}
+    UINT layoutElemCount = (unsigned)vertexShader->getInputCount();
+
+    m_device->CreateInputLayout(
+        layoutPtr, layoutElemCount,
+        m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(), 
+        &m_pipeline.vertexDataLayout
+    );
+
+    m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
+
+	free(layoutPtr); // Deallocating layoutPtr and all associated data
 	mPipelineReady = true;
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
+	// Pipeline specific calls
+	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
+	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
+	// Start implementing more shader types...
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
@@ -315,23 +432,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		if(!mSceneReady) return;
 		mMainGraphicsIDs = currentGraphicsID; // Gives us the greatest buffer ID number
 	}
-
-	// Input assembler inputs to pipeline
-	// These procedures belong inside the pipeline creation
-
-    D3D11_INPUT_ELEMENT_DESC layoutTest[] ={
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
-    };
-    UINT layoutElemCount = ARRAYSIZE(layoutTest); // REFINE THIS
-
-    m_device->CreateInputLayout(
-        layoutTest, layoutElemCount,
-        m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(), 
-        &m_pipeline.vertexDataLayout
-    );
-
-    m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
 
     mSceneReady = true;
     return;
@@ -449,7 +549,6 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 				break;
 			}
 
-
 		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
 		if (constBlockBuff != nullptr)
 			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff->buffer, &block);
@@ -479,11 +578,6 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 		OutputDebugStringA("Draw type not supported yet!");
 		return;
 	}
-
-	// Pipeline specific calls
-	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
-	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
-	// Start implementing more shader types...
 
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 

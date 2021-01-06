@@ -5,7 +5,7 @@
 #include "Topl_Shader.hpp"
 #include "Topl_SceneManager.hpp"
 
-typedef const Topl_Shader* const topl_shader_cptr;
+typedef const Topl_Shader* topl_shader_cptr;
 
 enum DRAW_Type {
     DRAW_Points,
@@ -30,7 +30,7 @@ enum BUFF_Type {
 };
 
 struct Buffer : public GraphicsTargetObject {
-    Buffer() : GraphicsTargetObject(){}
+    // Buffer() : GraphicsTargetObject(){}
     Buffer(unsigned id, enum BUFF_Type t) : GraphicsTargetObject(id){
         type = t;
     }
@@ -70,7 +70,7 @@ public:
 	virtual ~Topl_Renderer() {};
 
     // Basic pipeline creation
-    void setPipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
+    void setPipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader){
         mShaders.clear(); // Reset the pipeline values
         if(vertexShader->getType() != SHDR_Vertex) return; // Error
         if(fragShader->getType() != SHDR_Fragment) return; // Error
@@ -108,19 +108,19 @@ public:
 #endif
 
 protected:
-    const Topl_Shader* findShader(SHDR_Type type){
-        for(std::vector<const Topl_Shader*>::iterator currentShader = mShaders.begin(); currentShader < mShaders.end(); currentShader++)
+    topl_shader_cptr findShader(SHDR_Type type){
+        for(std::vector<topl_shader_cptr>::iterator currentShader = mShaders.begin(); currentShader < mShaders.end(); currentShader++)
             if((*currentShader)->getType() == type) return *currentShader;
         return nullptr; // If shader is not found return null pointer
     }
-    std::vector<const Topl_Shader*> mShaders;
+    std::vector<topl_shader_cptr> mShaders;
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
 	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects    
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) = 0;
+    virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;
     virtual void update(const Topl_SceneManager* sMan) = 0;
 	virtual void render(void) = 0;
 };
