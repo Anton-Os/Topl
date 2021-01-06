@@ -43,14 +43,13 @@ enum SHDR_ValueType {
     SHDR_matrix_4x4,
 };
 
-typedef void (*bytesFromBlockCallback)(const Geo_Component*, std::vector<uint8_t>*);
 
-struct Shader_Input {
-    Shader_Input(const std::string& n, SHDR_ValueType t){
+struct Shader_Type {
+    Shader_Type(const std::string& n, SHDR_ValueType t){
         name = n;
         type = t;
     }
-    Shader_Input(const std::string& n, const std::string& s, SHDR_ValueType t){
+    Shader_Type(const std::string& n, const std::string& s, SHDR_ValueType t){
         name = n;
         semantic = s;
         type = t;
@@ -67,30 +66,32 @@ public:
         mShaderType = type;
         mShaderSrcPath = filePath;
     }
-    // Extensible constructor
-    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Input> inputs){
+    // Extensible constructor w input values
+    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Type> inputs){
         mShaderType = type;
         mShaderSrcPath = filePath;
-        for(std::initializer_list<Shader_Input>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             mInputs.push_back(*currentInput);
     }
-    // Extensible constructor, with custom block callback
-    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Input> inputs, bytesFromBlockCallback callback){
+    // Extensible constructor w input and uniform values
+    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Type> inputs, std::initializer_list<Shader_Type> uniforms){
         mShaderType = type;
         mShaderSrcPath = filePath;
-        mCallback = callback; 
-        for(std::initializer_list<Shader_Input>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             mInputs.push_back(*currentInput);
+        for(std::initializer_list<Shader_Type>::iterator currentUniform = uniforms.begin(); currentUniform < uniforms.end(); currentUniform++)
+            mBlockUniforms.push_back(*currentUniform);
     }
-    const Shader_Input* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
-    bool getIsCallback() const { return (mCallback != nullptr) ? true : false; }
-    void execCallback(const Geo_Component* component, std::vector<uint8_t>* bytes) const { mCallback(component, bytes); }
+    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
+    const Shader_Type* getUniformAtIndex(unsigned index) const { return (index < mBlockUniforms.size()) ? &mBlockUniforms.at(index) : nullptr; }
     unsigned short getInputCount() const { return mInputs.size(); }
+    unsigned short getUniformsCount() const { return mBlockUniforms.size(); }
     enum SHDR_Type getType() const { return mShaderType; }
     const char* getFilePath() const { return mShaderSrcPath; }
 private:
-    std::vector<Shader_Input> mInputs;
+    std::vector<Shader_Type> mInputs;
+    std::vector<Shader_Type> mBlockUniforms;
     enum SHDR_Type mShaderType;
     const char* mShaderSrcPath;
-    bytesFromBlockCallback mCallback = nullptr; // Set to callback if shader recives info between draw calls
 };

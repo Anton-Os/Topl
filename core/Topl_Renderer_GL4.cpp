@@ -60,6 +60,120 @@ namespace _GL4 {
 		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
 	};
 
+	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
+		GLenum format;
+
+		switch(type) {
+		case SHDR_float_vec4:
+		case SHDR_float_vec3:
+		case SHDR_float_vec2:
+		case SHDR_float:
+			format = GL_FLOAT;
+			break;
+		case SHDR_double_vec4:
+		case SHDR_double_vec3:
+		case SHDR_double_vec2:
+		case SHDR_double:
+			format = GL_DOUBLE;
+			break;
+		case SHDR_uint_vec4:
+		case SHDR_uint_vec3:
+		case SHDR_uint_vec2:
+		case SHDR_uint:
+			format = GL_UNSIGNED_INT;
+			break;
+		case SHDR_int_vec4:
+		case SHDR_int_vec3:
+		case SHDR_int_vec2:
+		case SHDR_int:
+			format = GL_INT;
+			break;
+		default:
+			puts("GL4 Shader Input Type Not Supported!");
+			break;
+		}
+
+		return format;
+	}
+
+	static GLint getSizeFromShaderVal(enum SHDR_ValueType type){
+		GLint size = 0;
+
+		switch(type){
+		case SHDR_float_vec4:
+		case SHDR_double_vec4:
+		case SHDR_uint_vec4:
+		case SHDR_int_vec4:
+			size = 4;
+			break;
+		case SHDR_float_vec3:
+		case SHDR_double_vec3:
+		case SHDR_uint_vec3:
+		case SHDR_int_vec3:
+			size = 3;
+			break;
+		case SHDR_float_vec2:
+		case SHDR_double_vec2:
+		case SHDR_uint_vec2:
+		case SHDR_int_vec2:
+			size = 2;
+			break;
+		case SHDR_float:
+		case SHDR_double:
+		case SHDR_uint:
+		case SHDR_int:
+			size = 2;
+			break;
+		}
+
+		return size;
+	}
+
+	// Shared Renderer Code!
+	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
+		unsigned offset = 0;
+
+		switch(type) {
+		case SHDR_float_vec4:
+			offset = sizeof(float) * 4; break;
+		case SHDR_float_vec3:
+			offset = sizeof(float) * 3; break;
+		case SHDR_float_vec2:
+			offset = sizeof(float) * 2; break;
+		case SHDR_float:
+			offset = sizeof(float); break;
+		case SHDR_double_vec4:
+			offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3:
+			offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2:
+			offset = sizeof(double) * 2; break;
+		case SHDR_double:
+			offset = sizeof(double); break;
+		case SHDR_uint_vec4:
+			offset = sizeof(unsigned) * 4; break;
+		case SHDR_uint_vec3:
+			offset = sizeof(unsigned) * 3;  break;
+		case SHDR_uint_vec2:
+			offset = sizeof(unsigned) * 2; break;
+		case SHDR_uint:
+			offset = sizeof(unsigned); break;
+		case SHDR_int_vec4:
+			offset = sizeof(int) * 4; break;
+		case SHDR_int_vec3:
+			offset = sizeof(int) * 3; break;
+		case SHDR_int_vec2:
+			offset = sizeof(int) * 2; break;
+		case SHDR_int:
+			offset = sizeof(int); break;
+		default:
+			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			break;
+		}
+
+		return offset;
+	}
+
 	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
 		return *(bufferPtrs + type); // We know the offset with the type argument
 	}
@@ -158,6 +272,10 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
+	// Pipeline specific calls
+	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
+	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
+	// Start implementing more shader types...
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
@@ -188,16 +306,23 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		mVAOs.push_back(VertexArray_GL4(currentGraphicsID, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer( 0, 3,
-							   GL_FLOAT, GL_FALSE,
-							   sizeof(Geo_PerVertexData), NULL
-		);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2,
-			GL_FLOAT, GL_FALSE,
-			sizeof(Geo_PerVertexData), GL4_BUFFER_OFFSET(12)
-		);
+		
+		GLsizei inputElementOffset = 0;
+		for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
+			const Shader_Type* shaderType = vertexShader->getInputAtIndex(i);
+
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(
+				i, 
+				_GL4::getSizeFromShaderVal(shaderType->type),
+				_GL4::getFormatFromShaderVal(shaderType->type),
+				GL_FALSE,
+				sizeof(Geo_PerVertexData),
+				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
+			);
+
+			inputElementOffset += _GL4::getOffsetFromShaderVal(shaderType->type);
+		}
 
 #ifdef RASTERON_H
 	unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr);
@@ -280,13 +405,6 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 	GLint result;
 	const char* sourceStr_ptr;
 
-	// Check for correct type
-	if (vertexShader->getType() != SHDR_Vertex) {
-		mPipelineReady = false;
-		puts("Incorrect shader type provided for vertex shader");
-		return;
-	}
-
 	// Vertex shader creation and valid file checking
 	m_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -315,13 +433,6 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 		puts(errorLog);
 		free(errorLog);
 
-		return;
-	}
-
-	// Check for correct type
-	if (fragShader->getType() != SHDR_Fragment) {
-		mPipelineReady = false;
-		puts("Incorrect shader type provided for fragment shader");
 		return;
 	}
 

@@ -19,41 +19,30 @@ namespace _Drx11 {
 
 		switch(type) {
 		case SHDR_float_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			break;
+			format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 		case SHDR_float_vec3:
-			format = DXGI_FORMAT_R32G32B32_FLOAT;
-			break;
+			format = DXGI_FORMAT_R32G32B32_FLOAT; break;
 		case SHDR_float_vec2:
-			format = DXGI_FORMAT_R32G32_FLOAT;
-			break;
+			format = DXGI_FORMAT_R32G32_FLOAT; break;
 		case SHDR_float:
-			format = DXGI_FORMAT_R32_FLOAT;
-			break;
+			format = DXGI_FORMAT_R32_FLOAT; break;
+		// DOUBLE SUPPORT PLACEHOLDER
 		case SHDR_uint_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_UINT;
-			break;
+			format = DXGI_FORMAT_R32G32B32A32_UINT; break;
 		case SHDR_uint_vec3:
-			format = DXGI_FORMAT_R32G32B32_UINT;
-			break;
+			format = DXGI_FORMAT_R32G32B32_UINT; break;
 		case SHDR_uint_vec2:
-			format = DXGI_FORMAT_R32G32_UINT;
-			break;
+			format = DXGI_FORMAT_R32G32_UINT; break;
 		case SHDR_uint:
-			format = DXGI_FORMAT_R32_UINT;
-			break;
+			format = DXGI_FORMAT_R32_UINT; break;
 		case SHDR_int_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_SINT;
-			break;
+			format = DXGI_FORMAT_R32G32B32A32_SINT; break;
 		case SHDR_int_vec3:
-			format = DXGI_FORMAT_R32G32B32_SINT;
-			break;
+			format = DXGI_FORMAT_R32G32B32_SINT; break;
 		case SHDR_int_vec2:
-			format = DXGI_FORMAT_R32G32_SINT;
-			break;
+			format = DXGI_FORMAT_R32G32_SINT; break;
 		case SHDR_int:
-			format = DXGI_FORMAT_R32_SINT;
-			break;
+			format = DXGI_FORMAT_R32_SINT; break;
 		default:
 			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
 			break;
@@ -62,47 +51,43 @@ namespace _Drx11 {
 		return format;
 	}
 
+	// Shared Renderer Code!
 	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
 		unsigned offset = 0;
 
 		switch(type) {
 		case SHDR_float_vec4:
-			offset = sizeof(float) * 4;
-			break;
+			offset = sizeof(float) * 4; break;
 		case SHDR_float_vec3:
-			// offset = sizeof(float) * 4; // Padding results in an offset of 4
-			offset = sizeof(float) * 3;
-			break;
+			offset = sizeof(float) * 3; break;
 		case SHDR_float_vec2:
-			offset = sizeof(float) * 2;
-			break;
+			offset = sizeof(float) * 2; break;
 		case SHDR_float:
-			offset = sizeof(float);
-			break;
+			offset = sizeof(float); break;
+		case SHDR_double_vec4:
+			offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3:
+			offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2:
+			offset = sizeof(double) * 2; break;
+		case SHDR_double:
+			offset = sizeof(double); break;
 		case SHDR_uint_vec4:
-			offset = sizeof(unsigned) * 4;
-			break;
+			offset = sizeof(unsigned) * 4; break;
 		case SHDR_uint_vec3:
-			offset = sizeof(unsigned) * 4; // Padding results in an offset of 4
-			break;
+			offset = sizeof(unsigned) * 3;  break;
 		case SHDR_uint_vec2:
-			offset = sizeof(unsigned) * 2;
-			break;
+			offset = sizeof(unsigned) * 2; break;
 		case SHDR_uint:
-			offset = sizeof(unsigned);
-			break;
+			offset = sizeof(unsigned); break;
 		case SHDR_int_vec4:
-			offset = sizeof(int) * 4;
-			break;
+			offset = sizeof(int) * 4; break;
 		case SHDR_int_vec3:
-			offset = sizeof(int) * 4; // Padding results in an offset of 4
-			break;
+			offset = sizeof(int) * 3; break;
 		case SHDR_int_vec2:
-			offset = sizeof(int) * 2;
-			break;
+			offset = sizeof(int) * 2; break;
 		case SHDR_int:
-			offset = sizeof(int);
-			break;
+			offset = sizeof(int); break;
 		default:
 			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
 			break;
@@ -175,7 +160,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Input* input, UINT offset){
+	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset){
 		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
 		inputElementDesc.SemanticName = input->semantic.c_str();
 		inputElementDesc.SemanticIndex = 0;
@@ -357,7 +342,7 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
 	m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
 
-	// Updated successful layout code
+	// Updated successful layout code!
 
 	D3D11_INPUT_ELEMENT_DESC* layoutPtr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
 	unsigned inputElementOffset = 0;

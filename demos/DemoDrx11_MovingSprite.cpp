@@ -23,17 +23,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
-// Callback function specific to Vertex_MostBasic.hlsl
-void vertexBlockCallback(const Geo_Component* component, std::vector<uint8_t>* bytes) {
-	bytes->resize(sizeof(float) * 8); // Size should be known
-	const unsigned short posOffset = 0;
-	const unsigned short angleOffset = 4;
-
-	// TODO: Fix this!!!
-	// bytes->at(posOffset) = component->getPos; // Set first 4 floats to contents of component position
-	// bytes->at(angleOffset) = component->getAngles; // Set remaining 4 floats to contents of component angles
-}
-
 int main(int argc, char** argv) {
 
 	WNDCLASS wndClass = { 0 };
@@ -63,9 +52,9 @@ int main(int argc, char** argv) {
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str()); */
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), { 
-		Shader_Input("pos", "POSITION", SHDR_float_vec3), Shader_Input("texcoord", "TEXCOORD", SHDR_float_vec2) 
-	}, vertexBlockCallback);
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), 
+		{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) }
+	);
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 

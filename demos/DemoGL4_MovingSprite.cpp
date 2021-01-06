@@ -49,7 +49,9 @@ int main(int argc, char** argv) {
     Topl_Renderer_GL4 renderer(wndWindow);
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl"; // Make unix fix
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(),
+		{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) }
+	);
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl"; // Make unix fix
 	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
 
