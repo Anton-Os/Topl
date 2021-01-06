@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 	Topl_SceneManager sMan1;
 
 	// TODO: Make these not device specific, relative file paths only!
-	std::pair<const char*, Eigen::Vector3f> humanoidProps[ANATOMY_PARTS_COUNT] = {
+	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
 		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
 		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
 		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),

@@ -1,6 +1,6 @@
 #version 440
 
-layout(location = 0) in uint flatColor;
+layout(location = 0) flat in uint flatColor;
 
 out vec4 color;
 

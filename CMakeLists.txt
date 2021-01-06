@@ -165,6 +165,13 @@ add_executable(DemoGL4_MovingSprite
 )
 target_link_libraries(DemoGL4_MovingSprite PRIVATE GL4_Engine)
 
+add_executable(DemoGL4_Swings
+    geo/Chain.cpp
+
+    demos/DemoGL4_Swings.cpp 
+)
+target_link_libraries(DemoGL4_Swings PRIVATE GL4_Engine)
+
 
 # Copying and managing implemented here with custom targets
 

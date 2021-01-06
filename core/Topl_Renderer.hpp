@@ -41,6 +41,21 @@ struct Buffer : public GraphicsTargetObject {
     unsigned count = 1; // No. of primitives
 };
 
+struct BlockBuffer : public Buffer {
+    // Buffer() : GraphicsTargetObject(){}
+    BlockBuffer(unsigned id, const std::vector<uint8_t>& bytes) : Buffer(id, BUFF_Const_Block) {
+        if(!bytes.empty()){
+            data = (uint8_t*)malloc(bytes.size());
+            *data = *(bytes.data());
+        }
+    }
+    ~BlockBuffer(){
+        if(data != nullptr) free(data);
+    }
+
+    uint8_t* data = nullptr;
+};
+
 #define MAX_TEXTURES_PER_TARGET 12
 
 enum TEX_Frmt {
@@ -114,6 +129,7 @@ protected:
         return nullptr; // If shader is not found return null pointer
     }
     std::vector<topl_shader_cptr> mShaders;
+    std::vector<BlockBuffer> mBlockBuffers;
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built

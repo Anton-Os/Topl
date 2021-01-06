@@ -6,7 +6,7 @@
 #include "Topl_Renderer_GL4.hpp"
 
 #include "composites/Geo_Construct.hpp"
-#include "Humanoid.hpp"
+#include "Chain.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -22,6 +22,17 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void vertexShaderBlockCallback(const Geo_Component* component, std::vector<uint8_t>* bytes){
+	// Resize to contain the fields within constant shader block
+	bytes->resize((sizeof(float) * 4) + (sizeof(float) * 4) + sizeof(unsigned));
+
+	vec3f_cptr offset = component->getPos();
+	vec2f_cptr rotation = component->getAngles();
+	uint8_t flatColor = 0xFF118833; // Arbitrary for now, change to configurable color
+
+	// TODO: Implement method to modify contents of bytes vector
 }
 
 int main(int argc, char** argv) {
@@ -48,10 +59,14 @@ int main(int argc, char** argv) {
 	// OpenGL Specific code block
     Topl_Renderer_GL4 renderer(wndWindow);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl"; // Make unix fix
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl"; // Make unix fix
-	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.glsl";
+	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), {
+		Shader_Input("pos", SHDR_float_vec3)
+	}, vertexShaderBlockCallback);
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Flat.glsl";
+	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str(), {
+		Shader_Input("flatColor", SHDR_uint)
+	});
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 
@@ -59,20 +74,10 @@ int main(int argc, char** argv) {
 
 	// Generic code block
 
-	// TODO: Make these not device specific, relative file paths only!
-	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
-	};
-
-	// Geo_Humanoid humanoid("humanoid", &sMan1);
-	Geo_Humanoid humanoid("humanoid", &sMan1, humanoidProps, 0.25f);
-	humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid
-	// humanoid.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
+	Geo_Sphere2D sphere = Geo_Sphere2D(0.2f, 12);
+	Geo_Component component = Geo_Component((Geo_RenderObj*)&sphere);
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.1f);
+	Geo_Chain chain = Geo_Chain("chain1", &sMan1, &component, &chainProps, 8);
 
 	renderer.buildScene(&sMan1);
 
@@ -81,8 +86,8 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&sMan1);
-		sMan1.resolvePhysics();
+		// renderer.updateScene(&sMan1);
+		//sMan1.resolvePhysics();
 
 		// Input processing, check if it works unhinged
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))

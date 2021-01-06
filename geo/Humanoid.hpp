@@ -1,14 +1,14 @@
 #include "composites/Geo_Construct.hpp"
 #include "composites/Geo_SpriteTable.hpp"
 
-#define ANATOMY_PARTS_COUNT 6 // There are 6 body parts total
+#define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_SceneManager* sMan,
-		std::pair<const char*, Eigen::Vector3f> initProps[ANATOMY_PARTS_COUNT], // Filepaths and offsets for
+		std::pair<const char*, Eigen::Vector3f> initProps[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
 		float scaleFactor) :
 	Geo_SpriteTable({
 		initProps[HUMANOID_Head].first,
