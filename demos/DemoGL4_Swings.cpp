@@ -24,6 +24,34 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+// TODO: Move this into .hpp definition
+
+struct VertexShader : public Topl_Shader {
+	VertexShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Vertex, filePath,
+			{ Shader_Type("pos", SHDR_float_vec3) } // Inputs
+		) { }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return true; // Indicates that an implementation exists
+	}
+};
+
+struct FragmentShader : public Topl_Shader {
+	FragmentShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Fragment, filePath,
+			{ Shader_Type("flatColor", SHDR_uint) } // Inputs
+		) { }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return false; // Indicates that an implementation is absent
+	}
+};
+
+// Entry Point
+
 int main(int argc, char** argv) {
 
 	WNDCLASS wndClass = { 0 };
@@ -49,13 +77,9 @@ int main(int argc, char** argv) {
     Topl_Renderer_GL4 renderer(wndWindow);
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.glsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), 
-		{ Shader_Type("pos", SHDR_float_vec3) }
-	);
+	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Flat.glsl";
-	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str(), 
-		{ Shader_Type("flatColor", SHDR_uint) }
-	);
+	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 
@@ -65,7 +89,7 @@ int main(int argc, char** argv) {
 
 	Geo_Sphere2D sphere = Geo_Sphere2D(0.2f, 12);
 	Geo_Component component = Geo_Component((Geo_RenderObj*)&sphere);
-	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.1f);
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.23f);
 	Geo_Chain chain = Geo_Chain("chain1", &sMan1, &component, &chainProps, 8);
 
 	renderer.buildScene(&sMan1);

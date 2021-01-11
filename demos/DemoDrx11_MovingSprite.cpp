@@ -23,6 +23,34 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+// TODO: Move this into .hpp definition
+
+struct VertexShader : public Topl_Shader {
+	VertexShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Vertex, filePath,
+			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+		) {  }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return true; // Indicates that an implementation exists
+	}
+};
+
+struct PixelShader : public Topl_Shader {
+	PixelShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Fragment, filePath,
+			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+		) { }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return false; // Indicates that an implementation is absent
+	}
+};
+
+// Entry Point
+
 int main(int argc, char** argv) {
 
 	WNDCLASS wndClass = { 0 };
@@ -43,22 +71,14 @@ int main(int argc, char** argv) {
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
 
-
     Topl_Renderer_Drx11 renderer(wndWindow);
 
-	/* std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
-	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str()); */
-
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(), 
-		{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) }
-	);
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
-	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
+	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
+	std::string pixelShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
+	PixelShader pixelShader = PixelShader(pixelShaderSrc.c_str());
 
-	renderer.setPipeline(&vertexShader, &fragmentShader);
+	renderer.setPipeline(&vertexShader, &pixelShader);
 
 	Topl_SceneManager sMan1;
 

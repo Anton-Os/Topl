@@ -24,6 +24,34 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+// TODO: Move this into .hpp definition
+
+struct VertexShader : public Topl_Shader {
+	VertexShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Vertex, filePath,
+			{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+		) { }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return true; // Indicates that an implementation exists
+	}
+};
+
+struct FragmentShader : public Topl_Shader {
+	FragmentShader(const char* filePath)
+		: Topl_Shader(
+			SHDR_Fragment, filePath,
+			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+		) { }
+
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+		return false; // Indicates that an implementation is absent
+	}
+};
+
+// Entry Point
+
 int main(int argc, char** argv) {
 
 	WNDCLASS wndClass = { 0 };
@@ -45,15 +73,15 @@ int main(int argc, char** argv) {
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
 
+	std::string parentDir = getParentDir(argv[0]);
+
 	// OpenGL Specific code block
     Topl_Renderer_GL4 renderer(wndWindow);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl"; // Make unix fix
-	Topl_Shader vertexShader(SHDR_Vertex, vertexShaderSrc.c_str(),
-		{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) }
-	);
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl"; // Make unix fix
-	Topl_Shader fragmentShader(SHDR_Fragment, fragmentShaderSrc.c_str());
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl";
+	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl";
+	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 

@@ -73,20 +73,11 @@ public:
         for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             mInputs.push_back(*currentInput);
     }
-    // Extensible constructor w input and uniform values
-    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Type> inputs, std::initializer_list<Shader_Type> uniforms){
-        mShaderType = type;
-        mShaderSrcPath = filePath;
 
-        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            mInputs.push_back(*currentInput);
-        for(std::initializer_list<Shader_Type>::iterator currentUniform = uniforms.begin(); currentUniform < uniforms.end(); currentUniform++)
-            mBlockUniforms.push_back(*currentUniform);
-    }
+	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) = 0;
+
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
-    const Shader_Type* getUniformAtIndex(unsigned index) const { return (index < mBlockUniforms.size()) ? &mBlockUniforms.at(index) : nullptr; }
     unsigned short getInputCount() const { return mInputs.size(); }
-    unsigned short getUniformsCount() const { return mBlockUniforms.size(); }
     enum SHDR_Type getType() const { return mShaderType; }
     const char* getFilePath() const { return mShaderSrcPath; }
 private:
