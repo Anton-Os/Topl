@@ -32,8 +32,16 @@ struct VertexShader : public Topl_Shader {
 			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
 		) {  }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
-		return true; // Indicates that an implementation exists
+	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
+		const uint8_t* offsetBytesPtr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
+		const uint8_t* rotationBytesPtr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
+
+		bytes->assign({
+			*(offsetBytesPtr), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), 0, // Gets offset values for x, y, and z, 0 for padding
+			*(rotationBytesPtr), *(rotationBytesPtr + 1), 0, 0 // Gets rotations values on x and y axis, 0's for padding
+		});
+
+		return true;
 	}
 };
 
@@ -44,7 +52,7 @@ struct PixelShader : public Topl_Shader {
 			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) override {
+	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
 		return false; // Indicates that an implementation is absent
 	}
 };

@@ -274,7 +274,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	// Pipeline specific calls
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
-	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
 	// Start implementing more shader types...
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
@@ -289,11 +288,15 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
-		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
-		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
-		unsigned blockSize = sizeof(_GL4::DefaultUniformBlock);
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
+		// New block implementation
+		std::vector<uint8_t> blockBytes;
+		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+			_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
+			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
+			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
+			unsigned blockSize = sizeof(_GL4::DefaultUniformBlock);
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
+		}
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
@@ -328,7 +331,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr);
 	if(texCount > 0){
 		const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
-
 		genTexture(baseTex, currentGraphicsID); // Add the method definition
 	}
 #endif
@@ -372,29 +374,33 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
+	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
+	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_GL4* targetBuff = nullptr;
  
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
-		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
-		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
+		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+			vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
+			vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
+			_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
 
-		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
-				targetBuff = &(*currentBuff);
-				break;
+			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
+					targetBuff = &(*currentBuff);
+						break;
+				}
+
+			if (targetBuff == nullptr) {
+				puts("Block buffer could not be located! ");
+				return;
 			}
 
-		if (targetBuff == nullptr) {
-			puts("Position const buffer could not be located! ");
-			return;
+			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::DefaultUniformBlock), &block, GL_STATIC_DRAW);
 		}
-
-		glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::DefaultUniformBlock), &block, GL_STATIC_DRAW);
 	}
 
 	mSceneReady = true;

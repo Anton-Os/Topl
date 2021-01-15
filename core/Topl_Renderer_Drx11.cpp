@@ -367,7 +367,6 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	// Pipeline specific calls
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
-	const Topl_Shader* pixelShader = findShader(SHDR_Fragment);
 	// Start implementing more shader types...
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
@@ -380,10 +379,14 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
-		ID3D11Buffer* constBlockBuff;
-		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &block);
-		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
+		// New block implementation
+		std::vector<uint8_t> blockBytes;
+		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+			_Drx11::DefaultConstBlock block = _Drx11::DefaultConstBlock(geoTarget_position, geoTarget_angles);
+			ID3D11Buffer* constBlockBuff;
+			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &block);
+			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
+		}
 
 		if (!mSceneReady) return; // Error
 

@@ -74,7 +74,7 @@ public:
             mInputs.push_back(*currentInput);
     }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* component, std::vector<uint8_t>* bytes) = 0;
+	virtual bool genPerGeoDataBlock(const Geo_Component *const component, std::vector<uint8_t>* bytes) const = 0;
 
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return mInputs.size(); }
