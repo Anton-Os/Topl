@@ -50,6 +50,10 @@ struct VertexShader : public Topl_Shader {
 
 		return true; // Indicates that an implementation exists
 	}
+
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
+		return false;
+	}
 };
 
 struct FragmentShader : public Topl_Shader {
@@ -62,6 +66,10 @@ struct FragmentShader : public Topl_Shader {
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
 		return false; // Indicates that an implementation is absent
 	}
+
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
+		return false;
+	}                                                                       
 };
 
 // Entry Point

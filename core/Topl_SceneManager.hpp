@@ -1,5 +1,5 @@
 // More Complex types
-#ifndef TOPL_SCENEGRAPH_H
+#ifndef TOPL_SCENE_MANAGER_H
 
 #include "native_os_def.h" // This includes the Rasteron.h header, TODO Fix This!!!
 
@@ -89,5 +89,5 @@ private:
 #endif
 };
 
-#define TOPL_SCENEGRAPH_H
+#define TOPL_SCENE_MANAGER_H
 #endif

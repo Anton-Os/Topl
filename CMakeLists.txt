@@ -120,14 +120,6 @@ if(WIN32)
         demos/DemoDrx11_MovingSprite.cpp
     )
     target_link_libraries(DemoDrx11_MovingSprite PRIVATE Drx11_Engine)
-
-    add_executable(DemoDrx11_Swings
-        geo/Chain.cpp
-
-        demos/DemoDrx11_Swings.cpp
-    )
-    target_link_libraries(DemoDrx11_Swings PRIVATE Drx11_Engine)
-
 endif()
 
 # OpenGL Rendering Demos
@@ -164,13 +156,6 @@ add_executable(DemoGL4_MovingSprite
     demos/DemoGL4_MovingSprite.cpp 
 )
 target_link_libraries(DemoGL4_MovingSprite PRIVATE GL4_Engine)
-
-add_executable(DemoGL4_Swings
-    geo/Chain.cpp
-
-    demos/DemoGL4_Swings.cpp 
-)
-target_link_libraries(DemoGL4_Swings PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets
