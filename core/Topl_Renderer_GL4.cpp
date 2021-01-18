@@ -291,23 +291,22 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		// New block implementation
 		std::vector<uint8_t> blockBytes;
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
 			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
-			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers[mBuffers.size() - 1].buffer);
-			unsigned blockSize = sizeof(_GL4::DefaultUniformBlock);
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, &block, GL_STATIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
+			unsigned blockSize = sizeof(uint8_t) * blockBytes.size(); // Block size is 32!
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW); // Block size is 32!
 		}
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
-		glBindBuffer(GL_ARRAY_BUFFER, mBuffers[mBuffers.size() - 1].buffer); // Gets the latest buffer for now
+		glBindBuffer(GL_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
 		mVAOs.push_back(VertexArray_GL4(currentGraphicsID, m_vertexArrayAlloc.getAvailable()));
-		VertexArray_GL4* currentVAO_ptr = &mVAOs[mVAOs.size() - 1]; // Check to see if all parameters are valid
+		VertexArray_GL4* currentVAO_ptr = &mVAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 		
 		GLsizei inputElementOffset = 0;
@@ -382,24 +381,20 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		unsigned currentGraphicsID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
-			vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
-
-			_GL4::DefaultUniformBlock block = _GL4::DefaultUniformBlock(geoTarget_position, geoTarget_angles);
-
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
-					targetBuff = &(*currentBuff);
-						break;
+					targetBuff = &(*currentBuff); 
+					break;
 				}
 
-			if (targetBuff == nullptr) {
-				puts("Block buffer could not be located! ");
+			if (targetBuff == nullptr) { 
+				puts("Block buffer could not be located! "); 
 				return;
 			}
 
 			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(_GL4::DefaultUniformBlock), &block, GL_STATIC_DRAW);
+			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 	}
 

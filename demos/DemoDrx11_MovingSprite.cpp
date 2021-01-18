@@ -41,6 +41,17 @@ struct VertexShader : public Topl_Shader {
 			*(rotationBytesPtr), *(rotationBytesPtr + 1), 0, 0 // Gets rotations values on x and y axis, 0's for padding
 		});
 
+		bytes->assign({
+			*(offsetBytesPtr + 0), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), *(offsetBytesPtr + 3), // X offset value
+			*(offsetBytesPtr + 4), *(offsetBytesPtr + 5), *(offsetBytesPtr + 6), *(offsetBytesPtr + 7), // Y offset value
+			*(offsetBytesPtr + 8), *(offsetBytesPtr + 9), *(offsetBytesPtr + 10), *(offsetBytesPtr + 11), // Z offset value
+			0, 0, 0, 0, // 0 byte padding
+			*(rotationBytesPtr + 0), *(rotationBytesPtr + 1), *(rotationBytesPtr + 2), *(rotationBytesPtr + 3), // Main axis rotation
+			*(rotationBytesPtr + 4), *(rotationBytesPtr + 5), *(rotationBytesPtr + 6), *(rotationBytesPtr + 7), // Cross axis rotation
+			0, 0, 0, 0, // 0 byte padding
+			0, 0, 0, 0 // 0 byte padding
+		});
+
 		return true;
 	}
 };
