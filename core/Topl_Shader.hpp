@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Topl_SceneManager.hpp"
-#include "composites/Geo_Component.hpp"
+#include "Geo_Component.hpp"
 
 enum SHDR_Type {
     SHDR_Vertex,

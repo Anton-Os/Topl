@@ -1,4 +1,4 @@
-#include "Humanoid.hpp"
+#include "composites/Humanoid.hpp"
 
 namespace _Humanoid {
 	// TODO: Replace hard offsets, offsets need to vary depending on object constructor!

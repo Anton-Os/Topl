@@ -3,17 +3,6 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 namespace _Drx11 {
-	// TODO: This needs to adapt to the presets within the current shader
-	struct DefaultConstBlock {
-		DefaultConstBlock(vec3f_cptr v, vec2f_cptr a) {
-			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
-			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
-		}
-		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
-		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
-
-	};
-
 	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
 		DXGI_FORMAT format;
 
@@ -133,28 +122,6 @@ namespace _Drx11 {
 		buffData.SysMemSlicePitch = 0;
 
 		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, iBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
-	}
-
-	static bool createConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const DefaultConstBlock *const block ) {
-		D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.ByteWidth = sizeof(DefaultConstBlock);
-		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
-		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		buffDesc.MiscFlags = 0;
-		buffDesc.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = (const void*)block;
-		buffData.SysMemPitch = 0;
-		buffData.SysMemSlicePitch = 0;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
 		if (FAILED(hr)) return false;
 
 		return true;
@@ -364,7 +331,7 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
 	m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
 
-	// Updated successful layout code!
+	// Generating an input layout based on Vertex Shader Inputs
 
 	D3D11_INPUT_ELEMENT_DESC* layoutPtr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
 	unsigned inputElementOffset = 0;

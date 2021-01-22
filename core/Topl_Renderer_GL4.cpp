@@ -49,17 +49,6 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 #define DEFAULT_BLOCK_BINDING 0
 
 namespace _GL4 {
-	// TODO: This needs to adapt to the presets within the current shader
-	struct DefaultUniformBlock {
-		// Uniform Block contains padding data, try to minimize the data types
-		DefaultUniformBlock(vec3f_cptr v, vec2f_cptr a) {
-			pdOffset = Eigen::Vector4f(v->x(), v->y(), v->z(), 0.0);
-			pdRotation = Eigen::Vector4f(a->x(), a->y(), 0.0, 0.0);
-		}
-		Eigen::Vector4f pdRotation = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
-		Eigen::Vector4f pdOffset = Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
-	};
-
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
 		GLenum format;
 
@@ -288,13 +277,13 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
 		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
-		// New block implementation
+		// Create a block based on the shader virtual function
 		std::vector<uint8_t> blockBytes;
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
-			unsigned blockSize = sizeof(uint8_t) * blockBytes.size(); // Block size is 32!
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW); // Block size is 32!
+			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));

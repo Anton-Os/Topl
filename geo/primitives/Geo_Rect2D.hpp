@@ -1,3 +1,5 @@
+#include "Geometry.hpp"
+
 struct Rect {
     float width;
     float height;

@@ -1,12 +1,9 @@
 #ifndef GEO_CONSTRUCT_H
 
 #include <initializer_list>
-#include <utility>
-#include <cstdlib> // May be redundant
-#include <vector> // May be redundant
 #include <string>
 
-#include "Geometry.hpp" // Includes Physics.hpp as well
+#include "Geometry.hpp"
 #include "Timer.hpp"
 
 #include "Topl_SceneManager.hpp"
@@ -38,7 +35,7 @@ public:
         for(unsigned g = 0; g < count; g++) *(mGeoData + g) = new Geo_Component(*geoc);
 	}
 
-	~Geo_Construct() { // Precaution for custom geo objects, bad design friend
+	~Geo_Construct() { 
         if(mGeoData != nullptr) { 
             for (unsigned g = 0; g < mGeoCount; g++)
                 delete *(mGeoData + g);
@@ -49,7 +46,8 @@ public:
     void fillSceneManager(Topl_SceneManager* sMan){
         fill(sMan); // Calls virtual function
 
-        if(mNamedGeos.size() != 0 && mGeoData != nullptr) { // Precaution for custom geo objects
+        // Code that fills in sMan
+        if(mNamedGeos.size() != 0 && mGeoData != nullptr) {
             for(std::vector<geoName_pair>::iterator currentGeo = mNamedGeos.begin();
                 currentGeo < mNamedGeos.end(); currentGeo++)
                 sMan->addGeometry(currentGeo->first, currentGeo->second);

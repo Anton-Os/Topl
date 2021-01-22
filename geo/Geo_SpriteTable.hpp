@@ -1,14 +1,13 @@
 #ifndef GEO_SPRITE_TABLE_H
 
 #include <initializer_list>
-#include <cassert> // Might meed error handling library
-#include <utility>
 #include <cstdlib>
 #include <vector>
 
 #include "Rasteron.h"
 
 #include "Geometry.hpp"
+#include "primitives/Geo_Rect2D.hpp"
 
 typedef std::pair<const Rasteron_Sprite*, Geo_Rect2D*> spriteRect_pair;
 

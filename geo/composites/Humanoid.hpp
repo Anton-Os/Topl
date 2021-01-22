@@ -1,5 +1,5 @@
-#include "composites/Geo_Construct.hpp"
-#include "composites/Geo_SpriteTable.hpp"
+#include "Geo_Construct.hpp"
+#include "Geo_SpriteTable.hpp"
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
@@ -9,24 +9,26 @@ public:
 		const std::string& prefix,
 		Topl_SceneManager* sMan,
 		std::pair<const char*, Eigen::Vector3f> initProps[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
-		float scaleFactor) :
-	Geo_SpriteTable({
-		initProps[HUMANOID_Head].first,
-		initProps[HUMANOID_LeftArm].first,
-		initProps[HUMANOID_RightArm].first,
-		initProps[HUMANOID_Body].first,
-		initProps[HUMANOID_LeftLeg].first,
-		initProps[HUMANOID_RightLeg].first
-		}, scaleFactor
-	),
-	Geo_Construct(prefix, sMan, {
-		(Geo_RenderObj*)getRect(HUMANOID_Head),
-		(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
-		(Geo_RenderObj*)getRect(HUMANOID_RightArm),
-		(Geo_RenderObj*)getRect(HUMANOID_Body),
-		(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
-		(Geo_RenderObj*)getRect(HUMANOID_RightLeg), }
-	) {
+		float scaleFactor )
+		
+		: Geo_SpriteTable({
+			initProps[HUMANOID_Head].first,
+			initProps[HUMANOID_LeftArm].first,
+			initProps[HUMANOID_RightArm].first,
+			initProps[HUMANOID_Body].first,
+			initProps[HUMANOID_LeftLeg].first,
+			initProps[HUMANOID_RightLeg].first
+			}, scaleFactor
+		),
+		Geo_Construct(prefix, sMan, {
+			(Geo_RenderObj*)getRect(HUMANOID_Head),
+			(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
+			(Geo_RenderObj*)getRect(HUMANOID_RightArm),
+			(Geo_RenderObj*)getRect(HUMANOID_Body),
+			(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
+			(Geo_RenderObj*)getRect(HUMANOID_RightLeg), }
+		) {
+
 		headOffset = initProps[HUMANOID_Head].second;
 		bodyOffset = initProps[HUMANOID_LeftArm].second;
 		leftArmOffset = initProps[HUMANOID_RightArm].second;

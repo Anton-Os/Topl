@@ -5,8 +5,8 @@
 
 #include "Topl_Renderer_GL4.hpp"
 
-#include "composites/Geo_Construct.hpp"
-#include "Humanoid.hpp"
+#include "Geo_Construct.hpp"
+#include "composites/Humanoid.hpp"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;

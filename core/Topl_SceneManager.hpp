@@ -3,17 +3,15 @@
 
 #include "native_os_def.h" // This includes the Rasteron.h header, TODO Fix This!!!
 
-#include <memory>
 #include <vector>
+#include <map>
 #include <string>
-#include <utility>
-#include <cmath>
 
 #include "FileIO.hpp" // REMOVE THIS!!! DEBUGGING ONLY!!!
 #include "Timer.hpp"
 #include "Physics.hpp"
 
-#include "composites/Geo_Component.hpp"
+#include "Geo_Component.hpp"
 
 typedef const Geo_Component* const topl_geoComponent_cptr;
 typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;

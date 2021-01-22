@@ -68,6 +68,10 @@ if(Rasteron_FOUND)
 endif()
 
 
+list(APPEND geo_Sources 
+    geo/primitives/Geo_Rect2D.cpp
+    geo/primitives/Geo_Sphere2D.cpp
+)
 
 # Generic Features Demos
 
@@ -90,9 +94,9 @@ if(WIN32)
 
     add_library(Drx11_Engine
         core/FileIO.cpp
-        core/Geometry.cpp
         core/Timer.cpp
         core/Topl_SceneManager.cpp
+        ${geo_Sources}
 
         core/Topl_Renderer_Drx11.cpp
     )
@@ -115,7 +119,7 @@ if(WIN32)
     target_link_libraries(DemoDrx11 PRIVATE Drx11_Engine)
 
     add_executable(DemoDrx11_MovingSprite
-        geo/Humanoid.cpp
+        geo/composites/Humanoid.cpp
 
         demos/DemoDrx11_MovingSprite.cpp
     )
@@ -126,9 +130,9 @@ endif()
 
 add_library(GL4_Engine
         core/FileIO.cpp
-        core/Geometry.cpp
         core/Timer.cpp
         core/Topl_SceneManager.cpp
+        ${geo_Sources}
 
         core/Topl_Renderer_GL4.cpp
     )
@@ -151,7 +155,7 @@ add_executable(DemoGL4
 target_link_libraries(DemoGL4 PRIVATE GL4_Engine)
 
 add_executable(DemoGL4_MovingSprite
-    geo/Humanoid.cpp
+    geo/composites/Humanoid.cpp
 
     demos/DemoGL4_MovingSprite.cpp 
 )

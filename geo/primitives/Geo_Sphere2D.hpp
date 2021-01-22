@@ -1,3 +1,5 @@
+#include "Geometry.hpp"
+
 struct Circle {
     float radius;
     unsigned segments;

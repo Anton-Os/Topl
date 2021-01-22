@@ -3,15 +3,22 @@
 #include <cstdlib>
 #include <cmath>
 
-#include <vector>
-#include <map>
-#include <string> // For the scenegraph
-
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
 #include <Eigen/Dense> // Examine documentation
 
-// Typedefs for "safe" types
+#define POSITION_COUNT 3
+#define TEXCOORD_COUNT 2
+// #define NORMAL_COUNT 3
+// #define BLENDWEIGHTS_COUNT 3
+
+#define X_OFFSET 0
+#define Y_OFFSET 1
+#define Z_OFFSET 2
+#define U_OFFSET 0
+#define V_OFFSET 1
+
+// Typedefs for const safe types
 typedef const Eigen::Vector3f* const vec3f_cptr;
 typedef const Eigen::Vector2f* const vec2f_cptr;
 typedef const unsigned* const ui_cptr;
@@ -19,19 +26,22 @@ typedef const unsigned* const ui_cptr;
 struct Geo_PerVertexData { // TODO: Fix this class
 	Geo_PerVertexData(){} // Empty constructor
 
-	Geo_PerVertexData(Eigen::Vector3f p){ // Position Parameter
-		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
+	Geo_PerVertexData(Eigen::Vector3f p){ // Position data constructor
+		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
+		texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
 	}
-	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Position + Texture Coords + Other Params
-		position[0] = p[0]; position[1] = p[1]; position[2] = p[2];
-		texCoord[0] = t[0]; texCoord[1] = t[1];
+	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Extended constructor
+		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
+		texCoord[U_OFFSET] = t[U_OFFSET]; texCoord[V_OFFSET] = t[V_OFFSET];
 	}
 
-	float position[3]; // For xyz
-	float texCoord[2]; // For uv texture coordinates */
+	float position[POSITION_COUNT];
+	float texCoord[TEXCOORD_COUNT];
+	// float normal[NORMAL_COUNT]; // Implement
+	// float blendWeights[BLENDWEIGHTS_COUNT]; // Implement
 };
 
-typedef const Geo_PerVertexData* const perVertex_cptr;
+typedef const Geo_PerVertexData* const perVertex_cptr; // Safe const pointer type
 
 class Geo_RenderObj {
 public:
@@ -78,8 +88,8 @@ protected:
 	unsigned* mIData = nullptr; // Index data
 };
 
-#include "primitives/Geo_Rect2D.hpp"
-#include "primitives/Geo_Sphere2D.hpp" // Definition of Sphere2D class
+// #include "primitives/Geo_Rect2D.hpp"
+// #include "primitives/Geo_Sphere2D.hpp"
 
 #define GEOMETRY_H
 #endif
