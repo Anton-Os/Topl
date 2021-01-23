@@ -1,3 +1,5 @@
+#include "Geometry.hpp"
+
 struct Box {
     float width;
     float height;
@@ -6,28 +8,21 @@ struct Box {
 
 class Geo_Rect3D : public Geo_RenderObj {
 public:
-	Geo_Rect3D() : Geo_RenderObj() {}
-    Geo_Rect3D(float sideLength) : Geo_RenderObj() {
-        mVCount = 8; // Box has 8 vertices
-        mICount = 36; // Box has 36 indices
+    Geo_Rect3D(float sideLength) 
+    : Geo_RenderObj(8, 36) {
         mBox.width = sideLength;
         mBox.height = sideLength;
         mBox.depth = sideLength;
 
-        mVData = genVertices();
-        mIData = genIndices();
-		mTData = genTexCoords();
+        fillRenderObject();
     }
-    Geo_Rect3D(float width, float height, float depth) : Geo_RenderObj() {
-        mVCount = 8; // Box has 8 vertices
-        mICount = 36; // Box has 36 indices
+    Geo_Rect3D(float width, float height, float depth) 
+    : Geo_RenderObj(8, 36) {
         mBox.width = width;
         mBox.height = height;
         mBox.depth = depth;
 
-        mVData = genVertices();
-        mIData = genIndices();
-		mTData = genTexCoords();
+        fillRenderObject();
     }
 
 	float getWidth() const { return mBox.width; }

@@ -61,32 +61,33 @@ find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(Rasteron_FOUND)
-    add_executable(DemoImg
-        demos/DemoImg.cpp
+    add_executable(Img
+        demos/Img.cpp
     )   
-    target_link_libraries(DemoImg RasteronLib) # finding Rasteron but not tiff
+    target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
 endif()
 
 
 list(APPEND geo_Sources 
     geo/primitives/Geo_Rect2D.cpp
+    geo/primitives/Geo_Rect3D.cpp
     geo/primitives/Geo_Sphere2D.cpp
 )
 
 # Generic Features Demos
 
-add_executable(DemoTickTick  
+add_executable(TickTick  
     core/Timer.cpp
-    demos/DemoTickTick.cpp
+    demos/TickTick.cpp
 )
-target_include_directories(DemoTickTick PUBLIC core helper geo)
+target_include_directories(TickTick PUBLIC core helper geo)
 
-add_executable(DemoPresser
+add_executable(Presser
     core/Timer.cpp
     core/Input.cpp
-    demos/DemoPresser.cpp
+    demos/Presser.cpp
 )
-target_include_directories(DemoPresser PUBLIC core helper geo)
+target_include_directories(Presser PUBLIC core helper geo)
 
 
 # DirectX Windows Dependent Demos
@@ -113,17 +114,17 @@ if(WIN32)
         CXX_EXTENSIONS ON
     )
 
-    add_executable(DemoDrx11
-        demos/DemoDrx11_Init.cpp
+    add_executable(Drx11_Init
+        demos/Drx11_Init.cpp
     )
-    target_link_libraries(DemoDrx11 PRIVATE Drx11_Engine)
+    target_link_libraries(Drx11_Init PRIVATE Drx11_Engine)
 
-    add_executable(DemoDrx11_MovingSprite
+    add_executable(Drx11_MovingSprite
         geo/composites/Humanoid.cpp
 
-        demos/DemoDrx11_MovingSprite.cpp
+        demos/Drx11_MovingSprite.cpp
     )
-    target_link_libraries(DemoDrx11_MovingSprite PRIVATE Drx11_Engine)
+    target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
 endif()
 
 # OpenGL Rendering Demos
@@ -149,17 +150,17 @@ add_library(GL4_Engine
         CXX_EXTENSIONS ON
 )
 
-add_executable(DemoGL4
-    demos/DemoGL4_Init.cpp 
+add_executable(GL4_Init
+    demos/GL4_Init.cpp 
 )
-target_link_libraries(DemoGL4 PRIVATE GL4_Engine)
+target_link_libraries(GL4_Init PRIVATE GL4_Engine)
 
-add_executable(DemoGL4_MovingSprite
+add_executable(GL4_MovingSprite
     geo/composites/Humanoid.cpp
 
-    demos/DemoGL4_MovingSprite.cpp 
+    demos/GL4_MovingSprite.cpp 
 )
-target_link_libraries(DemoGL4_MovingSprite PRIVATE GL4_Engine)
+target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets
@@ -171,17 +172,17 @@ add_custom_target(ShaderCopy
                   # Add GLSL shaders too 
 if(WIN32)
     foreach(file IN ITEMS ${drx11_Shaders})
-        add_custom_command(TARGET DemoDrx11 PRE_BUILD
+        add_custom_command(TARGET Drx11_Init PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy 
             "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
     endforeach()
 endif()
 
 foreach(file IN ITEMS ${gl4_Shaders})
-    add_custom_command(TARGET DemoGL4 PRE_BUILD
+    add_custom_command(TARGET GL4_Init PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy 
         "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
 endforeach()
 
 
-add_dependencies(ShaderCopy DemoDrx11 DemoGL4) # Two dependencies so far, could add more
+add_dependencies(ShaderCopy Drx11_Init GL4_Init) # Two dependencies so far, could add more

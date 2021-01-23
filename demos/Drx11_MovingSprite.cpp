@@ -56,7 +56,7 @@ struct VertexShader : public Topl_Shader {
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false;
+		return false; // No implementation
 	}
 };
 
@@ -68,11 +68,11 @@ struct PixelShader : public Topl_Shader {
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		return false;
+		return false; // No implementation
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false;
+		return false; // No implementation
 	}
 };
 

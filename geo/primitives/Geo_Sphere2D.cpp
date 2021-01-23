@@ -15,7 +15,7 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
         *(data + v) = Eigen::Vector3f(
 								sin(startAngle + (v * incAngle)) * mCircle.radius, 
 								cos(startAngle + (v * incAngle)) * mCircle.radius, 
-								0.5f);
+								DEAULT_Z_VAL);
 
     return data;
 }

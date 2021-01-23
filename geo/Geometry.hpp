@@ -12,6 +12,7 @@
 // #define NORMAL_COUNT 3
 // #define BLENDWEIGHTS_COUNT 3
 
+#define DEAULT_Z_VAL 0.5f
 #define X_OFFSET 0
 #define Y_OFFSET 1
 #define Z_OFFSET 2
@@ -45,7 +46,16 @@ typedef const Geo_PerVertexData* const perVertex_cptr; // Safe const pointer typ
 
 class Geo_RenderObj {
 public:
-    Geo_RenderObj(){}
+	Geo_RenderObj(){}
+	// Plain vertex constructor
+	Geo_RenderObj(unsigned v){
+		mVCount = v;
+	}
+	// Vertex w indices constructor
+    Geo_RenderObj(unsigned v, unsigned i){
+		mVCount = v;
+		mICount = i;
+	}
     ~Geo_RenderObj(){ cleanup(); }
 
 	void cleanup() {
@@ -56,10 +66,14 @@ public:
 		if (mIData != nullptr) free(mIData);
 	}
 
-    unsigned getVCount() const { return mVCount; }
-    unsigned getICount() const { return mICount; }
-	perVertex_cptr getPerVertexData() {
+	// Should be called in the derived class constructor body!
+	void fillRenderObject(){
+		mVData = genVertices();
+		mTData = genTexCoords();
+        if(mICount != 0) mIData = genIndices();
+	}
 
+	perVertex_cptr getPerVertexData() {
 		if (mPerVertexData == nullptr) {
 			mPerVertexData = (Geo_PerVertexData*)malloc(mVCount * sizeof(Geo_PerVertexData));
 			for (unsigned v = 0; v < mVCount; v++)
@@ -67,6 +81,8 @@ public:
 		}
 		return mPerVertexData;
 	}
+    unsigned getVCount() const { return mVCount; } // Get Vertex Count
+    unsigned getICount() const { return mICount; } // Get Index Count
 
     vec3f_cptr getVData() const { return mVData; }
     vec2f_cptr getTData() const { return mTData; }
@@ -76,20 +92,14 @@ protected:
     virtual Eigen::Vector2f* genTexCoords() = 0;
     virtual unsigned* genIndices() = 0;
 
-    const unsigned short mPerVertex = 5; // Elements per vertex, should be configurable later
-    unsigned mVCount;
-    unsigned mICount;
+    unsigned mVCount = 0; // Vertex count
+    unsigned mICount = 0; // Index count
 
-	//std::vector<Geo_PerVertexData> mPerVertexData;
-	Geo_PerVertexData* mPerVertexData = nullptr;
-
+	Geo_PerVertexData* mPerVertexData = nullptr; // Formatted per vertex data
     Eigen::Vector3f* mVData = nullptr; // Vertex data
     Eigen::Vector2f* mTData = nullptr; // Texture coordinate data
 	unsigned* mIData = nullptr; // Index data
 };
-
-// #include "primitives/Geo_Rect2D.hpp"
-// #include "primitives/Geo_Sphere2D.hpp"
 
 #define GEOMETRY_H
 #endif

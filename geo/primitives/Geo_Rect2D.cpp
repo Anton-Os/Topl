@@ -7,10 +7,10 @@ Eigen::Vector3f* Geo_Rect2D::genVertices() {
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
     
     // The depth position of the vector is arbitrary for now
-    Eigen::Vector3f topRight(mRect.height / 2.0f, mRect.width / 2.0f, 0.5f);
-    Eigen::Vector3f topLeft(mRect.height / 2.0f, -1 * (mRect.width / 2.0f), 0.5f);
-    Eigen::Vector3f botRight(-1 * (mRect.height / 2.0f), mRect.width / 2.0f, 0.5f);
-    Eigen::Vector3f botLeft(-1 * (mRect.height / 2.0f), -1 * (mRect.width / 2.0f), 0.5f); 
+    Eigen::Vector3f topRight(mRect.height / 2.0f, mRect.width / 2.0f, DEAULT_Z_VAL);
+    Eigen::Vector3f topLeft(mRect.height / 2.0f, -1 * (mRect.width / 2.0f), DEAULT_Z_VAL);
+    Eigen::Vector3f botRight(-1 * (mRect.height / 2.0f), mRect.width / 2.0f, DEAULT_Z_VAL);
+    Eigen::Vector3f botLeft(-1 * (mRect.height / 2.0f), -1 * (mRect.width / 2.0f), DEAULT_Z_VAL); 
 
     *(data + 0) = botLeft;
     *(data + 1) = botRight;

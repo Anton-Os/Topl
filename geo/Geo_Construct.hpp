@@ -43,8 +43,9 @@ public:
         }
     }
 
+    // Should be called in the derived class constructor body
     void fillSceneManager(Topl_SceneManager* sMan){
-        fill(sMan); // Calls virtual function
+        fill(sMan);
 
         // Code that fills in sMan
         if(mNamedGeos.size() != 0 && mGeoData != nullptr) {

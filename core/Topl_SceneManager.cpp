@@ -187,7 +187,7 @@ void Topl_SceneManager::resolvePhysics() {
 				physProps->acceleration += (*(physProps->forces + forceIndex)) / physProps->mass;
 				*(physProps->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // Disabling current force
 			}
-		physProps->actingForceCount = 0; // We have resolved all the forces, resetting force count
+		(physProps->isGravityEnabled) ? physProps->actingForceCount = 1 : physProps->actingForceCount = 0; // We have resolved all the forces, resetting force count
 		
 		// Velocity Integrator
 		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
@@ -199,17 +199,6 @@ void Topl_SceneManager::resolvePhysics() {
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
-
-	// ------------------------------------------------ Debugging Section------------------------------------------------ //
-
-	std::string linkStatusMsg = 
-		"Timestamp: " + std::to_string(mPhysTicker.getAbsMillsecs()) + " milliseconds"
-		+ "\nLink1 vec1 points to body: " + std::to_string(mLinkedItems[0].connector->angleNormVec1.x()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec1.y()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec1.z())
-		+ "\nLink1 vec2 points to head: " + std::to_string(mLinkedItems[0].connector->angleNormVec2.x()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec2.y()) + ", " + std::to_string(mLinkedItems[0].connector->angleNormVec2.z());
-
-	logToFile("ConnectorData.txt", linkStatusMsg);
-
-	// ------------------------------------------------------ END ------------------------------------------------------ //
 }
 
 #ifdef RASTERON_H

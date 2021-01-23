@@ -7,26 +7,25 @@ struct Rect {
 
 class Geo_Rect2D : public Geo_RenderObj {
 public:
-	Geo_Rect2D() : Geo_RenderObj() {}
-    Geo_Rect2D(float sideLength){
-        mVCount = 4; // Rectangle has 4 vertices
-        mICount = 6; // Rectangle has 6 indices
-        mRect.width = sideLength;
-        mRect.height = sideLength;
+    // Empty constructor
+    Geo_Rect2D() : Geo_RenderObj(){}
+    // Box constructor
+    Geo_Rect2D(float l) 
+    : Geo_RenderObj(4, 6) // 4 vertices and 6 indices
+    {
+        mRect.width = l;
+        mRect.height = l;
 
-        mVData = genVertices();
-        mIData = genIndices();
-		mTData = genTexCoords();
+        fillRenderObject();
     }
-    Geo_Rect2D(float width, float height) : Geo_RenderObj() {
-        mVCount = 4; // Rectangle has 4 vertices
-        mICount = 6; // Rectangle has 6 indices
-        mRect.width = width;
-        mRect.height = height;
+    // Rectangle constructor
+    Geo_Rect2D(float w, float h) 
+    : Geo_RenderObj(4, 6) // 4 vertices and 6 indices
+    {
+        mRect.width = w;
+        mRect.height = h;
 
-        mVData = genVertices();
-        mIData = genIndices();
-		mTData = genTexCoords();
+        fillRenderObject();
     }
 
 	float getWidth() const { return mRect.width; }

@@ -38,7 +38,6 @@ public:
 
 		fillSceneManager(sMan);
 	}
-
 	~Geo_Humanoid() {}
 	
 	enum HUMANOID_Anatomy {
