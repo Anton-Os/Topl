@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
 
 	// Geo_Humanoid humanoid("humanoid", &sMan1);
 	Geo_Humanoid humanoid("humanoid", &sMan1, humanoidProps, 0.25f);
-	humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid
+	// humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid // Uncomment
 	// humanoid.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
 
 	renderer.buildScene(&sMan1);
@@ -130,9 +130,9 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&sMan1);
+		// renderer.updateScene(&sMan1); // Uncomment
 
-		sMan1.resolvePhysics();
+		// sMan1.resolvePhysics(); // Uncomment
 		
 		// Input processing, check if it works unhinged
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))

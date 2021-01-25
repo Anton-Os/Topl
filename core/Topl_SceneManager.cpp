@@ -10,23 +10,16 @@ static void print_ObjNotFound(const std::string& objTypeStr, const std::string& 
 
 unsigned Geo_Component::mId_count = 0;
 
-topl_geoComponent_cptr Topl_SceneManager::getGeoNode(unsigned index) const {
-	if (mIdToGeo_map.find(index) == mIdToGeo_map.end()) {
-		puts("Index for geometry provided cannot be found");
-		return nullptr;
-	}
-
-	return mIdToGeo_map.at(index);
+topl_geoComponent_cptr Topl_SceneManager::getGeoComponent(unsigned index) const {
+	if(index >= mNamedGeos.size()) return nullptr; // Error
+	else return mNamedGeos.at(index); 
 }
 
-topl_geoComponent_cptr Topl_SceneManager::getGeoNode(const std::string& name) const {
-	if (mNameToId_map.find(name) == mNameToId_map.end()) {
-		print_ObjNotFound("geometry", name);
-		return nullptr;
-	}
+topl_geoComponent_cptr Topl_SceneManager::getGeoComponent(const std::string& name) const {
+	for(std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if((*currentGeo)->getName() == name) return *currentGeo;
 
-	unsigned gIndex = mNameToId_map.at(name);
-	return mIdToGeo_map.at(gIndex);
+	return nullptr; // Error
 }
 
 topl_linkedItems_cptr Topl_SceneManager::getLink(unsigned index) const {
@@ -38,49 +31,50 @@ topl_linkedItems_cptr Topl_SceneManager::getLink(unsigned index) const {
 	return &mLinkedItems.at(index);
 }
 
-void Topl_SceneManager::addGeometry(const std::string& name, Geo_Component* geoNode) {
-	if (mNameToId_map.find(name) != mNameToId_map.end()) {
-		puts("Overriding geometry object:");
-		puts(name.c_str());
-	}
+void Topl_SceneManager::addGeometry(const std::string& name, Geo_Component* geoComponent) {
+	geoComponent->setName(name);
 
-	geoNode->setName(name);
-
-	mNameToId_map.insert({ name, ((Geo_Component*)geoNode)->getId() });
-	mIdToGeo_map.insert({ ((Geo_Component*)geoNode)->getId(), geoNode });
+	mNamedGeos.push_back(geoComponent);
 }
 
 void Topl_SceneManager::addPhysics(const std::string& name, Phys_Properties* pProp) {
-	if (mNameToId_map.find(name) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name);
+	// Find matching geometry component
+	for(std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if((*currentGeo)->getName() == name){
+			mGeoPhys_map.insert({ *currentGeo, pProp });
+			return;
+		}
 
-	mIdToPhysProp_map.insert({ mNameToId_map.at(name), pProp });
+	print_ObjNotFound("geometry", name); // Error
+	return;
 }
 
 void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f& vec) {
-	if (mNameToId_map.find(name) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name);
+	// Find matching geometry component
+	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if (name == (*currentGeo)->getName()) {
 
-	Geo_Component* targetNode = mIdToGeo_map.at(mNameToId_map.at(name));
-	vec3f_cptr targetPos = targetNode->getPos();
+			vec3f_cptr targetPos = (*currentGeo)->getPos();
 
-	if (mIdToPhysProp_map.find(mNameToId_map.at(name)) == mIdToPhysProp_map.end())
-		return print_ObjNotFound("physics", name);
+			if (mGeoPhys_map.find(*currentGeo) == mGeoPhys_map.end())
+				return print_ObjNotFound("physics", name); // Error
 
-	Phys_Properties* targetPhys = mIdToPhysProp_map.at(mNameToId_map.at(name));
+			Phys_Properties* targetPhys = mGeoPhys_map.find(*currentGeo)->second;
 
-	if (targetPhys->actingForceCount < MAX_PHYS_FORCES) {
-		*(targetPhys->forces + targetPhys->actingForceCount) = vec;
-		targetPhys->actingForceCount++; // Moves to the next available force space
-	}
-	else
-		return; // Too many forces are acting on the object simultaneously
+			if (targetPhys->actingForceCount < MAX_PHYS_FORCES) {
+				*(targetPhys->forces + targetPhys->actingForceCount) = vec;
+				targetPhys->actingForceCount++; // Moves to the next available force space
+			}
+			else
+				return; // Error! Too many forces
+		}
+
+	print_ObjNotFound("geometry or physics", name); // Error
+	return;
 }
 
 void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
-	// TODO: Make sure a duplicate connector is not encountered in the mLinkedItems vector
-
-	if (mNameToId_map.find(name1) == mNameToId_map.end())
+	/* if (mNameToId_map.find(name1) == mNameToId_map.end())
 		return print_ObjNotFound("geometry", name1);
 
 	if (mNameToId_map.find(name2) == mNameToId_map.end())
@@ -95,7 +89,20 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	};
 
 	const Geo_Component* link1 = items.linkedItems.first;
-	const Geo_Component* link2 = items.linkedItems.second;
+	const Geo_Component* link2 = items.linkedItems.second; */
+
+	const Geo_Component* link1 = nullptr;
+	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if (name1 == (*currentGeo)->getName()) link1 = *currentGeo;
+
+	if (link1 == nullptr) return print_ObjNotFound("link geometry", name1); // Error
+
+	const Geo_Component* link2 = nullptr;
+	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if (name2 == (*currentGeo)->getName()) link2 = *currentGeo;
+
+	if (link2 == nullptr) return print_ObjNotFound("link geometry", name2);
+
 
 	vec3f_cptr pos1 = link1->getPos();
 	vec3f_cptr pos2 = link2->getPos();
@@ -117,7 +124,7 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	connector->restAngleNormVec2.normalize();
 
 	// Add the new linked items to the scene manager data
-	mLinkedItems.push_back(items);
+	mLinkedItems.push_back({connector, std::make_pair(link1, link2)});
 }
 
 void Topl_SceneManager::resolvePhysics() {
@@ -177,10 +184,9 @@ void Topl_SceneManager::resolvePhysics() {
 	}
 
 	// Resolve general movement here
-	for (std::map<unsigned, Phys_Properties*>::iterator physCurrentMap = mIdToPhysProp_map.begin(); physCurrentMap != mIdToPhysProp_map.end(); physCurrentMap++) {
-		Phys_Properties* physProps = physCurrentMap->second;
-		
-		Geo_Component* targetNode = mIdToGeo_map.at(physCurrentMap->first); // Gets the geometry node bound to the physics object
+	for (std::map<Geo_Component*, Phys_Properties*>::iterator currentMap = mGeoPhys_map.begin(); currentMap != mGeoPhys_map.end(); currentMap++) {
+		Geo_Component* targetGeo = currentMap->first;
+		Phys_Properties* physProps = currentMap->second;
 		
 		if (physProps->actingForceCount > 0) 
 			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++) {
@@ -195,20 +201,22 @@ void Topl_SceneManager::resolvePhysics() {
 		physProps->velocity *= physProps->damping;
 
 		// Position integrator
-		targetNode->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
+		targetGeo->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
 
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
 }
 
 #ifdef RASTERON_H
-const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
+/* const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
 	for (unsigned t = 0; t < mIdToTex.size(); t++)
 		if (index == mIdToTex.at(t).first)
 			return mIdToTex.at(t).second;
-}
+} */
 
-unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
+
+
+/* unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
 	// Dummy check if textures exist at all.
 	unsigned texCount = 0;
 
@@ -224,5 +232,24 @@ unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** i
 			*(images + iOffset) = mIdToTex.at(t).second;
 			iOffset++;
 		}
+} */
+
+const Rasteron_Image* Topl_SceneManager::getFirstTexture(const std::string& name) const {
+	for (std::map<Geo_Component*, const Rasteron_Image*>::const_iterator currentMap = mGeoTex_map.cbegin(); currentMap != mGeoTex_map.cend(); currentMap++)
+		if (name == currentMap->first->getName()) return currentMap->second;
+
+	return nullptr; // Error
+}
+
+const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
+	// TODO: Rework and update this
+
+	return nullptr;
+}
+
+unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
+	// TODO: Rework and update this
+
+	return 0;
 }
 #endif

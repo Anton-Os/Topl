@@ -269,13 +269,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ID values begin at 1
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
-		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos();
-		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
 
 		// Create a block based on the shader virtual function
 		std::vector<uint8_t> blockBytes;
@@ -316,9 +314,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		}
 
 #ifdef RASTERON_H
-	unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr);
+	// unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); // Comment for testing
+	unsigned texCount = 5; // Testing
 	if(texCount > 0){
-		const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
+		// const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
+		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
 		genTexture(baseTex, currentGraphicsID); // Add the method definition
 	}
 #endif
@@ -368,7 +368,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
  
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {

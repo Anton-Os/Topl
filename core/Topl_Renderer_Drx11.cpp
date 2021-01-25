@@ -360,13 +360,11 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData(); // TODO: Keep these, remove other getters
-		vec3f_cptr geoTarget_position = geoTarget_ptr->getPos(); // TODO: Keep these, remove other getters
-		vec2f_cptr geoTarget_angles = geoTarget_ptr->getAngles();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 
 		// New block implementation
 		std::vector<uint8_t> blockBytes;
@@ -397,11 +395,12 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
 
 #ifdef RASTERON_H
-		unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); 
+		// unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); // Comment for testing
+		unsigned texCount = 5; // Testing
 		if (texCount > 0) {
-			const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
-
-			genTexture(baseTex, currentGraphicsID);
+			// const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
+			const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
+			genTexture(baseTex, currentGraphicsID); // Add the method definition
 		}
 #endif
 
@@ -517,7 +516,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoNode(currentGraphicsID); // ids begin at 1 // Add safeguards!
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
 
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)

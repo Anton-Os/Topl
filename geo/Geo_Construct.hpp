@@ -61,7 +61,7 @@ public:
     virtual void rotate(Topl_SceneManager* sMan, Eigen::Vector3f) = 0;
 
 protected:
-	unsigned getGeoCount(){ return mGeoCount; }
+	unsigned getGeoCount() const { return mGeoCount; }
     virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedGeos structure
     Geo_Component* getNextGeo(){
         if(mCurrentGeoOffset <= mGeoCount){
