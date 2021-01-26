@@ -118,7 +118,7 @@ void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {
 
 void Geo_Humanoid::move(Topl_SceneManager* sMan, Eigen::Vector3f vec){
 	sMan->addForce(getPrefix() + "head", vec);
-	sMan->addForce(getPrefix() + "head", vec);
+	// sMan->addForce(getPrefix() + "head", vec);
 	sMan->addForce(getPrefix() + "body", vec);
 	sMan->addForce(getPrefix() + "leftArm", vec);
 	sMan->addForce(getPrefix() + "rightArm", vec);

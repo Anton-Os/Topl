@@ -398,7 +398,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		// unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); // Comment for testing
 		unsigned texCount = 5; // Testing
 		if (texCount > 0) {
-			// const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
 			const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
 			genTexture(baseTex, currentGraphicsID); // Add the method definition
 		}

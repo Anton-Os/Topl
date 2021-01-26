@@ -64,6 +64,7 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 			if (targetPhys->actingForceCount < MAX_PHYS_FORCES) {
 				*(targetPhys->forces + targetPhys->actingForceCount) = vec;
 				targetPhys->actingForceCount++; // Moves to the next available force space
+				return;
 			}
 			else
 				return; // Error! Too many forces
@@ -74,22 +75,6 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 }
 
 void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
-	/* if (mNameToId_map.find(name1) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name1);
-
-	if (mNameToId_map.find(name2) == mNameToId_map.end())
-		return print_ObjNotFound("geometry", name2);
-
-	LinkedItems items = { // Could instead be implemented as as a LinkedItems constructor
-		connector,
-		std::make_pair(
-			mIdToGeo_map.at(mNameToId_map.at(name1)),
-			mIdToGeo_map.at(mNameToId_map.at(name2))
-		)
-	};
-
-	const Geo_Component* link1 = items.linkedItems.first;
-	const Geo_Component* link2 = items.linkedItems.second; */
 
 	const Geo_Component* link1 = nullptr;
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
@@ -208,31 +193,6 @@ void Topl_SceneManager::resolvePhysics() {
 }
 
 #ifdef RASTERON_H
-/* const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
-	for (unsigned t = 0; t < mIdToTex.size(); t++)
-		if (index == mIdToTex.at(t).first)
-			return mIdToTex.at(t).second;
-} */
-
-
-
-/* unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
-	// Dummy check if textures exist at all.
-	unsigned texCount = 0;
-
-	for (unsigned t = 0; t < mIdToTex.size(); t++)
-		if (index == mIdToTex.at(t).first) texCount++;
-
-	// Check if images has members
-	if (images == nullptr) return texCount;
-
-	unsigned iOffset = 0;
-	for (unsigned t = 0; t < mIdToTex.size(); t++)
-		if (index == mIdToTex.at(t).first) {
-			*(images + iOffset) = mIdToTex.at(t).second;
-			iOffset++;
-		}
-} */
 
 const Rasteron_Image* Topl_SceneManager::getFirstTexture(const std::string& name) const {
 	for (std::map<Geo_Component*, const Rasteron_Image*>::const_iterator currentMap = mGeoTex_map.cbegin(); currentMap != mGeoTex_map.cend(); currentMap++)

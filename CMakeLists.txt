@@ -95,6 +95,7 @@ if(WIN32)
 
     add_library(Drx11_Engine
         core/FileIO.cpp
+		core/Input.cpp
         core/Timer.cpp
         core/Topl_SceneManager.cpp
         ${geo_Sources}
@@ -132,6 +133,7 @@ endif()
 add_library(GL4_Engine
         core/FileIO.cpp
         core/Timer.cpp
+		core/Input.cpp
         core/Topl_SceneManager.cpp
         ${geo_Sources}
 

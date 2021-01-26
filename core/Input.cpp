@@ -13,6 +13,7 @@ void Input_KeyLogger::addKeyEvent(char keyCode, enum KEY_Event event){
     
 	// Update current key status // Update hold time-
     KeyState* currentState = mCodeToKey_map.at(keyCode);
+	currentState->keyCode = keyCode; // TYODO: Fix this, should be initialized already
     currentState->event = event;
     currentState->tstampMil = mTicker.getAbsMillsecs();
 
@@ -24,8 +25,7 @@ void Input_KeyLogger::addKeyEvent(char keyCode, enum KEY_Event event){
 		? true : false; // Test for keycode and event matchup
 
     if(statesMatch) 
-		mTriggerToCallback_map.at(triggerState)(); // Execute correct callback
-        // puts("Key events match");
+		mTriggerToCallback_map.at(triggerState)(); // Executes associated callback
 }
 
 void Input_KeyLogger::addCallback(const KeyState* state, keyCallback callback) {

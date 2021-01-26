@@ -14,11 +14,11 @@ public:
     Geo_Chain(
         const std::string& prefix, 
         Topl_SceneManager* sMan, 
-        const Geo_Component* geocLink, 
+        const Geo_Component* geoLink, 
         const Geo_Chain_Properties* properties,
         unsigned linkCount)
-    : Geo_Construct(prefix, sMan, geocLink, linkCount){
-        chainProp = *properties;
+    : Geo_Construct(prefix, sMan, geoLink, linkCount){
+		chain_prop = *properties;
         
         fillSceneManager(sMan);
     }
@@ -30,5 +30,5 @@ private:
     void fill(Topl_SceneManager* sMan) override;
 
     std::vector<Phys_Connector> connectors;
-    Geo_Chain_Properties chainProp;
+    Geo_Chain_Properties chain_prop;
 };

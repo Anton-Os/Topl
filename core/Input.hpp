@@ -51,7 +51,6 @@ private:
     std::map<const char, const KeyState*> mCodeToTrigger_map; // Associates a character with a keyTrigger, IMPROVE!
     std::map<const KeyState*, keyCallback> mTriggerToCallback_map; // Associates a trigger state with a callback
 
-
     Timer_Ticker mTicker;
     //double mExpireMil = 2.0; // How long do key events stay in the queue?
 };

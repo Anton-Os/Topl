@@ -1,27 +1,80 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+#include "Input.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
 #include "Geo_Construct.hpp"
 #include "composites/Humanoid.hpp"
 
+#define MOVE_AMOUNT 8.0
+
+namespace Topl_Demo {
+	Topl_SceneManager sceneManager;
+
+	// TODO: Make these not device specific, relative file paths only!
+	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
+		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
+	};
+
+	// Geo_Humanoid humanoid;
+	Geo_Humanoid humanoid("humanoid", &sceneManager, humanoidProps, 0.25f);
+}
+
+KeyState keyState_w('w', KEY_release);
+void callback_w(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
+KeyState keyState_a('a', KEY_release);
+void callback_a(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
+KeyState keyState_s('s', KEY_release);
+void callback_s(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
+KeyState keyState_d('d', KEY_release);
+void callback_d(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+
+static enum KEY_Event currentEvent = KEY_none; // Move to a separate destination!
+
+#ifdef WIN32
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
 	RECT rect;
 
-	switch (message) {
-	case (WM_CREATE): {
+	static Input_KeyLogger keyLogger;
+	if (keyLogger.getCallbackCount() == 0) { // Initialization required
+		keyLogger.addCallback(&keyState_w, callback_w);
+		keyLogger.addCallback(&keyState_a, callback_a);
+		keyLogger.addCallback(&keyState_s, callback_s);
+		keyLogger.addCallback(&keyState_d, callback_d);
 	}
-	case (WM_PAINT): {
+
+	switch (message) {
+	case (WM_CREATE): {}
+	case (WM_PAINT): {}
+	case(WM_KEYDOWN): {
+		currentEvent = KEY_press;
+	}
+	case(WM_KEYUP): {
+		currentEvent = KEY_release;
+	}
+	case (WM_CHAR): {
+		if (currentEvent != KEY_none) {
+			keyLogger.addKeyEvent((char)wParam, currentEvent);
+			currentEvent = KEY_none; // Reset the event to prevent extra triggers
+		}
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
 }
+#else
+	// TODO: make comparable UNIX version
+#endif
 
 // TODO: Move this into .hpp definition
 
@@ -80,6 +133,7 @@ struct PixelShader : public Topl_Shader {
 
 int main(int argc, char** argv) {
 
+#ifdef WIN32
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -87,9 +141,10 @@ int main(int argc, char** argv) {
 	wndClass.lpszClassName = "Default Class";
 	RegisterClass(&wndClass);
 
+	// Windows specific code block
 	HWND wndWindow = CreateWindow(
 		"Default Class",
-		"Team Purple",
+		"Moving Sprite",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
 		NULL, NULL, GetModuleHandle(NULL), NULL
@@ -98,7 +153,14 @@ int main(int argc, char** argv) {
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
 
-    Topl_Renderer_Drx11 renderer(wndWindow);
+	// Main loop related variables
+	MSG wndMessage;
+	BOOL bRet;
+
+	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
+#else
+	// TODO: make comparable UNIX version
+#endif
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
@@ -107,42 +169,22 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &pixelShader);
 
-	Topl_SceneManager sMan1;
-
-	// TODO: Make these not device specific, relative file paths only!
-	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
-	};
-
-	// Geo_Humanoid humanoid("humanoid", &sMan1);
-	Geo_Humanoid humanoid("humanoid", &sMan1, humanoidProps, 0.25f);
-	// humanoid.move(&sMan1, Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // Moving humanoid // Uncomment
-	// humanoid.rotate(&sMan1, Eigen::Vector3f(4.0f, 4.0f, 0.0f));
-
-	renderer.buildScene(&sMan1);
-
-	MSG wndMessage;
-	BOOL bRet;
+	renderer.buildScene(&Topl_Demo::sceneManager);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		// renderer.updateScene(&sMan1); // Uncomment
+		renderer.updateScene(&Topl_Demo::sceneManager);
 
-		// sMan1.resolvePhysics(); // Uncomment
+		Topl_Demo::sceneManager.resolvePhysics();
 		
-		// Input processing, check if it works unhinged
-		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE))
-		{
+#ifdef WIN32
+		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
 		}
-		
 		if (wndMessage.message == WM_QUIT) break;
-
+#else
+		// TODO: make comparable UNIX version
+#endif
 	}
 
 	return 0;
