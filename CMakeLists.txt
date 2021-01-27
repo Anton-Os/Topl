@@ -68,6 +68,12 @@ if(Rasteron_FOUND)
 endif()
 
 
+list(APPEND common_Sources
+	core/FileIO.cpp
+	core/Input.cpp
+    core/Timer.cpp
+)
+
 list(APPEND geo_Sources 
     geo/primitives/Geo_Rect2D.cpp
     geo/primitives/Geo_Rect3D.cpp
@@ -94,12 +100,10 @@ target_include_directories(Presser PUBLIC core helper geo)
 if(WIN32)
 
     add_library(Drx11_Engine
-        core/FileIO.cpp
-		core/Input.cpp
-        core/Timer.cpp
-        core/Topl_SceneManager.cpp
-        ${geo_Sources}
+        ${common_Sources}
+		${geo_Sources}
 
+        core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
     )
     target_include_directories(Drx11_Engine PUBLIC core geo)
@@ -115,28 +119,29 @@ if(WIN32)
         CXX_EXTENSIONS ON
     )
 
-    add_executable(Drx11_Init
-        demos/Drx11_Init.cpp
-    )
-    target_link_libraries(Drx11_Init PRIVATE Drx11_Engine)
-
     add_executable(Drx11_MovingSprite
         geo/composites/Humanoid.cpp
 
         demos/Drx11_MovingSprite.cpp
     )
     target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
+
+	add_executable(Drx11_Shapes
+		geo/composites/Chain.cpp
+		geo/composites/Grid.cpp
+
+		demos/Drx11_Shapes.cpp
+	)
+	target_link_libraries(Drx11_Shapes PRIVATE Drx11_Engine)
 endif()
 
 # OpenGL Rendering Demos
 
 add_library(GL4_Engine
-        core/FileIO.cpp
-        core/Timer.cpp
-		core/Input.cpp
-        core/Topl_SceneManager.cpp
-        ${geo_Sources}
+        ${common_Sources}
+		${geo_Sources}
 
+        core/Topl_SceneManager.cpp
         core/Topl_Renderer_GL4.cpp
     )
     target_include_directories(GL4_Engine PUBLIC core geo)
@@ -152,17 +157,20 @@ add_library(GL4_Engine
         CXX_EXTENSIONS ON
 )
 
-add_executable(GL4_Init
-    demos/GL4_Init.cpp 
-)
-target_link_libraries(GL4_Init PRIVATE GL4_Engine)
-
 add_executable(GL4_MovingSprite
     geo/composites/Humanoid.cpp
 
     demos/GL4_MovingSprite.cpp 
 )
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
+
+add_executable(GL4_Shapes
+	geo/composites/Chain.cpp
+    geo/composites/Grid.cpp
+
+    demos/GL4_Shapes.cpp 
+)
+target_link_libraries(GL4_Shapes PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets
@@ -174,17 +182,17 @@ add_custom_target(ShaderCopy
                   # Add GLSL shaders too 
 if(WIN32)
     foreach(file IN ITEMS ${drx11_Shaders})
-        add_custom_command(TARGET Drx11_Init PRE_BUILD
+        add_custom_command(TARGET Drx11_Engine PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy 
             "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
     endforeach()
 endif()
 
 foreach(file IN ITEMS ${gl4_Shaders})
-    add_custom_command(TARGET GL4_Init PRE_BUILD
+    add_custom_command(TARGET GL4_Engine PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy 
         "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
 endforeach()
 
 
-add_dependencies(ShaderCopy Drx11_Init GL4_Init) # Two dependencies so far, could add more
+add_dependencies(ShaderCopy Drx11_Engine GL4_Engine) # Two dependencies so far, could add more

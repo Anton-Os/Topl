@@ -284,9 +284,11 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 
-		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
+		if (geoTarget_iData != nullptr) {
+			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
+		} else mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
 		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
@@ -314,13 +316,9 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		}
 
 #ifdef RASTERON_H
-	// unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); // Comment for testing
-	unsigned texCount = 5; // Testing
-	if(texCount > 0){
-		// const Rasteron_Image* baseTex = sMan->getFirstTexture(currentGraphicsID);
+		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
-		genTexture(baseTex, currentGraphicsID); // Add the method definition
-	}
+		if(baseTex != nullptr) genTexture(baseTex, currentGraphicsID); // Add the method definition
 #endif
 		mMainGraphicsIDs = currentGraphicsID; // Sets main graphics ID's to max value of currentGraphicsID
 	}
@@ -533,7 +531,7 @@ void Topl_Renderer_GL4::render(void){
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 		for (unsigned t = 0; t < mTextures.size(); t++) {
 			if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
@@ -543,7 +541,8 @@ void Topl_Renderer_GL4::render(void){
 			}
 		}
 
-		glDrawElements(drawType, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(drawType, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+		else glDrawArrays(drawType, 0, vertexBuff->count); // When no indices are present
 
 		// Unbinding
 		glBindVertexArray(0);

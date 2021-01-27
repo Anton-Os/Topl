@@ -369,38 +369,30 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		// New block implementation
 		std::vector<uint8_t> blockBytes;
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			ID3D11Buffer* constBlockBuff;
+			ID3D11Buffer* constBlockBuff = nullptr;
 			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &blockBytes);
 			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
 		}
-
 		if (!mSceneReady) return; // Error
 
 		// Index creation procedures
-		ID3D11Buffer* indexBuff;
-		if(geoTarget_iData != nullptr) { // Check if index data exists for render object
-			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff,
-												(DWORD*)geoTarget_iData, geoTarget_renderObj->getICount() );
-
+		ID3D11Buffer* indexBuff = nullptr;
+		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
+			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getICount());
 			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
+		} else mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, 0));
+		if (!mSceneReady) return; // Error
 
-			if(!mSceneReady) return; // Error
-		}
-
-		ID3D11Buffer* vertexBuff;
-
+		ID3D11Buffer* vertexBuff = nullptr;
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
 
 		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+		if (!mSceneReady) return;
 
 #ifdef RASTERON_H
-		// unsigned texCount = sMan->getTextures(currentGraphicsID, nullptr); // Comment for testing
-		unsigned texCount = 5; // Testing
-		if (texCount > 0) {
-			const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
-			genTexture(baseTex, currentGraphicsID); // Add the method definition
-		}
+		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
+		if(baseTex != nullptr) genTexture(baseTex, currentGraphicsID); // Add the method definition
 #endif
 
 		if(!mSceneReady) return;
@@ -590,7 +582,8 @@ void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
 				}
 			}
 
-			m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+			if (indexBuff != nullptr && indexBuff->count != 0) m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+			else m_deviceCtx->Draw(vertexBuff->count, 0);
 		}
 
 	free(dBuffers);

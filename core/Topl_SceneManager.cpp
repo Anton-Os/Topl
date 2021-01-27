@@ -201,12 +201,6 @@ const Rasteron_Image* Topl_SceneManager::getFirstTexture(const std::string& name
 	return nullptr; // Error
 }
 
-const Rasteron_Image* Topl_SceneManager::getFirstTexture(unsigned index) const {
-	// TODO: Rework and update this
-
-	return nullptr;
-}
-
 unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
 	// TODO: Rework and update this
 
