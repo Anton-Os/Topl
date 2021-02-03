@@ -529,7 +529,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	return;
 }
 
-void Topl_Renderer_Drx11::render(void){ // May need to pass scene graph?
+void Topl_Renderer_Drx11::render(void){
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 

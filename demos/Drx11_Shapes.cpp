@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 	// Windows specific code block
 	HWND wndWindow = CreateWindow(
 		"Default Class",
-		"Moving Sprite",
+		"Shapes",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
 		NULL, NULL, GetModuleHandle(NULL), NULL

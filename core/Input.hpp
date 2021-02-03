@@ -5,54 +5,17 @@
 
 #include "Timer.hpp"
 
-enum KEY_Event {
-    KEY_none = 0,
-    KEY_press,
-    KEY_dbl_press,
-    KEY_release
-};
-
-struct KeyState {
-    KeyState(){}
-    KeyState(char kc, enum KEY_Event ke){
-        keyCode = toupper(kc); event = ke;
-    }
-    KeyState(char kc, enum KEY_Event ke, double lt){
-        keyCode = toupper(kc); event = ke; tstampMil = lt;
-    }
-    char keyCode = '\0';
-    KEY_Event event = KEY_none;
-
-	double tstampMil = 0.0f; // Timestamp in milliseconds when event triggered
-	double holdTime = 0.0f; // Duration the key was held
-};
-
-typedef void (*keyComboCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
+// typedef void (*keyComboCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
 typedef void (*keyCallback)(void); // Simply trigger on a certain
 
 class Input_KeyLogger {
-public: 
-    // Returns number of "expired" Keystates
-    // unsigned short updateKeyStates();
-
-	KeyState getKeyState(char c);
-    unsigned short getCallbackCount(){ return mCallbacks.size(); }
-
-    void addKeyEvent(char keyCode, enum KEY_Event event); // Searches for callback and triggers it
-
-	void addCallback(const KeyState* state, keyCallback callback);
+public:
+	Input_KeyLogger(){}
+	unsigned short getCallbackCount() const { return mKeyCallback_map.size(); }
+	void addKeyPress(char keyCode);
+	void addCallback(char keyCode, keyCallback callback);
 private:
-
-    std::vector<keyCallback> mCallbacks;
-	std::vector<KeyState> mStates;
-    std::vector<const KeyState*> mTriggerStates; // Fed in by the add callback function
-
-	std::map<const char, KeyState*> mCodeToKey_map; // Associates a character with a keyState, should be modifiable
-    std::map<const char, const KeyState*> mCodeToTrigger_map; // Associates a character with a keyTrigger, IMPROVE!
-    std::map<const KeyState*, keyCallback> mTriggerToCallback_map; // Associates a trigger state with a callback
-
-    Timer_Ticker mTicker;
-    //double mExpireMil = 2.0; // How long do key events stay in the queue?
+	std::map<char, keyCallback> mKeyCallback_map;
 };
 
 enum MOUSE_Button {
@@ -69,10 +32,6 @@ class Input_MouseLogger {
     void addMouseEvent(enum MOUSE_Button mb, float xNewPos, float yNewPos); // Translates mouse button enum to keystate
     void addCallback(enum MOUSE_Button mb, keyCallback callback);
 private:
-    std::vector<const KeyState*> mTriggerStates;
-    // Scroll should be scroll up = press, scroll down = release
-    KeyState mLButton;
-    KeyState mRButton;
     float xScreenPos;
     float yScreenPos;
 };

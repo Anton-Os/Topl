@@ -8,7 +8,7 @@
 #include "Geo_Construct.hpp"
 #include "composites/Humanoid.hpp"
 
-#define MOVE_AMOUNT 8.0
+#define MOVE_AMOUNT 16.0
 
 namespace Topl_Demo {
 	Topl_SceneManager sceneManager;
@@ -27,16 +27,10 @@ namespace Topl_Demo {
 	Geo_Humanoid humanoid("humanoid", &sceneManager, humanoidProps, 0.25f);
 }
 
-KeyState keyState_w('w', KEY_release);
 void callback_w(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
-KeyState keyState_a('a', KEY_release);
 void callback_a(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
-KeyState keyState_s('s', KEY_release);
 void callback_s(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
-KeyState keyState_d('d', KEY_release);
 void callback_d(void) { Topl_Demo::humanoid.move(&Topl_Demo::sceneManager, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
-
-static enum KEY_Event currentEvent = KEY_none; // Move to a separate destination!
 
 #ifdef WIN32
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -46,26 +40,19 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	static Input_KeyLogger keyLogger;
 	if (keyLogger.getCallbackCount() == 0) { // Initialization required
-		keyLogger.addCallback(&keyState_w, callback_w);
-		keyLogger.addCallback(&keyState_a, callback_a);
-		keyLogger.addCallback(&keyState_s, callback_s);
-		keyLogger.addCallback(&keyState_d, callback_d);
+		keyLogger.addCallback('w', callback_w);
+		keyLogger.addCallback('a', callback_a);
+		keyLogger.addCallback('s', callback_s);
+		keyLogger.addCallback('d', callback_d);
 	}
 
 	switch (message) {
 	case (WM_CREATE): {}
 	case (WM_PAINT): {}
-	case(WM_KEYDOWN): {
-		currentEvent = KEY_press;
-	}
-	case(WM_KEYUP): {
-		currentEvent = KEY_release;
-	}
+	case(WM_KEYDOWN): {}
+	case(WM_KEYUP): {}
 	case (WM_CHAR): {
-		if (currentEvent != KEY_none) {
-			keyLogger.addKeyEvent((char)wParam, currentEvent);
-			currentEvent = KEY_none; // Reset the event to prevent extra triggers
-		}
+		keyLogger.addKeyPress((char)wParam);
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
