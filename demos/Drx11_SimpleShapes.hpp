@@ -1,53 +1,26 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+
 #include "Topl_Renderer_Drx11.hpp"
 
-#include "primitives/Geo_Sphere2D.hpp"
-#include "primitives/Geo_Rect3D.hpp"
 #include "Geo_Construct.hpp"
-#include "composites/Grid.hpp"
+#include "primitives/Geo_Sphere2D.hpp"
 #include "composites/Chain.hpp"
+#include "composites/Grid.hpp"
 
 #define MOVE_AMOUNT 8.0
 
-namespace Topl_Demo {
+namespace Topl {
+	// Management Objects
 	Topl_SceneManager sceneManager;
 
-	Geo_Rect3D rect1 = Geo_Rect3D(0.3f, 0.4f, 0.2f);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
-	Geo_Grid_Properties gridProps = Geo_Grid_Properties(
-		std::make_pair(3, 0.1f), // Width count and distance apart
-		std::make_pair(3, 0.1f), // Height count and distance apart
-		std::make_pair(4, 0.2f) // Depth count and distance apart
-	);
-	Geo_Grid grid("grid", &sceneManager, &gridGeo, &gridProps);
-
+	// Composite Geometry Objects
 	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 30);
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&sphere1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.3f); // 0.1f is the distance apart
 	Geo_Chain chain("chain", &sceneManager, &chainGeo, &chainProps, 4);
 }
-
-#ifdef WIN32
-LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	PAINTSTRUCT ps;
-	HDC hDC = GetDC(hwnd);
-	RECT rect;
-
-	switch (message) {
-	case (WM_CREATE): {}
-	case (WM_PAINT): {}
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
-	}
-	return 0;
-}
-#else
-// TODO: make comparable UNIX version
-#endif
-
-// TODO: Move this into .hpp definition
 
 struct VertexShader : public Topl_Shader {
 	VertexShader(const char* filePath)
@@ -99,64 +72,3 @@ struct PixelShader : public Topl_Shader {
 		return false; // No implementation
 	}
 };
-
-// Entry Point
-
-int main(int argc, char** argv) {
-
-#ifdef WIN32
-	WNDCLASS wndClass = { 0 };
-	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
-	wndClass.hInstance = GetModuleHandle(NULL);
-	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Default Class";
-	RegisterClass(&wndClass);
-
-	// Windows specific code block
-	HWND wndWindow = CreateWindow(
-		"Default Class",
-		"Shapes",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
-		NULL, NULL, GetModuleHandle(NULL), NULL
-	);
-
-	ShowWindow(wndWindow, 1);
-	UpdateWindow(wndWindow);
-
-	// Main loop related variables
-	MSG wndMessage;
-	BOOL bRet;
-
-	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
-#else
-	// TODO: make comparable UNIX version
-#endif
-
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
-	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
-	std::string pixelShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
-	PixelShader pixelShader = PixelShader(pixelShaderSrc.c_str());
-
-	renderer.setPipeline(&vertexShader, &pixelShader);
-
-	renderer.buildScene(&Topl_Demo::sceneManager);
-
-	while (renderer.renderScene(DRAW_Triangles)) {
-		// renderer.updateScene(&Topl_Demo::sceneManager);
-
-		// Topl_Demo::sceneManager.resolvePhysics();
-		
-#ifdef WIN32
-		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-		}
-		if (wndMessage.message == WM_QUIT) break;
-#else
-		// TODO: make comparable UNIX version
-#endif
-	}
-
-	return 0;
-}

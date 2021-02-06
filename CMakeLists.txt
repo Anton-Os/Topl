@@ -124,15 +124,16 @@ if(WIN32)
 
         demos/Drx11_MovingSprite.cpp
     )
+    target_include_directories(Drx11_MovingSprite PRIVATE demos)
     target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
 
-	add_executable(Drx11_Shapes
+	add_executable(Drx11_SimpleShapes
 		geo/composites/Chain.cpp
 		geo/composites/Grid.cpp
 
-		demos/Drx11_Shapes.cpp
+		demos/Drx11_SimpleShapes.cpp
 	)
-	target_link_libraries(Drx11_Shapes PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
 endif()
 
 # OpenGL Rendering Demos
@@ -162,15 +163,16 @@ add_executable(GL4_MovingSprite
 
     demos/GL4_MovingSprite.cpp 
 )
+target_include_directories(GL4_MovingSprite PRIVATE demos)
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 
-add_executable(GL4_Shapes
+add_executable(GL4_SimpleShapes
 	geo/composites/Chain.cpp
     geo/composites/Grid.cpp
 
-    demos/GL4_Shapes.cpp 
+    demos/GL4_SimpleShapes.cpp 
 )
-target_link_libraries(GL4_Shapes PRIVATE GL4_Engine)
+target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets
@@ -194,5 +196,12 @@ foreach(file IN ITEMS ${gl4_Shaders})
         "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
 endforeach()
 
-
 add_dependencies(ShaderCopy Drx11_Engine GL4_Engine) # Two dependencies so far, could add more
+
+file(GLOB res_images 
+    ${CMAKE_SOURCE_DIR}/res/images/*.png # Rasteron Supported
+    ${CMAKE_SOURCE_DIR}/res/images/*.tiff # Rasteron Supported
+    ${CMAKE_SOURCE_DIR}/res/images/*.bmp # Rasteron Supported
+)
+
+file(COPY ${res_images} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/") # Copies all Image Resources
