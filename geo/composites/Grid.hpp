@@ -40,7 +40,7 @@ public:
 		properties->widthVals.first * properties->heightVals.first * properties->depthVals.first){ // Requires the volume
 
         grid_prop = *properties;
-		bottomCorner = Eigen::Vector3f(
+		bottomLeftCorner = Eigen::Vector3f(
 			-1.0f * properties->widthVals.first * (properties->widthVals.second * 0.5), // inverse of count times distance halved of each cell
 			-1.0f * properties->heightVals.first * (properties->heightVals.second * 0.5), // inverse of count times distance halved of each cell
 			0.0f // TODO: Change this to non hard-coded
@@ -56,6 +56,6 @@ private:
     void fill(Topl_SceneManager* sMan) override;
 
     std::vector<Phys_Connector> connectors;
-	Eigen::Vector3f bottomCorner; // Use this to determine grid item position
+	Eigen::Vector3f bottomLeftCorner; // Use this to determine grid item position
     Geo_Grid_Properties grid_prop;
 };
