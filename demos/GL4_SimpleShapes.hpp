@@ -1,11 +1,9 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
-#include "Input.hpp"
-
 #include "Topl_Renderer_GL4.hpp"
 
-// #include "Geo_Construct.hpp"
+#include "Geo_Construct.hpp"
 #include "primitives/Geo_Sphere2D.hpp"
 #include "primitives/Geo_Rect3D.hpp"
 #include "composites/Chain.hpp"
@@ -35,7 +33,7 @@ struct VertexShader : public Topl_Shader {
 	VertexShader(const char* filePath)
 		: Topl_Shader(
 			SHDR_Vertex, filePath,
-			{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+			{ Shader_Type("pos", SHDR_float_vec3) } // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
@@ -65,7 +63,7 @@ struct FragmentShader : public Topl_Shader {
 	FragmentShader(const char* filePath)
 		: Topl_Shader(
 			SHDR_Fragment, filePath,
-			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+			{ Shader_Type("flatColor", SHDR_uint) } // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {

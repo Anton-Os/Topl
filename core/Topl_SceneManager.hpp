@@ -64,6 +64,8 @@ public:
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Properties* pProp);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
+	void modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale); // Rotates and scales all connectors associated with named geometry
+	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
 
 	unsigned getGeoCount() const { return mNamedGeos.size(); }
@@ -80,9 +82,6 @@ public:
 	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
 #endif
 private:
-	// std::map<std::string, unsigned> mNameToId_map; // REMOVE!
-	// std::map<unsigned, Geo_Component*> mIdToGeo_map; // REMOVE!
-	// std::map<unsigned, Phys_Properties*> mIdToPhysProp_map; // REMOVE!
 	std::vector<Geo_Component*> mNamedGeos; // Stores all geometries
 	std::map<Geo_Component*, Phys_Properties*> mGeoPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> mLinkedItems; // Stores geometry connector data

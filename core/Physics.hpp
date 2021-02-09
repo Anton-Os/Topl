@@ -27,7 +27,7 @@ struct Phys_Connector {
     Phys_Connector(double l, double rl, double a, CONNECT_Type t, double k){
         length = l;
         restLength = rl;
-        angle = a;
+        // angle = a;
         type = t;
         kVal = k;
     }
@@ -39,7 +39,7 @@ struct Phys_Connector {
 
     double length = 0.5f; // Tries to reach rest length from here
     double restLength = 0.5f; // Zero forces act at this length
-	double angle = 0.0f; // Tries to reach rest angle from here
+	// double angle = 0.0f; // Tries to reach rest angle from here
     CONNECT_Type type = CONNECT_Rod;
 	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal
 };

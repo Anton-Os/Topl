@@ -32,7 +32,7 @@ struct VertexShader : public Topl_Shader {
 	VertexShader(const char* filePath)
 		: Topl_Shader(
 			SHDR_Vertex, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+			{ Shader_Type("pos", "POSITION", SHDR_float_vec3) } // Inputs
 		) {  }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
@@ -67,7 +67,7 @@ struct PixelShader : public Topl_Shader {
 	PixelShader(const char* filePath)
 		: Topl_Shader(
 			SHDR_Fragment, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("uint", "COLOR0", SHDR_uint) } // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {

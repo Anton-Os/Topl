@@ -1,6 +1,5 @@
 #include "Drx11_SimpleShapes.hpp"
 
-#ifdef WIN32
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -17,15 +16,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	return 0;
 }
-#else
-	// TODO: make comparable UNIX version
-#endif
 
 // Entry Point
 
 int main(int argc, char** argv) {
-
-#ifdef WIN32
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -50,15 +44,12 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
 	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
-#else
-	// TODO: make comparable UNIX version
-#endif
 
 	std::string parentDir = getParentDir(argv[0]);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_MostBasic.hlsl";
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_Flat.hlsl";
 	PixelShader fragmentShader = PixelShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
@@ -67,18 +58,13 @@ int main(int argc, char** argv) {
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		// renderer.updateScene(&Topl::sceneManager);
-
 		// Topl::sceneManager.resolvePhysics();
 
-#ifdef WIN32
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
 		}
 		if (wndMessage.message == WM_QUIT) break;
-#else
-		// TODO: make comparable UNIX version
-#endif
 	}
 
 	return 0;

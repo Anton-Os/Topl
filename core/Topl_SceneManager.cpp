@@ -112,9 +112,28 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	mLinkedItems.push_back({connector, std::make_pair(link1, link2)});
 }
 
+void Topl_SceneManager::modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale) {
+	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++)
+		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName){
+			
+			currentLink->connector->restLength *= lengthScale;
+			
+			currentLink->connector->restAngleNormVec1 = rotAnglesVec; // TODO: Make this rotate!
+			currentLink->connector->restAngleNormVec1.normalize();
+			currentLink->connector->restAngleNormVec2 = -1 * rotAnglesVec; // TODO: Make this rotate!
+			currentLink->connector->restAngleNormVec2.normalize();
+		}
+}
+
+void Topl_SceneManager::remConnector(const std::string& targetName){
+	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++)
+		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName)
+			mLinkedItems.erase(currentLink);
+}
+
+
 void Topl_SceneManager::resolvePhysics() {
-	double physElapseMils = mPhysTicker.getRelMillsecs();
-	double physElapseSecs = physElapseMils / 1000.0;
+	double physElapseSecs = mPhysTicker.getRelMillsecs() / 1000.0;
 
 	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){

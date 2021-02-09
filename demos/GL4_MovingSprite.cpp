@@ -70,9 +70,9 @@ int main(int argc, char** argv) {
 
 	std::string parentDir = getParentDir(argv[0]);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl";
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Basic.glsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl";
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Basic.glsl";
 	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
@@ -81,7 +81,6 @@ int main(int argc, char** argv) {
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		renderer.updateScene(&Topl::sceneManager);
-
 		Topl::sceneManager.resolvePhysics();
 
 #ifdef WIN32
