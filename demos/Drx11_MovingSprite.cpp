@@ -4,6 +4,7 @@ void callback_w(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f
 void callback_a(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
 void callback_s(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
 void callback_d(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void callback_r(void) { Topl::humanoid.rotate(&Topl::sceneManager, Eigen::Vector3f(0.0f, 1.0f, 0.0f)); } // Rotate
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -15,6 +16,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		Topl::keyLogger.addCallback('a', callback_a);
 		Topl::keyLogger.addCallback('s', callback_s);
 		Topl::keyLogger.addCallback('d', callback_d);
+		Topl::keyLogger.addCallback('r', callback_r);
 	}
 
 	switch (message) {

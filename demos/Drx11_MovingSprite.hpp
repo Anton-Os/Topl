@@ -41,26 +41,25 @@ struct VertexShader : public Topl_Shader {
 		const uint8_t* rotationBytesPtr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
 
 		bytes->assign({
-			*(offsetBytesPtr), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), 0, // Gets offset values for x, y, and z, 0 for padding
-			*(rotationBytesPtr), *(rotationBytesPtr + 1), 0, 0 // Gets rotations values on x and y axis, 0's for padding
-		});
-
-		bytes->assign({
 			*(offsetBytesPtr + 0), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), *(offsetBytesPtr + 3), // X offset value
 			*(offsetBytesPtr + 4), *(offsetBytesPtr + 5), *(offsetBytesPtr + 6), *(offsetBytesPtr + 7), // Y offset value
 			*(offsetBytesPtr + 8), *(offsetBytesPtr + 9), *(offsetBytesPtr + 10), *(offsetBytesPtr + 11), // Z offset value
-			0, 0, 0, 0, // 0 byte padding
+			0, 0, 0, 0, // 1 byte padding
 			*(rotationBytesPtr + 0), *(rotationBytesPtr + 1), *(rotationBytesPtr + 2), *(rotationBytesPtr + 3), // Main axis rotation
 			*(rotationBytesPtr + 4), *(rotationBytesPtr + 5), *(rotationBytesPtr + 6), *(rotationBytesPtr + 7), // Cross axis rotation
-			0, 0, 0, 0, // 0 byte padding
-			0, 0, 0, 0 // 0 byte padding
+			0, 0, 0, 0, // 1 byte padding
+			0, 0, 0, 0 // 1 byte padding
 		});
 
 		return true;
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false; // No implementation
+		const uint8_t* projMatrixBytesPtr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
+	
+		// TODO: Assign byte values here
+	
+		return true;
 	}
 };
 
@@ -71,11 +70,6 @@ struct PixelShader : public Topl_Shader {
 			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		return false; // No implementation
-	}
-
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false; // No implementation
-	}
+	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const { return false; }
 };

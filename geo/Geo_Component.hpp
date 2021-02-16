@@ -26,8 +26,8 @@ public:
 	std::string getName() const { return mName; }
 	vec3f_cptr getPos() const { return &mRelWorldPos; }
 	vec2f_cptr getAngles() const { return &mRotAngles; }
-
-	const Geo_RenderObj* mRenderObj; // Could be a private member
+	const Geo_RenderObj* getRenderObj() const { return mRenderObj; }
+	// const Geo_RenderObj* mRenderObj;
 private:
 	// IDENTIFICATION TYPES
 	static unsigned mId_count; // Grows/shrinks when objects are created/deleted
@@ -37,6 +37,7 @@ private:
 	// INTERNAL DATA TYPES
 	Eigen::Vector3f mRelWorldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
 	Eigen::Vector2f mRotAngles = Eigen::Vector2f(0.0, 0.0); // Angles by which to rotate
+	const Geo_RenderObj* mRenderObj;
 };
 
 #define GEO_COMPONENT_H

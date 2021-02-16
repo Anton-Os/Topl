@@ -214,15 +214,6 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
     wglMakeCurrent(*(windowDC), *(hglrc));
 }
 
-static void render_win(HDC* windowDC) {
-
-	// Need to loop through all created objects
-	// for(unsigned b = 0; b )
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	SwapBuffers(*(windowDC));
-}
-
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
 
 static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
@@ -268,33 +259,42 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
-		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
-		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
+		unsigned currentRenderID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
-		// Create a block based on the shader virtual function
-		std::vector<uint8_t> blockBytes;
+		// Geo component block implementation
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Const_Block, m_bufferAlloc.getAvailable()));
+			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Renderable_Block, m_bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 
+		// Scene block implementation // Only single instance required!!!
+		if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Scene_Block, m_bufferAlloc.getAvailable()));
+			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
+			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+		}
+
+		// Index creation procedures
 		if (geoTarget_iData != nullptr) {
-			mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
+			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
-		} else mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
+		} else mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
-		mBuffers.push_back(Buffer_GL4(currentGraphicsID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
-		mVAOs.push_back(VertexArray_GL4(currentGraphicsID, m_vertexArrayAlloc.getAvailable()));
+		mVAOs.push_back(VertexArray_GL4(currentRenderID, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 		
@@ -318,9 +318,9 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
-		if(baseTex != nullptr) genTexture(baseTex, currentGraphicsID); // Add the method definition
+		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
-		mMainGraphicsIDs = currentGraphicsID; // Sets main graphics ID's to max value of currentGraphicsID
+		mMainRenderIDs = currentRenderID; // Sets main graphics ID's to max value of currentRenderID
 	}
 
 	mSceneReady = true;
@@ -363,13 +363,30 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_GL4* targetBuff = nullptr;
+
+	/* if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+		for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Scene_Block) {
+				targetBuff = &(*currentBuff); 
+				break;
+			}
+
+		if (targetBuff == nullptr) { 
+			puts("Block buffer could not be located! "); 
+			return;
+		}
+
+		glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
+		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+	} */
  
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
+		unsigned currentRenderID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
+				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
 					targetBuff = &(*currentBuff); 
 					break;
 				}
@@ -509,7 +526,7 @@ void Topl_Renderer_GL4::render(void){
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
-	for (unsigned id = 1; id <= mMainGraphicsIDs; id++) {
+	for (unsigned id = 1; id <= mMainRenderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);
@@ -520,11 +537,12 @@ void Topl_Renderer_GL4::render(void){
 		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
 		// TODO: Because Const_off_3F also contains rotation data, create a new buffer type that conjoins the two!
-		Buffer_GL4* blockBuff = _GL4::findBuffer(BUFF_Const_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* sceneBlockBuff = _GL4::findBuffer(BUFF_Scene_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
-			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, blockBuff->buffer);
+			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, renderBlockBuff->buffer);
 		}
 
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);

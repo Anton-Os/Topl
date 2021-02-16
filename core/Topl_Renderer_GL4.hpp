@@ -43,12 +43,12 @@ private:
 
 // Vertex Array Object Allocation Helpers
 
-struct VertexArray_GL4 : public GraphicsTargetObject {
-	VertexArray_GL4() : GraphicsTargetObject() {}
-	VertexArray_GL4(unsigned id, GLuint v) : GraphicsTargetObject(id){
+struct VertexArray_GL4 : public RenderableTarget {
+	VertexArray_GL4() : RenderableTarget() {}
+	VertexArray_GL4(unsigned id, GLuint v) : RenderableTarget(id){
 		vao = v;
 	}
-	/* VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : GraphicsTargetObject(id){
+	/* VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : RenderableTarget(id){
 		vao = v; size = sz; type = t; index = i; normalized = n; stride = st;
 	} */
 

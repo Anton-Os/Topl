@@ -42,19 +42,23 @@ struct VertexShader : public Topl_Shader {
 		bytes->assign({ 
 			*(rotationBytesPtr + 0), *(rotationBytesPtr + 1), *(rotationBytesPtr + 2), *(rotationBytesPtr + 3), // Main axis rotation
 			*(rotationBytesPtr + 4), *(rotationBytesPtr + 5), *(rotationBytesPtr + 6), *(rotationBytesPtr + 7), // Cross axis rotation
-			0, 0, 0, 0, // 0 byte padding
-			0, 0, 0, 0, // 0 byte padding
+			0, 0, 0, 0, // 1 byte padding
+			0, 0, 0, 0, // 1 byte padding
 			*(offsetBytesPtr + 0), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), *(offsetBytesPtr + 3), // X offset value
 			*(offsetBytesPtr + 4), *(offsetBytesPtr + 5), *(offsetBytesPtr + 6), *(offsetBytesPtr + 7), // Y offset value
 			*(offsetBytesPtr + 8), *(offsetBytesPtr + 9), *(offsetBytesPtr + 10), *(offsetBytesPtr + 11), // Z offset value
-			0, 0, 0, 0 // 0 byte padding
+			0, 0, 0, 0 // 1 byte padding
 		});
 
 		return true; // Indicates that an implementation exists
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false;
+		const uint8_t* projMatrixBytesPtr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
+	
+		// TODO: Assign byte values here
+	
+		return true;
 	}
 };
 
@@ -65,11 +69,6 @@ struct FragmentShader : public Topl_Shader {
 			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		return false; // Indicates that an implementation is absent
-	}
-
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false;
-	}                                                                       
+	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const override { return false; }                                                                       
 };

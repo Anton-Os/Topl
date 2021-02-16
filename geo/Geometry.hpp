@@ -22,6 +22,9 @@
 // Typedefs for const safe types
 typedef const Eigen::Vector3f* const vec3f_cptr;
 typedef const Eigen::Vector2f* const vec2f_cptr;
+typedef const Eigen::Matrix4f* const mat4f_cptr;
+typedef const Eigen::Matrix3f* const mat3f_cptr;
+typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
 struct Geo_PerVertexData { // TODO: Fix this class

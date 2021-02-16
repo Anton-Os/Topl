@@ -213,6 +213,15 @@ void Topl_SceneManager::resolvePhysics() {
 
 #ifdef RASTERON_H
 
+void Topl_SceneManager::addTexture(const std::string& name, const Rasteron_Image* rstnImage) {
+	if (rstnImage->data == nullptr || rstnImage->height == 0 || rstnImage->width == 0) return; // Error
+	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
+		if (name == (*currentGeo)->getName()) {
+			mGeoTex_map.insert({ *currentGeo, rstnImage });
+			return;
+		}
+}
+
 const Rasteron_Image* Topl_SceneManager::getFirstTexture(const std::string& name) const {
 	for (std::map<Geo_Component*, const Rasteron_Image*>::const_iterator currentMap = mGeoTex_map.cbegin(); currentMap != mGeoTex_map.cend(); currentMap++)
 		if (name == currentMap->first->getName()) return currentMap->second;

@@ -108,7 +108,7 @@ void Geo_Humanoid::fill(Topl_SceneManager* sMan) { // Trying with displacements 
 	sMan->addConnector(&head_rightArm_link, getPrefix() + "head", getPrefix() + "rightArm");
 	sMan->addConnector(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	sMan->addConnector(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
-	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg");
+	sMan->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
 }
 
 void Geo_Humanoid::updateSceneManager(Topl_SceneManager* sMan) {
@@ -127,10 +127,7 @@ void Geo_Humanoid::move(Topl_SceneManager* sMan, Eigen::Vector3f vec){
 }
 
 void Geo_Humanoid::rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec){
-	sMan->addForce(getPrefix() + "head", Eigen::Vector3f(vec.x(), 0.0f, 0.0f));
-	// sMan->addForce(getPrefix() + "body", vec); // Body stays put!
-	sMan->addForce(getPrefix() + "leftArm", Eigen::Vector3f(0.0f, vec.y(), 0.0));
-	sMan->addForce(getPrefix() + "rightArm", Eigen::Vector3f(0.0f, -1 * vec.y(), 0.0));
-	sMan->addForce(getPrefix() + "leftLeg", Eigen::Vector3f(-0.5 * vec.x(), 0.0, 0.0));
-	sMan->addForce(getPrefix() + "rightLeg", Eigen::Vector3f(-0.5 * vec.x(), 0.0, 0.0));
+	sMan->modConnector(getPrefix() + "body", vec, 1.0f); // rotate using scene manager
+
+	// sMan->modConnector(getPrefix() + "body", Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
 }

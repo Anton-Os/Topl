@@ -359,44 +359,51 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	// Start implementing more shader types...
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
-		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
+		unsigned currentRenderID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
-		// New block implementation
-		std::vector<uint8_t> blockBytes;
+		// Geo component block implementation
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* constBlockBuff = nullptr;
 			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &blockBytes);
-			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, constBlockBuff));
 		}
 		if (!mSceneReady) return; // Error
+
+		// Scene block implementation // Only single instance required!!!
+		if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+			ID3D11Buffer* sceneBlockBuff = nullptr;
+			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &sceneBlockBuff, &blockBytes);
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Scene_Block, sceneBlockBuff));
+		}
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
 			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getICount());
-			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
-		} else mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, 0));
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
+		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
 		if (!mSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
 
-		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
 		if (!mSceneReady) return;
 
 #ifdef RASTERON_H
 		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
-		if(baseTex != nullptr) genTexture(baseTex, currentGraphicsID); // Add the method definition
+		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 
 		if(!mSceneReady) return;
-		mMainGraphicsIDs = currentGraphicsID; // Gives us the greatest buffer ID number
+		mMainRenderIDs = currentRenderID; // Gives us the greatest buffer ID number
 	}
 
     mSceneReady = true;
@@ -504,14 +511,30 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* constBlockBuff = nullptr;
+	Buffer_Drx11* sceneBlockBuff = nullptr;
+
+	/* if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Scene_Block) {
+				sceneBlockBuff = &(*currentBuff);
+				break;
+			}
+
+		if (sceneBlockBuff == nullptr) { // TODO: Replace this!
+			OutputDebugStringA("Block buffer could not be located!");
+			return;
+		} else mSceneReady = _Drx11::createConstBlockBuff(&m_device, &sceneBlockBuff->buffer, &blockBytes);
+
+		if (!mSceneReady) return; // Error
+	} */
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
-		unsigned currentGraphicsID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
+		unsigned currentRenderID = g + 1;
+		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
+				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
 					constBlockBuff = &(*currentBuff);
 					break;
 				}
@@ -521,7 +544,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 				return;
 			} else mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff->buffer, &blockBytes);
 
-			if (!mSceneReady) return;
+			if (!mSceneReady) return; // Error
 		}
 	}
 
@@ -552,18 +575,19 @@ void Topl_Renderer_Drx11::render(void){
 
 	// Rendering Loop!
 	if (mPipelineReady && mSceneReady)
-		for (unsigned id = mMainGraphicsIDs; id >= 1; id--) {
+		for (unsigned id = mMainRenderIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* constBlockBuff = _Drx11::findBuffer(BUFF_Const_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* constBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* sceneBlockBuff = _Drx11::findBuffer(BUFF_Scene_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-			m_deviceCtx->VSSetConstantBuffers(0, 1, &constBlockBuff->buffer); // Original
+			m_deviceCtx->VSSetConstantBuffers(0, 1, &constBlockBuff->buffer); // Check if valid
 
 			UINT stride = sizeof(Geo_PerVertexData);
 			UINT offset = 0;

@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "FileIO.hpp" // REMOVE THIS!!! DEBUGGING ONLY!!!
 #include "Timer.hpp"
 #include "Physics.hpp"
 
@@ -29,11 +28,25 @@ typedef const LinkedItems* const topl_linkedItems_cptr;
 
 class Topl_Camera {
 public:
+	// Identity projection constructor
+	Topl_Camera() {
+		projMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
+	}
+	// Customizable projection matrix constructor
+	Topl_Camera(double angle, double ratio, double nearZ, double farZ) {
+		projMatrix.row(0).col(0) << 1.0 / (angle * ratio * tan(angle / 2.0));
+		projMatrix.row(1).col(1) << 1.0 / (tan(angle / 2.0));
+		projMatrix.row(2).col(2) << (-1.0 * nearZ - farZ) / (nearZ - farZ);
+		projMatrix.row(2).col(3) << (2.0 * nearZ * farZ) / (nearZ - farZ);
+		projMatrix.row(3).col(2) << 1.0;
+	}
 	vec3f_cptr getPos() const { return &pos; }
 	vec3f_cptr getDirection() const { return &direction; }
+	mat4f_cptr getProjMatrix() const { return &projMatrix; }
 private:
 	Eigen::Vector3f pos = Eigen::Vector3f(0.0, 0.0, -1.0);
-	Eigen::Vector3f direction = Eigen::Vector3f(0.0, 0.0, 0.0);;
+	Eigen::Vector3f direction = Eigen::Vector3f(0.0, 0.0, 0.0);
+	Eigen::Matrix4f projMatrix = Eigen::Matrix4f::Zero();
 };
 
 typedef const Topl_Camera* const topl_camera_cptr;
@@ -50,17 +63,8 @@ public:
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
 #ifdef RASTERON_H
-	// TODO: Move definition to Topl_SceneManager.cpp and check for valid name input
-	void addTexture(const std::string& name, const Rasteron_Image* rstnImage) {
-		if (rstnImage->data == nullptr || rstnImage->height == 0 || rstnImage->width == 0) return; // Error
-		for(std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
-			if (name == (*currentGeo)->getName()) {
-				mGeoTex_map.insert({ *currentGeo, rstnImage });
-				return;
-			}
-	}
+	void addTexture(const std::string& name, const Rasteron_Image* rstnImage);
 #endif
-
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Properties* pProp);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
@@ -69,7 +73,7 @@ public:
 	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
 
 	unsigned getGeoCount() const { return mNamedGeos.size(); }
-	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // Access to geometry sequentially
+	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // Access to geometry by index
 	topl_geoComponent_cptr getGeoComponent(const std::string& name) const; // Access to geometry by name
 
 	unsigned getLinkedItemsCount() const { return mLinkedItems.size(); }
@@ -88,9 +92,7 @@ private:
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
 
 	Topl_Camera mCamera;
-
 #ifdef RASTERON_H
-	// std::vector<idToImage_pair> mIdToTex; // Multiple textures could be associated to a geometry Component // REMOVE!
 	std::map<Geo_Component*, const Rasteron_Image*> mGeoTex_map; // Associates geometry to a single texture structure
 #endif
 };

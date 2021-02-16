@@ -15,26 +15,27 @@ enum DRAW_Type {
     DRAW_Strip
 };
 
-struct GraphicsTargetObject {
-	GraphicsTargetObject() {}
-	GraphicsTargetObject(unsigned id) { targetID = id; }
+struct RenderableTarget {
+	RenderableTarget() {}
+	RenderableTarget(unsigned id) { targetID = id; }
 	unsigned targetID;
 };
 
-#define MAX_BUFFERS_PER_TARGET 3 // KEEP THIS UPDATED ALWAYS!
+#define MAX_BUFFERS_PER_TARGET 4 // KEEP THIS UPDATED ALWAYS!
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // custom vertex format
     BUFF_Index_UI = 1, // unsigned int Index Type
-    BUFF_Const_Block = 2, // stores 3F offset
+    BUFF_Renderable_Block = 2, // stores constants per draw object
+    BUFF_Scene_Block = 3 // stores constants for scene updates
 };
 
-struct Buffer : public GraphicsTargetObject {
-    // Buffer() : GraphicsTargetObject(){}
-    Buffer(unsigned id, enum BUFF_Type t) : GraphicsTargetObject(id){
+struct Buffer : public RenderableTarget {
+    // Buffer() : RenderableTarget(){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){
         type = t;
     }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : GraphicsTargetObject(id){
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){
         type = t; count = c;
     }
     enum BUFF_Type type; // Type of buffer 
@@ -42,8 +43,8 @@ struct Buffer : public GraphicsTargetObject {
 };
 
 struct BlockBuffer : public Buffer {
-    // Buffer() : GraphicsTargetObject(){}
-    BlockBuffer(unsigned id, const std::vector<uint8_t>& bytes) : Buffer(id, BUFF_Const_Block) {
+    // Buffer() : RenderableTarget(){}
+    BlockBuffer(unsigned id, const std::vector<uint8_t>& bytes) : Buffer(id, BUFF_Renderable_Block) {
         if(!bytes.empty()){
             data = (uint8_t*)malloc(bytes.size());
             *data = *(bytes.data());
@@ -70,12 +71,12 @@ enum TEX_Mode {
 	TEX_Clamp
 };
 
-struct Texture : public GraphicsTargetObject {
-	Texture() : GraphicsTargetObject(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : GraphicsTargetObject(id) {
+struct Texture : public RenderableTarget {
+	Texture() : RenderableTarget(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderableTarget(id) {
 		format = f; mode = m;
 	}
-		// Additional data fields when needed and Derived texture object types
+	// Additional data fields when needed and Derived texture object types
     enum TEX_Frmt format;
 	enum TEX_Mode mode;
 };
@@ -133,7 +134,7 @@ protected:
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned mMainGraphicsIDs = 1; // Indicator for number of drawable graphics objects    
+	unsigned mMainRenderIDs = 1; // Indicator for number of drawable graphics objects    
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;

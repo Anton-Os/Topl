@@ -1,9 +1,13 @@
 #version 440
 
-layout(packed) uniform Block{
-	vec2 rotation; // padding from vec2 to vec4
-	vec3 offset; // padding from vec3 to vec4
+layout(packed) uniform Block {
+	vec2 rotation; // padded to vec4
+	vec3 offset; // padded to vec4
 };
+
+layout(packed) uniform SceneBlock {
+	mat4 projMatrix;
+}
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
