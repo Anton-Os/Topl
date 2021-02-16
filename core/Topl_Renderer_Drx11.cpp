@@ -357,6 +357,13 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	// Pipeline specific calls
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
 	// Start implementing more shader types...
+	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
+
+	// Generates object for single scene block buffer
+	if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
+	}
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
@@ -365,7 +372,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
-		std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 		// Geo component block implementation
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
@@ -374,13 +380,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, constBlockBuff));
 		}
 		if (!mSceneReady) return; // Error
-
-		// Scene block implementation // Only single instance required!!!
-		if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
-			ID3D11Buffer* sceneBlockBuff = nullptr;
-			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &sceneBlockBuff, &blockBytes);
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Scene_Block, sceneBlockBuff));
-		}
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
@@ -553,6 +552,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 }
 
 void Topl_Renderer_Drx11::render(void){
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
@@ -571,8 +571,6 @@ void Topl_Renderer_Drx11::render(void){
 		return;
 	}
 
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
-
 	// Rendering Loop!
 	if (mPipelineReady && mSceneReady)
 		for (unsigned id = mMainRenderIDs; id >= 1; id--) {
@@ -581,7 +579,7 @@ void Topl_Renderer_Drx11::render(void){
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* constBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* sceneBlockBuff = _Drx11::findBuffer(BUFF_Scene_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
+			// Buffer_Drx11* sceneBlockBuff = _Drx11::findBuffer(BUFF_Scene_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;

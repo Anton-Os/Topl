@@ -3,9 +3,9 @@ cbuffer CONST_BLOCK : register(b0) {
 	float4 rotation;
 }
 
-cbuffer CONST_SCENE_BLOCK : register(b1) {
+/* cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4x4 projMatrix;
-}
+} */
 
 struct VS_INPUT {
 	float4 pos : POSITION;

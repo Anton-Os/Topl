@@ -255,8 +255,16 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	// Pipeline specific calls
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
 	// Start implementing more shader types...
+	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
+
+	// Generates object for single scene block buffer
+	if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+		mBuffers.push_back(Buffer_GL4(m_bufferAlloc.getAvailable()));
+		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+	}
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentRenderID = g + 1;
@@ -265,19 +273,10 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
-		std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 		// Geo component block implementation
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Renderable_Block, m_bufferAlloc.getAvailable()));
-			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
-			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
-		}
-
-		// Scene block implementation // Only single instance required!!!
-		if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
-			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Scene_Block, m_bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -505,6 +504,7 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 }
 
 void Topl_Renderer_GL4::render(void){
+	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLenum drawType;
@@ -523,8 +523,6 @@ void Topl_Renderer_GL4::render(void){
 		return;
 	}
 
-	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
-
 	// Rendering Loop!
 	for (unsigned id = 1; id <= mMainRenderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = mVAOs.begin(); currentVAO < mVAOs.end(); currentVAO++)
@@ -533,13 +531,9 @@ void Topl_Renderer_GL4::render(void){
 			else
 				continue; // If it continues all the way through error has occured
 
-		// Buffer binding step
 		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
 
-		// TODO: Because Const_off_3F also contains rotation data, create a new buffer type that conjoins the two!
 		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* sceneBlockBuff = _GL4::findBuffer(BUFF_Scene_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
 			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
 			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, renderBlockBuff->buffer);

@@ -4,12 +4,9 @@
 
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}
-	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) {
-		buffer = b;
-	}
-	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Buffer(id, t, c) {
-		buffer = b;
-	}
+	Buffer_Drx11(ID3D11Buffer* b) : Buffer(){ buffer = b; }
+	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) { buffer = b; }
+	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Buffer(id, t, c) { buffer = b; }
 
 	ID3D11Buffer* buffer; // DirectX specific
 };
@@ -58,6 +55,7 @@ private:
 	void render(void) override;
 
 	Topl_Pipeline_Drx11 m_pipeline;
+	ID3D11Buffer* mSceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
 	std::vector<Buffer_Drx11> mBuffers;
 	std::vector<Texture_Drx11> mTextures;
 
