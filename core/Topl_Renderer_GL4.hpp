@@ -16,13 +16,9 @@ protected:
 // Buffer Object Allocation Helpers
 
 struct Buffer_GL4 : public Buffer {
-	// Buffer_GL4() : Buffer() {}
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){
-		buffer = b;
-	}
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) {
-		buffer = b;
-	}
+	Buffer_GL4(GLuint b){ buffer = b; }
+	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
+	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) { buffer = b; }
 
 	GLuint buffer; // OpenGL specific
 };
@@ -45,13 +41,7 @@ private:
 
 struct VertexArray_GL4 : public RenderableTarget {
 	VertexArray_GL4() : RenderableTarget() {}
-	VertexArray_GL4(unsigned id, GLuint v) : RenderableTarget(id){
-		vao = v;
-	}
-	/* VertexArray_GL4(unsigned id, GLuint v, GLint sz, GLenum t, GLuint i, GLboolean n, GLsizei st) : RenderableTarget(id){
-		vao = v; size = sz; type = t; index = i; normalized = n; stride = st;
-	} */
-
+	VertexArray_GL4(unsigned id, GLuint v) : RenderableTarget(id){ vao = v; }
 	GLuint vao;
 };
 
@@ -121,9 +111,9 @@ private:
 
     Topl_Pipeline_GL4 m_pipeline;
 
-	Topl_BufferAlloc_GL4 m_bufferAlloc;
+	Topl_BufferAlloc_GL4 m_bufferAlloc; // Buffer allocator object
 	std::vector<Buffer_GL4> mBuffers;
-	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc;
+	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc; // Vertex Array allocattor object
 	std::vector<VertexArray_GL4> mVAOs;
 
 	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc;

@@ -5,9 +5,9 @@ layout(packed) uniform Block {
 	vec3 offset; // padded to vec4
 };
 
-layout(packed) uniform SceneBlock {
+layout(packed) uniform SceneBlock{
 	mat4 projMatrix;
-}
+};
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;

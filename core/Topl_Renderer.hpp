@@ -7,54 +7,30 @@
 
 typedef const Topl_Shader* topl_shader_cptr;
 
-enum DRAW_Type {
-    DRAW_Points,
-    DRAW_Lines,
-    DRAW_Triangles, // Default
-    DRAW_Fan,
-    DRAW_Strip
-};
+#define SPECIAL_SCENE_RENDER_ID 0
 
 struct RenderableTarget {
-	RenderableTarget() {}
+	RenderableTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
 	RenderableTarget(unsigned id) { targetID = id; }
 	unsigned targetID;
 };
 
-#define MAX_BUFFERS_PER_TARGET 4 // KEEP THIS UPDATED ALWAYS!
+#define MAX_BUFFERS_PER_TARGET 3 // KEEP THIS UPDATED ALWAYS!
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // custom vertex format
     BUFF_Index_UI = 1, // unsigned int Index Type
     BUFF_Renderable_Block = 2, // stores constants per draw object
-    BUFF_Scene_Block = 3 // stores constants for scene updates
+    // BUFF_Scene_Block = 3 // stores constants for scene updates
 };
 
 struct Buffer : public RenderableTarget {
-    // Buffer() : RenderableTarget(){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){
-        type = t;
-    }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){
-        type = t; count = c;
-    }
+    Buffer() : RenderableTarget(SPECIAL_SCENE_RENDER_ID){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){ type = t; count = c; }
+
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
-};
-
-struct BlockBuffer : public Buffer {
-    // Buffer() : RenderableTarget(){}
-    BlockBuffer(unsigned id, const std::vector<uint8_t>& bytes) : Buffer(id, BUFF_Renderable_Block) {
-        if(!bytes.empty()){
-            data = (uint8_t*)malloc(bytes.size());
-            *data = *(bytes.data());
-        }
-    }
-    ~BlockBuffer(){
-        if(data != nullptr) free(data);
-    }
-
-    uint8_t* data = nullptr;
 };
 
 #define MAX_TEXTURES_PER_TARGET 12
@@ -79,6 +55,14 @@ struct Texture : public RenderableTarget {
 	// Additional data fields when needed and Derived texture object types
     enum TEX_Frmt format;
 	enum TEX_Mode mode;
+};
+
+enum DRAW_Type {
+	DRAW_Points,
+	DRAW_Lines,
+	DRAW_Triangles, // Default
+	DRAW_Fan,
+	DRAW_Strip
 };
 
 class Topl_Renderer {
@@ -130,7 +114,7 @@ protected:
         return nullptr; // If shader is not found return null pointer
     }
     std::vector<topl_shader_cptr> mShaders;
-    std::vector<BlockBuffer> mBlockBuffers;
+    // std::vector<BlockBuffer> mBlockBuffers;
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
