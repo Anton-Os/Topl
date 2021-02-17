@@ -204,8 +204,10 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
     bufferDesc.Width = WIN_WIDTH;
     bufferDesc.Height = WIN_HEIGHT;
-    bufferDesc.RefreshRate.Numerator = 60;
-    bufferDesc.RefreshRate.Denominator = 1;
+    // bufferDesc.RefreshRate.Numerator = 60;
+    // bufferDesc.RefreshRate.Denominator = 1;
+	bufferDesc.RefreshRate.Numerator = 1;
+	bufferDesc.RefreshRate.Denominator = 60;
     bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     bufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -218,8 +220,9 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = 1;
-    swapChainDesc.OutputWindow = *(m_native.window); 
+    // swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
+	swapChainDesc.OutputWindow = *(m_native.window); 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -229,7 +232,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 		&swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceCtx);
 	if (FAILED(hr)) return;
     
-    ID3D11Texture2D* backBuffer;
+    // ID3D11Texture2D* backBuffer;
+	ID3D11Resource* backBuffer; // bgfx renderer_d3d11.cpp line 4660
 	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 	if(FAILED(hr)) return; // Provide error handling code
 
@@ -248,8 +252,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    viewport.Height = 500; // REPLACE WITH DETERMINED HEIGHT
-    viewport.Width = 500; // REPLACE WITH DETERMINED WIDTH
+    viewport.Height = WIN_HEIGHT;
+    viewport.Width = WIN_WIDTH;
 
 	m_deviceCtx->RSSetViewports(1, &viewport);
 
@@ -273,6 +277,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	UINT blendMask = 0xffffffff;
 
 	m_deviceCtx->OMSetBlendState(m_pipeline.blendState, blendFactor, blendMask);
+
+	// TODO: Implement Rasterizer here!
 
 	return;
 }
@@ -360,7 +366,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
-	if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
+	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes)) {
 		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
@@ -512,21 +518,6 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	Buffer_Drx11* constBlockBuff = nullptr;
 	Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	/* if(vertexShader->genPerSceneDataBlock(sMan, &blockBytes)){
-		for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-			if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Scene_Block) {
-				sceneBlockBuff = &(*currentBuff);
-				break;
-			}
-
-		if (sceneBlockBuff == nullptr) { // TODO: Replace this!
-			OutputDebugStringA("Block buffer could not be located!");
-			return;
-		} else mSceneReady = _Drx11::createConstBlockBuff(&m_device, &sceneBlockBuff->buffer, &blockBytes);
-
-		if (!mSceneReady) return; // Error
-	} */
-
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
@@ -552,7 +543,6 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 }
 
 void Topl_Renderer_Drx11::render(void){
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
     const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
@@ -570,6 +560,14 @@ void Topl_Renderer_Drx11::render(void){
 		OutputDebugStringA("Draw type not supported yet!");
 		return;
 	}
+
+	// Getting instance of scene block buffer
+	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		Buffer_Drx11* sceneBlock = &mBuffers.front();
+		// Call VSSetConstantBuffers on proper target
+	}
+
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
 	// Rendering Loop!
 	if (mPipelineReady && mSceneReady)

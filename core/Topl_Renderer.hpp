@@ -26,30 +26,12 @@ enum BUFF_Type {
 
 struct Buffer : public RenderableTarget {
     Buffer() : RenderableTarget(SPECIAL_SCENE_RENDER_ID){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){
-        type = t;
-    }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){
-        type = t; count = c;
-    }
+    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){ type = t; count = c; }
+
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
 };
-
-/* struct BlockBuffer : public Buffer {
-    // Buffer() : RenderableTarget(){}
-    BlockBuffer(unsigned id, const std::vector<uint8_t>& bytes) : Buffer(id, BUFF_Renderable_Block) {
-        if(!bytes.empty()){
-            data = (uint8_t*)malloc(bytes.size());
-            *data = *(bytes.data());
-        }
-    }
-    ~BlockBuffer(){
-        if(data != nullptr) free(data);
-    }
-
-    uint8_t* data = nullptr;
-}; */
 
 #define MAX_TEXTURES_PER_TARGET 12
 

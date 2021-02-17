@@ -56,7 +56,7 @@ struct VertexShader : public Topl_Shader {
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
 		const uint8_t* projMatrixBytesPtr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
 	
-		// TODO: Assign byte values here
+		bytes->assign({ 0xFF }); // dummy value
 	
 		return true;
 	}
