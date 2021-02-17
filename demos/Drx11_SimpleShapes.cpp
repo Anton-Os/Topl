@@ -1,6 +1,5 @@
 #include "Drx11_SimpleShapes.hpp"
 
-#ifdef WIN32
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -17,15 +16,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	return 0;
 }
-#else
-	// TODO: make comparable UNIX version
-#endif
 
 // Entry Point
 
 int main(int argc, char** argv) {
 
-#ifdef WIN32
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -50,9 +45,6 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
 	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
-#else
-	// TODO: make comparable UNIX version
-#endif
 
 	std::string parentDir = getParentDir(argv[0]);
 
@@ -62,7 +54,7 @@ int main(int argc, char** argv) {
 	PixelShader fragmentShader = PixelShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	
+
 	renderer.buildScene(&Topl::sceneManager);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
@@ -70,15 +62,11 @@ int main(int argc, char** argv) {
 
 		// Topl::sceneManager.resolvePhysics();
 
-#ifdef WIN32
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
 		}
 		if (wndMessage.message == WM_QUIT) break;
-#else
-		// TODO: make comparable UNIX version
-#endif
 	}
 
 	return 0;

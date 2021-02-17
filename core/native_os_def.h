@@ -12,7 +12,7 @@
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
-	#include <windowsx.h>
+	  #include <windowsx.h>
 
     // OpenGL support
     #include <GL/gl.h>
@@ -30,11 +30,36 @@
 
 	#define NATIVE_PLATFORM_ELEM _Native_Platform_Elem_win
 
-    #pragma comment(lib, "opengl32.lib")
+  #pragma comment(lib, "opengl32.lib")
+#elif defined(__linux__)
+  #include<X11/X.h>
+  #include<X11/Xlib.h>
+
+  #undef Success // Potential Eigen fix
+
+  // OpenGL Support
+  #include<GL/gl.h>
+  #include<GL/glx.h>
+
+  #define NATIVE_WINDOW Window
+  #define NATIVE_GL_CONTEXT GLXContext
+
+  struct Native_Cursor_Pos {
+    int xPos;
+    int yPos;
+  };
+
+  #define NATIVE_CURSOR_POS Native_Cursor_Pos // X and Y coordinates of the cursor
+
+  struct _Native_Platform_Context {
+    Display* display;
+    NATIVE_WINDOW* window;
+    NATIVE_GL_CONTEXT GL_Ctx;
+  };
 #endif
 
 #if defined (_WIN32) && defined (_MSC_VER)
-    
+
     #include <d3d11_1.h>
 	#include <dxgi.h> // additional
     #include <wrl/client.h> // additional

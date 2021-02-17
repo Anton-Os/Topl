@@ -5,13 +5,12 @@ project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
 
 if(NOT Rasteron_Install_Path)
     set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
-    set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
+    # set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
 endif()
 
 find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
 if(Rasteron_FOUND)
     include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
-
     message(STATUS "Rasteron loadding success!")
 else()
     message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
@@ -61,9 +60,7 @@ find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(Rasteron_FOUND)
-    add_executable(Img
-        demos/Img.cpp
-    )   
+    add_executable(Img demos/Img.cpp)
     target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
 endif()
 
@@ -71,18 +68,18 @@ endif()
 list(APPEND common_Sources
 	core/FileIO.cpp
 	core/Input.cpp
-    core/Timer.cpp
+  core/Timer.cpp
 )
 
-list(APPEND geo_Sources 
+list(APPEND geo_Sources
     geo/primitives/Geo_Rect2D.cpp
     geo/primitives/Geo_Rect3D.cpp
     geo/primitives/Geo_Sphere2D.cpp
 )
 
-# Generic Features Demos
+# Common Feature Demos
 
-add_executable(TickTick  
+add_executable(TickTick
     core/Timer.cpp
     demos/TickTick.cpp
 )
@@ -95,9 +92,9 @@ add_executable(Presser
 )
 target_include_directories(Presser PUBLIC core helper geo)
 
-
-# DirectX Windows Dependent Demos
 if(WIN32)
+
+    # DirectX Rendering Engine
 
     add_library(Drx11_Engine
         ${common_Sources}
@@ -107,7 +104,7 @@ if(WIN32)
         core/Topl_Renderer_Drx11.cpp
     )
     target_include_directories(Drx11_Engine PUBLIC core geo)
-    target_include_directories(Drx11_Engine PUBLIC 
+    target_include_directories(Drx11_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
@@ -118,6 +115,9 @@ if(WIN32)
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
     )
+    add_dependencies(Drx11_Engine DXSDK Eigen) # Build external projects before engine
+
+    # DirectX Rendering Demos
 
     add_executable(Drx11_MovingSprite
         geo/composites/Humanoid.cpp
@@ -136,7 +136,7 @@ if(WIN32)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
 endif()
 
-# OpenGL Rendering Demos
+# OpenGL Rendering Engine
 
 add_library(GL4_Engine
         ${common_Sources}
@@ -146,7 +146,7 @@ add_library(GL4_Engine
         core/Topl_Renderer_GL4.cpp
     )
     target_include_directories(GL4_Engine PUBLIC core geo)
-    target_include_directories(GL4_Engine PUBLIC 
+    target_include_directories(GL4_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
@@ -157,11 +157,14 @@ add_library(GL4_Engine
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
 )
+add_dependencies(GL4_Engine GLEW Eigen) # Build external projects before engine
+
+# OpenGL Rendering Demos
 
 add_executable(GL4_MovingSprite
     geo/composites/Humanoid.cpp
 
-    demos/GL4_MovingSprite.cpp 
+    demos/GL4_MovingSprite.cpp
 )
 target_include_directories(GL4_MovingSprite PRIVATE demos)
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
@@ -170,7 +173,7 @@ add_executable(GL4_SimpleShapes
 	geo/composites/Chain.cpp
     geo/composites/Grid.cpp
 
-    demos/GL4_SimpleShapes.cpp 
+    demos/GL4_SimpleShapes.cpp
 )
 target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
 
@@ -179,26 +182,29 @@ target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
 file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.glsl)
-add_custom_target(ShaderCopy 
+add_custom_target(ShaderCopy
                   SOURCES ${drx11_Shaders} ${gl4_Shaders})
-                  # Add GLSL shaders too 
+                  # Add GLSL shaders too
 if(WIN32)
     foreach(file IN ITEMS ${drx11_Shaders})
         add_custom_command(TARGET Drx11_Engine PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy 
+            COMMAND ${CMAKE_COMMAND} -E copy
             "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
     endforeach()
 endif()
 
 foreach(file IN ITEMS ${gl4_Shaders})
     add_custom_command(TARGET GL4_Engine PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy 
+        COMMAND ${CMAKE_COMMAND} -E copy
         "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
 endforeach()
 
-add_dependencies(ShaderCopy Drx11_Engine GL4_Engine) # Two dependencies so far, could add more
+add_dependencies(ShaderCopy GL4_Engine)
+if(WIN32)
+  add_dependencies(ShaderCopy Drx11_Engine)
+endif()
 
-file(GLOB res_images 
+file(GLOB res_images
     ${CMAKE_SOURCE_DIR}/res/images/*.png # Rasteron Supported
     ${CMAKE_SOURCE_DIR}/res/images/*.tiff # Rasteron Supported
     ${CMAKE_SOURCE_DIR}/res/images/*.bmp # Rasteron Supported

@@ -65,7 +65,9 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(wndWindow); // Renderer initialization
 #else
-	// TODO: make comparable UNIX version
+	Window lnxWindow;
+
+	Topl_Renderer_GL4 renderer(lnxWindow);
 #endif
 
 	std::string parentDir = getParentDir(argv[0]);
@@ -76,7 +78,7 @@ int main(int argc, char** argv) {
 	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	
+
 	renderer.buildScene(&Topl::sceneManager);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {

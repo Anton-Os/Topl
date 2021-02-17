@@ -39,7 +39,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 
-#ifdef WIN32
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -64,9 +63,6 @@ int main(int argc, char** argv) {
 	BOOL bRet;
 
 	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
-#else
-	// TODO: make comparable UNIX version
-#endif
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_MostBasic.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
@@ -81,16 +77,12 @@ int main(int argc, char** argv) {
 		renderer.updateScene(&Topl::sceneManager);
 
 		Topl::sceneManager.resolvePhysics();
-		
-#ifdef WIN32
+
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&wndMessage);
 			DispatchMessage(&wndMessage);
 		}
 		if (wndMessage.message == WM_QUIT) break;
-#else
-		// TODO: make comparable UNIX version
-#endif
 	}
 
 	return 0;
