@@ -15,7 +15,7 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
         *(data + v) = Eigen::Vector3f(
 								sin(startAngle + (v * incAngle)) * mCircle.radius, 
 								cos(startAngle + (v * incAngle)) * mCircle.radius, 
-								DEAULT_Z_VAL);
+								DEFAULT_Z_VAL);
 
     return data;
 }
@@ -35,7 +35,6 @@ Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
 unsigned* Geo_Sphere2D::genIndices(){
 	if (getIData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
-
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 
 	unsigned startCVert = 1; // Starting from index 1, which is the rightmost point

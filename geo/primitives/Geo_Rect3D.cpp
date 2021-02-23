@@ -7,10 +7,10 @@ Eigen::Vector3f* Geo_Rect3D::genVertices() {
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
     
     // Front Face
-    Eigen::Vector3f frontTopRight(mBox.height / 2.0f, mBox.width / 2.0f, DEAULT_Z_VAL - (mBox.depth / 2.0f));
-    Eigen::Vector3f frontTopLeft(mBox.height / 2.0f, -1 * (mBox.width / 2.0f), DEAULT_Z_VAL - (mBox.depth / 2.0f));
-    Eigen::Vector3f frontBotRight(-1 * (mBox.height / 2.0f), mBox.width / 2.0f, DEAULT_Z_VAL - (mBox.depth / 2.0f));
-    Eigen::Vector3f frontBotLeft(-1 * (mBox.height / 2.0f), -1 * (mBox.width / 2.0f), DEAULT_Z_VAL - (mBox.depth / 2.0f)); 
+    Eigen::Vector3f frontTopRight(mBox.height / 2.0f, mBox.width / 2.0f, DEFAULT_Z_VAL - (mBox.depth / 2.0f));
+    Eigen::Vector3f frontTopLeft(mBox.height / 2.0f, -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL - (mBox.depth / 2.0f));
+    Eigen::Vector3f frontBotRight(-1 * (mBox.height / 2.0f), mBox.width / 2.0f, DEFAULT_Z_VAL - (mBox.depth / 2.0f));
+    Eigen::Vector3f frontBotLeft(-1 * (mBox.height / 2.0f), -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL - (mBox.depth / 2.0f)); 
 
     *(data + 0) = frontBotLeft;
     *(data + 1) = frontBotRight;
@@ -18,10 +18,10 @@ Eigen::Vector3f* Geo_Rect3D::genVertices() {
     *(data + 3) = frontTopRight;
 
     // Back Face
-    Eigen::Vector3f backTopRight(mBox.height / 2.0f, mBox.width / 2.0f, DEAULT_Z_VAL + (mBox.depth / 2.0f));
-    Eigen::Vector3f backTopLeft(mBox.height / 2.0f, -1 * (mBox.width / 2.0f), DEAULT_Z_VAL + (mBox.depth / 2.0f));
-    Eigen::Vector3f backBotRight(-1 * (mBox.height / 2.0f), mBox.width / 2.0f, DEAULT_Z_VAL + (mBox.depth / 2.0f));
-    Eigen::Vector3f backBotLeft(-1 * (mBox.height / 2.0f), -1 * (mBox.width / 2.0f), DEAULT_Z_VAL + (mBox.depth / 2.0f)); 
+    Eigen::Vector3f backTopRight(mBox.height / 2.0f, mBox.width / 2.0f, DEFAULT_Z_VAL + (mBox.depth / 2.0f));
+    Eigen::Vector3f backTopLeft(mBox.height / 2.0f, -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL + (mBox.depth / 2.0f));
+    Eigen::Vector3f backBotRight(-1 * (mBox.height / 2.0f), mBox.width / 2.0f, DEFAULT_Z_VAL + (mBox.depth / 2.0f));
+    Eigen::Vector3f backBotLeft(-1 * (mBox.height / 2.0f), -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL + (mBox.depth / 2.0f)); 
 
     *(data + 0) = backBotLeft;
     *(data + 1) = backBotRight;

@@ -12,7 +12,7 @@
 // #define NORMAL_COUNT 3
 // #define BLENDWEIGHTS_COUNT 3
 
-#define DEAULT_Z_VAL 0.5f
+#define DEFAULT_Z_VAL 0.5f
 #define X_OFFSET 0
 #define Y_OFFSET 1
 #define Z_OFFSET 2
