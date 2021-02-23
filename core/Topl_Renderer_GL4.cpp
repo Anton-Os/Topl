@@ -46,8 +46,6 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 	return targetTextureB;
 }
 
-#define DEFAULT_BLOCK_BINDING 0
-
 namespace _GL4 {
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
 		GLenum format;
@@ -505,10 +503,13 @@ void Topl_Renderer_GL4::render(void){
 		return;
 	}
 
-	// Getting instance of scene block buffer
+	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_GL4* sceneBlock = &mBuffers.front();
-		// Call VSSetConstantBuffers on proper target
+		Buffer_GL4* sceneBlockBuff = &mBuffers.front();
+		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "SceneBlock") != GL_INVALID_INDEX) {
+			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, SCENE_BLOCK_BINDING);
+			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, sceneBlockBuff->buffer);
+		}
 	}
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
@@ -528,8 +529,8 @@ void Topl_Renderer_GL4::render(void){
 		// Buffer_GL4* sceneBlockBuff = _GL4::findBuffer(BUFF_Scene_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 
 		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
-			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, DEFAULT_BLOCK_BINDING);
-			glBindBufferBase(GL_UNIFORM_BUFFER, DEFAULT_BLOCK_BINDING, renderBlockBuff->buffer);
+			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, RENDER_BLOCK_BINDING);
+			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 		}
 
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);

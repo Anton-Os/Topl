@@ -55,12 +55,35 @@ struct VertexShader : public Topl_Shader {
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		const uint8_t* projMatrixBytesPtr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
+		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
 	
-		bytes->assign({ 
+		/* bytes->assign({ 
 			0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 			0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-		}); // dummy value, MUST BE 2 BYTES OR GREATER
+		}); // dummy value, MUST BE 2 BYTES OR GREATER */
+
+		// Assign with camera value
+		bytes->assign({
+			*(matrixBytes + 0), *(matrixBytes + 1), *(matrixBytes + 2), *(matrixBytes + 3),
+			*(matrixBytes + 4), *(matrixBytes + 5), *(matrixBytes + 6), *(matrixBytes + 7),
+			*(matrixBytes + 8), *(matrixBytes + 9), *(matrixBytes + 10), *(matrixBytes + 11),
+			*(matrixBytes + 12), *(matrixBytes + 13), *(matrixBytes + 14), *(matrixBytes + 15),
+
+			*(matrixBytes + 16), *(matrixBytes + 17), *(matrixBytes + 18), *(matrixBytes + 19),
+			*(matrixBytes + 20), *(matrixBytes + 21), *(matrixBytes + 22), *(matrixBytes + 23),
+			*(matrixBytes + 24), *(matrixBytes + 25), *(matrixBytes + 26), *(matrixBytes + 27),
+			*(matrixBytes + 28), *(matrixBytes + 29), *(matrixBytes + 30), *(matrixBytes + 31),
+
+			*(matrixBytes + 32), *(matrixBytes + 33), *(matrixBytes + 34), *(matrixBytes + 35),
+			*(matrixBytes + 36), *(matrixBytes + 37), *(matrixBytes + 38), *(matrixBytes + 39),
+			*(matrixBytes + 40), *(matrixBytes + 41), *(matrixBytes + 42), *(matrixBytes + 43),
+			*(matrixBytes + 44), *(matrixBytes + 45), *(matrixBytes + 46), *(matrixBytes + 47),
+
+			*(matrixBytes + 48), *(matrixBytes + 49), *(matrixBytes + 50), *(matrixBytes + 51),
+			*(matrixBytes + 52), *(matrixBytes + 53), *(matrixBytes + 54), *(matrixBytes + 55),
+			*(matrixBytes + 56), *(matrixBytes + 57), *(matrixBytes + 58), *(matrixBytes + 59),
+			*(matrixBytes + 60), *(matrixBytes + 61), *(matrixBytes + 62), *(matrixBytes + 63),
+		});
 	
 		return true;
 	}

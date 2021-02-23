@@ -127,7 +127,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static bool createConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+	static bool createrenderBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.ByteWidth = sizeof(uint8_t) * blockBytes->size();
@@ -193,7 +193,9 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	m_pipeline.vsBuff->Release();
 	m_pipeline.psBuff->Release();
 	m_pipeline.vertexDataLayout->Release();
-	m_pipeline.resourceView->Release();
+	mResourceView->Release();
+	mBlendState->Release();
+	mRasterizerState->Release();
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -257,7 +259,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	m_deviceCtx->RSSetViewports(1, &viewport);
 
-	// Blend State Functions
+	// Blend State creation
 
 	D3D11_BLEND_DESC blendStateDesc;
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
@@ -271,14 +273,33 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 
-	m_device->CreateBlendState(&blendStateDesc, &m_pipeline.blendState);
+	m_device->CreateBlendState(&blendStateDesc, &mBlendState);
     
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT blendMask = 0xffffffff;
 
-	m_deviceCtx->OMSetBlendState(m_pipeline.blendState, blendFactor, blendMask);
+	m_deviceCtx->OMSetBlendState(mBlendState, blendFactor, blendMask);
 
-	// TODO: Implement Rasterizer here!
+	// Rasterizer State creation
+
+	/* D3D11_RASTERIZER_DESC rasterizerStateDesc;
+	ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerStateDesc.CullMode = D3D11_CULL_FRONT;
+	rasterizerStateDesc.FrontCounterClockwise = true;
+	rasterizerStateDesc.DepthBias = false;
+	rasterizerStateDesc.DepthBiasClamp = 0;
+	rasterizerStateDesc.SlopeScaledDepthBias = 0;
+	rasterizerStateDesc.DepthClipEnable = true;
+	rasterizerStateDesc.ScissorEnable = true;
+	rasterizerStateDesc.MultisampleEnable = true;
+	rasterizerStateDesc.AntialiasedLineEnable = false;
+	// rasterizerStateDesc.ForcedSampleCount = 0;
+
+	m_device->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
+
+	m_deviceCtx->RSSetState(mRasterizerState); */
 
 	return;
 }
@@ -367,7 +388,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	// Generates object for single scene block buffer
 	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes)) {
-		mSceneReady = _Drx11::createConstBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+		mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
 
@@ -381,9 +402,9 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 		// Geo component block implementation
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			ID3D11Buffer* constBlockBuff = nullptr;
-			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &blockBytes);
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, constBlockBuff));
+			ID3D11Buffer* renderBlockBuff = nullptr;
+			mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
 		}
 		if (!mSceneReady) return; // Error
 
@@ -515,7 +536,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
-	Buffer_Drx11* constBlockBuff = nullptr;
+	Buffer_Drx11* renderBlockBuff = nullptr;
 	Buffer_Drx11* sceneBlockBuff = nullptr;
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
@@ -525,14 +546,14 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
-					constBlockBuff = &(*currentBuff);
+					renderBlockBuff = &(*currentBuff);
 					break;
 				}
 
-			if (constBlockBuff == nullptr) { // TODO: Replace this!
+			if (renderBlockBuff == nullptr) { // TODO: Replace this!
 				OutputDebugStringA("Block buffer could not be located!");
 				return;
-			} else mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff->buffer, &blockBytes);
+			} else mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
 
 			if (!mSceneReady) return; // Error
 		}
@@ -561,10 +582,10 @@ void Topl_Renderer_Drx11::render(void){
 		return;
 	}
 
-	// Getting instance of scene block buffer
+	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_Drx11* sceneBlock = &mBuffers.front();
-		// Call VSSetConstantBuffers on proper target
+		Buffer_Drx11* sceneBlockBuff = &mBuffers.front();
+		m_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
@@ -576,14 +597,15 @@ void Topl_Renderer_Drx11::render(void){
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* constBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			// Buffer_Drx11* sceneBlockBuff = _Drx11::findBuffer(BUFF_Scene_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;
 			}
 
-			m_deviceCtx->VSSetConstantBuffers(0, 1, &constBlockBuff->buffer); // Check if valid
+			// TODO: Check for renderBlockBuff validity
+			m_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
 			UINT stride = sizeof(Geo_PerVertexData);
 			UINT offset = 0;

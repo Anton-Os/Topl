@@ -21,7 +21,6 @@ enum BUFF_Type {
     BUFF_Vertex_Type = 0, // custom vertex format
     BUFF_Index_UI = 1, // unsigned int Index Type
     BUFF_Renderable_Block = 2, // stores constants per draw object
-    // BUFF_Scene_Block = 3 // stores constants for scene updates
 };
 
 struct Buffer : public RenderableTarget {
@@ -32,6 +31,9 @@ struct Buffer : public RenderableTarget {
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
 };
+
+#define RENDER_BLOCK_BINDING 0 // Point to bind to for geometry updates
+#define SCENE_BLOCK_BINDING 1 // Point to bind to for scene updates
 
 #define MAX_TEXTURES_PER_TARGET 12
 

@@ -32,9 +32,6 @@ struct Topl_Pipeline_Drx11 {
 	ID3D11PixelShader* pixelShader;
 	ID3DBlob* vsBuff;
 	ID3DBlob* psBuff;
-
-	ID3D11ShaderResourceView* resourceView;
-	ID3D11BlendState* blendState;
 };
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
@@ -63,4 +60,7 @@ private:
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceCtx;
 	ID3D11RenderTargetView* m_rtv;
+	ID3D11ShaderResourceView* mResourceView;
+	ID3D11BlendState* mBlendState;
+	ID3D11RasterizerState* mRasterizerState;
 };
