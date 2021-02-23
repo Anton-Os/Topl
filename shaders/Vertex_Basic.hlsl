@@ -34,7 +34,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	}
 
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
-	output.pos += offset;
+	output.pos += mul(projMatrix, offset);
 
 	return output;
 }

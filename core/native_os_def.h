@@ -1,7 +1,7 @@
 #ifndef NATIVE_OS_DEF
 
-#define WIN_HEIGHT 500
-#define WIN_WIDTH 500
+#define WIN_HEIGHT 1200
+#define WIN_WIDTH 1100
 
 #include "Rasteron.h" // TODO: Make this inclusion conditional
 

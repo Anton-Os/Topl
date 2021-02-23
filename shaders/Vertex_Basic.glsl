@@ -28,5 +28,5 @@ void main() {
 	}
 
 	texcoord_out = texcoord;
-	gl_Position = vec4(finalPos + vec3(offset), 1.0);
+	gl_Position = projMatrix * vec4(finalPos + vec3(offset), 1.0);
 }
