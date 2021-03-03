@@ -260,6 +260,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	// Generates object for single scene block buffer
 	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes)) {
 		mBuffers.push_back(Buffer_GL4(m_bufferAlloc.getAvailable()));
+		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}

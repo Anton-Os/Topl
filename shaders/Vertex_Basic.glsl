@@ -30,6 +30,6 @@ void main() {
 	texcoord_out = texcoord;
 
 	mat4 identityMatrix = mat4(1.0); // identity matrix
-	gl_Position = finalPos + (vec4(offset, 1.0f) * identityMatrix); // For testing
+	gl_Position = finalPos + (vec4(offset, 0.0f) * identityMatrix); // For testing
 	// gl_Position = finalPos + (vec4(offset, 1.0f) * projMatrix); // Uncomment for real projection!
 }
