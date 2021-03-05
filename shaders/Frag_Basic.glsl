@@ -2,8 +2,14 @@
 
 uniform sampler2D baseTex;
 
-layout(packed) uniform SceneBlock{
-	mat4 projMatrix; // For testing
+/* layout(packed, binding = 2) uniform Block{
+	vec2 rotation; // padded to vec4
+	vec3 offset; // padded to vec4
+}; */
+
+// glsl block index 1
+layout(packed) uniform SceneBlock {
+	mat4 projMatrix;
 };
 
 layout(location = 0) in vec2 texcoord;

@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::sceneManager);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&Topl::sceneManager);
-		Topl::sceneManager.resolvePhysics();
+		renderer.updateScene(&Topl::sceneManager); // Uncomment
+		Topl::sceneManager.resolvePhysics(); // Uncomment
 
 #ifdef WIN32
 		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {

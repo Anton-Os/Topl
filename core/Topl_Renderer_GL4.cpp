@@ -263,6 +263,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
@@ -279,6 +280,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		// Index creation procedures
@@ -321,6 +323,16 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		mMainRenderIDs = currentRenderID; // Sets main graphics ID's to max value of currentRenderID
 	}
 
+	GLint blockCount; glGetProgramiv(m_pipeline.shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+	if (blockCount != TOPL_BLOCK_COUNT) { // Check for proper glsl block count
+		mSceneReady = false;
+		return;
+	}
+	// if (GLuint sceneBlockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "SceneBlock") != GL_INVALID_INDEX)
+	glUniformBlockBinding(m_pipeline.shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+	// if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX)
+	glUniformBlockBinding(m_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+
 	mSceneReady = true;
     return; // To be continued
 }
@@ -361,27 +373,31 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_GL4* targetBuff = nullptr;
+
+	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.front().buffer);
+		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+	}
  
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
-					targetBuff = &(*currentBuff); 
-					break;
-				}
+				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) targetBuff = &(*currentBuff);
 
-			if (targetBuff == nullptr) { 
+			if (targetBuff == nullptr)
 				puts("Block buffer could not be located! "); 
-				return;
+			else {
+				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
+				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+				glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 			}
-
-			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	mSceneReady = true;
 	return;
@@ -504,14 +520,8 @@ void Topl_Renderer_GL4::render(void){
 		return;
 	}
 
-	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
-	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_GL4* sceneBlockBuff = &mBuffers.front();
-		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "SceneBlock") != GL_INVALID_INDEX) {
-			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, SCENE_BLOCK_BINDING);
-			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, sceneBlockBuff->buffer);
-		}
-	}
+	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, mBuffers.front().buffer);
 
 	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
@@ -523,16 +533,12 @@ void Topl_Renderer_GL4::render(void){
 			else
 				continue; // If it continues all the way through error has occured
 
-		// Buffer binding step
-		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id); // Untested! Make sure this works!
+		// Buffer discovery and binding step
+		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id);
 
 		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		// Buffer_GL4* sceneBlockBuff = _GL4::findBuffer(BUFF_Scene_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-
-		if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX) {
-			glUniformBlockBinding(m_pipeline.shaderProg, blockIndex, RENDER_BLOCK_BINDING);
+		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
-		}
 
 		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
 		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);

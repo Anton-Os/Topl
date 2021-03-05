@@ -32,8 +32,11 @@ struct Buffer : public RenderableTarget {
     unsigned count = 1; // No. of primitives
 };
 
-#define RENDER_BLOCK_BINDING 0 // Point to bind to for geometry updates
-#define SCENE_BLOCK_BINDING 1 // Point to bind to for scene updates
+#define TOPL_BLOCK_COUNT 2 // Number of supported uniform blocks
+#define RENDER_BLOCK_INDEX 0 // Uniform block index for geometry updates // hard-coded value
+#define RENDER_BLOCK_BINDING 0 // Uniform block binding to for geometry updates
+#define SCENE_BLOCK_INDEX 1 // Uniform block index for scene updates // hard-coded value
+#define SCENE_BLOCK_BINDING 1 // Uniform block binding to for updates
 
 #define MAX_TEXTURES_PER_TARGET 12
 
