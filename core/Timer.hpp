@@ -4,8 +4,6 @@
 #include <ratio>
 #include <cmath>
 
-
-
 class Timer_Ticker { // Get number of millisecs between two invocations of getSecsPassed()
 public:
 	Timer_Ticker() { reset(); }

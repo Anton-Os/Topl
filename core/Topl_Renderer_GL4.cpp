@@ -226,15 +226,15 @@ static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
-	cleanup_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
+	cleanup_win(mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
 #endif
 }
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	m_native.window = &hwnd;
+	mNativeContext.window = &hwnd;
 #ifdef _WIN32
-    init_win(m_native.window, &m_native.windowDevice_Ctx, &m_native.GL_Ctx);
+    init_win(mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -565,6 +565,6 @@ void Topl_Renderer_GL4::render(void){
 
 	free(bufferPtrs);
 #ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&m_native.windowDevice_Ctx);
+	swapBuffers_win(&mNativeContext.windowDevice_Ctx);
 #endif  
 }

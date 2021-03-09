@@ -8,7 +8,7 @@
 #include <string>
 
 #include "Timer.hpp"
-#include "Physics.hpp"
+#include "physics_def.h"
 
 #include "Geo_Component.hpp"
 

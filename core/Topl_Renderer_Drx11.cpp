@@ -199,7 +199,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	m_native.window = &hwnd; // Supplying platform specific stuff
+	mNativeContext.window = &hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -224,7 +224,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     // swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = *(m_native.window); 
+	swapChainDesc.OutputWindow = *(mNativeContext.window); 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -247,7 +247,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	// Viewport Creation
 
     RECT windowRect;
-    GetWindowRect(*(m_native.window), &windowRect);
+    GetWindowRect(*(mNativeContext.window), &windowRect);
 
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));

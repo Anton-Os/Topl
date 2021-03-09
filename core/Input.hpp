@@ -3,7 +3,7 @@
 #include <map>
 #include <cctype>
 
-#include "Timer.hpp"
+// #include "Timer.hpp"
 
 // typedef void (*keyComboCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
 typedef void (*keyCallback)(void); // Simply trigger on a certain
@@ -28,8 +28,9 @@ enum MOUSE_Button {
 };
 
 class Input_MouseLogger {
-    
-    void addMouseEvent(enum MOUSE_Button mb, float xNewPos, float yNewPos); // Translates mouse button enum to keystate
+public:
+    Input_MouseLogger(){}
+    // void addMouseEvent(enum MOUSE_Button mb, float xNewPos, float yNewPos); // Translates mouse button enum to keystate
     void addCallback(enum MOUSE_Button mb, keyCallback callback);
 private:
     float xScreenPos;

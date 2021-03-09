@@ -84,7 +84,6 @@ public:
         mShaders.push_back(fragShader);
         pipeline(vertexShader, fragShader);
     }
-    void setDrawType(enum DRAW_Type type){ mDrawType = type; }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
     bool updateScene(const Topl_SceneManager* sMan){
         if(!mPipelineReady) puts("Pipeline not set for update call");
@@ -104,7 +103,7 @@ public:
     }
     virtual void buildScene(const Topl_SceneManager* sMan) = 0;
 	
-	NATIVE_PLATFORM_ELEM m_native; // Native Platform Element required to create a renderer
+	NATIVE_PLATFORM_CONTEXT mNativeContext; // Native Platform Element required to create a renderer
 
 #ifdef RASTERON_H
     virtual Rasteron_Image* getFrame() = 0;
