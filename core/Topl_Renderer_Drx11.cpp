@@ -199,13 +199,13 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	mNativeContext.window = &hwnd; // Supplying platform specific stuff
+	mNativeContext.window_ptr = &hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 
-    bufferDesc.Width = WIN_WIDTH;
-    bufferDesc.Height = WIN_HEIGHT;
+    bufferDesc.Width = TOPL_WIN_WIDTH;
+    bufferDesc.Height = TOPL_WIN_HEIGHT;
     // bufferDesc.RefreshRate.Numerator = 60;
     // bufferDesc.RefreshRate.Denominator = 1;
 	bufferDesc.RefreshRate.Numerator = 1;
@@ -224,7 +224,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     // swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = *(mNativeContext.window); 
+	swapChainDesc.OutputWindow = *(mNativeContext.window_ptr); 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -247,15 +247,15 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	// Viewport Creation
 
     RECT windowRect;
-    GetWindowRect(*(mNativeContext.window), &windowRect);
+    GetWindowRect(*(mNativeContext.window_ptr), &windowRect);
 
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    viewport.Height = WIN_HEIGHT;
-    viewport.Width = WIN_WIDTH;
+    viewport.Height = TOPL_WIN_HEIGHT;
+    viewport.Width = TOPL_WIN_WIDTH;
 
 	m_deviceCtx->RSSetViewports(1, &viewport);
 
@@ -311,19 +311,19 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 
 	// Vertex shader compilation and creation code
 	sourceSize = strlen(vertexShader->getFilePath()) + 1;
-	wchar_t* vertexShaderSrc = new wchar_t[sourceSize];
-	mbstowcs(vertexShaderSrc, vertexShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
+	wchar_t* vertexShaderSrc_wchar = new wchar_t[sourceSize];
+	mbstowcs(vertexShaderSrc_wchar, vertexShader->getFilePath(), sourceSize); // need proper conversion to wcharhar_t
 	if (FAILED(
-		D3DCompileFromFile(vertexShaderSrc,
+		D3DCompileFromFile(vertexShaderSrc_wchar,
 			nullptr, nullptr, "main", "vs_5_0",
 			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.vsBuff, &errorBuff)
 	)) {
 		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		delete vertexShaderSrc; // Proper deallocation of the source string
+		delete vertexShaderSrc_wchar; // Proper deallocation of the source string
 		return;
 	}
-	delete vertexShaderSrc; // Proper deallocation of the source string
+	delete vertexShaderSrc_wchar; // Proper deallocation of the source string
 
 	hr = m_device->CreateVertexShader(m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
 		NULL, &m_pipeline.vertexShader);
@@ -334,19 +334,19 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 
 	// Pixel shader compilation and creation code
 	sourceSize = strlen(fragShader->getFilePath()) + 1;
-	wchar_t* fragmentShaderSrc = new wchar_t[sourceSize];
-	mbstowcs(fragmentShaderSrc, fragShader->getFilePath(), sourceSize); // need proper conversion to wchar_t first, sorry
+	wchar_t* fragmentShaderSrc_wchar = new wchar_t[sourceSize];
+	mbstowcs(fragmentShaderSrc_wchar, fragShader->getFilePath(), sourceSize); // need proper conversion to wcharhar_t first, sorry
 	if (FAILED(
-		D3DCompileFromFile(fragmentShaderSrc,
+		D3DCompileFromFile(fragmentShaderSrc_wchar,
 			nullptr, nullptr, "main", "ps_5_0",
 			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
 	)) {
 		mPipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-		delete fragmentShaderSrc; // Proper deallocation of the source string
+		delete fragmentShaderSrc_wchar; // Proper deallocation of the source string
 		return;
 	}
-	delete fragmentShaderSrc; // Proper deallocation of the source string
+	delete fragmentShaderSrc_wchar; // Proper deallocation of the source string
 
 	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
 		NULL, &m_pipeline.pixelShader);
@@ -360,23 +360,23 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 
 	// Generating an input layout based on Vertex Shader Inputs
 
-	D3D11_INPUT_ELEMENT_DESC* layoutPtr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
+	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
 	unsigned inputElementOffset = 0;
 	for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
-		*(layoutPtr + i) = _Drx11::getElementDescFromInput(vertexShader->getInputAtIndex(i), inputElementOffset);
+		*(layout_ptr + i) = _Drx11::getElementDescFromInput(vertexShader->getInputAtIndex(i), inputElementOffset);
 		inputElementOffset += _Drx11::getOffsetFromShaderVal(vertexShader->getInputAtIndex(i)->type);
 	}
     UINT layoutElemCount = (unsigned)vertexShader->getInputCount();
 
     m_device->CreateInputLayout(
-        layoutPtr, layoutElemCount,
+        layout_ptr, layoutElemCount,
         m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(), 
         &m_pipeline.vertexDataLayout
     );
 
     m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
 
-	free(layoutPtr); // Deallocating layoutPtr and all associated data
+	free(layout_ptr); // Deallocating layout_ptr and all associated data
 	mPipelineReady = true;
 }
 
@@ -465,8 +465,8 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	// Custom Image format creation
 	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
-	rstn_image->width = WIN_WIDTH; // defined in native_os_def
-	rstn_image->height = WIN_HEIGHT; // defined in native_os_def
+	rstn_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
+	rstn_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
 	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
 	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
@@ -598,7 +598,6 @@ void Topl_Renderer_Drx11::render(void){
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
-			// Buffer_Drx11* sceneBlockBuff = _Drx11::findBuffer(BUFF_Scene_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;

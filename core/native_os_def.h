@@ -1,7 +1,7 @@
 #ifndef NATIVE_OS_DEF
 
-#define WIN_HEIGHT 1200
-#define WIN_WIDTH 1100
+#define TOPL_WIN_HEIGHT 1200
+#define TOPL_WIN_WIDTH 1100
 
 #include "Rasteron.h" // TODO: Make this inclusion conditional
 
@@ -23,11 +23,11 @@
 
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
-        NATIVE_WINDOW* window; // Window is initialized outside
+        NATIVE_WINDOW* window_ptr; // Window is initialized outside // TODO: Fix this!
         NATIVE_GL_CONTEXT GL_Ctx;
         HDC windowDevice_Ctx;
         LPPOINT cursorPos;
-        MSG loopMessage;
+        MSG eventMsg;
     };
 
     #define NATIVE_PLATFORM_CONTEXT Windows_Platform_Context

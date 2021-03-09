@@ -161,8 +161,8 @@ namespace _GL4 {
 		return offset;
 	}
 
-	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** bufferPtrs, unsigned short count) {
-		return *(bufferPtrs + type); // We know the offset with the type argument
+	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** buffer_ptrs, unsigned short count) {
+		return *(buffer_ptrs + type); // We know the offset with the type argument
 	}
 
 	static void discoverBuffers(Buffer_GL4** dBuffers, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
@@ -226,15 +226,15 @@ static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
-	cleanup_win(mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
+	cleanup_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
 #endif
 }
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	mNativeContext.window = &hwnd;
+	mNativeContext.window_ptr = &hwnd;
 #ifdef _WIN32
-    init_win(mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
+    init_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -344,8 +344,8 @@ Rasteron_Image* Topl_Renderer_GL4::getFrame(){
 	// Custom Image format creation
 	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
-	rstn_image->width = WIN_WIDTH; // defined in native_os_def
-	rstn_image->height = WIN_HEIGHT; // defined in native_os_def
+	rstn_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
+	rstn_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
 	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
 	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
@@ -523,7 +523,7 @@ void Topl_Renderer_GL4::render(void){
 	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, mBuffers.front().buffer);
 
-	Buffer_GL4** bufferPtrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
+	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= mMainRenderIDs; id++) {
@@ -534,14 +534,14 @@ void Topl_Renderer_GL4::render(void){
 				continue; // If it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(bufferPtrs, &mBuffers, id);
+		_GL4::discoverBuffers(buffer_ptrs, &mBuffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, bufferPtrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, bufferPtrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
@@ -563,7 +563,7 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	free(bufferPtrs);
+	free(buffer_ptrs);
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&mNativeContext.windowDevice_Ctx);
 #endif  

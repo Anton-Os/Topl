@@ -1,7 +1,8 @@
  #include "native_os_def.h"
 
 #include "FileIO.hpp"
-#include "Input.hpp"
+// #include "Input.hpp"
+#include "Platform.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
@@ -13,7 +14,7 @@
 namespace Topl {
 	// Management structures
 	Topl_SceneManager sceneManager;
-	Input_KeyLogger keyLogger;
+	// Input_KeyLogger keyLogger;
 
 	// Render specific objects
 	// TODO: Make these not device specific, relative file paths only!
@@ -37,16 +38,16 @@ struct VertexShader : public Topl_Shader {
 		) {  }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		const uint8_t* offsetBytesPtr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
-		const uint8_t* rotationBytesPtr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
+		const uint8_t* offsetBytes_ptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
+		const uint8_t* rotationBytes_ptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
 
 		bytes->assign({
-			*(offsetBytesPtr + 0), *(offsetBytesPtr + 1), *(offsetBytesPtr + 2), *(offsetBytesPtr + 3), // X offset value
-			*(offsetBytesPtr + 4), *(offsetBytesPtr + 5), *(offsetBytesPtr + 6), *(offsetBytesPtr + 7), // Y offset value
-			*(offsetBytesPtr + 8), *(offsetBytesPtr + 9), *(offsetBytesPtr + 10), *(offsetBytesPtr + 11), // Z offset value
+			*(offsetBytes_ptr + 0), *(offsetBytes_ptr + 1), *(offsetBytes_ptr + 2), *(offsetBytes_ptr + 3), // X offset value
+			*(offsetBytes_ptr + 4), *(offsetBytes_ptr + 5), *(offsetBytes_ptr + 6), *(offsetBytes_ptr + 7), // Y offset value
+			*(offsetBytes_ptr + 8), *(offsetBytes_ptr + 9), *(offsetBytes_ptr + 10), *(offsetBytes_ptr + 11), // Z offset value
 			0, 0, 0, 0, // 1 byte padding
-			*(rotationBytesPtr + 0), *(rotationBytesPtr + 1), *(rotationBytesPtr + 2), *(rotationBytesPtr + 3), // Main axis rotation
-			*(rotationBytesPtr + 4), *(rotationBytesPtr + 5), *(rotationBytesPtr + 6), *(rotationBytesPtr + 7), // Cross axis rotation
+			*(rotationBytes_ptr + 0), *(rotationBytes_ptr + 1), *(rotationBytes_ptr + 2), *(rotationBytes_ptr + 3), // Main axis rotation
+			*(rotationBytes_ptr + 4), *(rotationBytes_ptr + 5), *(rotationBytes_ptr + 6), *(rotationBytes_ptr + 7), // Cross axis rotation
 			0, 0, 0, 0, // 1 byte padding
 			0, 0, 0, 0 // 1 byte padding
 		});

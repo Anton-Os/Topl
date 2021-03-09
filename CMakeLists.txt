@@ -72,6 +72,7 @@ list(APPEND common_Sources
 	core/FileIO.cpp
 	core/Input.cpp
     core/Timer.cpp
+    core/Platform.cpp
 )
 
 list(APPEND geo_Sources 
