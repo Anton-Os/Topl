@@ -154,7 +154,7 @@ namespace _GL4 {
 		case SHDR_int:
 			offset = sizeof(int); break;
 		default:
-			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			puts("GL4 Type Shader Input Type Not Supported!");
 			break;
 		}
 
@@ -169,7 +169,7 @@ namespace _GL4 {
 		//TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
 		for (std::vector<Buffer_GL4>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
-				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
+				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates
 	}
 
 	static void setTextureProperties(GLenum type, TEX_Mode m) {
@@ -215,13 +215,16 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
 
 static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
-    wglMakeCurrent(NULL, NULL);
+  wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(*(hglrc));
 
 	ReleaseDC(*(hwnd), *(windowDC));
 }
 #elif defined(__linux__)
 static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
+	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None }; // Copy from Platform.cpp createWindow()
+	XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs); // Copy from Platform.cpp createWindow()
+
 	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE); // Object might be moved inside _Native_Platform_Context
 	glXMakeCurrent(display, *window, graphicsContext);
 }
@@ -236,7 +239,7 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
 	cleanup_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
 #elif defined(__linux__)
-	cleawnup_linux(mNativeContext.display, mNativeContext.GL_ctx);
+	cleanup_linux(mNativeContext.display, mNativeContext.GL_ctx);
 #endif
 }
 
@@ -246,14 +249,14 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 #ifdef _WIN32
     init_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
 #elif defined(__linux__)
-	init_linux(mNativeContext.GL_ctx, mNativeContext.display, mNativeContext.window);
+	init_linux(mNativeContext.GL_ctx, mNativeContext.display, mNativeContext.window_ptr);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
 
 	glEnable(GL_DEPTH_TEST); // Make these customizable
 	glDepthFunc(GL_LESS); // Make these customizable
-	
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -282,7 +285,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
-		
+
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 
@@ -309,14 +312,14 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		mVAOs.push_back(VertexArray_GL4(currentRenderID, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
-		
+
 		GLsizei inputElementOffset = 0;
 		for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
 			const Shader_Type* shaderType = vertexShader->getInputAtIndex(i);
 
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(
-				i, 
+				i,
 				_GL4::getSizeFromShaderVal(shaderType->type),
 				_GL4::getFormatFromShaderVal(shaderType->type),
 				GL_FALSE,
@@ -371,7 +374,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	GLuint texture = m_textureBindingsAlloc.getAvailable();
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here 
+	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -391,7 +394,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
- 
+
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
@@ -400,7 +403,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) targetBuff = &(*currentBuff);
 
 			if (targetBuff == nullptr)
-				puts("Block buffer could not be located! "); 
+				puts("Block buffer could not be located! ");
 			else {
 				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
 				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -579,6 +582,6 @@ void Topl_Renderer_GL4::render(void){
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&mNativeContext.windowDevice_Ctx);
 #elif defined(__linux__)
-	swapBuffers_linux()
+	swapBuffers_linux(mNativeContext.display, mNativeContext.window_ptr);
 #endif
 }

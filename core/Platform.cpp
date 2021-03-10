@@ -54,7 +54,7 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
         "Topl",
 		windowName,
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 
+		CW_USEDEFAULT, CW_USEDEFAULT,
         TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
 		NULL, NULL, GetModuleHandle(NULL), NULL
     );
@@ -107,7 +107,7 @@ void Platform::setupMainWindow(NATIVE_WINDOW window){
 }
 
 void Platform::handleEvents(){
-    int eventsPending = XEventsQueued(mContext.display, QueuedAferReading);
+    int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);
 	XEvent currentEvent;
 
 	while(eventsPending-- > 0){ // Deplete number of events
