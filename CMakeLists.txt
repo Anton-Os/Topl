@@ -73,6 +73,7 @@ list(APPEND common_Sources
 	core/Input.cpp
     core/Timer.cpp
     core/Platform.cpp
+    core/ValueGen.cpp
 )
 
 list(APPEND geo_Sources 

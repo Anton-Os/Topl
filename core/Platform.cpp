@@ -1,5 +1,9 @@
 #include "Platform.hpp"
 
+namespace Topl {
+	Input_KeyLogger keyLogger;
+}
+
 #ifdef _WIN32
 
 /********* REMOVE AFTER TESTING ***********/
@@ -31,7 +35,7 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case (WM_CHAR): {
-		Platform::keyLogger.addKeyPress((char)wParam);
+		Topl::keyLogger.addKeyPress((char)wParam);
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
