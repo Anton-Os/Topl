@@ -50,11 +50,6 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
 	mContext.windowClass.lpszClassName = "Topl";
 	RegisterClass(&mContext.windowClass);
 
-    /* nameSize = strlen(windowName) + 1;
-	wchar_t* name_wchar = new wchar_t[nameSize];
-	mbstowcs(, windowName, nameSize); // need proper conversion to wchar_t 
-    delete name_wchar; */
-
     return CreateWindow(
         "Topl",
 		windowName,
@@ -83,18 +78,43 @@ void Platform::handleEvents(){
 #elif defined(__linux__)
 
 NATIVE_WINDOW Platform::createWindow(const char* windowName){
-    // TODO: Implement window creation code
-    return;
+    mContext.display = XOpenDisplay(NULL);
+
+	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	XVisualInfo* visualInfo = glXChooseVisual(mContext.display, 0, visualInfoAttribs);
+
+	XSetWindowAttributes windowAttribs;
+	windowAttribs.colormap = XCreateColormap(mContext.display, DefaultRootWindow(mContext.display), visualInfo->visual, AllocNone);
+	windowAttribs.event_mask = ExposureMask | KeyPressMask;
+
+    return XCreateWindow(
+		mContext.display, DefaultRootWindow(mContext.display),
+        0, 0,
+        TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
+        0, visualInfo->depth,
+        InputOutput, visualInfo->visual,
+        CWColormap | CWEventMask,
+        &windowAttribs
+	);
 }
 
 void Platform::setupMainWindow(NATIVE_WINDOW window){
-    // TODO: Implement window showing code
+    mContext.window = &window_ptr;
+
+	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
+	XMapWindow(mContext.display, window);
     return;
 }
 
 void Platform::handleEvents(){
-    // TODO: Implement event handling code
-    return;
+    int eventsPending = XEventsQueued(mContext.display, QueuedAferReading);
+	XEvent currentEvent;
+
+	while(eventsPending-- > 0){ // Deplete number of events
+		XNextEvent(mContext.display, &currentEvent);
+
+		// TODO: Perform event processing logic here
+	}
 }
 
 #endif

@@ -220,13 +220,23 @@ static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 
 	ReleaseDC(*(hwnd), *(windowDC));
 }
+#elif defined(__linux__)
+static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
+	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE); // Object might be moved inside _Native_Platform_Context
+	glXMakeCurrent(display, *window, graphicsContext);
+}
 
+static void swapBuffers_linux(Display* display, Window* window){ glXSwapBuffers(display, *window); }
+
+static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDestroyContext(display, graphicsContext);}
 #endif
 
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
-	cleanup_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
+	cleanup_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+#elif defined(__linux__)
+	cleawnup_linux(mNativeContext.display, mNativeContext.GL_ctx);
 #endif
 }
 
@@ -234,7 +244,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	mNativeContext.window_ptr = &hwnd;
 #ifdef _WIN32
-    init_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_Ctx);
+    init_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+#elif defined(__linux__)
+	init_linux(mNativeContext.GL_ctx, mNativeContext.display, mNativeContext.window);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -566,5 +578,7 @@ void Topl_Renderer_GL4::render(void){
 	free(buffer_ptrs);
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&mNativeContext.windowDevice_Ctx);
-#endif  
+#elif defined(__linux__)
+	swapBuffers_linux()
+#endif
 }
