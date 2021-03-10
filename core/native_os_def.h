@@ -53,7 +53,7 @@
 
     struct Linux_Platform_Context {
         Display* display;
-        NATIVE_WINDOW* window;
+        NATIVE_WINDOW* window_ptr;
         NATIVE_GL_CONTEXT GL_ctx;
         Cursor_Pos cursorPos;
     };

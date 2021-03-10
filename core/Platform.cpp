@@ -1,9 +1,5 @@
 #include "Platform.hpp"
 
-namespace Topl {
-    Input_KeyLogger keyLogger; // TODO: Integrate as part of Platform
-}
-
 #ifdef _WIN32
 
 /********* REMOVE AFTER TESTING ***********/
@@ -35,7 +31,7 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case (WM_CHAR): {
-		Topl::keyLogger.addKeyPress((char)wParam);
+		Platform::keyLogger.addKeyPress((char)wParam);
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
@@ -99,7 +95,7 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
 }
 
 void Platform::setupMainWindow(NATIVE_WINDOW window){
-    mContext.window = &window_ptr;
+    mContext.window_ptr = &window;
 
 	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
 	XMapWindow(mContext.display, window);
