@@ -265,15 +265,14 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
-	// Pipeline specific calls
-	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
-	// Start implementing more shader types...
+
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	// Generates object for single scene block buffer
-	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes)) {
+	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
 		mBuffers.push_back(Buffer_GL4(m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -290,7 +289,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
 
 		// Geo component block implementation
-		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Renderable_Block, m_bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -314,8 +313,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glBindVertexArray(currentVAO_ptr->vao);
 
 		GLsizei inputElementOffset = 0;
-		for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
-			const Shader_Type* shaderType = vertexShader->getInputAtIndex(i);
+		for(unsigned i = 0; i < primaryShader->getInputCount(); i++){
+			const Shader_Type* shaderType = primaryShader->getInputAtIndex(i);
 
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(
@@ -339,14 +338,16 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	}
 
 	GLint blockCount; glGetProgramiv(m_pipeline.shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
-	if (blockCount != TOPL_BLOCK_COUNT) { // Check for proper glsl block count
-		mSceneReady = false;
+	if (blockCount == TOPL_SINGLE_BLOCK_COUNT) // Render uniforms supported
+		glUniformBlockBinding(m_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+	else if (blockCount == TOPL_FULL_BLOCK_COUNT) { // Render and Scene uniforms supported
+		glUniformBlockBinding(m_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(m_pipeline.shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+	}
+	else {
+		mSceneReady = false; // Error
 		return;
 	}
-	// if (GLuint sceneBlockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "SceneBlock") != GL_INVALID_INDEX)
-	glUniformBlockBinding(m_pipeline.shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
-	// if (GLuint blockIndex = glGetUniformBlockIndex(m_pipeline.shaderProg, "Block") != GL_INVALID_INDEX)
-	glUniformBlockBinding(m_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 
 	mSceneReady = true;
     return; // To be continued
@@ -385,11 +386,11 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
-	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
-	std::vector<uint8_t> blockBytes; // New Implementation
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
+	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (vertexShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -398,7 +399,7 @@ void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
 	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
-		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) targetBuff = &(*currentBuff);
 
@@ -514,6 +515,10 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 
 	glUseProgram(m_pipeline.shaderProg); // Move this later
 	mPipelineReady = true;
+}
+
+void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader){
+	return; // TODO: Implement this code block
 }
 
 void Topl_Renderer_GL4::render(void){

@@ -1,7 +1,7 @@
 # Topl-Skeleton
 
-Skeleton code for a small renderer, using OpenGL 4 and Direct X 11.
+Skeleton code for a small renderer, using OpenGL 4 and Direct X 11. Windows is supported with a linux port in progress.
 
-Build runs on Visual Studio 2019. Cmake handles Eigen, GLEW, and DirectX SDK as dependencies. Cmake scripts still need work.
+Cmake handles Eigen, GLEW, and DirectX SDK as external project dependencies.
 
 The Rasteron submodule is required for loading textures.

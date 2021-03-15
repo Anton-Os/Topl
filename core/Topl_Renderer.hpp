@@ -32,7 +32,8 @@ struct Buffer : public RenderableTarget {
     unsigned count = 1; // No. of primitives
 };
 
-#define TOPL_BLOCK_COUNT 2 // Number of supported uniform blocks
+#define TOPL_SINGLE_BLOCK_COUNT 1 // For singly supported block, no scene uniform data
+#define TOPL_FULL_BLOCK_COUNT 2 // Number of fully supported uniform blocks
 #define RENDER_BLOCK_INDEX 0 // Uniform block index for geometry updates // hard-coded value
 #define RENDER_BLOCK_BINDING 0 // Uniform block binding to for geometry updates
 #define SCENE_BLOCK_INDEX 1 // Uniform block index for scene updates // hard-coded value
@@ -117,15 +118,16 @@ protected:
             if((*currentShader)->getType() == type) return *currentShader;
         return nullptr; // If shader is not found return null pointer
     }
+    enum SHDR_Type mPrimaryShaderType = SHDR_Vertex; // Shader that contains relevant uniform blocks and associated virtual functions
     std::vector<topl_shader_cptr> mShaders;
-    // std::vector<BlockBuffer> mBlockBuffers;
     enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool mSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned mMainRenderIDs = 1; // Indicator for number of drawable graphics objects    
+	unsigned mMainRenderIDs = 1; // Indicator for number of drawable graphics objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;
+    virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) = 0;
     virtual void update(const Topl_SceneManager* sMan) = 0;
 	virtual void render(void) = 0;
 };

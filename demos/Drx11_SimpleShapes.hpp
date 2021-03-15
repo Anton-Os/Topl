@@ -1,16 +1,16 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp"
+// #include "Input.hpp"
+#include "Platform.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
-// #include "Geo_Construct.hpp"
+#include "Geo_Construct.hpp"
 #include "primitives/Geo_Sphere2D.hpp"
 #include "primitives/Geo_Rect3D.hpp"
 #include "composites/Chain.hpp"
 #include "composites/Grid.hpp"
-
-#define MOVE_AMOUNT 8.0
 
 namespace Topl {
 	// Management Objects
@@ -36,31 +36,17 @@ struct VertexShader : public Topl_Shader {
 		) {  }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
+		bytes->clear(); // Make sure there is no preexisting data
+
 		const uint8_t* offsetBytes_ptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
 		const uint8_t* rotationBytes_ptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
-
-		bytes->assign({
-			*(offsetBytes_ptr), *(offsetBytes_ptr + 1), *(offsetBytes_ptr + 2), 0, // Gets offset values for x, y, and z, 0 for padding
-			*(rotationBytes_ptr), *(rotationBytes_ptr + 1), 0, 0 // Gets rotations values on x and y axis, 0's for padding
-		});
-
-		bytes->assign({
-			*(offsetBytes_ptr + 0), *(offsetBytes_ptr + 1), *(offsetBytes_ptr + 2), *(offsetBytes_ptr + 3), // X offset value
-			*(offsetBytes_ptr + 4), *(offsetBytes_ptr + 5), *(offsetBytes_ptr + 6), *(offsetBytes_ptr + 7), // Y offset value
-			*(offsetBytes_ptr + 8), *(offsetBytes_ptr + 9), *(offsetBytes_ptr + 10), *(offsetBytes_ptr + 11), // Z offset value
-			0, 0, 0, 0, // 0 byte padding
-			*(rotationBytes_ptr + 0), *(rotationBytes_ptr + 1), *(rotationBytes_ptr + 2), *(rotationBytes_ptr + 3), // Main axis rotation
-			*(rotationBytes_ptr + 4), *(rotationBytes_ptr + 5), *(rotationBytes_ptr + 6), *(rotationBytes_ptr + 7), // Cross axis rotation
-			0, 0, 0, 0, // 0 byte padding
-			0, 0, 0, 0 // 0 byte padding
-		});
-
+	
+		ValueGen::appendDataToBytes(offsetBytes_ptr, component->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotationBytes_ptr, component->getAngles()->size() * sizeof(float), 2 * sizeof(float), bytes);
 		return true;
 	}
 
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false; // No implementation
-	}
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const { return false; }
 };
 
 struct PixelShader : public Topl_Shader {
@@ -70,11 +56,6 @@ struct PixelShader : public Topl_Shader {
 			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("uint", "COLOR0", SHDR_uint) } // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		return false; // No implementation
-	}
-
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		return false; // No implementation
-	}
+	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const { return false; }
 };

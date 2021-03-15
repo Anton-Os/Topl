@@ -141,7 +141,7 @@ if(WIN32)
 	)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
 
-  add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
+  # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
 
 # OpenGL Rendering Demos
@@ -165,7 +165,9 @@ add_library(GL4_Engine
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
 )
-add_dependencies(GL4_Engine GLEW Eigen)
+if(NOT WIN32) # decreases Windows build time
+    add_dependencies(GL4_Engine GLEW Eigen)
+endif()
 
 add_executable(GL4_MovingSprite
     geo/composites/Humanoid.cpp
