@@ -8,6 +8,8 @@ layout(packed) uniform Block {
 
 // glsl block index 1
 layout(packed) uniform SceneBlock {
+	vec3 cameraPos; // padded to vec4
+	vec3 cameraRot; // padded to vec4
 	mat4 projMatrix;
 };
 

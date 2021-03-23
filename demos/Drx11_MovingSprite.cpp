@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Basic.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
-	std::string pixelShaderSrc = getParentDir(argv[0]) + "\\Pixel_Basic.hlsl";
+	std::string pixelShaderSrc = getParentDir(argv[0]) + "\\Frag_Basic.hlsl";
 	PixelShader pixelShader = PixelShader(pixelShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &pixelShader);

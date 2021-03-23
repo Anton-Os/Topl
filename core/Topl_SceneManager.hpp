@@ -2,13 +2,14 @@
 #ifndef TOPL_SCENE_MANAGER_H
 
 #include "native_os_def.h" // This includes the Rasteron.h header, TODO Fix This!!!
+#include "physics_def.h"
 
 #include <vector>
 #include <map>
 #include <string>
 
 #include "Timer.hpp"
-#include "physics_def.h"
+// #include "ValueGen.hpp"
 
 #include "Geo_Component.hpp"
 
@@ -30,23 +31,25 @@ class Topl_Camera {
 public:
 	// Identity projection constructor
 	Topl_Camera() {
-		projMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
+		mProjMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
 	}
 	// Customizable projection matrix constructor
 	Topl_Camera(double angle, double ratio, double nearZ, double farZ) {
-		projMatrix.row(0).col(0) << 1.0 / (angle * ratio * tan(angle / 2.0));
-		projMatrix.row(1).col(1) << 1.0 / (tan(angle / 2.0));
-		projMatrix.row(2).col(2) << (-1.0 * nearZ - farZ) / (nearZ - farZ);
-		projMatrix.row(2).col(3) << (2.0 * nearZ * farZ) / (nearZ - farZ);
-		projMatrix.row(3).col(2) << 1.0;
+		mProjMatrix.row(0).col(0) << 1.0 / (angle * ratio * tan(angle / 2.0));
+		mProjMatrix.row(1).col(1) << 1.0 / (tan(angle / 2.0));
+		mProjMatrix.row(2).col(2) << (-1.0 * nearZ - farZ) / (nearZ - farZ);
+		mProjMatrix.row(2).col(3) << (2.0 * nearZ * farZ) / (nearZ - farZ);
+		mProjMatrix.row(3).col(2) << 1.0;
 	}
-	vec3f_cptr getPos() const { return &pos; }
-	vec3f_cptr getDirection() const { return &direction; }
-	mat4f_cptr getProjMatrix() const { return &projMatrix; }
+	void updatePos(Eigen::Vector3f pos){ mPos += pos; }
+
+	vec3f_cptr getPos() const { return &mPos; }
+	vec3f_cptr getRotation() const { return &mRotation; }
+	mat4f_cptr getProjMatrix() const { return &mProjMatrix; }
 private:
-	Eigen::Vector3f pos = Eigen::Vector3f(0.0, 0.0, -1.0);
-	Eigen::Vector3f direction = Eigen::Vector3f(0.0, 0.0, 0.0);
-	Eigen::Matrix4f projMatrix = Eigen::Matrix4f::Zero();
+	Eigen::Vector3f mPos = Eigen::Vector3f(0.0, 0.0, -1.0);
+	Eigen::Vector3f mRotation = Eigen::Vector3f(0.0, 0.0, 1.0);
+	Eigen::Matrix4f mProjMatrix = Eigen::Matrix4f::Zero();
 };
 
 typedef const Topl_Camera* const topl_camera_cptr;
@@ -92,6 +95,7 @@ private:
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
 
 	Topl_Camera mCamera;
+	// ValueGen mValueGen;
 #ifdef RASTERON_H
 	std::map<Geo_Component*, const Rasteron_Image*> mGeoTex_map; // Associates geometry to a single texture structure
 #endif

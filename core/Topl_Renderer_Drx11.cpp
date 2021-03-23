@@ -380,6 +380,10 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	mPipelineReady = true;
 }
 
+void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader){
+	return; // TODO: Implement this code block
+}
+
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates

@@ -48,8 +48,14 @@ struct VertexShader : public Topl_Shader {
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
-		ValueGen::assignDataToBytes(matrixBytes, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
+		const uint8_t* cameraPosBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getPos()->data());
+		const uint8_t* cameraRotBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getRotation()->data());
+		const uint8_t* matrixBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
+
+		ValueGen::appendDataToBytes(cameraPosBytes_ptr, sMan->getCamera()->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRotBytes_ptr, sMan->getCamera()->getRotation()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrixBytes_ptr, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
+		// ValueGen::assignDataToBytes(matrixBytes, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

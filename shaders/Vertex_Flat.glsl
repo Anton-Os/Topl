@@ -1,6 +1,7 @@
 #version 440
 
-layout(packed) uniform Block{
+// glsl block index 0
+layout(packed) uniform Block {
 	vec2 rotation; // padding from vec2 to vec4
 	vec3 offset; // padding from vec3 to vec4
     uint flatColor;

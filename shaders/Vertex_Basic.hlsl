@@ -1,9 +1,11 @@
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset;
-	float4 rotation;
+	float4 offset; // padding in type
+	float4 rotation; // padding in type
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
+	float4 cameraPos; // padding in type
+	float4 cameraRot; // padding in type
 	float4x4 projMatrix;
 }
 
