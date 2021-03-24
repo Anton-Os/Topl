@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(mainWindow);
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.glsl";
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Volumes.glsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Flat.glsl";
 	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());

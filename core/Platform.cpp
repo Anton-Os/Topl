@@ -26,7 +26,7 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		Topl::keyLogger.addCallback('s', callback_s);
 		Topl::keyLogger.addCallback('d', callback_d);
 		Topl::keyLogger.addCallback('r', callback_r);
-	} */
+	}
     /********* REMOVE AFTER TESTING ***********/
 
 	switch (message) {
