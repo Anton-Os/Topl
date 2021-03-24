@@ -46,7 +46,8 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
 
-	output.pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0); // Initial assignment
+	// output.pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0); // Initial assignment
+	float4 finalPos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0);
 
 	if (rotation.x != 0.0) { // Rotation operations
 		float2x2 zRotMatrix = {
@@ -57,12 +58,12 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 		// float3x3 yRotMatrix = {} // TODO: Implement this
 
 		float2 rotCoords = mul(zRotMatrix, float2(input.pos.x, input.pos.y));
-		output.pos.x = rotCoords.x;
-		output.pos.y = rotCoords.y;
+		finalPos.x = rotCoords.x; finalPos.y = rotCoords.y;
+		finalPos.x += offset.x; finalPos.y += offset.y; finalPos.z += offset.z;
 	}
 
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
-	output.pos += mul(mul(projMatrix, calcCameraMatrix(cameraPos, lookPos)), offset);
+	output.pos = mul(projMatrix, finalPos); // TODO: Add camera matrix
 
 	return output;
 }
