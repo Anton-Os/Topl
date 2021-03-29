@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::sceneManager);
 
 	glPointSize(5.0f); // TODO: Include as part of the renderer code
-	while ( renderer.renderScene(DRAW_Points)) {
+	while ( renderer.renderScene(DRAW_Triangles)) {
 		// renderer.updateScene(&Topl::sceneManager);
 		// Topl::sceneManager.resolvePhysics();
 

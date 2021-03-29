@@ -43,23 +43,29 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 tPos){
 }
 
 void main() {
-	vec4 finalPos = vec4(pos, 1.0f);
-	if (rotation[0] != 0) {
+	vec4 finalPos = vec4(0.0, 0.0, 0.0, 0.0);
+	vec3 finalTranslation = pos + offset;
+
+	if (rotation[0] != 0 || rotation[1] != 0) {
 		mat2 zRotMatrix = mat2(
 			cos(rotation[0]), sin(rotation[0]),
 			-1 * sin(rotation[0]), cos(rotation[0])
 		);
+		vec2 zRotCoords = zRotMatrix * vec2(pos.x, pos.y);
 
-		/* mat3 yRotMatrix = mat3(
-			// TODO: Implement this
-		); */
+		mat3 yRotMatrix = mat3(
+			cos(rotation.y), 0, -1 * sin(rotation.y),
+			0, 1, 0,
+			sin(rotation.y), 0, cos(rotation.y)
+		);
+		vec3 yRotCoords = yRotMatrix * pos;
 
-		vec2 rotCoords = zRotMatrix * vec2(finalPos.x, finalPos.y);
-		finalPos.x = rotCoords.x;
-		finalPos.y = rotCoords.y;
-		finalPos += vec4(offset, 0.0f);
+		finalPos.x = zRotCoords.x + yRotCoords.x;
+		finalPos.y = zRotCoords.y + yRotCoords.y;
+		finalPos.z = yRotCoords.z;
 	}
 
+	finalPos = vec4(finalTranslation, 1.0);
 	texcoord_out = texcoord;
 
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;

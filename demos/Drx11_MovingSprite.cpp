@@ -6,6 +6,7 @@ int main(int argc, char** argv) {
 	Platform platform(argv[0]);
 	NATIVE_WINDOW mainWindow = platform.createWindow("Moving Sprite");
 	platform.setupMainWindow(mainWindow);
+	Platform::keyLogger.addCallback('w', buttonCallback_w);
 
 	Topl_Renderer_Drx11 renderer(mainWindow); // Renderer initialization
 

@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(mainWindow); // Renderer initialization
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Flat.hlsl";
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Volumes.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_Flat.hlsl";
 	PixelShader fragmentShader = PixelShader(fragmentShaderSrc.c_str());

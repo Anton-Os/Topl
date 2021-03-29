@@ -32,3 +32,9 @@ void logToFile(const char* fileName, std::string logMessage){
 
     file.close();
 }
+
+bool checkFormat_FBX(const char* source) {
+	std::string fileContent = readFile(source);
+	std::string magicKey("Kaydara FBX Binary  "); // 21 characters long
+	return (magicKey == fileContent.substr(0, 21)) ? true : false;
+}
