@@ -7,8 +7,8 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 #include "Geo_Construct.hpp"
-#include "primitives/Geo_Sphere2D.hpp"
-#include "primitives/Geo_Rect3D.hpp"
+#include "primitives/Geo_NGon2D.hpp"
+#include "primitives/Geo_Box3D.hpp"
 #include "composites/Chain.hpp"
 #include "composites/Grid.hpp"
 
@@ -17,8 +17,8 @@ namespace Topl {
 	Topl_SceneManager sceneManager;
 
 	// Primitive Geometry Objects
-	Geo_Sphere2D sphere1 = Geo_Sphere2D(0.1f, 30);
-	Geo_Rect3D box1 = Geo_Rect3D(0.4f);
+	Geo_NGon2D sphere1 = Geo_NGon2D(0.1f, 30);
+	Geo_Box3D box1 = Geo_Box3D(0.4f);
 	// Composite Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&sphere1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.3f); // 0.1f is the distance apart

@@ -6,9 +6,9 @@ struct Box {
     float depth;
 };
 
-class Geo_Rect3D : public Geo_RenderObj {
+class Geo_Box3D : public Geo_RenderObj {
 public:
-    Geo_Rect3D(float sideLength) 
+    Geo_Box3D(float sideLength) 
     : Geo_RenderObj(8, 36) {
         mBox.width = sideLength;
         mBox.height = sideLength;
@@ -16,7 +16,7 @@ public:
 
         fillRenderObject();
     }
-    Geo_Rect3D(float width, float height, float depth) 
+    Geo_Box3D(float width, float height, float depth) 
     : Geo_RenderObj(8, 36) {
         mBox.width = width;
         mBox.height = height;
@@ -29,8 +29,8 @@ public:
 	float getHeight() const { return mBox.height; }
     float getDepth() const { return mBox.depth; }
 private:
-    Eigen::Vector3f* genVertices() override;
-	Eigen::Vector2f* genTexCoords() override;
-    unsigned* genIndices() override;
+    void genVertices(Eigen::Vector3f* data) override;
+	void genTexCoords(Eigen::Vector2f* data) override;
+    void genIndices(unsigned* data) override;
     Box mBox;
 };

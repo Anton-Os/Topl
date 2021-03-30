@@ -66,7 +66,7 @@ find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(Rasteron_FOUND)
     add_executable(Img
-        demos/Img.cpp
+        demos/Demo_Img.cpp
     )
     target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
 endif()
@@ -82,22 +82,22 @@ list(APPEND common_Sources
 
 list(APPEND geo_Sources
     geo/primitives/Geo_Rect2D.cpp
-    geo/primitives/Geo_Rect3D.cpp
-    geo/primitives/Geo_Sphere2D.cpp
+    geo/primitives/Geo_Box3D.cpp
+    geo/primitives/Geo_NGon2D.cpp
 )
 
 # Generic Features Demos
 
 add_executable(TickTick
     core/Timer.cpp
-    demos/TickTick.cpp
+    demos/Demo_TickTick.cpp
 )
 target_include_directories(TickTick PUBLIC core helper geo)
 
 add_executable(Presser
     core/Timer.cpp
     core/Input.cpp
-    demos/Presser.cpp
+    demos/Demo_Presser.cpp
 )
 target_include_directories(Presser PUBLIC core helper geo)
 

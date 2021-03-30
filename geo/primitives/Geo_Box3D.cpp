@@ -1,11 +1,6 @@
-#include "Geo_Rect3D.hpp"
+#include "Geo_Box3D.hpp"
 
-Eigen::Vector3f* Geo_Rect3D::genVertices() {
-	if (getVertexData() != nullptr) cleanup();  // This means an attempt was made to override code
-	// TODO: This code should be in the base class!!!!
-	
-    Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
-    
+void Geo_Box3D::genVertices(Eigen::Vector3f* data) {
     // Front Face
     Eigen::Vector3f frontTopRight(mBox.height / 2.0f, mBox.width / 2.0f, DEFAULT_Z_VAL - (mBox.depth / 2.0f));
     Eigen::Vector3f frontTopLeft(mBox.height / 2.0f, -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL - (mBox.depth / 2.0f));
@@ -23,20 +18,13 @@ Eigen::Vector3f* Geo_Rect3D::genVertices() {
     Eigen::Vector3f backBotRight(-1 * (mBox.height / 2.0f), mBox.width / 2.0f, DEFAULT_Z_VAL + (mBox.depth / 2.0f));
     Eigen::Vector3f backBotLeft(-1 * (mBox.height / 2.0f), -1 * (mBox.width / 2.0f), DEFAULT_Z_VAL + (mBox.depth / 2.0f)); 
 
-    *(data + 0) = backBotLeft;
-    *(data + 1) = backBotRight;
-    *(data + 2) = backTopLeft;
-    *(data + 3) = backTopRight;
-
-    return data;
+    *(data + 4) = backBotLeft;
+    *(data + 5) = backBotRight;
+    *(data + 6) = backTopLeft;
+    *(data + 7) = backTopRight;
 }
 
-Eigen::Vector2f* Geo_Rect3D::genTexCoords() {
-	if (getTexCoordData() != nullptr) cleanup();  // This means an attempt was made to override code
-	// TODO: This code should be in the base class!!!!
-
-	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
-
+void Geo_Box3D::genTexCoords(Eigen::Vector2f* data) {
 	Eigen::Vector2f topRight(1.0f, 0.0f);
 	Eigen::Vector2f topLeft(0.0f, 0.0f);
 	Eigen::Vector2f botRight(1.0f, 1.0f);
@@ -53,13 +41,8 @@ Eigen::Vector2f* Geo_Rect3D::genTexCoords() {
 	*(data + 5) = botRight;
 	*(data + 6) = topLeft;
 	*(data + 7) = topRight;
-
-	return data;
 }
 
-unsigned* Geo_Rect3D::genIndices(){
-	if (getIndexData() != nullptr) cleanup();  // This means an attempt was made to override code
-	// TODO: This code should be in the base class!!!!
-
-    return nullptr; // No implementation
+void Geo_Box3D::genIndices(unsigned* data){
+    return; // No implementation
 }

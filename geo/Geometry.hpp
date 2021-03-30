@@ -12,8 +12,8 @@
 // #define NORMAL_COUNT 3
 // #define BLENDWEIGHTS_COUNT 3
 
-// #define DEFAULT_Z_VAL 0.5f
-#define DEFAULT_Z_VAL 0.0f
+#define DEFAULT_Z_VAL 0.5f
+// #define DEFAULT_Z_VAL 0.0f
 #define X_OFFSET 0
 #define Y_OFFSET 1
 #define Z_OFFSET 2
@@ -59,6 +59,10 @@ public:
     Geo_RenderObj(unsigned v, unsigned i){
 		mVertexCount = v;
 		mIndexCount = i;
+
+		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
+		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
+		if(mIndexCount != 0) mIndexData = (unsigned*)malloc(mIndexCount * sizeof(unsigned));
 	}
     ~Geo_RenderObj(){ cleanup(); }
 
@@ -70,11 +74,10 @@ public:
 		if (mIndexData != nullptr) free(mIndexData);
 	}
 
-	// Should be called in the derived class constructor body!
 	void fillRenderObject(){
-		mPosData = genVertices();
-		mTexCoordData = genTexCoords();
-        if(mIndexCount != 0) mIndexData = genIndices();
+		genVertices(mPosData);
+		genTexCoords(mTexCoordData);
+        if(mIndexCount != 0) genIndices(mIndexData);
 	}
 
 	perVertex_cptr getPerVertexData() {
@@ -88,13 +91,13 @@ public:
     unsigned getVertexCount() const { return mVertexCount; } // Get Vertex Count
     unsigned getIndexCount() const { return mIndexCount; } // Get Index Count
 
-    vec3f_cptr getVertexData() const { return mPosData; }
+    vec3f_cptr getPosData() const { return mPosData; }
     vec2f_cptr getTexCoordData() const { return mTexCoordData; }
     ui_cptr getIndexData() const { return mIndexData; }
 protected:
-    virtual Eigen::Vector3f* genVertices() = 0;
-    virtual Eigen::Vector2f* genTexCoords() = 0;
-    virtual unsigned* genIndices() = 0;
+    virtual void genVertices(Eigen::Vector3f* data) = 0;
+    virtual void genTexCoords(Eigen::Vector2f* data) = 0;
+    virtual void genIndices(unsigned* data) = 0;
 
     unsigned mVertexCount = 0; // Vertex count
     unsigned mIndexCount = 0; // Index count

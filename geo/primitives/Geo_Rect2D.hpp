@@ -31,8 +31,8 @@ public:
 	float getWidth() const { return mRect.width; }
 	float getHeight() const { return mRect.height; }
 private:
-    Eigen::Vector3f* genVertices() override;
-	Eigen::Vector2f* genTexCoords() override;
-    unsigned* genIndices() override;
+    void genVertices(Eigen::Vector3f* data) override;
+	void genTexCoords(Eigen::Vector2f* data) override;
+    void genIndices(unsigned* data) override;
     Rect mRect;
 };
