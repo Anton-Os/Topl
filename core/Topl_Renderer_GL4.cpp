@@ -286,7 +286,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
@@ -299,14 +299,14 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 		// Index creation procedures
 		if (geoTarget_iData != nullptr) {
-			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getICount()));
+			mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getICount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 		} else mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, m_bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
-		mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, m_bufferAlloc.getAvailable(), geoTarget_renderObj->getVertexCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVertexCount() * sizeof(Geo_PerVertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
 
 		mVAOs.push_back(VertexArray_GL4(currentRenderID, m_vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &mVAOs.back(); // Check to see if all parameters are valid

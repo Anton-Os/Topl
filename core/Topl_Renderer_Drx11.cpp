@@ -400,7 +400,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
@@ -413,16 +413,16 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
-			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getICount());
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
+			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
 		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
 		if (!mSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
+												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
 
-		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
 		if (!mSceneReady) return;
 
 #ifdef RASTERON_H

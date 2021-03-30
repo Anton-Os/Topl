@@ -9,7 +9,7 @@ public:
         Topl_SceneManager* sMan, 
         const Geo_Component* initiator,
         unsigned gCount)
-    : Geo_Construct(prefix, sMan, geoLink, pow(initiator->getRenderObj()->getVCount(), gCount)){
+    : Geo_Construct(prefix, sMan, geoLink, pow(initiator->getRenderObj()->getVertexCount(), gCount)){
         fillSceneManager(sMan);
     }
 

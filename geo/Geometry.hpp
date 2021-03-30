@@ -12,7 +12,8 @@
 // #define NORMAL_COUNT 3
 // #define BLENDWEIGHTS_COUNT 3
 
-#define DEFAULT_Z_VAL 0.5f
+// #define DEFAULT_Z_VAL 0.5f
+#define DEFAULT_Z_VAL 0.0f
 #define X_OFFSET 0
 #define Y_OFFSET 1
 #define Z_OFFSET 2
@@ -52,56 +53,56 @@ public:
 	Geo_RenderObj(){}
 	// Plain vertex constructor
 	Geo_RenderObj(unsigned v){
-		mVCount = v;
+		mVertexCount = v;
 	}
 	// Vertex w indices constructor
     Geo_RenderObj(unsigned v, unsigned i){
-		mVCount = v;
-		mICount = i;
+		mVertexCount = v;
+		mIndexCount = i;
 	}
     ~Geo_RenderObj(){ cleanup(); }
 
 	void cleanup() {
 		if (mPerVertexData != nullptr) free(mPerVertexData);
 
-		if (mVData != nullptr) free(mVData);
-		if (mTData != nullptr) free(mTData);
-		if (mIData != nullptr) free(mIData);
+		if (mPosData != nullptr) free(mPosData);
+		if (mTexCoordData != nullptr) free(mTexCoordData);
+		if (mIndexData != nullptr) free(mIndexData);
 	}
 
 	// Should be called in the derived class constructor body!
 	void fillRenderObject(){
-		mVData = genVertices();
-		mTData = genTexCoords();
-        if(mICount != 0) mIData = genIndices();
+		mPosData = genVertices();
+		mTexCoordData = genTexCoords();
+        if(mIndexCount != 0) mIndexData = genIndices();
 	}
 
 	perVertex_cptr getPerVertexData() {
 		if (mPerVertexData == nullptr) {
-			mPerVertexData = (Geo_PerVertexData*)malloc(mVCount * sizeof(Geo_PerVertexData));
-			for (unsigned v = 0; v < mVCount; v++)
-				*(mPerVertexData + v) = Geo_PerVertexData(*(mVData + v), *(mTData + v));
+			mPerVertexData = (Geo_PerVertexData*)malloc(mVertexCount * sizeof(Geo_PerVertexData));
+			for (unsigned v = 0; v < mVertexCount; v++)
+				*(mPerVertexData + v) = Geo_PerVertexData(*(mPosData + v), *(mTexCoordData + v));
 		}
 		return mPerVertexData;
 	}
-    unsigned getVCount() const { return mVCount; } // Get Vertex Count
-    unsigned getICount() const { return mICount; } // Get Index Count
+    unsigned getVertexCount() const { return mVertexCount; } // Get Vertex Count
+    unsigned getIndexCount() const { return mIndexCount; } // Get Index Count
 
-    vec3f_cptr getVData() const { return mVData; }
-    vec2f_cptr getTData() const { return mTData; }
-    ui_cptr getIData() const { return mIData; }
+    vec3f_cptr getVertexData() const { return mPosData; }
+    vec2f_cptr getTexCoordData() const { return mTexCoordData; }
+    ui_cptr getIndexData() const { return mIndexData; }
 protected:
     virtual Eigen::Vector3f* genVertices() = 0;
     virtual Eigen::Vector2f* genTexCoords() = 0;
     virtual unsigned* genIndices() = 0;
 
-    unsigned mVCount = 0; // Vertex count
-    unsigned mICount = 0; // Index count
+    unsigned mVertexCount = 0; // Vertex count
+    unsigned mIndexCount = 0; // Index count
 
 	Geo_PerVertexData* mPerVertexData = nullptr; // Formatted per vertex data
-    Eigen::Vector3f* mVData = nullptr; // Vertex data
-    Eigen::Vector2f* mTData = nullptr; // Texture coordinate data
-	unsigned* mIData = nullptr; // Index data
+    Eigen::Vector3f* mPosData = nullptr; // Vertex data
+    Eigen::Vector2f* mTexCoordData = nullptr; // Texture coordinate data
+	unsigned* mIndexData = nullptr; // Index data
 };
 
 #define GEOMETRY_H

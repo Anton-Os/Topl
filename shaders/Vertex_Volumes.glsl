@@ -46,7 +46,7 @@ void main() {
 	vec4 finalPos = vec4(0.0, 0.0, 0.0, 0.0);
 	vec3 finalTranslation = pos + offset;
 
-	if (rotation[0] != 0 || rotation[1] != 0) {
+//	if (rotation[0] != 0 || rotation[1] != 0) {
 		mat2 zRotMatrix = mat2(
 			cos(rotation[0]), sin(rotation[0]),
 			-1 * sin(rotation[0]), cos(rotation[0])
@@ -54,18 +54,29 @@ void main() {
 		vec2 zRotCoords = zRotMatrix * vec2(pos.x, pos.y);
 
 		mat3 yRotMatrix = mat3(
-			cos(rotation.y), 0, -1 * sin(rotation.y),
+			cos(rotation[1]), 0, -1 * sin(rotation[1]),
 			0, 1, 0,
-			sin(rotation.y), 0, cos(rotation.y)
+			sin(rotation[1]), 0, cos(rotation[1])
+		);
+		vec3 finalRotCoords = yRotMatrix * vec3(zRotCoords.x, zRotCoords.y, pos.z);
+		// vec3 finalRotCoords = yRotMatrix * vec3(zRotCoords.x, zRotCoords.y, 0.0); // For testing
+
+		finalPos = vec4(finalRotCoords, 0.0);
+
+		/* mat3 yRotMatrix = mat3(
+			cos(rotation[1]), 0, -1 * sin(rotation[1]),
+			0, 1, 0,
+			sin(rotation[1]), 0, cos(rotation[1])
 		);
 		vec3 yRotCoords = yRotMatrix * pos;
+		
 
 		finalPos.x = zRotCoords.x + yRotCoords.x;
 		finalPos.y = zRotCoords.y + yRotCoords.y;
-		finalPos.z = yRotCoords.z;
-	}
+		finalPos.z = yRotCoords.z; */
+//	}
 
-	finalPos = vec4(finalTranslation, 1.0);
+	finalPos += vec4(finalTranslation, 1.0);
 	texcoord_out = texcoord;
 
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;

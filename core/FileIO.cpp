@@ -1,5 +1,15 @@
 #include "FileIO.hpp"
 
+FBX_DocumentTree::FBX_DocumentTree(const char* source) {
+	mFileContent = readFile(source).c_str();
+
+	readNode(27); // 27 is the offset of the first node in fbx
+}
+
+void FBX_DocumentTree::readNode(unsigned startOffseet) {
+	// Perform read operation here
+}
+
 std::string readFile(const char* source){
     std::ifstream file(source);
     if(! file) return nullptr;

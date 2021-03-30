@@ -1,9 +1,8 @@
 #include "Geo_Sphere2D.hpp"
 
 Eigen::Vector3f* Geo_Sphere2D::genVertices(){
-	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getVertexData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
-
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
 
 	const double fullAngle = TOPL_PI * 2;
@@ -21,9 +20,8 @@ Eigen::Vector3f* Geo_Sphere2D::genVertices(){
 }
 
 Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
-	if (getTData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getTexCoordData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
-
 	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
 
 	for (unsigned t = 0; t < mVCount; t++)
@@ -33,7 +31,7 @@ Eigen::Vector2f* Geo_Sphere2D::genTexCoords() {
 }
 
 unsigned* Geo_Sphere2D::genIndices(){
-	if (getIData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getIndexData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
 

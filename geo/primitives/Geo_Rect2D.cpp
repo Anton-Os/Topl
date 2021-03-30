@@ -1,7 +1,7 @@
 #include "Geo_Rect2D.hpp"
 
 Eigen::Vector3f* Geo_Rect2D::genVertices() {
-	if (getVData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getVertexData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
 	
     Eigen::Vector3f* data = (Eigen::Vector3f*)malloc(mVCount * sizeof(Eigen::Vector3f));
@@ -21,7 +21,7 @@ Eigen::Vector3f* Geo_Rect2D::genVertices() {
 }
 
 Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
-	if (getTData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getTexCoordData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
 
 	Eigen::Vector2f* data = (Eigen::Vector2f*)malloc(mVCount * sizeof(Eigen::Vector2f));
@@ -40,7 +40,7 @@ Eigen::Vector2f* Geo_Rect2D::genTexCoords() {
 }
 
 unsigned* Geo_Rect2D::genIndices(){
-	if (getIData() != nullptr) cleanup();  // This means an attempt was made to override code
+	if (getIndexData() != nullptr) cleanup();  // This means an attempt was made to override code
 	// TODO: This code should be in the base class!!!!
 
     unsigned* data = (unsigned*)malloc(mICount * sizeof(unsigned));
