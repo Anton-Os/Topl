@@ -1,3 +1,5 @@
+#ifndef VALUEGEN_H
+
 #include <ctime>
 #include <cstdlib>
 #include <cstdint>
@@ -5,11 +7,24 @@
 
 #include <Eigen/Dense>
 
+struct SpatialBounds3D {
+    float left = -1.0f;
+    float right = 1.0f;
+    float bottom = -1.0f;
+    float top = 1.0f;
+    float nearPlane = 0;
+    float farPlane = 1.0f;
+    // float near = 0.0;
+    // float far = 1.0f;
+};
+
 struct ValueGen {
     ValueGen(){
         srand(time(NULL)); // random value seeder
     }
 
+    static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
+    static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
     static float genRandFloat(){ genRandFloat(0.0, 1.0); }
     static float genRandFloat(float minBound, float maxBound);
 
@@ -17,3 +32,6 @@ struct ValueGen {
     static void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* bytes);
     // void assignDataToBytes(void* dataPtr, std::vector<uint8_t>* bytes);
 };
+
+#define VALUEGEN_H
+#endif

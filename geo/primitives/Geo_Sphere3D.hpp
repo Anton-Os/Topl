@@ -10,7 +10,7 @@ class Geo_Sphere3D : public Geo_RenderObj {
 public:
     // Sphere Constructor
     Geo_Sphere3D(float radius, unsigned segments) 
-    : Geo_RenderObj(segments * segments + 1, 40) { // TODO: Fix this correctly
+    : Geo_RenderObj(segments * segments + 1, 40) { // TODO: Use proper values
         mSphere.radius = radius;
         mSphere.vSegments = segments;
         mSphere.hSegments = segments;

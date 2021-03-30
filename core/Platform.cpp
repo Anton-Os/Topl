@@ -58,6 +58,23 @@ void Platform::handleEvents(){
 	if (mContext.eventMsg.message == WM_QUIT) return; // Error code?
 }
 
+bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this function
+	GetCursorPos(&mContext.cursorPos);
+
+	RECT windowRect;
+	GetWindowRect(*(mContext.window_ptr), &windowRect);
+	
+	if (mContext.cursorPos.x > windowRect.right || mContext.cursorPos.x < windowRect.left || mContext.cursorPos.y > windowRect.top || mContext.cursorPos.y < windowRect.bottom)
+		return false; // Cursor is outside the screen space
+
+	LONG centerX = windowRect.left + ((windowRect.right - windowRect.left) / 2);
+	LONG centerY = windowRect.bottom + ((windowRect.top - windowRect.bottom) / 2);
+
+	// TODO: Continue to Implement
+
+	return true;
+}
+
 #elif defined(__linux__)
 
 NATIVE_WINDOW Platform::createWindow(const char* windowName){
@@ -98,6 +115,10 @@ void Platform::handleEvents(){
 
 		// TODO: Perform event processing logic here
 	}
+}
+
+bool Platform::getCursorCoords(float* xPos, float* yPos) {
+	return true;
 }
 
 #endif

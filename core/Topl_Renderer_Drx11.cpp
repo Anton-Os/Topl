@@ -246,8 +246,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	// Viewport Creation
 
-    RECT windowRect;
-    GetWindowRect(*(mNativeContext.window_ptr), &windowRect);
+    /* RECT windowRect;
+    GetWindowRect(*(mNativeContext.window_ptr), &windowRect); */
 
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));

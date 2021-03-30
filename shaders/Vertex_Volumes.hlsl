@@ -50,6 +50,8 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	// if (rotation.x != 0.0 || rotation.y != 0.0) { // Rotation operations
 
+		float hardRotAngle = 1.2;
+
 		float2x2 zRotMatrix = {
 			cos(rotation.x), sin(rotation.x),
 			-1 * sin(rotation.x), cos(rotation.x)
@@ -57,25 +59,14 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 		float2 zRotCoords = mul(zRotMatrix, float2(input.pos.x, input.pos.y)); // Rotation coordinates over z axis!
 		
 		float3x3 yRotMatrix = {
-			cos(rotation.y), 0, -1 * sin(rotation.y),
+			cos(hardRotAngle), 0, -1 * sin(hardRotAngle), // cos(rotation.y), 0, -1 * sin(rotation.y),
 			0, 1, 0,
-			sin(rotation.y), 0, cos(rotation.y)
+			sin(hardRotAngle), 0, cos(hardRotAngle) // sin(rotation.y), 0, cos(rotation.y)
 		};
 		float3 finalRotCoords = mul(yRotMatrix, float3(zRotCoords.x, zRotCoords.y, input.pos.z));
 
 		finalPos = float4(finalRotCoords, 0.0);
-		
-		/* float3x3 yRotMatrix = {
-			cos(rotation.y), 0, -1 * sin(rotation.y),
-			0, 1, 0,
-			sin(rotation.y), 0, cos(rotation.y)
-		};
-		float3 yRotCoords = mul(yRotMatrix, float3(input.pos.x, input.pos.y, input.pos.z)); // Rotation coordinates over y axis!
-
-
-		finalPos.x = zRotCoords.x + yRotCoords.x;
-		finalPos.y = zRotCoords.y + yRotCoords.y;
-		finalPos.z = yRotCoords.z; */
+	
 	// }
 
 	finalPos += finalTranslation;

@@ -86,6 +86,11 @@ list(APPEND geo_Sources
     geo/primitives/Geo_NGon2D.cpp
 )
 
+list(APPEND scene_Sources
+    scene/Topl_Scene_Builder.cpp
+    scene/Topl_Scene_Physics.cpp
+)
+
 # Generic Features Demos
 
 add_executable(TickTick
@@ -107,12 +112,12 @@ if(WIN32)
 
     add_library(Drx11_Engine
         ${common_Sources}
-    		${geo_Sources}
+    	${geo_Sources}
+        ${scene_Sources}
 
-        core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_Engine PUBLIC core geo)
+    target_include_directories(Drx11_Engine PUBLIC core geo scene)
     target_include_directories(Drx11_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -148,22 +153,22 @@ endif()
 
 add_library(GL4_Engine
     ${common_Sources}
-		${geo_Sources}
+    ${geo_Sources}
+    ${scene_Sources}
 
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_GL4.cpp
-    )
-    target_include_directories(GL4_Engine PUBLIC core geo)
-    target_include_directories(GL4_Engine PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    )
-    target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
-    set_target_properties(GL4_Engine
-        PROPERTIES
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS ON
+    core/Topl_Renderer_GL4.cpp
+)
+target_include_directories(GL4_Engine PUBLIC core geo scene)
+target_include_directories(GL4_Engine PUBLIC
+    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+)
+target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
+set_target_properties(GL4_Engine
+    PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS ON
 )
 if(NOT WIN32) # decreases Windows build time
     add_dependencies(GL4_Engine GLEW Eigen)

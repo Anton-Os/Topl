@@ -26,7 +26,7 @@
         NATIVE_WINDOW* window_ptr; // Window is initialized outside // TODO: Fix this!
         NATIVE_GL_CONTEXT GL_ctx;
         HDC windowDevice_Ctx;
-        LPPOINT cursorPos;
+        POINT cursorPos;
         MSG eventMsg;
     };
 

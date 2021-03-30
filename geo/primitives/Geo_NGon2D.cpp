@@ -5,7 +5,7 @@ void Geo_NGon2D::genVertices(Eigen::Vector3f* data){
 	const double incAngle = fullAngle / mNGon.segments;
 	const double startAngle = fullAngle / 4; // Start at 90 degrees, pointing vertically
 
-    *(data + 0) = Eigen::Vector3f(0.0f, 0.0f, 0.0f); // Circle origin
+    *(data + 0) = Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL); // Origin
     for(unsigned v = 1; v < mVertexCount; v++) // We have already created
         *(data + v) = Eigen::Vector3f(
 								sin(startAngle + (v * incAngle)) * mNGon.radius, 
