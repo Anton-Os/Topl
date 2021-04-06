@@ -1,6 +1,8 @@
 #include "Topl_Renderer.hpp"
 
-// Make this derived from Buffer within Renderer header
+#include <d3dx10.h> // DirectX Renderer Specific
+#include <d3dx11.h> // DirectX Renderer Specific
+#include <d3dx10math.h> // DirectX Renderer Specific
 
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}

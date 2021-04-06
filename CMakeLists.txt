@@ -77,7 +77,7 @@ list(APPEND common_Sources
 	core/Input.cpp
     core/Timer.cpp
     core/Platform.cpp
-    core/ValueGen.cpp
+    # core/ValueGen.cpp
 )
 
 list(APPEND geo_Sources
@@ -125,6 +125,7 @@ if(WIN32)
         ${common_Sources}
     	${geo_Sources}
         ${scene_Sources}
+        core/ValueGen.cpp
 
         core/Topl_Renderer_Drx11.cpp
     )
@@ -133,7 +134,7 @@ if(WIN32)
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
-    target_link_libraries(Drx11_Engine PUBLIC RasteronLib GLEW_lib) # GLEW lib shouldnt be linked
+    target_link_libraries(Drx11_Engine PUBLIC RasteronLib)
     set_target_properties(Drx11_Engine
         PROPERTIES
         CXX_STANDARD 11
@@ -166,12 +167,13 @@ add_library(GL4_Engine
     ${common_Sources}
     ${geo_Sources}
     ${scene_Sources}
+    core/ValueGen.cpp
 
     core/Topl_Renderer_GL4.cpp
 )
 target_include_directories(GL4_Engine PUBLIC core geo scene)
 target_include_directories(GL4_Engine PUBLIC
-    ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 )
 target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)

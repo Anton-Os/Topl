@@ -1,6 +1,8 @@
-#include <cstdio>
+// #include <cstdio>
 
 #include "native_os_def.h"
+
+#include "Rasteron.h" // For texturing support, should be conditional
 
 #include "Topl_Shader.hpp"
 #include "Topl_SceneManager.hpp"

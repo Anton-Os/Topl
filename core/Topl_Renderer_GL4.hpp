@@ -1,5 +1,11 @@
 #include "Topl_Renderer.hpp"
 
+#define GLEW_STATIC // OpenGL Renderer Specific
+#include "GL/glew.h" // OpenGL Renderer Specific
+
+#include <GL/gl.h> // OpenGL Renderer Specific
+ #include <GL/glu.h> // OpenGL Renderer Specific
+
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
 class Topl_DataAlloc_GL4 {
