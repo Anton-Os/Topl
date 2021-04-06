@@ -94,17 +94,28 @@ list(APPEND scene_Sources
 # Generic Features Demos
 
 add_executable(TickTick
-    core/Timer.cpp
+    ${common_Sources}
     demos/Demo_TickTick.cpp
 )
 target_include_directories(TickTick PUBLIC core helper geo)
 
 add_executable(Presser
-    core/Timer.cpp
-    core/Input.cpp
+    ${common_Sources}
     demos/Demo_Presser.cpp
 )
 target_include_directories(Presser PUBLIC core helper geo)
+
+add_executable(Cursor
+    ${common_Sources}
+    demos/Demo_Cursor.cpp
+)
+target_include_directories(Cursor PUBLIC core helper geo)
+
+add_executable(ParseFBX
+    ${common_Sources}
+    demos/Demo_ParseFBX.cpp
+)
+target_include_directories(ParseFBX PUBLIC core helper geo)
 
 
 # DirectX Windows Dependent Demos

@@ -16,10 +16,10 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
-	case (WM_CHAR): {
-		// Topl::keyLogger.addKeyPress((char)wParam);
-		Platform::keyLogger.addKeyPress((char)wParam);
-	}
+	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
+	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
+	case (WM_MBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_MiddleBtn_Down); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
