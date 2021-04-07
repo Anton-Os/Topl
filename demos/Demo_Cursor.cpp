@@ -1,13 +1,14 @@
 #include "Platform.hpp"
 
 namespace Topl {
-    bool isInWindow;
+    bool isInWindow = true;
     float cursorX; 
     float cursorY;
 }
 
 void mouseBtnCallback(){ 
-    if(Topl::isInWindow) printf("Mouse press!\n\tCursor X: %f\n\tCursor Y: %f", Topl::cursorX, Topl::cursorY);
+	if (Topl::isInWindow) printf("Mouse press!\n\tCursor X: %f\n\tCursor Y: %f", Topl::cursorX, Topl::cursorY);
+	else puts("Outside Window!");
 }
 
 int main(int argc, char** argv){
@@ -19,6 +20,7 @@ int main(int argc, char** argv){
     platform.mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseBtnCallback);
 
     while(true){
+		Topl::isInWindow = platform.getCursorCoords(&Topl::cursorX, &Topl::cursorY);
         platform.handleEvents();
     }
 
