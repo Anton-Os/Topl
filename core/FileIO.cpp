@@ -7,6 +7,12 @@ FBX_DocumentTree::FBX_DocumentTree(const char* source) {
 }
 
 unsigned FBX_DocumentTree::readNode(unsigned startOffseet) {
+    // Isolates endOffset for a given node
+    char endOffset_chars[4] = {
+        *(mFileContent + startOffseet + mEndOffset_relOffset + 0), *(mFileContent + startOffseet + mEndOffset_relOffset + 1), *(mFileContent + startOffseet + mEndOffset_relOffset + 2), *(mFileContent + startOffseet + mEndOffset_relOffset + 3) 
+    };
+    unsigned endOffset = (unsigned)atoi(&endOffset_chars[0]);
+
     // Isolates the name for a given node
     char nameLenChar = *(mFileContent + startOffseet + mNameLen_relOffset); // conversion required from const char* to char
     unsigned nameLen = (unsigned)atoi(&nameLenChar);
@@ -33,7 +39,7 @@ unsigned FBX_DocumentTree::readNode(unsigned startOffseet) {
 
 std::string readFile(const char* source){
     std::ifstream file(source);
-    if(! file) return nullptr;
+	if(!file.is_open()) return std::string(); // error occured, empty string returned
 
     // file.ignore(std::numeric_limits<std::streamsize>::max());
     file.clear();
@@ -45,6 +51,8 @@ std::string readFile(const char* source){
 
     return strStream.str();
 }
+
+// std::string readBinaryFile(const char* source){} // Possibly Read Binary File
 
 std::string getParentDir(const char* str){
     const char* strEnd = str + strlen(str); // Traverse to the end of the string

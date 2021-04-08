@@ -31,6 +31,7 @@ private:
 
 	// Here are relOffset values to help navigate each node
 	// For reference https://code.blender.org/2013/08/fbx-binary-file-format-specification/
+	const unsigned mEndOffset_relOffset = 0;
 	const unsigned mNumProps_relOffset = 4;
 	const unsigned mPropsListLen_relOffset = 8;
 	const unsigned mNameLen_relOffset = 12;

@@ -18,7 +18,7 @@
 
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
-        NATIVE_WINDOW* window_ptr; // Window is initialized outside // TODO: Fix this!
+        NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
         NATIVE_GL_CONTEXT GL_ctx;
         HDC windowDevice_Ctx;
         POINT cursorPos;
@@ -49,7 +49,7 @@
     struct Linux_Platform_Context {
         Display* display;
         // XVisualInfo* visualInfo;
-        NATIVE_WINDOW* window_ptr;
+        NATIVE_WINDOW window;
         NATIVE_GL_CONTEXT GL_ctx;
         Cursor_Pos cursorPos;
     };

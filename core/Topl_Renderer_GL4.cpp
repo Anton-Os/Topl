@@ -237,7 +237,7 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDest
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
-	cleanup_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+	cleanup_win(&mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
 #elif defined(__linux__)
 	cleanup_linux(mNativeContext.display, mNativeContext.GL_ctx);
 #endif
@@ -245,9 +245,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	mNativeContext.window_ptr = &hwnd;
+	mNativeContext.window = hwnd;
 #ifdef _WIN32
-    init_win(mNativeContext.window_ptr, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+    init_win(&mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
 #elif defined(__linux__)
 	init_linux(mNativeContext.GL_ctx, mNativeContext.display, mNativeContext.window_ptr);
 #endif

@@ -26,14 +26,14 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	return 0;
 }
 
-NATIVE_WINDOW Platform::createWindow(const char* windowName){
+void Platform::createWindow(const char* windowName){
     mContext.windowClass = { 0 };
 	mContext.windowClass.hInstance = GetModuleHandle(NULL);
 	mContext.windowClass.lpfnWndProc = eventProcedure;
 	mContext.windowClass.lpszClassName = "Topl";
 	RegisterClass(&mContext.windowClass);
 
-    return CreateWindow(
+    mContext.window = CreateWindow(
         "Topl",
 		windowName,
 		WS_OVERLAPPEDWINDOW,
@@ -41,13 +41,9 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
         TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
 		NULL, NULL, GetModuleHandle(NULL), NULL
     );
-}
 
-void Platform::setupMainWindow(NATIVE_WINDOW window){
-    mContext.window_ptr = &window;
-
-    ShowWindow(window, 1);
-	UpdateWindow(window);
+	ShowWindow(mContext.window, 1);
+	UpdateWindow(mContext.window);
 }
 
 void Platform::handleEvents(){
@@ -61,24 +57,29 @@ void Platform::handleEvents(){
 bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this function
 	GetCursorPos(&mContext.cursorPos);
 
-	HWND window = *(mContext.window_ptr);
+	// HWND window = *(mContext.window_ptr);
 	RECT windowRect;
-	GetWindowRect(window, &windowRect);
+	GetWindowRect(mContext.window, &windowRect);
 	
-	if (mContext.cursorPos.x > windowRect.right || mContext.cursorPos.x < windowRect.left || mContext.cursorPos.y > windowRect.top || mContext.cursorPos.y < windowRect.bottom)
-		return false; // Cursor is outside the screen space
+	// if (mContext.cursorPos.x > windowRect.right && mContext.cursorPos.x < windowRect.left && mContext.cursorPos.y > windowRect.top&& mContext.cursorPos.y < windowRect.bottom) {
+	if (mContext.cursorPos.x < windowRect.right && mContext.cursorPos.x > windowRect.left && mContext.cursorPos.y > windowRect.top && mContext.cursorPos.y < windowRect.bottom) {
+		// Cursor is inside screen space!
 
-	LONG centerX = windowRect.left + ((windowRect.right - windowRect.left) / 2);
-	LONG centerY = windowRect.bottom + ((windowRect.top - windowRect.bottom) / 2);
+		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
+		LONG centerX = windowRect.left + halfWidth;
+		*xPos = (mContext.cursorPos.x - centerX) / (float)halfWidth;
 
-	// TODO: Continue to Implement
+		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
+		LONG centerY = windowRect.top + halfHeight;
+		*yPos = -1.0f * (mContext.cursorPos.y - centerY) / (float)halfHeight;
 
-	return true;
+		return true;
+	} else return false; // Cursor is outside the screen space!
 }
 
 #elif defined(__linux__)
 
-NATIVE_WINDOW Platform::createWindow(const char* windowName){
+void Platform::createWindow(const char* windowName){
     mContext.display = XOpenDisplay(NULL);
 
 	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -88,7 +89,7 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
 	windowAttribs.colormap = XCreateColormap(mContext.display, DefaultRootWindow(mContext.display), visualInfo->visual, AllocNone);
 	windowAttribs.event_mask = ExposureMask | KeyPressMask;
 
-    return XCreateWindow(
+    mContext.window = XCreateWindow(
 		mContext.display, DefaultRootWindow(mContext.display),
         0, 0,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
@@ -97,15 +98,18 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
         CWColormap | CWEventMask,
         &windowAttribs
 	);
+
+	XSelectInput(mContext.display, mContext.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
+	XMapWindow(mContext.display, mContext.window);
 }
 
-void Platform::setupMainWindow(NATIVE_WINDOW window){
+/* void Platform::setupMainWindow(NATIVE_WINDOW window){
     mContext.window_ptr = &window;
 
 	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
 	XMapWindow(mContext.display, window);
     return;
-}
+} */
 
 void Platform::handleEvents(){
     int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);

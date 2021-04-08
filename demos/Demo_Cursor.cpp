@@ -13,8 +13,8 @@ void mouseBtnCallback(){
 
 int main(int argc, char** argv){
     Platform platform(argv[0]);
-    NATIVE_WINDOW mainWindow = platform.createWindow("Cursor");
-    platform.setupMainWindow(mainWindow);
+    platform.createWindow("Cursor");
+    // platform.setupMainWindow(mainWindow);
 
     platform.mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseBtnCallback);
     platform.mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseBtnCallback);
