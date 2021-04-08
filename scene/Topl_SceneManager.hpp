@@ -32,19 +32,12 @@ public:
 	Topl_Camera() {
 		projMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
 	}
-	// Customizable projection matrix constructor
-	/* Topl_Camera(double angle, double ratio, double nearZ, double farZ) {
-		projMatrix.row(0).col(0) << 1.0 / (angle * ratio * tan(angle / 2.0));
-		projMatrix.row(1).col(1) << 1.0 / (tan(angle / 2.0));
-		projMatrix.row(2).col(2) << (-1.0 * nearZ - farZ) / (nearZ - farZ);
-		projMatrix.row(2).col(3) << (2.0 * nearZ * farZ) / (nearZ - farZ);
-		projMatrix.row(3).col(2) << 1.0;
-	} */
 	Topl_Camera(bool isPerspective, SpatialBounds3D bounds){
 		(isPerspective)
 			? projMatrix = ValueGen::genPerspectiveMatrix(bounds)
 			: projMatrix = ValueGen::genOrthoMatrix(bounds);
 	}
+	void movePos(const Eigen::Vector3f& moveVec){ pos += moveVec; }
 	vec3f_cptr getPos() const { return &pos; }
 	vec3f_cptr getDirection() const { return &direction; }
 	mat4f_cptr getProjMatrix() const { return &projMatrix; }
@@ -67,6 +60,8 @@ public:
 	~Topl_SceneManager() {}
 
 	topl_camera_cptr getCamera() const { return &mCamera; }
+	// Topl_Camera* getCamera() { return &mCamera; }
+	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
 #ifdef RASTERON_H

@@ -3,6 +3,7 @@
 #include <cstdio>
 
 void Input_KeyLogger::addKeyPress(char keyCode) {
+	if (keyCode == '\0') return; // null keycode can be skippedS
 	for (std::map<char, keyCallback>::const_iterator currentCallback = mKeyCallback_map.cbegin(); currentCallback != mKeyCallback_map.cend(); currentCallback++)
 		if (keyCode == currentCallback->first) currentCallback->second(); // Makes callback go off
 }

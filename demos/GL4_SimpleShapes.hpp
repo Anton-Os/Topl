@@ -12,6 +12,8 @@
 #include "composites/Chain.hpp"
 #include "composites/Grid.hpp"
 
+#define MOVE_AMOUNT 0.5
+
 namespace Topl {
 	Topl_SceneManager sceneManager;
 
@@ -71,3 +73,8 @@ struct FragmentShader : public Topl_Shader {
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
 	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const { return false; }
 };
+
+void buttonCallback_w(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right

@@ -61,8 +61,9 @@ void Platform::handleEvents(){
 bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this function
 	GetCursorPos(&mContext.cursorPos);
 
+	HWND window = *(mContext.window_ptr);
 	RECT windowRect;
-	GetWindowRect(*(mContext.window_ptr), &windowRect);
+	GetWindowRect(window, &windowRect);
 	
 	if (mContext.cursorPos.x > windowRect.right || mContext.cursorPos.x < windowRect.left || mContext.cursorPos.y > windowRect.top || mContext.cursorPos.y < windowRect.bottom)
 		return false; // Cursor is outside the screen space

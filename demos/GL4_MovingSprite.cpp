@@ -8,6 +8,9 @@ int main(int argc, char** argv) {
 	NATIVE_WINDOW mainWindow = platform.createWindow("Moving Sprite");
 	platform.setupMainWindow(mainWindow);
 	Platform::keyLogger.addCallback('w', buttonCallback_w);
+	Platform::keyLogger.addCallback('a', buttonCallback_a);
+	Platform::keyLogger.addCallback('s', buttonCallback_s);
+	Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 	Topl_Renderer_GL4 renderer(mainWindow);
 

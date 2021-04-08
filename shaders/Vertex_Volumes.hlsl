@@ -49,9 +49,6 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	float4 finalTranslation = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
 
 	// if (rotation.x != 0.0 || rotation.y != 0.0) { // Rotation operations
-
-		float hardRotAngle = 1.2;
-
 		float2x2 zRotMatrix = {
 			cos(rotation.x), sin(rotation.x),
 			-1 * sin(rotation.x), cos(rotation.x)
@@ -59,9 +56,9 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 		float2 zRotCoords = mul(zRotMatrix, float2(input.pos.x, input.pos.y)); // Rotation coordinates over z axis!
 		
 		float3x3 yRotMatrix = {
-			cos(hardRotAngle), 0, -1 * sin(hardRotAngle), // cos(rotation.y), 0, -1 * sin(rotation.y),
+			cos(rotation.y), 0, -1 * sin(rotation.y), // cos(rotation.y), 0, -1 * sin(rotation.y),
 			0, 1, 0,
-			sin(hardRotAngle), 0, cos(hardRotAngle) // sin(rotation.y), 0, cos(rotation.y)
+			sin(rotation.y), 0, cos(rotation.y) // sin(rotation.y), 0, cos(rotation.y)
 		};
 		float3 finalRotCoords = mul(yRotMatrix, float3(zRotCoords.x, zRotCoords.y, input.pos.z));
 
@@ -70,8 +67,10 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	// }
 
 	finalPos += finalTranslation;
+	finalPos += cameraPos; // for testing
 
-	output.pos = mul(projMatrix, finalPos); // TODO: Multiply by computer cameraMatrix later
+	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
+	output.pos = mul(projMatrix, finalPos);
 	output.flatColor = 0xFF884422;
 
 	return output;

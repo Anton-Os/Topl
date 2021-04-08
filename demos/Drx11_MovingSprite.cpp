@@ -3,10 +3,14 @@
 // Entry Point
 
 int main(int argc, char** argv) {
+
 	Platform platform(argv[0]);
 	NATIVE_WINDOW mainWindow = platform.createWindow("Moving Sprite");
 	platform.setupMainWindow(mainWindow);
 	Platform::keyLogger.addCallback('w', buttonCallback_w);
+	Platform::keyLogger.addCallback('a', buttonCallback_a);
+	Platform::keyLogger.addCallback('s', buttonCallback_s);
+	Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 	Topl_Renderer_Drx11 renderer(mainWindow); // Renderer initialization
 

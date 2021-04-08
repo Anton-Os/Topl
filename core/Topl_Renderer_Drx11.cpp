@@ -127,7 +127,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static bool createrenderBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.ByteWidth = sizeof(uint8_t) * blockBytes->size();
@@ -390,7 +390,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 
 	// Generates object for single scene block buffer
 	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
-		mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+		mSceneReady = _Drx11::createBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
 
@@ -405,7 +405,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
+			mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
 			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
 		}
 		if (!mSceneReady) return; // Error
@@ -536,10 +536,13 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
-	const Topl_Shader* primaryShader = findShader(SHDR_Vertex); // New Implementation
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
-	Buffer_Drx11* sceneBlockBuff = nullptr;
+	// Buffer_Drx11* sceneBlockBuff = nullptr;
+
+	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		_Drx11::createBlockBuff(&m_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
@@ -555,7 +558,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 			if (renderBlockBuff == nullptr) { // TODO: Replace this!
 				OutputDebugStringA("Block buffer could not be located!");
 				return;
-			} else mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
+			} else mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
 
 			if (!mSceneReady) return; // Error
 		}
