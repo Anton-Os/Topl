@@ -1,30 +1,10 @@
 #include "GL4_SimpleShapes.hpp"
 
-#ifdef WIN32
-LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	PAINTSTRUCT ps;
-	HDC hDC = GetDC(hwnd);
-	RECT rect;
-
-	switch (message) {
-	case (WM_CREATE): {}
-	case (WM_PAINT): {}
-	case(WM_KEYDOWN): {}
-	case(WM_KEYUP): {}
-	case (WM_CHAR): {}
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
-	}
-	return 0;
-}
-#else
-	// TODO: make comparable UNIX version
-#endif
-
 // Entry Point
 
 int main(int argc, char** argv) {
 
+<<<<<<< refs/remotes/origin/linux_port
 #ifdef WIN32
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -55,10 +35,23 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(lnxWindow);
 #endif
+=======
+	Platform platform(argv[0]);
+	platform.createWindow("Simple Shapes");
+	// platform.setupMainWindow(mainWindow);
+	Platform::keyLogger.addCallback('w', buttonCallback_w);
+	Platform::keyLogger.addCallback('a', buttonCallback_a);
+	Platform::keyLogger.addCallback('s', buttonCallback_s);
+	Platform::keyLogger.addCallback('d', buttonCallback_d);
+>>>>>>> local
 
-	std::string parentDir = getParentDir(argv[0]);
+	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
 
+<<<<<<< refs/remotes/origin/linux_port
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\VertexShader.glsl";
+=======
+	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Volumes.glsl";
+>>>>>>> local
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
 	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\FragShader.glsl";
 	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
@@ -67,20 +60,18 @@ int main(int argc, char** argv) {
 
 	renderer.buildScene(&Topl::sceneManager);
 
+<<<<<<< refs/remotes/origin/linux_port
 	while ( renderer.renderScene(DRAW_Triangles)) {
 		// renderer.updateScene(&Topl::sceneManager);
 
+=======
+	glPointSize(5.0f); // TODO: Include as part of the renderer code
+	while ( renderer.renderScene(DRAW_Triangles)) {
+		renderer.updateScene(&Topl::sceneManager);
+>>>>>>> local
 		// Topl::sceneManager.resolvePhysics();
 
-#ifdef WIN32
-		while (PeekMessage(&wndMessage, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-		}
-		if (wndMessage.message == WM_QUIT) break;
-#else
-		// TODO: make comparable UNIX version
-#endif
+		platform.handleEvents();
 	}
 
 	return 0;

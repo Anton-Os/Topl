@@ -60,7 +60,13 @@ find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(Rasteron_FOUND)
+<<<<<<< refs/remotes/origin/linux_port
     add_executable(Img demos/Img.cpp)
+=======
+    add_executable(Img
+        demos/Demo_Img.cpp
+    )
+>>>>>>> local
     target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
 endif()
 
@@ -68,29 +74,60 @@ endif()
 list(APPEND common_Sources
 	core/FileIO.cpp
 	core/Input.cpp
+<<<<<<< refs/remotes/origin/linux_port
   core/Timer.cpp
+=======
+    core/Timer.cpp
+    core/Platform.cpp
+    # core/ValueGen.cpp
+>>>>>>> local
 )
 
 list(APPEND geo_Sources
     geo/primitives/Geo_Rect2D.cpp
-    geo/primitives/Geo_Rect3D.cpp
-    geo/primitives/Geo_Sphere2D.cpp
+    geo/primitives/Geo_Box3D.cpp
+    geo/primitives/Geo_NGon2D.cpp
+)
+
+list(APPEND scene_Sources
+    scene/Topl_Scene_Builder.cpp
+    scene/Topl_Scene_Physics.cpp
 )
 
 # Common Feature Demos
 
 add_executable(TickTick
-    core/Timer.cpp
-    demos/TickTick.cpp
+    ${common_Sources}
+    demos/Demo_TickTick.cpp
 )
 target_include_directories(TickTick PUBLIC core helper geo)
+if(UNIX)
+    target_link_libraries(TickTick PUBLIC X11 GL) # Links UNIX OS libs
+endif()
 
 add_executable(Presser
-    core/Timer.cpp
-    core/Input.cpp
-    demos/Presser.cpp
+    ${common_Sources}
+    demos/Demo_Presser.cpp
 )
 target_include_directories(Presser PUBLIC core helper geo)
+if(UNIX)
+    target_link_libraries(Presser PUBLIC X11 GL) # Links UNIX OS libs
+endif()
+
+add_executable(Cursor
+    ${common_Sources}
+    demos/Demo_Cursor.cpp
+)
+target_include_directories(Cursor PUBLIC core helper geo)
+if(UNIX)
+    target_link_libraries(Cursor PUBLIC X11 GL) # Links UNIX OS libs
+endif()
+
+add_executable(ParseFBX
+    ${common_Sources}
+    demos/Demo_ParseFBX.cpp
+)
+target_include_directories(ParseFBX PUBLIC core helper geo)
 
 if(WIN32)
 
@@ -98,17 +135,22 @@ if(WIN32)
 
     add_library(Drx11_Engine
         ${common_Sources}
+<<<<<<< refs/remotes/origin/linux_port
 		${geo_Sources}
+=======
+    	${geo_Sources}
+        ${scene_Sources}
+        core/ValueGen.cpp
+>>>>>>> local
 
-        core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_Engine PUBLIC core geo)
+    target_include_directories(Drx11_Engine PUBLIC core geo scene)
     target_include_directories(Drx11_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
-    target_link_libraries(Drx11_Engine PUBLIC RasteronLib GLEW_lib) # GLEW lib shouldnt be linked
+    target_link_libraries(Drx11_Engine PUBLIC RasteronLib)
     set_target_properties(Drx11_Engine
         PROPERTIES
         CXX_STANDARD 11
@@ -134,32 +176,52 @@ if(WIN32)
 		demos/Drx11_SimpleShapes.cpp
 	)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
+<<<<<<< refs/remotes/origin/linux_port
+=======
+
+  # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
+>>>>>>> local
 endif()
 
 # OpenGL Rendering Engine
 
 add_library(GL4_Engine
+<<<<<<< refs/remotes/origin/linux_port
         ${common_Sources}
 		${geo_Sources}
+=======
+    ${common_Sources}
+    ${geo_Sources}
+    ${scene_Sources}
+    core/ValueGen.cpp
+>>>>>>> local
 
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_GL4.cpp
-    )
-    target_include_directories(GL4_Engine PUBLIC core geo)
-    target_include_directories(GL4_Engine PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    )
-    target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
-    set_target_properties(GL4_Engine
-        PROPERTIES
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS ON
+    core/Topl_Renderer_GL4.cpp
 )
+target_include_directories(GL4_Engine PUBLIC core geo scene)
+target_include_directories(GL4_Engine PUBLIC
+    # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+)
+<<<<<<< refs/remotes/origin/linux_port
 add_dependencies(GL4_Engine GLEW Eigen) # Build external projects before engine
 
 # OpenGL Rendering Demos
+=======
+target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
+set_target_properties(GL4_Engine
+    PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS ON
+)
+if(NOT WIN32) # decreases Windows build time
+    add_dependencies(GL4_Engine GLEW Eigen)
+endif()
+if(UNIX)
+    target_link_libraries(GL4_Engine PUBLIC X11 GL) # Links UNIX OS libs
+endif()
+>>>>>>> local
 
 add_executable(GL4_MovingSprite
     geo/composites/Humanoid.cpp

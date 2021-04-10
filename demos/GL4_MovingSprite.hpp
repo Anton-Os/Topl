@@ -1,7 +1,13 @@
 #include "native_os_def.h"
 
+<<<<<<< refs/remotes/origin/linux_port
 #include "FileIO.hpp"
 #include "Input.hpp"
+=======
+// #include "FileIO.hpp"
+// #include "Input.hpp"
+#include "Platform.hpp"
+>>>>>>> local
 
 #include "Topl_Renderer_GL4.hpp"
 

@@ -1,5 +1,11 @@
 #include "Topl_Renderer.hpp"
 
+#define GLEW_STATIC // OpenGL Renderer Specific
+#include "GL/glew.h" // OpenGL Renderer Specific
+
+#include <GL/gl.h> // OpenGL Renderer Specific
+ #include <GL/glu.h> // OpenGL Renderer Specific
+
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
 class Topl_DataAlloc_GL4 {
@@ -104,22 +110,38 @@ struct Topl_Pipeline_GL4 {
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
+<<<<<<< refs/remotes/origin/linux_port
 	Topl_Renderer(NATIVE_WINDOW window){ init(window); }
 	~Topl_Renderer_GL4();
 
   void buildScene(const Topl_SceneManager* sMan) override;
+=======
+	Topl_Renderer_GL4(NATIVE_WINDOW window){ init(window); }
+	~Topl_Renderer_GL4();
+
+	void buildScene(const Topl_SceneManager* sMan) override;
+>>>>>>> local
 
 #ifdef RASTERON_H
 	Rasteron_Image* getFrame() override;
 	void genTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
+<<<<<<< refs/remotes/origin/linux_port
   void init(NATIVE_WINDOW hwnd) override;
+=======
+  	void init(NATIVE_WINDOW window) override;
+>>>>>>> local
 	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
+	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) override;
 	void update(const Topl_SceneManager* sMan) override;
 	void render(void) override;
 
+<<<<<<< refs/remotes/origin/linux_port
     Topl_Pipeline_GL4 m_pipeline;
+=======
+  	Topl_Pipeline_GL4 m_pipeline;
+>>>>>>> local
 
 	Topl_BufferAlloc_GL4 m_bufferAlloc;
 	std::vector<Buffer_GL4> mBuffers;

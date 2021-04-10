@@ -19,8 +19,7 @@ void main() {
 		);
 
 		vec2 rotCoords = rotMatrix * vec2(finalPos.x, finalPos.y);
-		finalPos.x = rotCoords.x;
-		finalPos.y = rotCoords.y;
+		finalPos.x = rotCoords.x; finalPos.y = rotCoords.y;
 	}
 
 	texcoord_out = texcoord;

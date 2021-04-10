@@ -39,6 +39,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 
+<<<<<<< refs/remotes/origin/linux_port
 	WNDCLASS wndClass = { 0 };
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -61,6 +62,17 @@ int main(int argc, char** argv) {
 	// Main loop related variables
 	MSG wndMessage;
 	BOOL bRet;
+=======
+	Platform platform(argv[0]);
+	platform.createWindow("Moving Sprite");
+	// platform.setupMainWindow(mainWindow);
+	Platform::keyLogger.addCallback('w', buttonCallback_w);
+	Platform::keyLogger.addCallback('a', buttonCallback_a);
+	Platform::keyLogger.addCallback('s', buttonCallback_s);
+	Platform::keyLogger.addCallback('d', buttonCallback_d);
+
+	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
+>>>>>>> local
 
 	Topl_Renderer_Drx11 renderer(wndWindow); // Renderer initialization
 

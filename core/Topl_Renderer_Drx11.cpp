@@ -127,7 +127,11 @@ namespace _Drx11 {
 		return true;
 	}
 
+<<<<<<< refs/remotes/origin/linux_port
 	static bool createConstBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+=======
+	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+>>>>>>> local
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.ByteWidth = sizeof(uint8_t) * blockBytes->size();
@@ -197,7 +201,11 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
+<<<<<<< refs/remotes/origin/linux_port
 	m_native.window = &hwnd; // Supplying platform specific stuff
+=======
+	mNativeContext.window = hwnd; // Supplying platform specific stuff
+>>>>>>> local
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -218,8 +226,14 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+<<<<<<< refs/remotes/origin/linux_port
     swapChainDesc.BufferCount = 1;
     swapChainDesc.OutputWindow = *(m_native.window); 
+=======
+    // swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
+	swapChainDesc.OutputWindow = mNativeContext.window; 
+>>>>>>> local
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -240,9 +254,12 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	// Viewport Creation
 
+<<<<<<< refs/remotes/origin/linux_port
     RECT windowRect;
     GetWindowRect(*(m_native.window), &windowRect);
 
+=======
+>>>>>>> local
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
@@ -353,10 +370,25 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	mPipelineReady = true;
 }
 
+void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader){
+	return; // TODO: Implement this code block
+}
+
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
+<<<<<<< refs/remotes/origin/linux_port
 	// Pipeline specific calls
 	const Topl_Shader* vertexShader = findShader(SHDR_Vertex);
 	// Start implementing more shader types...
+=======
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
+	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
+
+	// Generates object for single scene block buffer
+	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
+		mSceneReady = _Drx11::createBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
+	}
+>>>>>>> local
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
@@ -364,30 +396,48 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->mRenderObj;
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
 
+<<<<<<< refs/remotes/origin/linux_port
 		// New block implementation
 		std::vector<uint8_t> blockBytes;
 		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* constBlockBuff = nullptr;
 			mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff, &blockBytes);
 			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Const_Block, constBlockBuff));
+=======
+		// Geo component block implementation
+		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+			ID3D11Buffer* renderBlockBuff = nullptr;
+			mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
+>>>>>>> local
 		}
 		if (!mSceneReady) return; // Error
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
+<<<<<<< refs/remotes/origin/linux_port
 			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getICount());
 			mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
 		} else mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Index_UI, indexBuff, 0));
+=======
+			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
+		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
+>>>>>>> local
 		if (!mSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
+												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
 
+<<<<<<< refs/remotes/origin/linux_port
 		mBuffers.push_back(Buffer_Drx11(currentGraphicsID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+=======
+		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
+>>>>>>> local
 		if (!mSceneReady) return;
 
 #ifdef RASTERON_H
@@ -501,15 +551,23 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
-	const Topl_Shader* vertexShader = findShader(SHDR_Vertex); // New Implementation
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
+<<<<<<< refs/remotes/origin/linux_port
 	Buffer_Drx11* constBlockBuff = nullptr;
+=======
+	Buffer_Drx11* renderBlockBuff = nullptr;
+	// Buffer_Drx11* sceneBlockBuff = nullptr;
+
+	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		_Drx11::createBlockBuff(&m_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
+>>>>>>> local
 
 	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
 		unsigned currentGraphicsID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentGraphicsID - 1); // ids begin at 1, conversion is required
 
-		if (vertexShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentGraphicsID && currentBuff->type == BUFF_Const_Block) {
 					constBlockBuff = &(*currentBuff);
@@ -519,7 +577,11 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 			if (constBlockBuff == nullptr) { // TODO: Replace this!
 				OutputDebugStringA("Block buffer could not be located!");
 				return;
+<<<<<<< refs/remotes/origin/linux_port
 			} else mSceneReady = _Drx11::createConstBlockBuff(&m_device, &constBlockBuff->buffer, &blockBytes);
+=======
+			} else mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
+>>>>>>> local
 
 			if (!mSceneReady) return;
 		}
