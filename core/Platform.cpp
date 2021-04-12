@@ -91,7 +91,7 @@ void Platform::createWindow(const char* windowName){
 
     mContext.window = XCreateWindow(
 		mContext.display, DefaultRootWindow(mContext.display),
-        0, 0,
+        10, 10,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
         0, visualInfo->depth,
         InputOutput, visualInfo->visual,
@@ -101,29 +101,31 @@ void Platform::createWindow(const char* windowName){
 
 	XSelectInput(mContext.display, mContext.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
 	XMapWindow(mContext.display, mContext.window);
+	XStoreName(mContext.display, mContext.window, windowName);
+
+	mContext.GL_ctx = glXCreateContext(mContext.display, visualInfo, NULL, GL_TRUE);
+	glXMakeCurrent(mContext.display, mContext.window, mContext.GL_ctx);
 }
-
-/* void Platform::setupMainWindow(NATIVE_WINDOW window){
-    mContext.window_ptr = &window;
-
-	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
-	XMapWindow(mContext.display, window);
-    return;
-} */
 
 void Platform::handleEvents(){
     int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);
 	XEvent currentEvent;
 
-	while(eventsPending-- > 0){ // Deplete number of events
+	/* while(eventsPending-- > 0){ 
 		XNextEvent(mContext.display, &currentEvent);
 
 		// TODO: Perform event processing logic here
-	}
+	} */
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) {
-	return true;
+	int xRetVal;
+	int yRetVal;
+	Window* rootWindow; Window* rootChildWindow;
+	// if(XQueryPointer(mContext.display, mContext.window, rootWindow, rootChildWindow, nullptr, nullptr, &xRetVal, &yRetVal, nullptr)) return false;
+	// Segmentation Fault!
+
+	printf("xPos: %d, yPos: %d", xRetVal, yRetVal);
 }
 
 #endif
