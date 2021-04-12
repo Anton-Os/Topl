@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cmath>
 
+#define DEFAULT_CIRCLE_SEGS 1000 // this is a chiliagon
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
 #include <Eigen/Dense> // Examine documentation
@@ -47,6 +48,17 @@ struct Geo_PerVertexData { // TODO: Fix this class
 };
 
 typedef const Geo_PerVertexData* const perVertex_cptr; // Safe const pointer type
+
+struct NGon2D {
+    float radius;
+    unsigned short segments;
+};
+
+struct NGon3D {
+	float radius;
+	unsigned short xSegments;
+	unsigned short ySegments;
+};
 
 class Geo_RenderObj {
 public:

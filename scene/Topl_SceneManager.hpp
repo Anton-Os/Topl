@@ -15,17 +15,6 @@
 typedef const Geo_Component* const topl_geoComponent_cptr;
 typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;
 
-struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
-	Phys_Connector* connector;
-	geoComponent_pair linkedItems;
-};
-
-typedef const LinkedItems* const topl_linkedItems_cptr;
-
-#ifdef RASTERON_H
-	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
-#endif
-
 class Topl_Camera {
 public:
 	// Identity projection constructor
@@ -47,7 +36,18 @@ private:
 	Eigen::Matrix4f projMatrix = Eigen::Matrix4f::Zero();
 };
 
-typedef const Topl_Camera* const topl_camera_cptr;
+typedef const Topl_Camera* const topl_camera_cptr; // typedef for safety
+
+struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
+	Phys_Connector* connector;
+	geoComponent_pair linkedItems;
+};
+
+typedef const LinkedItems* const topl_linkedItems_cptr;
+
+#ifdef RASTERON_H
+	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
+#endif
 
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------
@@ -60,8 +60,8 @@ public:
 	~Topl_SceneManager() {}
 
 	topl_camera_cptr getCamera() const { return &mCamera; }
-	// Topl_Camera* getCamera() { return &mCamera; }
 	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }
+	// void addLight()
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
 #ifdef RASTERON_H

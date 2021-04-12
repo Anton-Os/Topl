@@ -7,6 +7,10 @@
 #include "Topl_Renderer_GL4.hpp"
 
 #include "Geo_Construct.hpp"
+#include "primitives/Geo_Flat.hpp" // include for testing!
+#include "primitives/Geo_Conic.hpp" // include for testing!
+#include "primitives/Geo_Extruded.hpp" // include for testing!
+#include "primitives/Geo_Sphere3D.hpp" // include for testing!
 #include "primitives/Geo_NGon2D.hpp"
 #include "primitives/Geo_Box3D.hpp"
 #include "composites/Chain.hpp"
