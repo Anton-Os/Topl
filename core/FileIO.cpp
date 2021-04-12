@@ -1,7 +1,7 @@
 #include "FileIO.hpp"
 
 FBX_DocumentTree::FBX_DocumentTree(const char* source) {
-	mFileContent = readFile(source).c_str();
+	mFileContent = readFile(source, true).c_str();
 
 	readNode(27); // 27 is the offset of the first node in fbx!
 }
@@ -37,8 +37,8 @@ unsigned FBX_DocumentTree::readNode(unsigned startOffseet) {
 	return 0; // TODO: Return the new offset to begin reading!
 }
 
-std::string readFile(const char* source){
-    std::ifstream file(source);
+std::string readFile(const char* source, bool isBinaryFile){
+    std::ifstream file = (!isBinaryFile)? std::ifstream(source, std::ios::in) : std::ifstream(source, std::ios::in | std::ios::binary);
 	if(!file.is_open()) return std::string(); // error occured, empty string returned
 
     // file.ignore(std::numeric_limits<std::streamsize>::max());
@@ -51,8 +51,6 @@ std::string readFile(const char* source){
 
     return strStream.str();
 }
-
-// std::string readBinaryFile(const char* source){} // Possibly Read Binary File
 
 std::string getParentDir(const char* str){
     const char* strEnd = str + strlen(str); // Traverse to the end of the string
@@ -73,7 +71,7 @@ void logToFile(const char* fileName, std::string logMessage){
 }
 
 bool checkFormat_FBX(const char* source) {
-	std::string fileContent = readFile(source);
+	std::string fileContent = readFile(source, true);
 	std::string magicKey("Kaydara FBX Binary  "); // 21 characters long
 	return (magicKey == fileContent.substr(0, 20)) ? true : false;
 	// TODO: Possibly look for version as well

@@ -426,7 +426,7 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 	// Vertex shader creation and valid file checking
 	m_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
 
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	std::string vertexShaderSrc = readFile(vertexShader->getFilePath(), false);
 	sourceStr_ptr = vertexShaderSrc.c_str();
 	if (!vertexShaderSrc.empty()) glShaderSource(m_pipeline.vShader, 1, &sourceStr_ptr, NULL);
 	else {
@@ -457,7 +457,7 @@ void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Sha
 	// Fragment shader creation and valid file checking
 	m_pipeline.fShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	std::string fragShaderSrc = readFile(fragShader->getFilePath());
+	std::string fragShaderSrc = readFile(fragShader->getFilePath(), false);
 	sourceStr_ptr = fragShaderSrc.c_str();
 	if (!fragShaderSrc.empty()) glShaderSource(m_pipeline.fShader, 1, &sourceStr_ptr, NULL);
 	else {

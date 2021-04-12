@@ -1,4 +1,4 @@
-
+#include <ios>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -40,7 +40,7 @@ private:
 
 // ---------------------- Anonymous Functions ---------------------- //
 
-std::string readFile(const char* source);
+std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);
 bool checkFormat_FBX(const char* source);
 

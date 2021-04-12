@@ -84,6 +84,9 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Rect2D.cpp
     geo/primitives/Geo_Box3D.cpp
     geo/primitives/Geo_NGon2D.cpp
+    geo/primitives/Geo_Flat.cpp
+    geo/primitives/Geo_Conic.cpp
+    geo/primitives/Geo_Extruded.cpp
 )
 
 list(APPEND scene_Sources
