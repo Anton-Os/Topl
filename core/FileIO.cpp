@@ -1,40 +1,19 @@
 #include "FileIO.hpp"
 
 FBX_DocumentTree::FBX_DocumentTree(const char* source) {
-	mFileContent = readFile(source, true).c_str();
+	mFileStr = readFile(source, true);
 
-	readNode(27); // 27 is the offset of the first node in fbx!
+	// TODO: Retrieve global definitions
+
+	while (!mIsDoneParsing)
+		readNodeAscii(0); // set this properly
 }
 
-unsigned FBX_DocumentTree::readNode(unsigned startOffseet) {
-    // Isolates endOffset for a given node
-    char endOffset_chars[4] = {
-        *(mFileContent + startOffseet + mEndOffset_relOffset + 0), *(mFileContent + startOffseet + mEndOffset_relOffset + 1), *(mFileContent + startOffseet + mEndOffset_relOffset + 2), *(mFileContent + startOffseet + mEndOffset_relOffset + 3) 
-    };
-    unsigned endOffset = (unsigned)atoi(&endOffset_chars[0]);
+unsigned FBX_DocumentTree::readNodeAscii(unsigned startOffseet) {
+	const char* fileContent = mFileStr.c_str();
 
-    // Isolates the name for a given node
-    char nameLenChar = *(mFileContent + startOffseet + mNameLen_relOffset); // conversion required from const char* to char
-    unsigned nameLen = (unsigned)atoi(&nameLenChar);
-    std::string nameStr = std::string(mFileContent + startOffseet + mName_relOffset, (size_t)nameLen);
-
-    // Isolates the number of properties for given node
-    char numProps_chars[4] = {
-        *(mFileContent + startOffseet + mNumProps_relOffset + 0), *(mFileContent + startOffseet + mNumProps_relOffset + 1), *(mFileContent + startOffseet + mNumProps_relOffset + 2), *(mFileContent + startOffseet + mNumProps_relOffset + 3) 
-    };
-    unsigned numProps = (unsigned)atoi(&numProps_chars[0]);
-
-     // Isolates the property list for a given node
-    char propsListLen_chars[4] = { 
-        *(mFileContent + startOffseet + mPropsListLen_relOffset + 0), *(mFileContent + startOffseet + mPropsListLen_relOffset + 1), *(mFileContent + startOffseet + mPropsListLen_relOffset + 2), *(mFileContent + startOffseet + mPropsListLen_relOffset + 3)
-    };
-    unsigned propsListLen = (unsigned)atoi(&propsListLen_chars[0]);
-    std::string propsListStr = std::string(mFileContent + startOffseet + mName_relOffset + nameLen, (size_t)propsListLen);
-	
-    FBX_Node node = FBX_Node(nameStr, numProps, propsListStr);
-	mNodes.push_back(node);
-
-	return 0; // TODO: Return the new offset to begin reading!
+	mIsDoneParsing = true; // set this for last node
+	return 0;
 }
 
 std::string readFile(const char* source, bool isBinaryFile){

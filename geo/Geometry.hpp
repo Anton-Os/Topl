@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cmath>
 
-#define DEFAULT_CIRCLE_SEGS 1000 // this is a chiliagon
+#define DEFAULT_CIRCLE_SEGS 1001 // this is a chiliagon + 1 for odd sides
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
 #include <Eigen/Dense> // Examine documentation
@@ -63,17 +63,22 @@ struct NGon3D {
 class Geo_RenderObj {
 public:
 	Geo_RenderObj(){}
-	// Plain vertex constructor
+	// Vertex only constructor
 	Geo_RenderObj(unsigned v){
 		mVertexCount = v;
+		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount / 2); // offset angle for each even side length
+
+		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
+ 		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 	}
 	// Vertex w indices constructor
     Geo_RenderObj(unsigned v, unsigned i){
 		mVertexCount = v;
 		mIndexCount = i;
+		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount / 2); // offset angle for each even side length
 
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
-		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
+ 		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 		if(mIndexCount != 0) mIndexData = (unsigned*)malloc(mIndexCount * sizeof(unsigned));
 	}
     ~Geo_RenderObj(){ cleanup(); }
@@ -113,6 +118,7 @@ protected:
 
     unsigned mVertexCount = 0; // Vertex count
     unsigned mIndexCount = 0; // Index count
+	double mStartAngle = 0.0; // Start angle for Vertex generation
 
 	Geo_PerVertexData* mPerVertexData = nullptr; // Formatted per vertex data
     Eigen::Vector3f* mPosData = nullptr; // Vertex data

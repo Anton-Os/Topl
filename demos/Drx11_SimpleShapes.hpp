@@ -7,8 +7,9 @@
 #include "Topl_Renderer_Drx11.hpp"
 
 #include "Geo_Construct.hpp"
-#include "primitives/Geo_NGon2D.hpp"
-#include "primitives/Geo_Box3D.hpp"
+#include "primitives/Geo_Flat.hpp"
+#include "primitives/Geo_Conic.hpp"
+#include "primitives/Geo_Extruded.hpp"
 #include "composites/Chain.hpp"
 #include "composites/Grid.hpp"
 
@@ -19,14 +20,15 @@ namespace Topl {
 	Topl_SceneManager sceneManager;
 
 	// Primitive Geometry Objects
-	Geo_NGon2D sphere1 = Geo_NGon2D(0.1f, 30);
-	Geo_Box3D box1 = Geo_Box3D(0.4f);
-	// Composite Geometry Objects
-	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&sphere1);
-	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.3f); // 0.1f is the distance apart
+	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
+	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.2f);
+	Geo_ConicCircle cone1 = Geo_ConicCircle(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.5f));
+	// Complex Geometry Objects
+	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
 	Geo_Chain chain("chain", &sceneManager, &chainGeo, &chainProps, 4);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&box1);
-	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.4f));
+	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&hex1);
+	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.45f));
 	Geo_Grid grid("grid", &sceneManager, &gridGeo, &gridProps);
 }
 

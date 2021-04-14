@@ -24,18 +24,12 @@ class FBX_DocumentTree {
 public:
 	FBX_DocumentTree(const char* source);
 private:
-	unsigned readNode(unsigned startOffset); // Returns byte relOffset of the next node
+	unsigned readNodeAscii(unsigned startOffset); // reads fbx file in ascii encoding mode
 
-	const char* mFileContent;
+	std::string mFileStr;
 	std::vector<FBX_Node> mNodes;
 
-	// Here are relOffset values to help navigate each node
-	// For reference https://code.blender.org/2013/08/fbx-binary-file-format-specification/
-	const unsigned mEndOffset_relOffset = 0;
-	const unsigned mNumProps_relOffset = 4;
-	const unsigned mPropsListLen_relOffset = 8;
-	const unsigned mNameLen_relOffset = 12;
-	const unsigned mName_relOffset = 13;
+	bool mIsDoneParsing = false; // Set to true once end is reached
 };
 
 // ---------------------- Anonymous Functions ---------------------- //
