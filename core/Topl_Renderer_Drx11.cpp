@@ -381,19 +381,19 @@ void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cp
 	return; // TODO: Implement this code block
 }
 
-void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
+void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
 		mSceneReady = _Drx11::createBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
 
-	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -423,7 +423,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		if (!mSceneReady) return;
 
 #ifdef RASTERON_H
-		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
+		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
 		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 
@@ -532,18 +532,18 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 
 #endif
 
-void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
+void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&m_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
 
-	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)

@@ -17,7 +17,7 @@
 #define MOVE_AMOUNT 0.5
 
 namespace Topl {
-	Topl_SceneManager sceneManager;
+	Topl_Scene sceneManager;
 
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
@@ -52,16 +52,16 @@ struct VertexShader : public Topl_Shader {
 		return true;
 	}
 
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		const uint8_t* cameraPosBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getPos()->data());
-		const uint8_t* cameraRotBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getDirection()->data());
-		const uint8_t* matrixBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
+	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const {
+		const uint8_t* cameraPosBytes_ptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getPos()->data());
+		const uint8_t* cameraRotBytes_ptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getDirection()->data());
+		const uint8_t* matrixBytes_ptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());
 
-		ValueGen::appendDataToBytes(cameraPosBytes_ptr, sMan->getCamera()->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRotBytes_ptr, sMan->getCamera()->getDirection()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrixBytes_ptr, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
+		ValueGen::appendDataToBytes(cameraPosBytes_ptr, scene->getCamera()->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRotBytes_ptr, scene->getCamera()->getDirection()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrixBytes_ptr, scene->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
 
-		//ValueGen::assignDataToBytes(matrixBytes, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
+		//ValueGen::assignDataToBytes(matrixBytes, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };
@@ -74,7 +74,7 @@ struct FragmentShader : public Topl_Shader {
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const { return false; }
+	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
 };
 
 void buttonCallback_w(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward

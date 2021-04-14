@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
 	Platform::keyLogger.addCallback('a', buttonCallback_a);
 	Platform::keyLogger.addCallback('s', buttonCallback_s);
 	Platform::keyLogger.addCallback('d', buttonCallback_d);
+	Platform::keyLogger.addCallback('r', buttonCallback_r);
 
 	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
 

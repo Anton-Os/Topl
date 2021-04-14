@@ -52,12 +52,12 @@ typedef const LinkedItems* const topl_linkedItems_cptr;
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------
 
-class Topl_SceneManager {
+class Topl_Scene {
 public:
-	Topl_SceneManager() {
+	Topl_Scene() {
 		mPhysTicker.reset(); // Resets timer for dynamic scene manager operations
 	}
-	~Topl_SceneManager() {}
+	~Topl_Scene() {}
 
 	topl_camera_cptr getCamera() const { return &mCamera; }
 	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }

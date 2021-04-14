@@ -264,7 +264,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
+void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
@@ -272,7 +272,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &m_pipeline.vertexDataLayouts[0]);
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
 		mBuffers.push_back(Buffer_GL4(m_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -280,9 +280,9 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	for (unsigned g = 0; g < sMan->getGeoCount(); g++) { // Slot index will signify how many buffers exist
+	for (unsigned g = 0; g < scene->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 
 		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
@@ -331,7 +331,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_SceneManager* sMan){
 
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
+		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
 		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 		mMainRenderIDs = currentRenderID; // Sets main graphics ID's to max value of currentRenderID
@@ -385,20 +385,20 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 
 #endif
 
-void Topl_Renderer_GL4::update(const Topl_SceneManager* sMan){
+void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		glBindBuffer(GL_UNIFORM_BUFFER, mBuffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
 
-	for (unsigned g = 0; g < sMan->getGeoCount(); g++) {
+	for (unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) targetBuff = &(*currentBuff);

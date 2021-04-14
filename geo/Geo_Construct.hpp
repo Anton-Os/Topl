@@ -6,7 +6,7 @@
 #include "Geometry.hpp"
 #include "Timer.hpp"
 
-#include "Topl_SceneManager.hpp"
+#include "Topl_Scene.hpp"
 
 // Geometry wrapper class that can manage its states
 
@@ -18,7 +18,7 @@ typedef std::pair<std::string, Geo_Component*> geoName_pair;
 class Geo_Construct {
 public:
     // Fixed items constructor
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, std::initializer_list<Geo_RenderObj*> renderObjs) {
+    Geo_Construct(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs) {
 		mPrefix = prefix;
         mGeoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
         for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
@@ -27,7 +27,7 @@ public:
         }
 	}
     // Duplicate items constructor
-    Geo_Construct(const std::string& prefix, Topl_SceneManager* sMan, const Geo_Component* geoc, unsigned count) {
+    Geo_Construct(const std::string& prefix, Topl_Scene* scene, const Geo_Component* geoc, unsigned count) {
 		mPrefix = prefix;
         mGeoCount = count;
         mGeoData = (Geo_Component**)malloc(count * sizeof(Geo_Component));
@@ -44,25 +44,31 @@ public:
     }
 
     // Should be called in the derived class constructor body
-    void fillSceneManager(Topl_SceneManager* sMan){
-        fill(sMan);
+    void fillSceneManager(Topl_Scene* scene){
+        fill(scene);
 
-        // Code that fills in sMan
+        // Code that fills in scene
         if(mNamedGeos.size() != 0 && mGeoData != nullptr) {
             for(std::vector<geoName_pair>::iterator currentGeo = mNamedGeos.begin();
                 currentGeo < mNamedGeos.end(); currentGeo++)
-                sMan->addGeometry(currentGeo->first, currentGeo->second);
+                scene->addGeometry(currentGeo->first, currentGeo->second);
         }
     }
 
     std::string getPrefix(){ return mPrefix + "_"; }
-	virtual void updateSceneManager(Topl_SceneManager* sMan) = 0;
-    virtual void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) = 0;
-    virtual void rotate(Topl_SceneManager* sMan, Eigen::Vector3f) = 0;
+	virtual void updateSceneManager(Topl_Scene* scene) = 0;
+    void move(Topl_Scene* scene, Eigen::Vector3f vec){
+        for(unsigned g = 0; g < mGeoCount; g++) scene->addForce((*(mGeoData + g))->getName(), vec);
+    }
+    void rotate(Topl_Scene* scene, Eigen::Vector2f angles){
+        for(unsigned g = 0; g < mGeoCount; g++) (*(mGeoData + g))->updateRot(angles);
+    }
+    /* virtual void move(Topl_Scene* scene, Eigen::Vector3f vec) = 0;
+    virtual void rotate(Topl_Scene* scene, Eigen::Vector3f) = 0; */
 
 protected:
 	unsigned getGeoCount() const { return mGeoCount; }
-    virtual void fill(Topl_SceneManager* sMan) = 0; // Job is to fill the mNamedGeos structure
+    virtual void fill(Topl_Scene* scene) = 0; // Job is to fill the mNamedGeos structure
     Geo_Component* getNextGeo(){
         if(mCurrentGeoOffset <= mGeoCount){
             mCurrentGeoOffset++;   

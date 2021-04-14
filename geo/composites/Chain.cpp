@@ -6,7 +6,7 @@ namespace _Chain {
     }
 }
 
-void Geo_Chain::fill(Topl_SceneManager* sMan){
+void Geo_Chain::fill(Topl_Scene* scene){
     Geo_Component* prevGeoc = nullptr;
     Geo_Component* currentGeoc = nullptr;
     
@@ -14,26 +14,18 @@ void Geo_Chain::fill(Topl_SceneManager* sMan){
         currentGeoc = getNextGeo();
 
         currentGeoc->updatePos(Eigen::Vector3f(chain_prop.distance * c, chain_prop.distance * c, 0.0f));
-        sMan->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), currentGeoc);
+        scene->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), currentGeoc);
 
         if(prevGeoc != nullptr){ 
             connectors.push_back(Phys_Connector());
-            sMan->addConnector(&connectors.back(), getPrefix() + _Chain::genLinkName(c), getPrefix() + _Chain::genLinkName(c + 1));
+            scene->addConnector(&connectors.back(), getPrefix() + _Chain::genLinkName(c), getPrefix() + _Chain::genLinkName(c + 1));
         }
 
         prevGeoc = currentGeoc; // Move up the chain
     }
 }
 
-void Geo_Chain::updateSceneManager(Topl_SceneManager* sMan) {
+void Geo_Chain::updateSceneManager(Topl_Scene* scene) {
     mUpdateCount++;
     return;
 } 
-
-void Geo_Chain::move(Topl_SceneManager* sMan, Eigen::Vector3f vec){
-	return;
-}
-
-void Geo_Chain::rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec){
-	return;
-}

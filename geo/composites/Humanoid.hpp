@@ -7,7 +7,7 @@ class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consis
 public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
-		Topl_SceneManager* sMan,
+		Topl_Scene* scene,
 		std::pair<const char*, Eigen::Vector3f> initProps[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
 		float scaleFactor )
 		
@@ -20,7 +20,7 @@ public:
 			initProps[HUMANOID_RightLeg].first
 			}, scaleFactor
 		),
-		Geo_Construct(prefix, sMan, {
+		Geo_Construct(prefix, scene, {
 			(Geo_RenderObj*)getRect(HUMANOID_Head),
 			(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
 			(Geo_RenderObj*)getRect(HUMANOID_RightArm),
@@ -36,7 +36,7 @@ public:
 		leftLegOffset = initProps[HUMANOID_LeftLeg].second;
 		rightLegOffset = initProps[HUMANOID_RightLeg].second;
 
-		fillSceneManager(sMan);
+		fillSceneManager(scene);
 	}
 	~Geo_Humanoid() {}
 	
@@ -49,11 +49,9 @@ public:
 		HUMANOID_RightLeg = 5
 	} anatomyIndex;
 
-    void updateSceneManager(Topl_SceneManager* sMan) override;
-	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
-	void rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
+    void updateSceneManager(Topl_Scene* scene) override;
 private:
-	void fill(Topl_SceneManager* sMan) override;
+	void fill(Topl_Scene* scene) override;
 
 	// Main links "starfish"
 	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;

@@ -29,6 +29,14 @@ typedef const Eigen::Matrix3f* const mat3f_cptr;
 typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
+enum AXIS_Target {
+	AXIS_X,
+	AXIS_Y,
+	AXIS_Z
+};
+
+typedef float (*vertexFuncCallback)(float); // Callback for transforming vertex attributes
+
 struct Geo_PerVertexData { // TODO: Fix this class
 	Geo_PerVertexData(){} // Empty constructor
 
@@ -71,7 +79,7 @@ public:
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 	}
-	// Vertex w indices constructor
+	// Vertex and Indices constructor
     Geo_RenderObj(unsigned v, unsigned i){
 		mVertexCount = v;
 		mIndexCount = i;
@@ -81,8 +89,8 @@ public:
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 		if(mIndexCount != 0) mIndexData = (unsigned*)malloc(mIndexCount * sizeof(unsigned));
 	}
-    ~Geo_RenderObj(){ cleanup(); }
-
+    
+	~Geo_RenderObj(){ cleanup(); }
 	void cleanup() {
 		if (mPerVertexData != nullptr) free(mPerVertexData);
 
@@ -91,10 +99,15 @@ public:
 		if (mIndexData != nullptr) free(mIndexData);
 	}
 
-	void fillRenderObject(){
-		genVertices(mPosData);
-		genTexCoords(mTexCoordData);
-        if(mIndexCount != 0) genIndices(mIndexData);
+	// Modify shape through vertex transform callback
+	bool modShapeFunc(vertexFuncCallback callback, AXIS_Target axis){
+		if(mVertexCount == 0 || mPosData == nullptr) return false; // no processing can occur
+		switch(axis){
+			case AXIS_X: break;
+			case AXIS_Y: break;
+			case AXIS_Z: break;
+		}
+		
 	}
 
 	perVertex_cptr getPerVertexData() {
@@ -112,6 +125,11 @@ public:
     vec2f_cptr getTexCoordData() const { return mTexCoordData; }
     ui_cptr getIndexData() const { return mIndexData; }
 protected:
+	void fillRenderObject(){
+		genVertices(mPosData);
+		genTexCoords(mTexCoordData);
+        if(mIndexCount != 0) genIndices(mIndexData);
+	}
     virtual void genVertices(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;
     virtual void genIndices(unsigned* data) = 0;
