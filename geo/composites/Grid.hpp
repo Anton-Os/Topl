@@ -46,10 +46,10 @@ public:
 			0.0f // TODO: Change this to non hard-coded
 		);
         
-        fillSceneManager(scene);
+        fillscene(scene);
     }
 
-    void updateSceneManager(Topl_Scene* scene) override;
+    void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
 

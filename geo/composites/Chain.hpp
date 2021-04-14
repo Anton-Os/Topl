@@ -20,10 +20,10 @@ public:
     : Geo_Construct(prefix, scene, geoLink, linkCount){
 		chain_prop = *properties;
         
-        fillSceneManager(scene);
+        fillscene(scene);
     }
 
-    void updateSceneManager(Topl_Scene* scene) override;
+    void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
 

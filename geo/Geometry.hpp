@@ -29,10 +29,10 @@ typedef const Eigen::Matrix3f* const mat3f_cptr;
 typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
-enum AXIS_Target {
-	AXIS_X,
-	AXIS_Y,
-	AXIS_Z
+enum AXIS_Target{
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z
 };
 
 typedef float (*vertexFuncCallback)(float); // Callback for transforming vertex attributes
@@ -102,12 +102,15 @@ public:
 	// Modify shape through vertex transform callback
 	bool modShapeFunc(vertexFuncCallback callback, AXIS_Target axis){
 		if(mVertexCount == 0 || mPosData == nullptr) return false; // no processing can occur
+
+		unsigned vAttributeOffset;
 		switch(axis){
-			case AXIS_X: break;
-			case AXIS_Y: break;
-			case AXIS_Z: break;
+			case AXIS_X: vAttributeOffset = 0; break;
+			case AXIS_Y: vAttributeOffset = 1; break;
+			case AXIS_Z: vAttributeOffset = 2; break;
 		}
-		
+		for(unsigned v = 0; v < mVertexCount; v++)
+			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset]); // updates specific vertex attribute
 	}
 
 	perVertex_cptr getPerVertexData() {

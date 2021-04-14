@@ -111,7 +111,7 @@ void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for no
 	scene->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
 }
 
-void Geo_Humanoid::updateSceneManager(Topl_Scene* scene) {
+void Geo_Humanoid::updateScene(Topl_Scene* scene) {
 	mUpdateCount++;
     return;
 }

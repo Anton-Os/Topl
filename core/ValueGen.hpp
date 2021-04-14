@@ -8,14 +8,21 @@
 #include <Eigen/Dense>
 
 struct SpatialBounds3D { // Used in Matrix calculations
+    SpatialBounds3D(){}
+    SpatialBounds3D(float scaleFactor){
+        left *= scaleFactor;
+        right *= scaleFactor;
+        bottom *= scaleFactor;
+        top *= scaleFactor;
+        nearPlane *= scaleFactor;
+        farPlane *= scaleFactor;
+    }
     float left = -1.0f;
     float right = 1.0f;
     float bottom = -1.0f;
     float top = 1.0f;
     float nearPlane = 0;
     float farPlane = 1.0f;
-    // float near = 0.0;
-    // float far = 1.0f;
 };
 
 struct ValueGen {

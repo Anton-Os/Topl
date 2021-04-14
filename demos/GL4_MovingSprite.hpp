@@ -12,7 +12,7 @@
 #define MOVE_AMOUNT 16.0
 
 namespace Topl {
-	Topl_Scene sceneManager;
+	Topl_Scene scene;
     // Input_KeyLogger keyLogger;
 
 	// TODO: Make these not device specific, relative file paths only!
@@ -26,7 +26,7 @@ namespace Topl {
 	};
 
 	// Geo_Humanoid humanoid;
-	Geo_Humanoid humanoid("humanoid", &sceneManager, humanoidProps, 0.25f);
+	Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.25f);
 }
 
 struct VertexShader : public Topl_Shader {
@@ -65,8 +65,8 @@ struct FragmentShader : public Topl_Shader {
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const override { return false; }                                                                       
 };
 
-void buttonCallback_w(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
-void buttonCallback_s(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
-void buttonCallback_r(void) { Topl::humanoid.rotate(&Topl::sceneManager, Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
+void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
+void buttonCallback_a(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
+void buttonCallback_s(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
+void buttonCallback_d(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_r(void) { Topl::humanoid.rotate(&Topl::scene, Eigen::Vector2f(1.0f, 0.0f)); } // Rotate

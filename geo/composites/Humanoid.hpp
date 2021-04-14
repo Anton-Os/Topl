@@ -36,7 +36,7 @@ public:
 		leftLegOffset = initProps[HUMANOID_LeftLeg].second;
 		rightLegOffset = initProps[HUMANOID_RightLeg].second;
 
-		fillSceneManager(scene);
+		fillscene(scene);
 	}
 	~Geo_Humanoid() {}
 	
@@ -49,7 +49,7 @@ public:
 		HUMANOID_RightLeg = 5
 	} anatomyIndex;
 
-    void updateSceneManager(Topl_Scene* scene) override;
+    void updateScene(Topl_Scene* scene) override;
 private:
 	void fill(Topl_Scene* scene) override;
 

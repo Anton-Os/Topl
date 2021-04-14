@@ -10,10 +10,10 @@ public:
         const Geo_Component* initiator,
         unsigned gCount)
     : Geo_Construct(prefix, scene, geoLink, pow(initiator->getRenderObj()->getVertexCount(), gCount)){
-        fillSceneManager(scene);
+        fillscene(scene);
     }
 
-    void updateSceneManager(Topl_Scene* scene) override;
+    void updateScene(Topl_Scene* scene) override;
 	void move(Topl_Scene* scene, Eigen::Vector3f vec) override;
 	void rotate(Topl_Scene* scene, Eigen::Vector3f vec) override;
 private:

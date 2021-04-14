@@ -59,8 +59,9 @@ public:
 	}
 	~Topl_Scene() {}
 
-	topl_camera_cptr getCamera() const { return &mCamera; }
+	void setCamera(bool isPerspective, SpatialBounds3D bounds){ mCamera = Topl_Camera(isPerspective, bounds); }
 	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }
+	topl_camera_cptr getCamera() const { return &mCamera; }
 	// void addLight()
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);

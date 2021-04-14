@@ -81,9 +81,8 @@ list(APPEND common_Sources
 )
 
 list(APPEND geo_Sources
-    geo/primitives/Geo_Rect2D.cpp
-    geo/primitives/Geo_Box3D.cpp
-    geo/primitives/Geo_NGon2D.cpp
+    geo/primitives/Geo_Rect2D.cpp # replace with Geo_Flat
+    geo/primitives/Geo_Box3D.cpp # replace with Geo_Extruded
     geo/primitives/Geo_Flat.cpp
     geo/primitives/Geo_Conic.cpp
     geo/primitives/Geo_Extruded.cpp

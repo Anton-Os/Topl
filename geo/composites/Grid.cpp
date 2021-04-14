@@ -27,7 +27,7 @@ void Geo_Grid::fill(Topl_Scene* scene){
     }
 }
 
-void Geo_Grid::updateSceneManager(Topl_Scene* scene) {
+void Geo_Grid::updateScene(Topl_Scene* scene) {
     mUpdateCount++;
     return;
 } 

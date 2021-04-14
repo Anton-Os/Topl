@@ -17,7 +17,7 @@
 
 namespace Topl {
 	// Management Objects
-	Topl_Scene sceneManager;
+	Topl_Scene scene;
 
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
@@ -26,10 +26,10 @@ namespace Topl {
 	// Complex Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
-	Geo_Chain chain("chain", &sceneManager, &chainGeo, &chainProps, 4);
+	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
 	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&hex1);
 	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.45f));
-	Geo_Grid grid("grid", &sceneManager, &gridGeo, &gridProps);
+	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
 }
 
 struct VertexShader : public Topl_Shader {
@@ -74,7 +74,7 @@ struct PixelShader : public Topl_Shader {
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
 };
 
-void buttonCallback_w(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { Topl::sceneManager.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right

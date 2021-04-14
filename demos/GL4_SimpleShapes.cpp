@@ -21,12 +21,13 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	
-	renderer.buildScene(&Topl::sceneManager);
+	renderer.buildScene(&Topl::scene);
+	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
 
 	glPointSize(5.0f); // TODO: Include as part of the renderer code
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&Topl::sceneManager);
-		// Topl::sceneManager.resolvePhysics();
+		renderer.updateScene(&Topl::scene);
+		// Topl::scene.resolvePhysics();
 
 		platform.handleEvents();
 	}

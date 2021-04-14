@@ -44,7 +44,7 @@ public:
     }
 
     // Should be called in the derived class constructor body
-    void fillSceneManager(Topl_Scene* scene){
+    void fillscene(Topl_Scene* scene){
         fill(scene);
 
         // Code that fills in scene
@@ -56,7 +56,7 @@ public:
     }
 
     std::string getPrefix(){ return mPrefix + "_"; }
-	virtual void updateSceneManager(Topl_Scene* scene) = 0;
+	virtual void updateScene(Topl_Scene* scene) = 0;
     void move(Topl_Scene* scene, Eigen::Vector3f vec){
         for(unsigned g = 0; g < mGeoCount; g++) scene->addForce((*(mGeoData + g))->getName(), vec);
     }

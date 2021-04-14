@@ -22,11 +22,11 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	
-	renderer.buildScene(&Topl::sceneManager);
+	renderer.buildScene(&Topl::scene);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&Topl::sceneManager); // Uncomment
-		Topl::sceneManager.resolvePhysics(); // Uncomment
+		renderer.updateScene(&Topl::scene); // Uncomment
+		Topl::scene.resolvePhysics(); // Uncomment
 
 		platform.handleEvents();
 	}

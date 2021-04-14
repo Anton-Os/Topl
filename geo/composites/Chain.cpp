@@ -25,7 +25,7 @@ void Geo_Chain::fill(Topl_Scene* scene){
     }
 }
 
-void Geo_Chain::updateSceneManager(Topl_Scene* scene) {
+void Geo_Chain::updateScene(Topl_Scene* scene) {
     mUpdateCount++;
     return;
 } 
