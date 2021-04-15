@@ -32,14 +32,14 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 tPos){
 		0.0, 0.0, 0.0, 1.0
 	);
 
-	mat4 posMatrix = mat4(
+	mat4 eyeMatrix = mat4(
 		1.0, 0.0, 0.0, -cPos.x,
 		0.0, 1.0, 0.0, -cPos.y,
 		0.0, 0.0, 1.0, -cPos.z,
 		0.0, 0.0, 0.0, 1.0
 	);
 
-	return lookAtMatrix * posMatrix;
+	return lookAtMatrix * eyeMatrix;
 }
 
 void main() {

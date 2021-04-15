@@ -19,27 +19,21 @@ struct VS_OUTPUT {
 };
 
 float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
-	float3 defaultUpVec = (0.0, 1.0, 0.0);
+	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
 
-	float3 zAxis = normalize(cPos - lPos);
+	float3 zAxis = normalize(lPos - cPos); // values flipped because of coordinate system
 	float3 xAxis = normalize(cross(defaultUpVec, zAxis));
 	float3 yAxis = cross(zAxis, xAxis);
 
-	float4x4 lookAtMatrix = {
-		xAxis.x, xAxis.y, xAxis.z, 0.0,
-		yAxis.x, yAxis.y, yAxis.z, 0.0,
-		zAxis.x, zAxis.y, zAxis.z, 0.0,
-		0.0, 0.0, 0.0, 1.0
+	float4x4 camMatrix = {
+		xAxis.x, yAxis.x, zAxis.x, 0.0,
+		xAxis.y, yAxis.y, zAxis.y, 0.0,
+		xAxis.z, yAxis.z, zAxis.z, 0.0,
+		-1.0 * dot(xAxis, cPos), -1.0 * dot(yAxis, cPos), -1.0 * dot(zAxis, cPos), 1.0
+		// -1.0 * dot(xAxis, lPos), -1.0 * dot(yAxis, lPos), -1.0 * dot(zAxis, lPos), 1.0
 	};
 
-	float4x4 eyeMatrix = {
-		1.0, 0.0, 0.0, -1.0 * cPos.x,
-		0.0, 1.0, 0.0, -1.0 * cPos.y,
-		0.0, 0.0, 1.0, -1.0 * cPos.z,
-		0.0, 0.0, 0.0, 1.0,
-	};
-
-	return mul(eyeMatrix, lookAtMatrix);
+	return camMatrix;
 }
 
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
@@ -67,10 +61,10 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	// }
 
 	finalPos += finalTranslation;
-	finalPos += cameraPos; // for testing
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
-	output.pos = mul(projMatrix, finalPos);
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), finalPos);
+	output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
 	output.flatColor = 0xFF884422;
 
 	return output;
