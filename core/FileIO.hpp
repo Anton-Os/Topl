@@ -5,38 +5,53 @@
 
 #include <cstring>
 #include <cstdio>
-// #include <cstdint>
+#include <cctype>
 #include <vector>
+#include <cfloat> // For error handling
+#include <cerrno> // For error handling
 
-class FBX_Node {
+enum F3D_Format {
+	F3D_ObjFile,
+	F3D_FbxFile
+	// possibly add another "heavier" format such as glTF
+};
+
+class File3D_Node {
 public:
-	FBX_Node(std::string name, unsigned propsCount, std::string propsList) 
-		: mName(name), mNumProps(propsCount), mPropsList(propsList) {}
+	File3D_Node(std::string name/*, unsigned propsCount, std::string propsList */) 
+		: mName(name)/* , mNumProps(propsCount), mPropsList(propsList) */{}
 
 	std::string getName() { return mName; }
 private:
 	const std::string mName; // Name of Node
-	const unsigned mNumProps; // Number of properties
-	const std::string mPropsList; // Property list
+	// const unsigned mNumProps; // Number of properties
+	// const std::string mPropsList; // Property list
 };
 
-class FBX_DocumentTree {
+class File3D_DocumentTree {
 public:
-	FBX_DocumentTree(const char* source);
+	File3D_DocumentTree(const char* source); // mNodeData allocation performed here
+	~File3D_DocumentTree() { if (mNodeData != nullptr) free(mNodeData); }
 private:
-	unsigned readNodeAscii(unsigned startOffset); // reads fbx file in ascii encoding mode
+	void readNode(unsigned nodeNum); // reads File3D file in ascii encoding mode
 
+	F3D_Format mFormat;
 	std::string mFileStr;
-	std::vector<FBX_Node> mNodes;
+	unsigned mNodeCount = 0;
+	File3D_Node* mNodeData = nullptr;
+	bool mIsValidFile; // used for error checking!
 
-	bool mIsDoneParsing = false; // Set to true once end is reached
+	// std::vector<File3D_Node> mNodes;
+	// bool mIsDoneParsing = false; // Set to true once end is reached
 };
 
 // ---------------------- Anonymous Functions ---------------------- //
 
 std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);
-bool checkFormat_FBX(const char* source);
+bool checkFormatObj(const char* source);
+bool checkFormatFbx(const char* source);
+float getFloatFromStr(const std::string& source, size_t startOffset);
 
 // Create a log file for debugging purposes
 void logToFile(const char* fileName, std::string logMessage);
