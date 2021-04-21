@@ -5,8 +5,8 @@ public:
     // All Shape Constructor
     Geo_Flat(NGon2D refShape) 
     : Geo_RenderObj
-    (refShape.segments + 1, // Vertex count is number of segments +1 for the center point
-     refShape.segments * 3 ){ // Each segment requires 1 triangle (3 vertices total)
+    (refShape.segments + 1, // vertex count is number of segments +1 for the center point
+     refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
         mShape2D = refShape; // copy to internal data
         fillRenderObject();
     }

@@ -24,7 +24,12 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::scene);
 	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
 
-	while ( renderer.renderScene(DRAW_Triangles)) {
+	Timer_Ticker gameTicker;
+	Timer_Ticker gameTicker;
+	// Topl::grid.move(&Topl::scene, Eigen::Vector3f(1.0f, -100.0f, 0.0f));
+	while (renderer.renderScene(DRAW_Triangles)) {
+		Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.001 * gameTicker.getAbsSecs(), 0.0));
+		Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.002 * gameTicker.getAbsSecs()));
 		renderer.updateScene(&Topl::scene);
 		// Topl::scene.resolvePhysics();
 

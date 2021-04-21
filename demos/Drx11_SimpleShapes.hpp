@@ -22,7 +22,7 @@ namespace Topl {
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
 	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.2f);
-	Geo_ConicCircle cone1 = Geo_ConicCircle(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.5f));
+	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart

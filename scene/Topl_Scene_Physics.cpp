@@ -104,7 +104,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 
 
 void Topl_Scene::resolvePhysics() {
-	double physElapseSecs = mPhysTicker.getRelMillsecs() / 1000.0;
+	double physElapseSecs = mPhysTicker.getRelSecs();
 
 	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){

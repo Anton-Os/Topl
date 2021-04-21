@@ -4,10 +4,12 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 	const char* fileExtension = &source[strlen(source) - 3]; // fetches last 3 characters
 	if (strcmp(fileExtension, "obj") == 0) { // obj extension detected
 		mFormat = F3D_ObjFile;
+		mGeoStartLabel = "g default";
 		mIsValidFile = checkFormatObj(source);
 	}
 	else if (strcmp(fileExtension, "fbx") == 0) { // fbx extension detected
 		mFormat = F3D_FbxFile;
+		mGeoStartLabel = "GeometryS";
 		mIsValidFile = checkFormatFbx(source);
 	}
 	else mIsValidFile = false; // unsupported format
@@ -18,8 +20,8 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 		mFileStr = readFile(source, true);
 		
 		size_t nodeSearchOffset = 0;
-		while (mFileStr.find("Vertices", nodeSearchOffset) != std::string::npos) { // FBX file specific
-			nodeSearchOffset += mFileStr.find("Vertices", nodeSearchOffset);
+		while (mFileStr.find(mGeoStartLabel, nodeSearchOffset) != std::string::npos) { // FBX file specific
+			nodeSearchOffset += mFileStr.find(mGeoStartLabel, nodeSearchOffset);
 			mNodeCount++;
 		}
 
@@ -36,7 +38,7 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 void File3D_DocumentTree::readNode(unsigned nodeNum) {
 	size_t nodeSearchOffset = 0;
 	for(unsigned n = 0; n < nodeNum; n++)
-		nodeSearchOffset += mFileStr.find("FbxNode", nodeSearchOffset);
+		nodeSearchOffset += mFileStr.find(mGeoStartLabel, nodeSearchOffset);
 }
 
 std::string readFile(const char* source, bool isBinaryFile){

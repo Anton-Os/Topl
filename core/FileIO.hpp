@@ -37,10 +37,10 @@ private:
 
 	F3D_Format mFormat;
 	std::string mFileStr;
+	std::string mGeoStartLabel; // label to search for geometry inside of 3D file
 	unsigned mNodeCount = 0;
 	File3D_Node* mNodeData = nullptr;
 	bool mIsValidFile; // used for error checking!
-
 	// std::vector<File3D_Node> mNodes;
 	// bool mIsDoneParsing = false; // Set to true once end is reached
 };

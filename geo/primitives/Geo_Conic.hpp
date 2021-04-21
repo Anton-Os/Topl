@@ -6,7 +6,7 @@ public:
     Geo_Conic(NGon2D refShape, Eigen::Vector3f apex) 
     : Geo_RenderObj
     (refShape.segments + 2, // Vertex count is number of segments +1 for the center point and +1 for the apex point
-     refShape.segments * 6 ){ // Each segment requires 1 triangle for base and 1 triangle to connect to apex (6 vertices total)
+     refShape.segments * 6){ // Each segment requires 1 triangle for base and 1 triangle to connect to apex (6 vertices total)
         mShape2D = refShape; // copy to internal data
         mApex = apex;
         fillRenderObject();

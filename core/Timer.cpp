@@ -10,12 +10,12 @@ void Timer_Ticker::reset(){
     mStartSec = steady_clock::now();
 }
 
-double Timer_Ticker::getRelMillsecs() {
+double Timer_Ticker::getRelMillisecs() {
     updateTimer();
     return mRelTimeSpan.count();
 }
 
-double Timer_Ticker::getAbsMillsecs() {
+double Timer_Ticker::getAbsMillisecs() {
     updateTimer();
     return mAbsTimeSpan.count();
 }
@@ -29,7 +29,7 @@ void Timer_Ticker::updateTimer(){
 
 void Timer_DiscreteEvent::update() {
 	unsigned callCountTmp = mCallCount;
-	mCallCount = (unsigned)( floor(mTicker.getAbsMillsecs() / mTrigTime) );
+	mCallCount = (unsigned)( floor(mTicker.getAbsMillisecs() / mTrigTime) );
 	
 	if (mCallCount > callCountTmp) mCallback();
 }

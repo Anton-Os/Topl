@@ -22,12 +22,12 @@ namespace Topl {
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
 	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.2f);
-	Geo_ConicCircle cone1 = Geo_ConicCircle(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.5f));
+	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&hex1);
+	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
 	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.45f));
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
 }

@@ -32,5 +32,5 @@ void Geo_NGon2D::genIndices(unsigned* data){
 	// Adressing last point, SPECIAL CASE
 	*(data + currentIdx + 0) = 0;
 	*(data + currentIdx + 1) = startCVert;
-	*(data + currentIdx + 2) = 1; // Connect back to first point
+	*(data + currentIdx + 2) = 1; // connect back to first point
 }

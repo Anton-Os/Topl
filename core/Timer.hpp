@@ -9,8 +9,10 @@ public:
 	Timer_Ticker() { reset(); }
 
 	void reset();
-	double getRelMillsecs(); // Gets secs since last call
-	double getAbsMillsecs(); // Gets secs since timer object construction
+	double getRelMillisecs(); // Gets milliseconds secs since last invocation
+	double getRelSecs(){ return getRelMillisecs() / 1000.0; } // Gets seconds secs since last invocation
+	double getAbsMillisecs(); // Gets milliseconds since timer creation
+	double getAbsSecs(){ return getAbsMillisecs() / 1000.0; } // Gets seconds since timer creation
 private:
 	void updateTimer();
 
