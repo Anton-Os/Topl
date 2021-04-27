@@ -9,15 +9,23 @@ void Geo_Flat::genVertices(Eigen::Vector3f* data){
 
     for(unsigned v = 1; v < mVertexCount; v++)
         *(data + v) = Eigen::Vector3f(
-			sin(mStartAngle + (v * incAngle)) * mShape2D.radius, 
-			cos(mStartAngle + (v * incAngle)) * mShape2D.radius, 
+			sin(mStartAngle + ((v - 1) * incAngle)) * mShape2D.radius, 
+			cos(mStartAngle + ((v - 1) * incAngle)) * mShape2D.radius, 
 			DEFAULT_Z_VAL
         );
 }
 
 void Geo_Flat::genTexCoords(Eigen::Vector2f* data) {
-	for (unsigned t = 0; t < mVertexCount; t++)
-		*(data + t) = Eigen::Vector2f(0.0f, 0.0f); // Fix this!
+	// texture coordinates are based off of rectangular geometries
+
+	*(data + 0) = Eigen::Vector2f(0.5f, 0.5f); // center point will always be shared
+	for (unsigned t = 1; t < mVertexCount; t++)
+		switch((t - 1) % 4){
+			case 0: *(data + t) = Eigen::Vector2f(1.0f, 0.0f); break; // bottom left
+			case 1: *(data + t) = Eigen::Vector2f(0.0f, 0.0f); break; // top left
+			case 2: *(data + t) = Eigen::Vector2f(0.0f, 1.0f); break; // bottom right
+			case 3: *(data + t) = Eigen::Vector2f(1.0f, 1.0f); break; // top right
+		}
 }
 
 void Geo_Flat::genIndices(unsigned* data){

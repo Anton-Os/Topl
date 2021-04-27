@@ -35,7 +35,7 @@ enum AXIS_Target{
     AXIS_Z
 };
 
-typedef float (*vertexFuncCallback)(float); // Callback for transforming vertex attributes
+typedef float (*vertexFuncCallback1)(float, double); // Callback for transforming vertex attributes given input and modifier 
 
 struct Geo_PerVertexData { // TODO: Fix this class
 	Geo_PerVertexData(){} // Empty constructor
@@ -74,7 +74,7 @@ public:
 	// Vertex only constructor
 	Geo_RenderObj(unsigned v){
 		mVertexCount = v;
-		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount / 2); // offset angle for each even side length
+		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
 
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
@@ -83,7 +83,7 @@ public:
     Geo_RenderObj(unsigned v, unsigned i){
 		mVertexCount = v;
 		mIndexCount = i;
-		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount / 2); // offset angle for each even side length
+		if((mVertexCount - 1) % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
 
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
@@ -100,7 +100,7 @@ public:
 	}
 
 	// Modify shape through vertex transform callback
-	bool modShapeFunc(vertexFuncCallback callback, AXIS_Target axis){
+	bool modShapeFunc(vertexFuncCallback1 callback, double mod, AXIS_Target axis){
 		if(mVertexCount == 0 || mPosData == nullptr) return false; // no processing can occur
 
 		unsigned vAttributeOffset;
@@ -110,7 +110,7 @@ public:
 			case AXIS_Z: vAttributeOffset = 2; break;
 		}
 		for(unsigned v = 0; v < mVertexCount; v++)
-			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset]); // updates specific vertex attribute
+			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 	}
 
 	perVertex_cptr getPerVertexData() {

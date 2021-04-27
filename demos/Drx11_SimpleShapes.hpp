@@ -27,7 +27,7 @@ namespace Topl {
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&hex1);
+	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
 	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.45f));
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
 }

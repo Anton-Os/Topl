@@ -21,8 +21,17 @@ void Geo_Conic::genVertices(Eigen::Vector3f* data){
 }
 
 void Geo_Conic::genTexCoords(Eigen::Vector2f* data) {
-	for (unsigned t = 0; t < mVertexCount; t++)
-		*(data + t) = Eigen::Vector2f(0.0f, 0.0f); // Fix this!
+	// texture coordinates are based off of rectangular geometries
+
+	*(data + 0) = Eigen::Vector2f(0.5f, 0.5f); // center point will always be shared
+	for (unsigned t = 1; t < mVertexCount; t++)
+		switch((t - 1) % 4){
+			case 0: *(data + t) = Eigen::Vector2f(1.0f, 0.0f); break; // bottom left
+			case 1: *(data + t) = Eigen::Vector2f(0.0f, 0.0f); break; // top left
+			case 2: *(data + t) = Eigen::Vector2f(0.0f, 1.0f); break; // bottom right
+			case 3: *(data + t) = Eigen::Vector2f(1.0f, 1.0f); break; // top right
+		}
+	*(data + mVertexCount - 1) = Eigen::Vector2f(0.5f, 0.5f); // apex point will always be shared
 }
 
 void Geo_Conic::genIndices(unsigned* data){

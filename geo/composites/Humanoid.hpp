@@ -21,12 +21,12 @@ public:
 			}, scaleFactor
 		),
 		Geo_Construct(prefix, scene, {
-			(Geo_RenderObj*)getRect(HUMANOID_Head),
-			(Geo_RenderObj*)getRect(HUMANOID_LeftArm),
-			(Geo_RenderObj*)getRect(HUMANOID_RightArm),
-			(Geo_RenderObj*)getRect(HUMANOID_Body),
-			(Geo_RenderObj*)getRect(HUMANOID_LeftLeg),
-			(Geo_RenderObj*)getRect(HUMANOID_RightLeg), }
+			(Geo_RenderObj*)getSquare(HUMANOID_Head),
+			(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
+			(Geo_RenderObj*)getSquare(HUMANOID_RightArm),
+			(Geo_RenderObj*)getSquare(HUMANOID_Body),
+			(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
+			(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
 		) {
 
 		headOffset = initProps[HUMANOID_Head].second;
