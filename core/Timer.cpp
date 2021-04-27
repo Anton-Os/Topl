@@ -24,12 +24,9 @@ void Timer_Ticker::updateTimer(){
     mEndSec = steady_clock::now(); // Gets current time
     mRelTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec);
     mAbsTimeSpan += mRelTimeSpan;
-    mStartSec = mEndSec;
-}
 
-void Timer_DiscreteEvent::update() {
-	unsigned callCountTmp = mCallCount;
-	mCallCount = (unsigned)( floor(mTicker.getAbsMillisecs() / mTrigTime) );
-	
-	if (mCallCount > callCountTmp) mCallback();
+    for(std::vector<Timer_PeriodicEvent>::iterator currentEvent = mPeriodicEvents.begin(); currentEvent != mPeriodicEvents.end(); currentEvent++)
+        currentEvent->addTime(mRelTimeSpan.count()); // update time elapsed of all periodic events
+
+    mStartSec = mEndSec; // internally adjusting timing functions
 }

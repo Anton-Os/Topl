@@ -88,11 +88,6 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Extruded.cpp
 )
 
-list(APPEND scene_Sources
-    scene/Topl_Scene_Builder.cpp
-    scene/Topl_Scene_Physics.cpp
-)
-
 # Generic Features Demos
 
 add_executable(TickTick
@@ -126,12 +121,13 @@ if(WIN32)
     add_library(Drx11_Engine
         ${common_Sources}
     	${geo_Sources}
-        ${scene_Sources}
+        core/Topl_Scene_Builder.cpp
+        core/Topl_Scene_Physics.cpp
         core/ValueGen.cpp
 
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_Engine PUBLIC core geo scene)
+    target_include_directories(Drx11_Engine PUBLIC core geo)
     target_include_directories(Drx11_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -168,12 +164,13 @@ endif()
 add_library(GL4_Engine
     ${common_Sources}
     ${geo_Sources}
-    ${scene_Sources}
+    core/Topl_Scene_Builder.cpp
+    core/Topl_Scene_Physics.cpp
     core/ValueGen.cpp
 
     core/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_Engine PUBLIC core geo scene)
+target_include_directories(GL4_Engine PUBLIC core geo)
 target_include_directories(GL4_Engine PUBLIC
     # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3

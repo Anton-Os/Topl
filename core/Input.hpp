@@ -3,7 +3,6 @@
 #include <map>
 #include <cctype>
 
-// typedef void (*keyComboCallback)(const std::vector<KeyState>& states); // Accept number of keys and keystates
 typedef void (*keyCallback)(void); // Triggers action on a particular keypress, no arguments required
 
 class Input_KeyLogger {

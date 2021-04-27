@@ -36,9 +36,20 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 }
 
 void File3D_DocumentTree::readNode(unsigned nodeNum) {
+	if(nodeNum > mNodeCount){
+		fprintf(stderr, "Node %d is out of range! Max nodes detected is at %d", nodeNum, mNodeCount);
+		return;
+	}
 	size_t nodeSearchOffset = 0;
 	for(unsigned n = 0; n < nodeNum; n++)
 		nodeSearchOffset += mFileStr.find(mGeoStartLabel, nodeSearchOffset);
+	
+	if(mFormat == F3D_FbxFile){ // Searching for relevant labels for the FBX format
+		size_t indicesRelOffset = mFileStr.find("PolygonVertexIndexi", nodeSearchOffset); // relative offset for the vertices label
+		size_t verticesRelOffset = mFileStr.find("Verticesd", nodeSearchOffset); // relative offset for the vertices label
+		size_t normalsRelOffset = mFileStr.find("Normalsd", nodeSearchOffset); // relative offset for the normals label
+		size_t uvRelOffset = mFileStr.find("UVd", nodeSearchOffset); // relative offset for the uv label
+	}
 }
 
 std::string readFile(const char* source, bool isBinaryFile){
@@ -68,16 +79,14 @@ std::string getParentDir(const char* str){
 
 void logToFile(const char* fileName, std::string logMessage){
     std::ofstream file(fileName, std::ofstream::out | std::ofstream::app);
-
     file << logMessage << "\n\n";
-
     file.close();
 }
 
 bool checkFormatObj(const char* source) {
 	std::string fileContent = readFile(source, false); // ascii read
 	std::string magicKey("OBJFILE.mtl");
-	return (fileContent.find(magicKey) != std::string::npos) ? true :  false;
+	return (fileContent.find(magicKey) != std::string::npos) ? true : false;
 }
 
 bool checkFormatFbx(const char* source) {
