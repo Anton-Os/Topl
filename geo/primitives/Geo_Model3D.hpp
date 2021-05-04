@@ -5,10 +5,9 @@
 class Geo_Model3D : public Geo_RenderObj {
 public:
     // Model Constructor
-    Geo_Model3D(FBX_Node* modelNode) 
+    Geo_Model3D() 
     : Geo_RenderObj(1, 1) { // TODO: Use proper values
-        mModelNode = modelNode;
-
+        // mModelNode = modelNode;
         fillRenderObject();
     }
 private:
@@ -16,5 +15,4 @@ private:
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
 
-    const FBX_Node* mModelNode;
 };

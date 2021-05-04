@@ -1,5 +1,5 @@
 #include "Platform.hpp"
-
+#include "File3D.hpp"
 
 int main(int argc, char** argv){
     if(argc != 2) return 1; // Improper number of arguments

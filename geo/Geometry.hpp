@@ -143,6 +143,7 @@ protected:
 
 	Geo_PerVertexData* mPerVertexData = nullptr; // Formatted per vertex data
     Eigen::Vector3f* mPosData = nullptr; // Vertex data
+	Eigen::Vector3f* mNormalsData = nullptr; // Normals data
     Eigen::Vector2f* mTexCoordData = nullptr; // Texture coordinate data
 	unsigned* mIndexData = nullptr; // Index data
 };

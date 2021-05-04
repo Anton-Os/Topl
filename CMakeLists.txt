@@ -77,6 +77,7 @@ list(APPEND common_Sources
 	core/Input.cpp
     core/Timer.cpp
     core/Platform.cpp
+    # core/File3D.cpp
     # core/ValueGen.cpp
 )
 
@@ -92,25 +93,28 @@ add_executable(TickTick
     ${common_Sources}
     demos/Demo_TickTick.cpp
 )
-target_include_directories(TickTick PUBLIC core helper geo)
+target_include_directories(TickTick PUBLIC core geo)
 
 add_executable(Presser
     ${common_Sources}
     demos/Demo_Presser.cpp
 )
-target_include_directories(Presser PUBLIC core helper geo)
+target_include_directories(Presser PUBLIC core geo)
 
 add_executable(Cursor
     ${common_Sources}
     demos/Demo_Cursor.cpp
 )
-target_include_directories(Cursor PUBLIC core helper geo)
+target_include_directories(Cursor PUBLIC core geo)
 
-add_executable(ParseFBX
+add_executable(Parse3D
     ${common_Sources}
-    demos/Demo_ParseFBX.cpp
+    geo/primitives/Geo_Model3D.cpp
+    core/File3D.cpp
+    demos/Demo_Parse3D.cpp
 )
-target_include_directories(ParseFBX PUBLIC core helper geo)
+target_include_directories(Parse3D PUBLIC core geo)
+target_include_directories(Parse3D PUBLIC ${CMAKE_INSTALL_PREFIX}/include/eigen3)
 
 
 # DirectX Windows Dependent Demos
@@ -121,6 +125,7 @@ if(WIN32)
     	${geo_Sources}
         core/Topl_Scene_Builder.cpp
         core/Topl_Scene_Physics.cpp
+        core/File3D.cpp
         core/ValueGen.cpp
 
         core/Topl_Renderer_Drx11.cpp
@@ -164,6 +169,7 @@ add_library(GL4_Engine
     ${geo_Sources}
     core/Topl_Scene_Builder.cpp
     core/Topl_Scene_Physics.cpp
+    core/File3D.cpp
     core/ValueGen.cpp
 
     core/Topl_Renderer_GL4.cpp
