@@ -9,4 +9,6 @@ int main(int argc, char** argv){
 
 	printf("Reading 3D File: %s", fileInput);
     File3D_DocumentTree docTree(fileInput); // TODO: Test to see if working
+
+	return 0;
 }

@@ -89,7 +89,7 @@ namespace _Drx11 {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Geo_PerVertexData) * vCount;
+		buffDesc.ByteWidth = sizeof(Geo_VertexData) * vCount;
 		// buffDesc.ByteWidth = 28 * vCount;
 		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffDesc.CPUAccessFlags = 0;
@@ -396,7 +396,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
-		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
+		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getVertexData();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
 
 		// Geo component block implementation
@@ -608,7 +608,7 @@ void Topl_Renderer_Drx11::render(void){
 			// TODO: Check for renderBlockBuff validity
 			m_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
-			UINT stride = sizeof(Geo_PerVertexData);
+			UINT stride = sizeof(Geo_VertexData);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);

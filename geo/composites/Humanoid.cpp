@@ -60,8 +60,6 @@ namespace _Humanoid {
 
 void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
-	const Eigen::Vector3f hardLegOffset1 = Eigen::Vector3f(0.06f, -0.35f, 0.0);
-	const Eigen::Vector3f hardLegOffset2 = Eigen::Vector3f(-0.06f, -0.35f, 0.0);
 	
 	Geo_Component* geocHead = getNextGeo();
 	sprite = getSprite(HUMANOID_Head);

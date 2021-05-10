@@ -7,17 +7,17 @@ struct ShapesGen {
     ShapesGen(){}
 
     // Modify shape through vertex transform callbacks
-    static void modShapeFunc(Geo_Component* targetGeo, vertexFuncCallback1 callback, AXIS_Target axis){ // Transofrms a single vertex attribute
-        targetGeo->modShapeFunc(callback, axis);
+    static void modify(Geo_Component* targetGeo, vTransformCallback callback, AXIS_Target axis){ // Transofrms a single vertex attribute
+        targetGeo->modify(callback, axis);
     }
-    static void modShapeFunc(Geo_Component* targetGeo, vertexFuncCallback1 xCallback, vertexFuncCallback1 yCallback){ // Transofrms x and y attributes
-        targetGeo->modShapeFunc(xCallback, AXIS_X);
-        targetGeo->modShapeFunc(yCallback, AXIS_Y);
+    static void modify(Geo_Component* targetGeo, vTransformCallback xCallback, vTransformCallback yCallback){ // Transofrms x and y attributes
+        targetGeo->modify(xCallback, AXIS_X);
+        targetGeo->modify(yCallback, AXIS_Y);
     }
-    static void modShapeFunc(Geo_Component* targetGeo, vertexFuncCallback1 xCallback, vertexFuncCallback1 yCallback, vertexFuncCallback1 zCallback){ // Transofrms x, y, and z attributes
-        targetGeo->modShapeFunc(xCallback, AXIS_X);
-        targetGeo->modShapeFunc(yCallback, AXIS_Y);
-        targetGeo->modShapeFunc(zCallback, AXIS_Z);
+    static void modify(Geo_Component* targetGeo, vTransformCallback xCallback, vTransformCallback yCallback, vTransformCallback zCallback){ // Transofrms x, y, and z attributes
+        targetGeo->modify(xCallback, AXIS_X);
+        targetGeo->modify(yCallback, AXIS_Y);
+        targetGeo->modify(zCallback, AXIS_Z);
     }
     /* static Geo_RenderObj genCompoundShape_add(const Geo_Component* firstGeo, const Geo_Component* secondGeo);
     static Geo_RenderObj genCompoundShape_diff(const Geo_Component* firstGeo, const Geo_Component* secondGeo);

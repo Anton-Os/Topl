@@ -35,16 +35,20 @@ enum AXIS_Target{
     AXIS_Z
 };
 
-typedef float (*vertexFuncCallback1)(float, double); // Callback for transforming vertex attributes given input and modifier 
+typedef float (*vTransformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
 
-struct Geo_PerVertexData { // TODO: Fix this class
-	Geo_PerVertexData(){} // Empty constructor
+// Common transform callbacks go here
+// float stretchTransform(float input, double mod){ return input * mod; }
+// float offsetTransform(float input, double mod){ return input + mod; }
 
-	Geo_PerVertexData(Eigen::Vector3f p){ // Position data constructor
+struct Geo_VertexData { // TODO: Fix this class
+	Geo_VertexData(){} // Empty constructor
+
+	Geo_VertexData(Eigen::Vector3f p){ // Position data constructor
 		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
 		texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
 	}
-	Geo_PerVertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Extended constructor
+	Geo_VertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Extended constructor
 		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
 		texCoord[U_OFFSET] = t[U_OFFSET]; texCoord[V_OFFSET] = t[V_OFFSET];
 	}
@@ -55,7 +59,7 @@ struct Geo_PerVertexData { // TODO: Fix this class
 	// float blendWeights[BLENDWEIGHTS_COUNT]; // Implement
 };
 
-typedef const Geo_PerVertexData* const perVertex_cptr; // Safe const pointer type
+typedef const Geo_VertexData* const perVertex_cptr; // Safe const pointer type
 
 struct NGon2D {
     float radius;
@@ -92,7 +96,7 @@ public:
     
 	~Geo_RenderObj(){ cleanup(); }
 	void cleanup() {
-		if (mPerVertexData != nullptr) free(mPerVertexData);
+		if (mVertexData != nullptr) free(mVertexData);
 
 		if (mPosData != nullptr) free(mPosData);
 		if (mTexCoordData != nullptr) free(mTexCoordData);
@@ -100,7 +104,7 @@ public:
 	}
 
 	// Modify shape through vertex transform callback
-	bool modShapeFunc(vertexFuncCallback1 callback, double mod, AXIS_Target axis){
+	bool modify(vTransformCallback callback, double mod, AXIS_Target axis){
 		if(mVertexCount == 0 || mPosData == nullptr) return false; // no processing can occur
 
 		unsigned vAttributeOffset;
@@ -113,17 +117,17 @@ public:
 			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 	}
 
-	perVertex_cptr getPerVertexData() {
-		if (mPerVertexData == nullptr) {
-			mPerVertexData = (Geo_PerVertexData*)malloc(mVertexCount * sizeof(Geo_PerVertexData));
-			for (unsigned v = 0; v < mVertexCount; v++)
-				*(mPerVertexData + v) = Geo_PerVertexData(*(mPosData + v), *(mTexCoordData + v));
-		}
-		return mPerVertexData;
-	}
     unsigned getVertexCount() const { return mVertexCount; } // Get Vertex Count
     unsigned getIndexCount() const { return mIndexCount; } // Get Index Count
 
+	perVertex_cptr getVertexData() {
+		if (mVertexData == nullptr) {
+			mVertexData = (Geo_VertexData*)malloc(mVertexCount * sizeof(Geo_VertexData));
+			for (unsigned v = 0; v < mVertexCount; v++)
+				*(mVertexData + v) = Geo_VertexData(*(mPosData + v), *(mTexCoordData + v));
+		}
+		return mVertexData;
+	}
     vec3f_cptr getPosData() const { return mPosData; }
     vec2f_cptr getTexCoordData() const { return mTexCoordData; }
     ui_cptr getIndexData() const { return mIndexData; }
@@ -141,7 +145,7 @@ protected:
     unsigned mIndexCount = 0; // Index count
 	double mStartAngle = 0.0; // Start angle for Vertex generation
 
-	Geo_PerVertexData* mPerVertexData = nullptr; // Formatted per vertex data
+	Geo_VertexData* mVertexData = nullptr; // Formatted per vertex data
     Eigen::Vector3f* mPosData = nullptr; // Vertex data
 	Eigen::Vector3f* mNormalsData = nullptr; // Normals data
     Eigen::Vector2f* mTexCoordData = nullptr; // Texture coordinate data
