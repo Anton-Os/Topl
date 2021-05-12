@@ -1,30 +1,28 @@
 #include "File3D.hpp"
 
+static std::string parseNodeName(const std::string& fileContent, size_t offset){
+	if (offset > fileContent.size()) return std::string(); // safety check
+
+	std::string name;
+	while(!isalpha(fileContent.at(offset))) offset++; // search for next alpha character
+	while (fileContent.at(offset) != '\n' && !isspace(fileContent.at(offset)) && fileContent.at(offset) != '_' && fileContent.at(offset) != '\"') {
+		name += fileContent.at(offset); // keep appending valid characters
+		offset++;
+	}
+
+	if(name == "default") return std::string(); // node cannot be named default because of obj parsing!
+	else return name;
+}
+
 File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 	const char* fileExtension = &source[strlen(source) - 3]; // fetches last 3 characters
 	if(strcmp(fileExtension, "obj") == 0) { // obj extension detected
 		mFormat = F3D_ObjFile;
-		// mPosStartLabels = { std::string("g"), std::string("default") };
-		mPosStartLabels[FIRST_LABEL] = "g";
-		mPosStartLabels[SECOND_LABEL] = "default";
-		mPosEndLabel = "vt"; // texCoords come next sequentially in obj file spec
-		// mIndexStartLabels = { "usemtl", "initialShadingGroup" };
-		mIndexStartLabels[FIRST_LABEL] = "usemtl";
-		mIndexStartLabels[SECOND_LABEL] = "initialShadingGroup";
-		mIndexEndLabel = "g"; // g label follows indices
-		mIsValidFile = checkFormatObj(source);
+		mNodeNameLabel = "g ";
 	}
 	else if(strcmp(fileExtension, "dae") == 0) { // obj extension detected
 		mFormat = F3D_DaeFile;
-		// mPosStartLabels = { "<float_array", "POSITION-array" };
-		mPosStartLabels[FIRST_LABEL] = "<float_array";
-		mPosStartLabels[SECOND_LABEL] = "POSITION-array";
-		mPosEndLabel = "</float_array>";
-		// mIndexStartLabels = { "", "<p>" };
-		mIndexStartLabels[FIRST_LABEL] = "<p"; // breaking a tag into 2
-		mIndexStartLabels[SECOND_LABEL] = ">"; // breaking a tag into 2
-		mIndexEndLabel = "        </triangles>"; // attempt to remove whitespace
-		// mIsValidFile = checkFormatDae(source);
+		mNodeNameLabel = "geometry id=";
 	}
 	else mIsValidFile = false; // unsupported format
 
@@ -33,53 +31,37 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 
 		mFileStr = readFile(source, true);
 		
-		size_t nodeSearchOffset = 0;
-		while (mFileStr.find(mPosStartLabels[SECOND_LABEL], nodeSearchOffset) != std::string::npos) { // TODO: Check for matching labels
-			nodeSearchOffset += mFileStr.find(mPosStartLabels[SECOND_LABEL], nodeSearchOffset);
-			mNodeCount++;
+		// size_t nodeSearchOffset = 0;
+		// size_t foundOffset = mFileStr.find(mNodeNameLabel, nodeSearchOffset); // nodeSearchOffset causes issues on its own
+		size_t foundOffset = 0;
+		std::string currentName;
+		while (mFileStr.find(mNodeNameLabel, foundOffset) != std::string::npos) {
+			foundOffset = mNodeNameLabel.length() + mFileStr.find(mNodeNameLabel, foundOffset); // update foundOffset to next position
+			currentName = parseNodeName(mFileStr, foundOffset /* + mNodeNameLabel.length() */);
+			if(!currentName.empty()) mNodeNames.push_back(currentName);
 		}
 
-		if (mNodeCount != 0) { // number of nodes has to increase from 0
-			mNodeData = (File3D_Node**)malloc(sizeof(File3D_Node) * mNodeCount); // allocates enough space
-			for(unsigned n = 0; n < mNodeCount; n++) *(mNodeData + n) = new File3D_Node(); // empty node
+		if (mNodeNames.size() != 0) { // number of nodes has to increase from 0
+			mNodeData = (File3D_Node**)malloc(sizeof(File3D_Node) * mNodeNames.size()); // allocates enough space
 
-			for (unsigned n = 0; n < mNodeCount; n++) readNode(n); // read thhrough all nodes in the file
+			for(unsigned n = 0; n < mNodeNames.size(); n++) 
+				*(mNodeData + n) = new File3D_Node(currentName); // iterate through creating properly named
+
+			for (unsigned n = 0; n < mNodeNames.size(); n++) 
+				readNode(n); // iterate through populating nodes with data
+
 		} else fprintf(stderr, "%s has no valid nodes!", source);
 	}
 	else fprintf(stderr, "%s is an invalid file!", source); // error occured
 }
 
 void File3D_DocumentTree::readNode(unsigned nodeNum) {
-	if(nodeNum > mNodeCount){
-		fprintf(stderr, "Node %d is out of range! Max nodes detected is at %d", nodeNum, mNodeCount);
+	if(nodeNum > mNodeNames.size()){
+		fprintf(stderr, "Node %d is out of range! Max nodes detected is at %d", nodeNum, mNodeNames.size());
 		return;
 	}
 
 	File3D_Node* currentNode = *(mNodeData + nodeNum); // provides easy access to change the target node
-	size_t nodeSearchOffset = 0;
-	
-	// find the cooresponding label for vertex positions
-	for(unsigned n = 0; n <= nodeNum; n++)
-		nodeSearchOffset += mFileStr.find(mPosStartLabels[SECOND_LABEL], nodeSearchOffset); // TODO: Check for matching labels
-	// find the next newline character
-	while(mFileStr.at(nodeSearchOffset) != '\n' && nodeSearchOffset < mFileStr.length())
-		nodeSearchOffset++;
-
-	// data parsing code line by line
-	std::string dataParseStr;
-	size_t dataParseOffset = nodeSearchOffset;
-	while(nodeSearchOffset < mFileStr.length()){
-		while((mFileStr.at(dataParseOffset + 1) != '\n')) dataParseOffset++;
-		while(!isdigit(mFileStr.at(nodeSearchOffset)) && mFileStr.at(nodeSearchOffset) != '-') nodeSearchOffset++; // adjusts search offset properly
-
-		dataParseStr = mFileStr.substr(nodeSearchOffset, dataParseOffset - nodeSearchOffset);
-		if(dataParseStr.substr(0, mPosEndLabel.length()) == mPosEndLabel) break;
-		else currentNode->appendPosExtractData(dataParseStr);
-
-		nodeSearchOffset = dataParseOffset;
-	}
-
-	// TODO: Continue processing with other node attributes
 }
 
 Geo_Model3D File3D_Node::genRenderObj(){

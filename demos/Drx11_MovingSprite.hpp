@@ -26,7 +26,8 @@ namespace Topl {
 		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
 	};
 
-	Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.25f);
+	Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.115f); // 11.5% original size
+	// Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.4f);
 }
 
 struct VertexShader : public Topl_Shader {

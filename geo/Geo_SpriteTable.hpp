@@ -12,12 +12,12 @@
 typedef std::pair<const Rasteron_Sprite*, Geo_FlatSquare*> spriteSquare_pair;
 
 static float getSpriteWidth(const Rasteron_Sprite* sprite) {
-	// return sprite->bounds.topRight_Pt[X_OFFSET] * 2;
-	return sprite->bounds.topRight_Pt[X_OFFSET]; // for testing
+	return sprite->bounds.topRight_Pt[X_OFFSET] * 2;
+	// return sprite->bounds.topRight_Pt[X_OFFSET]; // for testing
 }
 static float getSpriteHeight(const Rasteron_Sprite* sprite) {
-	// return sprite->bounds.topRight_Pt[Y_OFFSET] * 2;
-	return sprite->bounds.topRight_Pt[Y_OFFSET]; // for testing
+	return sprite->bounds.topRight_Pt[Y_OFFSET] * 2;
+	// return sprite->bounds.topRight_Pt[Y_OFFSET]; // for testing
 }
 
 static float stretchTransform(float input, double mod){ return input * mod; } // TODO: Make this code segment reusable
@@ -32,12 +32,11 @@ public:
 			*(mSquares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
 			mSpriteSquares.push_back(std::make_pair(currentSprite, *(mSquares + offset)));
 			if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
-				/* float stretchFactor = (getSpriteWidth(currentSprite) > getSpriteHeight(currentSprite)) ? getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite) : getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite);
-				if (getSpriteWidth(currentSprite) > getSpriteHeight(currentSprite)) mSpriteSquares.back().second->modify(stretchTransform, stretchFactor, AXIS_Y);
-				else  mSpriteSquares.back().second->modify(stretchTransform, stretchFactor, AXIS_X); */
 				float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
+				stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
 				mSpriteSquares.back().second->modify(stretchTransform, stretchFactorX, AXIS_Y);
 				float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
+				stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
 				mSpriteSquares.back().second->modify(stretchTransform, stretchFactorY, AXIS_X);
 			}
 		}
@@ -50,12 +49,11 @@ public:
 			*(mSquares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scaleFactor);
 			mSpriteSquares.push_back(std::make_pair(currentSprite, *(mSquares + offset)));
 			if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
-				/* float stretchFactor = (getSpriteWidth(currentSprite) > getSpriteHeight(currentSprite)) ? getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite) : getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite);
-				if (getSpriteWidth(currentSprite) > getSpriteHeight(currentSprite)) mSpriteSquares.back().second->modify(stretchTransform, stretchFactor, AXIS_Y);
-				else  mSpriteSquares.back().second->modify(stretchTransform, stretchFactor, AXIS_X); */
 				float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
+				stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
 				mSpriteSquares.back().second->modify(stretchTransform, stretchFactorX, AXIS_Y);
 				float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
+				stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
 				mSpriteSquares.back().second->modify(stretchTransform, stretchFactorY, AXIS_X);
 			}
 		}

@@ -9,8 +9,8 @@
 #include <Eigen/Dense> // Examine documentation
 
 #define POSITION_COUNT 3
+#define NORMAL_COUNT 3
 #define TEXCOORD_COUNT 2
-// #define NORMAL_COUNT 3
 // #define BLENDWEIGHTS_COUNT 3
 
 #define DEFAULT_Z_VAL 0.5f
@@ -113,7 +113,7 @@ public:
 			case AXIS_Y: vAttributeOffset = 1; break;
 			case AXIS_Z: vAttributeOffset = 2; break;
 		}
-		for(unsigned v = 0; v < mVertexCount; v++)
+		for(unsigned v = 0; v < mVertexCount; v++) // modify the position data of each vertex
 			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 	}
 
