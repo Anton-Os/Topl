@@ -18,10 +18,20 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 	const char* fileExtension = &source[strlen(source) - 3]; // fetches last 3 characters
 	if(strcmp(fileExtension, "obj") == 0) { // obj extension detected
 		mFormat = F3D_ObjFile;
+		mParseType = F3D_CheckLine;
+		// File3D_DocumentTree::File3D_LineParseAttribs parseAttribs = mLineParseAttribs;
+		mLineParseAttribs = File3D_LineParseAttribs("v ", "vn ", "vt ", "f ");
 		mNodeNameLabel = "g ";
 	}
 	else if(strcmp(fileExtension, "dae") == 0) { // obj extension detected
 		mFormat = F3D_DaeFile;
+		mParseType = F3D_CheckTag;
+		mTagParseAttribs = File3D_TagParseAttribs(
+			"float_array", "POSITION",
+			"float_array", "Normal",
+			"float_array", "UV",
+			"p", ""
+		);
 		mNodeNameLabel = "geometry id=";
 	}
 	else mIsValidFile = false; // unsupported format
@@ -29,15 +39,13 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 	if (mIsValidFile) {
 		bool isBinaryRead = true;
 
-		mFileStr = readFile(source, true);
-		
-		// size_t nodeSearchOffset = 0;
-		// size_t foundOffset = mFileStr.find(mNodeNameLabel, nodeSearchOffset); // nodeSearchOffset causes issues on its own
+		mFileSource = readFile(source, true);
+
 		size_t foundOffset = 0;
 		std::string currentName;
-		while (mFileStr.find(mNodeNameLabel, foundOffset) != std::string::npos) {
-			foundOffset = mNodeNameLabel.length() + mFileStr.find(mNodeNameLabel, foundOffset); // update foundOffset to next position
-			currentName = parseNodeName(mFileStr, foundOffset /* + mNodeNameLabel.length() */);
+		while (mFileSource.find(mNodeNameLabel, foundOffset) != std::string::npos) {
+			foundOffset = mNodeNameLabel.length() + mFileSource.find(mNodeNameLabel, foundOffset); // update foundOffset to next position
+			currentName = parseNodeName(mFileSource, foundOffset /* + mNodeNameLabel.length() */);
 			if(!currentName.empty()) mNodeNames.push_back(currentName);
 		}
 
@@ -61,7 +69,23 @@ void File3D_DocumentTree::readNode(unsigned nodeNum) {
 		return;
 	}
 
-	File3D_Node* currentNode = *(mNodeData + nodeNum); // provides easy access to change the target node
+	size_t foundOffset = 0;
+	File3D_Node* currentNode = *(mNodeData + nodeNum); // provides add data to the target node
+	std::string currentLine;
+
+	if (mParseType == F3D_CheckLine) {
+		for (unsigned n = 0; n < nodeNum + 1; n++) {
+			// Skip unecessary lines, check for matching lines
+			if (n == nodeNum) break;
+			else {
+				// Skip over older node data here
+			}
+		}
+		// while(currentLine.substr(0, ))
+	}
+	else if (mParseType == F3D_CheckTag) {
+		// Perform parsing by matching tag check
+	}
 }
 
 Geo_Model3D File3D_Node::genRenderObj(){
