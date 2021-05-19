@@ -16,7 +16,8 @@
 std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);
 bool checkFormatObj(const char* source);
-bool checkFormatFbx(const char* source);
+// bool checkFileExtension(const char* source, const char* ext);
+void cleanupNumStr(std::string* str); // cleanup string so only numbers and whitespace are left
 float getFloatFromStr(const std::string& source, size_t startOffset); // extracts float from str relative to start offset
 int getIntFromStr(const std::string& source, size_t startOffset); // extracts int from str relative to start offset
 

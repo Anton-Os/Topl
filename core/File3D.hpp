@@ -4,8 +4,6 @@
 
 #include "primitives/Geo_Model3D.hpp"
 
-typedef std::vector<std::string> fileDataExtracts_t; // type for 3D file extracted string data
-
 #define TAG_TARGET_COUNT 3
 #define OPEN_TAG_OFFSET 0
 #define INNER_LABEL_OFFSET 1
@@ -29,16 +27,16 @@ public:
 
 	std::string getName() { return mName; }
     Geo_Model3D genRenderObj();
-	/* void appendPosExtractData(std::string data) { mPosData.push_back(data); }
-    void appendNormalsExtractData(std::string data){ mNormalsData.push_back(data); }
-    void appendTexCoordExtractData(std::string data){ mTexCoordData.push_back(data); }
-    void appendIndexExtractData(std::string data){ mIndexData.push_back(data); } */
+	void assignPosData(const std::string& data){ mPosDataStr = data; }
+    void assignNormalsData(const std::string& data){ mNormalsDataStr = data; }
+    void assignTexCoordData(const std::string& data){ mTexCoordDataStr = data; }
+    void assignIndexData(const std::string& data){ mIndexDataStr = data; }
 private:
 	const std::string mName; // name of Node
-    /* fileDataExtracts_t mPosData;
-    fileDataExtracts_t mNormalsData;
-    fileDataExtracts_t mTexCoordData;
-    fileDataExtracts_t mIndexData; */
+    std::string mPosDataStr;
+    std::string mNormalsDataStr;
+    std::string mTexCoordDataStr;
+    std::string mIndexDataStr;
 };
 
 class File3D_DocumentTree {
@@ -80,12 +78,8 @@ private:
                 normalsData_tags[OPEN_TAG_OFFSET] = nTag; normalsData_tags[INNER_LABEL_OFFSET] = nInner; normalsData_tags[CLOSE_TAG_OFFSET] = nTag;
                 texCoordData_tags[OPEN_TAG_OFFSET] = tTag; texCoordData_tags[INNER_LABEL_OFFSET] = tInner; texCoordData_tags[CLOSE_TAG_OFFSET] = tTag;
                 indexData_tags[OPEN_TAG_OFFSET] = iTag; indexData_tags[INNER_LABEL_OFFSET] = iInner; indexData_tags[CLOSE_TAG_OFFSET] = iTag;
-                /* posData_tags[OPEN_TAG_OFFSET] = p[OPEN_TAG_OFFSET]; posData_tags[INNER_LABEL_OFFSET] = p[INNER_LABEL_OFFSET]; posData_tags[CLOSE_TAG_OFFSET] = p[CLOSE_TAG_OFFSET];
-                normalsData_tags[OPEN_TAG_OFFSET] = n[OPEN_TAG_OFFSET]; normalsData_tags[INNER_LABEL_OFFSET] = n[INNER_LABEL_OFFSET]; normalsData_tags[CLOSE_TAG_OFFSET] = n[CLOSE_TAG_OFFSET];
-                texCoordData_tags[OPEN_TAG_OFFSET] = t[OPEN_TAG_OFFSET]; texCoordData_tags[INNER_LABEL_OFFSET] = t[INNER_LABEL_OFFSET]; texCoordData_tags[CLOSE_TAG_OFFSET] = t[CLOSE_TAG_OFFSET];
-                indexData_tags[OPEN_TAG_OFFSET] = i[OPEN_TAG_OFFSET]; indexData_tags[INNER_LABEL_OFFSET] = i[INNER_LABEL_OFFSET]; indexData_tags[CLOSE_TAG_OFFSET] = i[CLOSE_TAG_OFFSET]; */
             }
-            tagTargets_t posData_tags; //= { "", "", "" };
+            tagTargets_t posData_tags;
             tagTargets_t normalsData_tags;
             tagTargets_t texCoordData_tags;
             tagTargets_t indexData_tags;

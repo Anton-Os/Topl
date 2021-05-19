@@ -37,6 +37,13 @@ bool checkFormatObj(const char* source) {
 	return (fileContent.find(magicKey) != std::string::npos) ? true : false;
 }
 
+void cleanupNumStr(std::string* str){
+    for(std::string::iterator c = str->begin(); c != str->end(); c++)
+        if(isalpha((int)*c) || *c == '\/' || *c == '\n') *c = ' '; // replace unwanted characters with whitespace
+}
+
+
+
 float getFloatFromStr(const std::string& source, size_t startOffset){
     if(!isdigit(source.at(startOffset)) && source.at(startOffset) != '-'){ // minus symbol is permitted 
         fprintf(stderr, "Invalid offset provided obtaining float value. Location: %d", startOffset);
