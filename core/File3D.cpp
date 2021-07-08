@@ -15,29 +15,31 @@ static std::string parseNodeName(const std::string& fileContent, size_t offset){
 	else return name;
 }
 
+// Specific for OBJ files which include data denoted by a starting sequence
 static std::string extractFileDataStr(const std::string& source, const std::string& sequence, unsigned nodeNum) {
 	size_t startReadOffset = 0; size_t savedReadOffset; size_t endReadOffset = 0;
 	bool matchSeqFound = false;
 	unsigned nodeOffset = 0;
 	std::string extractStr = "";
 
-	while (source.find('\n', startReadOffset) != std::string::npos && nodeOffset < nodeNum + 1) {
-		endReadOffset = 1 + source.find('\n', endReadOffset); // update endReadOffset to next newline character
-		extractStr = source.substr(startReadOffset, endReadOffset);
-		if (extractStr.substr(0, sequence.length()) == sequence && matchSeqFound == false) {
-			savedReadOffset = startReadOffset;
-			matchSeqFound = true; // characters match
-			nodeNum++; // increment number of nodes detected
+	while (source.find(sequence, startReadOffset) != std::string::npos & nodeOffset < nodeNum + 1) {
+		startReadOffset = source.find(sequence, endReadOffset + 1);
+		savedReadOffset = startReadOffset;
+		endReadOffset = source.find('\n', savedReadOffset);
+		extractStr = source.substr(savedReadOffset, endReadOffset - savedReadOffset);
+		while (extractStr.substr(0, sequence.length()) == sequence) { // looks for correct sequence at the start of the line
+			savedReadOffset = endReadOffset + 1;
+			endReadOffset = source.find('\n', savedReadOffset);
+			extractStr = source.substr(savedReadOffset, endReadOffset - savedReadOffset);
 		}
-		else if (extractStr.substr(0, sequence.length()) != sequence && matchSeqFound == true) matchSeqFound = false;
-		
-		startReadOffset = endReadOffset; // update start read offset
+		nodeOffset++;
 	}
 
-	extractStr = source.substr(savedReadOffset, endReadOffset);
+	extractStr = source.substr(startReadOffset, endReadOffset);
 	return extractStr;
 }
 
+// Specific for DAE which separates data into xml tags
 static std::string extractFileDataStr(const std::string& source, const tagTargets_t& tagTargets, unsigned nodeNum) {
 	size_t startReadOffset = 0; size_t endReadOffset = 0;
 	unsigned nodeOffset = 0;
@@ -61,7 +63,6 @@ static std::string extractFileDataStr(const std::string& source, const tagTarget
 	startReadOffset = endReadOffset + 1; // begin after the newline character of the proper tag
 	endReadOffset = source.find(closeTagLabel, startReadOffset);
 	extractStr = source.substr(startReadOffset, endReadOffset);
-	//for (unsigned c = 0; c < extractStr.length(); c++) if (extractStr[c] == '\/' || extractStr[c] == '\n') extractStr[c] = ' '; // replace special characters with spaces
 
 	return extractStr;
 }
@@ -127,13 +128,13 @@ void File3D_DocumentTree::readNode(unsigned nodeNum) {
 	std::string indexDataStr;
 	File3D_Node* currentNode = *(mNodeData + nodeNum); // provides add data to the target node
 
-	if (mParseType == F3D_CheckLine) {
+	if (mParseType == F3D_CheckLine) { // used for parsing data based on start of line, see F3D_CheckLine enumeration
 		posDataStr = extractFileDataStr(mFileSource, mLineParseAttribs.posData_seq, nodeNum);
 		normalsDataStr = extractFileDataStr(mFileSource, mLineParseAttribs.normalsData_seq, nodeNum);
 		texCoordDataStr = extractFileDataStr(mFileSource, mLineParseAttribs.texCoordData_seq, nodeNum);
 		indexDataStr = extractFileDataStr(mFileSource, mLineParseAttribs.indexData_seq, nodeNum);
 	}
-	else if (mParseType == F3D_CheckTag) {
+	else if (mParseType == F3D_CheckTag) { // used for parsing data based on xml tags, see F3D_CheckTag enumeration
 		posDataStr = extractFileDataStr(mFileSource, mTagParseAttribs.posData_tags, nodeNum);
 		normalsDataStr = extractFileDataStr(mFileSource, mTagParseAttribs.normalsData_tags, nodeNum);
 		texCoordDataStr = extractFileDataStr(mFileSource, mTagParseAttribs.texCoordData_tags, nodeNum);
@@ -148,9 +149,9 @@ void File3D_DocumentTree::readNode(unsigned nodeNum) {
 	if (!indexDataStr.empty()) currentNode->assignIndexData(indexDataStr);
 }
 
-Geo_Model3D File3D_Node::genRenderObj(){
-    Geo_Model3D renderObj;
+/* Geo_Model3D File3D_Node::genRenderObj(){
+    Geo_Model3D renderObj = Geo_Model3D();
     // TODO: Populate render object with data
 
     return renderObj;
-}
+} */

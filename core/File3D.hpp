@@ -1,8 +1,7 @@
 #include <vector>
 
 #include "FileIO.hpp"
-
-#include "primitives/Geo_Model3D.hpp"
+// #include "primitives/Geo_Model3D.hpp"
 
 #define TAG_TARGET_COUNT 3
 #define OPEN_TAG_OFFSET 0
@@ -26,7 +25,9 @@ public:
 	File3D_Node(std::string name) : mName(name){}
 
 	std::string getName() { return mName; }
-    Geo_Model3D genRenderObj();
+	unsigned getVertexCount()  const { return getValsCountFromStr(mPosDataStr, 3); } 
+	unsigned getIndexCount() const { return getValsCountFromStr(mIndexDataStr); }
+    // Geo_Model3D genRenderObj();
 	void assignPosData(const std::string& data){ mPosDataStr = data; }
     void assignNormalsData(const std::string& data){ mNormalsDataStr = data; }
     void assignTexCoordData(const std::string& data){ mTexCoordDataStr = data; }
@@ -47,6 +48,12 @@ public:
         for(unsigned n = 0; n < mNodeNames.size(); n++) if(mNodeData + n != nullptr) delete *(mNodeData + n);
         if (mNodeData != nullptr) free(mNodeData); 
     }
+
+	unsigned short getNodeCount() const { return mNodeNames.size(); }
+	const File3D_Node* getNode(unsigned num) const {
+		if (num > mNodeNames.size()) return nullptr; // ERROR Node is out of bounds
+		else return *(mNodeData + num);
+	}
 private:
 	void readNode(unsigned nodeNum); // reads File3D file in ascii encoding mode
 

@@ -40,9 +40,26 @@ bool checkFormatObj(const char* source) {
 void cleanupNumStr(std::string* str){
     for(std::string::iterator c = str->begin(); c != str->end(); c++)
         if(isalpha((int)*c) || *c == '\/' || *c == '\n') *c = ' '; // replace unwanted characters with whitespace
+    /* std::unique_copy(str->begin(), str->end(), std::back_insert_iterator<std::string>(*str),
+        [](char a,char b){ return isspace(a) && isspace(b);});  */
 }
 
+unsigned getValsCountFromStr(const std::string& source){ return getValsCountFromStr(source, 1); }
 
+unsigned getValsCountFromStr(const std::string& source, unsigned short div){
+    unsigned valsCount = 0;
+    bool isValReading = false;
+    
+	for (std::string::const_iterator ci = source.cbegin(); ci < source.end(); ci++)
+	if (!isspace(*ci) && isValReading == false) {
+		valsCount++;
+		isValReading = true; // indicates that a value is being read
+	}
+	else if (isspace(*ci) && isValReading) isValReading = false; // indicates that value is done reading
+	else continue;
+
+    return valsCount / div;
+}
 
 float getFloatFromStr(const std::string& source, size_t startOffset){
     if(!isdigit(source.at(startOffset)) && source.at(startOffset) != '-'){ // minus symbol is permitted 
