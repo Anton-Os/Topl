@@ -13,6 +13,7 @@ public:
 	float getRadius() const { return mShape3D.radius; }
 private:
     void genVertices(Eigen::Vector3f* data) override;
+    void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
     NGon3D mShape3D;

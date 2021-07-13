@@ -90,30 +90,32 @@ File3D_DocumentTree::File3D_DocumentTree(const char* source) {
 	else mIsValidFile = false; // unsupported format
 
 	if (mIsValidFile) {
-		bool isBinaryRead = true;
-
 		mFileSource = readFile(source, true);
 
-		size_t foundOffset = 0;
-		std::string currentName;
-		while (mFileSource.find(mNodeNameLabel, foundOffset) != std::string::npos) {
-			foundOffset = mNodeNameLabel.length() + mFileSource.find(mNodeNameLabel, foundOffset); // update foundOffset to next position
-			currentName = parseNodeName(mFileSource, foundOffset /* + mNodeNameLabel.length() */);
-			if(!currentName.empty()) mNodeNames.push_back(currentName);
+		if (mFileSource.empty()) mIsValidFile = false;
+		else {
+			size_t foundOffset = 0;
+			std::string currentName;
+			while (mFileSource.find(mNodeNameLabel, foundOffset) != std::string::npos) {
+				foundOffset = mNodeNameLabel.length() + mFileSource.find(mNodeNameLabel, foundOffset); // update foundOffset to next position
+				currentName = parseNodeName(mFileSource, foundOffset /* + mNodeNameLabel.length() */);
+				if (!currentName.empty()) mNodeNames.push_back(currentName);
+			}
+
+			if (mNodeNames.size() != 0) { // number of nodes has to increase from 0
+				mNodeData = (File3D_Node**)malloc(sizeof(File3D_Node) * mNodeNames.size()); // allocates enough space
+
+				for (unsigned n = 0; n < mNodeNames.size(); n++)
+					*(mNodeData + n) = new File3D_Node(currentName); // iterate through creating properly named
+
+				for (unsigned n = 0; n < mNodeNames.size(); n++)
+					readNode(n); // iterate through populating nodes with data
+			}
+			else fprintf(stderr, "%s has no valid nodes!", source);
 		}
-
-		if (mNodeNames.size() != 0) { // number of nodes has to increase from 0
-			mNodeData = (File3D_Node**)malloc(sizeof(File3D_Node) * mNodeNames.size()); // allocates enough space
-
-			for(unsigned n = 0; n < mNodeNames.size(); n++) 
-				*(mNodeData + n) = new File3D_Node(currentName); // iterate through creating properly named
-
-			for (unsigned n = 0; n < mNodeNames.size(); n++) 
-				readNode(n); // iterate through populating nodes with data
-
-		} else fprintf(stderr, "%s has no valid nodes!", source);
 	}
-	else fprintf(stderr, "%s is an invalid file!", source); // error occured
+	
+	if(!mIsValidFile) fprintf(stderr, "%s is an invalid file!", source); // error occured
 }
 
 void File3D_DocumentTree::readNode(unsigned nodeNum) {

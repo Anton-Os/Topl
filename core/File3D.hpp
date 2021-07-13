@@ -9,6 +9,11 @@
 #define CLOSE_TAG_OFFSET 2
 typedef std::string tagTargets_t[TAG_TARGET_COUNT]; // opening tag, inner label, and closing tag
 
+#define X_FILE_OFFSET 1
+#define Y_FILE_OFFSET 2
+#define Z_FILE_OFFSET 0
+// see Geo_Model3D::genVertices for implementation, vAttribCount needs to begin at 0 to work properly
+
 enum F3D_Format {
 	F3D_ObjFile, // OBJ file format support
 	F3D_DaeFile // Collada file format support
@@ -24,14 +29,18 @@ public:
     File3D_Node() : mName("node"){}
 	File3D_Node(std::string name) : mName(name){}
 
-	std::string getName() { return mName; }
+	std::string getName() const { return mName; }
 	unsigned getVertexCount()  const { return getValsCountFromStr(mPosDataStr, 3); } 
 	unsigned getIndexCount() const { return getValsCountFromStr(mIndexDataStr); }
-    // Geo_Model3D genRenderObj();
 	void assignPosData(const std::string& data){ mPosDataStr = data; }
     void assignNormalsData(const std::string& data){ mNormalsDataStr = data; }
     void assignTexCoordData(const std::string& data){ mTexCoordDataStr = data; }
     void assignIndexData(const std::string& data){ mIndexDataStr = data; }
+
+    const std::string *const getPosDataStr() const { return &mPosDataStr; }
+    const std::string *const getNormalsDataStr() const { return &mNormalsDataStr; }
+    const std::string *const getTexCoordDataStr() const { return &mTexCoordDataStr; }
+    const std::string *const getIndexDataStr() const { return &mIndexDataStr; }
 private:
 	const std::string mName; // name of Node
     std::string mPosDataStr;
@@ -50,8 +59,12 @@ public:
     }
 
 	unsigned short getNodeCount() const { return mNodeNames.size(); }
+	std::string getNodeName(unsigned num) const {
+		if (!mIsValidFile || num > mNodeNames.size()) return nullptr; // ERROR
+		else return (*(mNodeData + num))->getName();
+	}
 	const File3D_Node* getNode(unsigned num) const {
-		if (num > mNodeNames.size()) return nullptr; // ERROR Node is out of bounds
+		if (!mIsValidFile || num > mNodeNames.size()) return nullptr; // ERROR
 		else return *(mNodeData + num);
 	}
 private:
@@ -99,5 +112,5 @@ private:
 
 	std::string mFileSource;
 	File3D_Node** mNodeData = nullptr;
-	bool mIsValidFile; // used for error checking!
+	bool mIsValidFile = true; // used for error checking!
 };

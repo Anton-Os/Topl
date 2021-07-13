@@ -81,6 +81,7 @@ public:
 		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
 
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
+		mNormalsData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 	}
 	// Vertex and Indices constructor
@@ -90,6 +91,7 @@ public:
 		if((mVertexCount - 1) % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
 
 		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
+		mNormalsData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 		if(mIndexCount != 0) mIndexData = (unsigned*)malloc(mIndexCount * sizeof(unsigned));
 	}
@@ -99,6 +101,7 @@ public:
 		if (mVertexData != nullptr) free(mVertexData);
 
 		if (mPosData != nullptr) free(mPosData);
+		if (mNormalsData != nullptr) free(mNormalsData);
 		if (mTexCoordData != nullptr) free(mTexCoordData);
 		if (mIndexData != nullptr) free(mIndexData);
 	}
@@ -117,27 +120,30 @@ public:
 			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 	}
 
-    unsigned getVertexCount() const { return mVertexCount; } // Get Vertex Count
-    unsigned getIndexCount() const { return mIndexCount; } // Get Index Count
+    unsigned getVertexCount() const { return mVertexCount; } // get Vertex Count
+    unsigned getIndexCount() const { return mIndexCount; } // get Index Count
 
 	perVertex_cptr getVertexData() {
 		if (mVertexData == nullptr) {
 			mVertexData = (Geo_VertexData*)malloc(mVertexCount * sizeof(Geo_VertexData));
 			for (unsigned v = 0; v < mVertexCount; v++)
-				*(mVertexData + v) = Geo_VertexData(*(mPosData + v), *(mTexCoordData + v));
+				*(mVertexData + v) = Geo_VertexData(*(mPosData + v), *(mTexCoordData + v)); // TODO: Include normals
 		}
 		return mVertexData;
 	}
     vec3f_cptr getPosData() const { return mPosData; }
+	vec3f_cptr getNormalsData() const { return mNormalsData; }
     vec2f_cptr getTexCoordData() const { return mTexCoordData; }
     ui_cptr getIndexData() const { return mIndexData; }
 protected:
 	void fillRenderObject(){
 		genVertices(mPosData);
+		genNormals(mNormalsData);
 		genTexCoords(mTexCoordData);
         if(mIndexCount != 0) genIndices(mIndexData);
 	}
     virtual void genVertices(Eigen::Vector3f* data) = 0;
+	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;
     virtual void genIndices(unsigned* data) = 0;
 

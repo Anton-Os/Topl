@@ -33,7 +33,6 @@ topl_linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 
 void Topl_Scene::addGeometry(const std::string& name, Geo_Component* geoComponent) {
 	geoComponent->setName(name);
-
 	mNamedGeos.push_back(geoComponent);
 }
 

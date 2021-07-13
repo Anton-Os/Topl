@@ -15,6 +15,12 @@ void Geo_Flat::genVertices(Eigen::Vector3f* data){
         );
 }
 
+void Geo_Flat::genNormals(Eigen::Vector3f* data){
+	Eigen::Vector3f frontFaceNormal = Eigen::Vector3f(0.0f, 0.0f, -1.0f);
+
+	for(unsigned v = 1; v < mVertexCount; v++) *(data + v) = frontFaceNormal;
+}
+
 void Geo_Flat::genTexCoords(Eigen::Vector2f* data) {
 	// texture coordinates are based off of rectangular geometries
 

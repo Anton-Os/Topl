@@ -12,12 +12,20 @@ void Geo_Conic::genVertices(Eigen::Vector3f* data){
 	// apexVertex += Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL);
 	*(data + mVertexCount - 1) = apexVertex;
 
-    for(unsigned v = 1; v < mVertexCount; v++) // We have already created
+    for(unsigned v = 1; v < mVertexCount; v++)
         *(data + v) = Eigen::Vector3f(
 			sin(startAngle + (v * incAngle)) * mShape2D.radius, 
 			cos(startAngle + (v * incAngle)) * mShape2D.radius, 
 			DEFAULT_Z_VAL
 		);
+}
+
+void Geo_Conic::genNormals(Eigen::Vector3f* data){
+	Eigen::Vector3f frontFaceNormal = Eigen::Vector3f(0.0f, 0.0f, -1.0f);
+	Eigen::Vector3f backFaceNormal = Eigen::Vector3f(0.0f, 0.0f, 1.0f);
+
+	*(data + mVertexCount - 1) = backFaceNormal; // back facing normal 
+	for(unsigned v = 1; v < mVertexCount; v++) *(data + v) = frontFaceNormal;
 }
 
 void Geo_Conic::genTexCoords(Eigen::Vector2f* data) {

@@ -31,11 +31,13 @@ void logToFile(const char* fileName, std::string logMessage){
     file.close();
 }
 
-bool checkFormatObj(const char* source) {
+/* bool checkFormatObj(const char* source) {
 	std::string fileContent = readFile(source, false); // ascii read
 	std::string magicKey("OBJFILE.mtl");
 	return (fileContent.find(magicKey) != std::string::npos) ? true : false;
-}
+} */
+
+bool checkFormatObj(const char* source) { return true; } // TODO: Figure out a reliable check
 
 void cleanupNumStr(std::string* str){
     for(std::string::iterator c = str->begin(); c != str->end(); c++)

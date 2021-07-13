@@ -27,6 +27,14 @@ void Geo_Extruded::genVertices(Eigen::Vector3f* data){
         );
 }
 
+void Geo_Extruded::genNormals(Eigen::Vector3f* data){
+	Eigen::Vector3f frontFaceNormal = Eigen::Vector3f(0.0f, 0.0f, -1.0f);
+	Eigen::Vector3f backFaceNormal = Eigen::Vector3f(0.0f, 0.0f, 1.0f);
+
+	for(unsigned v = 1; v < mVertexCount / 2; v++) *(data + v) = frontFaceNormal;
+	for(unsigned v = 1 + (mVertexCount / 2); v < mVertexCount; v++) *(data + v) = backFaceNormal;
+}
+
 void Geo_Extruded::genTexCoords(Eigen::Vector2f* data) {
 	// texture coordinates are based off of rectangular geometries
 

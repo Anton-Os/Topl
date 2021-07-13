@@ -85,6 +85,7 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Flat.cpp
     geo/primitives/Geo_Conic.cpp
     geo/primitives/Geo_Extruded.cpp
+    geo/primitives/Geo_Model3D.cpp
 )
 
 # Generic Features Demos
@@ -195,7 +196,7 @@ add_executable(GL4_MovingSprite
 
     demos/GL4_MovingSprite.cpp
 )
-target_include_directories(GL4_MovingSprite PRIVATE demos)
+# target_include_directories(GL4_MovingSprite PRIVATE demos)
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 
 add_executable(GL4_SimpleShapes
@@ -205,6 +206,9 @@ add_executable(GL4_SimpleShapes
     demos/GL4_SimpleShapes.cpp
 )
 target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
+
+add_executable(GL4_Model demos/GL4_Model.cpp)
+target_link_libraries(GL4_Model PRIVATE GL4_Engine)
 
 # Copying and managing implemented here with custom targets
 

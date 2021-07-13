@@ -5,19 +5,20 @@
 
 class Geo_Model3D : public Geo_RenderObj {
 public:
+    Geo_Model3D(){  } // for testing
     // Model Constructor
     Geo_Model3D(const File3D_Node* node)
     : Geo_RenderObj(node->getVertexCount(), node->getIndexCount()){
-        fillRenderObject();
+		mNode = node;
+		
+		fillRenderObject();
     }
-    /* Geo_Model3D()
-    : Geo_RenderObj(1, 1) { // TODO: Use proper values
-        // mModelNode = modelNode;
-        fillRenderObject();
-    } */
 private:
+	friend class File3D_Node;
+	const File3D_Node* mNode;
+
     void genVertices(Eigen::Vector3f* data) override;
+	void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
-
 };
