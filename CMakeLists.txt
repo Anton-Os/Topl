@@ -149,7 +149,6 @@ if(WIN32)
 
         demos/Drx11_MovingSprite.cpp
     )
-    target_include_directories(Drx11_MovingSprite PRIVATE demos)
     target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
 
 	add_executable(Drx11_SimpleShapes
@@ -159,6 +158,9 @@ if(WIN32)
 		demos/Drx11_SimpleShapes.cpp
 	)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
+
+    add_executable(Drx11_Model demos/Drx11_Model.cpp)
+    target_link_libraries(Drx11_Model PRIVATE Drx11_Engine)
 
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()

@@ -625,6 +625,7 @@ void Topl_Renderer_Drx11::render(void){
 				}
 			}
 
+			// Draw Call!
 			if (indexBuff != nullptr && indexBuff->count != 0) m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 			else m_deviceCtx->Draw(vertexBuff->count, 0);
 		}

@@ -25,8 +25,8 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::scene);
 
 	while ( renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&Topl::scene); // Uncomment
-		Topl::scene.resolvePhysics(); // Uncomment
+		renderer.updateScene(&Topl::scene);
+		Topl::scene.resolvePhysics();
 
 		platform.handleEvents();
 	}

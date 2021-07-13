@@ -574,6 +574,7 @@ void Topl_Renderer_GL4::render(void){
 			}
 		}
 
+		// Drawing Call!
 		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(drawType, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 		else glDrawArrays(drawType, 0, vertexBuff->count); // When no indices are present
 
