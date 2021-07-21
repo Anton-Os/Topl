@@ -108,16 +108,6 @@ add_executable(Cursor
 )
 target_include_directories(Cursor PUBLIC core geo)
 
-add_executable(Parse3D
-    ${common_Sources}
-    geo/primitives/Geo_Model3D.cpp
-    core/File3D.cpp
-    demos/Demo_Parse3D.cpp
-)
-target_include_directories(Parse3D PUBLIC core geo)
-target_include_directories(Parse3D PUBLIC ${CMAKE_INSTALL_PREFIX}/include/eigen3)
-
-
 # DirectX Windows Dependent Demos
 if(WIN32)
 
@@ -126,7 +116,7 @@ if(WIN32)
     	${geo_Sources}
         core/Topl_Scene_Builder.cpp
         core/Topl_Scene_Physics.cpp
-        core/File3D.cpp
+        # core/File3D.cpp
         core/ValueGen.cpp
 
         core/Topl_Renderer_Drx11.cpp
@@ -159,9 +149,6 @@ if(WIN32)
 	)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
 
-    add_executable(Drx11_Model demos/Drx11_Model.cpp)
-    target_link_libraries(Drx11_Model PRIVATE Drx11_Engine)
-
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
 
@@ -172,7 +159,7 @@ add_library(GL4_Engine
     ${geo_Sources}
     core/Topl_Scene_Builder.cpp
     core/Topl_Scene_Physics.cpp
-    core/File3D.cpp
+    # core/File3D.cpp
     core/ValueGen.cpp
 
     core/Topl_Renderer_GL4.cpp
@@ -208,9 +195,6 @@ add_executable(GL4_SimpleShapes
     demos/GL4_SimpleShapes.cpp
 )
 target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
-
-add_executable(GL4_Model demos/GL4_Model.cpp)
-target_link_libraries(GL4_Model PRIVATE GL4_Engine)
 
 # Copying and managing implemented here with custom targets
 
