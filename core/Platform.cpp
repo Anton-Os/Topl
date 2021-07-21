@@ -1,56 +1,39 @@
 #include "Platform.hpp"
 
-namespace Topl {
-	Input_KeyLogger keyLogger;
-}
+Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of static member class
+Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of static member class
 
 #ifdef _WIN32
-
-/********* REMOVE AFTER TESTING ***********/
-/* void callback_w(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
-void callback_a(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
-void callback_s(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
-void callback_d(void) { Topl::humanoid.move(&Topl::sceneManager, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
-void callback_r(void) { Topl::humanoid.rotate(&Topl::sceneManager, Eigen::Vector3f(1.0f, 0.0f, 0.0f)); } // Rotate */
-/********* REMOVE AFTER TESTING ***********/
 
 LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
 	RECT rect;
 
-    /********* REMOVE AFTER TESTING ***********/
-    /* if (Topl::keyLogger.getCallbackCount() == 0) { // Initialization required
-		Topl::keyLogger.addCallback('w', callback_w);
-		Topl::keyLogger.addCallback('a', callback_a);
-		Topl::keyLogger.addCallback('s', callback_s);
-		Topl::keyLogger.addCallback('d', callback_d);
-		Topl::keyLogger.addCallback('r', callback_r);
-	} */
-    /********* REMOVE AFTER TESTING ***********/
-
 	switch (message) {
 	case (WM_CREATE): {}
 	case (WM_PAINT): {}
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
-	case (WM_CHAR): {
-		Topl::keyLogger.addKeyPress((char)wParam);
-	}
+	case(WM_MOUSEMOVE):{}
+	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
+	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
+	case (WM_MBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_MiddleBtn_Down); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
 }
 
-NATIVE_WINDOW Platform::createWindow(const char* windowName){
+void Platform::createWindow(const char* windowName){
     mContext.windowClass = { 0 };
 	mContext.windowClass.hInstance = GetModuleHandle(NULL);
 	mContext.windowClass.lpfnWndProc = eventProcedure;
 	mContext.windowClass.lpszClassName = "Topl";
 	RegisterClass(&mContext.windowClass);
 
-    return CreateWindow(
+    mContext.window = CreateWindow(
         "Topl",
 		windowName,
 		WS_OVERLAPPEDWINDOW,
@@ -58,13 +41,9 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
         TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
 		NULL, NULL, GetModuleHandle(NULL), NULL
     );
-}
 
-void Platform::setupMainWindow(NATIVE_WINDOW window){
-    mContext.window_ptr = &window;
-
-    ShowWindow(window, 1);
-	UpdateWindow(window);
+	ShowWindow(mContext.window, 1);
+	UpdateWindow(mContext.window);
 }
 
 void Platform::handleEvents(){
@@ -75,9 +54,32 @@ void Platform::handleEvents(){
 	if (mContext.eventMsg.message == WM_QUIT) return; // Error code?
 }
 
+bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this function
+	GetCursorPos(&mContext.cursorPos);
+
+	// HWND window = *(mContext.window_ptr);
+	RECT windowRect;
+	GetWindowRect(mContext.window, &windowRect);
+	
+	// if (mContext.cursorPos.x > windowRect.right && mContext.cursorPos.x < windowRect.left && mContext.cursorPos.y > windowRect.top&& mContext.cursorPos.y < windowRect.bottom) {
+	if (mContext.cursorPos.x < windowRect.right && mContext.cursorPos.x > windowRect.left && mContext.cursorPos.y > windowRect.top && mContext.cursorPos.y < windowRect.bottom) {
+		// Cursor is inside screen space!
+
+		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
+		LONG centerX = windowRect.left + halfWidth;
+		*xPos = (mContext.cursorPos.x - centerX) / (float)halfWidth;
+
+		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
+		LONG centerY = windowRect.top + halfHeight;
+		*yPos = -1.0f * (mContext.cursorPos.y - centerY) / (float)halfHeight;
+
+		return true;
+	} else return false; // Cursor is outside the screen space!
+}
+
 #elif defined(__linux__)
 
-NATIVE_WINDOW Platform::createWindow(const char* windowName){
+void Platform::createWindow(const char* windowName){
     mContext.display = XOpenDisplay(NULL);
 
 	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -87,7 +89,7 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
 	windowAttribs.colormap = XCreateColormap(mContext.display, DefaultRootWindow(mContext.display), visualInfo->visual, AllocNone);
 	windowAttribs.event_mask = ExposureMask | KeyPressMask;
 
-    return XCreateWindow(
+    mContext.window = XCreateWindow(
 		mContext.display, DefaultRootWindow(mContext.display),
         0, 0,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
@@ -96,15 +98,18 @@ NATIVE_WINDOW Platform::createWindow(const char* windowName){
         CWColormap | CWEventMask,
         &windowAttribs
 	);
+
+	XSelectInput(mContext.display, mContext.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
+	XMapWindow(mContext.display, mContext.window);
 }
 
-void Platform::setupMainWindow(NATIVE_WINDOW window){
+/* void Platform::setupMainWindow(NATIVE_WINDOW window){
     mContext.window_ptr = &window;
 
 	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
 	XMapWindow(mContext.display, window);
     return;
-}
+} */
 
 void Platform::handleEvents(){
     int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);
@@ -115,6 +120,10 @@ void Platform::handleEvents(){
 
 		// TODO: Perform event processing logic here
 	}
+}
+
+bool Platform::getCursorCoords(float* xPos, float* yPos) {
+	return true;
 }
 
 #endif

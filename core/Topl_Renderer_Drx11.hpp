@@ -1,6 +1,8 @@
 #include "Topl_Renderer.hpp"
 
-// Make this derived from Buffer within Renderer header
+#include <d3dx10.h> // DirectX Renderer Specific
+#include <d3dx11.h> // DirectX Renderer Specific
+#include <d3dx10math.h> // DirectX Renderer Specific
 
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}
@@ -39,7 +41,7 @@ public:
 	Topl_Renderer_Drx11(HWND hwnd) { init(hwnd); }
 	~Topl_Renderer_Drx11();
 
-	void buildScene(const Topl_SceneManager* sMan) override;
+	void buildScene(const Topl_Scene* scene) override;
 
 #ifdef RASTERON_H
     Rasteron_Image* getFrame() override;
@@ -49,7 +51,7 @@ private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) override;
-	void update(const Topl_SceneManager* sMan) override;
+	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
 	Topl_Pipeline_Drx11 m_pipeline;

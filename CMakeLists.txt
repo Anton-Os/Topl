@@ -66,7 +66,7 @@ find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(Rasteron_FOUND)
     add_executable(Img
-        demos/Img.cpp
+        demos/Demo_Img.cpp
     )
     target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
 endif()
@@ -77,29 +77,45 @@ list(APPEND common_Sources
 	core/Input.cpp
     core/Timer.cpp
     core/Platform.cpp
-    core/ValueGen.cpp
+    # core/File3D.cpp
+    # core/ValueGen.cpp
 )
 
 list(APPEND geo_Sources
-    geo/primitives/Geo_Rect2D.cpp
-    geo/primitives/Geo_Rect3D.cpp
-    geo/primitives/Geo_Sphere2D.cpp
+    geo/primitives/Geo_Flat.cpp
+    geo/primitives/Geo_Conic.cpp
+    geo/primitives/Geo_Extruded.cpp
+    geo/primitives/Geo_Model3D.cpp
 )
 
 # Generic Features Demos
 
 add_executable(TickTick
-    core/Timer.cpp
-    demos/TickTick.cpp
+    ${common_Sources}
+    demos/Demo_TickTick.cpp
 )
-target_include_directories(TickTick PUBLIC core helper geo)
+target_include_directories(TickTick PUBLIC core geo)
 
 add_executable(Presser
-    core/Timer.cpp
-    core/Input.cpp
-    demos/Presser.cpp
+    ${common_Sources}
+    demos/Demo_Presser.cpp
 )
-target_include_directories(Presser PUBLIC core helper geo)
+target_include_directories(Presser PUBLIC core geo)
+
+add_executable(Cursor
+    ${common_Sources}
+    demos/Demo_Cursor.cpp
+)
+target_include_directories(Cursor PUBLIC core geo)
+
+add_executable(Parse3D
+    ${common_Sources}
+    geo/primitives/Geo_Model3D.cpp
+    core/File3D.cpp
+    demos/Demo_Parse3D.cpp
+)
+target_include_directories(Parse3D PUBLIC core geo)
+target_include_directories(Parse3D PUBLIC ${CMAKE_INSTALL_PREFIX}/include/eigen3)
 
 
 # DirectX Windows Dependent Demos
@@ -107,9 +123,12 @@ if(WIN32)
 
     add_library(Drx11_Engine
         ${common_Sources}
-    		${geo_Sources}
+    	${geo_Sources}
+        core/Topl_Scene_Builder.cpp
+        core/Topl_Scene_Physics.cpp
+        core/File3D.cpp
+        core/ValueGen.cpp
 
-        core/Topl_SceneManager.cpp
         core/Topl_Renderer_Drx11.cpp
     )
     target_include_directories(Drx11_Engine PUBLIC core geo)
@@ -117,7 +136,7 @@ if(WIN32)
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
-    target_link_libraries(Drx11_Engine PUBLIC RasteronLib GLEW_lib) # GLEW lib shouldnt be linked
+    target_link_libraries(Drx11_Engine PUBLIC RasteronLib)
     set_target_properties(Drx11_Engine
         PROPERTIES
         CXX_STANDARD 11
@@ -130,7 +149,6 @@ if(WIN32)
 
         demos/Drx11_MovingSprite.cpp
     )
-    target_include_directories(Drx11_MovingSprite PRIVATE demos)
     target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
 
 	add_executable(Drx11_SimpleShapes
@@ -141,6 +159,9 @@ if(WIN32)
 	)
 	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
 
+    add_executable(Drx11_Model demos/Drx11_Model.cpp)
+    target_link_libraries(Drx11_Model PRIVATE Drx11_Engine)
+
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
 
@@ -148,22 +169,25 @@ endif()
 
 add_library(GL4_Engine
     ${common_Sources}
-		${geo_Sources}
+    ${geo_Sources}
+    core/Topl_Scene_Builder.cpp
+    core/Topl_Scene_Physics.cpp
+    core/File3D.cpp
+    core/ValueGen.cpp
 
-        core/Topl_SceneManager.cpp
-        core/Topl_Renderer_GL4.cpp
-    )
-    target_include_directories(GL4_Engine PUBLIC core geo)
-    target_include_directories(GL4_Engine PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    )
-    target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
-    set_target_properties(GL4_Engine
-        PROPERTIES
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS ON
+    core/Topl_Renderer_GL4.cpp
+)
+target_include_directories(GL4_Engine PUBLIC core geo)
+target_include_directories(GL4_Engine PUBLIC
+    # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
+    ${CMAKE_INSTALL_PREFIX}/include/eigen3
+)
+target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
+set_target_properties(GL4_Engine
+    PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS ON
 )
 if(NOT WIN32) # decreases Windows build time
     add_dependencies(GL4_Engine GLEW Eigen)
@@ -174,7 +198,7 @@ add_executable(GL4_MovingSprite
 
     demos/GL4_MovingSprite.cpp
 )
-target_include_directories(GL4_MovingSprite PRIVATE demos)
+# target_include_directories(GL4_MovingSprite PRIVATE demos)
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 
 add_executable(GL4_SimpleShapes
@@ -184,6 +208,9 @@ add_executable(GL4_SimpleShapes
     demos/GL4_SimpleShapes.cpp
 )
 target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
+
+add_executable(GL4_Model demos/GL4_Model.cpp)
+target_link_libraries(GL4_Model PRIVATE GL4_Engine)
 
 # Copying and managing implemented here with custom targets
 

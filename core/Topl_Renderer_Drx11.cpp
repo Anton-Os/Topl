@@ -89,7 +89,7 @@ namespace _Drx11 {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Geo_PerVertexData) * vCount;
+		buffDesc.ByteWidth = sizeof(Geo_VertexData) * vCount;
 		// buffDesc.ByteWidth = 28 * vCount;
 		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffDesc.CPUAccessFlags = 0;
@@ -127,7 +127,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static bool createrenderBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.ByteWidth = sizeof(uint8_t) * blockBytes->size();
@@ -199,7 +199,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	mNativeContext.window_ptr = &hwnd; // Supplying platform specific stuff
+	mNativeContext.window = hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -224,7 +224,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     // swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = *(mNativeContext.window_ptr); 
+	swapChainDesc.OutputWindow = mNativeContext.window; 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -245,9 +245,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     m_deviceCtx->OMSetRenderTargets(1, &m_rtv, NULL);
 
 	// Viewport Creation
-
-    RECT windowRect;
-    GetWindowRect(*(mNativeContext.window_ptr), &windowRect);
 
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -384,28 +381,32 @@ void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cp
 	return; // TODO: Implement this code block
 }
 
+<<<<<<< HEAD
 void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
+=======
+void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
+>>>>>>> master
 	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genPerSceneDataBlock(sMan, &blockBytes)) {
-		mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
+		mSceneReady = _Drx11::createBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
 
-	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
-		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getPerVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIData();
+		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getVertexData();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
+			mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
 			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
 		}
 		if (!mSceneReady) return; // Error
@@ -413,20 +414,20 @@ void Topl_Renderer_Drx11::buildScene(const Topl_SceneManager* sMan) {
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
-			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getICount());
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getICount()));
+			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
+			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
 		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
 		if (!mSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
-												geoTarget_perVertexData, geoTarget_renderObj->getVCount());
+												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
 
-		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVCount()));
+		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
 		if (!mSceneReady) return;
 
 #ifdef RASTERON_H
-		const Rasteron_Image* baseTex = sMan->getFirstTexture(geoTarget_ptr->getName());
+		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
 		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 
@@ -535,15 +536,18 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 
 #endif
 
-void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
-	const Topl_Shader* primaryShader = findShader(SHDR_Vertex); // New Implementation
+void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
+	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
-	Buffer_Drx11* sceneBlockBuff = nullptr;
+	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	for(unsigned g = 0; g < sMan->getGeoCount(); g++) {
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		_Drx11::createBlockBuff(&m_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
+
+	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = sMan->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
@@ -555,7 +559,7 @@ void Topl_Renderer_Drx11::update(const Topl_SceneManager* sMan){
 			if (renderBlockBuff == nullptr) { // TODO: Replace this!
 				OutputDebugStringA("Block buffer could not be located!");
 				return;
-			} else mSceneReady = _Drx11::createrenderBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
+			} else mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
 
 			if (!mSceneReady) return; // Error
 		}
@@ -608,7 +612,7 @@ void Topl_Renderer_Drx11::render(void){
 			// TODO: Check for renderBlockBuff validity
 			m_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
-			UINT stride = sizeof(Geo_PerVertexData);
+			UINT stride = sizeof(Geo_VertexData);
 			UINT offset = 0;
 			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
@@ -625,6 +629,7 @@ void Topl_Renderer_Drx11::render(void){
 				}
 			}
 
+			// Draw Call!
 			if (indexBuff != nullptr && indexBuff->count != 0) m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
 			else m_deviceCtx->Draw(vertexBuff->count, 0);
 		}

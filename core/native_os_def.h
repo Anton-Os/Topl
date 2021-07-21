@@ -3,19 +3,14 @@
 #define TOPL_WIN_HEIGHT 1200
 #define TOPL_WIN_WIDTH 1100
 
-#include "Rasteron.h" // TODO: Make this inclusion conditional
-
-#define GLEW_STATIC
-#include "GL/glew.h"
-
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
-        #include <windowsx.h>
+    #include <windowsx.h>
 
     // OpenGL support
-    #include <GL/gl.h>
-    #include <GL/glu.h>
+    /* #include <GL/gl.h>
+    #include <GL/glu.h> */
 
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP
@@ -23,10 +18,10 @@
 
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
-        NATIVE_WINDOW* window_ptr; // Window is initialized outside // TODO: Fix this!
+        NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
         NATIVE_GL_CONTEXT GL_ctx;
         HDC windowDevice_Ctx;
-        LPPOINT cursorPos;
+        POINT cursorPos;
         MSG eventMsg;
     };
 
@@ -54,7 +49,7 @@
     struct Linux_Platform_Context {
         Display* display;
         // XVisualInfo* visualInfo;
-        NATIVE_WINDOW* window_ptr;
+        NATIVE_WINDOW window;
         NATIVE_GL_CONTEXT GL_ctx;
         Cursor_Pos cursorPos;
     };
@@ -66,13 +61,10 @@
     #include <d3d11_1.h>
 	#include <dxgi.h> // additional
     #include <wrl/client.h> // additional
-    #include "d3dx10.h"
-    #include "d3dx11.h"
 
     #include <dxgi1_4.h>
     #include <d3dcompiler.h>
     // #include <xnamath.h>
-	#include <d3dx10math.h>
 
     #pragma comment(lib, "d3d11.lib")
     #pragma comment(lib, "d3dcompiler.lib")

@@ -29,13 +29,13 @@ class Geo_Grid : public Geo_Construct {
 public:
     Geo_Grid(
         const std::string& prefix, 
-        Topl_SceneManager* sMan, 
+        Topl_Scene* scene, 
         const Geo_Component* geoComponent, 
         const Geo_Grid_Properties* properties
 		)
     : Geo_Construct(
 		prefix, 
-		sMan, 
+		scene, 
 		geoComponent, 
 		properties->widthVals.first * properties->heightVals.first * properties->depthVals.first){ // Requires the volume
 
@@ -46,14 +46,12 @@ public:
 			0.0f // TODO: Change this to non hard-coded
 		);
         
-        fillSceneManager(sMan);
+        fillscene(scene);
     }
 
-    void updateSceneManager(Topl_SceneManager* sMan) override;
-	void move(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
-	void rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec) override;
+    void updateScene(Topl_Scene* scene) override;
 private:
-    void fill(Topl_SceneManager* sMan) override;
+    void fill(Topl_Scene* scene) override;
 
     std::vector<Phys_Connector> connectors;
 	Eigen::Vector3f bottomLeftCorner; // Use this to determine grid item position

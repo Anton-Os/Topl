@@ -5,7 +5,7 @@
 
 #include "ValueGen.hpp"
 
-#include "Topl_SceneManager.hpp"
+#include "Topl_Scene.hpp"
 #include "Geo_Component.hpp"
 
 enum SHDR_Type {
@@ -79,7 +79,7 @@ public:
     }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component *const component, std::vector<uint8_t>* bytes) const = 0;
-    virtual bool genPerSceneDataBlock(const Topl_SceneManager *const sMan, std::vector<uint8_t>* bytes) const = 0;
+    virtual bool genPerSceneDataBlock(const Topl_Scene *const scene, std::vector<uint8_t>* bytes) const = 0;
 
     // static ValueGen mValueGen; // Utility for converting from eigen specific types
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }

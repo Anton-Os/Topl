@@ -1,36 +1,27 @@
 #include "native_os_def.h"
 
-// #include "FileIO.hpp"
-// #include "Input.hpp"
 #include "Platform.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
 
-#include "Geo_Construct.hpp"
-#include "primitives/Geo_Flat.hpp"
-#include "primitives/Geo_Conic.hpp"
-#include "primitives/Geo_Extruded.hpp"
-#include "composites/Chain.hpp"
-#include "composites/Grid.hpp"
+#include "primitives/Geo_Model3D.hpp"
 
-#define MOVE_AMOUNT 0.5
+#define MAX_MODEL_COUNT 1 // hard coded number of model pieces // start with 1 for testing
+// #define MAX_MODEL_COUNT 4 // hard coded number of model pieces
 
 namespace Topl {
-	// Management Objects
 	Topl_Scene scene;
 
-	// Primitive Geometry Objects
-	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
-	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.2f);
-	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
-	// Complex Geometry Objects
-	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
-	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
-	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
-	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.45f));
-	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
+	// char* fileSource = "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Models\\OBJFILE.obj"; // hard coded target file
+	char* fileSource = "C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Models\\FirstAlien.dae";
+    File3D_DocumentTree docTree(fileSource);
+	Geo_Model3D model = Geo_Model3D(docTree.getNode(0)); // gets first node
+	Geo_Component geo = Geo_Component((const Geo_RenderObj*)&model);
+	// std::vector<Geo_Model3D> models;
+	// std::vector<Geo_Component> geos; // geometries
 }
+
+// Shader Objects
 
 struct VertexShader : public Topl_Shader {
 	VertexShader(const char* filePath)
@@ -50,17 +41,6 @@ struct VertexShader : public Topl_Shader {
 		return true;
 	}
 
-<<<<<<< HEAD
-	virtual bool genPerSceneDataBlock(const Topl_SceneManager* const sMan, std::vector<uint8_t>* bytes) const {
-		const uint8_t* cameraPosBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getPos()->data());
-		const uint8_t* cameraRotBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getRotation()->data());
-		const uint8_t* matrixBytes_ptr = reinterpret_cast<const uint8_t*>(sMan->getCamera()->getProjMatrix()->data());
-
-		ValueGen::appendDataToBytes(cameraPosBytes_ptr, sMan->getCamera()->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRotBytes_ptr, sMan->getCamera()->getRotation()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrixBytes_ptr, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
-		// ValueGen::assignDataToBytes(matrixBytes, sMan->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
-=======
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const {
 		const uint8_t* cameraPosBytes_ptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getPos()->data());
 		const uint8_t* cameraRotBytes_ptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getDirection()->data());
@@ -70,7 +50,6 @@ struct VertexShader : public Topl_Shader {
 		ValueGen::appendDataToBytes(cameraRotBytes_ptr, scene->getCamera()->getDirection()->size() * sizeof(float), 1 * sizeof(float), bytes);
 		ValueGen::appendDataToBytes(matrixBytes_ptr, scene->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
 		// ValueGen::assignDataToBytes(matrixBytes, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
->>>>>>> master
 		return true;
 	}
 };
@@ -85,8 +64,3 @@ struct PixelShader : public Topl_Shader {
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
 };
-
-void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right

@@ -1,9 +1,11 @@
-#include <cstdio>
+// #include <cstdio>
 
 #include "native_os_def.h"
 
+#include "Rasteron.h" // For texturing support, should be conditional
+
 #include "Topl_Shader.hpp"
-#include "Topl_SceneManager.hpp"
+#include "Topl_Scene.hpp"
 
 typedef const Topl_Shader* topl_shader_cptr;
 
@@ -86,12 +88,12 @@ public:
         pipeline(vertexShader, fragShader);
     }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
-    bool updateScene(const Topl_SceneManager* sMan){
+    bool updateScene(const Topl_Scene* scene){
         if(!mPipelineReady) puts("Pipeline not set for update call");
         if(!mSceneReady) puts("Scene not built for update call!");
         if(!mPipelineReady || !mSceneReady) return false;
 
-        update(sMan);
+        update(scene);
     }
     bool renderScene(enum DRAW_Type drawType){
         if(!mPipelineReady) puts("Pipeline not set for draw call!");
@@ -102,7 +104,7 @@ public:
         render(); // Call virtual method
 		return true; // Randering success
     }
-    virtual void buildScene(const Topl_SceneManager* sMan) = 0;
+    virtual void buildScene(const Topl_Scene* scene) = 0;
 	
 	NATIVE_PLATFORM_CONTEXT mNativeContext; // Native Platform Element required to create a renderer
 
@@ -128,6 +130,6 @@ private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) = 0;
-    virtual void update(const Topl_SceneManager* sMan) = 0;
+    virtual void update(const Topl_Scene* scene) = 0;
 	virtual void render(void) = 0;
 };

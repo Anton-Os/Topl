@@ -1,5 +1,11 @@
 #include "Topl_Renderer.hpp"
 
+#define GLEW_STATIC // OpenGL Renderer Specific
+#include "GL/glew.h" // OpenGL Renderer Specific
+
+#include <GL/gl.h> // OpenGL Renderer Specific
+ #include <GL/glu.h> // OpenGL Renderer Specific
+
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
 class Topl_DataAlloc_GL4 {
@@ -97,7 +103,7 @@ public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window){ init(window); }
 	~Topl_Renderer_GL4();
 
-	void buildScene(const Topl_SceneManager* sMan) override;
+	void buildScene(const Topl_Scene* scene) override;
 
 #ifdef RASTERON_H
 	Rasteron_Image* getFrame() override;
@@ -107,7 +113,7 @@ private:
   	void init(NATIVE_WINDOW window) override;
 	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
 	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) override;
-	void update(const Topl_SceneManager* sMan) override;
+	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
   	Topl_Pipeline_GL4 m_pipeline;

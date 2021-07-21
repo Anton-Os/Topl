@@ -3,11 +3,17 @@
 // Entry Point
 
 int main(int argc, char** argv) {
-	Platform platform(argv[0]);
-	NATIVE_WINDOW mainWindow = platform.createWindow("Moving Sprite");
-	platform.setupMainWindow(mainWindow);
 
-	Topl_Renderer_Drx11 renderer(mainWindow); // Renderer initialization
+	Platform platform(argv[0]);
+	platform.createWindow("Moving Sprite");
+	// platform.setupMainWindow(mainWindow);
+	Platform::keyLogger.addCallback('w', buttonCallback_w);
+	Platform::keyLogger.addCallback('a', buttonCallback_a);
+	Platform::keyLogger.addCallback('s', buttonCallback_s);
+	Platform::keyLogger.addCallback('d', buttonCallback_d);
+	Platform::keyLogger.addCallback('r', buttonCallback_r);
+
+	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Basic.hlsl";
 	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
@@ -16,11 +22,11 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &pixelShader);
 
-	renderer.buildScene(&Topl::sceneManager);
+	renderer.buildScene(&Topl::scene);
 
 	while (renderer.renderScene(DRAW_Triangles)) {
-		renderer.updateScene(&Topl::sceneManager);
-		Topl::sceneManager.resolvePhysics();
+		renderer.updateScene(&Topl::scene);
+		Topl::scene.resolvePhysics();
 		
 		platform.handleEvents();
 	}

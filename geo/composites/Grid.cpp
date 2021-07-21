@@ -6,7 +6,7 @@ namespace _Grid {
     }
 }
 
-void Geo_Grid::fill(Topl_SceneManager* sMan){
+void Geo_Grid::fill(Topl_Scene* scene){
     Geo_Component* currentGeoc = nullptr;
     Eigen::Vector3f offsetVec = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 
@@ -23,19 +23,11 @@ void Geo_Grid::fill(Topl_SceneManager* sMan){
 			(c / (height * width)) * grid_prop.depthVals.second
 		);
         currentGeoc->updatePos(bottomLeftCorner + offsetVec);
-        sMan->addGeometry(getPrefix() + _Grid::genCellName(c + 1), currentGeoc);
+        scene->addGeometry(getPrefix() + _Grid::genCellName(c + 1), currentGeoc);
     }
 }
 
-void Geo_Grid::updateSceneManager(Topl_SceneManager* sMan) {
+void Geo_Grid::updateScene(Topl_Scene* scene) {
     mUpdateCount++;
     return;
 } 
-
-void Geo_Grid::move(Topl_SceneManager* sMan, Eigen::Vector3f vec){
-	return;
-}
-
-void Geo_Grid::rotate(Topl_SceneManager* sMan, Eigen::Vector3f vec){
-	return;
-}

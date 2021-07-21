@@ -16,7 +16,7 @@ layout(packed) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out vec2 texcoord_out;
+layout(location = 0) out vec3 flatColor;
 
 mat4 calcCameraMatrix(vec3 cPos, vec3 tPos){
 	vec3 defaultUpVec = vec3(0.0, 1.0, 0.0);
@@ -25,32 +25,13 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 tPos){
 	vec3 xAxis = normalize(cross(defaultUpVec, zAxis));
 	vec3 yAxis = cross(zAxis, xAxis);
 
-<<<<<<< HEAD
-	mat4 lookAtMatrix(
-=======
 	mat4 lookAtMatrix = mat4(
->>>>>>> master
 		xAxis.x, xAxis.y, xAxis.z, 0.0,
 		yAxis.x, yAxis.y, yAxis.z, 0.0,
 		zAxis.x, zAxis.y, zAxis.z, 0.0,
 		0.0, 0.0, 0.0, 1.0
 	);
 
-<<<<<<< HEAD
-	mat4 posMatrix(
-		1.0, 0.0, 0.0, -1.0 * cPos.x,
-		0.0, 1.0, 0.0, -1.0 * cPos.y,
-		0.0, 0.0, 1.0, -1.0 * cPos.z,
-		0.0, 0.0, 0.0, 1.0,
-	);
-
-	return lookAtMatrix * posMatrix;
-}
-
-void main() {
-	vec4 finalPos = vec4(pos, 1.0f);
-	if (rotation[0] != 0) {
-=======
 	mat4 eyeMatrix = mat4(
 		1.0, 0.0, 0.0, -cPos.x,
 		0.0, 1.0, 0.0, -cPos.y,
@@ -66,24 +47,10 @@ void main() {
 	vec3 finalTranslation = pos + offset;
 
 //	if (rotation[0] != 0 || rotation[1] != 0) {
->>>>>>> master
 		mat2 zRotMatrix = mat2(
 			cos(rotation[0]), sin(rotation[0]),
 			-1 * sin(rotation[0]), cos(rotation[0])
 		);
-<<<<<<< HEAD
-
-		/* mat3 yRotMatrix = mat3(
-			// TODO: Implement this
-		); */
-
-		vec2 rotCoords = zRotMatrix * vec2(finalPos.x, finalPos.y);
-		finalPos.x = rotCoords.x;
-		finalPos.y = rotCoords.y;
-		finalPos += vec4(offset, 0.0f);
-	}
-
-=======
 		vec2 zRotCoords = zRotMatrix * vec2(pos.x, pos.y);
 
 		mat3 yRotMatrix = mat3(
@@ -98,8 +65,10 @@ void main() {
 //	}
 
 	finalPos += vec4(finalTranslation, 1.0);
->>>>>>> master
-	texcoord_out = texcoord;
+	if(gl_VertexID % 4 == 0) flatColor = vec3(0.1f, 0.9f, 0.3f);
+	else if(gl_VertexID % 4 == 1) flatColor = vec3(0.9f, 0.1f, 0.3f);
+	else if(gl_VertexID % 4 == 2) flatColor = vec3(0.9f, 0.9f, 0.3f);
+	else flatColor = vec3(0.3f, 0.9f, 0.9f);
 
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 }

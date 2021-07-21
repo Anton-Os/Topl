@@ -1,4 +1,4 @@
-#include "Topl_SceneManager.hpp"
+#include "Topl_Scene.hpp"
 
 static void print_ObjNotFound(const std::string& objTypeStr, const std::string& name) {
 	printf("Could not find %s object: \n", objTypeStr.c_str());
@@ -6,38 +6,9 @@ static void print_ObjNotFound(const std::string& objTypeStr, const std::string& 
 	putchar('\n');
 }
 
-// Scene Manager implementation code
+// Scene Builder implementation code
 
-unsigned Geo_Component::mId_count = 0;
-
-topl_geoComponent_cptr Topl_SceneManager::getGeoComponent(unsigned index) const {
-	if(index >= mNamedGeos.size()) return nullptr; // Error
-	else return mNamedGeos.at(index); 
-}
-
-topl_geoComponent_cptr Topl_SceneManager::getGeoComponent(const std::string& name) const {
-	for(std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
-		if((*currentGeo)->getName() == name) return *currentGeo;
-
-	return nullptr; // Error
-}
-
-topl_linkedItems_cptr Topl_SceneManager::getLink(unsigned index) const {
-	if(index > mLinkedItems.size()){
-		puts("Index for linked items is out of range!");
-		return nullptr;
-	}
-
-	return &mLinkedItems.at(index);
-}
-
-void Topl_SceneManager::addGeometry(const std::string& name, Geo_Component* geoComponent) {
-	geoComponent->setName(name);
-
-	mNamedGeos.push_back(geoComponent);
-}
-
-void Topl_SceneManager::addPhysics(const std::string& name, Phys_Properties* pProp) {
+void Topl_Scene::addPhysics(const std::string& name, Phys_Properties* pProp) {
 	// Find matching geometry component
 	for(std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if((*currentGeo)->getName() == name){
@@ -49,7 +20,7 @@ void Topl_SceneManager::addPhysics(const std::string& name, Phys_Properties* pPr
 	return;
 }
 
-void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f& vec) {
+void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& vec) {
 	// Find matching geometry component
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if (name == (*currentGeo)->getName()) {
@@ -74,7 +45,7 @@ void Topl_SceneManager::addForce(const std::string& name, const Eigen::Vector3f&
 	return;
 }
 
-void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
+void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
 
 	const Geo_Component* link1 = nullptr;
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
@@ -112,7 +83,7 @@ void Topl_SceneManager::addConnector(Phys_Connector* connector, const std::strin
 	mLinkedItems.push_back({connector, std::make_pair(link1, link2)});
 }
 
-void Topl_SceneManager::modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale) {
+void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale) {
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++)
 		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName){
 			
@@ -125,15 +96,15 @@ void Topl_SceneManager::modConnector(const std::string& targetName, Eigen::Vecto
 		}
 }
 
-void Topl_SceneManager::remConnector(const std::string& targetName){
+void Topl_Scene::remConnector(const std::string& targetName){
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++)
 		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName)
 			mLinkedItems.erase(currentLink);
 }
 
 
-void Topl_SceneManager::resolvePhysics() {
-	double physElapseSecs = mPhysTicker.getRelMillsecs() / 1000.0;
+void Topl_Scene::resolvePhysics() {
+	double physElapseSecs = mPhysTicker.getRelSecs();
 
 	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator currentLink = mLinkedItems.begin(); currentLink != mLinkedItems.end(); currentLink++){
@@ -210,28 +181,3 @@ void Topl_SceneManager::resolvePhysics() {
 		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
 }
-
-#ifdef RASTERON_H
-
-void Topl_SceneManager::addTexture(const std::string& name, const Rasteron_Image* rstnImage) {
-	if (rstnImage->data == nullptr || rstnImage->height == 0 || rstnImage->width == 0) return; // Error
-	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
-		if (name == (*currentGeo)->getName()) {
-			mGeoTex_map.insert({ *currentGeo, rstnImage });
-			return;
-		}
-}
-
-const Rasteron_Image* Topl_SceneManager::getFirstTexture(const std::string& name) const {
-	for (std::map<Geo_Component*, const Rasteron_Image*>::const_iterator currentMap = mGeoTex_map.cbegin(); currentMap != mGeoTex_map.cend(); currentMap++)
-		if (name == currentMap->first->getName()) return currentMap->second;
-
-	return nullptr; // Error
-}
-
-unsigned Topl_SceneManager::getTextures(unsigned index, const Rasteron_Image** images) const {
-	// TODO: Rework and update this
-
-	return 0;
-}
-#endif
