@@ -18,10 +18,11 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::scene);
 	Topl::scene.setCamera(false, SpatialBounds3D(30.0f));
 
+	Topl::model.log("Output.model"); // for testing
+
 	Timer_Ticker gameTicker;
 	while (renderer.renderScene(DRAW_Triangles)) {
-		Topl::geo.updateRot(Eigen::Vector2f(0.0, 0.001 * gameTicker.getAbsSecs()));
-		// Topl::geo.updateRot(Eigen::Vector2f(0.001 * gameTicker.getAbsSecs(), 0.0f));
+		// Topl::geo.updateRot(Eigen::Vector2f(0.0, 0.001 * gameTicker.getAbsSecs()));
 
 		renderer.updateScene(&Topl::scene);
 		platform.handleEvents();

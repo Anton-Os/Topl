@@ -18,6 +18,8 @@ int main(int argc, char** argv) {
 	renderer.buildScene(&Topl::scene);
 	Topl::scene.setCamera(false, SpatialBounds3D(30.0f));
 
+	Topl::model.log("Output.model"); // for testing
+
 	glPointSize(5.0f); // TODO: include as part of the renderer code
 	glLineWidth(3.0f); // TODO: include as part of the renderer code
 	// Topl::geo.updatePos(Eigen::Vector3f(0.0f, -40.0f, 0.0f));

@@ -13,6 +13,8 @@ public:
 		
 		fillRenderObject();
     }
+
+	void log(const char* fileName); // prints contents for debugging
 private:
 	friend class File3D_Node;
 	const File3D_Node* mNode;

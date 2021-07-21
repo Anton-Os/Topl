@@ -67,3 +67,24 @@ void Geo_Model3D::genIndices(unsigned* data){
 
 	return;
 }
+
+void Geo_Model3D::log(const char* fileName) { // for debugging
+	std::string currentLine;
+
+	logToFile(fileName, "\n\nPos Data\n");
+	logToFile(fileName, *(mNode->getPosDataStr()));
+	/* Eigen::Vector3f currentPos;
+	for (unsigned v = 0; v < mVertexCount; v++){
+		currentPos = *(mPosData + v);
+		currentLine = std::to_string(currentPos.x()) + ' ' + std::to_string(currentPos.y()) + ' ' + std::to_string(currentPos.z()) + '\n';
+		logToFile(fileName, currentLine);
+	} */
+
+	logToFile(fileName, "\n\nIndex Data\n");
+	logToFile(fileName, *(mNode->getIndexDataStr()));
+	/* unsigned currentIndex;
+	for (unsigned i = 0; i < mIndexCount; i++) {
+		currentIndex = *(mIndexData + i);
+		logToFile(fileName, std::to_string(currentIndex) + ' ');
+	} */
+}

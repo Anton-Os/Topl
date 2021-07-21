@@ -22,7 +22,7 @@ static std::string extractFileDataStr(const std::string& source, const std::stri
 	unsigned nodeOffset = 0;
 	std::string extractStr = "";
 
-	while (source.find(sequence, startReadOffset) != std::string::npos & nodeOffset < nodeNum + 1) {
+	while (source.find(sequence, startReadOffset) != std::string::npos && nodeOffset < nodeNum + 1) {
 		startReadOffset = source.find(sequence, endReadOffset + 1);
 		savedReadOffset = startReadOffset;
 		endReadOffset = source.find('\n', savedReadOffset);
@@ -35,7 +35,7 @@ static std::string extractFileDataStr(const std::string& source, const std::stri
 		nodeOffset++;
 	}
 
-	extractStr = source.substr(startReadOffset, endReadOffset);
+	extractStr = source.substr(startReadOffset, savedReadOffset - startReadOffset);
 	return extractStr;
 }
 
@@ -62,7 +62,7 @@ static std::string extractFileDataStr(const std::string& source, const tagTarget
 	
 	startReadOffset = endReadOffset + 1; // begin after the newline character of the proper tag
 	endReadOffset = source.find(closeTagLabel, startReadOffset);
-	extractStr = source.substr(startReadOffset, endReadOffset);
+	extractStr = source.substr(startReadOffset, endReadOffset - startReadOffset);
 
 	return extractStr;
 }
