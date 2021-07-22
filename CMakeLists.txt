@@ -1,20 +1,18 @@
 cmake_minimum_required(VERSION 3.6)
-project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
+project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
 # Extrenal Libraries
 
 if(NOT Rasteron_Install_Path)
     set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
-    # set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
 endif()
 
 find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
 if(Rasteron_FOUND)
     include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
-
     message(STATUS "Rasteron loadding success!")
 else()
-    message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
+    message(WARNING "Texturing and Image modules cannot load! Build and install Rasteron submodule and point Rasteron_Install_Path variable to the Rasteron install directory")
 endif()
 
 
@@ -22,7 +20,6 @@ include(ExternalProject)
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
 if(WIN32)
-
 ExternalProject_Add(DXSDK
         GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
         GIT_TAG "5fbd5e1158db72421bc32709136131451e6c8c37"
@@ -30,11 +27,7 @@ ExternalProject_Add(DXSDK
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 
         PREFIX ${EXTERNAL_PROJ_DIR}/dxsdk
-        # SOURCE_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
-        # BINARY_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
-        # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
     )
-
 endif()
 
 ExternalProject_Add(GLEW
@@ -57,20 +50,48 @@ ExternalProject_Add(Eigen
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
+# 3rd Party Additions
+
+### CMake Install Issues
+ExternalProject_Add(Assimp # 3D Model loading
+        GIT_REPOSITORY "https://github.com/assimp/assimp.git"
+        GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/Assimp
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+
+ExternalProject_Add(OpenAL # Audio File Loading
+        GIT_REPOSITORY "https://github.com/kcat/openal-soft.git"
+        GIT_TAG "6406cc614130ba5f04555ba46e849c685ae6eae0"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/OpenAL
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+
+ExternalProject_Add(FreeType # Font Loading
+        GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetype.git"
+        GIT_TAG "801cd842e27c85cb1d5000f6397f382ffe295daa"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/FreeType
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+
+
+
 
 if(WIN32)
   find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
 endif()
 find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
-
-if(Rasteron_FOUND)
-    add_executable(Img
-        demos/Demo_Img.cpp
-    )
-    target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
-endif()
-
+find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/assimp)
 
 list(APPEND common_Sources
 	core/FileIO.cpp
@@ -87,26 +108,6 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Extruded.cpp
     geo/primitives/Geo_Model3D.cpp
 )
-
-# Generic Features Demos
-
-add_executable(TickTick
-    ${common_Sources}
-    demos/Demo_TickTick.cpp
-)
-target_include_directories(TickTick PUBLIC core geo)
-
-add_executable(Presser
-    ${common_Sources}
-    demos/Demo_Presser.cpp
-)
-target_include_directories(Presser PUBLIC core geo)
-
-add_executable(Cursor
-    ${common_Sources}
-    demos/Demo_Cursor.cpp
-)
-target_include_directories(Cursor PUBLIC core geo)
 
 # DirectX Windows Dependent Demos
 if(WIN32)
