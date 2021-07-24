@@ -28,7 +28,7 @@ public:
 		init(filePaths);
 		// Topl specific object loading
 		for(unsigned offset = 0; offset < mSpriteCount; offset++){
-			const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(mRstnSprites + offset);
+			const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(mRastSprites + offset);
 			*(mSquares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
 			mSpriteSquares.push_back(std::make_pair(currentSprite, *(mSquares + offset)));
 			if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
@@ -45,7 +45,7 @@ public:
 		init(filePaths);
 		// Topl specific object loading
 		for(unsigned offset = 0; offset < mSpriteCount; offset++){
-			const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(mRstnSprites + offset);
+			const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(mRastSprites + offset);
 			*(mSquares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scaleFactor);
 			mSpriteSquares.push_back(std::make_pair(currentSprite, *(mSquares + offset)));
 			if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
@@ -60,16 +60,16 @@ public:
     }
     ~Geo_SpriteTable(){
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rstnDelFromFile(mFileImages + i); // free all Rasteron specific file images
+            rastDelFromFile(mFileImages + i); // free all Rasteron specific file images
         if(mFileImages != nullptr) free(mFileImages); // free allocated space
 
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rstnDel_Img(*(mRstnImages + i)); // free all Rasteron specific raw images
-        if(mRstnImages != nullptr) free(mRstnImages); // free allocated space
+            rastDel_Img(*(mRastImages + i)); // free all Rasteron specific raw images
+        if(mRastImages != nullptr) free(mRastImages); // free allocated space
 
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rstnDel_Sprite(*(mRstnSprites + i)); // free all Rasteron specific sprite objects
-        if(mRstnSprites != nullptr) free(mRstnSprites); // free allocated space
+            rastDel_Sprite(*(mRastSprites + i)); // free all Rasteron specific sprite objects
+        if(mRastSprites != nullptr) free(mRastSprites); // free allocated space
 
 		for(unsigned i = 0; i < mSpriteCount; i++) // delete Topl Flat Shapes
 			delete(*(mSquares + i));
@@ -94,14 +94,14 @@ private:
         // Rasteron specific object allocation
         mFileImages = (FileImage*)malloc(mSpriteCount * sizeof(FileImage));
 		mSquares = (Geo_FlatSquare**)malloc(mSpriteCount * sizeof(Geo_FlatSquare*));
-        mRstnImages = (Rasteron_Image**)malloc(mSpriteCount * sizeof(Rasteron_Image*));
-		mRstnSprites = (Rasteron_Sprite**)malloc(mSpriteCount * sizeof(Rasteron_Sprite*));
+        mRastImages = (Rasteron_Image**)malloc(mSpriteCount * sizeof(Rasteron_Image*));
+		mRastSprites = (Rasteron_Sprite**)malloc(mSpriteCount * sizeof(Rasteron_Sprite*));
 
 		unsigned offset = 0;
 		for (std::initializer_list<const char*>::iterator currentFileName = filePaths.begin(); currentFileName < filePaths.end(); currentFileName++) {
-			rstnLoadFromFile(*(currentFileName), &(*(mFileImages + offset)));
-			*(mRstnImages + offset) = rstnCreate_ImgBase(&(*(mFileImages + offset)));
-			*(mRstnSprites + offset) = rstnCreate_Sprite(*(mRstnImages + offset));
+			rastLoadFromFile(*(currentFileName), &(*(mFileImages + offset)));
+			*(mRastImages + offset) = rastCreate_ImgBase(&(*(mFileImages + offset)));
+			*(mRastSprites + offset) = rastCreate_Sprite(*(mRastImages + offset));
 			
 			offset++;
 		}
@@ -110,8 +110,8 @@ private:
     unsigned mSpriteCount;
 	std::vector<spriteSquare_pair> mSpriteSquares;
     FileImage* mFileImages = nullptr;
-    Rasteron_Image** mRstnImages = nullptr;
-    Rasteron_Sprite** mRstnSprites = nullptr;
+    Rasteron_Image** mRastImages = nullptr;
+    Rasteron_Sprite** mRastSprites = nullptr;
 	Geo_FlatSquare** mSquares = nullptr;
 };
 

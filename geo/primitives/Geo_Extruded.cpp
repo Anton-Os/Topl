@@ -60,34 +60,34 @@ void Geo_Extruded::genTexCoords(Eigen::Vector2f* data) {
 }
 
 void Geo_Extruded::genIndices(unsigned* data){
-	unsigned currentIdx; // increments as more indices are added
+	unsigned i; // increments as more indices are added
 	// Indexing FRONT FACE
-	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
-	for (currentIdx = 0; currentIdx < (mIndexCount / 2) - 3; currentIdx += 3) { // iterate to all but last trig!!!
-		*(data + currentIdx + 0) = 0; // origin point
-		*(data + currentIdx + 1) = currentVertex; // take the start vertex
-		*(data + currentIdx + 2) = currentVertex + 1; // connect to next vertex
+	unsigned v = 1; // starting from index 1, which is the rightmost point
+	for (i = 0; i < (mIndexCount / 2) - 3; i += 3) { // iterate to all but last trig!!!
+		*(data + i + 0) = 0; // origin point
+		*(data + i + 1) = v; // take the start vertex
+		*(data + i + 2) = v + 1; // connect to next vertex
 
-		currentVertex++;
+		v++;
 	}
 
 	// special case, connect to first vertex
-	*(data + currentIdx + 0) = 0;
-	*(data + currentIdx + 1) = currentVertex;
-	*(data + currentIdx + 2) = 1; // connect back to first point of FRONT FACE
+	*(data + i + 0) = 0;
+	*(data + i + 1) = v;
+	*(data + i + 2) = 1; // connect back to first point of FRONT FACE
 
 	// Indexing BACK FACE
-	currentVertex = mVertexCount / 2 + 1; // target the first edge vertex of the back face
-	for (currentIdx = mIndexCount / 2; currentIdx < mIndexCount - 3; currentIdx += 3) { // iterate to all but last trig!!!
-		*(data + currentIdx + 0) = mVertexCount / 2; // origin point
-		*(data + currentIdx + 1) = currentVertex; // take the start vertex
-		*(data + currentIdx + 2) = currentVertex + 1; // connect to next vertex
+	v = mVertexCount / 2 + 1; // target the first edge vertex of the back face
+	for (i = mIndexCount / 2; i < mIndexCount - 3; i += 3) { // iterate to all but last trig!!!
+		*(data + i + 0) = mVertexCount / 2; // origin point
+		*(data + i + 1) = v; // take the start vertex
+		*(data + i + 2) = v + 1; // connect to next vertex
 
-		currentVertex++;
+		v++;
 	}
 
 	// special case, connect to first vertex
-	*(data + currentIdx + 0) = mVertexCount / 2; // center point of BACK FACE
-	*(data + currentIdx + 1) = currentVertex;
-	*(data + currentIdx + 2) = mVertexCount / 2 + 1; // connect back to first point of BACK FACE
+	*(data + i + 0) = mVertexCount / 2; // center point of BACK FACE
+	*(data + i + 1) = v;
+	*(data + i + 2) = mVertexCount / 2 + 1; // connect back to first point of BACK FACE
 }

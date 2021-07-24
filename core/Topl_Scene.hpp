@@ -66,7 +66,7 @@ public:
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, const Rasteron_Image* rstnImage);
+	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
 	unsigned getGeoCount() const { return mNamedGeos.size(); }
 	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // Access to geometry by index

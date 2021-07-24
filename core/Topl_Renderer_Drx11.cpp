@@ -462,16 +462,16 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	const uint32_t* srcTexData = static_cast<const uint32_t*>(resource.pData);
 
 	// Custom Image format creation
-	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	Rasteron_Image* rast_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
-	rstn_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
-	rstn_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
-	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+	rast_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
+	rast_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
+	rast_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
-	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
-	memcpy(rstn_image->data, srcTexData, rstn_image->width * rstn_image->height * sizeof(uint32_t));
+	rast_image->data = (uint32_t*)malloc(rast_image->width * rast_image->height * sizeof(uint32_t));
+	memcpy(rast_image->data, srcTexData, rast_image->width * rast_image->height * sizeof(uint32_t));
 
-	return rstn_image;
+	return rast_image;
 }
 
 void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){

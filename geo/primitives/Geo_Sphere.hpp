@@ -9,13 +9,20 @@ enum SPHERE_Type {
     SPHERE_Goldberg
 };
 
-class Geo_Sphere3D : public Geo_RenderObj {
+class Geo_SphereUV : public Geo_RenderObj {
 public:
-    Geo_Sphere3D(NGon3D refShape)
-    : Geo_RenderObj(mShape3D.xSegments * mShape3D.ySegments + 1, 40) { // TODO: Use proper values!
+    Geo_SphereUV(NGon3D refShape)
+    : Geo_RenderObj(mShape3D.xSegments * mShape3D.ySegments + 2, 100) {
         mShape3D = refShape; // copy to internal data
+        sphereType = SPHERE_UV;
         fillRenderObject();
     }
+    /* Geo_SphereUV(SPHERE_Type type, NGon3D refShape)
+    : Geo_RenderObj(mShape3D.xSegments * mShape3D.ySegments + 1, 40) {
+        mShape3D = refShape; // copy to internal data
+        sphereType = type;
+        fillRenderObject();
+    } */
 
 	float getRadius() const { return mShape3D.radius; }
 private:
@@ -23,5 +30,7 @@ private:
     void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
+
     NGon3D mShape3D;
+    SPHERE_Type sphereType; // Add support for multiple rendering types!
 };

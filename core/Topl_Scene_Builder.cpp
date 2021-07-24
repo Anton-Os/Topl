@@ -38,11 +38,11 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Component* geoComponen
 
 #ifdef RASTERON_H
 
-void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rstnImage) {
-	if (rstnImage->data == nullptr || rstnImage->height == 0 || rstnImage->width == 0) return; // Error
+void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rastImage) {
+	if (rastImage->data == nullptr || rastImage->height == 0 || rastImage->width == 0) return; // Error
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if (name == (*currentGeo)->getName()) {
-			mGeoTex_map.insert({ *currentGeo, rstnImage });
+			mGeoTex_map.insert({ *currentGeo, rastImage });
 			return;
 		}
 }

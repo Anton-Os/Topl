@@ -358,16 +358,16 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 // EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_GL4::getFrame(){
 	// Custom Image format creation
-	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	Rasteron_Image* rast_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
-	rstn_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
-	rstn_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
-	rstn_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+	rast_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
+	rast_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
+	rast_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
-	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
-	glReadPixels(0, 0, rstn_image->width, rstn_image->height, GL_RGBA, GL_UNSIGNED_BYTE, rstn_image->data);
+	rast_image->data = (uint32_t*)malloc(rast_image->width * rast_image->height * sizeof(uint32_t));
+	glReadPixels(0, 0, rast_image->width, rast_image->height, GL_RGBA, GL_UNSIGNED_BYTE, rast_image->data);
 
-	return rstn_image;
+	return rast_image;
 }
 
 void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){

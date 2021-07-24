@@ -107,6 +107,7 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Conic.cpp
     geo/primitives/Geo_Extruded.cpp
     geo/primitives/Geo_Model3D.cpp
+    geo/primitives/Geo_Sphere.cpp
 )
 
 # DirectX Windows Dependent Demos

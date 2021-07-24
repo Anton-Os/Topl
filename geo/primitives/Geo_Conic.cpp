@@ -43,33 +43,33 @@ void Geo_Conic::genTexCoords(Eigen::Vector2f* data) {
 }
 
 void Geo_Conic::genIndices(unsigned* data){
-	unsigned currentIdx; // increments as more indices are added
+	unsigned i; // increments as more indices are added
 	// Indexing FRONT FACE
-	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
+	unsigned v = 1; // starting from index 1, which is the rightmost point
 
-	for (currentIdx = 0; currentIdx < mIndexCount / 2 - 3; currentIdx += 3) { // iterate halfway through minus 1 trig
-		*(data + currentIdx + 0) = 0; // center point
-		*(data + currentIdx + 1) = currentVertex; // target vertex
-		*(data + currentIdx + 2) = currentVertex + 1; // connect to next vertex
-		currentVertex++;
+	for (i = 0; i < mIndexCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
+		*(data + i + 0) = 0; // center point
+		*(data + i + 1) = v; // target vertex
+		*(data + i + 2) = v + 1; // connect to next vertex
+		v++;
 	}
 
 	// special case, connect to first vertex
-	*(data + currentIdx + 0) = 0; // center point
-	*(data + currentIdx + 1) = currentVertex;
-	*(data + currentIdx + 2) = 1; // connect back to first point in sequence
+	*(data + i + 0) = 0; // center point
+	*(data + i + 1) = v;
+	*(data + i + 2) = 1; // connect back to first point in sequence
 
 	// Indexing APEX connection
-	currentVertex = 1; // currentVertex needs to reset!
-	for(currentIdx = mIndexCount / 2; currentIdx < mIndexCount - 3; currentIdx += 3){ // iterate to the end minus 1 trig
-		*(data + currentIdx + 0) = mVertexCount - 1; // apex point
-		*(data + currentIdx + 1) = currentVertex + 1; // connect to next vertex
-		*(data + currentIdx + 1) = currentVertex; // target vertex
-		currentVertex++;
+	v = 1; // v needs to reset!
+	for(i = mIndexCount / 2; i < mIndexCount - 3; i += 3){ // iterate to the end minus 1 trig
+		*(data + i + 0) = mVertexCount - 1; // apex point
+		*(data + i + 1) = v + 1; // connect to next vertex
+		*(data + i + 1) = v; // target vertex
+		v++;
 	}
 
 	// special case, connect to first vertex
-	*(data + currentIdx + 0) = mIndexCount - 1; // apex point
-	*(data + currentIdx + 1) = currentVertex;
-	*(data + currentIdx + 2) = 1; // connect back to first point in sequence
+	*(data + i + 0) = mIndexCount - 1; // apex point
+	*(data + i + 1) = v;
+	*(data + i + 2) = 1; // connect back to first point in sequence
 }
