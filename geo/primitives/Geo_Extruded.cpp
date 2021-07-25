@@ -90,4 +90,26 @@ void Geo_Extruded::genIndices(unsigned* data){
 	*(data + i + 0) = mVertexCount / 2; // center point of BACK FACE
 	*(data + i + 1) = v;
 	*(data + i + 2) = mVertexCount / 2 + 1; // connect back to first point of BACK FACE
+
+	// Indexing SIDE FACES
+	/* v = 1; // starting from index 1 which is a corner point
+	for(i = mIndexCount / 2; i < mIndexCount - 6; i += 6){
+		*(data + i + 0) = v;
+		*(data + i + 1) = v + mShape2D.segments + 1;
+		*(data + i + 2) = v + 1;
+
+		*(data + i + 4) = v + mShape2D.segments + 2;
+		*(data + i + 5) = v + mShape2D.segments + 1;
+		*(data + i + 6) = v + 1;
+
+		v++; // increment current vertex
+	}
+
+	*(data + i + 0) = 1;
+	*(data + i + 1) = mShape2D.segments;
+	*(data + i + 2) = mShape2D.segments + 2;
+
+	*(data + i + 0) = mVertexCount - 1;
+	*(data + i + 1) = mShape2D.segments;
+	*(data + i + 2) = mShape2D.segments + 2; */
 }

@@ -5,13 +5,13 @@ void Geo_SphereUV::genVertices(Eigen::Vector3f* data){
     *(data + 0) = topVertex; // first vertex is the top of the sphere
 
 	unsigned v = 1;
-	for(unsigned stack = 0; stack < mShape3D.xSegments - 1; stack++){
+	for(unsigned stack = 0; stack < mShape3D.xSegments; stack++){
 		double phi = TOPL_PI * double(stack + 1) / double(mShape3D.xSegments);
     	for (int slice = 0; slice < mShape3D.ySegments; slice++) {
 			double theta = 2.0 * TOPL_PI * double(slice) / double(mShape3D.ySegments);
-			double x = std::sin(phi) * std::cos(theta);
-			double y = std::cos(phi);
-			double z = std::sin(phi) * std::sin(theta);
+			double x = std::sin(phi) * std::cos(theta) * mShape3D.radius;
+			double y = std::cos(phi) * mShape3D.radius;
+			double z = std::sin(phi) * std::sin(theta) * mShape3D.radius;
 			*(data + v) = Eigen::Vector3f(x, y, z);
 			v++; // increase the vertex count
 		}
@@ -33,5 +33,6 @@ void Geo_SphereUV::genTexCoords(Eigen::Vector2f* data) {
 
 void Geo_SphereUV::genIndices(unsigned* data){
 	// TODO: Implement body here
+	// *data = 0;
 	return;
 }

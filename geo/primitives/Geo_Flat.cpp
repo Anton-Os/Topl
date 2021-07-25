@@ -37,17 +37,17 @@ void Geo_Flat::genTexCoords(Eigen::Vector2f* data) {
 void Geo_Flat::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
 	// Indexing FRONT FACE
-	unsigned v = 1; // starting from index 1, which is the rightmost point
+	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
 	for (i = 0; i < mIndexCount - 3; i += 3) { // iterate to all but last trig!!!
 		*(data + i + 0) = 0; // origin point
-		*(data + i + 1) = v; // take the start vertex
-		*(data + i + 2) = v + 1; // connect to next vertex
+		*(data + i + 1) = currentVertex; // take the start vertex
+		*(data + i + 2) = currentVertex + 1; // connect to next vertex
 
-		v++;
+		currentVertex++;
 	}
 
 	// special case, connect to first vertex
 	*(data + i + 0) = 0;
-	*(data + i + 1) = v;
+	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point
 }

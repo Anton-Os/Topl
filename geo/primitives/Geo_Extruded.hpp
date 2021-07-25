@@ -6,7 +6,7 @@ public:
     Geo_Extruded(NGon2D refShape, float depth) 
     : Geo_RenderObj
         ((refShape.segments + 1) * 2, // Vertex count is number of segments +1 for the center point but DOUBLED for the back face as well
-        // refShape.segments * 6 ){ // each segment has a front trig, a back trig, and two side trigs for a total of 12 indices
+        // refShape.segments * 12 ){ // each segment has a front trig, a back trig, and two side trigs for a total of 12 indices
         refShape.segments * 6 ){ // for testing! replace this!
         mShape2D = refShape; // copy to internal data
         mDepth = depth;

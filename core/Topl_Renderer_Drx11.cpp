@@ -570,14 +570,20 @@ void Topl_Renderer_Drx11::render(void){
     m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
 
 	switch(mDrawType) { // Change draw type depending on what is configured
-	case DRAW_Triangles:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		break;
 	case DRAW_Points:
 		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		break;
 	case DRAW_Lines:
 		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		break;
+	case DRAW_Triangles:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		break;
+	case DRAW_Fan:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); // not sure this is correct
+		break;
+	case DRAW_Strip:
+		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		break;
 	default:
 		OutputDebugStringA("Draw type not supported yet!");

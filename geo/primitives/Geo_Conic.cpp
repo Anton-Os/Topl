@@ -45,31 +45,31 @@ void Geo_Conic::genTexCoords(Eigen::Vector2f* data) {
 void Geo_Conic::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
 	// Indexing FRONT FACE
-	unsigned v = 1; // starting from index 1, which is the rightmost point
+	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
 
 	for (i = 0; i < mIndexCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
 		*(data + i + 0) = 0; // center point
-		*(data + i + 1) = v; // target vertex
-		*(data + i + 2) = v + 1; // connect to next vertex
-		v++;
+		*(data + i + 1) = currentVertex; // target vertex
+		*(data + i + 2) = currentVertex + 1; // connect to next vertex
+		currentVertex++;
 	}
 
 	// special case, connect to first vertex
 	*(data + i + 0) = 0; // center point
-	*(data + i + 1) = v;
+	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point in sequence
 
 	// Indexing APEX connection
-	v = 1; // v needs to reset!
+	currentVertex = 1; // currentVertex needs to reset!
 	for(i = mIndexCount / 2; i < mIndexCount - 3; i += 3){ // iterate to the end minus 1 trig
 		*(data + i + 0) = mVertexCount - 1; // apex point
-		*(data + i + 1) = v + 1; // connect to next vertex
-		*(data + i + 1) = v; // target vertex
-		v++;
+		*(data + i + 1) = currentVertex + 1; // connect to next vertex
+		*(data + i + 1) = currentVertex; // target vertex
+		currentVertex++;
 	}
 
 	// special case, connect to first vertex
 	*(data + i + 0) = mIndexCount - 1; // apex point
-	*(data + i + 1) = v;
+	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point in sequence
 }

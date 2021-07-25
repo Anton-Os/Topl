@@ -12,7 +12,7 @@ enum SPHERE_Type {
 class Geo_SphereUV : public Geo_RenderObj {
 public:
     Geo_SphereUV(NGon3D refShape)
-    : Geo_RenderObj(mShape3D.xSegments * mShape3D.ySegments + 2, 100) {
+    : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, 0) {
         mShape3D = refShape; // copy to internal data
         sphereType = SPHERE_UV;
         fillRenderObject();

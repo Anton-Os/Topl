@@ -1,19 +1,15 @@
-#include "native_os_def.h"
-
-// #include "FileIO.hpp"
-// #include "Input.hpp"
 #include "Platform.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
 
-#include "primitives/Geo_Sphere3D.hpp"
+#include "primitives/Geo_Sphere.hpp"
 
 #define MOVE_AMOUNT 0.5
 
 namespace Topl {
 	Topl_Scene scene;
 
-	NGon3D ngon = { 1.0, 12, 12 };
+	NGon3D ngon = { 1.0, 40, 41 };
 	Geo_SphereUV sphereGeo(ngon);
 	Geo_Component sphere((const Geo_RenderObj*)&sphereGeo);
 }

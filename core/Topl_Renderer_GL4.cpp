@@ -535,6 +535,12 @@ void Topl_Renderer_GL4::render(void){
 	case DRAW_Lines:
 		drawType = GL_LINES;
 		break;
+	case DRAW_Fan:
+		drawType = GL_TRIANGLE_FAN;
+		break;
+	case DRAW_Strip:
+		drawType = GL_TRIANGLE_STRIP;
+		break;
 	default:
 		puts("Draw type not supported yet!");
 		return;

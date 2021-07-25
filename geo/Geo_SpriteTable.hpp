@@ -60,15 +60,15 @@ public:
     }
     ~Geo_SpriteTable(){
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rastDelFromFile(mFileImages + i); // free all Rasteron specific file images
+            delFileImage(mFileImages + i); // free all Rasteron specific file images
         if(mFileImages != nullptr) free(mFileImages); // free allocated space
 
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rastDel_Img(*(mRastImages + i)); // free all Rasteron specific raw images
+            deleteImg(*(mRastImages + i)); // free all Rasteron specific raw images
         if(mRastImages != nullptr) free(mRastImages); // free allocated space
 
         for(unsigned i = 0; i < mSpriteCount; i++)
-            rastDel_Sprite(*(mRastSprites + i)); // free all Rasteron specific sprite objects
+            deleteSprite(*(mRastSprites + i)); // free all Rasteron specific sprite objects
         if(mRastSprites != nullptr) free(mRastSprites); // free allocated space
 
 		for(unsigned i = 0; i < mSpriteCount; i++) // delete Topl Flat Shapes
@@ -99,9 +99,9 @@ private:
 
 		unsigned offset = 0;
 		for (std::initializer_list<const char*>::iterator currentFileName = filePaths.begin(); currentFileName < filePaths.end(); currentFileName++) {
-			rastLoadFromFile(*(currentFileName), &(*(mFileImages + offset)));
-			*(mRastImages + offset) = rastCreate_ImgBase(&(*(mFileImages + offset)));
-			*(mRastSprites + offset) = rastCreate_Sprite(*(mRastImages + offset));
+			loadFileImage(*(currentFileName), &(*(mFileImages + offset)));
+			*(mRastImages + offset) = createImgBase(&(*(mFileImages + offset)));
+			*(mRastSprites + offset) = createSprite(*(mRastImages + offset));
 			
 			offset++;
 		}
