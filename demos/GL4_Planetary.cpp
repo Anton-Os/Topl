@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 	Timer_Ticker gameTicker;
 	
 	Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f));
-	while (renderer.renderScene(DRAW_Strip)) {
+	while (renderer.renderScene(DRAW_Lines)) {
 		renderer.updateScene(&Topl::scene);
 
 		platform.handleEvents();

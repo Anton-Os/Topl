@@ -18,28 +18,21 @@ layout(location = 1) in vec2 texcoord;
 
 layout(location = 0) out vec2 texcoord_out;
 
-mat4 calcCameraMatrix(vec3 cPos, vec3 tPos){
+mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 	vec3 defaultUpVec = vec3(0.0, 1.0, 0.0);
 
-	vec3 zAxis = normalize(cPos - tPos);
+	vec3 zAxis = normalize(cPos - lPos);
 	vec3 xAxis = normalize(cross(defaultUpVec, zAxis));
 	vec3 yAxis = cross(zAxis, xAxis);
 
-	mat4 lookAtMatrix = mat4(
-		xAxis.x, xAxis.y, xAxis.z, 0.0,
-		yAxis.x, yAxis.y, yAxis.z, 0.0,
-		zAxis.x, zAxis.y, zAxis.z, 0.0,
+	mat4 camMatrix = mat4(
+		xAxis.x, xAxis.y, xAxis.z, -1.0 * dot(xAxis, cPos),
+		yAxis.x, yAxis.y, yAxis.z, -1.0 * dot(yAxis, cPos),
+		zAxis.x, zAxis.y, zAxis.z, -1.0 * dot(zAxis, cPos),
 		0.0, 0.0, 0.0, 1.0
-	);
+	)
 
-	mat4 eyeMatrix = mat4(
-		1.0, 0.0, 0.0, -cPos.x,
-		0.0, 1.0, 0.0, -cPos.y,
-		0.0, 0.0, 1.0, -cPos.z,
-		0.0, 0.0, 0.0, 1.0
-	);
-
-	return lookAtMatrix * eyeMatrix;
+	return camMatrix;
 }
 
 void main() {
@@ -67,5 +60,6 @@ void main() {
 	finalPos += vec4(finalTranslation, 1.0);
 	texcoord_out = texcoord;
 
-	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
+	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
+	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }

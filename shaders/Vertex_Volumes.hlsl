@@ -15,7 +15,7 @@ struct VS_INPUT {
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	uint flatColor : COLOR0;
+	float4 flatColor : COLOR0;
 };
 
 float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
@@ -30,7 +30,6 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 		xAxis.y, yAxis.y, zAxis.y, 0.0,
 		xAxis.z, yAxis.z, zAxis.z, 0.0,
 		-1.0 * dot(xAxis, cPos), -1.0 * dot(yAxis, cPos), -1.0 * dot(zAxis, cPos), 1.0
-		// -1.0 * dot(xAxis, lPos), -1.0 * dot(yAxis, lPos), -1.0 * dot(zAxis, lPos), 1.0
 	};
 
 	return camMatrix;
@@ -63,9 +62,9 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	finalPos += finalTranslation;
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
-	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), finalPos);
-	output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
-	output.flatColor = 0xFF884422;
+	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
+	output.pos = mul(cameraMatrix, finalPos); // no projection
+	output.flatColor = float4(0.4f, 0.8f, 0.2f, 1.0f);
 
 	return output;
 }

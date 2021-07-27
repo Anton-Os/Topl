@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
 
 	Timer_Ticker gameTicker;
 
-	Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, 2.0f));
-	while (renderer.renderScene(DRAW_Triangles)) {
+	// Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
+	while (renderer.renderScene(DRAW_Fan)) {
 		renderer.updateScene(&Topl::scene);
 
 		platform.handleEvents();
