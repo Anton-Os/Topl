@@ -63,7 +63,8 @@ void Geo_Extruded::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
 	// Indexing FRONT FACE
 	unsigned v = 1; // starting from index 1, which is the rightmost point
-	for (i = 0; i < (mIndexCount / 2) - 3; i += 3) { // iterate to all but last trig!!!
+	// for (i = 0; i < (mIndexCount / 2) - 3; i += 3) { // iterate to all but last trig!!!
+	for (i = 0; i < (mIndexCount / 4) - 3; i += 3) { // iterate to all but last trig!!!
 		*(data + i + 0) = 0; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
@@ -78,7 +79,8 @@ void Geo_Extruded::genIndices(unsigned* data){
 
 	// Indexing BACK FACE
 	v = mVertexCount / 2 + 1; // target the first edge vertex of the back face
-	for (i = mIndexCount / 2; i < mIndexCount - 3; i += 3) { // iterate to all but last trig!!!
+	// for (i = mIndexCount / 2; i < mIndexCount - 3; i += 3) { // iterate to all but last trig!!!
+	for (i = mIndexCount / 4; i < (mIndexCount / 2) - 3; i += 3) {
 		*(data + i + 0) = mVertexCount / 2; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
@@ -92,24 +94,25 @@ void Geo_Extruded::genIndices(unsigned* data){
 	*(data + i + 2) = mVertexCount / 2 + 1; // connect back to first point of BACK FACE
 
 	// Indexing SIDE FACES
+	
 	/* v = 1; // starting from index 1 which is a corner point
-	for(i = mIndexCount / 2; i < mIndexCount - 6; i += 6){
+	for (i = mIndexCount / 2; i < mIndexCount - 6; i += 6) {
 		*(data + i + 0) = v;
-		*(data + i + 1) = v + mShape2D.segments + 1;
+		*(data + i + 1) = v + (mVertexCount / 2);
 		*(data + i + 2) = v + 1;
 
-		*(data + i + 4) = v + mShape2D.segments + 2;
-		*(data + i + 5) = v + mShape2D.segments + 1;
+		*(data + i + 4) = v + (mVertexCount / 2) + 1;
+		*(data + i + 5) = v + (mVertexCount / 2);
 		*(data + i + 6) = v + 1;
 
-		v++; // increment current vertex
+		// v++; // increment current vertex
 	}
 
 	*(data + i + 0) = 1;
-	*(data + i + 1) = mShape2D.segments;
-	*(data + i + 2) = mShape2D.segments + 2;
+	*(data + i + 1) = (mVertexCount / 2) + 1;
+	*(data + i + 2) = (mVertexCount / 2) + 2;
 
-	*(data + i + 0) = mVertexCount - 1;
-	*(data + i + 1) = mShape2D.segments;
-	*(data + i + 2) = mShape2D.segments + 2; */
+	*(data + i + 3) = (mVertexCount / 2) + 1;
+	*(data + i + 4) = (mVertexCount / 2) + 2;
+	*(data + i + 5) = mVertexCount - 1; */
 }

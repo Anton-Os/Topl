@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
 	Timer_Ticker gameTicker;
 	// Topl::grid.move(&Topl::scene, Eigen::Vector3f(1.0f, -100.0f, 0.0f));
 	while (renderer.renderScene(DRAW_Triangles)) {
-		Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.001 * gameTicker.getAbsSecs(), 0.0));
-		Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.002 * gameTicker.getAbsSecs()));
+		Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
+		Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
 		renderer.updateScene(&Topl::scene);
 		// Topl::scene.resolvePhysics();
 

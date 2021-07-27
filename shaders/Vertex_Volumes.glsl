@@ -17,6 +17,7 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
 layout(location = 0) out vec2 texcoord_out;
+layout(location = 1) out vec4 flatColor_out;
 
 mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 	vec3 defaultUpVec = vec3(0.0, 1.0, 0.0);
@@ -30,7 +31,7 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 		yAxis.x, yAxis.y, yAxis.z, -1.0 * dot(yAxis, cPos),
 		zAxis.x, zAxis.y, zAxis.z, -1.0 * dot(zAxis, cPos),
 		0.0, 0.0, 0.0, 1.0
-	)
+	);
 
 	return camMatrix;
 }
@@ -58,8 +59,9 @@ void main() {
 //	}
 
 	finalPos += vec4(finalTranslation, 1.0);
-	texcoord_out = texcoord;
 
+	texcoord_out = texcoord;
+	flatColor_out = vec4(0.4f, 0.8f, 0.2f, 1.0f);
 	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }
