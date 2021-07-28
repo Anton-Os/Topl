@@ -18,7 +18,7 @@ layout(location = 0) out uvec2 screenRes_out;
 layout(location = 1) out uvec2 cursorPos_out;
 
 void main() {
-    screenRes_out = screenRes;
-	cursorPos_out = cursorPos;
+    screenRes_out = uvec2(1100, 1200); // screenRes_out = screenRes; // change to uniform value
+	screenRes_out = uvec2(0, 0); // cursorPos_out = cursorPos; // change to uniform value
 	gl_Position = vec4(finalPos, 1.0);
 }

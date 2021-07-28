@@ -26,41 +26,7 @@ namespace Topl {
 	// Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.4f);
 }
 
-struct VertexShader : public Topl_Shader {
-	VertexShader(const char* filePath)
-		: Topl_Shader(
-			SHDR_Vertex, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
-		) {  }
-
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
-		bytes->clear(); // Make sure there is no preexisting data
-
-		const uint8_t* offsetBytes_ptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
-		const uint8_t* rotationBytes_ptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
-	
-		ValueGen::appendDataToBytes(offsetBytes_ptr, component->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotationBytes_ptr, component->getAngles()->size() * sizeof(float), 2 * sizeof(float), bytes);
-		return true;
-	}
-
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const {
-		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());
-		ValueGen::assignDataToBytes(matrixBytes, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
-		return true;
-	}
-};
-
-struct PixelShader : public Topl_Shader {
-	PixelShader(const char* filePath)
-		: Topl_Shader(
-			SHDR_Fragment, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
-		) { }
-
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
-};
+#include "Drx11_Basic.hpp"
 
 void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
 void buttonCallback_a(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left

@@ -1,6 +1,7 @@
 #version 440
 
 layout(location = 0) in uvec2 screenRes;
+layout(location = 1) in uvec2 cursorPos;
 
 out vec4 color;
 

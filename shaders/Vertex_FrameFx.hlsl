@@ -23,8 +23,8 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	float4 finalPos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0);
 
-	output.screenRes = screenRes;
-	output.cursorPos = cursorPos;
+	output.screenRes = uint2(1200, 1100); // output.screenRes = screenRes; // change to const value
+	output.cursorPos = uint2(0, 0); // output.cursorPos = cursorPos; // change to const value
 	output.pos = finalPos;
 
 	return output;

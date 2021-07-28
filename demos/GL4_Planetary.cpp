@@ -14,9 +14,9 @@ int main(int argc, char** argv) {
 	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
 
 	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Volumes.glsl";
-	VertexShader vertexShader = VertexShader(vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Swirls.glsl";
-	FragmentShader fragmentShader = FragmentShader(fragmentShaderSrc.c_str());
+	Volumes_VertexShader vertexShader = Volumes_VertexShader(vertexShaderSrc.c_str());
+	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Frag_Flat.glsl";
+	Flat_FragmentShader fragmentShader = Flat_FragmentShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	
