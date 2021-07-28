@@ -21,7 +21,7 @@ struct VS_OUTPUT {
 float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
 	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
 
-	float3 zAxis = normalize(lPos - cPos); // values flipped because of coordinate system
+	float3 zAxis = normalize(lPos - cPos);
 	float3 xAxis = normalize(cross(defaultUpVec, zAxis));
 	float3 yAxis = cross(zAxis, xAxis);
 
@@ -63,7 +63,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
 	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
-	output.pos = mul(cameraMatrix, finalPos); // no projection
+	output.pos = mul(finalPos, cameraMatrix); // no projection
 	output.flatColor = float4(0.4f, 0.8f, 0.2f, 1.0f);
 
 	return output;
