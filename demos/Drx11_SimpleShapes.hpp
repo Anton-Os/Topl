@@ -17,7 +17,7 @@ namespace Topl {
 
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
-	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.1f);
+	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.4f);
 	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);

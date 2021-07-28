@@ -21,8 +21,8 @@ void Geo_Extruded::genVertices(Eigen::Vector3f* data){
 
     for(unsigned v = 1 + (mVertexCount / 2); v < mVertexCount; v++)
         *(data + v) = Eigen::Vector3f(
-			sin(mStartAngle + (v * incAngle)) * mShape2D.radius, 
-			cos(mStartAngle + (v * incAngle)) * mShape2D.radius, 
+			sin(mStartAngle + ((v - (mVertexCount / 2)) * incAngle)) * mShape2D.radius,
+			cos(mStartAngle + ((v - (mVertexCount / 2)) * incAngle)) * mShape2D.radius,
 			DEFAULT_Z_VAL - (mDepth / 2)
         );
 }
@@ -72,7 +72,7 @@ void Geo_Extruded::genIndices(unsigned* data){
 		v++;
 	}
 
-	// special case, connect to first vertex
+	// special case, last trig
 	*(data + i + 0) = 0;
 	*(data + i + 1) = v;
 	*(data + i + 2) = 1; // connect back to first point of FRONT FACE
@@ -88,31 +88,31 @@ void Geo_Extruded::genIndices(unsigned* data){
 		v++;
 	}
 
-	// special case, connect to first vertex
+	// special case, last trig
 	*(data + i + 0) = mVertexCount / 2; // center point of BACK FACE
 	*(data + i + 1) = v;
 	*(data + i + 2) = mVertexCount / 2 + 1; // connect back to first point of BACK FACE
 
 	// Indexing SIDE FACES
 	
-	/* v = 1; // starting from index 1 which is a corner point
+	v = 1; // starting from index 1 which is a corner point
 	for (i = mIndexCount / 2; i < mIndexCount - 6; i += 6) {
 		*(data + i + 0) = v;
-		*(data + i + 1) = v + (mVertexCount / 2);
-		*(data + i + 2) = v + 1;
+		*(data + i + 2) = v + (mVertexCount / 2) + 1;
+		*(data + i + 1) = v + 1;
 
-		*(data + i + 4) = v + (mVertexCount / 2) + 1;
-		*(data + i + 5) = v + (mVertexCount / 2);
-		*(data + i + 6) = v + 1;
+		*(data + i + 3) = v + (mVertexCount / 2);
+		*(data + i + 4) = v;
+		*(data + i + 5) = v + (mVertexCount / 2) + 1;
 
-		// v++; // increment current vertex
+		v++; // increment current vertex
 	}
 
 	*(data + i + 0) = 1;
 	*(data + i + 1) = (mVertexCount / 2) + 1;
-	*(data + i + 2) = (mVertexCount / 2) + 2;
+	*(data + i + 2) = (mVertexCount / 2) - 1;
 
-	*(data + i + 3) = (mVertexCount / 2) + 1;
-	*(data + i + 4) = (mVertexCount / 2) + 2;
-	*(data + i + 5) = mVertexCount - 1; */
+	*(data + i + 3) = mVertexCount - 1;
+	*(data + i + 4) = (mVertexCount / 2) - 1;
+	*(data + i + 5) = (mVertexCount / 2) + 1;
 }

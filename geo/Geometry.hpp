@@ -13,7 +13,7 @@
 #define TEXCOORD_COUNT 2
 // #define BLENDWEIGHTS_COUNT 3
 
-#define DEFAULT_Z_VAL 0.5f
+#define DEFAULT_Z_VAL 0.1f
 // #define DEFAULT_Z_VAL 0.0f
 #define X_OFFSET 0
 #define Y_OFFSET 1

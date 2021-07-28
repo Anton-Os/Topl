@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 	glLineWidth(2.0f);
 	Timer_Ticker gameTicker;
 	
-	Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f));
+	// Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f));
 	while (renderer.renderScene(DRAW_Lines)) {
 		renderer.updateScene(&Topl::scene);
 

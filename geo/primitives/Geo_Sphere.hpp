@@ -12,17 +12,12 @@ enum SPHERE_Type {
 class Geo_SphereUV : public Geo_RenderObj {
 public:
     Geo_SphereUV(NGon3D refShape)
-    : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, 0) {
+    : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, 0){
+    // : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, refShape.ySegments * 12) { // only indexes top and bottom
         mShape3D = refShape; // copy to internal data
         sphereType = SPHERE_UV;
         fillRenderObject();
     }
-    /* Geo_SphereUV(SPHERE_Type type, NGon3D refShape)
-    : Geo_RenderObj(mShape3D.xSegments * mShape3D.ySegments + 1, 40) {
-        mShape3D = refShape; // copy to internal data
-        sphereType = type;
-        fillRenderObject();
-    } */
 
 	float getRadius() const { return mShape3D.radius; }
 private:
