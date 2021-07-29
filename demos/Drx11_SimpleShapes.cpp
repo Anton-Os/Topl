@@ -1,16 +1,15 @@
-#include "Drx11_SimpleShapes.hpp"
+#include "SimpleShapes.hpp"
+
+#include "Topl_Renderer_Drx11.hpp"
+#include "Drx11_Volumes.hpp" // shader inclusion
+#include "Drx11_Flat.hpp" // shader inclusion
 
 // Entry Point
 
 int main(int argc, char** argv) {
 	
 	Platform platform(argv[0]);
-	platform.createWindow("Simple Shapes");
-	//platform.setupMainWindow(mainWindow);
-	Platform::keyLogger.addCallback('w', buttonCallback_w);
-	Platform::keyLogger.addCallback('a', buttonCallback_a);
-	Platform::keyLogger.addCallback('s', buttonCallback_s);
-	Platform::keyLogger.addCallback('d', buttonCallback_d);
+	Main::init(&platform);
 
 	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
@@ -20,20 +19,10 @@ int main(int argc, char** argv) {
 	Flat_PixelShader fragmentShader = Flat_PixelShader(fragmentShaderSrc.c_str());
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	
 	renderer.buildScene(&Topl::scene);
 	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
 
-	Timer_Ticker gameTicker;
-	// Topl::grid.move(&Topl::scene, Eigen::Vector3f(1.0f, -100.0f, 0.0f));
-	while (renderer.renderScene(DRAW_Triangles)) {
-		Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
-		// Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
-		renderer.updateScene(&Topl::scene);
-		// Topl::scene.resolvePhysics();
-
-		platform.handleEvents();
-	}
+	Main::gameLoop(&platform, &renderer);
 
 	return 0;
 }

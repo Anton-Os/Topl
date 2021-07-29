@@ -1,15 +1,15 @@
-#include "Drx11_Planetary.hpp"
+#include "Planetary.hpp"
+
+#include "Topl_Renderer_Drx11.hpp"
+#include "Drx11_Volumes.hpp" // shader inclusion
+#include "Drx11_Flat.hpp" // shader inclusion
 
 // Entry Point
 
 int main(int argc, char** argv) {
 	
 	Platform platform(argv[0]);
-	platform.createWindow("Planetary");
-	Platform::keyLogger.addCallback('w', buttonCallback_w);
-	Platform::keyLogger.addCallback('a', buttonCallback_a);
-	Platform::keyLogger.addCallback('s', buttonCallback_s);
-	Platform::keyLogger.addCallback('d', buttonCallback_d);
+	Main::init(&platform);
 
 	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
@@ -26,12 +26,7 @@ int main(int argc, char** argv) {
 
 	Timer_Ticker gameTicker;
 
-	// Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
-	while (renderer.renderScene(DRAW_Fan)) {
-		renderer.updateScene(&Topl::scene);
-
-		platform.handleEvents();
-	}
+	Main::gameLoop(&platform, &renderer);
 
 	return 0;
 }

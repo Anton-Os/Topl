@@ -1,6 +1,7 @@
 #include "Platform.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Scene.hpp"
+#include "Topl_Renderer.hpp"
 
 #include "Geo_Construct.hpp"
 #include "primitives/Geo_Flat.hpp"
@@ -12,6 +13,7 @@
 #define MOVE_AMOUNT 0.5
 
 namespace Topl {
+	// Management Objects
 	Topl_Scene scene;
 
 	// Primitive Geometry Objects
@@ -27,12 +29,33 @@ namespace Topl {
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
 }
 
-// Shader Objects
-
-#include "GL4_Volumes.hpp"
-#include "GL4_Flat.hpp"
-
 void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
 void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
 void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
 void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+
+// Shared functions
+
+namespace Main {
+	void init(Platform* platform) {
+		platform->createWindow("Simple Shapes");
+
+		Platform::keyLogger.addCallback('w', buttonCallback_w);
+		Platform::keyLogger.addCallback('a', buttonCallback_a);
+		Platform::keyLogger.addCallback('s', buttonCallback_s);
+		Platform::keyLogger.addCallback('d', buttonCallback_d);
+	}
+
+	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
+		Timer_Ticker gameTicker;
+
+		while (renderer->renderScene(DRAW_Triangles)) {
+			Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
+			Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
+			renderer->updateScene(&Topl::scene);
+			// Topl::scene.resolvePhysics();
+
+			platform->handleEvents();
+		}
+	}
+}

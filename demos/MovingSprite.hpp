@@ -1,9 +1,12 @@
+
 #include "Platform.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Scene.hpp"
+#include "Topl_Renderer.hpp"
 
 #include "Geo_Construct.hpp"
 #include "composites/Humanoid.hpp"
+
 
 #define MOVE_AMOUNT 16.0
 
@@ -25,10 +28,32 @@ namespace Topl {
 	Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.25f);
 }
 
-#include "GL4_Basic.hpp" // Shader inclusion
-
 void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
 void buttonCallback_a(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
 void buttonCallback_s(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
 void buttonCallback_d(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 void buttonCallback_r(void) { Topl::humanoid.rotate(&Topl::scene, Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
+
+// Shared functions
+
+namespace Main {
+	void init(Platform* platform) {
+		platform->createWindow("Moving Sprite");
+
+		Platform::keyLogger.addCallback('w', buttonCallback_w);
+		Platform::keyLogger.addCallback('a', buttonCallback_a);
+		Platform::keyLogger.addCallback('s', buttonCallback_s);
+		Platform::keyLogger.addCallback('d', buttonCallback_d);
+		Platform::keyLogger.addCallback('r', buttonCallback_r);
+	}
+
+	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
+
+		while (renderer->renderScene(DRAW_Triangles)) {
+			renderer->updateScene(&Topl::scene);
+			Topl::scene.resolvePhysics();
+
+			platform->handleEvents();
+		}
+	}
+}

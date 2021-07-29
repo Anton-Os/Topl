@@ -1,15 +1,15 @@
-#include "GL4_Planetary.hpp"
+#include "Planetary.hpp"
+
+#include "Topl_Renderer_GL4.hpp"
+#include "GL4_Volumes.hpp" // shader inclusion
+#include "GL4_Flat.hpp" // shader inclusion
 
 // Entry Point
 
 int main(int argc, char** argv) {
 
 	Platform platform(argv[0]);
-	platform.createWindow("Planetary");
-	Platform::keyLogger.addCallback('w', buttonCallback_w);
-	Platform::keyLogger.addCallback('a', buttonCallback_a);
-	Platform::keyLogger.addCallback('s', buttonCallback_s);
-	Platform::keyLogger.addCallback('d', buttonCallback_d);
+	Main::init(&platform);
 
 	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
 
@@ -28,12 +28,7 @@ int main(int argc, char** argv) {
 	glLineWidth(2.0f);
 	Timer_Ticker gameTicker;
 	
-	// Topl::sphere.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f));
-	while (renderer.renderScene(DRAW_Lines)) {
-		renderer.updateScene(&Topl::scene);
-
-		platform.handleEvents();
-	}
+	Main::gameLoop(&platform, &renderer);
 
 	return 0;
 }

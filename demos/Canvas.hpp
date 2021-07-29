@@ -12,5 +12,5 @@ namespace Topl {
     Geo_Component canvasGeo  = Geo_Component((Geo_RenderObj*)&canvas);
 }
 
-void init(Platform* platform);
-void gameLoop(const Topl_Renderer* renderer, Topl_Scene* scene);
+/* void init(Platform* platform);
+void gameLoop(const Topl_Renderer* renderer, Topl_Scene* scene); */

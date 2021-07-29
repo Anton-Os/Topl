@@ -123,7 +123,7 @@ if(WIN32)
 
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_Engine PUBLIC core geo)
+    target_include_directories(Drx11_Engine PUBLIC core geo shaders/include)
     target_include_directories(Drx11_Engine PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -169,7 +169,7 @@ add_library(GL4_Engine
 
     core/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_Engine PUBLIC core geo)
+target_include_directories(GL4_Engine PUBLIC core geo shaders/include)
 target_include_directories(GL4_Engine PUBLIC
     # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3

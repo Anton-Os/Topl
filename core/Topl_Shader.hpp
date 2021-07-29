@@ -1,3 +1,5 @@
+#ifndef TOPL_SHADER_H
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -91,3 +93,6 @@ private:
     enum SHDR_Type mShaderType;
     const char* mShaderSrcPath;
 };
+
+#define TOPL_SHADER_H
+#endif

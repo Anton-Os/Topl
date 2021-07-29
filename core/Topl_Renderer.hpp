@@ -1,4 +1,4 @@
-// #include <cstdio>
+#ifndef TOPL_RENDERER_H
 
 #include "native_os_def.h"
 
@@ -133,3 +133,6 @@ private:
     virtual void update(const Topl_Scene* scene) = 0;
 	virtual void render(void) = 0;
 };
+
+#define TOPL_RENDERER_H
+#endif
