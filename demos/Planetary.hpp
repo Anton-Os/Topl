@@ -10,9 +10,10 @@
 namespace Topl {
 	Topl_Scene scene;
 
-	NGon3D ngon = { 0.2, 20, 30 };
-	Geo_SphereUV sphereGeo(ngon);
-	Geo_Component sphere((const Geo_RenderObj*)&sphereGeo);
+	// NGon3D ngon = { 0.3, 6, 12 };
+	NGon3D ngon = { 0.1, 7, 7 };
+	Geo_SphereUV sphere(ngon);
+	Geo_Component sphereGeo((const Geo_RenderObj*)&sphere);
 }
 
 void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -33,7 +34,10 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
-		while (renderer->renderScene(DRAW_Lines)) {
+		Timer_Ticker gameTicker;
+
+		while (renderer->renderScene(DRAW_Triangles)) {
+			Topl::sphereGeo.updateRot(Eigen::Vector2f(0.01f, 0.0f) * gameTicker.getAbsSecs());
 			renderer->updateScene(&Topl::scene);
 
 			platform->handleEvents();

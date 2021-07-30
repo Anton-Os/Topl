@@ -5,7 +5,7 @@ void Geo_SphereUV::genVertices(Eigen::Vector3f* data){
     *(data + 0) = topVertex; // first vertex is the top of the sphere
 
 	unsigned v = 1;
-	for(unsigned stack = 0; stack < mShape3D.xSegments; stack++){
+	for(unsigned stack = 0; stack < mShape3D.xSegments - 1; stack++){
 		double phi = TOPL_PI * double(stack + 1) / double(mShape3D.xSegments);
     	for (unsigned slice = 0; slice < mShape3D.ySegments; slice++) {
 			double theta = 2.0 * TOPL_PI * double(slice) / double(mShape3D.ySegments);
@@ -33,17 +33,35 @@ void Geo_SphereUV::genTexCoords(Eigen::Vector2f* data) {
 
 void Geo_SphereUV::genIndices(unsigned* data){
 	// special cases, top and bottom vertices
-	/* unsigned v = 1;
-	for(unsigned i = 0; i < mShape3D.ySegments; i += 6){
-		// Top Vertices
+
+	unsigned v = 1;
+	for (unsigned i = 0; i < mShape3D.ySegments * 6; i += 6) {
+		// Top vertices
 		*(data + i + 0) = 0; // top vertex
 		*(data + i + 1) = v;
-		*(data + i + 2) = v + 1;
+		*(data + i + 2) = (v % mShape3D.ySegments) + 1;
 
 		// Bottom Vertices
 		*(data + i + 3) = mVertexCount - 1;
-		*(data + i + 4) = mVertexCount - v - 1;
-		*(data + i + 5) = mVertexCount - v - 2;
-	} */
+		*(data + i + 4) = mVertexCount - (v + 1);
+		*(data + i + 5) = (i < (mShape3D.ySegments * 6) - 6) ? mVertexCount - (v + 2) : mVertexCount - 2; // special case last iteration
+
+		v++;
+	}
 	return;
+
+	for (unsigned stack = 0; stack < mShape3D.xSegments - 2; stack++) {
+		for (unsigned slice = 0; slice < mShape3D.ySegments; slice++) {
+
+			/* *(data + i + 0) = 0;
+			*(data + i + 1) = 0;
+			*(data + i + 2) = 0;
+
+			*(data + i + 3) = 0;
+			*(data + i + 4) = 0;
+			*(data + i + 5) = 0;
+
+			i += 6; */
+		}
+	}
 }

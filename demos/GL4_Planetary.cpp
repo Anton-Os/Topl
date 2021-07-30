@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	
-	Topl::scene.addGeometry("sphere", &Topl::sphere);
+	Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 	renderer.buildScene(&Topl::scene);
 	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
 
