@@ -22,7 +22,7 @@ public:
 	void updatePos(Eigen::Vector3f vec){ mRelWorldPos += vec; }
 	void updateRot(Eigen::Vector2f angles) { mRotAngles += angles; } // TODO: Check for 2 pi boundaries
 
-	unsigned getId(){ return mId; }
+	unsigned getId() const { return mId; }
 	std::string getName() const { return mName; }
 	vec3f_cptr getPos() const { return &mRelWorldPos; }
 	vec2f_cptr getAngles() const { return &mRotAngles; }

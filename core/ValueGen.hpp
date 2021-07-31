@@ -7,6 +7,11 @@
 
 #include <Eigen/Dense>
 
+enum PROJECTION_Type {
+    PROJECTION_Perspective,
+    PROJECTION_Ortho
+};
+
 struct SpatialBounds3D { // Used in Matrix calculations
     SpatialBounds3D(){}
     SpatialBounds3D(float scaleFactor){

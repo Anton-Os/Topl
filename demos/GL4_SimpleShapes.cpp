@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
+	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	glPointSize(5.0f);
 	glLineWidth(3.0f);

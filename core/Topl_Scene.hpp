@@ -1,5 +1,5 @@
 // More Complex types
-#ifndef TOPL_SCENE_MANAGER_H
+#ifndef TOPL_SCENE_H
 
 #include <vector>
 #include <map>
@@ -21,10 +21,9 @@ public:
 	Topl_Camera() {
 		projMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
 	}
-	Topl_Camera(bool isPerspective, SpatialBounds3D bounds){
-		(isPerspective)
-			? projMatrix = ValueGen::genPerspectiveMatrix(bounds)
-			: projMatrix = ValueGen::genOrthoMatrix(bounds);
+	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
+		if (projType == PROJECTION_Perspective) projMatrix = ValueGen::genPerspectiveMatrix(bounds);
+		else if(projType == PROJECTION_Ortho) projMatrix = ValueGen::genOrthoMatrix(bounds);
 	}
 	void movePos(const Eigen::Vector3f& moveVec){ pos += moveVec; }
 	vec3f_cptr getPos() const { return &pos; }
@@ -59,7 +58,7 @@ public:
 	}
 	~Topl_Scene() {}
 
-	void setCamera(bool isPerspective, SpatialBounds3D bounds){ mCamera = Topl_Camera(isPerspective, bounds); }
+	void setCamera(enum PROJECTION_Type type, SpatialBounds3D bounds){ mCamera = Topl_Camera(type, bounds); }
 	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }
 	topl_camera_cptr getCamera() const { return &mCamera; }
 	// void addLight()
@@ -93,10 +92,11 @@ private:
 	std::map<Geo_Component*, Phys_Properties*> mGeoPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> mLinkedItems; // Stores geometry connector data
 	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
+	// const Platform* mPlatform_cptr; // Provides useful system information and parameters
 #ifdef RASTERON_H
 	std::map<Geo_Component*, const Rasteron_Image*> mGeoTex_map; // Associates geometry to a single texture structure
 #endif
 };
 
-#define TOPL_SCENE_MANAGER_H
+#define TOPL_SCENE_H
 #endif

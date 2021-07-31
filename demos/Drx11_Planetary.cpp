@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	
 	Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(false, SpatialBounds3D(3.0f));
+	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	Timer_Ticker gameTicker;
 

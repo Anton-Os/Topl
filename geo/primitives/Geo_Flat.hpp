@@ -37,3 +37,25 @@ struct Geo_FlatCircle : public Geo_Flat {
     Geo_FlatCircle(float radius) : Geo_Flat({ radius, DEFAULT_CIRCLE_SEGS }){}
 };
 
+// Extended Types
+
+#define DEFAULT_PLANE_LENGTH 10.00 // should stretch as far as possible
+
+struct Geo_Plane : public Geo_FlatSquare {
+	/* Geo_Plane(Eigen::Vector3f a1) // Orthogonal plane constructor
+	: Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {
+		axis1 = a1.norm();
+		axis2 = Eigen::Vector3f(axis1.z(), axis1.y(), axis1.x());
+	} */
+	Geo_Plane(Eigen::Vector3f a1, Eigen::Vector3f a2) // Arbitrary plane constructor
+		: Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {
+		axis1 = a1; 
+		axis1.normalize();
+		axis2 = a2;
+		axis2.normalize();
+	}
+
+	Eigen::Vector3f axis1;
+	Eigen::Vector3f axis2;
+};
+

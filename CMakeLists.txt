@@ -153,6 +153,9 @@ if(WIN32)
 
     add_executable(Drx11_Planetary demos/Drx11_Planetary.cpp)
 	target_link_libraries(Drx11_Planetary PRIVATE Drx11_Engine)
+    
+    add_executable(Drx11_Canvas demos/Drx11_Canvas.cpp)
+	target_link_libraries(Drx11_Canvas PRIVATE Drx11_Engine)
 
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
@@ -203,6 +206,9 @@ target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
 
 add_executable(GL4_Planetary demos/GL4_Planetary.cpp)
 target_link_libraries(GL4_Planetary PRIVATE GL4_Engine)
+
+add_executable(GL4_Canvas demos/GL4_Canvas.cpp)
+target_link_libraries(GL4_Canvas PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets

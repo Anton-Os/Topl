@@ -9,7 +9,7 @@
 #include <Eigen/Dense> // Examine documentation
 
 #define POSITION_COUNT 3
-#define NORMAL_COUNT 3
+#define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
 // #define BLENDWEIGHTS_COUNT 3
 
@@ -29,34 +29,38 @@ typedef const Eigen::Matrix3f* const mat3f_cptr;
 typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
-enum AXIS_Target{
-    AXIS_X,
-    AXIS_Y,
-    AXIS_Z
-};
-
-typedef float (*vTransformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
-
-// Common transform callbacks go here
-// float stretchTransform(float input, double mod){ return input * mod; }
-// float offsetTransform(float input, double mod){ return input + mod; }
-
-struct Geo_VertexData { // TODO: Fix this class
-	Geo_VertexData(){} // Empty constructor
-
-	Geo_VertexData(Eigen::Vector3f p){ // Position data constructor
-		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
+struct Geo_VertexData {
+	Geo_VertexData(Eigen::Vector3f pos){ // Position data constructor
+		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
 		texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
 	}
-	Geo_VertexData(Eigen::Vector3f p, Eigen::Vector2f t){ // Extended constructor
-		position[X_OFFSET] = p[X_OFFSET]; position[Y_OFFSET] = p[Y_OFFSET]; position[Z_OFFSET] = p[Z_OFFSET];
-		texCoord[U_OFFSET] = t[U_OFFSET]; texCoord[V_OFFSET] = t[V_OFFSET];
+	Geo_VertexData(Eigen::Vector3f pos, Eigen::Vector2f texc){ // Extended constructor
+		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
+		texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
 	}
 
 	float position[POSITION_COUNT];
 	float texCoord[TEXCOORD_COUNT];
-	// float normal[NORMAL_COUNT]; // Implement
-	// float blendWeights[BLENDWEIGHTS_COUNT]; // Implement
+	// float normals[NORMALS_COUNT]; // might need to implement
+};
+
+enum VERTEX_Tag {
+	VERTEX_Edge = 0,
+	VERTEX_Inner = 1
+	// Add more tags!
+};
+
+struct Geo_TaggedVertexData : public Geo_VertexData {
+	Geo_TaggedVertexData(VERTEX_Tag t, Eigen::Vector3f pos)
+	: Geo_VertexData(pos){ // Position data constructor
+		tag = t;
+	}
+	Geo_TaggedVertexData(VERTEX_Tag t, Eigen::Vector3f pos, Eigen::Vector2f texc)
+	: Geo_VertexData(pos, texc){ // Extended constructor
+		tag = t;
+	}
+
+	VERTEX_Tag tag;
 };
 
 typedef const Geo_VertexData* const perVertex_cptr; // Safe const pointer type
@@ -72,11 +76,18 @@ struct NGon3D {
 	unsigned short ySegments;
 };
 
+enum AXIS_Target{
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z
+};
+
+typedef float (*vTransformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
+
+
 class Geo_RenderObj {
 public:
-	Geo_RenderObj(){}
-	// Vertex only constructor
-	Geo_RenderObj(unsigned v){
+	Geo_RenderObj(unsigned v){ // Vertex only constructor
 		mVertexCount = v;
 		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
 
@@ -84,8 +95,7 @@ public:
 		mNormalsData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
  		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
 	}
-	// Vertex and Indices constructor
-    Geo_RenderObj(unsigned v, unsigned i){
+    Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
 		mVertexCount = v;
 		mIndexCount = i;
 		if((mVertexCount - 1) % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length

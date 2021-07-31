@@ -10,12 +10,12 @@ struct Platform {
     }
 
     void createWindow(const char* windowName);
-    // void setupMainWindow(NATIVE_WINDOW window); // For displaying the target Window
     void handleEvents(); // handles platform specific events
-	bool getCursorCoords(float* xPos, float* yPos); // returns false if not inside window
 
     // static Timer_Ticker mTicker;
     HWND getNativeWindow(){ return mContext.window; }
+    bool getCursorCoords(float* xPos, float* yPos); // returns false if not inside window
+    
     static Input_KeyLogger keyLogger;
     static Input_MouseLogger mouseLogger;
 private:
