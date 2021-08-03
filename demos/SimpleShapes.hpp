@@ -22,7 +22,7 @@ namespace Topl {
 	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
 	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
-	Geo_Chain_Properties chainProps = Geo_Chain_Properties(0.45f); // argument is the distance apart
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
 	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
 	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(1, 0.5f));
@@ -49,11 +49,14 @@ namespace Main {
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		Timer_Ticker gameTicker;
 
-		while (renderer->renderScene(DRAW_Triangles)) {
+		while (1) {
 			Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
 			Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
-			renderer->updateScene(&Topl::scene);
 			// Topl::scene.resolvePhysics();
+
+			renderer->clearView();
+			renderer->updateScene(&Topl::scene);
+			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
 		}

@@ -11,12 +11,10 @@
 class Topl_DataAlloc_GL4 {
 public:
 	Topl_DataAlloc_GL4() {}
-
 	virtual GLuint getAvailable() = 0;
 protected:
 	bool mIsInit = false;
 	virtual void init() = 0;
-	// slots and slotIndex have to probably remain separate
 };
 
 // Buffer Object Allocation Helpers
@@ -34,7 +32,6 @@ struct Buffer_GL4 : public Buffer {
 class Topl_BufferAlloc_GL4 : public Topl_DataAlloc_GL4 { // derived class
 public:
 	Topl_BufferAlloc_GL4(){}
-
 	GLuint getAvailable() override;
 private:
 	void init() override { glGenBuffers(GL4_BUFFER_MAX, &slots[0]); mIsInit = true; }
@@ -56,7 +53,6 @@ struct VertexArray_GL4 : public RenderableTarget {
 class Topl_VertexArrayAlloc_GL4 : public Topl_DataAlloc_GL4 { // derived class
 public:
 	Topl_VertexArrayAlloc_GL4(){}
-
 	GLuint getAvailable() override;
 private:
 	void init() override { glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &slots[0]); mIsInit = true; }
@@ -84,7 +80,7 @@ public:
 private:
 	void init() override { glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &slots[0]); mIsInit = true;}
 
-	GLenum allocFrmt;
+	// GLenum allocFrmt;
 	GLuint slots[GL4_TEXTURE_BINDINGS_MAX];
 	unsigned slotIndex = 0;
 };
@@ -93,8 +89,8 @@ struct Topl_Pipeline_GL4 {
 	GLuint vertexDataLayouts[GL4_VERTEX_ARRAY_MAX];
 	unsigned layoutIndex = 0;
 
-	GLuint vShader; // Vertex Shader // Make to vector
-	GLuint fShader; // Fragment Shader // Make to vector
+	GLuint vShader; // Vertex Shader
+	GLuint fShader; // Fragment Shader
 	GLuint shaderProg;
 };
 
@@ -103,6 +99,7 @@ public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window){ init(window); }
 	~Topl_Renderer_GL4();
 
+	void clearView() override;
 	void buildScene(const Topl_Scene* scene) override;
 
 #ifdef RASTERON_H
@@ -116,13 +113,13 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
-  	Topl_Pipeline_GL4 m_pipeline;
+  	Topl_Pipeline_GL4 _pipeline;
 
-	Topl_BufferAlloc_GL4 m_bufferAlloc; // Buffer allocator object
-	std::vector<Buffer_GL4> mBuffers;
-	Topl_VertexArrayAlloc_GL4 m_vertexArrayAlloc; // Vertex Array allocattor object
-	std::vector<VertexArray_GL4> mVAOs;
+	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object
+	std::vector<Buffer_GL4> _buffers;
+	Topl_VertexArrayAlloc_GL4 _vertexArrayAlloc; // Vertex Array allocator object
+	std::vector<VertexArray_GL4> _VAOs; // Vertex Array Objects
 
-	Topl_TextureBindingAlloc_GL4 m_textureBindingsAlloc;
-	std::vector<Texture_GL4> mTextures;
+	Topl_TextureBindingAlloc_GL4 _textureBindingsAlloc; // Texture bindings allocator object
+	std::vector<Texture_GL4> _textures;
 };

@@ -14,7 +14,6 @@
 
 typedef std::pair<std::string, Geo_Component*> geoName_pair;
 
-// TODO: Node data must be changed to geo data
 class Geo_Construct {
 public:
     // Fixed items constructor
@@ -44,7 +43,7 @@ public:
     }
 
     // Should be called in the derived class constructor body
-    void fillscene(Topl_Scene* scene){
+    void fillScene(Topl_Scene* scene){
         fill(scene);
 
         // Code that fills in scene
@@ -68,22 +67,31 @@ public:
 
 protected:
 	unsigned getGeoCount() const { return mGeoCount; }
-    virtual void fill(Topl_Scene* scene) = 0; // Job is to fill the mNamedGeos structure
+    virtual void fill(Topl_Scene* scene) = 0; // job is to fill the mNamedGeos structure
     Geo_Component* getNextGeo(){
         if(mCurrentGeoOffset <= mGeoCount){
             mCurrentGeoOffset++;   
-            return *(mGeoData + mCurrentGeoOffset - 1); // To increment offset above in one line
+            return *(mGeoData + mCurrentGeoOffset - 1); // to increment offset above in one line
         } else return nullptr;
     }
 
-    unsigned mUpdateCount = FIRST_UPDATE_NUM; // Probably needs to be private and a getter method
+    unsigned _updateCount = FIRST_UPDATE_NUM; // probably needs to be private and a getter method
 	std::vector<geoName_pair> mNamedGeos;
 private:
     std::string mPrefix;
 	unsigned mGeoCount = 0;
     unsigned mCurrentGeoOffset = 0;
 	Geo_Component** mGeoData = nullptr;
-}; // Needs work, could use more abstraction
+}; // needs work! could use more abstraction
+
+struct Geo_DynamicSet { // A container for multiple dynamic objects
+    Geo_DynamicSet(unsigned setCount){
+        phys.resize(setCount);
+    }
+
+    std::vector<Phys_Properties> phys;
+    std::vector<Phys_Connector> links;
+};
 
 #define GEO_CONSTRUCT_H
 #endif

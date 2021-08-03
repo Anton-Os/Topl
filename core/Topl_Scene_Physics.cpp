@@ -1,8 +1,13 @@
 #include "Topl_Scene.hpp"
 
-static void print_ObjNotFound(const std::string& objTypeStr, const std::string& name) {
-	printf("Could not find %s object: \n", objTypeStr.c_str());
+static void error_notFound(const std::string& objTypeStr, const std::string& name) {
+	printf("ERROR! Could not find %s object: \n", objTypeStr.c_str());
 	puts(name.c_str());
+	putchar('\n');
+}
+
+static void error_forcesExcess() {
+	puts("ERROR! Too many forces on one object!");
 	putchar('\n');
 }
 
@@ -16,32 +21,23 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Properties* pProp) {
 			return;
 		}
 
-	print_ObjNotFound("geometry", name); // Error
+	error_notFound("geometry", name); // Error
 	return;
 }
 
-void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& vec) {
+void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceVec) {
 	// Find matching geometry component
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if (name == (*currentGeo)->getName()) {
-
-			vec3f_cptr targetPos = (*currentGeo)->getPos();
-
-			if (mGeoPhys_map.find(*currentGeo) == mGeoPhys_map.end())
-				return print_ObjNotFound("physics", name); // Error
+			if (mGeoPhys_map.find(*currentGeo) == mGeoPhys_map.end()) return error_notFound("physics", name); // Error
 
 			Phys_Properties* targetPhys = mGeoPhys_map.find(*currentGeo)->second;
+			vec3f_cptr targetPos = (*currentGeo)->getPos();
 
-			if (targetPhys->actingForceCount < MAX_PHYS_FORCES) {
-				*(targetPhys->forces + targetPhys->actingForceCount) = vec;
-				targetPhys->actingForceCount++; // Moves to the next available force space
-				return;
-			}
-			else
-				return; // Error! Too many forces
+			if(!targetPhys->addForce(forceVec)) return error_forcesExcess(); // Error
 		}
 
-	print_ObjNotFound("geometry or physics", name); // Error
+	error_notFound("geometry or physics", name); // Error
 	return;
 }
 
@@ -51,13 +47,13 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if (name1 == (*currentGeo)->getName()) link1 = *currentGeo;
 
-	if (link1 == nullptr) return print_ObjNotFound("link geometry", name1); // Error
+	if (link1 == nullptr) return error_notFound("link geometry", name1); // Error
 
 	const Geo_Component* link2 = nullptr;
 	for (std::vector<Geo_Component*>::const_iterator currentGeo = mNamedGeos.cbegin(); currentGeo < mNamedGeos.cend(); currentGeo++)
 		if (name2 == (*currentGeo)->getName()) link2 = *currentGeo;
 
-	if (link2 == nullptr) return print_ObjNotFound("link geometry", name2);
+	if (link2 == nullptr) return error_notFound("link geometry", name2);
 
 
 	vec3f_cptr pos1 = link1->getPos();
@@ -66,10 +62,8 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 	// Compute the length of the distance between both vectors
 	Eigen::Vector3f diffPos = *pos1 - *pos2;
 	connector->length = sqrt(pow(diffPos.x(), 2) + pow(diffPos.y(), 2) + pow(diffPos.z(), 2));
-
 	// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
 	connector->restLength = connector->length;
-
 	// Compute the center point which needs to be updated in the resolvePhysics() method
 	connector->centerPoint = (*pos1 + *pos2) / 2;
 

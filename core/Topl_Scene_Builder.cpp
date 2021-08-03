@@ -1,6 +1,6 @@
 #include "Topl_Scene.hpp"
 
-static void print_ObjNotFound(const std::string& objTypeStr, const std::string& name) {
+static void error_notFound(const std::string& objTypeStr, const std::string& name) {
 	printf("Could not find %s object: \n", objTypeStr.c_str());
 	puts(name.c_str());
 	putchar('\n');

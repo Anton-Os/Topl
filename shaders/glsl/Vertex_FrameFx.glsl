@@ -9,6 +9,7 @@ layout(packed) uniform Block {
 layout(packed) uniform SceneBlock {
 	uvec2 screenRes;
 	uvec2 cursorPos;
+	uint renderMode; // switches modes to implement different drawing functions
 };
 
 layout(location = 0) in vec3 pos;

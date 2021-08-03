@@ -79,31 +79,32 @@ public:
 
     // Basic pipeline creation
     void setPipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader){
-        mShaders.clear(); // Reset the pipeline values
+        _shaders.clear(); // Reset the pipeline values
         if(vertexShader->getType() != SHDR_Vertex) return; // Error
         if(fragShader->getType() != SHDR_Fragment) return; // Error
 
-        mShaders.push_back(vertexShader);
-        mShaders.push_back(fragShader);
+        _shaders.push_back(vertexShader);
+        _shaders.push_back(fragShader);
         pipeline(vertexShader, fragShader);
     }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
     bool updateScene(const Topl_Scene* scene){
-        if(!mPipelineReady) puts("Pipeline not set for update call");
-        if(!mSceneReady) puts("Scene not built for update call!");
-        if(!mPipelineReady || !mSceneReady) return false;
+        if(!_pipelineReady) puts("Pipeline not set for update call");
+        if(!_isSceneReady) puts("Scene not built for update call!");
+        if(!_pipelineReady || !_isSceneReady) return false;
 
         update(scene);
     }
     bool renderScene(enum DRAW_Type drawType){
-        if(!mPipelineReady) puts("Pipeline not set for draw call!");
-        if(!mSceneReady) puts("Scene not built for draw call!");
-        if(!mPipelineReady || !mSceneReady) return false; // Rendering failed
+        if(!_pipelineReady) puts("Pipeline not set for draw call!");
+        if(!_isSceneReady) puts("Scene not built for draw call!");
+        if(!_pipelineReady || !_isSceneReady) return false; // Rendering failed
 
-        mDrawType = drawType;
+        _drawType = drawType;
         render(); // Call virtual method
 		return true; // Randering success
     }
+    virtual void clearView()  = 0;
     virtual void buildScene(const Topl_Scene* scene) = 0;
 	
 	NATIVE_PLATFORM_CONTEXT mNativeContext; // Native Platform Element required to create a renderer
@@ -116,16 +117,16 @@ public:
 
 protected:
     topl_shader_cptr findShader(SHDR_Type type){
-        for(std::vector<topl_shader_cptr>::iterator currentShader = mShaders.begin(); currentShader < mShaders.end(); currentShader++)
+        for(std::vector<topl_shader_cptr>::iterator currentShader = _shaders.begin(); currentShader < _shaders.end(); currentShader++)
             if((*currentShader)->getType() == type) return *currentShader;
         return nullptr; // If shader is not found return null pointer
     }
-    enum SHDR_Type mPrimaryShaderType = SHDR_Vertex; // Shader that contains relevant uniform blocks and associated virtual functions
-    std::vector<topl_shader_cptr> mShaders;
-    enum DRAW_Type mDrawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
-    bool mPipelineReady = false; // Switch to true when graphics pipeline is ready
-    bool mSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned mMainRenderIDs = 1; // Indicator for number of drawable graphics objects
+    enum SHDR_Type _primaryShaderType = SHDR_Vertex; // Shader that contains relevant uniform blocks and associated virtual functions
+    std::vector<topl_shader_cptr> _shaders;
+    enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
+    bool _pipelineReady = false; // Switch to true when graphics pipeline is ready
+    bool _isSceneReady = false; // Switch to true when elements of the scene are built
+	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;

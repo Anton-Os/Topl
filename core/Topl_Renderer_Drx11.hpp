@@ -41,6 +41,7 @@ public:
 	Topl_Renderer_Drx11(HWND hwnd) { init(hwnd); }
 	~Topl_Renderer_Drx11();
 
+	void clearView() override;
 	void buildScene(const Topl_Scene* scene) override;
 
 #ifdef RASTERON_H
@@ -54,16 +55,16 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
-	Topl_Pipeline_Drx11 m_pipeline;
+	Topl_Pipeline_Drx11 _pipeline;
 	ID3D11Buffer* mSceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
 	std::vector<Buffer_Drx11> mBuffers;
 	std::vector<Texture_Drx11> mTextures;
 
-	IDXGISwapChain* m_swapChain;
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_deviceCtx;
-	ID3D11RenderTargetView* m_rtv;
-	ID3D11ShaderResourceView* mResourceView;
-	ID3D11BlendState* mBlendState;
-	ID3D11RasterizerState* mRasterizerState;
+	IDXGISwapChain* _swapChain;
+	ID3D11Device* _device;
+	ID3D11DeviceContext* _deviceCtx;
+	ID3D11RenderTargetView* _rtv;
+	ID3D11ShaderResourceView* _resourceView;
+	ID3D11BlendState* _blendState;
+	ID3D11RasterizerState* _rasterizerState;
 };

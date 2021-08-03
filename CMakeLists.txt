@@ -106,7 +106,7 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Flat.cpp
     geo/primitives/Geo_Conic.cpp
     geo/primitives/Geo_Extruded.cpp
-    geo/primitives/Geo_Model3D.cpp
+    geo/primitives/Geo_ModelNode.cpp
     geo/primitives/Geo_Sphere.cpp
 )
 
@@ -199,6 +199,7 @@ target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 add_executable(GL4_SimpleShapes
 	geo/composites/Chain.cpp
     geo/composites/Grid.cpp
+    geo/composites/Web.cpp
 
     demos/GL4_SimpleShapes.cpp
 )
@@ -213,8 +214,8 @@ target_link_libraries(GL4_Canvas PRIVATE GL4_Engine)
 
 # Copying and managing implemented here with custom targets
 
-file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
-file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.glsl)
+file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/hlsl/*.hlsl)
+file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/glsl/*.glsl)
 add_custom_target(ShaderCopy
                   SOURCES ${drx11_Shaders} ${gl4_Shaders})
                   # Add GLSL shaders too
@@ -237,10 +238,10 @@ if(WIN32)
   add_dependencies(ShaderCopy Drx11_Engine)
 endif()
 
-file(GLOB res_images
-    ${CMAKE_SOURCE_DIR}/res/images/*.png # Rasteron Supported
-    ${CMAKE_SOURCE_DIR}/res/images/*.tiff # Rasteron Supported
-    ${CMAKE_SOURCE_DIR}/res/images/*.bmp # Rasteron Supported
+file(GLOB assets_images
+    ${CMAKE_SOURCE_DIR}/assets/images/*.png # Rasteron Supported
+    ${CMAKE_SOURCE_DIR}/assets/images/*.tiff # Rasteron Supported
+    ${CMAKE_SOURCE_DIR}/assets/images/*.bmp # Rasteron Supported
 )
 
-file(COPY ${res_images} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/") # Copies all Image Resources
+file(COPY ${assets_images} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/") # Copies all Image Resources

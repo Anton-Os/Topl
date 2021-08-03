@@ -25,11 +25,12 @@ namespace Main {
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		float mouseX, mouseY;
 
-		while (renderer->renderScene(DRAW_Triangles)) {
+		while (1) {
+			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
+			renderer->renderScene(DRAW_Triangles);
 
             bool isInWindowBounds = platform->getCursorCoords(&mouseX, &mouseY);
-            // add mouse processing logic
 			platform->handleEvents();
 		}
 	}

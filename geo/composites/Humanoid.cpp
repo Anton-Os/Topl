@@ -110,6 +110,6 @@ void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for no
 }
 
 void Geo_Humanoid::updateScene(Topl_Scene* scene) {
-	mUpdateCount++;
+	_updateCount++;
     return;
 }

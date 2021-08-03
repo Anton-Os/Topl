@@ -17,7 +17,7 @@ struct FrameFx_VertexShader : public Topl_Shader {
 
 		const uint8_t* renderId_bptr = reinterpret_cast<const uint8_t*>(&renderId);
 
-		ValueGen::appendDataToBytes(renderId_bptr, sizeof(unsigned), 0, bytes);
+		ValueGen::appendDataToBytes(renderId_bptr, sizeof(unsigned), 3 * sizeof(unsigned), bytes);
 		return true;
 	}
 
@@ -25,6 +25,7 @@ struct FrameFx_VertexShader : public Topl_Shader {
 		const Eigen::Vector2i screenRes = Eigen::Vector2i(SCREEN_RES_X, SCREEN_RES_Y);
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
+		// TODO: add support for cursorPos and renderMode!
 
 		ValueGen::appendDataToBytes(screenRes_bptr, screenRes.size() * sizeof(int), 2 * sizeof(int), bytes);
 		return true;

@@ -35,7 +35,8 @@ void Geo_SphereUV::genIndices(unsigned* data){
 	// special cases, top and bottom vertices
 
 	unsigned v = 1;
-	for (unsigned i = 0; i < mShape3D.ySegments * 6; i += 6) {
+	unsigned i = 0;
+	for (i = 0; i < mShape3D.ySegments * 6; i += 6) {
 		// Top vertices
 		*(data + i + 0) = 0; // top vertex
 		*(data + i + 1) = v;

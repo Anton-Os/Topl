@@ -1,32 +1,30 @@
 #include "Geo_Construct.hpp"
 
 struct Geo_Chain_Properties {
-    Geo_Chain_Properties(){}
-	Geo_Chain_Properties(float d) { 
-        distance = d;
-        // TODO: Add more properties
-    }
-	float distance = 0.1f;
+	Geo_Chain_Properties() { directionVec = Eigen::Vector3f(0.1f, 0.0f, 0.0f); }
+    Geo_Chain_Properties(Eigen::Vector3f d) { directionVec = d; }
+    
+    Eigen::Vector3f directionVec;
 };
 
-class Geo_Chain : public Geo_Construct {
+class Geo_Chain : public Geo_Construct, public Geo_DynamicSet {
 public:
     Geo_Chain(
         const std::string& prefix, 
         Topl_Scene* scene, 
-        const Geo_Component* geoLink, 
-        const Geo_Chain_Properties* properties,
+        const Geo_Component* geo, 
+        const Geo_Chain_Properties* props,
         unsigned linkCount)
-    : Geo_Construct(prefix, scene, geoLink, linkCount){
-		chain_prop = *properties;
+    : Geo_Construct(prefix, scene, geo, linkCount),
+    Geo_DynamicSet(linkCount){
+		chain_props = *props;
         
-        fillscene(scene);
+        fillScene(scene);
     }
 
     void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
 
-    std::vector<Phys_Connector> connectors;
-    Geo_Chain_Properties chain_prop;
+    Geo_Chain_Properties chain_props;
 };

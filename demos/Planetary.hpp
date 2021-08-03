@@ -36,9 +36,12 @@ namespace Main {
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
 		Timer_Ticker gameTicker;
 
-		while (renderer->renderScene(DRAW_Triangles)) {
+		while (1) {
 			Topl::sphereGeo.updateRot(Eigen::Vector2f(0.01f, 0.0f) * gameTicker.getAbsSecs());
+
+			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
+			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
 		}

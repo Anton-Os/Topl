@@ -3,21 +3,23 @@
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
+// TODO: Make this a derived class of Web.hpp !!!
+
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Construct { // Consists of sprites
 public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
-		std::pair<const char*, Eigen::Vector3f> initProps[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
+		std::pair<const char*, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
 		float scaleFactor )
 		
 		: Geo_SpriteTable({
-			initProps[HUMANOID_Head].first,
-			initProps[HUMANOID_LeftArm].first,
-			initProps[HUMANOID_RightArm].first,
-			initProps[HUMANOID_Body].first,
-			initProps[HUMANOID_LeftLeg].first,
-			initProps[HUMANOID_RightLeg].first
+			props[HUMANOID_Head].first,
+			props[HUMANOID_LeftArm].first,
+			props[HUMANOID_RightArm].first,
+			props[HUMANOID_Body].first,
+			props[HUMANOID_LeftLeg].first,
+			props[HUMANOID_RightLeg].first
 			}, scaleFactor
 		),
 		Geo_Construct(prefix, scene, {
@@ -29,14 +31,14 @@ public:
 			(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
 		) {
 
-		headOffset = initProps[HUMANOID_Head].second;
-		bodyOffset = initProps[HUMANOID_LeftArm].second;
-		leftArmOffset = initProps[HUMANOID_RightArm].second;
-		rightArmOffset = initProps[HUMANOID_Body].second;
-		leftLegOffset = initProps[HUMANOID_LeftLeg].second;
-		rightLegOffset = initProps[HUMANOID_RightLeg].second;
+		headOffset = props[HUMANOID_Head].second;
+		bodyOffset = props[HUMANOID_LeftArm].second;
+		leftArmOffset = props[HUMANOID_RightArm].second;
+		rightArmOffset = props[HUMANOID_Body].second;
+		leftLegOffset = props[HUMANOID_LeftLeg].second;
+		rightLegOffset = props[HUMANOID_RightLeg].second;
 
-		fillscene(scene);
+		fillScene(scene);
 	}
 	~Geo_Humanoid() {}
 	
@@ -53,12 +55,12 @@ public:
 private:
 	void fill(Topl_Scene* scene) override;
 
-	// Main links "starfish"
-	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
-	// Stability links "pentagon"
-	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
 	// Offsets associated with each body part to positon them appropriately
 	Eigen::Vector3f headOffset, bodyOffset, rightArmOffset, leftArmOffset, rightLegOffset, leftLegOffset;
 	// Physics properties associated with each body part
     Phys_Properties head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
+	// Main links "Starfish" Shape
+	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
+	// Stability links "Pentagon" Shape
+	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
 };

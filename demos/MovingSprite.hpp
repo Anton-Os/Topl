@@ -49,9 +49,12 @@ namespace Main {
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 
-		while (renderer->renderScene(DRAW_Triangles)) {
-			renderer->updateScene(&Topl::scene);
+		while (1) {
 			Topl::scene.resolvePhysics();
+
+			renderer->clearView();
+			renderer->updateScene(&Topl::scene);
+			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
 		}

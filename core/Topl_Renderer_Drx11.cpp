@@ -184,18 +184,18 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 		mTextures.at(t).resView->Release();
 	}
 
-	m_swapChain->Release();
-	m_device->Release();
-	m_deviceCtx->Release();
+	_swapChain->Release();
+	_device->Release();
+	_deviceCtx->Release();
 
-	m_pipeline.vertexShader->Release();
-	m_pipeline.pixelShader->Release();
-	m_pipeline.vsBuff->Release();
-	m_pipeline.psBuff->Release();
-	m_pipeline.vertexDataLayout->Release();
-	mResourceView->Release();
-	mBlendState->Release();
-	mRasterizerState->Release();
+	_pipeline.vertexShader->Release();
+	_pipeline.pixelShader->Release();
+	_pipeline.vsBuff->Release();
+	_pipeline.psBuff->Release();
+	_pipeline.vertexDataLayout->Release();
+	_resourceView->Release();
+	_blendState->Release();
+	_rasterizerState->Release();
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -231,18 +231,18 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	HRESULT hr; // Error handler
 
 	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
-		&swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceCtx);
+		&swapChainDesc, &_swapChain, &_device, NULL, &_deviceCtx);
 	if (FAILED(hr)) return;
     
     // ID3D11Texture2D* backBuffer;
 	ID3D11Resource* backBuffer; // bgfx renderer_d3d11.cpp line 4660
-	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 	if(FAILED(hr)) return; // Provide error handling code
 
-    m_device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
+    _device->CreateRenderTargetView(backBuffer, NULL, &_rtv);
     backBuffer->Release();
 
-    m_deviceCtx->OMSetRenderTargets(1, &m_rtv, NULL);
+    _deviceCtx->OMSetRenderTargets(1, &_rtv, NULL);
 
 	// Viewport Creation
 
@@ -254,7 +254,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     viewport.Height = TOPL_WIN_HEIGHT;
     viewport.Width = TOPL_WIN_WIDTH;
 
-	m_deviceCtx->RSSetViewports(1, &viewport);
+	_deviceCtx->RSSetViewports(1, &viewport);
 
 	// Blend State creation
 
@@ -270,12 +270,12 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 
-	m_device->CreateBlendState(&blendStateDesc, &mBlendState);
+	_device->CreateBlendState(&blendStateDesc, &_blendState);
     
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT blendMask = 0xffffffff;
 
-	m_deviceCtx->OMSetBlendState(mBlendState, blendFactor, blendMask);
+	_deviceCtx->OMSetBlendState(_blendState, blendFactor, blendMask);
 
 	// Rasterizer State creation
 
@@ -294,9 +294,9 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	rasterizerStateDesc.AntialiasedLineEnable = false;
 	// rasterizerStateDesc.ForcedSampleCount = 0;
 
-	m_device->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
+	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 
-	m_deviceCtx->RSSetState(mRasterizerState); */
+	_deviceCtx->RSSetState(_rasterizerState); */
 
 	return;
 }
@@ -313,19 +313,19 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	if (FAILED(
 		D3DCompileFromFile(vertexShaderSrc_wchar,
 			nullptr, nullptr, "main", "vs_5_0",
-			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.vsBuff, &errorBuff)
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &_pipeline.vsBuff, &errorBuff)
 	)) {
-		mPipelineReady = false;
+		_pipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
 		delete vertexShaderSrc_wchar; // Proper deallocation of the source string
 		return;
 	}
 	delete vertexShaderSrc_wchar; // Proper deallocation of the source string
 
-	hr = m_device->CreateVertexShader(m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(),
-		NULL, &m_pipeline.vertexShader);
+	hr = _device->CreateVertexShader(_pipeline.vsBuff->GetBufferPointer(), _pipeline.vsBuff->GetBufferSize(),
+		NULL, &_pipeline.vertexShader);
 	if (FAILED(hr)) {
-		mPipelineReady = false;
+		_pipelineReady = false;
 		return;
 	}
 
@@ -336,24 +336,24 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	if (FAILED(
 		D3DCompileFromFile(fragmentShaderSrc_wchar,
 			nullptr, nullptr, "main", "ps_5_0",
-			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &m_pipeline.psBuff, &errorBuff)
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &_pipeline.psBuff, &errorBuff)
 	)) {
-		mPipelineReady = false;
+		_pipelineReady = false;
 		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
 		delete fragmentShaderSrc_wchar; // Proper deallocation of the source string
 		return;
 	}
 	delete fragmentShaderSrc_wchar; // Proper deallocation of the source string
 
-	hr = m_device->CreatePixelShader(m_pipeline.psBuff->GetBufferPointer(), m_pipeline.psBuff->GetBufferSize(),
-		NULL, &m_pipeline.pixelShader);
+	hr = _device->CreatePixelShader(_pipeline.psBuff->GetBufferPointer(), _pipeline.psBuff->GetBufferSize(),
+		NULL, &_pipeline.pixelShader);
 	if (FAILED(hr)) {
-		mPipelineReady = false;
+		_pipelineReady = false;
 		return;
 	}
 
-	m_deviceCtx->VSSetShader(m_pipeline.vertexShader, 0, 0);
-	m_deviceCtx->PSSetShader(m_pipeline.pixelShader, 0, 0);
+	_deviceCtx->VSSetShader(_pipeline.vertexShader, 0, 0);
+	_deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
 
 	// Generating an input layout based on Vertex Shader Inputs
 
@@ -365,29 +365,34 @@ void Topl_Renderer_Drx11::pipeline(const Topl_Shader* vertexShader, const Topl_S
 	}
     UINT layoutElemCount = (unsigned)vertexShader->getInputCount();
 
-    m_device->CreateInputLayout(
+    _device->CreateInputLayout(
         layout_ptr, layoutElemCount,
-        m_pipeline.vsBuff->GetBufferPointer(), m_pipeline.vsBuff->GetBufferSize(), 
-        &m_pipeline.vertexDataLayout
+        _pipeline.vsBuff->GetBufferPointer(), _pipeline.vsBuff->GetBufferSize(), 
+        &_pipeline.vertexDataLayout
     );
 
-    m_deviceCtx->IASetInputLayout(m_pipeline.vertexDataLayout);
+    _deviceCtx->IASetInputLayout(_pipeline.vertexDataLayout);
 
 	free(layout_ptr); // Deallocating layout_ptr and all associated data
-	mPipelineReady = true;
+	_pipelineReady = true;
 }
 
 void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader){
 	return; // TODO: Implement this code block
 }
 
+void Topl_Renderer_Drx11::clearView(){
+	const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
+    _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
+}
+
 void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
-	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType);
+	const Topl_Shader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
 	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
-		mSceneReady = _Drx11::createBlockBuff(&m_device, &mSceneBlockBuff, &blockBytes);
+		_isSceneReady = _Drx11::createBlockBuff(&_device, &mSceneBlockBuff, &blockBytes);
 		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
 	}
 
@@ -402,36 +407,36 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff, &blockBytes);
+			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
 		}
-		if (!mSceneReady) return; // Error
+		if (!_isSceneReady) return; // Error
 
 		// Index creation procedures
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
-			mSceneReady = _Drx11::createIndexBuff(&m_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
+			_isSceneReady = _Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
 			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
 		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
-		if (!mSceneReady) return; // Error
+		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		mSceneReady = _Drx11::createVertexBuff(&m_device, &vertexBuff,
+		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
 
 		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
-		if (!mSceneReady) return;
+		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
 		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
 		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 
-		if(!mSceneReady) return;
-		mMainRenderIDs = currentRenderID; // Gives us the greatest buffer ID number
+		if(!_isSceneReady) return;
+		_mainRenderIDs = currentRenderID; // Gives us the greatest buffer ID number
 	}
 
-    mSceneReady = true;
+    _isSceneReady = true;
     return;
 }
 
@@ -443,7 +448,7 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	HRESULT hr;
 
 	ID3D11Texture2D* framebuff;
-	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&framebuff);
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&framebuff);
 
 	D3D11_TEXTURE2D_DESC framebuffDesc;
 	framebuff->GetDesc(&framebuffDesc);
@@ -452,13 +457,13 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	framebuffDesc.Usage = D3D11_USAGE_STAGING;
 
 	ID3D11Texture2D* srcTexture;
-	hr = m_device->CreateTexture2D(&framebuffDesc, NULL, &srcTexture);
+	hr = _device->CreateTexture2D(&framebuffDesc, NULL, &srcTexture);
 	
 	// Copying phase and subresource mapping
-	m_deviceCtx->CopyResource(srcTexture, framebuff);
+	_deviceCtx->CopyResource(srcTexture, framebuff);
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
-	hr = m_deviceCtx->Map(srcTexture, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
+	hr = _deviceCtx->Map(srcTexture, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
 	const uint32_t* srcTexData = static_cast<const uint32_t*>(resource.pData);
 
 	// Custom Image format creation
@@ -490,7 +495,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	sd.MaxLOD = D3D11_FLOAT32_MAX;
 
 	ID3D11SamplerState* sampler;
-	hrCode = m_device->CreateSamplerState(&sd, &sampler);
+	hrCode = _device->CreateSamplerState(&sd, &sampler);
 	
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
@@ -513,7 +518,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
-    hrCode = m_device->CreateTexture2D( &texDesc, &texData, &texture);
+    hrCode = _device->CreateTexture2D( &texDesc, &texData, &texture);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resViewDesc;
 	ZeroMemory(&resViewDesc, sizeof(resViewDesc));
@@ -523,9 +528,9 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	resViewDesc.Texture2D.MipLevels = -1;
 	
 	ID3D11ShaderResourceView* resView;
-	m_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
-	m_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
-	m_deviceCtx->GenerateMips(resView);
+	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
+	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
+	_deviceCtx->GenerateMips(resView);
 
 	mTextures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler, resView));
 }
@@ -533,13 +538,13 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
-	const Topl_Shader* primaryShader = findShader(mPrimaryShaderType); // New Implementation
+	const Topl_Shader* primaryShader = findShader(_primaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
 	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		_Drx11::createBlockBuff(&m_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
+		_Drx11::createBlockBuff(&_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
@@ -555,35 +560,35 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 			if (renderBlockBuff == nullptr) { // TODO: Replace this!
 				OutputDebugStringA("Block buffer could not be located!");
 				return;
-			} else mSceneReady = _Drx11::createBlockBuff(&m_device, &renderBlockBuff->buffer, &blockBytes);
+			} else _isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
 
-			if (!mSceneReady) return; // Error
+			if (!_isSceneReady) return; // Error
 		}
 	}
 
-    mSceneReady = true;
+    _isSceneReady = true;
 	return;
 }
 
 void Topl_Renderer_Drx11::render(void){
-    const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
-    m_deviceCtx->ClearRenderTargetView(m_rtv, clearColor);
+    /* const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
+    _deviceCtx->ClearRenderTargetView(_rtv, clearColor); */
 
-	switch(mDrawType) { // Change draw type depending on what is configured
+	switch(_drawType) { // Change draw type depending on what is configured
 	case DRAW_Points:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		break;
 	case DRAW_Lines:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		break;
 	case DRAW_Triangles:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		break;
 	case DRAW_Fan:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); // not sure this is correct
+		_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); // not sure this is correct
 		break;
 	case DRAW_Strip:
-		m_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		_deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		break;
 	default:
 		OutputDebugStringA("Draw type not supported yet!");
@@ -593,14 +598,14 @@ void Topl_Renderer_Drx11::render(void){
 	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &mBuffers.front();
-		m_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+		_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
 	// Rendering Loop!
-	if (mPipelineReady && mSceneReady)
-		for (unsigned id = mMainRenderIDs; id >= 1; id--) {
+	if (_pipelineReady && _isSceneReady)
+		for (unsigned id = _mainRenderIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
@@ -612,12 +617,12 @@ void Topl_Renderer_Drx11::render(void){
 			}
 
 			// TODO: Check for renderBlockBuff validity
-			m_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
 			UINT stride = sizeof(Geo_VertexData);
 			UINT offset = 0;
-			m_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
-			m_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+			_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			for (unsigned t = 0; t < mTextures.size(); t++) {
 				if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
@@ -625,18 +630,18 @@ void Topl_Renderer_Drx11::render(void){
 					ID3D11SamplerState* baseSampler = mTextures.at(t).sampler;
 					ID3D11ShaderResourceView* resView = mTextures.at(t).resView;
 
-					m_deviceCtx->PSSetShaderResources(0, 1, &resView);
-					m_deviceCtx->PSSetSamplers(0, 1, &baseSampler);
+					_deviceCtx->PSSetShaderResources(0, 1, &resView);
+					_deviceCtx->PSSetSamplers(0, 1, &baseSampler);
 					break;
 				}
 			}
 
 			// Draw Call!
-			if (indexBuff != nullptr && indexBuff->count != 0) m_deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
-			else m_deviceCtx->Draw(vertexBuff->count, 0);
+			if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
+			else _deviceCtx->Draw(vertexBuff->count, 0);
 		}
 
 	free(dBuffers);
 
-    m_swapChain->Present(0, 0);
+    _swapChain->Present(0, 0);
 }

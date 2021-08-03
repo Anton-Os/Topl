@@ -1,59 +1,63 @@
 #include "Geo_Construct.hpp"
 
-// #include "<utility>"
-
 struct Geo_Grid_Properties {
-    Geo_Grid_Properties(){}
-	// Uniform sides constructor
-	Geo_Grid_Properties(std::pair<unsigned short, float> vals) { 
-		widthVals = vals;
-		heightVals = vals;
-		depthVals = vals;
+	Geo_Grid_Properties() {}
+	Geo_Grid_Properties(std::pair<unsigned short, float> attribs) { // Uniform sides constructor
+		xAttr = attribs;
+		yAttr = attribs;
+		zAttr = attribs;
+		setNonZeroUnits();
     }
-	// Variable sides constructor
-	Geo_Grid_Properties(
-		std::pair<unsigned short, float> wv,
-		std::pair<unsigned short, float> hv,
-		std::pair<unsigned short, float> dv
+	Geo_Grid_Properties( // Variable sides constructor
+		std::pair<unsigned short, float> xa,
+		std::pair<unsigned short, float> ya,
+		std::pair<unsigned short, float> za
 	) {
-		widthVals = wv;
-		heightVals = hv;
-		depthVals = dv;
+		xAttr = xa;
+		yAttr = ya;
+		zAttr = za;
+		setNonZeroUnits();
 	}
-	std::pair<unsigned short, float> widthVals;
-	std::pair<unsigned short, float> heightVals;
-	std::pair<unsigned short, float> depthVals;
+
+	void setNonZeroUnits(){ // makes sure that all counts are set tonon-zero
+		if(xAttr.first == 0) xAttr.first++;
+		if(yAttr.first == 0) yAttr.first++;
+		if(zAttr.first == 0) zAttr.first++;
+	}
+
+	unsigned getCellCount() const {
+		return xAttr.first * yAttr.first * zAttr.first;
+	}
+
+	std::pair<unsigned short, float> xAttr; // unit count and spacing along x axis
+	std::pair<unsigned short, float> yAttr; // unit count and spacing along y axis
+	std::pair<unsigned short, float> zAttr; // unit count and spacing along z axis
 };
 
-class Geo_Grid : public Geo_Construct {
+class Geo_Grid : public Geo_Construct, public Geo_DynamicSet {
 public:
     Geo_Grid(
         const std::string& prefix, 
         Topl_Scene* scene, 
-        const Geo_Component* geoComponent, 
-        const Geo_Grid_Properties* properties
+        const Geo_Component* geo, 
+        const Geo_Grid_Properties* props
 		)
-    : Geo_Construct(
-		prefix, 
-		scene, 
-		geoComponent, 
-		properties->widthVals.first * properties->heightVals.first * properties->depthVals.first){ // Requires the volume
-
-        grid_prop = *properties;
-		bottomLeftCorner = Eigen::Vector3f(
-			-1.0f * properties->widthVals.first * (properties->widthVals.second * 0.5), // inverse of count times distance halved of each cell
-			-1.0f * properties->heightVals.first * (properties->heightVals.second * 0.5), // inverse of count times distance halved of each cell
-			0.0f // TODO: Change this to non hard-coded
+    : Geo_Construct(prefix, scene, geo, props->getCellCount()),
+	Geo_DynamicSet(props->getCellCount()){
+        grid_prop = *props;
+		originPos = Eigen::Vector3f(
+			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5), // inverse of count times distance halved of each cell
+			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5), // inverse of count times distance halved of each cell
+			0.0f
 		);
-        
-        fillscene(scene);
+
+        fillScene(scene);
     }
 
     void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
-
-    std::vector<Phys_Connector> connectors;
-	Eigen::Vector3f bottomLeftCorner; // Use this to determine grid item position
+	
+	Eigen::Vector3f originPos; // Use this to determine grid item position
     Geo_Grid_Properties grid_prop;
 };
