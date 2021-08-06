@@ -34,11 +34,14 @@ public:
         if(isFirstCall){
             startSecs += currentSecs;
             endSecs += currentSecs;
+            isFirstCall = false; // makes sure this segment doesnt repeat
         }
 
         seqCount = static_cast<unsigned>(std::floor(getSeqProgress(currentSecs)));
+        double seqProgressFrac = getSeqProgress(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
+        Eigen::Vector3f motionVec = (seqProgressFrac < 0.5f) ? startMotionVec : endMotionVec; // TODO: set proper values!
 
-        return (getSeqProgress(currentSecs) - seqCount)? startMotionVec : endMotionVec; // return proper value!
+        return motionVec; // TODO: set proper values!
     }
 
 private:
@@ -86,7 +89,16 @@ struct Phys_Connector {
 
 #define MAX_PHYS_FORCES 64
 
-struct Phys_Properties { // A physics property that binds to a Geo_Component object
+struct Phys_Colliders {
+    Phys_Colliders(){}
+    Phys_Colliders(const Eigen::Vector3f* o){ origin = o; }
+
+    float radii = 0.0f; // all colliding spheres that are uniform in size
+    std::vector<Eigen::Vector3f> offsets; // offsets from origin of colliders
+    const Eigen::Vector3f* origin = nullptr; // origin of associated geometry object
+};
+
+struct Phys_Properties { // A physics property that becomes associated to a Geo_Component object
     Phys_Properties(){ // Freeform constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
     }
@@ -113,6 +125,7 @@ struct Phys_Properties { // A physics property that binds to a Geo_Component obj
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
     Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
 
-    unsigned short actingForceCount = 0; // Indicates the gravity force
+    unsigned short actingForceCount = 0; // number of acting forces on theobject
     Eigen::Vector3f* forces = nullptr;
+    const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection
 };

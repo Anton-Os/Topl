@@ -46,6 +46,10 @@ void Platform::createWindow(const char* windowName){
 	UpdateWindow(mContext.window);
 }
 
+void createChildGUI(NATIVE_WINDOW parentWindow){
+	// TODO: Implement Body Here
+}
+
 void Platform::handleEvents(){
     while (PeekMessage(&mContext.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&mContext.eventMsg);
@@ -103,13 +107,9 @@ void Platform::createWindow(const char* windowName){
 	XMapWindow(mContext.display, mContext.window);
 }
 
-/* void Platform::setupMainWindow(NATIVE_WINDOW window){
-    mContext.window_ptr = &window;
-
-	XSelectInput(mContext.display, window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
-	XMapWindow(mContext.display, window);
-    return;
-} */
+void createChildGUI(NATIVE_WINDOW parentWindow){
+	// TODO: Implement Body Here
+}
 
 void Platform::handleEvents(){
     int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);
@@ -123,6 +123,7 @@ void Platform::handleEvents(){
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) {
+	// TODO: Implement cursor tracking here!
 	return true;
 }
 

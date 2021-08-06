@@ -38,10 +38,11 @@ struct ValueGen {
     static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
     static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
     static float genRandFloat(){ genRandFloat(0.0, 1.0); }
-    static float genRandFloat(float minBound, float maxBound);
+    static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
 
-    static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingByteCount, std::vector<uint8_t>* bytes); // Implement later
-    static void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* bytes);
+    static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes); // default padding
+    static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes); // custom padding
+    static void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes);
     // void assignDataToBytes(void* dataPtr, std::vector<uint8_t>* bytes);
 };
 

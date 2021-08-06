@@ -5,9 +5,9 @@
 #define SCREEN_RES_Y 1200
 
 struct FrameFx_VertexShader : public Topl_Shader {
-	FrameFx_VertexShader(const char* filePath)
+	FrameFx_VertexShader(const Platform* platform, const char* filePath)
 		: Topl_Shader(
-			SHDR_Vertex, filePath,
+			platform, SHDR_Vertex, filePath,
 			{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
 		) { }
 

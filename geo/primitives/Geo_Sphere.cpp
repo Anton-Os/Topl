@@ -33,7 +33,6 @@ void Geo_SphereUV::genTexCoords(Eigen::Vector2f* data) {
 
 void Geo_SphereUV::genIndices(unsigned* data){
 	// special cases, top and bottom vertices
-
 	unsigned v = 1;
 	unsigned i = 0;
 	for (i = 0; i < mShape3D.ySegments * 6; i += 6) {
@@ -49,20 +48,18 @@ void Geo_SphereUV::genIndices(unsigned* data){
 
 		v++;
 	}
-	return;
 
-	for (unsigned stack = 0; stack < mShape3D.xSegments - 2; stack++) {
-		for (unsigned slice = 0; slice < mShape3D.ySegments; slice++) {
+	// sphere volumetric quads
+	v = 1;
+	for(i = i; i < ((mShape3D.xSegments - 1) * mShape3D.ySegments) * 6; i += 6){
+		*(data + i + 0) = v;
+		*(data + i + 1) = v + 1;
+		*(data + i + 2) = v + mShape3D.xSegments + 1;
 
-			/* *(data + i + 0) = 0;
-			*(data + i + 1) = 0;
-			*(data + i + 2) = 0;
+		*(data + i + 3) = v;
+		*(data + i + 4) = v + mShape3D.xSegments;
+		*(data + i + 5) = v + mShape3D.xSegments + 1;
 
-			*(data + i + 3) = 0;
-			*(data + i + 4) = 0;
-			*(data + i + 5) = 0;
-
-			i += 6; */
-		}
+		v++;
 	}
 }

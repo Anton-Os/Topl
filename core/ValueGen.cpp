@@ -20,17 +20,22 @@ Eigen::Matrix4f ValueGen::genOrthoMatrix(SpatialBounds3D bounds){
     return projMatrix;
 }
 
-void ValueGen::appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingByteCount, std::vector<uint8_t>* bytes){
-    for(unsigned d = 0; d < dataSize + paddingByteCount; d++)
-        (d < dataSize && data_ptr + d != nullptr)
-            ? bytes->push_back(*(data_ptr + d)) // Value is copied into bytes
-            : bytes->push_back(0); // Otherwise padding is created
+void ValueGen::appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
+    size_t paddingSize = 4 - (dataSize % 4); // manually computed padding value
+    appendDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
 }
 
-void ValueGen::assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* bytes){
-    bytes->clear();
-    bytes->resize(dataSize);
+void ValueGen::appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes){
+    for(unsigned d = 0; d < dataSize + paddingSize; d++)
+        (d < dataSize && data_ptr + d != nullptr)
+            ? targetBytes->push_back(*(data_ptr + d)) // value is copied into targetBytes
+            : targetBytes->push_back(0); // otherwise zero padding is applied
+}
+
+void ValueGen::assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
+    targetBytes->clear();
+    targetBytes->resize(dataSize);
     
     for(unsigned d = 0; d < dataSize; d++)
-        if(data_ptr + d != nullptr) bytes->at(d) = *(data_ptr + d);
+        if(data_ptr + d != nullptr) targetBytes->at(d) = *(data_ptr + d);
 }

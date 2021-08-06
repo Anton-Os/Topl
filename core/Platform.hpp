@@ -1,3 +1,5 @@
+#ifndef TOPL_PLATFORM_H
+
 #include "native_os_def.h"
 
 #include "FileIO.hpp";
@@ -10,6 +12,7 @@ struct Platform {
     }
 
     void createWindow(const char* windowName);
+    void createChildGUI(NATIVE_WINDOW parentWindow); // provide GUI customization options!
     void handleEvents(); // handles platform specific events
 
     // static Timer_Ticker mTicker;
@@ -22,3 +25,6 @@ private:
     const char* mExecPath; // full path to executable
     NATIVE_PLATFORM_CONTEXT mContext;
 };
+
+#define TOPL_PLATFORM_H
+#endif

@@ -11,7 +11,7 @@ namespace Topl {
 	Topl_Scene scene;
 
 	// NGon3D ngon = { 0.3, 6, 12 };
-	NGon3D ngon = { 0.1, 7, 7 };
+	NGon3D ngon = { 0.1, 20, 20 };
 	Geo_SphereUV sphere(ngon);
 	Geo_Component sphereGeo((const Geo_RenderObj*)&sphere);
 }

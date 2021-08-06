@@ -54,7 +54,7 @@ typedef const LinkedItems* const topl_linkedItems_cptr;
 class Topl_Scene {
 public:
 	Topl_Scene() {
-		mPhysTicker.reset(); // Resets timer for dynamic scene manager operations
+		_physTicker.reset(); // Resets timer for dynamic scene manager operations
 	}
 	~Topl_Scene() {}
 
@@ -67,7 +67,7 @@ public:
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
-	unsigned getGeoCount() const { return mNamedGeos.size(); }
+	unsigned getGeoCount() const { return _namedGeos.size(); }
 	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // Access to geometry by index
 	topl_geoComponent_cptr getGeoComponent(const std::string& name) const; // Access to geometry by name
 
@@ -78,7 +78,7 @@ public:
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
 
-	unsigned getLinkedItemsCount() const { return mLinkedItems.size(); }
+	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
 	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(unsigned index) const; // Remove!
@@ -88,10 +88,11 @@ public:
 private:
 	Topl_Camera mCamera;
 
-	std::vector<Geo_Component*> mNamedGeos; // Stores all geometries
-	std::map<Geo_Component*, Phys_Properties*> mGeoPhys_map; // Associates geometry to a physics structure
-	std::vector<LinkedItems> mLinkedItems; // Stores geometry connector data
-	Timer_Ticker mPhysTicker; // This ticker is specific to physics updates
+	std::vector<Geo_Component*> _namedGeos; // Stores all geometries
+	std::map<Geo_Component*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
+	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
+	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
+	Timer_Ticker _physTicker; // This ticker is specific to physics updates
 	// const Platform* mPlatform_cptr; // Provides useful system information and parameters
 #ifdef RASTERON_H
 	std::map<Geo_Component*, const Rasteron_Image*> mGeoTex_map; // Associates geometry to a single texture structure

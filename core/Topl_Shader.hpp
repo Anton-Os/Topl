@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 
+#include "Platform.hpp"
 #include "ValueGen.hpp"
 
 #include "Topl_Scene.hpp"
@@ -60,38 +61,49 @@ struct Shader_Type {
         type = t;
     }
     std::string name;
-    std::string semantic = ""; // DirectX11 extensible 
+    std::string semantic = ""; // Relevant for DirectX
     SHDR_ValueType type;
 };
 
 class Topl_Shader {
 public:
-    // Basic constructor, DEPRICATE!
-    Topl_Shader(enum SHDR_Type type, const char* filePath){
-        mShaderType = type;
-        mShaderSrcPath = filePath;
-    }
-    // Extensible constructor w input values
-    Topl_Shader(enum SHDR_Type type, const char* filePath, std::initializer_list<Shader_Type> inputs){
-        mShaderType = type;
-        mShaderSrcPath = filePath;
+    // Basic Input Value Constructor
+    Topl_Shader(
+		enum SHDR_Type type, 
+		const char* filePath, 
+		std::initializer_list<Shader_Type> inputs){
+        _shaderType = type;
+        _shaderSrcPath = filePath;
         for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            mInputs.push_back(*currentInput);
+            _inputs.push_back(*currentInput);
+    }
+    // Platform support variable constructor
+	Topl_Shader(
+		const Platform* platform,
+		enum SHDR_Type type, 
+		const char* filePath, 
+		std::initializer_list<Shader_Type> inputs){
+		_platform_cptr = platform;
+        _shaderType = type;
+        _shaderSrcPath = filePath;
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput);
     }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component *const component, std::vector<uint8_t>* bytes) const = 0;
     virtual bool genPerSceneDataBlock(const Topl_Scene *const scene, std::vector<uint8_t>* bytes) const = 0;
 
     // static ValueGen mValueGen; // Utility for converting from eigen specific types
-    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < mInputs.size()) ? &mInputs.at(index) : nullptr; }
-    unsigned short getInputCount() const { return mInputs.size(); }
-    enum SHDR_Type getType() const { return mShaderType; }
-    const char* getFilePath() const { return mShaderSrcPath; }
+    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
+    unsigned short getInputCount() const { return _inputs.size(); }
+    enum SHDR_Type getType() const { return _shaderType; }
+    const char* getFilePath() const { return _shaderSrcPath; }
 private:
-    std::vector<Shader_Type> mInputs;
-    std::vector<Shader_Type> mBlockUniforms;
-    enum SHDR_Type mShaderType;
-    const char* mShaderSrcPath;
+    const Platform* _platform_cptr = nullptr;
+    std::vector<Shader_Type> _inputs;
+    std::vector<Shader_Type> _blockUniforms;
+    enum SHDR_Type _shaderType;
+    const char* _shaderSrcPath;
 };
 
 #define TOPL_SHADER_H

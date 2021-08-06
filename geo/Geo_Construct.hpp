@@ -47,9 +47,9 @@ public:
         fill(scene);
 
         // Code that fills in scene
-        if(mNamedGeos.size() != 0 && mGeoData != nullptr) {
-            for(std::vector<geoName_pair>::iterator currentGeo = mNamedGeos.begin();
-                currentGeo < mNamedGeos.end(); currentGeo++)
+        if(_namedGeos.size() != 0 && mGeoData != nullptr) {
+            for(std::vector<geoName_pair>::iterator currentGeo = _namedGeos.begin();
+                currentGeo < _namedGeos.end(); currentGeo++)
                 scene->addGeometry(currentGeo->first, currentGeo->second);
         }
     }
@@ -67,7 +67,7 @@ public:
 
 protected:
 	unsigned getGeoCount() const { return mGeoCount; }
-    virtual void fill(Topl_Scene* scene) = 0; // job is to fill the mNamedGeos structure
+    virtual void fill(Topl_Scene* scene) = 0; // job is to fill the _namedGeos structure
     Geo_Component* getNextGeo(){
         if(mCurrentGeoOffset <= mGeoCount){
             mCurrentGeoOffset++;   
@@ -76,7 +76,7 @@ protected:
     }
 
     unsigned _updateCount = FIRST_UPDATE_NUM; // probably needs to be private and a getter method
-	std::vector<geoName_pair> mNamedGeos;
+	std::vector<geoName_pair> _namedGeos;
 private:
     std::string mPrefix;
 	unsigned mGeoCount = 0;
