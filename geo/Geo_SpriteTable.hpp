@@ -12,12 +12,12 @@
 typedef std::pair<const Rasteron_Sprite*, Geo_FlatSquare*> spriteSquare_pair;
 
 static float getSpriteWidth(const Rasteron_Sprite* sprite) {
-	return sprite->bounds.topRight_Pt[X_OFFSET] * 2;
-	// return sprite->bounds.topRight_Pt[X_OFFSET]; // for testing
+	return sprite->bounds.topRight_point[X_OFFSET] * 2;
+	// return sprite->bounds.topRight_point[X_OFFSET]; // for testing
 }
 static float getSpriteHeight(const Rasteron_Sprite* sprite) {
-	return sprite->bounds.topRight_Pt[Y_OFFSET] * 2;
-	// return sprite->bounds.topRight_Pt[Y_OFFSET]; // for testing
+	return sprite->bounds.topRight_point[Y_OFFSET] * 2;
+	// return sprite->bounds.topRight_point[Y_OFFSET]; // for testing
 }
 
 static float stretchTransform(float input, double mod){ return input * mod; } // TODO: Make this code segment reusable

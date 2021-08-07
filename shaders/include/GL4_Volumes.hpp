@@ -14,8 +14,8 @@ struct Volumes_VertexShader : public Topl_Shader {
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
 		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
 
-		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), 2 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);
 		return true;
 	}
 
@@ -24,9 +24,9 @@ struct Volumes_VertexShader : public Topl_Shader {
 		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getDirection()->data());
 		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());
 
-		ValueGen::appendDataToBytes(cameraPos_bptr, scene->getCamera()->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bptr, scene->getCamera()->getDirection()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bptr, scene->getCamera()->getProjMatrix()->size() * sizeof(float), 0, bytes);
+		ValueGen::appendDataToBytes(cameraPos_bptr, scene->getCamera()->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRot_bptr, scene->getCamera()->getDirection()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrix_bptr, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

@@ -7,6 +7,8 @@
 
 #include <Eigen/Dense>
 
+#define PADDING_WIDTH 16 // padding should be aligned by 4 byte boundaries
+
 enum PROJECTION_Type {
     PROJECTION_Perspective,
     PROJECTION_Ortho

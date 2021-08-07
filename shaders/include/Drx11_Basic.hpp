@@ -14,8 +14,8 @@ struct Basic_VertexShader : public Topl_Shader {
 		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
 	
-		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), 2 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), bytes);
 		return true;
 	}
 
@@ -30,7 +30,8 @@ struct Basic_PixelShader : public Topl_Shader {
 	Basic_PixelShader(const char* filePath)
 		: Topl_Shader(
 			SHDR_Fragment, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+			Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }

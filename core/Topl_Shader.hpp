@@ -98,8 +98,9 @@ public:
     unsigned short getInputCount() const { return _inputs.size(); }
     enum SHDR_Type getType() const { return _shaderType; }
     const char* getFilePath() const { return _shaderSrcPath; }
+protected:
+	const Platform* _platform_cptr = nullptr;
 private:
-    const Platform* _platform_cptr = nullptr;
     std::vector<Shader_Type> _inputs;
     std::vector<Shader_Type> _blockUniforms;
     enum SHDR_Type _shaderType;

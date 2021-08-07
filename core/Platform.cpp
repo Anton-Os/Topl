@@ -27,13 +27,13 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 }
 
 void Platform::createWindow(const char* windowName){
-    mContext.windowClass = { 0 };
-	mContext.windowClass.hInstance = GetModuleHandle(NULL);
-	mContext.windowClass.lpfnWndProc = eventProcedure;
-	mContext.windowClass.lpszClassName = "Topl";
-	RegisterClass(&mContext.windowClass);
+    _context.windowClass = { 0 };
+	_context.windowClass.hInstance = GetModuleHandle(NULL);
+	_context.windowClass.lpfnWndProc = eventProcedure;
+	_context.windowClass.lpszClassName = "Topl";
+	RegisterClass(&_context.windowClass);
 
-    mContext.window = CreateWindow(
+    _context.window = CreateWindow(
         "Topl",
 		windowName,
 		WS_OVERLAPPEDWINDOW,
@@ -42,8 +42,8 @@ void Platform::createWindow(const char* windowName){
 		NULL, NULL, GetModuleHandle(NULL), NULL
     );
 
-	ShowWindow(mContext.window, 1);
-	UpdateWindow(mContext.window);
+	ShowWindow(_context.window, 1);
+	UpdateWindow(_context.window);
 }
 
 void createChildGUI(NATIVE_WINDOW parentWindow){
@@ -51,31 +51,32 @@ void createChildGUI(NATIVE_WINDOW parentWindow){
 }
 
 void Platform::handleEvents(){
-    while (PeekMessage(&mContext.eventMsg, NULL, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&mContext.eventMsg);
-		DispatchMessage(&mContext.eventMsg);
+    while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&_context.eventMsg);
+		DispatchMessage(&_context.eventMsg);
 	}
-	if (mContext.eventMsg.message == WM_QUIT) return; // Error code?
+	if (_context.eventMsg.message == WM_QUIT) return; // Error code?
 }
 
-bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this function
-	GetCursorPos(&mContext.cursorPos);
+bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize this function
+	POINT point;
+	GetCursorPos(&point);
 
-	// HWND window = *(mContext.window_ptr);
+	// HWND window = *(_context.window_ptr);
 	RECT windowRect;
-	GetWindowRect(mContext.window, &windowRect);
+	GetWindowRect(_context.window, &windowRect);
 	
-	// if (mContext.cursorPos.x > windowRect.right && mContext.cursorPos.x < windowRect.left && mContext.cursorPos.y > windowRect.top&& mContext.cursorPos.y < windowRect.bottom) {
-	if (mContext.cursorPos.x < windowRect.right && mContext.cursorPos.x > windowRect.left && mContext.cursorPos.y > windowRect.top && mContext.cursorPos.y < windowRect.bottom) {
+	// if (point.x > windowRect.right && point.x < windowRect.left && point.y > windowRect.top&& point.y < windowRect.bottom) {
+	if (point.x < windowRect.right && point.x > windowRect.left && point.y > windowRect.top && point.y < windowRect.bottom) {
 		// Cursor is inside screen space!
 
 		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
 		LONG centerX = windowRect.left + halfWidth;
-		*xPos = (mContext.cursorPos.x - centerX) / (float)halfWidth;
+		*xPos = (point.x - centerX) / (float)halfWidth;
 
 		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
 		LONG centerY = windowRect.top + halfHeight;
-		*yPos = -1.0f * (mContext.cursorPos.y - centerY) / (float)halfHeight;
+		*yPos = -1.0f * (point.y - centerY) / (float)halfHeight;
 
 		return true;
 	} else return false; // Cursor is outside the screen space!
@@ -84,17 +85,17 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) { // Optimize this func
 #elif defined(__linux__)
 
 void Platform::createWindow(const char* windowName){
-    mContext.display = XOpenDisplay(NULL);
+    _context.display = XOpenDisplay(NULL);
 
 	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	XVisualInfo* visualInfo = glXChooseVisual(mContext.display, 0, visualInfoAttribs);
+	XVisualInfo* visualInfo = glXChooseVisual(_context.display, 0, visualInfoAttribs);
 
 	XSetWindowAttributes windowAttribs;
-	windowAttribs.colormap = XCreateColormap(mContext.display, DefaultRootWindow(mContext.display), visualInfo->visual, AllocNone);
+	windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visualInfo->visual, AllocNone);
 	windowAttribs.event_mask = ExposureMask | KeyPressMask;
 
-    mContext.window = XCreateWindow(
-		mContext.display, DefaultRootWindow(mContext.display),
+    _context.window = XCreateWindow(
+		_context.display, DefaultRootWindow(_context.display),
         0, 0,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
         0, visualInfo->depth,
@@ -103,8 +104,8 @@ void Platform::createWindow(const char* windowName){
         &windowAttribs
 	);
 
-	XSelectInput(mContext.display, mContext.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
-	XMapWindow(mContext.display, mContext.window);
+	XSelectInput(_context.display, _context.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
+	XMapWindow(_context.display, _context.window);
 }
 
 void createChildGUI(NATIVE_WINDOW parentWindow){
@@ -112,11 +113,11 @@ void createChildGUI(NATIVE_WINDOW parentWindow){
 }
 
 void Platform::handleEvents(){
-    int eventsPending = XEventsQueued(mContext.display, QueuedAfterReading);
+    int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
 	XEvent currentEvent;
 
 	while(eventsPending-- > 0){ // Deplete number of events
-		XNextEvent(mContext.display, &currentEvent);
+		XNextEvent(_context.display, &currentEvent);
 
 		// TODO: Perform event processing logic here
 	}

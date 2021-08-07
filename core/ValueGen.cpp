@@ -21,7 +21,7 @@ Eigen::Matrix4f ValueGen::genOrthoMatrix(SpatialBounds3D bounds){
 }
 
 void ValueGen::appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
-    size_t paddingSize = 4 - (dataSize % 4); // manually computed padding value
+    size_t paddingSize = PADDING_WIDTH - (dataSize % PADDING_WIDTH); // manually computed padding value
     appendDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
 }
 

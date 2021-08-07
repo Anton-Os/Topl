@@ -18,17 +18,20 @@ struct FrameFx_VertexShader : public Topl_Shader {
 
 		const uint8_t* renderId_bptr = reinterpret_cast<const uint8_t*>(&renderId);
 
-		ValueGen::appendDataToBytes(renderId_bptr, sizeof(unsigned), 3 * sizeof(unsigned), bytes);
+		ValueGen::appendDataToBytes(renderId_bptr, sizeof(unsigned), bytes);
 		return true;
 	}
 
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const {
 		const Eigen::Vector2i screenRes = Eigen::Vector2i(SCREEN_RES_X, SCREEN_RES_Y);
+		Eigen::Vector2f cursorPos;
+		bool isOnScreen = _platform_cptr->getCursorCoords(&cursorPos.x(), &cursorPos.y());
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
-		// TODO: add support for cursorPos and renderMode!
+		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
 
-		ValueGen::appendDataToBytes(screenRes_bptr, screenRes.size() * sizeof(int), 2 * sizeof(int), bytes);
+		ValueGen::appendDataToBytes(screenRes_bptr, screenRes.size() * sizeof(int), bytes);
+		ValueGen::appendDataToBytes(cursorPos_bptr, cursorPos.size() * sizeof(float), bytes);
 		return true;
 	}
 };

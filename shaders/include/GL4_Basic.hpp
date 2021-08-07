@@ -14,8 +14,8 @@ struct Basic_VertexShader : public Topl_Shader {
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
 		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
 
-		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), 2 * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), 1 * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);
 		return true;
 	}
 
