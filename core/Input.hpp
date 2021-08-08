@@ -20,7 +20,7 @@ enum MOUSE_Button {
     MOUSE_LeftBtn_Down,
     // MOUSE_RightBtn_Up,
     MOUSE_RightBtn_Down,
-    MOUSE_MiddleBtn_Down,
+    MOUSE__iddleBtn_Down,
     MOUSE_Scroll_Up,
     MOUSE_Scroll_Down
 };

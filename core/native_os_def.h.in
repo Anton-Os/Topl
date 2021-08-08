@@ -3,8 +3,8 @@
 #define TOPL_WIN_HEIGHT 1200
 #define TOPL_WIN_WIDTH 1100
 
-#define PARENT_DIR "/home/antonos/AntonDocs/Codex/Ao-Project/Topl-Skeleton/GCC-Build-2/./"
-#ifdef 0
+#define PARENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/"
+#ifdef ${Rasteron_FOUND}
     #include "Rasteron.h" // includes Rasteron if found include the header
 #endif
 

@@ -8,7 +8,7 @@ static void error_notFound(const std::string& objTypeStr, const std::string& nam
 
 // Scene Manager implementation code
 
-unsigned Geo_Component::mId_count = 0;
+unsigned Geo_Component::_id_count = 0;
 
 topl_geoComponent_cptr Topl_Scene::getGeoComponent(unsigned index) const {
 	if(index >= _namedGeos.size()) return nullptr; // Error

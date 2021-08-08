@@ -76,7 +76,7 @@ public:
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
 	void modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale); // Rotates and scales all connectors associated with named geometry
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
-	void resolvePhysics(); // Iterates through all appropriate members in mIdToPhysProp_map
+	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 
 	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
 	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially

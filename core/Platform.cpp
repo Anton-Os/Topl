@@ -19,7 +19,7 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
 	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
-	case (WM_MBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_MiddleBtn_Down); }
+	case (WM_MBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE__iddleBtn_Down); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -46,7 +46,7 @@ void Platform::createWindow(const char* windowName){
 	UpdateWindow(_context.window);
 }
 
-void createChildGUI(NATIVE_WINDOW parentWindow){
+void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
 	// TODO: Implement Body Here
 }
 
@@ -98,17 +98,17 @@ void Platform::createWindow(const char* windowName){
 		_context.display, DefaultRootWindow(_context.display),
         0, 0,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
-        0, visualInfo->depth,
+        0, visualInfo->depth,ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | KeyPressMask
         InputOutput, visualInfo->visual,
         CWColormap | CWEventMask,
         &windowAttribs
 	);
 
-	XSelectInput(_context.display, _context.window, ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask);
+	XSelectInput(_context.display, _context.window, );
 	XMapWindow(_context.display, _context.window);
 }
 
-void createChildGUI(NATIVE_WINDOW parentWindow){
+void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
 	// TODO: Implement Body Here
 }
 
@@ -119,7 +119,11 @@ void Platform::handleEvents(){
 	while(eventsPending-- > 0){ // Deplete number of events
 		XNextEvent(_context.display, &currentEvent);
 
-		// TODO: Perform event processing logic here
+		switch(currentEvent.type){
+		// case (KeyPress): { Platform::keyLogger.addKeyPress((char)currentEvent.xkey.keycode); } // keycode needs to be converted!
+		case (ButtonPress): {  }
+		case (MotionNotify): {  }
+		}
 	}
 }
 

@@ -27,7 +27,7 @@ struct Geo_ConicTriangle : public Geo_Conic {
     Geo_ConicTriangle(float radius, Eigen::Vector3f apex) : Geo_Conic({ radius, 3 }, apex){}
 };
 
-struct Geo_ConicSquare : public Geo_Conic { // i.e. Pyramid
+struct Geo_ConicSquare : public Geo_Conic { // i.e. Pyra_id
     Geo_ConicSquare(float radius, Eigen::Vector3f apex) : Geo_Conic({ radius, 4 }, apex){}
 };
 

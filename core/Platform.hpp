@@ -2,6 +2,7 @@
 
 #include "native_os_def.h"
 
+#include "GUI.h"
 #include "FileIO.hpp";
 #include "Timer.hpp";
 #include "Input.hpp";
@@ -12,7 +13,7 @@ struct Platform {
     }
 
     void createWindow(const char* windowName);
-    void createChildGUI(NATIVE_WINDOW parentWindow); // provide GUI customization options!
+    void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout); // provide GUI customization options!
     void handleEvents(); // handles platform specific events
 
     // static Timer_Ticker mTicker;
