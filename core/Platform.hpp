@@ -13,7 +13,8 @@ struct Platform {
     }
 
     void createWindow(const char* windowName);
-    void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout); // provide GUI customization options!
+    void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout);
+	void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */); // use UI_TreeLayout argument
     void handleEvents(); // handles platform specific events
 
     // static Timer_Ticker mTicker;

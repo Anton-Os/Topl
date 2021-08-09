@@ -70,10 +70,13 @@ public:
     // Basic Input Value Constructor
     Topl_Shader(
 		enum SHDR_Type type, 
-		const char* filePath, 
+		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs){
+            
         _shaderType = type;
-        _shaderSrcPath = filePath;
+        _shaderFileSrc = fileSrc;
+		_shaderFileSrc = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
         for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             _inputs.push_back(*currentInput);
     }
@@ -81,11 +84,13 @@ public:
 	Topl_Shader(
 		const Platform* platform,
 		enum SHDR_Type type, 
-		const char* filePath, 
+		std::string fileSrc,
 		std::initializer_list<Shader_Type> inputs){
+
 		_platform_cptr = platform;
         _shaderType = type;
-        _shaderSrcPath = filePath;
+        _shaderFileSrc = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
         for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             _inputs.push_back(*currentInput);
     }
@@ -97,14 +102,16 @@ public:
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
     enum SHDR_Type getType() const { return _shaderType; }
-    const char* getFilePath() const { return _shaderSrcPath; }
+    const char* getFilePath() const { return _shaderFileSrc.c_str(); }
 protected:
 	const Platform* _platform_cptr = nullptr;
+	std::string genPrefix_glsl() { return "glsl/"; }
+	std::string genPrefix_hlsl() { return "hlsl/"; }
 private:
     std::vector<Shader_Type> _inputs;
     std::vector<Shader_Type> _blockUniforms;
     enum SHDR_Type _shaderType;
-    const char* _shaderSrcPath;
+    std::string _shaderFileSrc; // make into const type!
 };
 
 #define TOPL_SHADER_H

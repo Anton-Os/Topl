@@ -175,13 +175,13 @@ namespace _Drx11 {
 }
 
 Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
-	for(unsigned b = 0; b < mBuffers.size(); b++)
-		mBuffers.at(b).buffer->Release();
+	for(unsigned b = 0; b < _buffers.size(); b++)
+		_buffers.at(b).buffer->Release();
 
-	for (unsigned t = 0; t < mTextures.size(); t++) {
-		mTextures.at(t).texture->Release();
-		mTextures.at(t).sampler->Release();
-		mTextures.at(t).resView->Release();
+	for (unsigned t = 0; t < _textures.size(); t++) {
+		_textures.at(t).texture->Release();
+		_textures.at(t).sampler->Release();
+		_textures.at(t).resView->Release();
 	}
 
 	_swapChain->Release();
@@ -392,8 +392,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 
 	// Generates object for single scene block buffer
 	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
-		_isSceneReady = _Drx11::createBlockBuff(&_device, &mSceneBlockBuff, &blockBytes);
-		mBuffers.push_back(Buffer_Drx11(mSceneBlockBuff));
+		_isSceneReady = _Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
+		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 	}
 
 	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
@@ -408,7 +408,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
+			_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
 		}
 		if (!_isSceneReady) return; // Error
 
@@ -416,15 +416,15 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		ID3D11Buffer* indexBuff = nullptr;
 		if (geoTarget_iData != nullptr) { // Checks if index data exists for render object
 			_isSceneReady = _Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)geoTarget_iData, geoTarget_renderObj->getIndexCount());
-			mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
-		} else mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
+			_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, geoTarget_renderObj->getIndexCount()));
+		} else _buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff,
 												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
 
-		mBuffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
 		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
@@ -532,7 +532,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	mTextures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler, resView));
+	_textures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler, resView));
 }
 
 #endif
@@ -543,15 +543,15 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		_Drx11::createBlockBuff(&_device, &mBuffers.front().buffer, &blockBytes); // Update code should work
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		_Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			for (std::vector<Buffer_Drx11>::iterator currentBuff = mBuffers.begin(); currentBuff < mBuffers.end(); currentBuff++)
+			for (std::vector<Buffer_Drx11>::iterator currentBuff = _buffers.begin(); currentBuff < _buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
 					renderBlockBuff = &(*currentBuff);
 					break;
@@ -596,8 +596,8 @@ void Topl_Renderer_Drx11::render(void){
 	}
 
 	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
-	if (mBuffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_Drx11* sceneBlockBuff = &mBuffers.front();
+	if (_buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
@@ -606,7 +606,7 @@ void Topl_Renderer_Drx11::render(void){
 	// Rendering Loop!
 	if (_pipelineReady && _isSceneReady)
 		for (unsigned id = _mainRenderIDs; id >= 1; id--) {
-			_Drx11::discoverBuffers(dBuffers, &mBuffers, id);
+			_Drx11::discoverBuffers(dBuffers, &_buffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
@@ -624,11 +624,11 @@ void Topl_Renderer_Drx11::render(void){
 			_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			for (unsigned t = 0; t < mTextures.size(); t++) {
-				if (mTextures.at(t).targetID > id) break; // This means we have passed it in sequence
-				else if (mTextures.at(t).targetID == id) {
-					ID3D11SamplerState* baseSampler = mTextures.at(t).sampler;
-					ID3D11ShaderResourceView* resView = mTextures.at(t).resView;
+			for (unsigned t = 0; t < _textures.size(); t++) {
+				if (_textures.at(t).targetID > id) break; // This means we have passed it in sequence
+				else if (_textures.at(t).targetID == id) {
+					ID3D11SamplerState* baseSampler = _textures.at(t).sampler;
+					ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 
 					_deviceCtx->PSSetShaderResources(0, 1, &resView);
 					_deviceCtx->PSSetSamplers(0, 1, &baseSampler);

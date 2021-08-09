@@ -1,10 +1,15 @@
 #include "Topl_Shader.hpp"
 
 struct FrameFx_VertexShader : public Topl_Shader {
-	FrameFx_VertexShader(const Platform* platform, const char* filePath)
+	FrameFx_VertexShader(const Platform* platform)
 		: Topl_Shader(
-			platform, SHDR_Vertex, filePath,
-			{ Shader_Type("pos", SHDR_float_vec3), Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+			platform, 
+			SHDR_Vertex, 
+			genPrefix_glsl() + "Vertex_FrameFx.glsl",
+			{ 
+				Shader_Type("pos", SHDR_float_vec3), 
+				Shader_Type("texcoord", SHDR_float_vec2) 
+			} // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
@@ -33,11 +38,14 @@ struct FrameFx_VertexShader : public Topl_Shader {
 };
 
 struct FrameFx_FragmentShader : public Topl_Shader {
-	FrameFx_FragmentShader(const char* filePath)
+	FrameFx_FragmentShader()
 		: Topl_Shader(
-			SHDR_Fragment, filePath,
-			{ Shader_Type("screenRes", SHDR_uint_vec2), 
-            Shader_Type("cursorPos", SHDR_float_vec2) } // Inputs
+			SHDR_Fragment,
+			genPrefix_glsl() + "Frag_FrameFx.glsl",
+			{ 
+				Shader_Type("screenRes", SHDR_uint_vec2), 
+				Shader_Type("cursorPos", SHDR_float_vec2) 
+			} // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }

@@ -12,10 +12,8 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_FrameFx.hlsl";
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_FrameFx.hlsl";
-	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader(fragmentShaderSrc.c_str());
+	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
+	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader();
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 

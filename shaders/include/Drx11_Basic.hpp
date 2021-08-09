@@ -1,11 +1,14 @@
 #include "Topl_Shader.hpp"
 
 struct Basic_VertexShader : public Topl_Shader {
-	Basic_VertexShader(const char* filePath)
+	Basic_VertexShader()
 		: Topl_Shader(
-			SHDR_Vertex, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-            Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+			SHDR_Vertex, 
+			genPrefix_hlsl() + "Vertex_Basic.hlsl",
+			{ 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+			} // Inputs
 		) {  }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
@@ -27,11 +30,14 @@ struct Basic_VertexShader : public Topl_Shader {
 };
 
 struct Basic_PixelShader : public Topl_Shader {
-	Basic_PixelShader(const char* filePath)
+	Basic_PixelShader()
 		: Topl_Shader(
-			SHDR_Fragment, filePath,
-			{ Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-			Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) } // Inputs
+			SHDR_Fragment, 
+			genPrefix_hlsl() + "Pixel_Basic.hlsl",
+			{ 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+			} // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }

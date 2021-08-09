@@ -93,6 +93,7 @@ struct Phys_Colliders {
     Phys_Colliders(){}
     Phys_Colliders(const Eigen::Vector3f* o){ origin = o; }
 
+    bool is3D = true; // indicates whether collider is 3D
     float radii = 0.0f; // all colliding spheres that are uniform in size
     std::vector<Eigen::Vector3f> offsets; // offsets from origin of colliders
     const Eigen::Vector3f* origin = nullptr; // origin of associated geometry object

@@ -12,6 +12,8 @@
 
 namespace Topl {
 	Topl_Scene scene;
+	std::string assetsPath = ASSETS_DIR;
+	// std::replace(assetsPath.begin(), assetsPath.end(), '/', '\\');
 
 	// TODO: Make these not device specific, relative file paths only!
 	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {

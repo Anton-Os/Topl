@@ -36,6 +36,14 @@ struct Topl_Pipeline_Drx11 {
 	ID3DBlob* psBuff;
 };
 
+struct Topl_RenderableContext_Drx11 { // Groups items together to allow for switching between multiple scenes and pipelines
+	const Topl_Scene* scenePtr;
+	Topl_Pipeline_Drx11 pipeline;
+	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
+	std::vector<Buffer_Drx11> buffers;
+	std::vector<Texture_Drx11> textures;
+};
+
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
 	Topl_Renderer_Drx11(HWND hwnd) { init(hwnd); }
@@ -55,10 +63,11 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
+	std::vector<Topl_RenderableContext_Drx11> _renderCtx; // NEW! begin to relocate objects here!
 	Topl_Pipeline_Drx11 _pipeline;
-	ID3D11Buffer* mSceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
-	std::vector<Buffer_Drx11> mBuffers;
-	std::vector<Texture_Drx11> mTextures;
+	ID3D11Buffer* _sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
+	std::vector<Buffer_Drx11> _buffers;
+	std::vector<Texture_Drx11> _textures;
 
 	IDXGISwapChain* _swapChain;
 	ID3D11Device* _device;

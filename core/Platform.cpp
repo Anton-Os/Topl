@@ -46,7 +46,11 @@ void Platform::createWindow(const char* windowName){
 	UpdateWindow(_context.window);
 }
 
-void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
+void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
+	// TODO: Implement Body Here
+}
+
+void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */) {
 	// TODO: Implement Body Here
 }
 
@@ -108,7 +112,11 @@ void Platform::createWindow(const char* windowName){
 	XMapWindow(_context.display, _context.window);
 }
 
-void createChildGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
+void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout) {
+	// TODO: Implement Body Here
+}
+
+void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */) {
 	// TODO: Implement Body Here
 }
 

@@ -1,5 +1,11 @@
 #include "Geo_Construct.hpp"
 
+Geo_Grid_CellIndex {
+	unsigned xOffset;
+	unsigned yOffset;
+	unsigned zOffset;
+}
+
 struct Geo_Grid_Properties {
 	Geo_Grid_Properties() {}
 	Geo_Grid_Properties(std::pair<unsigned short, float> attribs) { // Uniform sides constructor
@@ -58,6 +64,7 @@ public:
 private:
     void fill(Topl_Scene* scene) override;
 	
-	Eigen::Vector3f originPos; // Use this to determine grid item position
+	Eigen::Vector3f originPos; // use this to determine grid item position
+	std::vector<Geo_Grid_CellIndex> blocks; // blocked cells are not rendered to screen 
     Geo_Grid_Properties grid_prop;
 };

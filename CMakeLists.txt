@@ -53,7 +53,9 @@ ExternalProject_Add(Eigen
 # 3rd Party Additions
 # include(thirdParty.cmake)
 
-configure_file("${CMAKE_SOURCE_DIR}/core/native_os_def.h.in" "${CMAKE_SOURCE_DIR}/core/native_os_def.h")
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
+set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
+configure_file("${CMAKE_SOURCE_DIR}/core/support_def.h.in" "${CMAKE_SOURCE_DIR}/core/support_def.h")
 
 if(WIN32)
   find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)

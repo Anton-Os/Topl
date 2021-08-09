@@ -3,10 +3,11 @@
 #define TOPL_WIN_HEIGHT 1200
 #define TOPL_WIN_WIDTH 1100
 
-#define PARENT_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/MSVC_BUILD_2/Debug/" // Change Debug directory to $(Configuration)
-#if 1
-    #include "Rasteron.h" // includes Rasteron if found include the header
-#endif
+#include "support_def.h"
+// #define PARENT_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/MSVC_BUILD_2/Debug/" // Change Debug directory to $(Configuration)
+// #if 1
+//     #include "Rasteron.h" // includes Rasteron if found include the header
+// #endif
 
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN

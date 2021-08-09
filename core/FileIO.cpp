@@ -25,10 +25,6 @@ std::string getParentDir(const char* str){
     return parentDir;
 }
 
-void fixPathSlashes(std::string* path){
-    path->replace(path->begin(), path->end(), '/', '\\');
-}
-
 void logToFile(const char* fileName, std::string logMessage){
     std::ofstream file(fileName, std::ofstream::out | std::ofstream::app);
     file << logMessage << "\n\n";

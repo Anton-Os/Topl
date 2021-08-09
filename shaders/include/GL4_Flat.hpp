@@ -1,9 +1,10 @@
 #include "Topl_Shader.hpp"
 
 struct Flat_FragmentShader : public Topl_Shader {
-	Flat_FragmentShader(const char* filePath)
+	Flat_FragmentShader()
 		: Topl_Shader(
-			SHDR_Fragment, filePath,
+			SHDR_Fragment,
+			genPrefix_glsl() + "Frag_Flat.glsl",
 			{ Shader_Type("flatColor", SHDR_float) } // Inputs
 		) { }
 

@@ -15,7 +15,6 @@
 
 std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);
-void fixPathSlashes(std::string* path);
 bool checkFormatObj(const char* source);
 void cleanupNumStr(std::string* str); // cleanup string so only numbers and whitespace are left
 unsigned getValsCountFromStr(const std::string& source); // extracts number of consecutive values in a string without divisor

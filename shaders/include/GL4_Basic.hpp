@@ -1,11 +1,14 @@
 #include "Topl_Shader.hpp"
 
 struct Basic_VertexShader : public Topl_Shader {
-	Basic_VertexShader(const char* filePath)
+	Basic_VertexShader()
 		: Topl_Shader(
-			SHDR_Vertex, filePath,
-			{ Shader_Type("pos", SHDR_float_vec3), 
-            Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+			SHDR_Vertex, 
+			genPrefix_glsl() + "Vertex_Basic.glsl",
+			{ 
+				Shader_Type("pos", SHDR_float_vec3), 
+				Shader_Type("texcoord", SHDR_float_vec2) 
+			} // Inputs
 		) { }
 
 	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
@@ -27,9 +30,10 @@ struct Basic_VertexShader : public Topl_Shader {
 };
 
 struct Basic_FragmentShader : public Topl_Shader {
-	Basic_FragmentShader(const char* filePath)
+	Basic_FragmentShader()
 		: Topl_Shader(
-			SHDR_Fragment, filePath,
+			SHDR_Fragment,
+			genPrefix_glsl() + "Frag_Basic.glsl",
 			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
 		) { }
 

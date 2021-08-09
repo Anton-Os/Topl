@@ -14,10 +14,8 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Basic.hlsl";
-	Basic_VertexShader vertexShader = Basic_VertexShader(vertexShaderSrc.c_str());
-	std::string pixelShaderSrc = getParentDir(argv[0]) + "\\Pixel_Basic.hlsl";
-	Basic_PixelShader pixelShader = Basic_PixelShader(pixelShaderSrc.c_str());
+	Basic_VertexShader vertexShader = Basic_VertexShader();
+	Basic_PixelShader pixelShader = Basic_PixelShader();
 
 	renderer.setPipeline(&vertexShader, &pixelShader);
 	renderer.buildScene(&Topl::scene);

@@ -62,6 +62,8 @@ private:
 
 };
 
+// Texture Objects
+
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t)
@@ -80,10 +82,11 @@ public:
 private:
 	void init() override { glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &slots[0]); mIsInit = true;}
 
-	// GLenum allocFrmt;
 	GLuint slots[GL4_TEXTURE_BINDINGS_MAX];
 	unsigned slotIndex = 0;
 };
+
+// Instance Specific Containers
 
 struct Topl_Pipeline_GL4 {
 	GLuint vertexDataLayouts[GL4_VERTEX_ARRAY_MAX];
@@ -92,6 +95,14 @@ struct Topl_Pipeline_GL4 {
 	GLuint vShader; // Vertex Shader
 	GLuint fShader; // Fragment Shader
 	GLuint shaderProg;
+};
+
+struct Topl_RenderableContext_GL4 { // Groups items together to allow for switching between multiple scenes and pipelines
+	const Topl_Scene* scenePtr;
+	Topl_Pipeline_GL4 pipeline;
+	std::vector<Buffer_GL4> buffers;
+	std::vector<VertexArray_GL4> VAOs; // Vertex Array Objects
+	std::vector<Texture_GL4> textures;
 };
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
@@ -113,6 +124,7 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
+	std::vector<Topl_RenderableContext_GL4> _renderCtx; // NEW! begin to relocate objects here!
   	Topl_Pipeline_GL4 _pipeline;
 
 	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object
