@@ -15,6 +15,27 @@
 typedef const Geo_Component* const topl_geoComponent_cptr;
 typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;
 
+struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
+	Phys_Connector* connector;
+	geoComponent_pair linkedItems;
+};
+
+typedef const LinkedItems* const topl_linkedItems_cptr;
+
+struct Topl_LightSource {
+	Topl_LightSource(Eigen::Vector3f p) {
+		pos = p;
+	}
+	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
+		pos = p;
+		lightColor = lc;
+		intensity = i;
+	}
+	Eigen::Vector3f pos;
+	Eigen::Vector3f lightColor;
+	double intensity = 1.0;
+};
+
 class Topl_Camera {
 public:
 	// Identity projection constructor
@@ -37,13 +58,6 @@ private:
 
 typedef const Topl_Camera* const topl_camera_cptr; // typedef for safety
 
-struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
-	Phys_Connector* connector;
-	geoComponent_pair linkedItems;
-};
-
-typedef const LinkedItems* const topl_linkedItems_cptr;
-
 #ifdef RASTERON_H
 	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
 #endif
@@ -64,6 +78,7 @@ public:
 	// void addLight()
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
+	void addLightSource(Topl_LightSource ls){ _lightSources.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
@@ -89,6 +104,7 @@ private:
 	Topl_Camera mCamera;
 
 	std::vector<Geo_Component*> _namedGeos; // Stores all geometries
+	std::vector<Topl_LightSource> _lightSources; // Stores all light sources
 	std::map<Geo_Component*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision

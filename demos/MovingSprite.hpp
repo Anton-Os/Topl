@@ -12,7 +12,6 @@
 
 namespace Topl {
 	Topl_Scene scene;
-    // Input_KeyLogger keyLogger;
 
 	// TODO: Make these not device specific, relative file paths only!
 	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {

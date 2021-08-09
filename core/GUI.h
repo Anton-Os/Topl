@@ -14,15 +14,14 @@ enum UI_QuadType {
 
 class UI_Interactive {
 public:
-    UI_Interactive((*c)()) { callback = c; }
-
+    // UI_Interactive((*c)()) { callback = c; }
     int fireCallback(){
         (isToggled)? isToggled = false : isToggled = true;
         return callback();
     }
     unsigned toggleColor = DEFAULT_FG_COLOR;
 private:
-    int (*callback)();
+    virtual int callback() = 0;
     bool isToggled = false;
 };
 
@@ -36,13 +35,14 @@ public:
         interactCtx = i;
     }
 
-    UI_QuadType getQuadType { return type; }
+    UI_QuadType getQuadType() { return type; }
 
     const char* name = ""; // can be used as a label or as an image path
     unsigned bkColor = DEFAULT_BK_COLOR;
+protected:
+	UI_QuadType type;
 private:
     UI_Interactive* interactCtx = nullptr; // fires callback if applicable
-    UI_QuadType type;
 };
 
 struct UI_ParentQuadPane : public UI_QuadPane {
@@ -70,10 +70,10 @@ struct UI_QuadLayout {
         // by default there is one parent with 4 empty children
         childPanes.resize(4);
         parentPanes.push_back(UI_ParentQuadPane(
-            &childPanes.at(0);
-            &childPanes.at(1);
-            &childPanes.at(2);
-            &childPanes.at(3);
+            &childPanes.at(0),
+            &childPanes.at(1),
+            &childPanes.at(2),
+            &childPanes.at(3)
         ));
     }
     std::vector<UI_ParentQuadPane> parentPanes;

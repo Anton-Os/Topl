@@ -25,19 +25,15 @@ std::string getParentDir(const char* str){
     return parentDir;
 }
 
+void fixPathSlashes(std::string* path){
+    path->replace(path->begin(), path->end(), '/', '\\');
+}
+
 void logToFile(const char* fileName, std::string logMessage){
     std::ofstream file(fileName, std::ofstream::out | std::ofstream::app);
     file << logMessage << "\n\n";
     file.close();
 }
-
-/* bool checkFormatObj(const char* source) {
-	std::string fileContent = readFile(source, false); // ascii read
-	std::string magicKey("OBJFILE.mtl");
-	return (fileContent.find(magicKey) != std::string::npos) ? true : false;
-} */
-
-bool checkFormatObj(const char* source) { return true; } // TODO: Figure out a reliable check
 
 void cleanupNumStr(std::string* str){
     for(std::string::iterator c = str->begin(); c != str->end(); c++)

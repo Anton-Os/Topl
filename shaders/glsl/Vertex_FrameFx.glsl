@@ -7,21 +7,23 @@ layout(packed) uniform Block {
 
 // glsl block index 1
 layout(packed) uniform SceneBlock {
-	uvec2 screenRes;
-	uvec2 cursorPos;
-	uint renderMode; // switches modes to implement different drawing functions
+	ivec2 screenRes;
+	vec2 cursorPos;
+	// uint renderMode; // switches modes to implement different drawing functions
 };
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) flat out uint renderID_out;
-layout(location = 1) flat out uvec2 screenRes_out;
-layout(location = 2) flat out uvec2 cursorPos_out;
+// layout(location = 0) flat out uint renderID_out;
+layout(location = 0) flat out ivec2 screenRes_out;
+layout(location = 1) flat out vec2 cursorPos_out;
+layout(location = 2) flat out uint renderID_out;
 
 void main() {
-	renderID_out = renderID;
+	// renderID_out = renderID;
     screenRes_out = screenRes;
-	screenRes_out = uvec2(0, 0); // cursorPos_out = cursorPos; // change to uniform value
+	cursorPos_out = cursorPos; // change to uniform value
+	renderID_out = renderID;
 	gl_Position = vec4(pos, 1.0);
 }

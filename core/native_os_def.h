@@ -3,8 +3,8 @@
 #define TOPL_WIN_HEIGHT 1200
 #define TOPL_WIN_WIDTH 1100
 
-#define PARENT_DIR "/home/antonos/AntonDocs/Codex/Ao-Project/Topl-Skeleton/GCC-Build-2/./"
-#ifdef 0
+#define PARENT_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/MSVC_BUILD_2/Debug/" // Change Debug directory to $(Configuration)
+#if 1
     #include "Rasteron.h" // includes Rasteron if found include the header
 #endif
 
