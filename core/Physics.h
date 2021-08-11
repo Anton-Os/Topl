@@ -14,19 +14,23 @@
 #define TOPL_CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
 #define TOPL_CONNECTOR_ANGLE_MULT 20
 
-/* enum MOTION_Type { MOTION_Linear }; */
+enum MOTION_Type {
+	MOTION_Instant,
+	MOTION_Linear,
+	MOTION_Smooth,
+	MOTION_Pivot,
+};
 
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
 public:
-    Phys_Motion(Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
-        startMotionVec = m;
-        endMotionVec = -1.0 * m;
+    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
+        motionVec1 = m;
         endSecs = d;
     }
 
-    Phys_Motion(Eigen::Vector3f sm, Eigen::Vector3f em, double d){ // Start and End Motion Vec
-        startMotionVec = sm;
-        endMotionVec = em;
+    Phys_Motion(Eigen::Vector3f m1, Eigen::Vector3f m2, double d){ // Start and End Motion Vec
+        motionVec1 = m1;
+		motionVec2 = m2;
         endSecs = d;
     }
 
@@ -39,24 +43,28 @@ public:
 
         seqCount = static_cast<unsigned>(std::floor(getSeqProgress(currentSecs)));
         double seqProgressFrac = getSeqProgress(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
-        // Eigen::Vector3f motionVec = (seqProgressFrac < 0.5f) ? startMotionVec : endMotionVec; // TODO: set proper values!
-		Eigen::Vector3f motionVec = (seqProgressFrac - 1.0f) * startMotionVec;
 
-        return motionVec; // TODO: set proper values!
+		switch (type) {
+		case MOTION_Instant: return (seqProgressFrac - 1.0f) * motionVec1; // implement instant!
+		case MOTION_Linear : return (seqProgressFrac - 1.0f) * motionVec1;
+		case MOTION_Smooth: return (seqProgressFrac - 1.0f) * motionVec1; // implement smooth!
+		case MOTION_Pivot: return (seqProgressFrac - 1.0f) * motionVec1; // implement pivot!
+		}
     }
 
 private:
     double getSeqProgress(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets the progression in the sequence
 
     // MOTION_Type motionType = MOTION_Linear;
+	MOTION_Type type;
     double startSecs = 0.0f;
     double endSecs = 0.0f;
     unsigned maxIter = 0; // by default repeats infinitely
     unsigned seqCount = 0;
     bool isFirstCall = true; // set to false after first call to get position
 
-    Eigen::Vector3f startMotionVec; // start motion vector
-    Eigen::Vector3f endMotionVec; // end motion vector
+    Eigen::Vector3f motionVec1 = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
+    Eigen::Vector3f motionVec2 = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
 };
 
 enum CONNECT_Type {

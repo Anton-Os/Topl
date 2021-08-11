@@ -54,11 +54,11 @@ void Geo_SphereUV::genIndices(unsigned* data){
 	for(i = i; i < ((_shape3D.xSegments - 1) * _shape3D.ySegments) * 6; i += 6){
 		*(data + i + 0) = v;
 		*(data + i + 1) = v + 1;
-		*(data + i + 2) = v + _shape3D.xSegments + 1;
+		*(data + i + 2) = v + _shape3D.ySegments + 1;
 
 		*(data + i + 3) = v;
-		*(data + i + 4) = v + _shape3D.xSegments + 1;
-		*(data + i + 5) = v + _shape3D.xSegments;
+		*(data + i + 4) = v + _shape3D.ySegments + 1;
+		*(data + i + 5) = v + _shape3D.ySegments;
 
 		v++;
 	}

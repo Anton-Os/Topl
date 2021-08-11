@@ -5,24 +5,28 @@
 #include <cmath>
 #include <vector>
 
-typedef void (*periodicCallback)(void);
-// typedef void (*periodicCallback)(double);
+#define TIME_MOTION_CALLBACK 30 // 30 milliseconds
 
-struct Timer_PeriodicEvent {
+// typedef void (*periodicCallback)(void);
+typedef void (*periodicCallback)(double);
+
+class Timer_PeriodicEvent {
+public:
 	Timer_PeriodicEvent(unsigned period, periodicCallback callback) : millisecPeriod(period){
 		callbackTrigger = callback;
 	}
 	void addTime(unsigned millisecs){
-		millisecElapsed += millisecs;
-		while(millisecElapsed >= millisecPeriod){
-			millisecElapsed -= millisecPeriod;
-			double secs = static_cast<double>(millisecs) / 1000.0;
-			callbackTrigger();
-			// callbackTrigger(secs); // callback function triggers once period is exceeded
+		_relMillisecSpan += millisecs;
+		_absSecSpan += static_cast<double>(millisecs) / 1000.0;
+		while(_relMillisecSpan >= millisecPeriod){
+			_relMillisecSpan -= millisecPeriod;
+			callbackTrigger(_absSecSpan);
 		}
 	}
-	unsigned millisecElapsed = 0;
-	const unsigned millisecPeriod;	
+private:
+	unsigned _relMillisecSpan = 0;
+	double _absSecSpan = 0.0;
+	const unsigned millisecPeriod;
 	periodicCallback callbackTrigger;
 };
 
@@ -41,8 +45,8 @@ public:
 	double getAbsMillisecs(); // Gets milliseconds since timer creation
 	double getAbsSecs(){ return getAbsMillisecs() / 1000.0; } // Gets seconds since timer creation
 private:
-	std::chrono::duration<double, std::milli> _relTimeSpan = std::chrono::milliseconds(0);
-	std::chrono::duration<double, std::milli> _absTimeSpan = std::chrono::milliseconds(0);
+	std::chrono::duration<double, std::milli> _relSecSpan = std::chrono::milliseconds(0); // relative time since last call
+	std::chrono::duration<double, std::milli> _absSecSpan = std::chrono::milliseconds(0); // absolute time since creation
 	std::chrono::steady_clock::time_point _startSecs; // helper variable for adjusting time
 	std::chrono::steady_clock::time_point _endSecs; // helper variable for adjusting time
 
