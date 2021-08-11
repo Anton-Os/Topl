@@ -39,7 +39,8 @@ public:
 
         seqCount = static_cast<unsigned>(std::floor(getSeqProgress(currentSecs)));
         double seqProgressFrac = getSeqProgress(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
-        Eigen::Vector3f motionVec = (seqProgressFrac < 0.5f) ? startMotionVec : endMotionVec; // TODO: set proper values!
+        // Eigen::Vector3f motionVec = (seqProgressFrac < 0.5f) ? startMotionVec : endMotionVec; // TODO: set proper values!
+		Eigen::Vector3f motionVec = (seqProgressFrac - 1.0f) * startMotionVec;
 
         return motionVec; // TODO: set proper values!
     }
@@ -99,6 +100,10 @@ struct Phys_Colliders {
     const Eigen::Vector3f* origin = nullptr; // origin of associated geometry object
 };
 
+/* struct Phys_ColliderObj { // allows a derived class to 
+    virtual void genColliders(Phys_Colliders* colliders) = 0;
+} */
+
 struct Phys_Properties { // A physics property that becomes associated to a Geo_Component object
     Phys_Properties(){ // Freeform constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
@@ -130,3 +135,4 @@ struct Phys_Properties { // A physics property that becomes associated to a Geo_
     Eigen::Vector3f* forces = nullptr;
     const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection
 };
+

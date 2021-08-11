@@ -17,12 +17,7 @@ int main(int argc, char** argv) {
 	Flat_PixelShader fragmentShader = Flat_PixelShader();
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	
-	Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
-
-	Timer_Ticker gameTicker;
 
 	Main::gameLoop(&platform, &renderer);
 

@@ -51,6 +51,7 @@ enum SHDR_ValueType {
 
 
 struct Shader_Type {
+    Shader_Type(){}
     Shader_Type(const std::string& n, SHDR_ValueType t){
         name = n;
         type = t;

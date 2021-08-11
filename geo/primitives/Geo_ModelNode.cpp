@@ -27,5 +27,5 @@ void Geo_ModelNode::log(const char* fileName) { // for debugging
 	// logToFile(fileName, *(mNode->getPosDataStr()));
 
 	logToFile(fileName, "\n\nIndex Data\n");
-	// logToFile(fileName, *(mNode->getIndexDataStr()));
+	// logToFile(fileName, *(mNode->getIndicesStr()));
 }

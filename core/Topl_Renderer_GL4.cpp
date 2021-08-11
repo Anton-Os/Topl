@@ -237,19 +237,19 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDest
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #ifdef _WIN32
-	cleanup_win(&mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+	cleanup_win(&_nativeContext.window, &_nativeContext.windowDevice_Ctx, &_nativeContext.GL_ctx);
 #elif defined(__linux__)
-	cleanup_linux(mNativeContext.display, mNativeContext.GL_ctx);
+	cleanup_linux(_nativeContext.display, _nativeContext.GL_ctx);
 #endif
 }
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	mNativeContext.window = hwnd;
+	_nativeContext.window = hwnd;
 #ifdef _WIN32
-    init_win(&mNativeContext.window, &mNativeContext.windowDevice_Ctx, &mNativeContext.GL_ctx);
+    init_win(&_nativeContext.window, &_nativeContext.windowDevice_Ctx, &_nativeContext.GL_ctx);
 #elif defined(__linux__)
-	init_linux(mNativeContext.GL_ctx, mNativeContext.display, mNativeContext.window_ptr);
+	init_linux(_nativeContext.GL_ctx, _nativeContext.display, _nativeContext.window_ptr);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -290,8 +290,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 
-		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
+		geoVertex_cptr geoTarget_perVertex = geoTarget_renderObj->getVertices();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
@@ -309,9 +309,9 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
 		} else _buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
-		_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
 		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVertexCount() * sizeof(Geo_VertexData), geoTarget_perVertexData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVerticesCount() * sizeof(Geo_Vertex), geoTarget_perVertex, GL_STATIC_DRAW);
 
 		_VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
 		VertexArray_GL4* currentVAO_ptr = &_VAOs.back(); // Check to see if all parameters are valid
@@ -327,7 +327,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 				_GL4::getSizeFromShaderVal(shaderType->type),
 				_GL4::getFormatFromShaderVal(shaderType->type),
 				GL_FALSE,
-				sizeof(Geo_VertexData),
+				sizeof(Geo_Vertex),
 				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
 			);
 
@@ -595,8 +595,8 @@ void Topl_Renderer_GL4::render(void){
 
 	free(buffer_ptrs);
 #ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&mNativeContext.windowDevice_Ctx);
+	swapBuffers_win(&_nativeContext.windowDevice_Ctx);
 #elif defined(__linux__)
-	swapBuffers_linux(mNativeContext.display, mNativeContext.window_ptr);
+	swapBuffers_linux(_nativeContext.display, _nativeContext.window_ptr);
 #endif
 }

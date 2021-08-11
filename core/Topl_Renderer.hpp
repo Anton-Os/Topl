@@ -80,8 +80,7 @@ public:
     // Basic pipeline creation
     void setPipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader){
         _shaders.clear(); // Reset the pipeline values
-        if(vertexShader->getType() != SHDR_Vertex) return; // Error
-        if(fragShader->getType() != SHDR_Fragment) return; // Error
+        if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment) return;
 
         _shaders.push_back(vertexShader);
         _shaders.push_back(fragShader);
@@ -107,7 +106,7 @@ public:
     virtual void clearView()  = 0;
     virtual void buildScene(const Topl_Scene* scene) = 0;
 	
-	NATIVE_PLATFORM_CONTEXT mNativeContext; // Native Platform Element required to create a renderer
+	NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 
 #ifdef RASTERON_H
     virtual Rasteron_Image* getFrame() = 0;

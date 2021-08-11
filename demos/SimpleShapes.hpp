@@ -44,6 +44,8 @@ namespace Main {
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
+
+		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

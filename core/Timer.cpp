@@ -5,28 +5,28 @@
 using namespace std::chrono;
 
 void Timer_Ticker::reset(){
-    mRelTimeSpan = milliseconds(0);
-    mAbsTimeSpan = milliseconds(0);
-    mStartSec = steady_clock::now();
+    _relTimeSpan = milliseconds(0);
+    _absTimeSpan = milliseconds(0);
+    _startSecs = steady_clock::now();
 }
 
 double Timer_Ticker::getRelMillisecs() {
     updateTimer();
-    return mRelTimeSpan.count();
+    return _relTimeSpan.count();
 }
 
 double Timer_Ticker::getAbsMillisecs() {
     updateTimer();
-    return mAbsTimeSpan.count();
+    return _absTimeSpan.count();
 }
 
 void Timer_Ticker::updateTimer(){
-    mEndSec = steady_clock::now(); // Gets current time
-    mRelTimeSpan = duration_cast<duration<double>>(mEndSec - mStartSec);
-    mAbsTimeSpan += mRelTimeSpan;
+    _endSecs = steady_clock::now(); // Gets current time
+    _relTimeSpan = duration_cast<duration<double>>(_endSecs - _startSecs);
+    _absTimeSpan += _relTimeSpan;
 
-    for(std::vector<Timer_PeriodicEvent>::iterator currentEvent = mPeriodicEvents.begin(); currentEvent != mPeriodicEvents.end(); currentEvent++)
-        currentEvent->addTime(mRelTimeSpan.count()); // update time elapsed of all periodic events
+    for(std::vector<Timer_PeriodicEvent>::iterator currentEvent = _periodicEvents.begin(); currentEvent != _periodicEvents.end(); currentEvent++)
+        currentEvent->addTime(_relTimeSpan.count()); // update time elapsed of all periodic events
 
-    mStartSec = mEndSec; // internally adjusting timing functions
+    _startSecs = _endSecs; // internally adjusting timing functions
 }

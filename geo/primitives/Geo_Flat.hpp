@@ -7,26 +7,30 @@ public:
     : Geo_RenderObj
     (refShape.segments + 1, // vertex count is number of segments +1 for the center point
      refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
-        mShape2D = refShape; // copy to internal data
+        _shape2D = refShape; // copy to internal data
         fillRenderObject();
     }
 
-    float getRadius() const { return mShape2D.radius; }
-    unsigned getSegments() const { return mShape2D.segments; }
+    float getRadius() const { return _shape2D.radius; }
+    unsigned getSegments() const { return _shape2D.segments; }
 private:
     void genVertices(Eigen::Vector3f* data) override;
     void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
-    NGon2D mShape2D;
+    NGon2D _shape2D;
 };
 
 struct Geo_FlatTriangle : public Geo_Flat {
     Geo_FlatTriangle(float radius) : Geo_Flat({ radius, 3 }){}
 };
 
-struct Geo_FlatSquare : public Geo_Flat {
+class Geo_FlatSquare : public Geo_Flat {
+public:
     Geo_FlatSquare(float radius) : Geo_Flat({ radius, 4 }){}
+    face_cptr getFace() const { return &_face; }
+private:
+    Geo_Face _face;
 };
 
 struct Geo_FlatHex : public Geo_Flat {

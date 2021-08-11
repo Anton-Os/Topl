@@ -20,6 +20,9 @@ namespace Main {
 		platform->createWindow("Canvas");
 
         // add callbacks
+
+		Topl::scene.addGeometry("plane", &Topl::planeGeo);
+		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

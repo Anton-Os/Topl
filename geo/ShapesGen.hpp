@@ -1,6 +1,5 @@
 #ifndef SHAPESGEN_H
 
-#include "Geometry.hpp"
 #include "Geo_Component.hpp"
 
 struct ShapesGen {
@@ -19,6 +18,12 @@ struct ShapesGen {
         targetGeo->modify(yCallback, AXIS_Y);
         targetGeo->modify(zCallback, AXIS_Z);
     }
+    // Object Creation Utilities
+    static void genColliders(Phys_Colliders* colliders, const std::vector<Geo_Face> *const faces); // generates a collision object based on faces provided
+    // Tiling Functions
+    static void tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Square tiling
+    static void tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Triangular tiling
+    static void tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Hexagonal tiling
     /* static Geo_RenderObj genCompoundShape_add(const Geo_Component* firstGeo, const Geo_Component* secondGeo);
     static Geo_RenderObj genCompoundShape_diff(const Geo_Component* firstGeo, const Geo_Component* secondGeo);
     static Geo_RenderObj genCompoundShape_intersect(const Geo_Component* firstGeo, const Geo_Component* secondGeo);

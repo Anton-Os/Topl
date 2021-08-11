@@ -16,10 +16,7 @@ int main(int argc, char** argv) {
 	FrameFx_FragmentShader fragmentShader = FrameFx_FragmentShader();
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-
-	Topl::scene.addGeometry("plane", &Topl::planeGeo);
 	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	glPointSize(5.0f);
 	glLineWidth(3.0f);

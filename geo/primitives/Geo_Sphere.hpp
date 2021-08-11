@@ -17,18 +17,19 @@ public:
         (refShape.ySegments * 6) + (((refShape.xSegments - 1) * refShape.ySegments) * 6) // + ((((refShape.xSegments - 2) * refShape.ySegments)) * 6) // Index Count
     ){
     // : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, refShape.ySegments * 12) { // only indexes top and bottom
-        mShape3D = refShape; // copy to internal data
-        sphereType = SPHERE_UV;
+        _shape3D = refShape; // copy to internal data
+        _sphereType = SPHERE_UV;
         fillRenderObject();
     }
 
-	float getRadius() const { return mShape3D.radius; }
+	float getRadius() const { return _shape3D.radius; }
 private:
     void genVertices(Eigen::Vector3f* data) override;
     void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
 
-    NGon3D mShape3D;
-    SPHERE_Type sphereType; // Add support for multiple rendering types!
+    NGon3D _shape3D;
+    SPHERE_Type _sphereType; // Add support for multiple rendering types!
+    std::vector<Geo_Face> _faces;
 };

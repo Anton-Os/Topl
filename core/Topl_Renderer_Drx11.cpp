@@ -85,11 +85,11 @@ namespace _Drx11 {
 		return offset;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, perVertex_cptr pvData, unsigned vCount) {
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, geoVertex_cptr pvData, unsigned vCount) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Geo_VertexData) * vCount;
+		buffDesc.ByteWidth = sizeof(Geo_Vertex) * vCount;
 		// buffDesc.ByteWidth = 28 * vCount;
 		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffDesc.CPUAccessFlags = 0;
@@ -199,7 +199,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	mNativeContext.window = hwnd; // Supplying platform specific stuff
+	_nativeContext.window = hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -224,7 +224,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     // swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = mNativeContext.window; 
+	swapChainDesc.OutputWindow = _nativeContext.window; 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -401,8 +401,8 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
-		perVertex_cptr geoTarget_perVertexData = geoTarget_renderObj->getVertexData();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndexData();
+		geoVertex_cptr geoTarget_perVertex = geoTarget_renderObj->getVertices();
+		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
@@ -422,9 +422,9 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff,
-												geoTarget_perVertexData, geoTarget_renderObj->getVertexCount());
+												geoTarget_perVertex, geoTarget_renderObj->getVerticesCount());
 
-		_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, geoTarget_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
@@ -619,7 +619,7 @@ void Topl_Renderer_Drx11::render(void){
 			// TODO: Check for renderBlockBuff validity
 			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
-			UINT stride = sizeof(Geo_VertexData);
+			UINT stride = sizeof(Geo_Vertex);
 			UINT offset = 0;
 			_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);

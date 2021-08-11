@@ -13,14 +13,11 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
 
-	std::string vertexShaderSrc = getParentDir(argv[0]) + "\\Vertex_Volumes.hlsl";
-	Volumes_VertexShader vertexShader = Volumes_VertexShader(vertexShaderSrc.c_str());
-	std::string fragmentShaderSrc = getParentDir(argv[0]) + "\\Pixel_Flat.hlsl";
-	Flat_PixelShader fragmentShader = Flat_PixelShader(fragmentShaderSrc.c_str());
+	Volumes_VertexShader vertexShader = Volumes_VertexShader();
+	Flat_PixelShader fragmentShader = Flat_PixelShader();
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	Main::gameLoop(&platform, &renderer);
 

@@ -60,6 +60,8 @@ public:
         fillScene(scene);
     }
 
+	void addBlock(Geo_Grid_CellIndex cellIndex){ blcoks.push_back(cellIndex); }
+
     void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;

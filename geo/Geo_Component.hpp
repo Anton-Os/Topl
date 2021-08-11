@@ -1,7 +1,7 @@
 #ifndef GEO_COMPONENT_H
 
 #include "Geometry.hpp"
-#include <Eigen/Dense>
+// #include "Physics.hpp"
 
 class Geo_Component {
 public:
@@ -19,7 +19,9 @@ public:
 	}
 
 	void setName(const std::string& name) { _name = name; }
+	void setPos(Eigen::Vector3f vec){ _worldPos = vec; }
 	void updatePos(Eigen::Vector3f vec){ _worldPos += vec; }
+	void setRot(Eigen::Vector2f angles) { _worldRot = angles; } // TODO: Check for 2 pi boundaries
 	void updateRot(Eigen::Vector2f angles) { _worldRot += angles; } // TODO: Check for 2 pi boundaries
 
 	unsigned getId() const { return _id; }

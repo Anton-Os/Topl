@@ -6,6 +6,7 @@
 #include <vector>
 
 typedef void (*periodicCallback)(void);
+// typedef void (*periodicCallback)(double);
 
 struct Timer_PeriodicEvent {
 	Timer_PeriodicEvent(unsigned period, periodicCallback callback) : millisecPeriod(period){
@@ -15,7 +16,9 @@ struct Timer_PeriodicEvent {
 		millisecElapsed += millisecs;
 		while(millisecElapsed >= millisecPeriod){
 			millisecElapsed -= millisecPeriod;
-			callbackTrigger(); // callback function triggers once period is exceeded
+			double secs = static_cast<double>(millisecs) / 1000.0;
+			callbackTrigger();
+			// callbackTrigger(secs); // callback function triggers once period is exceeded
 		}
 	}
 	unsigned millisecElapsed = 0;
@@ -29,22 +32,21 @@ public:
 
 	void reset();
 	void addPeriodicEvent(unsigned period, periodicCallback callback){ 
-		mPeriodicEvents.push_back(Timer_PeriodicEvent(period, callback));
+		_periodicEvents.push_back(Timer_PeriodicEvent(period, callback));
 	}
 
+	void updateTimer();
 	double getRelMillisecs(); // Gets milliseconds secs since last invocation
 	double getRelSecs(){ return getRelMillisecs() / 1000.0; } // Gets seconds secs since last invocation
 	double getAbsMillisecs(); // Gets milliseconds since timer creation
 	double getAbsSecs(){ return getAbsMillisecs() / 1000.0; } // Gets seconds since timer creation
 private:
-	void updateTimer();
+	std::chrono::duration<double, std::milli> _relTimeSpan = std::chrono::milliseconds(0);
+	std::chrono::duration<double, std::milli> _absTimeSpan = std::chrono::milliseconds(0);
+	std::chrono::steady_clock::time_point _startSecs; // helper variable for adjusting time
+	std::chrono::steady_clock::time_point _endSecs; // helper variable for adjusting time
 
-	std::chrono::duration<double, std::milli> mRelTimeSpan = std::chrono::milliseconds(0);
-	std::chrono::duration<double, std::milli> mAbsTimeSpan = std::chrono::milliseconds(0);
-	std::chrono::steady_clock::time_point mStartSec; // helper variable for adjusting time
-	std::chrono::steady_clock::time_point mEndSec; // helper variable for adjusting time
-
-	std::vector<Timer_PeriodicEvent> mPeriodicEvents;
+	std::vector<Timer_PeriodicEvent> _periodicEvents;
 };
 
 #define TIMER_H

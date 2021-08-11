@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <cmath>
 
+#include "Physics.h" // added to generate collision objects
+
 #define DEFAULT_CIRCLE_SEGS 1001 // this is a chiliagon + 1 for odd sides
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
@@ -29,12 +31,12 @@ typedef const Eigen::Matrix3f* const mat3f_cptr;
 typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
-struct Geo_VertexData {
-	Geo_VertexData(Eigen::Vector3f pos){ // Position data constructor
+struct Geo_Vertex {
+	Geo_Vertex(Eigen::Vector3f pos){ // Position data constructor
 		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
 		texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
 	}
-	Geo_VertexData(Eigen::Vector3f pos, Eigen::Vector2f texc){ // Extended constructor
+	Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc){ // Extended constructor
 		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
 		texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
 	}
@@ -50,20 +52,29 @@ enum VERTEX_Tag {
 	// Add more tags!
 };
 
-struct Geo_TaggedVertexData : public Geo_VertexData {
-	Geo_TaggedVertexData(VERTEX_Tag t, Eigen::Vector3f pos)
-	: Geo_VertexData(pos){ // Position data constructor
+struct Geo_TaggedVertex : public Geo_Vertex {
+	Geo_TaggedVertex(VERTEX_Tag t, Eigen::Vector3f pos)
+	: Geo_Vertex(pos){ // Position data constructor
 		tag = t;
 	}
-	Geo_TaggedVertexData(VERTEX_Tag t, Eigen::Vector3f pos, Eigen::Vector2f texc)
-	: Geo_VertexData(pos, texc){ // Extended constructor
+	Geo_TaggedVertex(VERTEX_Tag t, Eigen::Vector3f pos, Eigen::Vector2f texc)
+	: Geo_Vertex(pos, texc){ // Extended constructor
 		tag = t;
 	}
 
 	VERTEX_Tag tag;
 };
 
-typedef const Geo_VertexData* const perVertex_cptr; // Safe const pointer type
+typedef const Geo_Vertex* const geoVertex_cptr; // Safe const pointer type
+
+struct Geo_Face {
+	Eigen::Vector3f point1 = Eigen::Vector3f(1.0f, 1.0f, DEFAULT_Z_VAL); // top right
+	Eigen::Vector3f point2 = Eigen::Vector3f(-1.0f, 1.0f, DEFAULT_Z_VAL); // top left
+	Eigen::Vector3f point3 = Eigen::Vector3f(1.0f, -1.0f, DEFAULT_Z_VAL); // bottom right
+	Eigen::Vector3f point4 = Eigen::Vector3f(-1.0f, -1.0f, DEFAULT_Z_VAL); // bottom left
+};
+
+typedef const Geo_Face* const face_cptr;
 
 struct NGon2D {
     float radius;
@@ -84,41 +95,40 @@ enum AXIS_Target{
 
 typedef float (*vTransformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
 
-
 class Geo_RenderObj {
 public:
 	Geo_RenderObj(unsigned v){ // Vertex only constructor
-		mVertexCount = v;
-		if(mVertexCount % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
+		_verticesCount = v;
+		if(_verticesCount % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
 
-		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
-		mNormalsData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
- 		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
+		_posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+		_normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+ 		_texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
 	}
     Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
-		mVertexCount = v;
-		mIndexCount = i;
-		if((mVertexCount - 1) % 2 == 0) mStartAngle = TOPL_PI / (mVertexCount - 1); // offset angle for each even side length
+		_verticesCount = v;
+		_indicesCount = i;
+		if((_verticesCount - 1) % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
 
-		mPosData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
-		mNormalsData = (Eigen::Vector3f*)malloc(mVertexCount * sizeof(Eigen::Vector3f));
- 		mTexCoordData = (Eigen::Vector2f*)malloc(mVertexCount * sizeof(Eigen::Vector2f));
-		if(mIndexCount != 0) mIndexData = (unsigned*)malloc(mIndexCount * sizeof(unsigned));
+		_posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+		_normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+ 		_texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+		if(_indicesCount != 0) _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
 	}
     
 	~Geo_RenderObj(){ cleanup(); }
 	void cleanup() {
-		if (mVertexData != nullptr) free(mVertexData);
+		if (_vertices != nullptr) free(_vertices);
 
-		if (mPosData != nullptr) free(mPosData);
-		if (mNormalsData != nullptr) free(mNormalsData);
-		if (mTexCoordData != nullptr) free(mTexCoordData);
-		if (mIndexData != nullptr) free(mIndexData);
+		if (_posData != nullptr) free(_posData);
+		if (_normalsData != nullptr) free(_normalsData);
+		if (_texCoordData != nullptr) free(_texCoordData);
+		if (_indices != nullptr) free(_indices);
 	}
 
 	// Modify shape through vertex transform callback
 	bool modify(vTransformCallback callback, double mod, AXIS_Target axis){
-		if(mVertexCount == 0 || mPosData == nullptr) return false; // no processing can occur
+		if(_verticesCount == 0 || _posData == nullptr) return false; // no processing can occur
 
 		unsigned vAttributeOffset;
 		switch(axis){
@@ -126,46 +136,47 @@ public:
 			case AXIS_Y: vAttributeOffset = 1; break;
 			case AXIS_Z: vAttributeOffset = 2; break;
 		}
-		for(unsigned v = 0; v < mVertexCount; v++) // modify the position data of each vertex
-			(*(mPosData + v))[vAttributeOffset] = callback((*(mPosData + v))[vAttributeOffset], mod); // updates specific vertex attribute
+		for(unsigned v = 0; v < _verticesCount; v++) // modify the position data of each vertex
+			(*(_posData + v))[vAttributeOffset] = callback((*(_posData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 	}
 
-    unsigned getVertexCount() const { return mVertexCount; } // get Vertex Count
-    unsigned getIndexCount() const { return mIndexCount; } // get Index Count
+    unsigned getVerticesCount() const { return _verticesCount; } // get Vertex Count
+    unsigned getIndexCount() const { return _indicesCount; } // get Index Count
 
-	perVertex_cptr getVertexData() {
-		if (mVertexData == nullptr) {
-			mVertexData = (Geo_VertexData*)malloc(mVertexCount * sizeof(Geo_VertexData));
-			for (unsigned v = 0; v < mVertexCount; v++)
-				*(mVertexData + v) = Geo_VertexData(*(mPosData + v), *(mTexCoordData + v)); // TODO: Include normals
+	geoVertex_cptr getVertices() {
+		if (_vertices == nullptr) {
+			_vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
+			for (unsigned v = 0; v < _verticesCount; v++)
+				*(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
 		}
-		return mVertexData;
+		return _vertices;
 	}
-    vec3f_cptr getPosData() const { return mPosData; }
-	vec3f_cptr getNormalsData() const { return mNormalsData; }
-    vec2f_cptr getTexCoordData() const { return mTexCoordData; }
-    ui_cptr getIndexData() const { return mIndexData; }
+    ui_cptr getIndices() const { return _indices; }
+	vec3f_cptr getPosData() const { return _posData; }
+	vec3f_cptr getNormalsData() const { return _normalsData; }
+    vec2f_cptr getTexCoordData() const { return _texCoordData; }
 protected:
 	void fillRenderObject(){
-		genVertices(mPosData);
-		genNormals(mNormalsData);
-		genTexCoords(mTexCoordData);
-        if(mIndexCount != 0) genIndices(mIndexData);
+		genVertices(_posData);
+		genNormals(_normalsData);
+		genTexCoords(_texCoordData);
+        if(_indicesCount != 0) genIndices(_indices);
 	}
     virtual void genVertices(Eigen::Vector3f* data) = 0;
 	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;
     virtual void genIndices(unsigned* data) = 0;
 
-    unsigned mVertexCount = 0; // Vertex count
-    unsigned mIndexCount = 0; // Index count
-	double mStartAngle = 0.0; // Start angle for Vertex generation
+	double _startAngle = 0.0; // starting angle for vertex generation
 
-	Geo_VertexData* mVertexData = nullptr; // Formatted per vertex data
-    Eigen::Vector3f* mPosData = nullptr; // Vertex data
-	Eigen::Vector3f* mNormalsData = nullptr; // Normals data
-    Eigen::Vector2f* mTexCoordData = nullptr; // Texture coordinate data
-	unsigned* mIndexData = nullptr; // Index data
+    unsigned _verticesCount = 0; // Vertex count
+    unsigned _indicesCount = 0; // Index count
+	Geo_Vertex* _vertices = nullptr; // formatted vertex data
+	unsigned* _indices = nullptr; // index data
+
+    Eigen::Vector3f* _posData = nullptr; // position data
+	Eigen::Vector3f* _normalsData = nullptr; // normals data
+    Eigen::Vector2f* _texCoordData = nullptr; // texture coordinate data
 };
 
 #define GEOMETRY_H
