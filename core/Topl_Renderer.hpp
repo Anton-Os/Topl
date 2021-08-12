@@ -86,18 +86,30 @@ public:
         _shaders.push_back(fragShader);
         pipeline(vertexShader, fragShader);
     }
+    // Extended Pipeline Creation
+    void setPipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader){
+        _shaders.clear(); // Reset the pipeline values
+        if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment || tessCtrlShader->getType() != SHDR_TessCtrl || tessEvalShader->getType() != SHDR_TessEval || geomShader->getType() != SHDR_Geom) return;
+
+        _shaders.push_back(vertexShader);
+        _shaders.push_back(fragShader);
+        _shaders.push_back(tessCtrlShader);
+        _shaders.push_back(tessEvalShader);
+        _shaders.push_back(geomShader);
+        pipeline(vertexShader, fragShader, tessCtrlShader, tessEvalShader, geomShader);
+    }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
     bool updateScene(const Topl_Scene* scene){
-        if(!_pipelineReady) puts("Pipeline not set for update call");
+        if(!_isPipelineReady) puts("Pipeline not set for update call");
         if(!_isSceneReady) puts("Scene not built for update call!");
-        if(!_pipelineReady || !_isSceneReady) return false;
+        if(!_isPipelineReady || !_isSceneReady) return false;
 
         update(scene);
     }
     bool renderScene(enum DRAW_Type drawType){
-        if(!_pipelineReady) puts("Pipeline not set for draw call!");
+        if(!_isPipelineReady) puts("Pipeline not set for draw call!");
         if(!_isSceneReady) puts("Scene not built for draw call!");
-        if(!_pipelineReady || !_isSceneReady) return false; // Rendering failed
+        if(!_isPipelineReady || !_isSceneReady) return false; // Rendering failed
 
         _drawType = drawType;
         render(); // Call virtual method
@@ -123,13 +135,13 @@ protected:
     enum SHDR_Type _primaryShaderType = SHDR_Vertex; // Shader that contains relevant uniform blocks and associated virtual functions
     std::vector<topl_shader_cptr> _shaders;
     enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
-    bool _pipelineReady = false; // Switch to true when graphics pipeline is ready
+    bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // Switch to true when elements of the scene are built
 	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;
-    virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) = 0;
+    virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
 	virtual void render(void) = 0;
 };

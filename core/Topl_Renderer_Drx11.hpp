@@ -29,11 +29,16 @@ struct Texture_Drx11 : public Texture {
 
 
 struct Topl_Pipeline_Drx11 {
-	ID3D11InputLayout* vertexDataLayout; // Move out of here, NEXT IMPLEMENTATION
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
+	ID3D11HullShader* hullShader;
+	ID3D11DomainShader* domainShader;
+	ID3D11GeometryShader* geomShader;
 	ID3DBlob* vsBuff;
 	ID3DBlob* psBuff;
+	ID3DBlob* hsBuff;
+	ID3DBlob* dsBuff;
+	ID3DBlob* gsBuff;
 };
 
 struct Topl_RenderableContext_Drx11 { // Groups items together to allow for switching between multiple scenes and pipelines
@@ -59,7 +64,7 @@ public:
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
-	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) override;
+	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
@@ -73,6 +78,7 @@ private:
 	ID3D11Device* _device;
 	ID3D11DeviceContext* _deviceCtx;
 	ID3D11RenderTargetView* _rtv;
+	ID3D11InputLayout* _vertexDataLayout;
 	ID3D11ShaderResourceView* _resourceView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;

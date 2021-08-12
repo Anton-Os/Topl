@@ -16,7 +16,8 @@ enum SHDR_Type {
     SHDR_Fragment,
     SHDR_Compute, // Compute shader, implement later
     SHDR_Geom, // Geometry shader, implement later
-    SHDR_Tess // Tesselation shader, implement later
+    SHDR_TessCtrl,
+    SHDR_TessEval
 };
 
 enum SHDR_ValueType {

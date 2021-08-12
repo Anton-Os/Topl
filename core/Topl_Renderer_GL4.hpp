@@ -92,9 +92,12 @@ struct Topl_Pipeline_GL4 {
 	GLuint vertexDataLayouts[GL4_VERTEX_ARRAY_MAX];
 	unsigned layoutIndex = 0;
 
+	GLuint shaderProg; // Linked Shader Program
 	GLuint vShader; // Vertex Shader
 	GLuint fShader; // Fragment Shader
-	GLuint shaderProg;
+	GLuint tcShader; // Tesselation Control Shader
+	GLuint teShader; // Tesselation Evaluation Shader
+	GLuint gShader; // Geometry Shader
 };
 
 struct Topl_RenderableContext_GL4 { // Groups items together to allow for switching between multiple scenes and pipelines
@@ -120,7 +123,7 @@ public:
 private:
   	void init(NATIVE_WINDOW window) override;
 	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
-	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader, topl_shader_cptr compShader) override;
+	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
