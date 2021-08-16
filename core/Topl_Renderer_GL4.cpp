@@ -298,10 +298,12 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 // void Topl_Renderer_GL4::clearView(float color[4]){
 void Topl_Renderer_GL4::clearView(){
 	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
+	_renderCtx.push_back(Topl_RenderContext_GL4());
+	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
 
 	const Topl_Shader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
@@ -327,7 +329,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Renderable_Block, _bufferAlloc.getAvailable()));
+			_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -438,7 +440,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _buffers.begin(); currentBuff < _buffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) targetBuff = &(*currentBuff);
+				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
 			if (targetBuff == nullptr)
 				puts("Block buffer could not be located! ");
@@ -648,7 +650,7 @@ void Topl_Renderer_GL4::render(void){
 		// Buffer discovery and binding step
 		_GL4::discoverBuffers(buffer_ptrs, &_buffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Renderable_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 

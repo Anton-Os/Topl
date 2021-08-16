@@ -10,7 +10,7 @@ public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
-		std::pair<const char*, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
+		std::pair<std::string, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
 		float scaleFactor )
 		
 		: Geo_SpriteTable({

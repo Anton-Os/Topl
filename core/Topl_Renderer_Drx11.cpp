@@ -528,9 +528,13 @@ void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cp
 void Topl_Renderer_Drx11::clearView(){
 	const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
     _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
+	// _deviceCtx->ClearDepthStencilView(_rtv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
+	_renderCtx.push_back(Topl_RenderContext_Drx11());
+	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
+
 	const Topl_Shader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
@@ -552,7 +556,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
-			_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Renderable_Block, renderBlockBuff));
+			_buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Render_Block, renderBlockBuff));
 		}
 		if (!_isSceneReady) return; // Error
 
@@ -696,7 +700,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = _buffers.begin(); currentBuff < _buffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Renderable_Block) {
+				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*currentBuff);
 					break;
 				}
@@ -754,7 +758,7 @@ void Topl_Renderer_Drx11::render(void){
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
 			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Renderable_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
+			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Render_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
 			if (indexBuff == nullptr || vertexBuff == nullptr) {
 				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
 				return;

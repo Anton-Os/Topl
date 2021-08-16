@@ -13,16 +13,16 @@
 namespace Topl {
 	Topl_Scene scene;
 	std::string assetsPath = ASSETS_DIR;
-	// std::replace(assetsPath.begin(), assetsPath.end(), '/', '\\');
+	std::string imagesSubPath = "images/";
 
 	// TODO: Make these not device specific, relative file paths only!
-	std::pair<const char*, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
-		std::make_pair("C:\\AntonDocs\\Design\\UrkwinArt\\Normguy\\RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
+	std::pair<std::string, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
+		std::make_pair(assetsPath + imagesSubPath + "Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Body.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
 	};
 
 	// Geo_Humanoid humanoid;

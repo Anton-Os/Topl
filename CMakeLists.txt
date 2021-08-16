@@ -79,6 +79,11 @@ list(APPEND geo_Sources
     geo/primitives/Geo_Extruded.cpp
     geo/primitives/Geo_ModelNode.cpp
     geo/primitives/Geo_Sphere.cpp
+
+    geo/Geo_Construct.cpp
+    geo/Geo_SpriteTable.cpp
+    geo/Geometry.cpp
+    geo/ShapesGen.cpp
 )
 
 # DirectX Windows Dependent Demos

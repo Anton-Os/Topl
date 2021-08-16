@@ -32,14 +32,8 @@ typedef const Eigen::Matrix2f* const mat2f_cptr;
 typedef const unsigned* const ui_cptr;
 
 struct Geo_Vertex {
-	Geo_Vertex(Eigen::Vector3f pos){ // Position data constructor
-		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-		texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
-	}
-	Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc){ // Extended constructor
-		position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-		texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
-	}
+	Geo_Vertex(Eigen::Vector3f pos); // Position data constructor
+	Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc); // Extended constructor
 
 	float position[POSITION_COUNT];
 	float texCoord[TEXCOORD_COUNT];
@@ -68,6 +62,14 @@ struct Geo_TaggedVertex : public Geo_Vertex {
 typedef const Geo_Vertex* const geoVertex_cptr; // Safe const pointer type
 
 struct Geo_Face {
+	Geo_Face(){}
+	Geo_Face(Eigen::Vector3f p1, Eigen::Vector3f p2, Eigen::Vector3f p3, Eigen::Vector3f p4){
+		point1 = p1;
+		point2 = p2;
+		point3 = p3;
+		point4 = p4;
+	}
+
 	Eigen::Vector3f point1 = Eigen::Vector3f(1.0f, 1.0f, DEFAULT_Z_VAL); // top right
 	Eigen::Vector3f point2 = Eigen::Vector3f(-1.0f, 1.0f, DEFAULT_Z_VAL); // top left
 	Eigen::Vector3f point3 = Eigen::Vector3f(1.0f, -1.0f, DEFAULT_Z_VAL); // bottom right
@@ -97,71 +99,23 @@ typedef float (*vTransformCallback)(float, double); // Callback for transforming
 
 class Geo_RenderObj {
 public:
-	Geo_RenderObj(unsigned v){ // Vertex only constructor
-		_verticesCount = v;
-		if(_verticesCount % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
-
-		_posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-		_normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
- 		_texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
-	}
-    Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
-		_verticesCount = v;
-		_indicesCount = i;
-		if((_verticesCount - 1) % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
-
-		_posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-		_normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
- 		_texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
-		if(_indicesCount != 0) _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
-	}
+	Geo_RenderObj(unsigned v); // Vertex only constructor
+    Geo_RenderObj(unsigned v, unsigned i); // Vertex and Indices constructor
     
 	~Geo_RenderObj(){ cleanup(); }
-	void cleanup() {
-		if (_vertices != nullptr) free(_vertices);
-
-		if (_posData != nullptr) free(_posData);
-		if (_normalsData != nullptr) free(_normalsData);
-		if (_texCoordData != nullptr) free(_texCoordData);
-		if (_indices != nullptr) free(_indices);
-	}
-
-	// Modify shape through vertex transform callback
-	bool modify(vTransformCallback callback, double mod, AXIS_Target axis){
-		if(_verticesCount == 0 || _posData == nullptr) return false; // no processing can occur
-
-		unsigned vAttributeOffset;
-		switch(axis){
-			case AXIS_X: vAttributeOffset = 0; break;
-			case AXIS_Y: vAttributeOffset = 1; break;
-			case AXIS_Z: vAttributeOffset = 2; break;
-		}
-		for(unsigned v = 0; v < _verticesCount; v++) // modify the position data of each vertex
-			(*(_posData + v))[vAttributeOffset] = callback((*(_posData + v))[vAttributeOffset], mod); // updates specific vertex attribute
-	}
+	void cleanup();
+	void modify(vTransformCallback callback, double mod, AXIS_Target axis);
 
     unsigned getVerticesCount() const { return _verticesCount; } // get Vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get Index Count
 
-	geoVertex_cptr getVertices() {
-		if (_vertices == nullptr) {
-			_vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
-			for (unsigned v = 0; v < _verticesCount; v++)
-				*(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
-		}
-		return _vertices;
-	}
+	geoVertex_cptr getVertices();
     ui_cptr getIndices() const { return _indices; }
 	vec3f_cptr getPosData() const { return _posData; }
 	vec3f_cptr getNormalsData() const { return _normalsData; }
     vec2f_cptr getTexCoordData() const { return _texCoordData; }
 protected:
-	void fillRenderObject(){
-		genVertices(_posData);
-		genNormals(_normalsData);
-		genTexCoords(_texCoordData);
-        if(_indicesCount != 0) genIndices(_indices);
-	}
+	void fillRenderObject();
     virtual void genVertices(Eigen::Vector3f* data) = 0;
 	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;

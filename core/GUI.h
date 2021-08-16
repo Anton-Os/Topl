@@ -7,8 +7,7 @@
 
 enum UI_QuadType {
     UI_Empty,
-    UI_Label,
-    UI_Image,
+    UI_Clickable,
     UI_Parent
 };
 
@@ -31,7 +30,7 @@ public:
         type = UI_Empty;
     }
     UI_QuadPane(bool isLabel, UI_Interactive* i){
-        (isLabel)? type = UI_Label : UI_Image;
+        type = UI_Clickable;
         interactCtx = i;
     }
 
@@ -79,3 +78,9 @@ struct UI_QuadLayout {
     std::vector<UI_ParentQuadPane> parentPanes;
     std::vector<UI_QuadPane> childPanes;
 };
+
+/* struct UI_TreeLayout {
+    UI_TreeLayout(){ }
+
+    std::vector<UI_TreePane> childPanes;
+} */

@@ -11,9 +11,9 @@ typedef const Topl_Shader* topl_shader_cptr;
 
 #define SPECIAL_SCENE_RENDER_ID 0
 
-struct RenderableTarget {
-	RenderableTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
-	RenderableTarget(unsigned id) { targetID = id; }
+struct RenderTarget {
+	RenderTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
+	RenderTarget(unsigned id) { targetID = id; }
 	unsigned targetID;
 };
 
@@ -22,13 +22,13 @@ struct RenderableTarget {
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // custom vertex format
     BUFF_Index_UI = 1, // unsigned int Index Type
-    BUFF_Renderable_Block = 2, // stores constants per draw object
+    BUFF_Render_Block = 2, // stores constants per draw object
 };
 
-struct Buffer : public RenderableTarget {
-    Buffer() : RenderableTarget(SPECIAL_SCENE_RENDER_ID){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderableTarget(id){ type = t; }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderableTarget(id){ type = t; count = c; }
+struct Buffer : public RenderTarget {
+    Buffer() : RenderTarget(SPECIAL_SCENE_RENDER_ID){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderTarget(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTarget(id){ type = t; count = c; }
 
     enum BUFF_Type type; // Type of buffer 
     unsigned count = 1; // No. of primitives
@@ -55,9 +55,9 @@ enum TEX_Mode {
 	TEX_Clamp
 };
 
-struct Texture : public RenderableTarget {
-	Texture() : RenderableTarget(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderableTarget(id) {
+struct Texture : public RenderTarget {
+	Texture() : RenderTarget(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
 		format = f; mode = m;
 	}
 	// Additional data fields when needed and Derived texture object types

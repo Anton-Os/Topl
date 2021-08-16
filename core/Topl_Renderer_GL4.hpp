@@ -42,9 +42,9 @@ private:
 
 // Vertex Array Object Allocation Helpers
 
-struct VertexArray_GL4 : public RenderableTarget {
-	VertexArray_GL4() : RenderableTarget() {}
-	VertexArray_GL4(unsigned id, GLuint v) : RenderableTarget(id){ vao = v; }
+struct VertexArray_GL4 : public RenderTarget {
+	VertexArray_GL4() : RenderTarget() {}
+	VertexArray_GL4(unsigned id, GLuint v) : RenderTarget(id){ vao = v; }
 	GLuint vao;
 };
 
@@ -100,7 +100,7 @@ struct Topl_Pipeline_GL4 {
 	GLuint gShader; // Geometry Shader
 };
 
-struct Topl_RenderableContext_GL4 { // Groups items together to allow for switching between multiple scenes and pipelines
+struct Topl_RenderContext_GL4 { // Groups items together to allow for switching between multiple scenes and pipelines
 	const Topl_Scene* scenePtr;
 	Topl_Pipeline_GL4 pipeline;
 	std::vector<Buffer_GL4> buffers;
@@ -127,7 +127,8 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void render(void) override;
 
-	std::vector<Topl_RenderableContext_GL4> _renderCtx; // NEW! begin to relocate objects here!
+	std::vector<Topl_RenderContext_GL4> _renderCtx; // drawable render contexts
+	Topl_RenderContext_GL4* _currentRenderCtx; // current render context to be used for drawing
   	Topl_Pipeline_GL4 _pipeline;
 
 	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object

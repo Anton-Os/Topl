@@ -20,10 +20,11 @@ public:
 
 	void setName(const std::string& name) { _name = name; }
 	void setPos(Eigen::Vector3f vec){ _worldPos = vec; }
+
 	void updatePos(Eigen::Vector3f vec){ _worldPos += vec; }
 	void setRot(Eigen::Vector2f angles) { _worldRot = angles; } // TODO: Check for 2 pi boundaries
 	void updateRot(Eigen::Vector2f angles) { _worldRot += angles; } // TODO: Check for 2 pi boundaries
-
+	// void modify(vTransformCallback callback, double mod, AXIS_Target axis){ _renderObj->modify(callback, mod, axis); }
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }
 	vec3f_cptr getPos() const { return &_worldPos; }

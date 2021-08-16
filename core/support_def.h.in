@@ -1,6 +1,6 @@
 // #define PARENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/Debug/" // Change Debug directory to ${CMAKE_CFG_INTDIR}
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define SHADERS_DIR "${SHADERS_DIR}"
-#ifdef ${Rasteron_FOUND}
+#if ${Rasteron_FOUND}
     #include "Rasteron.h" // includes Rasteron if found include the header
 #endif
