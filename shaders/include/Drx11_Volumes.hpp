@@ -4,7 +4,7 @@ struct Volumes_VertexShader : public Topl_Shader {
 	Volumes_VertexShader()
 		: Topl_Shader(
 			SHDR_Vertex, 
-			genPrefix_hlsl() + "Vertex_Volumes.hlsl",
+			genPrefix_hlsl() + "Volumes_Vertex.hlsl",
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 

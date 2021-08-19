@@ -50,8 +50,31 @@ ExternalProject_Add(Eigen
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-# 3rd Party Additions
-# include(thirdParty.cmake)
+set(SUPPORT_3D_ASSETS false CACHE BOOL "Include 3d asset loading module" FORCE)
+if(SUPPORT_3D_ASSETS)
+ExternalProject_Add(Assimp # 3D Model loading
+        GIT_REPOSITORY "https://github.com/assimp/assimp.git"
+        GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/Assimp
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+endif()
+
+set(SUPPORT_AUDIO false CACHE BOOL "Include audio playback module" FORCE)
+if(SUPPORT_AUDIO)
+ExternalProject_Add(OpenAL # Audio File Loading
+        GIT_REPOSITORY "https://github.com/kcat/openal-soft.git"
+        GIT_TAG "6406cc614130ba5f04555ba46e849c685ae6eae0"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/OpenAL
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+endif()
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")

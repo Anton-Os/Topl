@@ -5,7 +5,7 @@ struct FrameFx_VertexShader : public Topl_Shader {
 		: Topl_Shader(
 			platform, 
 			SHDR_Vertex, 
-			genPrefix_hlsl() + "Vertex_FrameFx.hlsl",
+			genPrefix_hlsl() + "FrameFx_Vertex.hlsl",
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
             	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
@@ -41,7 +41,7 @@ struct FrameFx_PixelShader : public Topl_Shader {
 	FrameFx_PixelShader()
 		: Topl_Shader(
 			SHDR_Fragment,
-			genPrefix_hlsl() + "Pixel_FrameFx.hlsl",
+			genPrefix_hlsl() + "FrameFx_Pixel.hlsl",
 			{ 
 				Shader_Type("screenRes", "RESOLUTION", SHDR_uint_vec2), 
 				Shader_Type("cursorPos", "CURSOR", SHDR_float_vec2) 
