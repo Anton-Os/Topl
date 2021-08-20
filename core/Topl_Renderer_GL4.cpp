@@ -247,7 +247,7 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
 
 static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
-  wglMakeCurrent(NULL, NULL);
+  	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(*(hglrc));
 
 	ReleaseDC(*(hwnd), *(windowDC));

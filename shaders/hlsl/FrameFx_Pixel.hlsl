@@ -34,9 +34,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	// float2 pixelCoordsAdj = (input.pos.x / 1200, input.pos.y / 1100); // hard values
 	float2 pixelCoordsAdj = float2(input.pos.x / input.screenRes.x, input.pos.y / input.screenRes.y); 
 
-	uint m = 10;
-	/* if(input.cursorPos.x > 0.0) return float4(sin(pixelCoordsAdj.x * m), sin(pixelCoordsAdj.y * m), 1.0f, 1.0f);
-	else return float4(cos(pixelCoordsAdj.x * m), cos(pixelCoordsAdj.y * m), 1.0f, 1.0f); */
 	// return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f);
 	// return float4(colorQuad(pixelCoordsAdj), 1.0f);
 	return float4(pixelCoordsAdj.x, pixelCoordsAdj.y, 0.0, 1.0);

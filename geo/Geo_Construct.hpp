@@ -23,8 +23,6 @@ public:
 
 	~Geo_Construct();
 
-    void fillScene(Topl_Scene* scene); // should be called in the derived class constructor body!
-
     std::string getPrefix(){ return _prefix + "_"; }
 	virtual void updateScene(Topl_Scene* scene) = 0;
     void move(Topl_Scene* scene, Eigen::Vector3f vec){
@@ -37,8 +35,9 @@ public:
     virtual void rotate(Topl_Scene* scene, Eigen::Vector3f) = 0; */
 
 protected:
-	unsigned getGeoCount() const { return _geoCount; }
+    void fillScene(Topl_Scene* scene); // called within the derived constructor body
     virtual void fill(Topl_Scene* scene) = 0; // job is to fill the _namedGeos structure
+	unsigned getGeoCount() const { return _geoCount; }
     Geo_Component* getNextGeo();
 
     unsigned _updateCount = FIRST_UPDATE_NUM; // probably needs to be private and a getter method

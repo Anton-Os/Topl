@@ -10,26 +10,27 @@ public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
-		std::pair<std::string, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // Filepaths and offsets for
-		float scaleFactor )
+		std::pair<std::string, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // humanoid property list of sprite images and positions
+		float scaleFactor 
+	)
 		
-		: Geo_SpriteTable({
-			props[HUMANOID_Head].first,
-			props[HUMANOID_LeftArm].first,
-			props[HUMANOID_RightArm].first,
-			props[HUMANOID_Body].first,
-			props[HUMANOID_LeftLeg].first,
-			props[HUMANOID_RightLeg].first
-			}, scaleFactor
-		),
-		Geo_Construct(prefix, scene, {
-			(Geo_RenderObj*)getSquare(HUMANOID_Head),
-			(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
-			(Geo_RenderObj*)getSquare(HUMANOID_RightArm),
-			(Geo_RenderObj*)getSquare(HUMANOID_Body),
-			(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
-			(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
-		) {
+	: Geo_SpriteTable({
+		props[HUMANOID_Head].first,
+		props[HUMANOID_LeftArm].first,
+		props[HUMANOID_RightArm].first,
+		props[HUMANOID_Body].first,
+		props[HUMANOID_LeftLeg].first,
+		props[HUMANOID_RightLeg].first
+		}, scaleFactor
+	),
+	Geo_Construct(prefix, scene, {
+		(Geo_RenderObj*)getSquare(HUMANOID_Head),
+		(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
+		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),
+		(Geo_RenderObj*)getSquare(HUMANOID_Body),
+		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
+		(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
+	) {
 
 		headOffset = props[HUMANOID_Head].second;
 		bodyOffset = props[HUMANOID_LeftArm].second;

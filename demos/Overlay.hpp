@@ -4,10 +4,12 @@
 #include "Topl_Renderer.hpp"
 
 #include "primitives/Geo_Flat.hpp"
+#include "composites/Panes.hpp"
 
 namespace Topl {
-	// Management Objects
 	Topl_Scene scene;
+    std::string assetsPath = ASSETS_DIR;
+	std::string imagesSubPath = "images/";
 
     Geo_FlatTriangle trig
     Geo_Component trigGeo  = Geo_Component((Geo_RenderObj*)&trig);

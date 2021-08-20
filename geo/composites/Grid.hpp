@@ -47,8 +47,7 @@ public:
         Topl_Scene* scene, 
         const Geo_Component* geo, 
         const Geo_Grid_Properties* props
-		)
-    : Geo_Construct(prefix, scene, geo, props->getCellCount()),
+	) : Geo_Construct(prefix, scene, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
         grid_prop = *props;
 		originPos = Eigen::Vector3f(

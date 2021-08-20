@@ -7,31 +7,19 @@ namespace _Drx11 {
 		DXGI_FORMAT format;
 
 		switch(type) {
-		case SHDR_float_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
-		case SHDR_float_vec3:
-			format = DXGI_FORMAT_R32G32B32_FLOAT; break;
-		case SHDR_float_vec2:
-			format = DXGI_FORMAT_R32G32_FLOAT; break;
-		case SHDR_float:
-			format = DXGI_FORMAT_R32_FLOAT; break;
+		case SHDR_float_vec4: format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+		case SHDR_float_vec3: format = DXGI_FORMAT_R32G32B32_FLOAT; break;
+		case SHDR_float_vec2: format = DXGI_FORMAT_R32G32_FLOAT; break;
+		case SHDR_float: format = DXGI_FORMAT_R32_FLOAT; break;
 		// DOUBLE SUPPORT PLACEHOLDER
-		case SHDR_uint_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_UINT; break;
-		case SHDR_uint_vec3:
-			format = DXGI_FORMAT_R32G32B32_UINT; break;
-		case SHDR_uint_vec2:
-			format = DXGI_FORMAT_R32G32_UINT; break;
-		case SHDR_uint:
-			format = DXGI_FORMAT_R32_UINT; break;
-		case SHDR_int_vec4:
-			format = DXGI_FORMAT_R32G32B32A32_SINT; break;
-		case SHDR_int_vec3:
-			format = DXGI_FORMAT_R32G32B32_SINT; break;
-		case SHDR_int_vec2:
-			format = DXGI_FORMAT_R32G32_SINT; break;
-		case SHDR_int:
-			format = DXGI_FORMAT_R32_SINT; break;
+		case SHDR_uint_vec4: format = DXGI_FORMAT_R32G32B32A32_UINT; break;
+		case SHDR_uint_vec3: format = DXGI_FORMAT_R32G32B32_UINT; break;
+		case SHDR_uint_vec2: format = DXGI_FORMAT_R32G32_UINT; break;
+		case SHDR_uint: format = DXGI_FORMAT_R32_UINT; break;
+		case SHDR_int_vec4: format = DXGI_FORMAT_R32G32B32A32_SINT; break;
+		case SHDR_int_vec3: format = DXGI_FORMAT_R32G32B32_SINT; break;
+		case SHDR_int_vec2: format = DXGI_FORMAT_R32G32_SINT; break;
+		case SHDR_int: format = DXGI_FORMAT_R32_SINT; break;
 		default:
 			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
 			break;
@@ -45,38 +33,22 @@ namespace _Drx11 {
 		unsigned offset = 0;
 
 		switch(type) {
-		case SHDR_float_vec4:
-			offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3:
-			offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2:
-			offset = sizeof(float) * 2; break;
-		case SHDR_float:
-			offset = sizeof(float); break;
-		case SHDR_double_vec4:
-			offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3:
-			offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2:
-			offset = sizeof(double) * 2; break;
-		case SHDR_double:
-			offset = sizeof(double); break;
-		case SHDR_uint_vec4:
-			offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3:
-			offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2:
-			offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint:
-			offset = sizeof(unsigned); break;
-		case SHDR_int_vec4:
-			offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3:
-			offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2:
-			offset = sizeof(int) * 2; break;
-		case SHDR_int:
-			offset = sizeof(int); break;
+		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
+		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
+		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
+		case SHDR_float: offset = sizeof(float); break;
+		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
+		case SHDR_double: offset = sizeof(double); break;
+		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
+		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
+		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
+		case SHDR_uint: offset = sizeof(unsigned); break;
+		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
+		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
+		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
+		case SHDR_int: offset = sizeof(int); break;
 		default:
 			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
 			break;
@@ -85,68 +57,36 @@ namespace _Drx11 {
 		return offset;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, geoVertex_cptr pvData, unsigned vCount) {
+	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuAccessFlags, const void* data){
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(Geo_Vertex) * vCount;
-		// buffDesc.ByteWidth = 28 * vCount;
-		buffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffDesc.CPUAccessFlags = 0;
+		buffDesc.Usage = usage;
+		buffDesc.ByteWidth = byteWidth;
+		buffDesc.BindFlags = bindFlags;
+		buffDesc.CPUAccessFlags = cpuAccessFlags;
 		buffDesc.MiscFlags = 0;
 		buffDesc.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA buffData;
 		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = pvData;
+		buffData.pSysMem = data;
 
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, vBuff);
+		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, buffer);
 		if (FAILED(hr)) return false;
 
 		return true;
+	}
+
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, geoVertex_cptr pvData, unsigned vCount) {
+		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, pvData);
 	}
 
 	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
-		D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.Usage = D3D11_USAGE_DEFAULT;
-		buffDesc.ByteWidth = sizeof(DWORD) * iCount;
-		buffDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		buffDesc.CPUAccessFlags = 0;
-		buffDesc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		// ZeroMemory(&buffData, sizeof(buffData)); // Maybe solution??
-		buffData.pSysMem = iData;
-		buffData.SysMemPitch = 0;
-		buffData.SysMemSlicePitch = 0;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, iBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
+		return createBuff(device, iBuff, sizeof(DWORD) * iCount, D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER, 0, iData);
 	}
 
 	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
-		D3D11_BUFFER_DESC buffDesc;
-		ZeroMemory(&buffDesc, sizeof(buffDesc));
-		buffDesc.ByteWidth = sizeof(uint8_t) * blockBytes->size();
-		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
-		buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		buffDesc.MiscFlags = 0;
-		buffDesc.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA buffData;
-		ZeroMemory(&buffData, sizeof(buffData));
-		buffData.pSysMem = (const void*)blockBytes->data();
-		buffData.SysMemPitch = 0;
-		buffData.SysMemSlicePitch = 0;
-
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, cBuff);
-		if (FAILED(hr)) return false;
-
-		return true;
+		return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
 	}
 
 	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset){

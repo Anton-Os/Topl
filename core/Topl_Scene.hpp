@@ -110,7 +110,7 @@ private:
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
 	// const Platform* mPlatform_cptr; // Provides useful system information and parameters
 #ifdef RASTERON_H
-	std::map<Geo_Component*, const Rasteron_Image*> mGeoTex_map; // Associates geometry to a single texture structure
+	std::map<Geo_Component*, const Rasteron_Image*> _geoTex_map; // Associates geometry to a single texture structure
 #endif
 };
 
