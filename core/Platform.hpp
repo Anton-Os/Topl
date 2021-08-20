@@ -2,7 +2,6 @@
 
 #include "native_os_def.h"
 
-#include "GUI.h"
 #include "FileIO.hpp";
 #include "Timer.hpp";
 #include "Input.hpp";
@@ -13,7 +12,7 @@ struct Platform {
     }
 
     void createWindow(const char* windowName);
-    void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout);
+    // void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout);
 	void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */); // use UI_TreeLayout argument
     void handleEvents(); // handles platform specific events
 

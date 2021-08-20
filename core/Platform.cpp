@@ -46,10 +46,6 @@ void Platform::createWindow(const char* windowName){
 	UpdateWindow(_context.window);
 }
 
-void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout){
-	// TODO: Implement Body Here
-}
-
 void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */) {
 	// TODO: Implement Body Here
 }

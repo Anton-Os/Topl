@@ -34,11 +34,11 @@ struct Topl_Pipeline_Drx11 {
 	ID3D11HullShader* hullShader;
 	ID3D11DomainShader* domainShader;
 	ID3D11GeometryShader* geomShader;
-	ID3DBlob* vsBuff;
-	ID3DBlob* psBuff;
-	ID3DBlob* hsBuff;
-	ID3DBlob* dsBuff;
-	ID3DBlob* gsBuff;
+	ID3DBlob* vsBlob;
+	ID3DBlob* psBlob;
+	ID3DBlob* hsBlob;
+	ID3DBlob* dsBlob;
+	ID3DBlob* gsBlob;
 };
 
 struct Topl_RenderContext_Drx11 { // Groups items together to allow for switching between multiple scenes and pipelines
@@ -71,15 +71,12 @@ private:
 	std::vector<Topl_RenderContext_Drx11> _renderCtx; // NEW! begin to relocate objects here!
 	Topl_RenderContext_Drx11* _currentRenderCtx; // current render context to be used for drawing
 	Topl_Pipeline_Drx11 _pipeline;
-	ID3D11Buffer* _sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
-	std::vector<Buffer_Drx11> _buffers;
-	std::vector<Texture_Drx11> _textures;
+	ID3D11InputLayout* _vertexDataLayout;
 
 	IDXGISwapChain* _swapChain;
 	ID3D11Device* _device;
 	ID3D11DeviceContext* _deviceCtx;
 	ID3D11RenderTargetView* _rtv;
-	ID3D11InputLayout* _vertexDataLayout;
 	ID3D11ShaderResourceView* _resourceView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;

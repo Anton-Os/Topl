@@ -8,8 +8,7 @@ GLuint Topl_BufferAlloc_GL4::getAvailable() {
 	if (!mIsInit) init();
 	GLuint targetBuff = 0;
 
-	if (slotIndex > GL4_BUFFER_MAX)
-		puts("Maximum buffer capacity exceeded!");
+	if (slotIndex > GL4_BUFFER_MAX) puts("Maximum buffer capacity exceeded!");
 	else {
 		targetBuff = slots[slotIndex];
 		slotIndex++;
@@ -22,8 +21,7 @@ GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
 	if (!mIsInit) init();
 	GLuint targetVAO = 0;
 
-	if (slotIndex > GL4_VERTEX_ARRAY_MAX)
-		puts("Maximum VAO capacity exceeded!");
+	if (slotIndex > GL4_VERTEX_ARRAY_MAX) puts("Maximum VAO capacity exceeded!");
 	else {
 		targetVAO = slots[slotIndex];
 		slotIndex++;
@@ -36,8 +34,7 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 	if (!mIsInit) init();
 	GLuint targetTextureB = 0;
 
-	if (slotIndex > GL4_TEXTURE_BINDINGS_MAX)
-		puts("Maximum Texture Bindings capacity exceeded!");
+	if (slotIndex > GL4_TEXTURE_BINDINGS_MAX) puts("Maximum Texture Bindings capacity exceeded!");
 	else {
 		targetTextureB = slots[slotIndex];
 		slotIndex++;
@@ -312,8 +309,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 	// Generates object for single scene block buffer
 	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
-		_buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+		_currentRenderCtx->buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
+		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -329,8 +326,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 		// Geo component block implementation
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
-			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+			_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
+			glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -338,17 +335,17 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 		// Index creation procedures
 		if (geoTarget_iData != nullptr) {
-			_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
+			_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _currentRenderCtx->buffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
-		} else _buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
+		} else _currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
-		_buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
-		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
+		_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
+		glBindBuffer(GL_ARRAY_BUFFER, _currentRenderCtx->buffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVerticesCount() * sizeof(Geo_Vertex), geoTarget_perVertex, GL_STATIC_DRAW);
 
-		_VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
-		VertexArray_GL4* currentVAO_ptr = &_VAOs.back(); // Check to see if all parameters are valid
+		_currentRenderCtx->VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
+		VertexArray_GL4* currentVAO_ptr = &_currentRenderCtx->VAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 
 		GLsizei inputElementOffset = 0;
@@ -419,7 +416,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	_textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
+	_currentRenderCtx->textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
 }
 
 #endif
@@ -429,8 +426,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
+	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
@@ -439,7 +436,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		unsigned currentRenderID = g + 1;
 		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
-			for (std::vector<Buffer_GL4>::iterator currentBuff = _buffers.begin(); currentBuff < _buffers.end(); currentBuff++)
+			for (std::vector<Buffer_GL4>::iterator currentBuff = _currentRenderCtx->buffers.begin(); currentBuff < _currentRenderCtx->buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
 			if (targetBuff == nullptr)
@@ -614,41 +611,31 @@ void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr
 void Topl_Renderer_GL4::render(void){
 	GLenum drawType;
 	switch(_drawType){
-	case DRAW_Triangles:
-		drawType = GL_TRIANGLES;
-		break;
-	case DRAW_Points:
-		drawType = GL_POINTS;
-		break;
-	case DRAW_Lines:
-		drawType = GL_LINES;
-		break;
-	case DRAW_Fan:
-		drawType = GL_TRIANGLE_FAN;
-		break;
-	case DRAW_Strip:
-		drawType = GL_TRIANGLE_STRIP;
-		break;
+	case DRAW_Triangles: drawType = GL_TRIANGLES; break;
+	case DRAW_Points: drawType = GL_POINTS; break;
+	case DRAW_Lines: drawType = GL_LINES; break;
+	case DRAW_Fan: drawType = GL_TRIANGLE_FAN; break;
+	case DRAW_Strip: drawType = GL_TRIANGLE_STRIP; break;
 	default:
 		puts("Draw type not supported yet!");
 		return;
 	}
 
-	if (_buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
+	if (_currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _currentRenderCtx->buffers.front().buffer);
 
 	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _mainRenderIDs; id++) {
-		for (std::vector<VertexArray_GL4>::iterator currentVAO = _VAOs.begin(); currentVAO < _VAOs.end(); currentVAO++)
+		for (std::vector<VertexArray_GL4>::iterator currentVAO = _currentRenderCtx->VAOs.begin(); currentVAO < _currentRenderCtx->VAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);
 			else
 				continue; // If it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(buffer_ptrs, &_buffers, id);
+		_GL4::discoverBuffers(buffer_ptrs, &_currentRenderCtx->buffers, id);
 
 		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
 		if (renderBlockBuff != nullptr)
@@ -660,10 +647,10 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
-		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).targetID > id) break; // This means we have passed it in sequence
-			else if (_textures.at(t).targetID == id) {
-				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
+		for (unsigned t = 0; t < _currentRenderCtx->textures.size(); t++) {
+			if (_currentRenderCtx->textures.at(t).targetID > id) break; // This means we have passed it in sequence
+			else if (_currentRenderCtx->textures.at(t).targetID == id) {
+				glBindTexture(GL_TEXTURE_2D, _currentRenderCtx->textures.at(t).texture);
 				break;
 			}
 		}

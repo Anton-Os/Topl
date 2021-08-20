@@ -1,10 +1,10 @@
 #include "Geo_Construct.hpp"
 
-Geo_Grid_CellIndex {
+struct Geo_Grid_CellIndex{
 	unsigned xOffset;
 	unsigned yOffset;
 	unsigned zOffset;
-}
+};
 
 struct Geo_Grid_Properties {
 	Geo_Grid_Properties() {}
@@ -59,7 +59,7 @@ public:
         fillScene(scene);
     }
 
-	void addBlock(Geo_Grid_CellIndex cellIndex){ blcoks.push_back(cellIndex); }
+	void addBlock(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); }
 
     void updateScene(Topl_Scene* scene) override;
 private:

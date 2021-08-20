@@ -132,10 +132,6 @@ private:
   	Topl_Pipeline_GL4 _pipeline;
 
 	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object
-	std::vector<Buffer_GL4> _buffers;
 	Topl_VertexArrayAlloc_GL4 _vertexArrayAlloc; // Vertex Array allocator object
-	std::vector<VertexArray_GL4> _VAOs; // Vertex Array Objects
-
 	Topl_TextureBindingAlloc_GL4 _textureBindingsAlloc; // Texture bindings allocator object
-	std::vector<Texture_GL4> _textures;
 };

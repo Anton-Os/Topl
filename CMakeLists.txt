@@ -198,7 +198,6 @@ target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 add_executable(GL4_SimpleShapes
 	geo/composites/Chain.cpp
     geo/composites/Grid.cpp
-    geo/composites/Web.cpp
 
     demos/GL4_SimpleShapes.cpp
 )
