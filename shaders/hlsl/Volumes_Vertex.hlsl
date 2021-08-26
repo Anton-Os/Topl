@@ -4,9 +4,10 @@ cbuffer CONST_BLOCK : register(b0) {
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	float4 cameraPos; // padding in type
-	float4 lookPos; // padding in type
+	float4 cameraPos;
+	float4 lookPos;
 	float4x4 projMatrix;
+	float4 lightSource;
 }
 
 struct VS_INPUT {
@@ -35,7 +36,7 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 	return camMatrix;
 }
 
-VS_OUTPUT main(VS_INPUT input) { // Only output is position
+VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
 	float4 finalPos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
@@ -64,7 +65,10 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
 	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
 	output.pos = mul(finalPos, cameraMatrix); // no projection
-	output.flatColor = float4(0.4f, 0.8f, 0.2f, 1.0f);
+	switch (vertexID % 2) {
+	case 0: output.flatColor = float4(0.4f, 0.8f, 0.2f, 1.0f); break;
+	case 1: output.flatColor = float4(0.8f, 0.4f, 0.2f, 1.0f); break;
+	}
 
 	return output;
 }

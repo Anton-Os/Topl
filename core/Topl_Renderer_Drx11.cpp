@@ -130,7 +130,7 @@ namespace _Drx11 {
 	}
 
 	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
-		//TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
+		// TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
 		for (std::vector<Buffer_Drx11>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
 				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 

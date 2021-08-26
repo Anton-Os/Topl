@@ -35,6 +35,8 @@ struct Topl_LightSource {
 	double intensity = 1.0;
 };
 
+typedef const Topl_LightSource* const topl_lightSource_cptr; // typedef for safety
+
 class Topl_Camera {
 public:
 	// Identity projection constructor
@@ -77,13 +79,19 @@ public:
 	// void addLight()
 
 	void addGeometry(const std::string& name, Geo_Component* geoComponent);
-	void addLightSource(Topl_LightSource ls){ _lightSources.push_back(ls); }
+	void addLightSource(Topl_LightSource ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
 	unsigned getGeoCount() const { return _namedGeos.size(); }
-	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // Access to geometry by index
-	topl_geoComponent_cptr getGeoComponent(const std::string& name) const; // Access to geometry by name
+	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // access to geometry by index
+	topl_geoComponent_cptr getGeoComponent(const std::string& name) const; // access to geometry by name
+	unsigned getLightSourceCount() const { return _lightSrc.size(); }
+	topl_lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
+#ifdef RASTERON_H
+	const Rasteron_Image* getFirstTexture(const std::string& name) const;
+	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
+#endif
 
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Properties* pProp);
@@ -94,16 +102,11 @@ public:
 
 	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
 	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
-#ifdef RASTERON_H
-	const Rasteron_Image* getFirstTexture(unsigned index) const; // Remove!
-	const Rasteron_Image* getFirstTexture(const std::string& name) const;
-	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
-#endif
 private:
 	Topl_Camera mCamera;
 
 	std::vector<Geo_Component*> _namedGeos; // Stores all geometries
-	std::vector<Topl_LightSource> _lightSources; // Stores all light sources
+	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
 	std::map<Geo_Component*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision

@@ -1,13 +1,11 @@
 #version 440
 
-// glsl block index 0
-layout(packed) uniform Block {
+layout(packed, binding = 0) uniform Block {
 	vec2 rotation; // padded to vec4
 	vec3 offset; // padded to vec4
 };
 
-// glsl block index 1
-layout(packed) uniform SceneBlock {
+layout(packed, binding = 0) uniform SceneBlock {
 	mat4 projMatrix;
 };
 

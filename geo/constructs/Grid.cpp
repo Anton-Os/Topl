@@ -1,9 +1,7 @@
 #include "Grid.hpp"
 
 namespace _Grid {
-    std::string genCellName(unsigned num){
-        return "cell" + std::to_string(num);
-    }
+    std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
 }
 
 void Geo_Grid::fill(Topl_Scene* scene){

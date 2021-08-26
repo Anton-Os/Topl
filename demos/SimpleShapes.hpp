@@ -7,8 +7,8 @@
 #include "primitives/Geo_Flat.hpp"
 #include "primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Extruded.hpp"
-#include "composites/Chain.hpp"
-#include "composites/Grid.hpp"
+#include "constructs/Chain.hpp"
+#include "constructs/Grid.hpp"
 
 #define MOVE_AMOUNT 0.5
 

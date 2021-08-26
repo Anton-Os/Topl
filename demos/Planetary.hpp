@@ -12,7 +12,7 @@ namespace Topl {
 	Timer_Ticker gameTicker;
 
 	NGon3D ngon = { 0.1, 12, 10 };
-	NGon3D ngon2 = { 0.5, 105, 8 };
+	NGon3D ngon2 = { 0.3, 105, 8 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Component sphereGeo((const Geo_RenderObj*)&sphere);
@@ -32,7 +32,7 @@ void bounceCallback(double absSecs) {
 }
 
 void swivelCallback(double absSecs) {
-	Eigen::Vector3f motionVec = Topl::swivelMotion.getMotion(absSecs);
+	Eigen::Vector3f motionVec = 0.01 * Topl::swivelMotion.getMotion(absSecs);
 	Topl::sphereGeo2.updateRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
 }
 
@@ -52,7 +52,7 @@ namespace Main {
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
 		// Topl::gameTicker.addPeriodicEvent(60, &bounceCallback);
-		Topl::gameTicker.addPeriodicEvent(60, &swivelCallback);
+		Topl::gameTicker.addRecurringEvent(&swivelCallback);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){

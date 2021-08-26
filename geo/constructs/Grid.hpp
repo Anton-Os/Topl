@@ -51,15 +51,15 @@ public:
 	Geo_DynamicSet(props->getCellCount()){
         grid_prop = *props;
 		originPos = Eigen::Vector3f(
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5), // inverse of count times distance halved of each cell
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5), // inverse of count times distance halved of each cell
+			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5),
+			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5),
 			0.0f
 		);
 
         fillScene(scene);
     }
 
-	void addBlock(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); }
+	void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
 
     void updateScene(Topl_Scene* scene) override;
 private:

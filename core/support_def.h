@@ -4,3 +4,8 @@
 #if 1
     #include "Rasteron.h" // includes Rasteron if found include the header
 #endif
+#if 1
+    // #include <assimp/Importer.hpp>      // C++ importer interface
+    // #include <assimp/scene.h>           // Output data structure
+    // #include <assimp/postprocess.h>     // Post processing flags
+#endif

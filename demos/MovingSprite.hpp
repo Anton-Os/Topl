@@ -5,7 +5,7 @@
 #include "Topl_Renderer.hpp"
 
 #include "Geo_Construct.hpp"
-#include "composites/Humanoid.hpp"
+#include "constructs/Humanoid.hpp"
 
 
 #define MOVE_AMOUNT 16.0

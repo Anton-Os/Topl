@@ -1,12 +1,10 @@
 #version 440
 
-// glsl block index 0
-layout(packed) uniform Block {
+layout(packed, binding = 0) uniform Block {
 	uint renderID;
 };
 
-// glsl block index 1
-layout(packed) uniform SceneBlock {
+layout(packed, binding = 1) uniform SceneBlock {
 	ivec2 screenRes;
 	vec2 cursorPos;
 	// uint renderMode; // switches modes to implement different drawing functions

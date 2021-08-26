@@ -4,7 +4,7 @@
 #include "Topl_Renderer.hpp"
 
 #include "primitives/Geo_Flat.hpp"
-#include "composites/Panes.hpp"
+#include "constructs/Panes.hpp"
 
 namespace Topl {
 	Topl_Scene scene;

@@ -1,16 +1,15 @@
 #version 440
 
-// glsl block index 0
-layout(packed) uniform Block {
+layout(packed, binding = 0) uniform Block {
 	vec2 rotation; // padded to vec4
 	vec3 offset; // padded to vec4
 };
 
-// glsl block index 1
-layout(packed) uniform SceneBlock {
+layout(packed, binding = 1) uniform SceneBlock {
 	vec3 cameraPos; // padded to vec4
 	vec3 lookPos; // padded to vec4
 	mat4 projMatrix;
+	vec3 lightSource; // padded to vec4
 };
 
 layout(location = 0) in vec3 pos;
@@ -61,7 +60,10 @@ void main() {
 	finalPos += vec4(finalTranslation, 1.0);
 
 	texcoord_out = texcoord;
-	flatColor_out = vec4(0.4f, 0.8f, 0.2f, 1.0f);
+	switch (gl_VertexID % 2) {
+	case 0: flatColor_out = vec4(0.4f, 0.8f, 0.2f, 1.0f); break;
+	case 1: flatColor_out = vec4(0.8f, 0.4f, 0.2f, 1.0f); break;
+	}
 	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }

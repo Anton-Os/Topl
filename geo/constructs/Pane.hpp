@@ -13,30 +13,30 @@ struct Geo_Pane_Properties {
 #endif
 }
 
-#define ROOT_PANE_LEVEL 0
-
 class Geo_Pane {
     Geo_Pane(const Geo_Pane_Properties* props, unsigned short level){
         pane_level = level;
         pane_prop = *props;
     }
 
-    unsigned short pane_level;
     Geo_Pane_Properties pane_prop;
-
-    // Geo_FlatSquare square;
-    // Geo_Component geo;
 }
 
-/* class Geo_PaneTree : public Geo_Construct {
+class Geo_PaneLayout : public Geo_Construct {
 public:
-    Geo_Pane( // Root pane constructor without parent
+    Geo_PaneLayout(
         const std::string& name,
         Topl_Scene* scene,
-        const Geo_Pane* parentPane,
-        std::vector<const Geo_Pane*> childPanes,
-    ) : Geo_Construct(name, scene, childPanes.size() + 1) { // size includes child count plus current pane
-        fillScene();
-    }
+        const Geo_Pane* parent,
+        std::vector<const Geo_Pane*> children
+    ) : Geo_Construct(prefix, scene, &squareGeo, children.size() + 1){
+        fillScene(scene);
+    } 
 
-} */
+    void updateScene(Topl_Scene* scene) override;
+private:
+    void fill(Topl_Scene* scene) override;
+
+    static Geo_FlatSquare square = Geo_FlatSquare(1.0f);
+    static Geo_Component squareGeo = Geo_Component((RenderObj*)&square);
+};
