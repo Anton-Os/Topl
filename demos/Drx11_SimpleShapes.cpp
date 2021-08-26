@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
 
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	renderer.buildScene(&Topl::scene);
+	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	Main::gameLoop(&platform, &renderer);
 

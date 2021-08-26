@@ -54,7 +54,7 @@ if(WIN32)
         target_link_libraries(Drx11_Engine PUBLIC Rasteron)
     endif()
     if(Assimp_FOUND)
-        target_link_libraries(Drx11_Engine PUBLIC assimp)
+        # target_link_libraries(Drx11_Engine PUBLIC assimp)
     endif()
     set_target_properties(Drx11_Engine
         PROPERTIES
@@ -109,7 +109,7 @@ if(Rasteron_FOUND)
     target_link_libraries(GL4_Engine PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    target_link_libraries(GL4_Engine PUBLIC assimp)
+    # target_link_libraries(GL4_Engine PUBLIC assimp)
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES
