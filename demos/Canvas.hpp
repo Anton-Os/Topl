@@ -8,9 +8,10 @@
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
+	Topl_Camera camera;
 
     Geo_Plane plane = Geo_Plane(Eigen::Vector3f(0.0f, 1.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0));
-    Geo_Component planeGeo  = Geo_Component((Geo_RenderObj*)&plane);
+    Geo_Actor planeGeo  = Geo_Actor((Geo_RenderObj*)&plane);
 }
 
 // Shared functions

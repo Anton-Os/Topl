@@ -9,10 +9,7 @@ GLuint Topl_BufferAlloc_GL4::getAvailable() {
 	GLuint targetBuff = 0;
 
 	if (slotIndex > GL4_BUFFER_MAX) puts("Maximum buffer capacity exceeded!");
-	else {
-		targetBuff = slots[slotIndex];
-		slotIndex++;
-	}
+	else { targetBuff = slots[slotIndex]; slotIndex++; }
 
 	return targetBuff;
 }
@@ -22,10 +19,7 @@ GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
 	GLuint targetVAO = 0;
 
 	if (slotIndex > GL4_VERTEX_ARRAY_MAX) puts("Maximum VAO capacity exceeded!");
-	else {
-		targetVAO = slots[slotIndex];
-		slotIndex++;
-	}
+	else { targetVAO = slots[slotIndex]; slotIndex++; }
 
 	return targetVAO;
 }
@@ -35,10 +29,7 @@ GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
 	GLuint targetTextureB = 0;
 
 	if (slotIndex > GL4_TEXTURE_BINDINGS_MAX) puts("Maximum Texture Bindings capacity exceeded!");
-	else {
-		targetTextureB = slots[slotIndex];
-		slotIndex++;
-	}
+	else { targetTextureB = slots[slotIndex]; slotIndex++; }
 
 	return targetTextureB;
 }
@@ -302,7 +293,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 	_renderCtx.push_back(Topl_RenderContext_GL4());
 	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
 
-	const Topl_Shader* primaryShader = findShader(_primaryShaderType);
+	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
@@ -318,7 +309,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 
 	for (unsigned g = 0; g < scene->getGeoCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 
 		geoVertex_cptr geoTarget_perVertex = geoTarget_renderObj->getVertices();
@@ -389,6 +380,10 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
     return; // To be continued
 }
 
+void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
+	buildScene(scene); // Implement body
+}
+
 #ifdef RASTERON_H
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
@@ -422,7 +417,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
-	const Topl_Shader* primaryShader = findShader(_primaryShaderType);
+	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
@@ -434,7 +429,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 
 	for (unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geoComponent_cptr geoTarget_ptr = scene->getGeoComponent(currentRenderID - 1); // ids begin at 1, conversion is required
+		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _currentRenderCtx->buffers.begin(); currentBuff < _currentRenderCtx->buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
@@ -455,7 +450,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	return;
 }
 
-void Topl_Renderer_GL4::pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader){
+void Topl_Renderer_GL4::pipeline(const Topl_PrimaryShader* vertexShader, const Topl_PrimaryShader* fragShader){
 	GLint result;
 	const char* sourceStr_ptr;
 
@@ -529,7 +524,7 @@ void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr
 	if (result == GL_FALSE) return _GL4::errorShaderCompile("Vertex", _pipeline.vShader);
 
 
-	// Tesselation Control creation and valid file checking
+	// Tesselation Control shader creation and valid file checking
 	_pipeline.tcShader = glCreateShader(GL_TESS_CONTROL_SHADER);
 
 	std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath(), false);
@@ -537,14 +532,14 @@ void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr
 	if (!tessCtrlShaderSrc.empty()) glShaderSource(_pipeline.tcShader, 1, &sourceStr_ptr, NULL);
 	else return _GL4::errorNotFount("Tess Control");
 
-	// Vertex shader compilation and syntax checking
+	// Tesselation Control compilation and syntax checking
 	glCompileShader(_pipeline.tcShader);
 
 	glGetShaderiv(_pipeline.tcShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) return _GL4::errorShaderCompile("Tess Control", _pipeline.tcShader);
 
 
-	// Tesselation Evaluation creation and valid file checking
+	// Tesselation Evaluation shader creation and valid file checking
 	_pipeline.teShader = glCreateShader(GL_TESS_EVALUATION_SHADER);
 
 	std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath(), false);
@@ -552,14 +547,14 @@ void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr
 	if (!tessEvalShaderSrc.empty()) glShaderSource(_pipeline.teShader, 1, &sourceStr_ptr, NULL);
 	else return _GL4::errorNotFount("Tess Evaluation");
 
-	// Vertex shader compilation and syntax checking
+	// Tesselation Evaluation compilation and syntax checking
 	glCompileShader(_pipeline.teShader);
 
 	glGetShaderiv(_pipeline.teShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) return _GL4::errorShaderCompile("Tess Evaluation", _pipeline.teShader);
 
 
-	// Tesselation Evaluation creation and valid file checking
+	// Geometry shader creation and valid file checking
 	_pipeline.gShader = glCreateShader(GL_GEOMETRY_SHADER);
 
 	std::string geomShaderSrc = readFile(geomShader->getFilePath(), false);
@@ -567,7 +562,7 @@ void Topl_Renderer_GL4::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr
 	if (!geomShaderSrc.empty()) glShaderSource(_pipeline.gShader, 1, &sourceStr_ptr, NULL);
 	else return _GL4::errorNotFount("Geometry");
 
-	// Vertex shader compilation and syntax checking
+	// Geometry shader compilation and syntax checking
 	glCompileShader(_pipeline.gShader);
 
 	glGetShaderiv(_pipeline.gShader, GL_COMPILE_STATUS, &result);

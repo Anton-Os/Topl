@@ -8,8 +8,8 @@
 #include "Platform.hpp"
 #include "ValueGen.hpp"
 
+#include "Geo_Actor.hpp"
 #include "Topl_Scene.hpp"
-#include "Geo_Component.hpp"
 
 enum SHDR_Type {
     SHDR_Vertex,
@@ -69,8 +69,54 @@ struct Shader_Type {
 
 class Topl_Shader {
 public:
-    // Basic Input Value Constructor
+    // Basic Input Value Troupeor
     Topl_Shader(
+		enum SHDR_Type type, 
+		std::string fileSrc, 
+		std::initializer_list<Shader_Type> inputs
+    ){    
+        _shaderType = type;
+        _shaderFileSrc = fileSrc;
+		_shaderFileSrc = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput);
+    }
+    // Platform support variable constructor
+	Topl_Shader(
+		const Platform* platform,
+        const Topl_Camera* camera,
+		enum SHDR_Type type, 
+		std::string fileSrc,
+		std::initializer_list<Shader_Type> inputs
+    ){
+		_platform_cptr = platform;
+        _shaderType = type;
+        _shaderFileSrc = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput);
+    }
+    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
+    unsigned short getInputCount() const { return _inputs.size(); }
+    enum SHDR_Type getType() const { return _shaderType; }
+    const char* getFilePath() const { return _shaderFileSrc.c_str(); }
+protected:
+    enum SHDR_Type _shaderType;
+    std::string _shaderFileSrc; // make into const type!
+	const Platform* _platform_cptr = nullptr;
+    std::vector<Shader_Type> _inputs;
+    std::vector<Shader_Type> _blockUniforms;
+
+	std::string genPrefix_glsl() { return "glsl/"; }
+	std::string genPrefix_hlsl() { return "hlsl/"; }
+};
+
+// TODO: Inherit everything from Topl_Shader and only include virtual functions
+class Topl_PrimaryShader {
+public:
+    // Basic Input Value Troupeor
+    Topl_PrimaryShader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs){
@@ -83,8 +129,9 @@ public:
             _inputs.push_back(*currentInput);
     }
     // Platform support variable constructor
-	Topl_Shader(
+	Topl_PrimaryShader(
 		const Platform* platform,
+        const Topl_Camera* camera,
 		enum SHDR_Type type, 
 		std::string fileSrc,
 		std::initializer_list<Shader_Type> inputs){
@@ -97,10 +144,9 @@ public:
             _inputs.push_back(*currentInput);
     }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component *const component, std::vector<uint8_t>* bytes) const = 0;
+	virtual bool genPerGeoDataBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
     virtual bool genPerSceneDataBlock(const Topl_Scene *const scene, std::vector<uint8_t>* bytes) const = 0;
 
-    // static ValueGen mValueGen; // Utility for converting from eigen specific types
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
     enum SHDR_Type getType() const { return _shaderType; }

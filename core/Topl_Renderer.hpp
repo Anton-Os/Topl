@@ -7,7 +7,7 @@
 #include "Topl_Shader.hpp"
 #include "Topl_Scene.hpp"
 
-typedef const Topl_Shader* topl_shader_cptr;
+typedef const Topl_PrimaryShader* topl_shader_cptr;
 
 #define SPECIAL_SCENE_RENDER_ID 0
 
@@ -117,15 +117,13 @@ public:
     }
     virtual void clearView()  = 0;
     virtual void buildScene(const Topl_Scene* scene) = 0;
-	
-	NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
-
+    virtual void buildScene(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
 #ifdef RASTERON_H
     virtual Rasteron_Image* getFrame() = 0;
     // May need a renderer specific texture type here // Texture should be linked to graphics object id!!!
     virtual void genTexture(const Rasteron_Image* image, unsigned id) = 0;
 #endif
-
+    NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
     topl_shader_cptr findShader(SHDR_Type type){
         for(std::vector<topl_shader_cptr>::iterator currentShader = _shaders.begin(); currentShader < _shaders.end(); currentShader++)
@@ -143,7 +141,10 @@ private:
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
+    virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
 	virtual void render(void) = 0;
+
+    Topl_Camera _defaultCamera;
 };
 
 #define TOPL_RENDERER_H

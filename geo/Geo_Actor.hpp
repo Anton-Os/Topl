@@ -3,34 +3,33 @@
 #include "Geometry.hpp"
 // #include "Physics.hpp"
 
-class Geo_Component {
+class Geo_Actor {
 public:
-	Geo_Component(){
+	Geo_Actor(){
 		_id_count++;
 		_id = _id_count;
 	}
-	Geo_Component(const Geo_RenderObj* renderObj) {
+	Geo_Actor(const Geo_RenderObj* renderObj) {
 		_id_count++;
 		_id = _id_count;
 		_renderObj = renderObj; 
 	}
-	~Geo_Component() {
+	~Geo_Actor() {
 		_id_count--;
 	}
 
 	void setName(const std::string& name) { _name = name; }
-	void setPos(Eigen::Vector3f vec){ _worldPos = vec; }
 
+	void setPos(Eigen::Vector3f vec){ _worldPos = vec; }
 	void updatePos(Eigen::Vector3f vec){ _worldPos += vec; }
 	void setRot(Eigen::Vector2f angles) { _worldRot = angles; } // TODO: Check for 2 pi boundaries
 	void updateRot(Eigen::Vector2f angles) { _worldRot += angles; } // TODO: Check for 2 pi boundaries
-	// void modify(vTransformCallback callback, double mod, AXIS_Target axis){ _renderObj->modify(callback, mod, axis); }
+	// void modify(vTformCallback callback, double mod, AXIS_Target axis){ _renderObj->modify(callback, mod, axis); }
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }
 	vec3f_cptr getPos() const { return &_worldPos; }
 	vec2f_cptr getAngles() const { return &_worldRot; }
 	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
-	// const Geo_RenderObj* _renderObj;
 private:
 	// Identification Types
 	static unsigned _id_count; // Grows/shrinks when objects are created/deleted

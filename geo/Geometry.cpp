@@ -43,7 +43,7 @@ void Geo_RenderObj::cleanup() {
     if (_indices != nullptr) free(_indices);
 } 
 
-void Geo_RenderObj::modify(vTransformCallback callback, double mod, AXIS_Target axis){
+void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis){
     if(_verticesCount == 0 || _posData == nullptr) return; // no processing can occur
 
     unsigned vAttributeOffset;

@@ -20,7 +20,7 @@ list(APPEND geo_Src
     geo/primitives/Geo_ModelNode.cpp
     geo/primitives/Geo_Sphere.cpp
 
-    geo/Geo_Construct.cpp
+    geo/Geo_Troupe.cpp
     geo/Geo_SpriteTable.cpp
     geo/Geometry.cpp
     geo/ShapesGen.cpp
@@ -54,7 +54,7 @@ if(WIN32)
         target_link_libraries(Drx11_Engine PUBLIC Rasteron)
     endif()
     if(Assimp_FOUND)
-        # target_link_libraries(Drx11_Engine PUBLIC assimp)
+        # target_link_libraries(Drx11_Engine PUBLIC assimp::assimp)
     endif()
     set_target_properties(Drx11_Engine
         PROPERTIES
@@ -109,7 +109,7 @@ if(Rasteron_FOUND)
     target_link_libraries(GL4_Engine PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    # target_link_libraries(GL4_Engine PUBLIC assimp)
+    # target_link_libraries(GL4_Engine PUBLIC assimp::assimp)
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES

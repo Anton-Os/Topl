@@ -20,7 +20,7 @@ static float getSpriteHeight(const Rasteron_Sprite* sprite) {
 	// return sprite->bounds.topRight_point[Y_OFFSET]; // for testing
 }
 
-static float stretchTransform(float input, double mod){ return input * mod; } // TODO: Make this code segment reusable
+static float stretchTform(float input, double mod){ return input * mod; } // TODO: Make this code segment reusable
 
 class Geo_SpriteTable {
 public:

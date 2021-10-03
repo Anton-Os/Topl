@@ -4,7 +4,7 @@
 #include "Topl_Scene.hpp"
 #include "Topl_Renderer.hpp"
 
-#include "Geo_Construct.hpp"
+#include "Geo_Troupe.hpp"
 #include "constructs/Humanoid.hpp"
 
 

@@ -10,10 +10,10 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths){
         if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
             float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
             stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTransform, stretchFactorX, AXIS_Y);
+            _spriteSquares.back().second->modify(stretchTform, stretchFactorX, AXIS_Y);
             float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
             stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTransform, stretchFactorY, AXIS_X);
+            _spriteSquares.back().second->modify(stretchTform, stretchFactorY, AXIS_X);
         }
     }
 }
@@ -28,10 +28,10 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, f
         if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
             float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
             stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTransform, stretchFactorX, AXIS_Y);
+            _spriteSquares.back().second->modify(stretchTform, stretchFactorX, AXIS_Y);
             float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
             stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTransform, stretchFactorY, AXIS_X);
+            _spriteSquares.back().second->modify(stretchTform, stretchFactorY, AXIS_X);
         }
     }
 }

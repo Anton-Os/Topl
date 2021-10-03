@@ -12,7 +12,7 @@ namespace Topl {
 	std::string imagesSubPath = "images/";
 
     Geo_FlatTriangle trig
-    Geo_Component trigGeo  = Geo_Component((Geo_RenderObj*)&trig);
+    Geo_Actor trigGeo  = Geo_Actor((Geo_RenderObj*)&trig);
 }
 
 // Shared functions

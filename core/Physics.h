@@ -23,7 +23,7 @@ enum MOTION_Type {
 
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
 public:
-    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
+    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Troupeor
         motionVec1 = m;
         endSecs = d;
     }
@@ -112,7 +112,7 @@ struct Phys_Colliders {
     virtual void genColliders(Phys_Colliders* colliders) = 0;
 } */
 
-struct Phys_Properties { // A physics property that becomes associated to a Geo_Component object
+struct Phys_Properties { // A physics property that becomes associated to a Geo_Actor object
     Phys_Properties(){ // Freeform constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
     }

@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct Volumes_VertexShader : public Topl_Shader {
+struct Volumes_VertexShader : public Topl_PrimaryShader {
 	Volumes_VertexShader()
-		: Topl_Shader(
+		: Topl_PrimaryShader(
 			SHDR_Vertex, 
 			genPrefix_glsl() + "Volumes_Vertex.glsl",
 			{ 
@@ -11,7 +11,7 @@ struct Volumes_VertexShader : public Topl_Shader {
 			} // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
+	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());

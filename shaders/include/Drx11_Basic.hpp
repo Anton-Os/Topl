@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct Basic_VertexShader : public Topl_Shader {
+struct Basic_VertexShader : public Topl_PrimaryShader {
 	Basic_VertexShader()
-		: Topl_Shader(
+		: Topl_PrimaryShader(
 			SHDR_Vertex, 
 			genPrefix_hlsl() + "Basic_Vertex.hlsl",
 			{ 
@@ -11,7 +11,7 @@ struct Basic_VertexShader : public Topl_Shader {
 			} // Inputs
 		) {  }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override {
+	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
 		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
@@ -29,9 +29,9 @@ struct Basic_VertexShader : public Topl_Shader {
 	}
 };
 
-struct Basic_PixelShader : public Topl_Shader {
+struct Basic_PixelShader : public Topl_PrimaryShader {
 	Basic_PixelShader()
-		: Topl_Shader(
+		: Topl_PrimaryShader(
 			SHDR_Fragment, 
 			genPrefix_hlsl() + "Basic_Pixel.hlsl",
 			{ 
@@ -40,6 +40,6 @@ struct Basic_PixelShader : public Topl_Shader {
 			} // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
 };

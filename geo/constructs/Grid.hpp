@@ -1,4 +1,4 @@
-#include "Geo_Construct.hpp"
+#include "Geo_Troupe.hpp"
 
 struct Geo_Grid_CellIndex{
 	unsigned xOffset;
@@ -40,14 +40,14 @@ struct Geo_Grid_Properties {
 	std::pair<unsigned short, float> zAttr; // unit count and spacing along z axis
 };
 
-class Geo_Grid : public Geo_Construct, public Geo_DynamicSet {
+class Geo_Grid : public Geo_Troupe, public Geo_DynamicSet {
 public:
     Geo_Grid(
         const std::string& prefix, 
         Topl_Scene* scene, 
-        const Geo_Component* geo, 
+        const Geo_Actor* geo, 
         const Geo_Grid_Properties* props
-	) : Geo_Construct(prefix, scene, geo, props->getCellCount()),
+	) : Geo_Troupe(prefix, scene, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
         grid_prop = *props;
 		originPos = Eigen::Vector3f(

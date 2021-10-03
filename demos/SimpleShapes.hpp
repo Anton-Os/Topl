@@ -3,7 +3,7 @@
 #include "Topl_Scene.hpp"
 #include "Topl_Renderer.hpp"
 
-#include "Geo_Construct.hpp"
+#include "Geo_Troupe.hpp"
 #include "primitives/Geo_Flat.hpp"
 #include "primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Extruded.hpp"
@@ -21,10 +21,10 @@ namespace Topl {
 	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.4f);
 	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
-	Geo_Component chainGeo = Geo_Component((const Geo_RenderObj*)&cone1);
+	Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainProps = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
-	Geo_Component gridGeo = Geo_Component((const Geo_RenderObj*)&rect1);
+	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&rect1);
 	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(1, 0.5f));
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
 }

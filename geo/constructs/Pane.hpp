@@ -1,5 +1,5 @@
 #include "Geo_Flat.hpp"
-#include "Geo_Construct.hpp"
+#include "Geo_Troupe.hpp"
 
 struct Geo_Pane_Properties {
     double xOffFrac = 0.0; // x offset fraction
@@ -22,14 +22,14 @@ class Geo_Pane {
     Geo_Pane_Properties pane_prop;
 }
 
-class Geo_PaneLayout : public Geo_Construct {
+class Geo_PaneLayout : public Geo_Troupe {
 public:
     Geo_PaneLayout(
         const std::string& name,
         Topl_Scene* scene,
         const Geo_Pane* parent,
         std::vector<const Geo_Pane*> children
-    ) : Geo_Construct(prefix, scene, &squareGeo, children.size() + 1){
+    ) : Geo_Troupe(prefix, scene, &squareGeo, children.size() + 1){
         fillScene(scene);
     } 
 
@@ -38,5 +38,5 @@ private:
     void fill(Topl_Scene* scene) override;
 
     static Geo_FlatSquare square = Geo_FlatSquare(1.0f);
-    static Geo_Component squareGeo = Geo_Component((RenderObj*)&square);
+    static Geo_Actor squareGeo = Geo_Actor((RenderObj*)&square);
 };

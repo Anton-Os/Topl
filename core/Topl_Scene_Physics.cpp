@@ -15,7 +15,7 @@ static void error_forcesExcess() {
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Properties* pProp) {
 	// Find matching geometry component
-	for(std::vector<Geo_Component*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	for(std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
 		if((*currentGeo)->getName() == name){
 			_geoToPhys_map.insert({ *currentGeo, pProp });
 			return;
@@ -27,7 +27,7 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Properties* pProp) {
 
 void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceVec) {
 	// Find matching geometry component
-	for (std::vector<Geo_Component*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
 		if (name == (*currentGeo)->getName()) {
 			if (_geoToPhys_map.find(*currentGeo) == _geoToPhys_map.end()) return error_notFound("physics", name); // Error
 
@@ -43,14 +43,14 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 
 void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
 
-	const Geo_Component* link1 = nullptr;
-	for (std::vector<Geo_Component*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	const Geo_Actor* link1 = nullptr;
+	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
 		if (name1 == (*currentGeo)->getName()) link1 = *currentGeo;
 
 	if (link1 == nullptr) return error_notFound("link geometry", name1); // Error
 
-	const Geo_Component* link2 = nullptr;
-	for (std::vector<Geo_Component*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	const Geo_Actor* link2 = nullptr;
+	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
 		if (name2 == (*currentGeo)->getName()) link2 = *currentGeo;
 
 	if (link2 == nullptr) return error_notFound("link geometry", name2);
@@ -103,8 +103,8 @@ void Topl_Scene::resolvePhysics() {
 	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator currentLink = _linkedItems.begin(); currentLink != _linkedItems.end(); currentLink++){
 		Phys_Connector* connector = currentLink->connector;
-		const Geo_Component* linkItem1 = currentLink->linkedItems.first;
-		const Geo_Component* linkItem2 = currentLink->linkedItems.second;
+		const Geo_Actor* linkItem1 = currentLink->linkedItems.first;
+		const Geo_Actor* linkItem2 = currentLink->linkedItems.second;
 
 		connector->length = sqrt( // Length needs to be updated
 			pow(linkItem1->getPos()->x() - linkItem2->getPos()->x(), 2)
@@ -153,8 +153,8 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve general movement here
-	for (std::map<Geo_Component*, Phys_Properties*>::iterator currentMap = _geoToPhys_map.begin(); currentMap != _geoToPhys_map.end(); currentMap++) {
-		Geo_Component* targetGeo = currentMap->first;
+	for (std::map<Geo_Actor*, Phys_Properties*>::iterator currentMap = _geoToPhys_map.begin(); currentMap != _geoToPhys_map.end(); currentMap++) {
+		Geo_Actor* targetGeo = currentMap->first;
 		Phys_Properties* physProps = currentMap->second;
 		
 		if (physProps->actingForceCount > 0) 

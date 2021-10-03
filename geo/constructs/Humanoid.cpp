@@ -5,7 +5,7 @@ namespace _Humanoid {
 	const Eigen::Vector2f hardQuartRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0); // Hardcoded quarter rotation
 	const Eigen::Vector2f hardHalfRot = Eigen::Vector2f(-1.0 * TOPL_PI, 0.0); // Hardcoded half rotation
 
-	static void createHead(Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createHead(Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		geoc->updateRot(hardQuartRot);
 		scene->addGeometry(name, geoc);
@@ -14,7 +14,7 @@ namespace _Humanoid {
 			scene->addTexture(name, sprite->image);
 	}
 
-	static void createBody (Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createBody (Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		geoc->updateRot(hardQuartRot);
 		scene->addGeometry(name, geoc);
@@ -23,7 +23,7 @@ namespace _Humanoid {
 			scene->addTexture(name, sprite->image);
 	}
 
-	static void createLeftArm(Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createLeftArm(Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		scene->addGeometry(name, geoc);
 
@@ -31,7 +31,7 @@ namespace _Humanoid {
 			scene->addTexture(name, sprite->image);
 	}
 
-	static void createRightArm(Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createRightArm(Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		geoc->updateRot(hardHalfRot);
 		scene->addGeometry(name, geoc);
@@ -40,7 +40,7 @@ namespace _Humanoid {
 			scene->addTexture(name, sprite->image);
 	}
 
-	static void createLeftLeg(Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createLeftLeg(Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		scene->addGeometry(name, geoc);
 
@@ -48,7 +48,7 @@ namespace _Humanoid {
 			scene->addTexture(name, sprite->image);
 	}
 
-	static void createRightLeg(Topl_Scene* scene, Geo_Component* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
+	static void createRightLeg(Topl_Scene* scene, Geo_Actor* geoc, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
 		geoc->updatePos(offset);
 		geoc->updateRot(hardHalfRot);
 		scene->addGeometry(name, geoc);
@@ -61,27 +61,27 @@ namespace _Humanoid {
 void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	
-	Geo_Component* geocHead = getNextGeo();
+	Geo_Actor* geocHead = getNextGeo();
 	sprite = getSprite(HUMANOID_Head);
 	_Humanoid::createHead(scene, geocHead, headOffset, getPrefix() + "head", sprite);
 
-	Geo_Component* geocLeftArm = getNextGeo();
+	Geo_Actor* geocLeftArm = getNextGeo();
 	sprite = getSprite(HUMANOID_LeftArm);
 	_Humanoid::createLeftArm(scene, geocLeftArm, leftArmOffset, getPrefix() + "leftArm", sprite);
 
-	Geo_Component* geocRightArm = getNextGeo();
+	Geo_Actor* geocRightArm = getNextGeo();
 	sprite = getSprite(HUMANOID_RightArm);
 	_Humanoid::createRightArm(scene, geocRightArm, rightArmOffset, getPrefix() + "rightArm", sprite);
 
-	Geo_Component* geocBody = getNextGeo();
+	Geo_Actor* geocBody = getNextGeo();
 	sprite = getSprite(HUMANOID_Body);
 	_Humanoid::createBody(scene, geocBody, bodyOffset, getPrefix() + "body", sprite);
 
-	Geo_Component* geocLeftLeg = getNextGeo();
+	Geo_Actor* geocLeftLeg = getNextGeo();
 	sprite = getSprite(HUMANOID_LeftLeg);
 	_Humanoid::createLeftLeg(scene, geocLeftLeg, leftLegOffset, getPrefix() + "leftLeg", sprite);
 
-	Geo_Component* geocRightLeg = getNextGeo();
+	Geo_Actor* geocRightLeg = getNextGeo();
 	sprite = getSprite(HUMANOID_RightLeg);
 	_Humanoid::createRightLeg(scene, geocRightLeg, rightLegOffset, getPrefix() + "rightLeg", sprite);
 

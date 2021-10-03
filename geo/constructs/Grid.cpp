@@ -5,7 +5,7 @@ namespace _Grid {
 }
 
 void Geo_Grid::fill(Topl_Scene* scene){
-    Geo_Component* currentGeo = nullptr;
+    Geo_Actor* currentGeo = nullptr;
     Eigen::Vector3f offsetVec = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 
     unsigned short width = grid_prop.xAttr.first;

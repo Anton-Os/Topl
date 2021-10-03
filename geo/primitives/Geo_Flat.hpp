@@ -2,7 +2,7 @@
 
 class Geo_Flat : public Geo_RenderObj {
 public:
-    // All Shape Constructor
+    // All Shape Troupeor
     Geo_Flat(NGon2D refShape) 
     : Geo_RenderObj
     (refShape.segments + 1, // vertex count is number of segments +1 for the center point

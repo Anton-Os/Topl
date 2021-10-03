@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct Flat_PixelShader : public Topl_Shader {
+struct Flat_PixelShader : public Topl_PrimaryShader {
 	Flat_PixelShader()
-		: Topl_Shader(
+		: Topl_PrimaryShader(
 			SHDR_Fragment, 
 			genPrefix_hlsl() + "Flat_Pixel.hlsl",
 			{ 
@@ -11,6 +11,6 @@ struct Flat_PixelShader : public Topl_Shader {
 			} // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Component* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
 	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
 };

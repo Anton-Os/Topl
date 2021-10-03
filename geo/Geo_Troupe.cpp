@@ -1,23 +1,23 @@
-#include "Geo_Construct.hpp"
+#include "Geo_Troupe.hpp"
 
-Geo_Construct::Geo_Construct(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs){
+Geo_Troupe::Geo_Troupe(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs){
     _prefix = prefix;
-    _geoData = (Geo_Component**)malloc(renderObjs.size() * sizeof(Geo_Component*));
+    _geoData = (Geo_Actor**)malloc(renderObjs.size() * sizeof(Geo_Actor*));
     for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-        *(_geoData + _geoCount) = new Geo_Component(*(currentRenderObj));
+        *(_geoData + _geoCount) = new Geo_Actor(*(currentRenderObj));
         _geoCount++;
     }
 }
 
-Geo_Construct::Geo_Construct(const std::string& prefix, Topl_Scene* scene, const Geo_Component* geoc, unsigned count){
+Geo_Troupe::Geo_Troupe(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* geoc, unsigned count){
     _prefix = prefix;
     _geoCount = count;
-    _geoData = (Geo_Component**)malloc(count * sizeof(Geo_Component));
+    _geoData = (Geo_Actor**)malloc(count * sizeof(Geo_Actor));
 
-    for(unsigned g = 0; g < count; g++) *(_geoData + g) = new Geo_Component(*geoc);
+    for(unsigned g = 0; g < count; g++) *(_geoData + g) = new Geo_Actor(*geoc);
 }
 
-Geo_Construct::~Geo_Construct(){
+Geo_Troupe::~Geo_Troupe(){
     if(_geoData != nullptr) { 
         for (unsigned g = 0; g < _geoCount; g++)
             delete *(_geoData + g);
@@ -25,7 +25,7 @@ Geo_Construct::~Geo_Construct(){
     }
 }
 
-void Geo_Construct::fillScene(Topl_Scene* scene){
+void Geo_Troupe::fillScene(Topl_Scene* scene){
     fill(scene);
     // Code that fills in scene
     if(_namedGeos.size() != 0 && _geoData != nullptr)
@@ -33,7 +33,7 @@ void Geo_Construct::fillScene(Topl_Scene* scene){
             scene->addGeometry(currentGeo->first, currentGeo->second);
 }
 
-Geo_Component* Geo_Construct::getNextGeo(){
+Geo_Actor* Geo_Troupe::getNextGeo(){
     if(_currentGeoOffset <= _geoCount){
         _currentGeoOffset++;   
         return *(_geoData + _currentGeoOffset - 1); // to increment offset above in one line

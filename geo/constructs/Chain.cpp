@@ -5,8 +5,8 @@ namespace _Chain {
 }
 
 void Geo_Chain::fill(Topl_Scene* scene){
-    Geo_Component* prevGeo = nullptr;
-    Geo_Component* currentGeo = nullptr;
+    Geo_Actor* prevGeo = nullptr;
+    Geo_Actor* currentGeo = nullptr;
     
     for(unsigned c = 0; c < getGeoCount(); c++){
         currentGeo = getNextGeo();

@@ -6,19 +6,18 @@ struct ShapesGen {
     ShapesGen(){}
 
     // Modify shape through vertex transform callbacks
-    static void modify(Geo_RenderObj* renderObj, double mod, vTransformCallback callback, AXIS_Target axis);
-    static void modify(Geo_RenderObj* renderObj, double mod, vTransformCallback xCallback, vTransformCallback yCallback);
-    static void modify(Geo_RenderObj* renderObj, double mod, vTransformCallback xCallback, vTransformCallback yCallback, vTransformCallback zCallback);
-    // Object Creation Utilities
+    static void modify(Geo_RenderObj* renderObj, double mod, vTformCallback callback, AXIS_Target axis);
+    static void modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback);
+    static void modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback, vTformCallback zCallback);
+    // Render Object Generation
+    static void genTessShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, unsigned iter); // tesselates objects by iterating through triangle midpoints
+    static void genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, Geo_RenderObj* duplexObj); // inserts duplex object at every vertex of ref object
+    // Physics Objects Generation
     static void genColliders(Phys_Colliders* colliders, const std::vector<Geo_Face> *const faces); // generates a collision object based on faces provided
     // Tiling Functions
-    static void tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Square tiling
+    /* static void tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Square tiling
     static void tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Triangular tiling
-    static void tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Hexagonal tiling
-    /* static Geo_RenderObj genCompoundShape_add(const Geo_RenderObj* firstGeo, const Geo_RenderObj* secondGeo);
-    static Geo_RenderObj genCompoundShape_diff(const Geo_RenderObj* firstGeo, const Geo_RenderObj* secondGeo);
-    static Geo_RenderObj genCompoundShape_intersect(const Geo_RenderObj* firstGeo, const Geo_RenderObj* secondGeo);
-    static Geo_RenderObj genCompoundShape_exclude(const Geo_RenderObj* firstGeo, const Geo_RenderObj* secondGeo); */
+    static void tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Hexagonal tiling */
 };
 
 #define SHAPESGEN_H

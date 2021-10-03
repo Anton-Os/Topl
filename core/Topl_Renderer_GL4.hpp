@@ -115,16 +115,17 @@ public:
 
 	void clearView() override;
 	void buildScene(const Topl_Scene* scene) override;
-
+	void buildScene(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
 	Rasteron_Image* getFrame() override;
 	void genTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
-	void pipeline(const Topl_Shader* vertexShader, const Topl_Shader* fragShader) override;
+	void pipeline(const Topl_PrimaryShader* vertexShader, const Topl_PrimaryShader* fragShader) override;
 	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
+	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	std::vector<Topl_RenderContext_GL4> _renderCtx; // drawable render contexts

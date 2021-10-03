@@ -15,11 +15,11 @@ namespace Topl {
 	NGon3D ngon2 = { 0.3, 105, 8 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
-	Geo_Component sphereGeo((const Geo_RenderObj*)&sphere);
-	Geo_Component sphereGeo2((const Geo_RenderObj*)&sphere2);
+	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
+	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
-	Phys_Motion bounceMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(0.0f, 0.3f, 0.0), 2.0 );
-	Phys_Motion swivelMotion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(0.2f, 0.3f, 0.0), 2.5);
+	// Phys_Motion bounceMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(0.0f, 0.3f, 0.0), 2.0 );
+	Phys_Motion motion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(0.5f, 0.5f, 0.0), 2.5);
 }
 
 void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -27,13 +27,18 @@ void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * 
 void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
 void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
-void bounceCallback(double absSecs) {
+/* void bounceCallback(double absSecs) {
 	Topl::sphereGeo2.setPos(Topl::bounceMotion.getMotion(absSecs));
+} */
+
+void orbitCallback(double absSecs){
+	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
+	Topl::sphereGeo.setPos(Eigen::Vector3f(std::sin(motionVec.x()), std::cos(motionVec.y()), 0.0));
 }
 
 void swivelCallback(double absSecs) {
-	Eigen::Vector3f motionVec = 0.01 * Topl::swivelMotion.getMotion(absSecs);
-	Topl::sphereGeo2.updateRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
+	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
+	Topl::sphereGeo2.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
 }
 
 // Shared functions
@@ -48,17 +53,15 @@ namespace Main {
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
-		// Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
+		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
-		// Topl::gameTicker.addPeriodicEvent(60, &bounceCallback);
 		Topl::gameTicker.addRecurringEvent(&swivelCallback);
+		Topl::gameTicker.addRecurringEvent(&orbitCallback);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
 		while (1) {
-			// Topl::sphereGeo2.updateRot(Eigen::Vector2f(0.0003f, 0.0f) * Topl::gameTicker.getAbsMillisecs());
-
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);

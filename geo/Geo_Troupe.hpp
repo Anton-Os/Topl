@@ -12,16 +12,16 @@
 
 #define FIRST_UPDATE_NUM 0
 
-typedef std::pair<std::string, Geo_Component*> geoName_pair;
+typedef std::pair<std::string, Geo_Actor*> geoName_pair;
 
-class Geo_Construct {
+class Geo_Troupe {
 public:
     // Fixed items constructor
-    Geo_Construct(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs);
+    Geo_Troupe(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs);
     // Duplicate items constructor
-    Geo_Construct(const std::string& prefix, Topl_Scene* scene, const Geo_Component* geoc, unsigned count);
+    Geo_Troupe(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* geoc, unsigned count);
 
-	~Geo_Construct();
+	~Geo_Troupe();
 
     std::string getPrefix(){ return _prefix + "_"; }
 	virtual void updateScene(Topl_Scene* scene) = 0;
@@ -38,7 +38,7 @@ protected:
     void fillScene(Topl_Scene* scene); // called within the derived constructor body
     virtual void fill(Topl_Scene* scene) = 0; // job is to fill the _namedGeos structure
 	unsigned getGeoCount() const { return _geoCount; }
-    Geo_Component* getNextGeo();
+    Geo_Actor* getNextGeo();
 
     unsigned _updateCount = FIRST_UPDATE_NUM; // probably needs to be private and a getter method
 	std::vector<geoName_pair> _namedGeos;
@@ -46,7 +46,7 @@ private:
     std::string _prefix;
 	unsigned _geoCount = 0;
     unsigned _currentGeoOffset = 0;
-	Geo_Component** _geoData = nullptr;
+	Geo_Actor** _geoData = nullptr;
 }; // needs work! could use more abstraction
 
 struct Geo_DynamicSet { // A container for multiple dynamic objects

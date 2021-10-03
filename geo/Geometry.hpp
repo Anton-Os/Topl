@@ -95,7 +95,7 @@ enum AXIS_Target{
     AXIS_Z
 };
 
-typedef float (*vTransformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
+typedef float (*vTformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
 
 class Geo_RenderObj {
 public:
@@ -104,7 +104,7 @@ public:
     
 	~Geo_RenderObj(){ cleanup(); }
 	void cleanup();
-	void modify(vTransformCallback callback, double mod, AXIS_Target axis);
+	void modify(vTformCallback callback, double mod, AXIS_Target axis);
 
     unsigned getVerticesCount() const { return _verticesCount; } // get Vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get Index Count

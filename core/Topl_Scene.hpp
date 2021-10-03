@@ -9,14 +9,16 @@
 
 #include "Timer.hpp"
 #include "ValueGen.hpp"
-#include "Geo_Component.hpp"
 
-typedef const Geo_Component* const topl_geoComponent_cptr;
-typedef std::pair<const Geo_Component*, const Geo_Component*> geoComponent_pair;
+#include "Geo_Actor.hpp"
+#include "Topl_Camera.hpp"
+
+typedef const Geo_Actor* const topl_geo_cptr;
+typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
 
 struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
 	Phys_Connector* connector;
-	geoComponent_pair linkedItems;
+	geo_pair linkedItems;
 };
 
 typedef const LinkedItems* const topl_linkedItems_cptr;
@@ -25,7 +27,7 @@ struct Topl_LightSource {
 	Topl_LightSource(Eigen::Vector3f p) {
 		pos = p;
 	}
-	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
+	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Troupeor
 		pos = p;
 		lightColor = lc;
 		intensity = i;
@@ -36,28 +38,6 @@ struct Topl_LightSource {
 };
 
 typedef const Topl_LightSource* const topl_lightSource_cptr; // typedef for safety
-
-class Topl_Camera {
-public:
-	// Identity projection constructor
-	Topl_Camera() {
-		projMatrix = Eigen::Matrix4f::Identity(); // No transformation by default
-	}
-	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
-		if (projType == PROJECTION_Perspective) projMatrix = ValueGen::genPerspectiveMatrix(bounds);
-		else if(projType == PROJECTION_Ortho) projMatrix = ValueGen::genOrthoMatrix(bounds);
-	}
-	void movePos(const Eigen::Vector3f& moveVec){ pos += moveVec; }
-	vec3f_cptr getPos() const { return &pos; }
-	vec3f_cptr getDirection() const { return &direction; }
-	mat4f_cptr getProjMatrix() const { return &projMatrix; }
-private:
-	Eigen::Vector3f pos = Eigen::Vector3f(0.0, 0.0, -1.0);
-	Eigen::Vector3f direction = Eigen::Vector3f(0.0, 0.0, 0.0);
-	Eigen::Matrix4f projMatrix = Eigen::Matrix4f::Zero();
-};
-
-typedef const Topl_Camera* const topl_camera_cptr; // typedef for safety
 
 #ifdef RASTERON_H
 	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
@@ -73,19 +53,19 @@ public:
 	}
 	~Topl_Scene() {}
 
-	void setCamera(enum PROJECTION_Type type, SpatialBounds3D bounds){ mCamera = Topl_Camera(type, bounds); }
-	void moveCameraPos(const Eigen::Vector3f moveVec){ mCamera.movePos(moveVec); }
-	topl_camera_cptr getCamera() const { return &mCamera; }
+	void setCamera(enum PROJECTION_Type type, SpatialBounds3D bounds){ _camera = Topl_Camera(type, bounds); }
+	void moveCameraPos(const Eigen::Vector3f moveVec){ _camera.movePos(moveVec); }
+	topl_camera_cptr getCamera() const { return &_camera; }
 	// void addLight()
 
-	void addGeometry(const std::string& name, Geo_Component* geoComponent);
+	void addGeometry(const std::string& name, Geo_Actor* geo);
 	void addLightSource(Topl_LightSource ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
 	unsigned getGeoCount() const { return _namedGeos.size(); }
-	topl_geoComponent_cptr getGeoComponent(unsigned index) const; // access to geometry by index
-	topl_geoComponent_cptr getGeoComponent(const std::string& name) const; // access to geometry by name
+	topl_geo_cptr getGeoActor(unsigned index) const; // access to geometry by index
+	topl_geo_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	unsigned getLightSourceCount() const { return _lightSrc.size(); }
 	topl_lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
@@ -103,17 +83,17 @@ public:
 	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
 	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 private:
-	Topl_Camera mCamera;
+	Topl_Camera _camera;
 
-	std::vector<Geo_Component*> _namedGeos; // Stores all geometries
+	std::vector<Geo_Actor*> _namedGeos; // Stores all geometries
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
-	std::map<Geo_Component*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
+	std::map<Geo_Actor*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
 	// const Platform* mPlatform_cptr; // Provides useful system information and parameters
 #ifdef RASTERON_H
-	std::map<Geo_Component*, const Rasteron_Image*> _geoTex_map; // Associates geometry to a single texture structure
+	std::map<Geo_Actor*, const Rasteron_Image*> _geoTex_map; // Associates geometry to a single texture structure
 #endif
 };
 
