@@ -27,7 +27,6 @@ topl_linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 		puts("Index for linked items is out of range!");
 		return nullptr;
 	}
-
 	return &_linkedItems.at(index);
 }
 

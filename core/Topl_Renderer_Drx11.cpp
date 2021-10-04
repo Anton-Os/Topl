@@ -428,6 +428,10 @@ void Topl_Renderer_Drx11::clearView(){
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
+	buildScene(scene, &_defaultCamera);
+}
+
+void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
 	_renderCtx.push_back(Topl_RenderContext_Drx11());
 	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
 
@@ -435,7 +439,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
+	if (primaryShader->genSceneBlock(scene, camera, &blockBytes)) {
 		_isSceneReady = _Drx11::createBlockBuff(&_device, &_currentRenderCtx->sceneBlockBuff, &blockBytes);
 		_currentRenderCtx->buffers.push_back(Buffer_Drx11(_currentRenderCtx->sceneBlockBuff));
 	}
@@ -449,7 +453,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
 
 		// Geo component block implementation
-		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			_currentRenderCtx->buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Render_Block, renderBlockBuff));
@@ -475,17 +479,12 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
 		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
 #endif
-
 		if(!_isSceneReady) return;
 		_mainRenderIDs = currentRenderID; // Gives us the greatest buffer ID number
 	}
 
     _isSceneReady = true;
     return;
-}
-
-void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	buildScene(scene); // Implement body
 }
 
 #ifdef RASTERON_H
@@ -585,19 +584,23 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
+	update(scene, &_defaultCamera);
+}
+
+void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* camera){
 	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&_device, &_currentRenderCtx->buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 
-		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = _currentRenderCtx->buffers.begin(); currentBuff < _currentRenderCtx->buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*currentBuff);

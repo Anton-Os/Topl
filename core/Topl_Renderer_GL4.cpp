@@ -290,6 +290,10 @@ void Topl_Renderer_GL4::clearView(){
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
+	buildScene(scene, &_defaultCamera);
+}
+
+void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
 	_renderCtx.push_back(Topl_RenderContext_GL4());
 	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
 
@@ -299,7 +303,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes)) {
+	if (primaryShader->genSceneBlock(scene, camera, &blockBytes)) {
 		_currentRenderCtx->buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
 		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -316,7 +320,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
 
 		// Geo component block implementation
-		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
 			glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -380,10 +384,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
     return; // To be continued
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	buildScene(scene); // Implement body
-}
-
 #ifdef RASTERON_H
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
@@ -417,11 +417,15 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
+	update(scene, &_defaultCamera);
+}
+
+void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camera){
 	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (primaryShader->genPerSceneDataBlock(scene, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -430,7 +434,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	for (unsigned g = 0; g < scene->getGeoCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
-		if (primaryShader->genPerGeoDataBlock(geoTarget_ptr, &blockBytes)) {
+		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _currentRenderCtx->buffers.begin(); currentBuff < _currentRenderCtx->buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
@@ -445,7 +449,6 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 	_isSceneReady = true;
 	return;
 }

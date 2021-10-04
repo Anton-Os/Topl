@@ -1,6 +1,6 @@
 #include "ValueGen.hpp"
 
-Eigen::Matrix4f ValueGen::genPerspectiveMatrix(SpatialBounds3D bounds){
+Eigen::Matrix4f ValueGen::genspectiveMatrix(SpatialBounds3D bounds){
     Eigen::Matrix4f projMatrix;
     projMatrix << // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,

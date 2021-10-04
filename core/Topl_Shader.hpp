@@ -111,7 +111,7 @@ protected:
 	std::string genPrefix_hlsl() { return "hlsl/"; }
 };
 
-// TODO: Inherit everything from Topl_Shader and only include virtual functions
+// Primary shader contains virtual functions in order to pass uniforms into bytes container
 class Topl_PrimaryShader : public Topl_Shader {
 public:
     // Basic Input Value Troupeor
@@ -129,8 +129,8 @@ public:
 		std::initializer_list<Shader_Type> inputs
 	) : Topl_Shader(platform, camera, type, fileSrc, inputs) {}
 
-	virtual bool genPerGeoDataBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
-    virtual bool genPerSceneDataBlock(const Topl_Scene *const scene, std::vector<uint8_t>* bytes) const = 0;
+	virtual bool genGeoBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
+    virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;
 };
 
 typedef const Topl_PrimaryShader* topl_shader_cptr;

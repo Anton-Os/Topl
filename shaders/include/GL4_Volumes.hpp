@@ -11,7 +11,7 @@ struct Volumes_VertexShader : public Topl_PrimaryShader {
 			} // Inputs
 		) { }
 
-	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
+	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
@@ -22,7 +22,7 @@ struct Volumes_VertexShader : public Topl_PrimaryShader {
 		return true;
 	}
 
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const {
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const {
 		const uint8_t* cameraPos_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getPos()->data());
 		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getDirection()->data());
 		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());

@@ -37,7 +37,7 @@ struct ValueGen {
         srand(time(NULL)); // random value seeder
     }
 
-    static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
+    static Eigen::Matrix4f genspectiveMatrix(SpatialBounds3D bounds);
     static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
     static float genRandFloat(){ genRandFloat(0.0, 1.0); }
     static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }

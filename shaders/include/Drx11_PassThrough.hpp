@@ -8,8 +8,8 @@ struct PassThru_TessHullShader : public Topl_PrimaryShader {
 			{ Shader_Type({}) }// Inputs
 		){ }
 
-	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
+	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const { return false; }
 };
 
 struct PassThru_TessDomainShader : public Topl_PrimaryShader {
@@ -20,8 +20,8 @@ struct PassThru_TessDomainShader : public Topl_PrimaryShader {
 			{ Shader_Type({}) }// Inputs
 		){ }
 
-	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
+	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const { return false; }
 };
 
 struct PassThru_GeometryShader : public Topl_PrimaryShader {
@@ -32,6 +32,6 @@ struct PassThru_GeometryShader : public Topl_PrimaryShader {
 			{ Shader_Type({}) }// Inputs
 		){ }
 
-	virtual bool genPerGeoDataBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genPerSceneDataBlock(const Topl_Scene* const scene, std::vector<uint8_t>* bytes) const { return false; }
+	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const { return false; }
 };

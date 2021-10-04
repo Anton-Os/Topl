@@ -7,8 +7,6 @@
 #include "Topl_Shader.hpp"
 #include "Topl_Scene.hpp"
 
-typedef const Topl_PrimaryShader* topl_shader_cptr;
-
 #define SPECIAL_SCENE_RENDER_ID 0
 
 struct RenderTarget {
@@ -135,6 +133,7 @@ protected:
     enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // Switch to true when elements of the scene are built
+    Topl_Camera _defaultCamera;
 	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
@@ -143,8 +142,6 @@ private:
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
 	virtual void render(void) = 0;
-
-    Topl_Camera _defaultCamera;
 };
 
 #define TOPL_RENDERER_H
