@@ -2,6 +2,8 @@
 
 #define TOPL_WIN_HEIGHT 1200
 #define TOPL_WIN_WIDTH 1100
+#define TOPL_WIN_MAX_COUNT 5
+#define TOPL_WIN_MAX_CHILDREN 4
 
 #include "support_def.h"
 // #define PARENT_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/MSVC_BUILD_2/Debug/" // Change Debug directory to $(Configuration)
@@ -21,6 +23,7 @@
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
         NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
+		NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN];
         NATIVE_GL_CONTEXT GL_ctx;
         HDC windowDevice_Ctx;
         POINT cursorPos;
@@ -52,6 +55,7 @@
         Display* display;
         // XVisualInfo* visualInfo;
         NATIVE_WINDOW window;
+		NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN]
         NATIVE_GL_CONTEXT GL_ctx;
         Cursor_Pos cursorPos;
     };

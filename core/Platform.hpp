@@ -7,24 +7,30 @@
 #include "Input.hpp";
 
 struct Platform {
-    Platform(const char* execPath){
+    Platform(const char* execPath, const char* winName){
         _execPath = execPath;
+		_winName = winName;
     }
 
-    void createWindow(const char* windowName);
-    // void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout);
-	void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */); // use UI_TreeLayout argument
+    void createWindow();
     void handleEvents(); // handles platform specific events
 
-    // static Timer_Ticker mTicker;
-    HWND getNativeWindow(){ return _context.window; }
+    HWND getParentWindow(){ return _context.window; }
+	HWND getChildWindow(unsigned short childNum) {
+		if (_windowCount <= 1 || childNum > _windowCount - 1) return 0; // problem retrieving child window
+		else return _context.childWindows[childNum];
+	}
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true if within window bounds
     
     static Input_KeyLogger keyLogger;
     static Input_MouseLogger mouseLogger;
 private:
-    const char* _execPath; // full path to executable
-    NATIVE_PLATFORM_CONTEXT _context;
+	const char* _execPath; // full path to executable
+	const char* _winName; // parent window display name
+	NATIVE_PLATFORM_CONTEXT _context;
+
+	unsigned short _windowCount = 0; // increments as new windows are created
+	unsigned short _windowMax = TOPL_WIN_MAX_COUNT;
 };
 
 #define TOPL_PLATFORM_H

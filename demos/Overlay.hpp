@@ -19,7 +19,7 @@ namespace Topl {
 
 namespace Main {
     void init(Platform* platform) {
-		platform->createWindow("Overlay");
+		platform->createWindow();
 
         // add callbacks
 

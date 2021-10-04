@@ -112,17 +112,17 @@ struct Phys_Colliders {
     virtual void genColliders(Phys_Colliders* colliders) = 0;
 } */
 
-struct Phys_Properties { // A physics property that becomes associated to a Geo_Actor object
-    Phys_Properties(){ // Freeform constructor
+struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor object
+    Phys_Actor(){ // Freeform constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
     }
-    Phys_Properties(Eigen::Vector3f gravityVec){ // Gravity constructor
+    Phys_Actor(Eigen::Vector3f gravityVec){ // Gravity constructor
         forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
         
         addForce(gravityVec);
         isGravityEnabled = true;
     }
-    ~Phys_Properties(){ if(forces != nullptr) free(forces); }
+    ~Phys_Actor(){ if(forces != nullptr) free(forces); }
 
     bool addForce(Eigen::Vector3f force){
         if(actingForceCount < MAX_PHYS_FORCES){

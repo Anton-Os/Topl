@@ -7,10 +7,10 @@
 
 int main(int argc, char** argv) {
 	
-	Platform platform(argv[0]);
+	Platform platform(argv[0], "Drx11 Canvas");
 	Main::init(&platform);
 
-	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
+	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
 	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
 	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader();

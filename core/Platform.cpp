@@ -5,7 +5,7 @@ Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit defin
 
 #ifdef _WIN32
 
-LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
 	RECT rect;
@@ -26,28 +26,28 @@ LRESULT CALLBACK eventProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	return 0;
 }
 
-void Platform::createWindow(const char* windowName){
+void Platform::createWindow(){
     _context.windowClass = { 0 };
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
-	_context.windowClass.lpfnWndProc = eventProcedure;
+	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
 	RegisterClass(&_context.windowClass);
 
-    _context.window = CreateWindow(
-        "Topl",
-		windowName,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-        TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
-		NULL, NULL, GetModuleHandle(NULL), NULL
-    );
+	if (_windowCount == 0) { // Parent window is being created
+		_context.window = CreateWindow(
+			"Topl",
+			_winName,
+			WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
+			NULL, NULL, GetModuleHandle(NULL), NULL
+		);
 
-	ShowWindow(_context.window, 1);
-	UpdateWindow(_context.window);
-}
-
-void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */) {
-	// TODO: Implement Body Here
+		ShowWindow(_context.window, 1);
+		UpdateWindow(_context.window);
+	}
+	else if (_windowCount >= _windowMax) { OutputDebugStringA("Exceeding maximum number of windows!"); }
+	else { } // Implement Body for child window creation
 }
 
 void Platform::handleEvents(){

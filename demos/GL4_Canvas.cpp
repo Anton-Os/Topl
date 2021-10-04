@@ -7,10 +7,10 @@
 
 int main(int argc, char** argv) {
 
-	Platform platform(argv[0]);
+	Platform platform(argv[0], "GL4 Canvas");
 	Main::init(&platform);
 
-	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
+	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
 	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
 	FrameFx_FragmentShader fragmentShader = FrameFx_FragmentShader();

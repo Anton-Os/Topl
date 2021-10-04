@@ -13,11 +13,11 @@ static void error_forcesExcess() {
 
 // Scene Builder implementation code
 
-void Topl_Scene::addPhysics(const std::string& name, Phys_Properties* pProp) {
+void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	// Find matching geometry component
 	for(std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
 		if((*currentGeo)->getName() == name){
-			_geoToPhys_map.insert({ *currentGeo, pProp });
+			_geoToPhys_map.insert({ *currentGeo, physActor });
 			return;
 		}
 
@@ -31,10 +31,10 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 		if (name == (*currentGeo)->getName()) {
 			if (_geoToPhys_map.find(*currentGeo) == _geoToPhys_map.end()) return error_notFound("physics", name); // Error
 
-			Phys_Properties* targetPhys = _geoToPhys_map.find(*currentGeo)->second;
+			Phys_Actor* physActor = _geoToPhys_map.find(*currentGeo)->second;
 			vec3f_cptr targetPos = (*currentGeo)->getPos();
 
-			if(!targetPhys->addForce(forceVec)) return error_forcesExcess(); // Error
+			if(!physActor->addForce(forceVec)) return error_forcesExcess(); // Error
 		}
 
 	error_notFound("geometry or physics", name); // Error
@@ -153,25 +153,25 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve general movement here
-	for (std::map<Geo_Actor*, Phys_Properties*>::iterator currentMap = _geoToPhys_map.begin(); currentMap != _geoToPhys_map.end(); currentMap++) {
+	for (std::map<Geo_Actor*, Phys_Actor*>::iterator currentMap = _geoToPhys_map.begin(); currentMap != _geoToPhys_map.end(); currentMap++) {
 		Geo_Actor* targetGeo = currentMap->first;
-		Phys_Properties* physProps = currentMap->second;
+		Phys_Actor* physActor = currentMap->second;
 		
-		if (physProps->actingForceCount > 0) 
-			for (unsigned forceIndex = 0; forceIndex < physProps->actingForceCount; forceIndex++) {
-				physProps->acceleration += (*(physProps->forces + forceIndex)) / physProps->mass;
-				*(physProps->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // Disabling current force
+		if (physActor->actingForceCount > 0) 
+			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
+				physActor->acceleration += (*(physActor->forces + forceIndex)) / physActor->mass;
+				*(physActor->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // Disabling current force
 			}
-		(physProps->isGravityEnabled) ? physProps->actingForceCount = 1 : physProps->actingForceCount = 0; // We have resolved all the forces, resetting force count
+		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // We have resolved all the forces, resetting force count
 		
 		// Velocity Integrator
-		physProps->velocity += (physProps->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
+		physActor->velocity += (physActor->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
 		// Velocity Damping, to avoid infinite displacement
-		physProps->velocity *= physProps->damping;
+		physActor->velocity *= physActor->damping;
 
 		// Position integrator
-		targetGeo->updatePos((physProps->velocity * physElapseSecs) + 0.5 * (physProps->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
+		targetGeo->updatePos((physActor->velocity * physElapseSecs) + 0.5 * (physActor->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
 
-		physProps->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
+		physActor->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
 }

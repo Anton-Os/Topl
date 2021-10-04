@@ -69,8 +69,9 @@ private:
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
-	std::vector<Topl_RenderContext_Drx11> _renderCtx; // NEW! begin to relocate objects here!
-	Topl_RenderContext_Drx11* _currentRenderCtx; // current render context to be used for drawing
+	/* std::vector<Topl_RenderContext_Drx11> _renderCtx; // NEW! begin to relocate objects here!
+	Topl_RenderContext_Drx11* _currentRenderCtx; // current render context to be used for drawing */
+	Topl_RenderContext_Drx11 _renderCtx;
 	Topl_Pipeline_Drx11 _pipeline;
 	ID3D11InputLayout* _vertexDataLayout;
 

@@ -22,11 +22,11 @@ namespace Topl {
 	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
 	// Complex Geometry Objects
 	Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
-	Geo_Chain_Properties chainProps = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
-	Geo_Chain chain("chain", &scene, &chainGeo, &chainProps, 4);
+	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
+	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 4);
 	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&rect1);
-	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(1, 0.5f));
-	Geo_Grid grid("grid", &scene, &gridGeo, &gridProps);
+	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(1, 0.5f));
+	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 }
 
 void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -38,7 +38,7 @@ void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMO
 
 namespace Main {
 	void init(Platform* platform) {
-		platform->createWindow("Simple Shapes");
+		platform->createWindow();
 
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);

@@ -294,9 +294,6 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 }
 
 void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	_renderCtx.push_back(Topl_RenderContext_GL4());
-	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context
-
 	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
@@ -304,8 +301,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 	// Generates object for single scene block buffer
 	if (primaryShader->genSceneBlock(scene, camera, &blockBytes)) {
-		_currentRenderCtx->buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
-		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
+		_renderCtx.buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
+		glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -321,8 +318,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 		// Geo component block implementation
 		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
-			_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
-			glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.back().buffer);
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
+			glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -330,17 +327,17 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 		// Index creation procedures
 		if (geoTarget_iData != nullptr) {
-			_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _currentRenderCtx->buffers.back().buffer); // Gets the latest buffer for now
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
-		} else _currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
+		} else _renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
 
-		_currentRenderCtx->buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
-		glBindBuffer(GL_ARRAY_BUFFER, _currentRenderCtx->buffers.back().buffer); // Gets the latest buffer for now
+		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
+		glBindBuffer(GL_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVerticesCount() * sizeof(Geo_Vertex), geoTarget_perVertex, GL_STATIC_DRAW);
 
-		_currentRenderCtx->VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
-		VertexArray_GL4* currentVAO_ptr = &_currentRenderCtx->VAOs.back(); // Check to see if all parameters are valid
+		_renderCtx.VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
+		VertexArray_GL4* currentVAO_ptr = &_renderCtx.VAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 
 		GLsizei inputElementOffset = 0;
@@ -411,7 +408,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	_currentRenderCtx->textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
+	_renderCtx.textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
 }
 
 #endif
@@ -425,8 +422,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		glBindBuffer(GL_UNIFORM_BUFFER, _currentRenderCtx->buffers.front().buffer);
+	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
@@ -435,7 +432,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
-			for (std::vector<Buffer_GL4>::iterator currentBuff = _currentRenderCtx->buffers.begin(); currentBuff < _currentRenderCtx->buffers.end(); currentBuff++)
+			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
 			if (targetBuff == nullptr)
@@ -619,21 +616,21 @@ void Topl_Renderer_GL4::render(void){
 		return;
 	}
 
-	if (_currentRenderCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _currentRenderCtx->buffers.front().buffer);
+	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx.buffers.front().buffer);
 
 	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _mainRenderIDs; id++) {
-		for (std::vector<VertexArray_GL4>::iterator currentVAO = _currentRenderCtx->VAOs.begin(); currentVAO < _currentRenderCtx->VAOs.end(); currentVAO++)
+		for (std::vector<VertexArray_GL4>::iterator currentVAO = _renderCtx.VAOs.begin(); currentVAO < _renderCtx.VAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);
 			else
 				continue; // If it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(buffer_ptrs, &_currentRenderCtx->buffers, id);
+		_GL4::discoverBuffers(buffer_ptrs, &_renderCtx.buffers, id);
 
 		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
 		if (renderBlockBuff != nullptr)
@@ -645,10 +642,10 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
-		for (unsigned t = 0; t < _currentRenderCtx->textures.size(); t++) {
-			if (_currentRenderCtx->textures.at(t).targetID > id) break; // This means we have passed it in sequence
-			else if (_currentRenderCtx->textures.at(t).targetID == id) {
-				glBindTexture(GL_TEXTURE_2D, _currentRenderCtx->textures.at(t).texture);
+		for (unsigned t = 0; t < _renderCtx.textures.size(); t++) {
+			if (_renderCtx.textures.at(t).targetID > id) break; // This means we have passed it in sequence
+			else if (_renderCtx.textures.at(t).targetID == id) {
+				glBindTexture(GL_TEXTURE_2D, _renderCtx.textures.at(t).texture);
 				break;
 			}
 		}

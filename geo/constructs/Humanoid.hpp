@@ -59,7 +59,7 @@ private:
 	// Offsets associated with each body part to positon them appropriately
 	Eigen::Vector3f headOffset, bodyOffset, rightArmOffset, leftArmOffset, rightLegOffset, leftLegOffset;
 	// Physics properties associated with each body part
-    Phys_Properties head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
+    Phys_Actor head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
 	// Main links "Starfish" Shape
 	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
 	// Stability links "Pentagon" Shape

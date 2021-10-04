@@ -8,10 +8,10 @@
 
 int main(int argc, char** argv) {
 
-	Platform platform(argv[0]);
+	Platform platform(argv[0], "GL4 Simple Shapes");
 	Main::init(&platform);
 
-	Topl_Renderer_GL4 renderer(platform.getNativeWindow());
+	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
 	Volumes_VertexShader vertexShader = Volumes_VertexShader();
 	Flat_FragmentShader fragmentShader = Flat_FragmentShader();

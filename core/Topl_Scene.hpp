@@ -74,7 +74,7 @@ public:
 #endif
 
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
-	void addPhysics(const std::string& name, Phys_Properties* pProp);
+	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
 	void modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale); // Rotates and scales all connectors associated with named geometry
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
@@ -87,7 +87,7 @@ private:
 
 	std::vector<Geo_Actor*> _namedGeos; // Stores all geometries
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
-	std::map<Geo_Actor*, Phys_Properties*> _geoToPhys_map; // Associates geometry to a physics structure
+	std::map<Geo_Actor*, Phys_Actor*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates

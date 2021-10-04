@@ -27,10 +27,6 @@ void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * 
 void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
 void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
-/* void bounceCallback(double absSecs) {
-	Topl::sphereGeo2.setPos(Topl::bounceMotion.getMotion(absSecs));
-} */
-
 void orbitCallback(double absSecs){
 	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
 	Topl::sphereGeo.setPos(Eigen::Vector3f(std::sin(motionVec.x()), std::cos(motionVec.y()), 0.0));
@@ -41,11 +37,16 @@ void swivelCallback(double absSecs) {
 	Topl::sphereGeo2.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
 }
 
+void moveUpCallback() {
+	Eigen::Vector3f updatePos = Eigen::Vector3f(*Topl::sphereGeo2.getPos()) + Eigen::Vector3f(0.0f, 0.1f, 0.0f);
+	Topl::sphereGeo2.setPos(updatePos);
+}
+
 // Shared functions
 
 namespace Main {
 	void init(Platform* platform){
-		platform->createWindow("Planetary");
+		platform->createWindow();
 
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
@@ -56,8 +57,9 @@ namespace Main {
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
-		Topl::gameTicker.addRecurringEvent(&swivelCallback);
-		Topl::gameTicker.addRecurringEvent(&orbitCallback);
+		// Topl::gameTicker.addRecurringEvent(&swivelCallback);
+		// Topl::gameTicker.addRecurringEvent(&orbitCallback);
+		Topl::gameTicker.addPeriodicEvent(2000, moveUpCallback);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){

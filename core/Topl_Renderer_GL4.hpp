@@ -128,8 +128,9 @@ private:
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
-	std::vector<Topl_RenderContext_GL4> _renderCtx; // drawable render contexts
-	Topl_RenderContext_GL4* _currentRenderCtx; // current render context to be used for drawing
+	/* std::vector<Topl_RenderContext_GL4> _renderCtx; // drawable render contexts
+	Topl_RenderContext_GL4* _currentRenderCtx; // current render context to be used for drawing */
+	Topl_RenderContext_GL4 _renderCtx;
   	Topl_Pipeline_GL4 _pipeline;
 
 	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object

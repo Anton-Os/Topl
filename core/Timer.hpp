@@ -8,7 +8,6 @@
 #define TIME_MOTION_CALLBACK 30 // 30 milliseconds
 
 typedef void (*periodicCallback)(void);
-// typedef void (*periodicCallback)(double);
 
 class Timer_PeriodicEvent {
 public:
@@ -19,7 +18,6 @@ public:
 		_secsElapsed += static_cast<double>(millisecs / 1000.0);
 		while(_secsElapsed >= static_cast<double>(millisecPeriod / 1000.0)){
 			_secsElapsed -= static_cast<double>(millisecPeriod / 1000.0);
-			// callbackTrigger(_absSecsElapsed);
 			callbackTrigger();
 		}
 	}

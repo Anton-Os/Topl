@@ -8,10 +8,10 @@
 
 int main(int argc, char** argv) {
 	
-	Platform platform(argv[0]);
+	Platform platform(argv[0], "Drx11 Planetary");
 	Main::init(&platform);
 
-	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
+	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
 	Volumes_VertexShader vertexShader = Volumes_VertexShader();
 	Flat_PixelShader fragmentShader = Flat_PixelShader();

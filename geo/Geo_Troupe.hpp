@@ -52,7 +52,7 @@ private:
 struct Geo_DynamicSet { // A container for multiple dynamic objects
     Geo_DynamicSet(unsigned setCount){ phys.resize(setCount); }
 
-    std::vector<Phys_Properties> phys;
+    std::vector<Phys_Actor> phys;
     std::vector<Phys_Connector> links;
 };
 

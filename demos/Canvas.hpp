@@ -18,10 +18,9 @@ namespace Topl {
 
 namespace Main {
     void init(Platform* platform) {
-		platform->createWindow("Canvas");
+		platform->createWindow();
 
-        // add callbacks
-
+        // Adding callbacks
 		Topl::scene.addGeometry("plane", &Topl::planeGeo);
 		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	}

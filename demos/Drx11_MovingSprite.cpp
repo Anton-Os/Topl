@@ -9,10 +9,10 @@
 
 int main(int argc, char** argv) {
 
-	Platform platform(argv[0]);
+	Platform platform(argv[0], "Drx11 Moving Sprite");
 	Main::init(&platform);
 
-	Topl_Renderer_Drx11 renderer(platform.getNativeWindow()); // Renderer initialization
+	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
 	Basic_VertexShader vertexShader = Basic_VertexShader();
 	Basic_PixelShader pixelShader = Basic_PixelShader();

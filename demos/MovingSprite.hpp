@@ -16,7 +16,7 @@ namespace Topl {
 	std::string imagesSubPath = "images/";
 
 	// TODO: Make these not device specific, relative file paths only!
-	std::pair<std::string, Eigen::Vector3f> humanoidProps[HUMANOID_PARTS_COUNT] = {
+	std::pair<std::string, Eigen::Vector3f> humanoidActor[HUMANOID_PARTS_COUNT] = {
 		std::make_pair(assetsPath + imagesSubPath + "Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
 		std::make_pair(assetsPath + imagesSubPath + "LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
 		std::make_pair(assetsPath + imagesSubPath + "RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
@@ -26,7 +26,7 @@ namespace Topl {
 	};
 
 	// Geo_Humanoid humanoid;
-	Geo_Humanoid humanoid("humanoid", &scene, humanoidProps, 0.25f);
+	Geo_Humanoid humanoid("humanoid", &scene, humanoidActor, 0.25f);
 }
 
 void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
@@ -39,7 +39,7 @@ void buttonCallback_r(void) { Topl::humanoid.rotate(&Topl::scene, Eigen::Vector2
 
 namespace Main {
 	void init(Platform* platform) {
-		platform->createWindow("Moving Sprite");
+		platform->createWindow();
 
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
