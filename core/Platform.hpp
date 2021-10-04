@@ -15,8 +15,8 @@ struct Platform {
     void createWindow();
     void handleEvents(); // handles platform specific events
 
-    HWND getParentWindow(){ return _context.window; }
-	HWND getChildWindow(unsigned short childNum) {
+    NATIVE_WINDOW getParentWindow(){ return _context.window; }
+	NATIVE_WINDOW getChildWindow(unsigned short childNum) {
 		if (_windowCount <= 1 || childNum > _windowCount - 1) return 0; // problem retrieving child window
 		else return _context.childWindows[childNum];
 	}
