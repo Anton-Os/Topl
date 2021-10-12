@@ -61,27 +61,27 @@ namespace _Humanoid {
 void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	
-	Geo_Actor* geocHead = getNextGeo();
+	Geo_Actor* geocHead = getNextActor();
 	sprite = getSprite(HUMANOID_Head);
 	_Humanoid::createHead(scene, geocHead, headOffset, getPrefix() + "head", sprite);
 
-	Geo_Actor* geocLeftArm = getNextGeo();
+	Geo_Actor* geocLeftArm = getNextActor();
 	sprite = getSprite(HUMANOID_LeftArm);
 	_Humanoid::createLeftArm(scene, geocLeftArm, leftArmOffset, getPrefix() + "leftArm", sprite);
 
-	Geo_Actor* geocRightArm = getNextGeo();
+	Geo_Actor* geocRightArm = getNextActor();
 	sprite = getSprite(HUMANOID_RightArm);
 	_Humanoid::createRightArm(scene, geocRightArm, rightArmOffset, getPrefix() + "rightArm", sprite);
 
-	Geo_Actor* geocBody = getNextGeo();
+	Geo_Actor* geocBody = getNextActor();
 	sprite = getSprite(HUMANOID_Body);
 	_Humanoid::createBody(scene, geocBody, bodyOffset, getPrefix() + "body", sprite);
 
-	Geo_Actor* geocLeftLeg = getNextGeo();
+	Geo_Actor* geocLeftLeg = getNextActor();
 	sprite = getSprite(HUMANOID_LeftLeg);
 	_Humanoid::createLeftLeg(scene, geocLeftLeg, leftLegOffset, getPrefix() + "leftLeg", sprite);
 
-	Geo_Actor* geocRightLeg = getNextGeo();
+	Geo_Actor* geocRightLeg = getNextActor();
 	sprite = getSprite(HUMANOID_RightLeg);
 	_Humanoid::createRightLeg(scene, geocRightLeg, rightLegOffset, getPrefix() + "rightLeg", sprite);
 
@@ -107,9 +107,4 @@ void Geo_Humanoid::fill(Topl_Scene* scene) { // Trying with displacements for no
 	scene->addConnector(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	scene->addConnector(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
 	scene->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
-}
-
-void Geo_Humanoid::updateScene(Topl_Scene* scene) {
-	_updateCount++;
-    return;
 }

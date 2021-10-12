@@ -31,7 +31,6 @@ public:
 		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
 		(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
 	) {
-
 		headOffset = props[HUMANOID_Head].second;
 		bodyOffset = props[HUMANOID_LeftArm].second;
 		leftArmOffset = props[HUMANOID_RightArm].second;
@@ -39,7 +38,7 @@ public:
 		leftLegOffset = props[HUMANOID_LeftLeg].second;
 		rightLegOffset = props[HUMANOID_RightLeg].second;
 
-		fillScene(scene);
+		fill(scene);
 	}
 	~Geo_Humanoid() {}
 	
@@ -51,8 +50,6 @@ public:
 		HUMANOID_LeftLeg = 4,
 		HUMANOID_RightLeg = 5
 	} anatomyIndex;
-
-    void updateScene(Topl_Scene* scene) override;
 private:
 	void fill(Topl_Scene* scene) override;
 

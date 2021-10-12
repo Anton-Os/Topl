@@ -7,7 +7,3 @@ namespace _Pane {
 void Geo_PaneLayout::fill(Topl_Scene* scene){
     return; // include implementation
 }
-
-void Geo_PaneLayout::updateScene(Topl_Scene* scene){
-    return; // include implementation
-}

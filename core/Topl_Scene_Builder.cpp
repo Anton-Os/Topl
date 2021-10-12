@@ -16,8 +16,8 @@ topl_geo_cptr Topl_Scene::getGeoActor(unsigned index) const {
 }
 
 topl_geo_cptr Topl_Scene::getGeoActor(const std::string& name) const {
-	for(std::vector<Geo_Actor*>::const_iterator currentGeo = _namedActor.cbegin(); currentGeo < _namedActor.cend(); currentGeo++)
-		if((*currentGeo)->getName() == name) return *currentGeo;
+	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+		if((*actor)->getName() == name) return *actor;
 
 	return nullptr; // Error
 }
@@ -39,9 +39,9 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
 
 void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rastImage) {
 	if (rastImage->data == nullptr || rastImage->height == 0 || rastImage->width == 0) return; // Error
-	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedActor.cbegin(); currentGeo < _namedActor.cend(); currentGeo++)
-		if (name == (*currentGeo)->getName()) {
-			_geoTex_map.insert({ *currentGeo, rastImage });
+	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+		if (name == (*actor)->getName()) {
+			_geoTex_map.insert({ *actor, rastImage });
 			return;
 		}
 }

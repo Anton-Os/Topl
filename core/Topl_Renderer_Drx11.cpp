@@ -444,7 +444,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera*
 		_renderCtx.buffers.push_back(Buffer_Drx11(_renderCtx.sceneBlockBuff));
 	}
 
-	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
+	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
@@ -596,7 +596,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* cam
 	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&_device, &_renderCtx.buffers.front().buffer, &blockBytes); // Update code should work
 
-	for(unsigned g = 0; g < scene->getGeoCount(); g++) {
+	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 

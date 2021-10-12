@@ -19,10 +19,8 @@ public:
     Geo_DynamicSet(linkCount){
 		chain_props = *props;
         
-        fillScene(scene);
+        fill(scene);
     }
-
-    void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
 

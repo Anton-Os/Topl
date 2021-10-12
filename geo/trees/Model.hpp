@@ -9,10 +9,9 @@ public:
         std::vector<const Geo_Node*> nodes
     ) : Geo_Tree(prefix, scene, nullptr, nodes.size()){ // includes 
         _filePath = filePath;
-        fillScene(scene);
-    } 
 
-    void updateScene(Topl_Scene* scene) override;
+        fill(scene);
+    }
 private:
     void fill(Topl_Scene* scene) override;
 

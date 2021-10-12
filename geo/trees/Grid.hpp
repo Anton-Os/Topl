@@ -56,12 +56,10 @@ public:
 			0.0f
 		);
 
-        fillScene(scene);
+		fill(scene);
     }
 
 	void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
-
-    void updateScene(Topl_Scene* scene) override;
 private:
     void fill(Topl_Scene* scene) override;
 	

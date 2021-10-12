@@ -308,7 +308,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	for (unsigned g = 0; g < scene->getGeoCount(); g++) { // Slot index will signify how many buffers exist
+	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
@@ -428,7 +428,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
 
-	for (unsigned g = 0; g < scene->getGeoCount(); g++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
 		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
