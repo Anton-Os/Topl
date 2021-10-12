@@ -3,12 +3,12 @@
 #include "Topl_Scene.hpp"
 #include "Topl_Renderer.hpp"
 
-#include "Geo_Troupe.hpp"
+#include "Geo_Tree.hpp"
 #include "primitives/Geo_Flat.hpp"
 #include "primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Extruded.hpp"
-#include "constructs/Chain.hpp"
-#include "constructs/Grid.hpp"
+#include "trees/Chain.hpp"
+#include "trees/Grid.hpp"
 
 #define MOVE_AMOUNT 0.5
 

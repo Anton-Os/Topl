@@ -69,7 +69,7 @@ struct Shader_Type {
 
 class Topl_Shader {
 public:
-    // Basic Input Value Troupeor
+    // Basic Input Value Treeor
     Topl_Shader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 
@@ -114,7 +114,7 @@ protected:
 // Primary shader contains virtual functions in order to pass uniforms into bytes container
 class Topl_PrimaryShader : public Topl_Shader {
 public:
-    // Basic Input Value Troupeor
+    // Basic Input Value Treeor
     Topl_PrimaryShader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 

@@ -2,7 +2,7 @@
 
 class Geo_Extruded : public Geo_RenderObj {
 public:
-    // All Shape Troupeor
+    // All Shape Treeor
     Geo_Extruded(NGon2D refShape, float depth) 
     : Geo_RenderObj
         ((refShape.segments + 1) * 2, // Vertex count is number of segments +1 for the center point but DOUBLED for the back face as well

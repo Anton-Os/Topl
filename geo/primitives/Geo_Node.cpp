@@ -1,26 +1,26 @@
-#include "Geo_ModelNode.hpp"
+#include "Geo_Node.hpp"
 
-void Geo_ModelNode::genVertices(Eigen::Vector3f* data){
+void Geo_Node::genVertices(Eigen::Vector3f* data){
 	// TODO: Implement body here
 	return;
 }
 
-void Geo_ModelNode::genNormals(Eigen::Vector3f* data) {
+void Geo_Node::genNormals(Eigen::Vector3f* data) {
 	// TODO: Implement body here
 	return;
 }
 
-void Geo_ModelNode::genTexCoords(Eigen::Vector2f* data) {
+void Geo_Node::genTexCoords(Eigen::Vector2f* data) {
 	// TODO: Implement body here
 	return;
 }
 
-void Geo_ModelNode::genIndices(unsigned* data){
+void Geo_Node::genIndices(unsigned* data){
 	// TODO: Implement body here
 	return;
 }
 
-void Geo_ModelNode::log(const char* fileName) { // for debugging
+void Geo_Node::log(const char* fileName) { // for debugging
 	std::string currentLine;
 
 	logToFile(fileName, "\n\nPos Data\n");

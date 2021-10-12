@@ -4,8 +4,8 @@
 #include "Topl_Scene.hpp"
 #include "Topl_Renderer.hpp"
 
-#include "Geo_Troupe.hpp"
-#include "constructs/Humanoid.hpp"
+#include "Geo_Tree.hpp"
+#include "trees/Humanoid.hpp"
 
 
 #define MOVE_AMOUNT 16.0

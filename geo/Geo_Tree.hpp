@@ -14,42 +14,39 @@
 
 typedef std::pair<std::string, Geo_Actor*> geoName_pair;
 
-class Geo_Troupe {
+class Geo_Tree {
 public:
     // Fixed items constructor
-    Geo_Troupe(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs);
+    Geo_Tree(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs);
     // Duplicate items constructor
-    Geo_Troupe(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* geoc, unsigned count);
+    Geo_Tree(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* geoc, unsigned count);
 
-	~Geo_Troupe();
+	~Geo_Tree();
 
     std::string getPrefix(){ return _prefix + "_"; }
 	virtual void updateScene(Topl_Scene* scene) = 0;
-    void move(Topl_Scene* scene, Eigen::Vector3f vec){
-        for(unsigned g = 0; g < _geoCount; g++) scene->addForce((*(_geoData + g))->getName(), vec);
+    void move(Topl_Scene* scene, Eigen::Vector3f vec){ 
+        for(unsigned g = 0; g < _geoCount; g++) (*(_geoData + g))->updatePos(vec); 
     }
     void rotate(Topl_Scene* scene, Eigen::Vector2f angles){
         for(unsigned g = 0; g < _geoCount; g++) (*(_geoData + g))->updateRot(angles);
     }
-    /* virtual void move(Topl_Scene* scene, Eigen::Vector3f vec) = 0;
-    virtual void rotate(Topl_Scene* scene, Eigen::Vector3f) = 0; */
-
 protected:
     void fillScene(Topl_Scene* scene); // called within the derived constructor body
-    virtual void fill(Topl_Scene* scene) = 0; // job is to fill the _namedGeos structure
+    virtual void fill(Topl_Scene* scene) = 0; // job is to fill the _namedActor structure
 	unsigned getGeoCount() const { return _geoCount; }
     Geo_Actor* getNextGeo();
 
     unsigned _updateCount = FIRST_UPDATE_NUM; // probably needs to be private and a getter method
-	std::vector<geoName_pair> _namedGeos;
+	std::vector<geoName_pair> _namedActor;
 private:
     std::string _prefix;
 	unsigned _geoCount = 0;
     unsigned _currentGeoOffset = 0;
-	Geo_Actor** _geoData = nullptr;
+	Geo_Actor** _geoData = nullptr; // actor data is stored here and retrieved sequentially by derived class
 }; // needs work! could use more abstraction
 
-struct Geo_DynamicSet { // A container for multiple dynamic objects
+struct Geo_DynamicSet { // A container that holds objects used in physics
     Geo_DynamicSet(unsigned setCount){ phys.resize(setCount); }
 
     std::vector<Phys_Actor> phys;

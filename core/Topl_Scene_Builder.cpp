@@ -11,12 +11,12 @@ static void error_notFound(const std::string& objTypeStr, const std::string& nam
 unsigned Geo_Actor::_id_count = 0;
 
 topl_geo_cptr Topl_Scene::getGeoActor(unsigned index) const {
-	if(index >= _namedGeos.size()) return nullptr; // Error
-	else return _namedGeos.at(index); 
+	if(index >= _namedActor.size()) return nullptr; // Error
+	else return _namedActor.at(index); 
 }
 
 topl_geo_cptr Topl_Scene::getGeoActor(const std::string& name) const {
-	for(std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	for(std::vector<Geo_Actor*>::const_iterator currentGeo = _namedActor.cbegin(); currentGeo < _namedActor.cend(); currentGeo++)
 		if((*currentGeo)->getName() == name) return *currentGeo;
 
 	return nullptr; // Error
@@ -32,14 +32,14 @@ topl_linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 
 void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
 	geo->setName(name);
-	_namedGeos.push_back(geo);
+	_namedActor.push_back(geo);
 }
 
 #ifdef RASTERON_H
 
 void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rastImage) {
 	if (rastImage->data == nullptr || rastImage->height == 0 || rastImage->width == 0) return; // Error
-	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedGeos.cbegin(); currentGeo < _namedGeos.cend(); currentGeo++)
+	for (std::vector<Geo_Actor*>::const_iterator currentGeo = _namedActor.cbegin(); currentGeo < _namedActor.cend(); currentGeo++)
 		if (name == (*currentGeo)->getName()) {
 			_geoTex_map.insert({ *currentGeo, rastImage });
 			return;

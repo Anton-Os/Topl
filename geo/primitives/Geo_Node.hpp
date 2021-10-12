@@ -3,9 +3,9 @@
 #include "FileIO.hpp"
 // #include "File3D.hpp"
 
-class Geo_ModelNode : public Geo_RenderObj {
+class Geo_Node : public Geo_RenderObj {
 public:
-    Geo_ModelNode() : Geo_RenderObj(1, 1){  } // for testing
+    Geo_Node() : Geo_RenderObj(1, 1){  } // for testing
 
 	void log(const char* fileName); // prints contents for debugging
 private:

@@ -1,11 +1,11 @@
-#include "Geo_Troupe.hpp"
+#include "Geo_Tree.hpp"
 #include "Geo_SpriteTable.hpp"
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
 // TODO: Make this a derived class of Web.hpp !!!
 
-class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Troupe { // Consists of sprites
+class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
 public:
 	Geo_Humanoid( // Customizable constructor
 		const std::string& prefix,
@@ -23,7 +23,7 @@ public:
 		props[HUMANOID_RightLeg].first
 		}, scaleFactor
 	),
-	Geo_Troupe(prefix, scene, {
+	Geo_Tree(prefix, scene, {
 		(Geo_RenderObj*)getSquare(HUMANOID_Head),
 		(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
 		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),

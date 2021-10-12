@@ -2,7 +2,7 @@
 
 class Geo_Conic : public Geo_RenderObj {
 public:
-    // All Shape Troupeor
+    // All Shape Treeor
     Geo_Conic(NGon2D refShape, Eigen::Vector3f apex) 
     : Geo_RenderObj
     (refShape.segments + 2, // Vertex count is number of segments +1 for the center point and +1 for the apex point

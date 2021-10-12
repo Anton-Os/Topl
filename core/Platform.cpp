@@ -46,8 +46,13 @@ void Platform::createWindow(){
 		ShowWindow(_context.window, 1);
 		UpdateWindow(_context.window);
 	}
-	else if (_windowCount >= _windowMax) { OutputDebugStringA("Exceeding maximum number of windows!"); }
+	else if (_windowCount >= _windowMax) { 
+		OutputDebugStringA("Exceeding maximum number of windows!"); 
+		return;
+	}
 	else { } // Implement Body for child window creation
+
+	_windowCount++;
 }
 
 void Platform::handleEvents(){

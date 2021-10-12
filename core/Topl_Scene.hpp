@@ -27,7 +27,7 @@ struct Topl_LightSource {
 	Topl_LightSource(Eigen::Vector3f p) {
 		pos = p;
 	}
-	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Troupeor
+	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Treeor
 		pos = p;
 		lightColor = lc;
 		intensity = i;
@@ -63,7 +63,7 @@ public:
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
-	unsigned getGeoCount() const { return _namedGeos.size(); }
+	unsigned getGeoCount() const { return _namedActor.size(); }
 	topl_geo_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	topl_geo_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	unsigned getLightSourceCount() const { return _lightSrc.size(); }
@@ -85,7 +85,7 @@ public:
 private:
 	Topl_Camera _camera;
 
-	std::vector<Geo_Actor*> _namedGeos; // Stores all geometries
+	std::vector<Geo_Actor*> _namedActor; // Stores all geometries
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
 	std::map<Geo_Actor*, Phys_Actor*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data

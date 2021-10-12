@@ -17,18 +17,18 @@ list(APPEND geo_Src
     geo/primitives/Geo_Flat.cpp
     geo/primitives/Geo_Conic.cpp
     geo/primitives/Geo_Extruded.cpp
-    geo/primitives/Geo_ModelNode.cpp
+    # geo/primitives/Geo_Node.cpp
     geo/primitives/Geo_Sphere.cpp
 
-    geo/Geo_Troupe.cpp
+    geo/Geo_Tree.cpp
     geo/Geo_SpriteTable.cpp
     geo/Geometry.cpp
     geo/ShapesGen.cpp
 )
 if(SUPPORT_3D_ASSETS)
     list(APPEND geo_Src
-        # geo/constructs/Model.cpp
-        geo/primitives/Geo_ModelNode.cpp
+        # geo/trees/Model.cpp
+        geo/primitives/Geo_Node.cpp
     )
 endif()
 
@@ -64,15 +64,15 @@ if(WIN32)
     )
 
     add_executable(Drx11_MovingSprite
-        geo/constructs/Humanoid.cpp
+        geo/trees/Humanoid.cpp
 
         demos/Drx11_MovingSprite.cpp
     )
     target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
 
 	add_executable(Drx11_SimpleShapes
-		geo/constructs/Chain.cpp
-		geo/constructs/Grid.cpp
+		geo/trees/Chain.cpp
+		geo/trees/Grid.cpp
 
 		demos/Drx11_SimpleShapes.cpp
 	)
@@ -122,7 +122,7 @@ if(NOT WIN32) # decreases Windows build time
 endif()
 
 add_executable(GL4_MovingSprite
-    geo/constructs/Humanoid.cpp
+    geo/trees/Humanoid.cpp
 
     demos/GL4_MovingSprite.cpp
 )
@@ -130,8 +130,8 @@ add_executable(GL4_MovingSprite
 target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
 
 add_executable(GL4_SimpleShapes
-	geo/constructs/Chain.cpp
-    geo/constructs/Grid.cpp
+	geo/trees/Chain.cpp
+    geo/trees/Grid.cpp
 
     demos/GL4_SimpleShapes.cpp
 )
