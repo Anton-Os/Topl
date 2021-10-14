@@ -85,7 +85,6 @@ public:
     // Platform support variable constructor
 	Topl_Shader(
 		const Platform* platform,
-        const Topl_Camera* camera,
 		enum SHDR_Type type, 
 		std::string fileSrc,
 		std::initializer_list<Shader_Type> inputs
@@ -114,7 +113,7 @@ protected:
 // Primary shader contains virtual functions in order to pass uniforms into bytes container
 class Topl_PrimaryShader : public Topl_Shader {
 public:
-    // Basic Input Value Treeor
+    // Basic constructor
     Topl_PrimaryShader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 
@@ -123,11 +122,10 @@ public:
     // Platform support variable constructor
 	Topl_PrimaryShader(
 		const Platform* platform,
-		const Topl_Camera* camera,
 		enum SHDR_Type type,
 		std::string fileSrc,
 		std::initializer_list<Shader_Type> inputs
-	) : Topl_Shader(platform, camera, type, fileSrc, inputs) {}
+	) : Topl_Shader(platform, type, fileSrc, inputs) {}
 
 	virtual bool genGeoBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
     virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;

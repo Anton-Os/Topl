@@ -15,8 +15,9 @@ int main(int argc, char** argv) {
 	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
 	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader();
 
+	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene);
+	renderer.buildScene(&Topl::scene, &Topl::camera);
 
 	Main::gameLoop(&platform, &renderer);
 

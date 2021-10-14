@@ -15,6 +15,7 @@
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
@@ -29,10 +30,10 @@ namespace Topl {
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 }
 
-void buttonCallback_w(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { Topl::scene.moveCameraPos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
 // Shared functions
 
@@ -44,8 +45,6 @@ namespace Main {
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
-
-		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

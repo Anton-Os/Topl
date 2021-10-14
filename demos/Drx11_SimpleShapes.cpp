@@ -16,9 +16,9 @@ int main(int argc, char** argv) {
 	Volumes_VertexShader vertexShader = Volumes_VertexShader();
 	Flat_PixelShader fragmentShader = Flat_PixelShader();
 
+	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene);
-	Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	renderer.buildScene(&Topl::scene, &Topl::camera);
 
 	Main::gameLoop(&platform, &renderer);
 

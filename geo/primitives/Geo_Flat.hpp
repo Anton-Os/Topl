@@ -1,3 +1,5 @@
+#ifndef GEO_FLAT_H
+
 #include "Geometry.hpp"
 
 class Geo_Flat : public Geo_RenderObj {
@@ -63,3 +65,5 @@ struct Geo_Plane : public Geo_FlatSquare {
 	Eigen::Vector3f axis2;
 };
 
+#define GEO_FLAT_H
+#endif

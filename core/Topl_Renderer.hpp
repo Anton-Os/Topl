@@ -75,6 +75,7 @@ class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
 
+    void setCamera(const Topl_Camera* camera){ _activeCamera = camera; }
     // Basic pipeline creation
     void setPipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader){
         _shaders.clear(); // Reset the pipeline values
@@ -133,8 +134,9 @@ protected:
     enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // Switch to true when elements of the scene are built
-    Topl_Camera _defaultCamera;
 	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
+    Topl_Camera _defaultCamera;
+    const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader) = 0;

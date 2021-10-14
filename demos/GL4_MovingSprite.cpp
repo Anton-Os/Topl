@@ -15,8 +15,9 @@ int main(int argc, char** argv) {
 	Basic_VertexShader vertexShader = Basic_VertexShader();
 	Basic_FragmentShader fragmentShader = Basic_FragmentShader();
 
+	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene);
+	renderer.buildScene(&Topl::scene, &Topl::camera);
 
 	Main::gameLoop(&platform, &renderer);
 

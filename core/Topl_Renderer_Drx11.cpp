@@ -432,9 +432,6 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	/* _renderCtx.push_back(Topl_RenderContext_Drx11());
-	_currentRenderCtx = &_renderCtx.back(); // gets the most recent render context */
-
 	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 

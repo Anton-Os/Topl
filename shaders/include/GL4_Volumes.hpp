@@ -23,13 +23,13 @@ struct Volumes_VertexShader : public Topl_PrimaryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const {
-		const uint8_t* cameraPos_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getPos()->data());
-		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getDirection()->data());
-		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());
+		const uint8_t* cameraPos_bptr = reinterpret_cast<const uint8_t*>(camera->getPos()->data());
+		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(camera->getDirection()->data());
+		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
 
-		ValueGen::appendDataToBytes(cameraPos_bptr, scene->getCamera()->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bptr, scene->getCamera()->getDirection()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bptr, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraPos_bptr, camera->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRot_bptr, camera->getDirection()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrix_bptr, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

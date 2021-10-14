@@ -16,8 +16,9 @@ int main(int argc, char** argv) {
 	Volumes_VertexShader vertexShader = Volumes_VertexShader();
 	Flat_FragmentShader fragmentShader = Flat_FragmentShader();
 
+	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene);
+	renderer.buildScene(&Topl::scene, &Topl::camera);
 
 	glPointSize(5.0f);
 	glLineWidth(2.0f);

@@ -12,6 +12,7 @@
 
 namespace Topl {
 	Topl_Scene scene;
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagesSubPath = "images/";
 

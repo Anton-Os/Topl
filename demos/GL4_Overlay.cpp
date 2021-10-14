@@ -1,4 +1,4 @@
-#include "Canvas.hpp"
+#include "Overlay.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
 #include "GL4_FrameFx.hpp" // shader inclusion
@@ -7,20 +7,17 @@
 
 int main(int argc, char** argv) {
 
-	Platform platform(argv[0], "GL4 Canvas");
+	Platform platform(argv[0], "GL4 Overlay");
 	Main::init(&platform);
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
+	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
 	FrameFx_FragmentShader fragmentShader = FrameFx_FragmentShader();
 
 	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
 	renderer.buildScene(&Topl::scene, &Topl::camera);
-
-	glPointSize(5.0f);
-	glLineWidth(3.0f);
 
 	Main::gameLoop(&platform, &renderer);
 

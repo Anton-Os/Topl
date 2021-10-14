@@ -1,4 +1,4 @@
-#include "Geo_Flat.hpp"
+#include "primitives/Geo_Flat.hpp"
 #include "Geo_Tree.hpp"
 
 struct Geo_Pane {
@@ -7,22 +7,22 @@ struct Geo_Pane {
         squareGeo = g;
     }
 
-    Geo_FlatSquare* square;
-    Geo_Actor* squareGeo;
+    const Geo_FlatSquare* square;
+    const Geo_Actor* squareGeo;
     // Geo_Pane_Properties pane_prop;
 #ifdef RASTERON_H
     Rasteron_Image* image = nullptr; // background image available if Rasteron is supported
 #else
     unsigned bkColor = 0xFFFFFF00; // yellow background color by default
 #endif
-}
+};
 
 class Geo_PaneLayout : public Geo_Tree {
 public:
     Geo_PaneLayout(
-        const std::string& name,
+        const std::string& prefix,
         Topl_Scene* scene,
-        unsigned paneCount,
+        unsigned paneCount
     ) : Geo_Tree(prefix, scene, &squareGeo, paneCount + 1){ // includes the parent pane as well
         fill(scene);
     } 

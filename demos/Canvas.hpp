@@ -8,7 +8,7 @@
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
-	Topl_Camera camera;
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
     Geo_Plane plane = Geo_Plane(Eigen::Vector3f(0.0f, 1.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0));
     Geo_Actor planeGeo  = Geo_Actor((Geo_RenderObj*)&plane);
@@ -22,7 +22,6 @@ namespace Main {
 
         // Adding callbacks
 		Topl::scene.addGeometry("plane", &Topl::planeGeo);
-		Topl::scene.setCamera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

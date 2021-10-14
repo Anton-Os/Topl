@@ -10,8 +10,8 @@
 #include "Timer.hpp"
 #include "ValueGen.hpp"
 
-#include "Geo_Actor.hpp"
 #include "Topl_Camera.hpp"
+#include "Geo_Actor.hpp"
 
 typedef const Geo_Actor* const topl_geo_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
@@ -52,11 +52,6 @@ public:
 		_physTicker.reset(); // Resets timer for dynamic scene manager operations
 	}
 	~Topl_Scene() {}
-
-	void setCamera(enum PROJECTION_Type type, SpatialBounds3D bounds){ _camera = Topl_Camera(type, bounds); }
-	void moveCameraPos(const Eigen::Vector3f moveVec){ _camera.movePos(moveVec); }
-	topl_camera_cptr getCamera() const { return &_camera; }
-	// void addLight()
 
 	void addGeometry(const std::string& name, Geo_Actor* geo);
 	void addLightSource(Topl_LightSource ls){ _lightSrc.push_back(ls); }

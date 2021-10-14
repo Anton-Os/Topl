@@ -1,3 +1,5 @@
+
+#include "Geometry.hpp"
 #include "ValueGen.hpp"
 
 class Topl_Camera {

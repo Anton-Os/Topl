@@ -23,8 +23,8 @@ struct Basic_VertexShader : public Topl_PrimaryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const {
-		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(scene->getCamera()->getProjMatrix()->data());
-		ValueGen::assignDataToBytes(matrixBytes, scene->getCamera()->getProjMatrix()->size() * sizeof(float), bytes);
+		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
+		ValueGen::assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

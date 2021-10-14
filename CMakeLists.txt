@@ -54,7 +54,7 @@ if(WIN32)
         target_link_libraries(Drx11_Engine PUBLIC Rasteron)
     endif()
     if(Assimp_FOUND)
-        # target_link_libraries(Drx11_Engine PUBLIC assimp::assimp)
+        target_link_libraries(Drx11_Engine PUBLIC assimp::assimp)
     endif()
     set_target_properties(Drx11_Engine
         PROPERTIES
@@ -84,6 +84,9 @@ if(WIN32)
     add_executable(Drx11_Canvas demos/Drx11_Canvas.cpp)
 	target_link_libraries(Drx11_Canvas PRIVATE Drx11_Engine)
 
+    add_executable(Drx11_Overlay demos/Drx11_Overlay.cpp)
+	target_link_libraries(Drx11_Overlay PRIVATE Drx11_Engine)
+
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
 
@@ -109,7 +112,7 @@ if(Rasteron_FOUND)
     target_link_libraries(GL4_Engine PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    # target_link_libraries(GL4_Engine PUBLIC assimp::assimp)
+    target_link_libraries(GL4_Engine PUBLIC assimp::assimp)
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES
@@ -142,6 +145,9 @@ target_link_libraries(GL4_Planetary PRIVATE GL4_Engine)
 
 add_executable(GL4_Canvas demos/GL4_Canvas.cpp)
 target_link_libraries(GL4_Canvas PRIVATE GL4_Engine)
+
+add_executable(GL4_Overlay demos/GL4_Overlay.cpp)
+target_link_libraries(GL4_Overlay PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets

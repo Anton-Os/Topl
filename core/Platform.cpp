@@ -50,7 +50,43 @@ void Platform::createWindow(){
 		OutputDebugStringA("Exceeding maximum number of windows!"); 
 		return;
 	}
-	else { } // Implement Body for child window creation
+	else { 
+		RECT windowRect;
+		GetWindowRect(_context.window, &windowRect);
+
+		int x = 0; int y = 0;
+		int w = 200; int h = 200;
+		switch(_windowCount){
+		case 1: // Left Pane
+			w = 200; h = TOPL_WIN_HEIGHT;
+		break;
+		case 2: // Right Pane
+			x = 1200;
+			w = 200; h = TOPL_WIN_HEIGHT;
+		break;
+		case 3: // Top Pane
+			x = 200;
+			w = TOPL_WIN_WIDTH - 200; h = 200;
+		break;
+		case 4: // Bottom Pane
+			x = 200; y = TOPL_WIN_HEIGHT - 200;
+			w = TOPL_WIN_WIDTH - 200; h = 200;
+		break;
+		}
+
+		_context.childWindows[_windowCount - 1] = CreateWindow(
+			"Topl",
+			(LPCTSTR) NULL,
+			WS_CHILD | WS_BORDER,
+			x, y, w, h,
+			_context.window,
+			(HMENU)(int)(_windowCount),
+			GetModuleHandle(NULL),
+			NULL
+		);
+
+		ShowWindow(_context.childWindows[_windowCount - 1], 0);
+	}
 
 	_windowCount++;
 }
