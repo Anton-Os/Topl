@@ -60,10 +60,9 @@ void main() {
 	finalPos += vec4(finalTranslation, 1.0);
 
 	texcoord_out = texcoord;
-	switch (gl_VertexID % 2) {
-	case 0: flatColor_out = vec4(0.4f, 0.8f, 0.2f, 1.0f); break;
-	case 1: flatColor_out = vec4(0.8f, 0.4f, 0.2f, 1.0f); break;
-	}
+	/* switch (gl_VertexID % 2) */
+	flatColor_out = vec4(0.9f, 0.7f, 0.5f, 1.0f);
+
 	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }

@@ -27,7 +27,7 @@ struct Topl_LightSource {
 	Topl_LightSource(Eigen::Vector3f p) {
 		pos = p;
 	}
-	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Treeor
+	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
 		pos = p;
 		lightColor = lc;
 		intensity = i;

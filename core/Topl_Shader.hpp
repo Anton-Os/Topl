@@ -69,7 +69,7 @@ struct Shader_Type {
 
 class Topl_Shader {
 public:
-    // Basic Input Value Treeor
+    // Basic Input Value Constructor
     Topl_Shader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 

@@ -13,7 +13,7 @@ namespace Topl {
 	Timer_Ticker gameTicker;
 
 	NGon3D ngon = { 0.1, 12, 10 };
-	NGon3D ngon2 = { 0.3, 105, 8 };
+	NGon3D ngon2 = { 0.1, 105, 1000 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
@@ -28,14 +28,14 @@ void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_
 void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
 void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
-void orbitCallback(double absSecs){
+/* void orbitCallback(double absSecs){
 	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
 	Topl::sphereGeo.setPos(Eigen::Vector3f(std::sin(motionVec.x()), std::cos(motionVec.y()), 0.0));
-}
+} */
 
 void swivelCallback(double absSecs) {
 	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
-	Topl::sphereGeo2.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
+	Topl::sphereGeo.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
 }
 
 void moveUpCallback() {
@@ -54,11 +54,11 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
+		Topl::scene.addLightSource(Topl_LightSource(Eigen::Vector3f(0.2f, 0.0f, 0.0f)))
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
-		// Topl::gameTicker.addRecurringEvent(&swivelCallback);
-		// Topl::gameTicker.addRecurringEvent(&orbitCallback);
+		Topl::gameTicker.addRecurringEvent(&swivelCallback);
 		Topl::gameTicker.addPeriodicEvent(2000, moveUpCallback);
 	}
 

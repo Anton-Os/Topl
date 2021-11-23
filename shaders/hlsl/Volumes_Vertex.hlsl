@@ -62,13 +62,12 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	finalPos += finalTranslation;
 
+	/* switch (vertexID % 2)*/
+	output.flatColor = float4(0.5f, 0.7f, 0.9f, 1.0f);
+
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
-	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
 	output.pos = mul(finalPos, cameraMatrix); // no projection
-	switch (vertexID % 2) {
-	case 0: output.flatColor = float4(0.4f, 0.8f, 0.2f, 1.0f); break;
-	case 1: output.flatColor = float4(0.8f, 0.4f, 0.2f, 1.0f); break;
-	}
+	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
 
 	return output;
 }

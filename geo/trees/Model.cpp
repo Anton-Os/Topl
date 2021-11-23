@@ -5,5 +5,18 @@ namespace _Model {
 }
 
 void Geo_Model::fill(Topl_Scene* scene){
-    return; // include implementation
+	Assimp::Importer aiImporter;
+	unsigned aiFlags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType;
+
+	const aiScene* aiScene = aiImporter.ReadFile(
+		_filePath,
+		aiFlags
+	);
+
+	if (aiScene != nullptr) {
+		puts("Scene importation failed");
+		return;
+	}
+
+	// Perform processing here
 }

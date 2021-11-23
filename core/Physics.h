@@ -23,7 +23,7 @@ enum MOTION_Type {
 
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
 public:
-    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Treeor
+    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
         motionVec1 = m;
         endSecs = d;
     }

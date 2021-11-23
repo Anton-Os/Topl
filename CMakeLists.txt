@@ -87,6 +87,9 @@ if(WIN32)
     add_executable(Drx11_Overlay demos/Drx11_Overlay.cpp)
 	target_link_libraries(Drx11_Overlay PRIVATE Drx11_Engine)
 
+    add_executable(Drx11_Assets demos/Drx11_Assets.cpp)
+	target_link_libraries(Drx11_Assets PRIVATE Drx11_Engine)
+
   # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
 endif()
 
@@ -147,6 +150,9 @@ target_link_libraries(GL4_Canvas PRIVATE GL4_Engine)
 
 add_executable(GL4_Overlay demos/GL4_Overlay.cpp)
 target_link_libraries(GL4_Overlay PRIVATE GL4_Engine)
+
+add_executable(GL4_Assets demos/GL4_Assets.cpp)
+target_link_libraries(GL4_Assets PRIVATE GL4_Engine)
 
 
 # Copying and managing implemented here with custom targets
