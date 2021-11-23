@@ -117,7 +117,7 @@ public:
 	void buildScene(const Topl_Scene* scene) override;
 	void buildScene(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
-	Rasteron_Image* getFrame() override;
+	Rasteron_Image* frame() override;
 	void genTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:

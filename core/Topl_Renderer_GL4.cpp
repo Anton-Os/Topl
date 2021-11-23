@@ -279,13 +279,12 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 }
 
 // void Topl_Renderer_GL4::clearView(float color[4]){
 void Topl_Renderer_GL4::clearView(){
-	glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
+	// glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
+	glClearColor(0.6f, 1.0f, 0.8f, 0.99f); // green screen effect!
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -384,18 +383,18 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 #ifdef RASTERON_H
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
-Rasteron_Image* Topl_Renderer_GL4::getFrame(){
+Rasteron_Image* Topl_Renderer_GL4::frame(){
 	// Custom Image format creation
-	Rasteron_Image* rast_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
-	rast_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
-	rast_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
-	rast_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+	image->width = TOPL_WIN_WIDTH;
+	image->height = TOPL_WIN_HEIGHT;
+	image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
-	rast_image->data = (uint32_t*)malloc(rast_image->width * rast_image->height * sizeof(uint32_t));
-	glReadPixels(0, 0, rast_image->width, rast_image->height, GL_RGBA, GL_UNSIGNED_BYTE, rast_image->data);
+	image->data = (uint32_t*)malloc(image->width * image->height * sizeof(uint32_t));
+	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 
-	return rast_image;
+	return image;
 }
 
 void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){

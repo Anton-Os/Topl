@@ -27,7 +27,7 @@ list(APPEND geo_Src
 )
 if(SUPPORT_3D_ASSETS)
     list(APPEND geo_Src
-        # geo/trees/Model.cpp
+        geo/trees/Model.cpp
         geo/primitives/Geo_Node.cpp
     )
 endif()
@@ -104,7 +104,6 @@ add_library(GL4_Engine
 )
 target_include_directories(GL4_Engine PUBLIC core geo shaders/include)
 target_include_directories(GL4_Engine PUBLIC
-    # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 )
 target_link_libraries(GL4_Engine PUBLIC GLEW_lib)

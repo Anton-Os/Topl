@@ -422,7 +422,7 @@ void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cp
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	const float clearColor[] = { 0.4f, 0.4f, 0.9f, 1.0f };
+	const float clearColor[] = { 0.6f, 1.0f, 0.8f, 0.99f }; // green screen effect
     _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
 	// _deviceCtx->ClearDepthStencilView(_rtv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
@@ -487,7 +487,7 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera*
 #ifdef RASTERON_H
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
-Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
+Rasteron_Image* Topl_Renderer_Drx11::frame(){
 	HRESULT hr;
 
 	ID3D11Texture2D* framebuff;
@@ -510,16 +510,15 @@ Rasteron_Image* Topl_Renderer_Drx11::getFrame(){
 	const uint32_t* srcTexData = static_cast<const uint32_t*>(resource.pData);
 
 	// Custom Image format creation
-	Rasteron_Image* rast_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	image->width = TOPL_WIN_WIDTH;
+	image->height = TOPL_WIN_HEIGHT;
+	image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
 
-	rast_image->width = TOPL_WIN_WIDTH; // defined in native_os_def
-	rast_image->height = TOPL_WIN_HEIGHT; // defined in native_os_def
-	rast_image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
+	image->data = (uint32_t*)malloc(image->width * image->height * sizeof(uint32_t));
+	memcpy(image->data, srcTexData, image->width * image->height * sizeof(uint32_t));
 
-	rast_image->data = (uint32_t*)malloc(rast_image->width * rast_image->height * sizeof(uint32_t));
-	memcpy(rast_image->data, srcTexData, rast_image->width * rast_image->height * sizeof(uint32_t));
-
-	return rast_image;
+	return image;
 }
 
 void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){

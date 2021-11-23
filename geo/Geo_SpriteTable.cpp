@@ -70,7 +70,7 @@ void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
 		std::replace(newFileName.begin(), newFileName.end(), '/', '\\');
 
         loadFileImage(newFileName.c_str(), &(*(_fileImages + offset)));
-        *(_rastImages + offset) = createImgBase(&(*(_fileImages + offset)));
+        *(_rastImages + offset) = createImgRef(&(*(_fileImages + offset)));
         *(_rastSprites + offset) = createSprite(*(_rastImages + offset));
         
         offset++;

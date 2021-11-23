@@ -118,7 +118,12 @@ public:
     virtual void buildScene(const Topl_Scene* scene) = 0;
     virtual void buildScene(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
 #ifdef RASTERON_H
-    virtual Rasteron_Image* getFrame() = 0;
+    Rasteron_Image* getFrame(){
+        Rasteron_Image* frameImg = frame();
+        _frameCapID++;
+        return frameImg;
+    }
+    virtual Rasteron_Image* frame() = 0;
     // May need a renderer specific texture type here // Texture should be linked to graphics object id!!!
     virtual void genTexture(const Rasteron_Image* image, unsigned id) = 0;
 #endif
@@ -135,6 +140,7 @@ protected:
     bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // Switch to true when elements of the scene are built
 	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
+    unsigned _frameCapID = 1; // Increments as more frames are captured
     Topl_Camera _defaultCamera;
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:

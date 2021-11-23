@@ -4,14 +4,14 @@ void Geo_Flat::genVertices(Eigen::Vector3f* data){
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 
-    Eigen::Vector3f centerVertex = Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL);
+    Eigen::Vector3f centerVertex = Eigen::Vector3f(0.0f, 0.0f, _depth);
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1; v < _verticesCount; v++)
         *(data + v) = Eigen::Vector3f(
 			sin(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
 			cos(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
-			DEFAULT_Z_VAL
+			_depth
         );
 }
 

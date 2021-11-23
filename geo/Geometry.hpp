@@ -40,25 +40,6 @@ struct Geo_Vertex {
 	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
-enum VERTEX_Tag {
-	VERTEX_Edge = 0,
-	VERTEX_Inner = 1
-	// Add more tags!
-};
-
-struct Geo_TaggedVertex : public Geo_Vertex {
-	Geo_TaggedVertex(VERTEX_Tag t, Eigen::Vector3f pos)
-	: Geo_Vertex(pos){ // Position data constructor
-		tag = t;
-	}
-	Geo_TaggedVertex(VERTEX_Tag t, Eigen::Vector3f pos, Eigen::Vector2f texc)
-	: Geo_Vertex(pos, texc){ // Extended constructor
-		tag = t;
-	}
-
-	VERTEX_Tag tag;
-};
-
 typedef const Geo_Vertex* const geoVertex_cptr; // Safe const pointer type
 
 struct Geo_Face {

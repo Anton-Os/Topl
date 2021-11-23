@@ -16,7 +16,6 @@ namespace Topl {
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagesSubPath = "images/";
 
-	// TODO: Make these not device specific, relative file paths only!
 	std::pair<std::string, Eigen::Vector3f> humanoidActor[HUMANOID_PARTS_COUNT] = {
 		std::make_pair(assetsPath + imagesSubPath + "Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
 		std::make_pair(assetsPath + imagesSubPath + "LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
