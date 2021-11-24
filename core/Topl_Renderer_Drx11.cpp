@@ -270,7 +270,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	return;
 }
 
-void Topl_Renderer_Drx11::pipeline(const Topl_PrimaryShader* vertexShader, const Topl_PrimaryShader* pixelShader){
+void Topl_Renderer_Drx11::pipeline(prim_shader_cptr vertexShader, shader_cptr pixelShader){
 	HRESULT hr;
 
 	// Vertex shader compilation and creation code
@@ -324,7 +324,7 @@ void Topl_Renderer_Drx11::pipeline(const Topl_PrimaryShader* vertexShader, const
 	_isPipelineReady = true;
 }
 
-void Topl_Renderer_Drx11::pipeline(topl_shader_cptr vertexShader, topl_shader_cptr pixelShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader){
+void Topl_Renderer_Drx11::pipeline(shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	ID3DBlob* errorBuff;
 	HRESULT hr;
 	size_t sourceSize;
@@ -432,25 +432,24 @@ void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene) {
 }
 
 void Topl_Renderer_Drx11::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType);
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
 	// Generates object for single scene block buffer
-	if (primaryShader->genSceneBlock(scene, camera, &blockBytes)) {
+	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
 		_isSceneReady = _Drx11::createBlockBuff(&_device, &_renderCtx.sceneBlockBuff, &blockBytes);
 		_renderCtx.buffers.push_back(Buffer_Drx11(_renderCtx.sceneBlockBuff));
 	}
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
 		
 		geoVertex_cptr geoTarget_perVertex = geoTarget_renderObj->getVertices();
 		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
 
 		// Geo component block implementation
-		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
+		if (_entryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			_renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Render_Block, renderBlockBuff));
@@ -584,19 +583,18 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 }
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* camera){
-	const Topl_PrimaryShader* primaryShader = findShader(_primaryShaderType); // New Implementation
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	if (primaryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (_entryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&_device, &_renderCtx.buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		topl_geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
 
-		if (primaryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
+		if (_entryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*currentBuff);

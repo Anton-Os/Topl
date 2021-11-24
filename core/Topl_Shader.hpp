@@ -111,16 +111,16 @@ protected:
 };
 
 // Primary shader contains virtual functions in order to pass uniforms into bytes container
-class Topl_PrimaryShader : public Topl_Shader {
+class Topl_EntryShader : public Topl_Shader {
 public:
     // Basic constructor
-    Topl_PrimaryShader(
+    Topl_EntryShader(
 		enum SHDR_Type type, 
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs
 	) : Topl_Shader(type, fileSrc, inputs){ }
     // Platform support variable constructor
-	Topl_PrimaryShader(
+	Topl_EntryShader(
 		const Platform* platform,
 		enum SHDR_Type type,
 		std::string fileSrc,
@@ -131,7 +131,8 @@ public:
     virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;
 };
 
-typedef const Topl_PrimaryShader* topl_shader_cptr;
+typedef const Topl_EntryShader* prim_shader_cptr;
+typedef const Topl_Shader* shader_cptr;
 
 #define TOPL_SHADER_H
 #endif

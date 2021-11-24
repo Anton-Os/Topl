@@ -122,8 +122,8 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
-	void pipeline(const Topl_PrimaryShader* vertexShader, const Topl_PrimaryShader* fragShader) override;
-	void pipeline(topl_shader_cptr vertexShader, topl_shader_cptr fragShader, topl_shader_cptr tessCtrlShader, topl_shader_cptr tessEvalShader, topl_shader_cptr geomShader) override;
+	void pipeline(prim_shader_cptr vertexShader, shader_cptr fragShader) override;
+	void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;

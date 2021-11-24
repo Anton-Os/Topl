@@ -32,6 +32,17 @@ if(SUPPORT_3D_ASSETS)
     )
 endif()
 
+if(Assimp_FOUND)
+    # ExternalProject_Get_Property(Assimp BINARY_DIR)
+    # find_library(irrXML_lib NAMES IrrXML IrrXMLd PATHS "${BINARY_DIR}/contrib/irrXML" "${BINARY_DIR}/contrib/irrXML/Debug" "${BINARY_DIR}/contrib/irrXML/Release")
+    # find_library(zlib_lib NAMES zlibstatic zlibstaticd PATHS "${BINARY_DIR}/contrib/zlib" "${BINARY_DIR}/contrib/zlib/Debug" "${BINARY_DIR}/contrib/zlib/Release")
+    find_library(irrXML_lib NAMES IrrXML IrrXMLd)
+    find_library(zlib_lib NAMES zlibstatic zlibstaticd)
+
+    message("Assimp dependency irrXML_lib set to ${irrXML_lib}")
+    message("Assimp dependency zlib_lib set to ${zlib_lib}")
+endif()
+
 # DirectX Windows Dependent Demos
 if(WIN32)
 
@@ -55,6 +66,7 @@ if(WIN32)
     endif()
     if(Assimp_FOUND)
         target_link_libraries(Drx11_Engine PUBLIC assimp::assimp)
+        # target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
     endif()
     set_target_properties(Drx11_Engine
         PROPERTIES
@@ -115,6 +127,7 @@ if(Rasteron_FOUND)
 endif()
 if(Assimp_FOUND)
     target_link_libraries(GL4_Engine PUBLIC assimp::assimp)
+    # target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES

@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct Flat_PixelShader : public Topl_PrimaryShader {
+struct Flat_PixelShader : public Topl_Shader {
 	Flat_PixelShader()
-		: Topl_PrimaryShader(
+		: Topl_Shader(
 			SHDR_Fragment, 
 			genPrefix_hlsl() + "Flat_Pixel.hlsl",
 			{ 
@@ -10,7 +10,4 @@ struct Flat_PixelShader : public Topl_PrimaryShader {
 				Shader_Type("flatColor", "COLOR0", SHDR_uint) 
 			} // Inputs
 		) { }
-
-	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const { return false; }
 };

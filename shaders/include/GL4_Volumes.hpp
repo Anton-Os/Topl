@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct Volumes_VertexShader : public Topl_PrimaryShader {
+struct Volumes_VertexShader : public Topl_EntryShader {
 	Volumes_VertexShader()
-		: Topl_PrimaryShader(
+		: Topl_EntryShader(
 			SHDR_Vertex, 
 			genPrefix_glsl() + "Volumes_Vertex.glsl",
 			{ 

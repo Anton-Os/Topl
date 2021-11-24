@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
+	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
 	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader();
 
 	renderer.setCamera(&Topl::camera);

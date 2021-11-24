@@ -10,24 +10,24 @@ static void error_notFound(const std::string& objTypeStr, const std::string& nam
 
 unsigned Geo_Actor::_id_count = 0;
 
-topl_geo_cptr Topl_Scene::getGeoActor(unsigned index) const {
+geo_cptr Topl_Scene::getGeoActor(unsigned index) const {
 	if(index >= _namedActor.size()) return nullptr; // Error
 	else return _namedActor.at(index); 
 }
 
-topl_geo_cptr Topl_Scene::getGeoActor(const std::string& name) const {
+geo_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if((*actor)->getName() == name) return *actor;
 
 	return nullptr; // Error
 }
 
-topl_lightSource_cptr Topl_Scene::getLightSource(unsigned index) const {
+lightSource_cptr Topl_Scene::getLightSource(unsigned index) const {
 	if(index > _lightSrc.size()) return nullptr;
 	else return &_lightSrc.at(index);
 }
 
-topl_linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
+linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 	if(index > _linkedItems.size()){
 		puts("Index for linked items is out of range!");
 		return nullptr;

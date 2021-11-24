@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform, Topl::camera);
+	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
 	FrameFx_FragmentShader fragmentShader = FrameFx_FragmentShader();
 
 	renderer.setCamera(&Topl::camera);

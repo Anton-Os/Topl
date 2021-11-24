@@ -13,7 +13,7 @@
 #include "Topl_Camera.hpp"
 #include "Geo_Actor.hpp"
 
-typedef const Geo_Actor* const topl_geo_cptr;
+typedef const Geo_Actor* const geo_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
 
 struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
@@ -21,7 +21,7 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 	geo_pair linkedItems;
 };
 
-typedef const LinkedItems* const topl_linkedItems_cptr;
+typedef const LinkedItems* const linkedItems_cptr;
 
 struct Topl_LightSource {
 	Topl_LightSource(Eigen::Vector3f p) {
@@ -37,7 +37,7 @@ struct Topl_LightSource {
 	double intensity = 1.0;
 };
 
-typedef const Topl_LightSource* const topl_lightSource_cptr; // typedef for safety
+typedef const Topl_LightSource* const lightSource_cptr; // typedef for safety
 
 #ifdef RASTERON_H
 	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
@@ -59,10 +59,10 @@ public:
 	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
 #endif
 	unsigned getActorCount() const { return _namedActor.size(); }
-	topl_geo_cptr getGeoActor(unsigned index) const; // access to geometry by index
-	topl_geo_cptr getGeoActor(const std::string& name) const; // access to geometry by name
+	geo_cptr getGeoActor(unsigned index) const; // access to geometry by index
+	geo_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	unsigned getLightSourceCount() const { return _lightSrc.size(); }
-	topl_lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
+	lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(const std::string& name) const;
 	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
@@ -76,7 +76,7 @@ public:
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 
 	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
-	topl_linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
+	linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 private:
 	Topl_Camera _camera;
 
@@ -86,7 +86,7 @@ private:
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
-	// const Platform* mPlatform_cptr; // Provides useful system information and parameters
+	// const Platform* _platform; // Provides useful system information and parameters
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _geoTex_map; // Associates geometry to a single texture structure
 #endif

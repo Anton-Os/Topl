@@ -1,8 +1,8 @@
 #include "Topl_Shader.hpp"
 
-struct FrameFx_VertexShader : public Topl_PrimaryShader {
+struct FrameFx_VertexShader : public Topl_EntryShader {
 	FrameFx_VertexShader(const Platform* platform)
-		: Topl_PrimaryShader(
+		: Topl_EntryShader(
 			platform, 
 			SHDR_Vertex, 
 			genPrefix_hlsl() + "FrameFx_Vertex.hlsl",
@@ -37,9 +37,9 @@ struct FrameFx_VertexShader : public Topl_PrimaryShader {
 	}
 };
 
-struct FrameFx_PixelShader : public Topl_PrimaryShader {
+struct FrameFx_PixelShader : public Topl_Shader {
 	FrameFx_PixelShader()
-		: Topl_PrimaryShader(
+		: Topl_Shader(
 			SHDR_Fragment,
 			genPrefix_hlsl() + "FrameFx_Pixel.hlsl",
 			{ 
@@ -47,7 +47,4 @@ struct FrameFx_PixelShader : public Topl_PrimaryShader {
 				Shader_Type("cursorPos", "CURSOR", SHDR_float_vec2) 
 			} // Inputs
 		) { }
-
-	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override { return false; }
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const { return false; }
 };

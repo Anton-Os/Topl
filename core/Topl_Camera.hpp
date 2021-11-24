@@ -20,4 +20,4 @@ private:
 	Eigen::Matrix4f projMatrix = Eigen::Matrix4f::Zero();
 };
 
-typedef const Topl_Camera* const topl_camera_cptr;
+typedef const Topl_Camera* const camera_cptr;
