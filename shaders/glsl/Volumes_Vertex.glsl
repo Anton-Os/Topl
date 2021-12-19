@@ -63,6 +63,6 @@ void main() {
 	/* switch (gl_VertexID % 2) */
 	flatColor_out = vec4(0.9f, 0.7f, 0.5f, 1.0f);
 
-	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
-	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
+	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
+	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }

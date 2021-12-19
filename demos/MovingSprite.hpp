@@ -8,7 +8,7 @@
 #include "trees/Humanoid.hpp"
 
 
-#define MOVE_AMOUNT 16.0
+#define MOVE_AMOUNT 3.0
 
 namespace Topl {
 	Topl_Scene scene;

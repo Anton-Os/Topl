@@ -2,10 +2,11 @@
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define SHADERS_DIR "${SHADERS_DIR}"
 #if ${Rasteron_FOUND}
-    #include "Rasteron.h" // includes Rasteron if found include the header
+    #include "Rasteron.h" // includes Rasteron main modules
+    // #include "Font.h" // includes Rasteron font loading module
 #endif
 #if ${Assimp_FOUND}
-    // #include <assimp/Importer.hpp>      // C++ importer interface
-    // #include <assimp/scene.h>           // Output data structure
-    // #include <assimp/postprocess.h>     // Post processing flags
+    #include <assimp/Importer.hpp>      // C++ importer interface
+    #include <assimp/scene.h>           // Output data structure
+    #include <assimp/postprocess.h>     // Post processing flags
 #endif

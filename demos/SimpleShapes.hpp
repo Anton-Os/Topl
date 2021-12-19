@@ -56,7 +56,7 @@ namespace Main {
 			// Topl::scene.resolvePhysics();
 
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene);
+			renderer->updateScene(&Topl::scene, &Topl::camera);
 			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();

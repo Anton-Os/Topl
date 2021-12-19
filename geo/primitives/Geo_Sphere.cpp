@@ -44,7 +44,7 @@ void Geo_SphereUV::genIndices(unsigned* data){
 		// Bottom Vertices
 		*(data + i + 3) = _verticesCount - 1;
 		*(data + i + 4) = _verticesCount - (v + 1);
-		*(data + i + 5) = (i < (_shape3D.ySegments * 6) - 6) ? _verticesCount - (v + 2) : _verticesCount - 2; // special case last iteration
+		*(data + i + 5) = _verticesCount - (v + 2);
 
 		v++;
 	}
@@ -62,4 +62,7 @@ void Geo_SphereUV::genIndices(unsigned* data){
 
 		v++;
 	}
+
+	// TODO: fix volumetric vertices here!
+	// TODO: fix index count mismatch here!
 }

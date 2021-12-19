@@ -31,10 +31,9 @@ float3 colorQuad(float2 fragCoord){
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	// Include effects here
-	// float2 pixelCoordsAdj = (input.pos.x / 1200, input.pos.y / 1100); // hard values
 	float2 pixelCoordsAdj = float2(input.pos.x / input.screenRes.x, input.pos.y / input.screenRes.y); 
 
-	// return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f);
+	return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f);
 	// return float4(colorQuad(pixelCoordsAdj), 1.0f);
-	return float4(pixelCoordsAdj.x, pixelCoordsAdj.y, 0.0, 1.0);
+	// return float4(pixelCoordsAdj.x, pixelCoordsAdj.y, 0.0, 1.0);
 }

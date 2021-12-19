@@ -1,7 +1,8 @@
 #include "Overlay.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
-#include "Drx11_FrameFx.hpp" // shader inclusion
+#include "Drx11_Volumes.hpp" // shader inclusion
+#include "Drx11_Flat.hpp" // shader inclusion
 
 // Entry Point
 
@@ -12,8 +13,8 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
-	FrameFx_PixelShader fragmentShader = FrameFx_PixelShader();
+	Volumes_VertexShader vertexShader = Volumes_VertexShader();
+	Flat_PixelShader fragmentShader = Flat_PixelShader();
 
 	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);

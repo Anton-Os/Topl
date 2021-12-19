@@ -35,7 +35,7 @@ void main() {
 	// Include effects here
 	vec2 fragCoordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // hard values
 
-	// color = vec4(cursorDist(cursorPos, fragCoordsAdj), 1.0);
+	color = vec4(cursorDist(cursorPos, fragCoordsAdj), 1.0);
 	// color = vec4(colorQuad(fragCoordsAdj), 1.0);
-	color = vec4(fragCoordsAdj.x, fragCoordsAdj.y, 0.0, 1.0);
+	// color = vec4(fragCoordsAdj.x, 0.0, fragCoordsAdj.y, 1.0);
 }

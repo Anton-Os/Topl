@@ -540,8 +540,8 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 	
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-    texDesc.Width = image->width;
-    texDesc.Height = image->height;
+    texDesc.Width = image->height;
+    texDesc.Height = image->width;
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -555,7 +555,7 @@ void Topl_Renderer_Drx11::genTexture(const Rasteron_Image* image, unsigned id){
 
     D3D11_SUBRESOURCE_DATA texData;
     texData.pSysMem = image->data;
-	texData.SysMemPitch = sizeof(uint32_t) * image->width;
+	texData.SysMemPitch = sizeof(uint32_t) * image->height;
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;

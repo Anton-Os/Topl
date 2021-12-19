@@ -402,7 +402,7 @@ void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 
 	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	_renderCtx.textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));

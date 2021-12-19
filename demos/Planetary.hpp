@@ -12,7 +12,7 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
 
-	NGon3D ngon = { 0.1, 12, 10 };
+	NGon3D ngon = { 0.1, 6, 6 };
 	NGon3D ngon2 = { 0.1, 105, 1000 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
@@ -20,7 +20,7 @@ namespace Topl {
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
 	// Phys_Motion bounceMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(0.0f, 0.3f, 0.0), 2.0 );
-	Phys_Motion motion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(0.5f, 0.5f, 0.0), 2.5);
+	Phys_Motion motion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(1.0f, 2.0f, 0.0), 8.0);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -54,7 +54,7 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		Topl::scene.addLightSource(Topl_LightSource(Eigen::Vector3f(0.2f, 0.0f, 0.0f)))
+		Topl::scene.addLightSource(Topl_LightSource(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 

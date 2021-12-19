@@ -21,10 +21,10 @@ namespace Topl {
 namespace Main {
     void init(Platform* platform) {
 		platform->createWindow();
-		platform->createWindow(); // creates first child
-		platform->createWindow(); // creates second child
-		platform->createWindow(); // creates third child
-		platform->createWindow(); // creates fourth child
+		// platform->createWindow(); // creates first child
+		// platform->createWindow(); // creates second child
+		// platform->createWindow(); // creates third child
+		// platform->createWindow(); // creates fourth child
 
 		Topl::scene.addGeometry("triangle", &Topl::trigGeo);
 	}

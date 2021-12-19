@@ -106,6 +106,13 @@ public:
 
         update(scene);
     }
+    bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
+        if(!_isPipelineReady) puts("Pipeline not set for update call");
+        if(!_isSceneReady) puts("Scene not built for update call!");
+        if(!_isPipelineReady || !_isSceneReady) return false;
+
+        update(scene, camera);
+    }
     bool renderScene(enum DRAW_Type drawType){
         if(!_isPipelineReady) puts("Pipeline not set for draw call!");
         if(!_isSceneReady) puts("Scene not built for draw call!");

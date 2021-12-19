@@ -27,6 +27,9 @@ struct FrameFx_VertexShader : public Topl_EntryShader {
 		Eigen::Vector2f cursorPos;
 		bool isOnScreen = _platform_cptr->getCursorCoords(&cursorPos.x(), &cursorPos.y());
 		if (!isOnScreen) cursorPos = Eigen::Vector2f(0.0f, 0.0f);
+		else {
+			unsigned i = 1;
+		}
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
 		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
