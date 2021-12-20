@@ -19,18 +19,34 @@ public:
 	}
 
 	void setName(const std::string& name) { _name = name; }
+	void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }
 
 	void setPos(Eigen::Vector3f vec){ _worldPos = vec; }
 	void updatePos(Eigen::Vector3f vec){ _worldPos += vec; }
-	void setRot(Eigen::Vector2f angles) { _worldRot = angles; } // TODO: Check for 2 pi boundaries
-	void updateRot(Eigen::Vector2f angles) { _worldRot += angles; } // TODO: Check for 2 pi boundaries
+	void setRot(Eigen::Vector2f angles) { 
+		_worldRot = angles;
+		clampAngles();
+	}
+	void updateRot(Eigen::Vector2f angles) { 
+		_worldRot += angles;
+		clampAngles();
+	}
 	// void modify(vTformCallback callback, double mod, AXIS_Target axis){ _renderObj->modify(callback, mod, axis); }
-	unsigned getId() const { return _id; }
+	unsigned getId() const { return _id; } // id is immutable
 	std::string getName() const { return _name; }
+	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
+
 	vec3f_cptr getPos() const { return &_worldPos; }
 	vec2f_cptr getAngles() const { return &_worldRot; }
-	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
 private:
+	void clampAngles(){
+		while(_worldRot.x() > TOPL_PI * 2.0) _worldRot.x() -= TOPL_PI * 2.0;
+		while(_worldRot.x() < TOPL_PI * -2.0) _worldRot.x() += TOPL_PI * 2.0;
+
+		while (_worldRot.y() > TOPL_PI * 2.0) _worldRot.y() -= TOPL_PI * 2.0;
+		while (_worldRot.y() < TOPL_PI * -2.0) _worldRot.y() += TOPL_PI * 2.0;
+	}
+
 	// Identification Types
 	static unsigned _id_count; // Grows/shrinks when objects are created/deleted
 	unsigned _id; // Each object has a unique id

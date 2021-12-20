@@ -295,7 +295,7 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
 void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
 
-	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
+ 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
 	// Generates object for single scene block buffer
 	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
 		_renderCtx.buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
@@ -618,7 +618,8 @@ void Topl_Renderer_GL4::render(void){
 	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
-	for (unsigned id = 1; id <= _mainRenderIDs; id++) {
+	if (_mainRenderIDs == 1) return; // no rendering can occur without targets to draw
+	else for (unsigned id = 1; id <= _mainRenderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _renderCtx.VAOs.begin(); currentVAO < _renderCtx.VAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id)
 				glBindVertexArray(currentVAO->vao);

@@ -9,7 +9,7 @@
 
 namespace Topl {
 	Topl_Scene scene;
-	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(4.0f));
 	Timer_Ticker gameTicker;
 
 	NGon3D ngon = { 0.1, 6, 6 };

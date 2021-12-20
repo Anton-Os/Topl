@@ -8,11 +8,13 @@
 #include "trees/Humanoid.hpp"
 
 
-#define MOVE_AMOUNT 3.0
+#define SHIFT_AMOUNT 0.2
+#define MOVE_SCALE 10
 
 namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	Timer_Ticker gameTicker;
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagesSubPath = "images/";
 
@@ -29,11 +31,18 @@ namespace Topl {
 	Geo_Humanoid humanoid("humanoid", &scene, humanoidActor, 0.25f);
 }
 
-void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(-1 * MOVE_AMOUNT, 0.0f, 0.0f)); } // Move left
-void buttonCallback_s(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, -1 * MOVE_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
+void buttonCallback_a(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
+void buttonCallback_s(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
+void buttonCallback_d(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
 void buttonCallback_r(void) { Topl::humanoid.rotate(&Topl::scene, Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
+
+void actionCallback() {
+	Topl::scene.addForce("humanoid_head", Eigen::Vector3f(0.0f, 1.0f * MOVE_SCALE, 0.0f)); // test head movement
+	Topl::scene.addForce("humanoid_body", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f)); // test body movement
+	Topl::scene.addForce("humanoid_rightLeg", Eigen::Vector3f(3.0f * MOVE_SCALE, 0.0f, 0.0f)); // test leg movement
+	Topl::scene.addForce("humanoid_leftLeg", Eigen::Vector3f(-3.0f * MOVE_SCALE, 0.0f, 0.0f)); // test leg movement
+}
 
 // Shared functions
 
@@ -46,6 +55,8 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 		Platform::keyLogger.addCallback('r', buttonCallback_r);
+
+		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
@@ -58,6 +69,7 @@ namespace Main {
 			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
+			Topl::gameTicker.updateTimer();
 		}
 	}
 }

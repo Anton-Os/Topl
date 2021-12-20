@@ -8,12 +8,14 @@
 
 namespace Topl {
 	Topl_Scene scene;
-	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	Topl_Camera camera = Topl_Camera(); // identity matrix
     std::string assetsPath = ASSETS_DIR;
 	std::string imagesSubPath = "images/";
 
-    Geo_FlatTriangle trig = Geo_FlatTriangle(1.0f);
+    Geo_FlatTriangle trig = Geo_FlatTriangle(0.5f);
     Geo_Actor trigGeo  = Geo_Actor((Geo_RenderObj*)&trig);
+
+	Geo_PaneLayout paneLayout("layout", &scene, 6);
 }
 
 // Shared functions
@@ -25,8 +27,6 @@ namespace Main {
 		// platform->createWindow(); // creates second child
 		// platform->createWindow(); // creates third child
 		// platform->createWindow(); // creates fourth child
-
-		Topl::scene.addGeometry("triangle", &Topl::trigGeo);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

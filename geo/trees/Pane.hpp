@@ -1,20 +1,24 @@
 #include "primitives/Geo_Flat.hpp"
 #include "Geo_Tree.hpp"
 
-struct Geo_Pane {
-    Geo_Pane(const Geo_FlatSquare* s, const Geo_Actor* g){ 
-        square = s;
-        squareGeo = g;
+#define DEFAULT_Y_INC 0.01
+#define DEFAULT_Z_INC 0.0001
+
+class Geo_Pane {
+public:
+    Geo_Pane(const Geo_Actor* a){ 
+        _actor = a;
+        // _renderObj = *(a->getRenderObj());
+        _bkColor = (a->getId() % 2)? 0xFFFF0000 : 0xFF0000FF; // switch to red or blue background
     }
 
-    const Geo_FlatSquare* square;
-    const Geo_Actor* squareGeo;
-    // Geo_Pane_Properties pane_prop;
+private:
+    // Geo_RenderObj _renderObj = (Geo_RenderObj)Geo_FlatSquare(1.0f);
+    const Geo_Actor* _actor;
 #ifdef RASTERON_H
-    Rasteron_Image* image = nullptr; // background image available if Rasteron is supported
-#else
-    unsigned bkColor = 0xFFFFFF00; // yellow background color by default
+    Rasteron_Image* _image = nullptr; // background image available if Rasteron is supported
 #endif
+    unsigned _bkColor = 0xFF000000; // starting background is black
 };
 
 class Geo_PaneLayout : public Geo_Tree {
@@ -23,13 +27,15 @@ public:
         const std::string& prefix,
         Topl_Scene* scene,
         unsigned paneCount
-    ) : Geo_Tree(prefix, scene, &squareGeo, paneCount + 1){ // includes the parent pane as well
+    ) : Geo_Tree(prefix, scene, &_squareGeo, paneCount + 1){ // includes the root pane as well
         fill(scene);
-    } 
+    }
 private:
     void fill(Topl_Scene* scene) override;
 
-    Geo_FlatSquare square = Geo_FlatSquare(1.0f);
-    Geo_Actor squareGeo = Geo_Actor((Geo_RenderObj*)&square);
-    Geo_Pane parent = Geo_Pane(&square, &squareGeo);
+	static Geo_FlatSquare _square;
+	static Geo_Actor _squareGeo;
+    Geo_Pane _rootPane = Geo_Pane(&_squareGeo); // all panes are children positioned relative to the root pane
+
+    std::vector<Geo_Pane> _panes;
 };
