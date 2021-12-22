@@ -15,7 +15,7 @@
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
-	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
 
 	// Primitive Geometry Objects
 	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);

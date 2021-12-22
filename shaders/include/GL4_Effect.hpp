@@ -1,16 +1,16 @@
 #include "Topl_Shader.hpp"
 
-struct FrameFx_VertexShader : public Topl_EntryShader {
-	FrameFx_VertexShader(const Platform* platform)
+struct Effect_VertexShader : public Topl_EntryShader {
+	Effect_VertexShader(const Platform* platform)
 		: Topl_EntryShader(
 			platform, 
 			SHDR_Vertex, 
-			genPrefix_hlsl() + "FrameFx_Vertex.hlsl",
+			genPrefix_glsl() + "Effect_Vertex.glsl",
 			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+				Shader_Type("pos", SHDR_float_vec3), 
+				Shader_Type("texcoord", SHDR_float_vec2) 
 			} // Inputs
-		) {  }
+		) { }
 
 	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
@@ -27,6 +27,9 @@ struct FrameFx_VertexShader : public Topl_EntryShader {
 		Eigen::Vector2f cursorPos;
 		bool isOnScreen = _platform_cptr->getCursorCoords(&cursorPos.x(), &cursorPos.y());
 		if (!isOnScreen) cursorPos = Eigen::Vector2f(0.0f, 0.0f);
+		else {
+			unsigned i = 1;
+		}
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
 		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
@@ -37,14 +40,14 @@ struct FrameFx_VertexShader : public Topl_EntryShader {
 	}
 };
 
-struct FrameFx_PixelShader : public Topl_Shader {
-	FrameFx_PixelShader()
+struct Effect_FragmentShader : public Topl_Shader {
+	Effect_FragmentShader()
 		: Topl_Shader(
 			SHDR_Fragment,
-			genPrefix_hlsl() + "FrameFx_Pixel.hlsl",
+			genPrefix_glsl() + "Effect_Frag.glsl",
 			{ 
-				Shader_Type("screenRes", "RESOLUTION", SHDR_uint_vec2), 
-				Shader_Type("cursorPos", "CURSOR", SHDR_float_vec2) 
+				Shader_Type("screenRes", SHDR_uint_vec2), 
+				Shader_Type("cursorPos", SHDR_float_vec2) 
 			} // Inputs
 		) { }
 };

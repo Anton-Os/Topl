@@ -1,10 +1,10 @@
 #include "Topl_Shader.hpp"
 
-struct Volumes_VertexShader : public Topl_EntryShader {
-	Volumes_VertexShader()
+struct Textured_VertexShader : public Topl_EntryShader {
+	Textured_VertexShader()
 		: Topl_EntryShader(
 			SHDR_Vertex, 
-			genPrefix_glsl() + "Volumes_Vertex.glsl",
+			genPrefix_glsl() + "Basic_Vertex.glsl",
 			{ 
 				Shader_Type("pos", SHDR_float_vec3), 
 				Shader_Type("texcoord", SHDR_float_vec2) 
@@ -23,16 +23,17 @@ struct Volumes_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const {
-		const uint8_t* cameraPos_bptr = reinterpret_cast<const uint8_t*>(camera->getPos()->data());
-		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(camera->getDirection()->data());
-		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
-		// const uint8_t* lightSrc_bptr = reinterpret_cast<const uint8_t*>(scene->getLightSource(0)->pos->data());
-
-		ValueGen::appendDataToBytes(cameraPos_bptr, camera->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bptr, camera->getDirection()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bptr, camera->getProjMatrix()->size() * sizeof(float), bytes);
-		// ValueGen::appendDataToBytes(lightSrc_bptr, 4 * sizeof(float), bytes);
-		
+		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
+		ValueGen::assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
+};
+
+struct Basic_FragmentShader : public Topl_Shader {
+	Basic_FragmentShader()
+		: Topl_Shader(
+			SHDR_Fragment,
+			genPrefix_glsl() + "Basic_Frag.glsl",
+			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
+		) { }                                                                      
 };

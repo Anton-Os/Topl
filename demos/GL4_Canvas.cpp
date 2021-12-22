@@ -1,7 +1,7 @@
 #include "Canvas.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
-#include "GL4_FrameFx.hpp" // shader inclusion
+#include "GL4_Effect.hpp" // shader inclusion
 
 // Entry Point
 
@@ -12,8 +12,8 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	FrameFx_VertexShader vertexShader = FrameFx_VertexShader(&platform);
-	FrameFx_FragmentShader fragmentShader = FrameFx_FragmentShader();
+	Effect_VertexShader vertexShader = Effect_VertexShader(&platform);
+	Effect_FragmentShader fragmentShader = Effect_FragmentShader();
 
 	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);

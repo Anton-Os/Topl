@@ -27,7 +27,8 @@ public:
         const std::string& prefix,
         Topl_Scene* scene,
         unsigned paneCount
-    ) : Geo_Tree(prefix, scene, &_squareGeo, paneCount + 1){ // includes the root pane as well
+    // ) : Geo_Tree(prefix, scene, &_squareGeo, paneCount + 1){ // includes the root pane as well
+	) : Geo_Tree(prefix, scene, &_squareGeo, paneCount + 1) {
         fill(scene);
     }
 private:

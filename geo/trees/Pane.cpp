@@ -1,6 +1,6 @@
 #include "Pane.hpp"
 
-Geo_FlatSquare Geo_PaneLayout::_square = Geo_FlatSquare(1.0f);
+Geo_FlatSquare Geo_PaneLayout::_square = Geo_FlatSquare(0.5f);
 Geo_Actor Geo_PaneLayout::_squareGeo = Geo_Actor((Geo_RenderObj*)&_square);
 
 namespace _Pane {

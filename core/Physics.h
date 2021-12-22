@@ -98,7 +98,7 @@ struct Phys_Connector {
 
 #define MAX_PHYS_FORCES 64
 
-struct Phys_Colliders {
+/* struct Phys_Colliders {
     Phys_Colliders(){}
     Phys_Colliders(const Eigen::Vector3f* o){ origin = o; }
 
@@ -106,7 +106,7 @@ struct Phys_Colliders {
     float radii = 0.0f; // all colliding spheres that are uniform in size
     std::vector<Eigen::Vector3f> offsets; // offsets from origin of colliders
     const Eigen::Vector3f* origin = nullptr; // origin of associated geometry object
-};
+}; */
 
 /* struct Phys_ColliderObj { // allows a derived class to 
     virtual void genColliders(Phys_Colliders* colliders) = 0;
@@ -141,6 +141,6 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
 
     unsigned short actingForceCount = 0; // number of acting forces on theobject
     Eigen::Vector3f* forces = nullptr;
-    const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection
+    // const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection
 };
 

@@ -12,8 +12,6 @@ struct ShapesGen {
     // Render Object Generation
     static void genTessShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, unsigned iter); // tesselates objects by iterating through triangle midpoints
     static void genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, Geo_RenderObj* duplexObj); // inserts duplex object at every vertex of ref object
-    // Physics Objects Generation
-    static void genColliders(Phys_Colliders* colliders, const std::vector<Geo_Face> *const faces); // generates a collision object based on faces provided
     // Tiling Functions
     /* static void tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Square tiling
     static void tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Triangular tiling

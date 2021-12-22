@@ -1,6 +1,7 @@
 cbuffer CONST_BLOCK : register(b0) {
 	float4 offset;
 	float4 rotation;
+	float4 color;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -63,6 +64,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	finalPos += finalTranslation;
 
 	/* switch (vertexID % 2)*/
+	// output.flatColor = color;
 	output.flatColor = float4(0.5f, 0.7f, 0.9f, 1.0f);
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);

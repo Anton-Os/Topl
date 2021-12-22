@@ -27,12 +27,6 @@ void ShapesGen::genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refOb
     // Implement body
 }
 
-// Physics Objects Generation
-
-void ShapesGen::genColliders(Phys_Colliders* colliders, const std::vector<Geo_Face> *const faces){
-    // Implement Body
-}
-
 // Tiling Operations
 
 /* void ShapesGen::tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){

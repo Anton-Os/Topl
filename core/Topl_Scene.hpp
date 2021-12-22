@@ -84,7 +84,7 @@ private:
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
 	std::map<Geo_Actor*, Phys_Actor*> _geoToPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
-	std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
+	// std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
 	// const Platform* _platform; // Provides useful system information and parameters
 #ifdef RASTERON_H

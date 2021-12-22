@@ -3,7 +3,7 @@
 #include "MovingSprite.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
-#include "Drx11_Basic.hpp" // shader inclusion
+#include "Drx11_Textured.hpp" // shader inclusion
 
 // Entry Point
 
@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
-	Basic_VertexShader vertexShader = Basic_VertexShader();
+	Textured_VertexShader vertexShader = Textured_VertexShader();
 	Basic_PixelShader pixelShader = Basic_PixelShader();
 
 	renderer.setCamera(&Topl::camera);
