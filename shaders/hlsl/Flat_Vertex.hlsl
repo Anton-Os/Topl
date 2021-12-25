@@ -64,8 +64,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	finalPos += finalTranslation;
 
 	/* switch (vertexID % 2)*/
-	// output.flatColor = color;
-	output.flatColor = float4(0.5f, 0.7f, 0.9f, 1.0f);
+	output.flatColor = color;
+	// output.flatColor = float4(0.5f, 0.7f, 0.9f, 1.0f);
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
 	output.pos = mul(finalPos, cameraMatrix); // no projection

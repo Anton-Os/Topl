@@ -36,9 +36,6 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 
 			if(!physActor->addForce(forceVec)) return error_forcesExcess(); // Error
 		}
-
-	error_notFound("geometry or physics", name); // Error
-	return;
 }
 
 void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
@@ -164,9 +161,9 @@ void Topl_Scene::resolvePhysics() {
 			}
 		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // We have resolved all the forces, resetting force count
 		
-		// Velocity Integrator
+		// Velocity integrator
 		physActor->velocity += (physActor->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
-		// Velocity Damping, to avoid infinite displacement
+		// Velocity damping, to avoid infinite displacement
 		physActor->velocity *= physActor->damping;
 
 		// Position integrator

@@ -7,7 +7,7 @@ public:
 	// Identity projection constructor
 	Topl_Camera() { projMatrix = Eigen::Matrix4f::Identity(); } // Identity matrix by default
 	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
-		if (projType == PROJECTION_Perspective) projMatrix = ValueGen::genspectiveMatrix(bounds);
+		if (projType == PROJECTION_Perspective) projMatrix = ValueGen::genPerspectiveMatrix(bounds);
 		else if(projType == PROJECTION_Ortho) projMatrix = ValueGen::genOrthoMatrix(bounds);
 	}
 	void movePos(const Eigen::Vector3f& moveVec){ pos += moveVec; }

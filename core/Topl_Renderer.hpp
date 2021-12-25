@@ -40,6 +40,7 @@ struct Buffer : public RenderTarget {
 #define SCENE_BLOCK_BINDING 1 // Uniform block binding to for updates
 
 #define MAX_TEXTURES_PER_TARGET 12
+#define MAX_PIPELINE_COUNT 12
 
 enum TEX_Frmt {
     TEX_1D,
@@ -77,25 +78,22 @@ public:
 
     void setCamera(const Topl_Camera* camera){ _activeCamera = camera; }
     // Basic pipeline creation
-    void setPipeline(prim_shader_cptr vertexShader, shader_cptr fragShader){
-        _shaders.clear(); // Reset the pipeline values
+    void setPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader){
         if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment) return;
 
-        // _shaders.push_back(vertexShader);
         _entryShader = vertexShader;
         _shaders.assign(1, fragShader);
         pipeline(vertexShader, fragShader);
     }
     // Extended Pipeline Creation
-    void setPipeline(prim_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-        _shaders.clear(); // Reset the pipeline values
+    void setPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
         if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment || tessCtrlShader->getType() != SHDR_TessCtrl || tessEvalShader->getType() != SHDR_TessEval || geomShader->getType() != SHDR_Geom) return;
 
-        // _shaders.push_back(vertexShader);
-        _shaders.push_back(fragShader);
+        _entryShader = vertexShader;
         _shaders.push_back(tessCtrlShader);
         _shaders.push_back(tessEvalShader);
         _shaders.push_back(geomShader);
+        _shaders.push_back(fragShader);
         pipeline(vertexShader, fragShader, tessCtrlShader, tessEvalShader, geomShader);
     }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
@@ -142,8 +140,7 @@ protected:
             if((*currentShader)->getType() == type) return *currentShader;
         return nullptr; // If shader is not found return null pointer
     }
-    // enum SHDR_Type _primaryShaderType = SHDR_Vertex; // Shader that contains relevant uniform blocks and associated virtual functions
-    prim_shader_cptr _entryShader;
+    entry_shader_cptr _entryShader;
     std::vector<shader_cptr> _shaders;
     enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
@@ -154,7 +151,7 @@ protected:
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void pipeline(prim_shader_cptr vertexShader, shader_cptr fragShader) = 0;
+    virtual void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) = 0;
     virtual void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control

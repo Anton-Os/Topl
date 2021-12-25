@@ -37,10 +37,13 @@ struct ValueGen {
         srand(time(NULL)); // random value seeder
     }
 
-    static Eigen::Matrix4f genspectiveMatrix(SpatialBounds3D bounds);
+    static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
     static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
-    static float genRandFloat(){ genRandFloat(0.0, 1.0); }
+    static float genRandFloat(){ return genRandFloat(0.0, 1.0); }
     static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
+    static Eigen::Vector2f genRandVec2(){ return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
+    static Eigen::Vector3f genRandVec3(){ return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
+    static Eigen::Vector4f genRandVec4(){ return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
 
     static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes); // default padding
     static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes); // custom padding

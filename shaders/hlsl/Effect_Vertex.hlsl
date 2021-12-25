@@ -23,9 +23,10 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
 
 	float4 finalPos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0);
+	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f;
 
 	output.screenRes = screenRes;
-	output.cursorPos = cursorPos;
+	output.cursorPos = cursorPosAdj;
 	output.pos = finalPos;
 
 	return output;

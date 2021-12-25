@@ -27,8 +27,17 @@ namespace Topl {
 		std::make_pair(assetsPath + imagesSubPath + "RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
 	};
 
-	// Geo_Humanoid humanoid;
+	std::pair<std::string, Eigen::Vector3f> ghostActor[HUMANOID_PARTS_COUNT] = {
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.11f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-LeftArm.png", Eigen::Vector3f(0.0f, -0.1f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-RightArm.png", Eigen::Vector3f(0.12f, -0.14f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-Torso.png", Eigen::Vector3f(-0.12f, -0.14f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f, -0.35f, 0.0)),
+		std::make_pair(assetsPath + imagesSubPath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f, -0.35f, 0.0))
+	};
+
 	Geo_Humanoid humanoid("humanoid", &scene, humanoidActor, 0.25f);
+	Geo_Humanoid ghost("ghost", &scene, ghostActor, 2.0);
 }
 
 void buttonCallback_w(void) { Topl::humanoid.move(&Topl::scene, Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
@@ -60,6 +69,7 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
+		Topl::ghost.move(&Topl::scene, Eigen::Vector3f(0.0, -0.5f, 0.0f));
 
 		while (1) {
 			Topl::scene.resolvePhysics();

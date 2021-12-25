@@ -27,7 +27,6 @@ struct Texture_Drx11 : public Texture {
 	ID3D11ShaderResourceView* resView = nullptr;
 };
 
-
 struct Topl_Pipeline_Drx11 {
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -63,14 +62,12 @@ public:
 #endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
-	void pipeline(prim_shader_cptr vertexShader, shader_cptr fragShader) override;
+	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) override;
 	void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
-	/* std::vector<Topl_RenderContext_Drx11> _renderCtx; // NEW! begin to relocate objects here!
-	Topl_RenderContext_Drx11* _currentRenderCtx; // current render context to be used for drawing */
 	Topl_RenderContext_Drx11 _renderCtx;
 	Topl_Pipeline_Drx11 _pipeline;
 	ID3D11InputLayout* _vertexDataLayout;

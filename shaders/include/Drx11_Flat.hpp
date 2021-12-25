@@ -16,7 +16,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 
 		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
 		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
-		Eigen::Vector4f color = Eigen::Vector4f(0.3f, 0.3f, 0.9f, 1.0f);
+		Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
 		const uint8_t* color_bptr = reinterpret_cast<const uint8_t*>(color.data());
 	
 		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);

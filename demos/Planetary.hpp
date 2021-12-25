@@ -12,7 +12,7 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(4.0f));
 	Timer_Ticker gameTicker;
 
-	NGon3D ngon = { 0.1, 6, 6 };
+	NGon3D ngon = { 0.4, 6, 6 };
 	NGon3D ngon2 = { 0.1, 105, 1000 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);

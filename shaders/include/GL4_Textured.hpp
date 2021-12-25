@@ -4,7 +4,7 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	Textured_VertexShader()
 		: Topl_EntryShader(
 			SHDR_Vertex, 
-			genPrefix_glsl() + "Basic_Vertex.glsl",
+			genPrefix_glsl() + "Textured_Vertex.glsl",
 			{ 
 				Shader_Type("pos", SHDR_float_vec3), 
 				Shader_Type("texcoord", SHDR_float_vec2) 
@@ -29,11 +29,11 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	}
 };
 
-struct Basic_FragmentShader : public Topl_Shader {
-	Basic_FragmentShader()
+struct Textured_FragmentShader : public Topl_Shader {
+	Textured_FragmentShader()
 		: Topl_Shader(
 			SHDR_Fragment,
-			genPrefix_glsl() + "Basic_Frag.glsl",
+			genPrefix_glsl() + "Textured_Frag.glsl",
 			{ Shader_Type("texcoord", SHDR_float_vec2) } // Inputs
 		) { }                                                                      
 };

@@ -270,7 +270,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	return;
 }
 
-void Topl_Renderer_Drx11::pipeline(prim_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	HRESULT hr;
 
 	// Vertex shader compilation and creation code
@@ -422,7 +422,7 @@ void Topl_Renderer_Drx11::pipeline(shader_cptr vertexShader, shader_cptr pixelSh
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	const float clearColor[] = { 0.6f, 1.0f, 0.8f, 0.99f }; // green screen effect
+	const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
     _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
 	// _deviceCtx->ClearDepthStencilView(_rtv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }

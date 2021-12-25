@@ -281,10 +281,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-// void Topl_Renderer_GL4::clearView(float color[4]){
 void Topl_Renderer_GL4::clearView(){
-	// glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
-	glClearColor(0.6f, 1.0f, 0.8f, 0.99f); // green screen effect!
+	glClearColor(0.0f, 1.0f, 1.0f, 1.0f); // cyan
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -446,7 +444,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 	return;
 }
 
-void Topl_Renderer_GL4::pipeline(prim_shader_cptr vertexShader, shader_cptr fragShader){
+void Topl_Renderer_GL4::pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader){
 	GLint result;
 	const char* sourceStr_ptr;
 

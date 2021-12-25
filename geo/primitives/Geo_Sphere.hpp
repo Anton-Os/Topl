@@ -13,8 +13,8 @@ class Geo_SphereUV : public Geo_RenderObj {
 public:
     Geo_SphereUV(NGon3D refShape)
     : Geo_RenderObj(
-        (refShape.xSegments * refShape.ySegments) + 2 - refShape.ySegments, // 0 // Vertex Count
-        (refShape.ySegments * 6) + (((refShape.xSegments - 1) * refShape.ySegments) * 6) // + ((((refShape.xSegments - 2) * refShape.ySegments)) * 6) // Index Count
+        (refShape.xSegments * refShape.ySegments) + 2 - refShape.ySegments, // Vertex Count
+        (refShape.ySegments * 6) + ((refShape.xSegments * refShape.ySegments) * 6) // Index Count
     ){
     // : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, refShape.ySegments * 12) { // only indexes top and bottom
         _shape3D = refShape; // copy to internal data

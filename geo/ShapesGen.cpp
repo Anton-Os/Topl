@@ -19,13 +19,13 @@ void ShapesGen::modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCal
 
 // Render Object Generation
 
-void ShapesGen::genTessShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, unsigned iter){
+/* Geo_RenderObj ShapesGen::genTessShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, unsigned iter){
     // Implement body
 }
 
-void ShapesGen::genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, Geo_RenderObj* duplexObj){
+Geo_RenderObj ShapesGen::genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, Geo_RenderObj* duplexObj){
     // Implement body
-}
+} */
 
 // Tiling Operations
 

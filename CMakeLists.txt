@@ -33,9 +33,15 @@ if(SUPPORT_3D_ASSETS)
 endif()
 
 if(Assimp_FOUND)
-    # ExternalProject_Get_Property(Assimp BINARY_DIR)
-    message("Assimp dependency irrXML_lib set to ${irrXML_lib}")
-    message("Assimp dependency zlib_lib set to ${zlib_lib}")
+    message("Assimp built library irrXML_lib set to ${irrXML_lib}")
+    message("Assimp built library zlib_lib set to ${zlib_lib}")
+
+    #string(REPLACE ".lib" "d.lib" irrXMLd_lib ${irrXML_lib})
+    set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib")
+    #string(REPLACE ".lib" "d.lib" zlibd_lib ${zlib_lib})
+    set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib")
+    message("Assimp built library irrXMLd_lib set to ${irrXMLd_lib}")
+    message("Assimp built library zlibd_lib set to ${zlibd_lib}")
 endif()
 
 # DirectX Windows Dependent Demos
@@ -60,8 +66,8 @@ if(WIN32)
         target_link_libraries(Drx11_Engine PUBLIC Rasteron)
     endif()
     if(Assimp_FOUND)
-        target_link_libraries(Drx11_Engine PUBLIC assimp::assimp)
-        target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+        # target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+        target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
     endif()
     set_target_properties(Drx11_Engine
         PROPERTIES
@@ -88,8 +94,8 @@ if(WIN32)
     add_executable(Drx11_Planetary demos/Drx11_Planetary.cpp)
 	target_link_libraries(Drx11_Planetary PRIVATE Drx11_Engine)
     
-    add_executable(Drx11_Canvas demos/Drx11_Canvas.cpp)
-	target_link_libraries(Drx11_Canvas PRIVATE Drx11_Engine)
+    add_executable(Drx11_Surface demos/Drx11_Surface.cpp)
+	target_link_libraries(Drx11_Surface PRIVATE Drx11_Engine)
 
     add_executable(Drx11_Overlay 
         geo/trees/Pane.cpp
@@ -125,8 +131,8 @@ if(Rasteron_FOUND)
     target_link_libraries(GL4_Engine PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    target_link_libraries(GL4_Engine PUBLIC assimp::assimp)
-    target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+    # target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+    target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES
@@ -157,8 +163,8 @@ target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
 add_executable(GL4_Planetary demos/GL4_Planetary.cpp)
 target_link_libraries(GL4_Planetary PRIVATE GL4_Engine)
 
-add_executable(GL4_Canvas demos/GL4_Canvas.cpp)
-target_link_libraries(GL4_Canvas PRIVATE GL4_Engine)
+add_executable(GL4_Surface demos/GL4_Surface.cpp)
+target_link_libraries(GL4_Surface PRIVATE GL4_Engine)
 
 add_executable(GL4_Overlay
     geo/trees/Pane.cpp

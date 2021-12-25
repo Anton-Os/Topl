@@ -1,4 +1,4 @@
-#include "Canvas.hpp"
+#include "Surface.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
 #include "GL4_Effect.hpp" // shader inclusion
@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
 
-	Platform platform(argv[0], "GL4 Canvas");
+	Platform platform(argv[0], "GL4 Surface");
 	Main::init(&platform);
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());

@@ -131,7 +131,7 @@ public:
     virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;
 };
 
-typedef const Topl_EntryShader* prim_shader_cptr;
+typedef const Topl_EntryShader* entry_shader_cptr;
 typedef const Topl_Shader* shader_cptr;
 
 #define TOPL_SHADER_H

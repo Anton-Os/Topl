@@ -62,8 +62,8 @@ void main() {
 
 	texcoord_out = texcoord;
 	/* switch (gl_VertexID % 2) */
-	// flatColor_out = color;
-	flatColor_out = vec4(0.9f, 0.7f, 0.5f, 1.0f);
+	flatColor_out = color;
+	// flatColor_out = vec4(0.9f, 0.7f, 0.5f, 1.0f);
 
 	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);

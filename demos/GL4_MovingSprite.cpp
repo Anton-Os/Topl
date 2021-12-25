@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
 	Textured_VertexShader vertexShader = Textured_VertexShader();
-	Basic_FragmentShader fragmentShader = Basic_FragmentShader();
+	Textured_FragmentShader fragmentShader = Textured_FragmentShader();
 
 	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
