@@ -152,7 +152,7 @@ protected:
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) = 0;
-    virtual void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) = 0;
+    virtual void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
 	virtual void render(void) = 0;

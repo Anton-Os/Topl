@@ -72,39 +72,37 @@ public:
     // Basic Input Value Constructor
     Topl_Shader(
 		enum SHDR_Type type, 
-		std::string fileSrc, 
-		std::initializer_list<Shader_Type> inputs
+		std::string fileSrc
+		// std::initializer_list<Shader_Type> inputs
     ){    
         _shaderType = type;
         _shaderFileSrc = fileSrc;
 		_shaderFileSrc = SHADERS_DIR + fileSrc;
 		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
-        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            _inputs.push_back(*currentInput);
+        /* for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput); */
     }
     // Platform support variable constructor
 	Topl_Shader(
 		const Platform* platform,
 		enum SHDR_Type type, 
-		std::string fileSrc,
-		std::initializer_list<Shader_Type> inputs
+		std::string fileSrc
+		// std::initializer_list<Shader_Type> inputs
     ){
 		_platform_cptr = platform;
         _shaderType = type;
         _shaderFileSrc = SHADERS_DIR + fileSrc;
 		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
-        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            _inputs.push_back(*currentInput);
+        /* for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput); */
     }
-    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
-    unsigned short getInputCount() const { return _inputs.size(); }
     enum SHDR_Type getType() const { return _shaderType; }
     const char* getFilePath() const { return _shaderFileSrc.c_str(); }
 protected:
     enum SHDR_Type _shaderType;
     std::string _shaderFileSrc; // make into const type!
 	const Platform* _platform_cptr = nullptr;
-    std::vector<Shader_Type> _inputs;
+    // std::vector<Shader_Type> _inputs;
 
 	std::string genPrefix_glsl() { return "glsl/"; }
 	std::string genPrefix_hlsl() { return "hlsl/"; }
@@ -118,17 +116,27 @@ public:
 		enum SHDR_Type type, 
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs
-	) : Topl_Shader(type, fileSrc, inputs){ }
+	) : Topl_Shader(type, fileSrc){ 
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput); // fills input list with data
+    }
     // Platform support variable constructor
 	Topl_EntryShader(
 		const Platform* platform,
 		enum SHDR_Type type,
 		std::string fileSrc,
 		std::initializer_list<Shader_Type> inputs
-	) : Topl_Shader(platform, type, fileSrc, inputs) {}
+	) : Topl_Shader(platform, type, fileSrc){
+        for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
+            _inputs.push_back(*currentInput); // fills input list with data
+    }
 
+    const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
+    unsigned short getInputCount() const { return _inputs.size(); }
 	virtual bool genGeoBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
     virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;
+
+    std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };
 
 typedef const Topl_EntryShader* entry_shader_cptr;

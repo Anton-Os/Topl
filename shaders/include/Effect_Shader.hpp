@@ -1,16 +1,16 @@
 #include "Topl_Shader.hpp"
 
+// Vertex Shaders
+
 struct Effect_VertexShader : public Topl_EntryShader {
-	Effect_VertexShader(const Platform* platform)
+	Effect_VertexShader(const Platform* platform, std::string name)
 		: Topl_EntryShader(
-			platform, 
-			SHDR_Vertex, 
-			genPrefix_hlsl() + "Effect_Vertex.hlsl",
+			platform, SHDR_Vertex, name,
 			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+				Shader_Type("pos", SHDR_float_vec3), 
+				Shader_Type("texcoord", SHDR_float_vec2) 
 			} // Inputs
-		) {  }
+		) { }
 
 	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
@@ -27,6 +27,9 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Eigen::Vector2f cursorPos;
 		bool isOnScreen = _platform_cptr->getCursorCoords(&cursorPos.x(), &cursorPos.y());
 		if (!isOnScreen) cursorPos = Eigen::Vector2f(0.0f, 0.0f);
+		else {
+			unsigned i = 1;
+		}
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
 		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
@@ -37,6 +40,24 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	}
 };
 
-struct Effect_PixelShader : public Topl_Shader {
-	Effect_PixelShader() : Topl_Shader(SHDR_Fragment, genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
+struct GL4_Effect_VertexShader : public Effect_VertexShader {
+    GL4_Effect_VertexShader(const Platform* platform) : Effect_VertexShader(platform, genPrefix_glsl() + "Effect_Vertex.glsl"){}
+}
+
+struct Drx11_Effect_VertexShader : public Effect_VertexShader {
+    Drx11_Effect_VertexShader(const Platform* platform) : Effect_VertexShader(platform, genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
+}
+
+// Fragment Shaders
+
+struct Effect_FragmentShader : public Topl_Shader {
+	Effect_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
+};
+
+struct GL4_Effect_FragmentShader : public Effect_FragmentShader {
+	GL4_Effect_FragmentShader() : Effect_FragmentShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
+};
+
+struct Drx11_Effect_FragmentShader : public Effect_FragmentShader {
+	Drx11_Effect_FragmentShader() : Effect_FragmentShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
 };

@@ -13,7 +13,8 @@ void Geo_PaneLayout::fill(Topl_Scene* scene){
     for(unsigned p = 0; p < getActorCount(); p++){
         actor = getNextActor();
 
-        actor->updatePos(Eigen::Vector3f(0.0f, DEFAULT_Y_INC * p, DEFAULT_Z_INC * p));
+        actor->setPos(Eigen::Vector3f(0.0f, DEFAULT_Y_INC * p, DEFAULT_Z_INC * p));
+        actor->setRot(Eigen::Vector2f(0.0f, DEFAULT_Y_INC * p)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p + 1), actor);
         _panes.push_back(Geo_Pane(actor));
     }

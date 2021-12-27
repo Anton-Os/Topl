@@ -63,7 +63,7 @@ public:
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) override;
-	void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
+	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;

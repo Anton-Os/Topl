@@ -1,10 +1,11 @@
 #include "Topl_Shader.hpp"
 
+// Vertex Shaders
+
 struct Flat_VertexShader : public Topl_EntryShader {
-	Flat_VertexShader()
+	Flat_VertexShader(std::string name)
 		: Topl_EntryShader(
-			SHDR_Vertex, 
-			genPrefix_glsl() + "Flat_Vertex.glsl",
+			SHDR_Vertex, name,
 			{ 
 				Shader_Type("pos", SHDR_float_vec3), 
 				Shader_Type("texcoord", SHDR_float_vec2) 
@@ -35,11 +36,28 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		ValueGen::appendDataToBytes(cameraRot_bptr, camera->getDirection()->size() * sizeof(float), bytes);
 		ValueGen::appendDataToBytes(matrix_bptr, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		// ValueGen::appendDataToBytes(lightSrc_bptr, 4 * sizeof(float), bytes);
-		
 		return true;
 	}
 };
 
+struct GL4_Flat_VertexShader : public Flat_VertexShader {
+    GL4_Flat_VertexShader() : Flat_VertexShader(genPrefix_glsl() + "Flat_Vertex.glsl"){}
+}
+
+struct Drx11_Flat_VertexShader : public Flat_VertexShader {
+    Drx11_Flat_VertexShader() : Flat_VertexShader(genPrefix_hlsl() + "Flat_Vertex.hlsl"){}
+}
+
+// Fragment Shaders
+
 struct Flat_FragmentShader : public Topl_Shader {
-	Flat_FragmentShader() : Topl_Shader(SHDR_Fragment, genPrefix_glsl() + "Flat_Frag.glsl"){ }
+	Flat_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name){ }
 };
+
+struct GL4_Flat_FragmentShader : public Flat_FragmentShader {
+    GL4_Flat_FragmentShader() : Flat_FragmentShader(genPrefix_glsl() + "Flat_Frag.glsl"){}
+}
+
+struct Drx11_Flat_FragmentShader : public Flat_FragmentShader {
+    Drx11_Flat_FragmentShader() : Flat_FragmentShader(genPrefix_hlsl() + "Flat_Pixel.hlsl"){}
+}

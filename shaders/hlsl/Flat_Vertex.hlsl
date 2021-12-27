@@ -44,19 +44,19 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4 finalTranslation = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
 
 	// if (rotation.x != 0.0 || rotation.y != 0.0) { // Rotation operations
-		float2x2 zRotMatrix = {
-			cos(rotation.x), sin(rotation.x),
-			-1 * sin(rotation.x), cos(rotation.x)
+		float3x3 zRotMatrix = {
+			cos(rotation.x), sin(rotation.x), 0,
+			-1 * sin(rotation.x), cos(rotation.x), 0,
+			0, 0, 1
 		};
-		float2 zRotCoords = mul(zRotMatrix, float2(input.pos.x, input.pos.y)); // Rotation coordinates over z axis!
 		
 		float3x3 yRotMatrix = {
-			cos(rotation.y), 0, -1 * sin(rotation.y), // cos(rotation.y), 0, -1 * sin(rotation.y),
+			cos(rotation.y), 0, sin(rotation.y),
 			0, 1, 0,
-			sin(rotation.y), 0, cos(rotation.y) // sin(rotation.y), 0, cos(rotation.y)
+			-1.0 * sin(rotation.y), 0, cos(rotation.y)
 		};
-		float3 finalRotCoords = mul(yRotMatrix, float3(zRotCoords.x, zRotCoords.y, input.pos.z));
 
+		float3 finalRotCoords = mul(mul(zRotMatrix, yRotMatrix), float3(input.pos.x, input.pos.y, input.pos.z));
 		finalPos = float4(finalRotCoords, 0.0);
 	
 	// }

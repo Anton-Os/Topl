@@ -2,45 +2,25 @@
 
 #define GLEW_STATIC // OpenGL Renderer Specific
 #include "GL/glew.h" // OpenGL Renderer Specific
-
 #include <GL/gl.h> // OpenGL Renderer Specific
  #include <GL/glu.h> // OpenGL Renderer Specific
 
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
-class Topl_DataAlloc_GL4 {
-public:
-	Topl_DataAlloc_GL4() {}
-	virtual GLuint getAvailable() = 0;
-protected:
-	bool mIsInit = false;
-	virtual void init() = 0;
-};
-
 // Buffer Object Allocation Helpers
+
+#define GL4_BUFFER_MAX 1024
 
 struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) { buffer = b; }
-
-	GLuint buffer; // OpenGL specific
-};
-
-#define GL4_BUFFER_MAX 1024
-
-class Topl_BufferAlloc_GL4 : public Topl_DataAlloc_GL4 { // derived class
-public:
-	Topl_BufferAlloc_GL4(){}
-	GLuint getAvailable() override;
-private:
-	void init() override { glGenBuffers(GL4_BUFFER_MAX, &slots[0]); mIsInit = true; }
-
-	GLuint slots[GL4_BUFFER_MAX];
-	unsigned slotIndex = 0; // May need to be zero
+	GLuint buffer; // OpenGL buffer
 };
 
 // Vertex Array Object Allocation Helpers
+
+#define GL4_VERTEX_ARRAY_MAX 1024
 
 struct VertexArray_GL4 : public RenderTarget {
 	VertexArray_GL4() : RenderTarget() {}
@@ -48,42 +28,14 @@ struct VertexArray_GL4 : public RenderTarget {
 	GLuint vao;
 };
 
-#define GL4_VERTEX_ARRAY_MAX 1024
-
-class Topl_VertexArrayAlloc_GL4 : public Topl_DataAlloc_GL4 { // derived class
-public:
-	Topl_VertexArrayAlloc_GL4(){}
-	GLuint getAvailable() override;
-private:
-	void init() override { glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &slots[0]); mIsInit = true; }
-
-	GLuint slots[GL4_VERTEX_ARRAY_MAX];
-	unsigned slotIndex = 0; // May need to be zero
-
-};
-
 // Texture Objects
-
-struct Texture_GL4 : public Texture {
-	Texture_GL4() : Texture() {}
-	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t)
-		: Texture(id, f, m) { texture = t; }
-
-	GLuint texture;
-};
 
 #define GL4_TEXTURE_BINDINGS_MAX 1024
 
-class Topl_TextureBindingAlloc_GL4 :  public Topl_DataAlloc_GL4 { // derived class
-public:
-	Topl_TextureBindingAlloc_GL4(){}
-	GLuint getAvailable() override;
-	enum TEX_Frmt getFormat(){ return TEX_2D; } // Set to default, use switch case statement
-private:
-	void init() override { glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &slots[0]); mIsInit = true;}
-
-	GLuint slots[GL4_TEXTURE_BINDINGS_MAX];
-	unsigned slotIndex = 0;
+struct Texture_GL4 : public Texture {
+	Texture_GL4() : Texture() {}
+	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
+	GLuint texture;
 };
 
 // Instance Specific Containers
@@ -122,17 +74,21 @@ public:
 private:
   	void init(NATIVE_WINDOW window) override;
 	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) override;
-	void pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
+	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
-	/* std::vector<Topl_RenderContext_GL4> _renderCtx; // drawable render contexts
-	Topl_RenderContext_GL4* _currentRenderCtx; // current render context to be used for drawing */
 	Topl_RenderContext_GL4 _renderCtx;
   	Topl_Pipeline_GL4 _pipeline;
 
-	Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object
-	Topl_VertexArrayAlloc_GL4 _vertexArrayAlloc; // Vertex Array allocator object
-	Topl_TextureBindingAlloc_GL4 _textureBindingsAlloc; // Texture bindings allocator object
+	GLuint _bufferSlots[GL4_BUFFER_MAX];
+	unsigned _bufferIndex = 0;
+	//Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object // REPLACE!
+	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX];
+	unsigned _vertexArrayIndex = 0;
+	// Topl_VertexArrayAlloc_GL4 _vertexArrayAlloc; // Vertex Array allocator object // REPLACE!
+	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX];
+	unsigned _textureIndex = 0;
+	// Topl_TextureBindingAlloc_GL4 _textureBindingsAlloc; // Texture bindings allocator object // REPLACE!
 };

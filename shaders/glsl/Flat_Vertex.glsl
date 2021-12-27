@@ -16,8 +16,7 @@ layout(packed, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out vec2 texcoord_out;
-layout(location = 1) out vec4 flatColor_out;
+layout(location = 0) out vec4 flatColor_out;
 
 mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 	vec3 defaultUpVec = vec3(0.0, 1.0, 0.0);
@@ -41,30 +40,26 @@ void main() {
 	vec3 finalTranslation = pos + offset;
 
 //	if (rotation[0] != 0 || rotation[1] != 0) {
-		mat2 zRotMatrix = mat2(
-			cos(rotation[0]), sin(rotation[0]),
-			-1 * sin(rotation[0]), cos(rotation[0])
+		mat3 zRotMatrix = mat3(
+			cos(rotation[0]), sin(rotation[0]), 0,
+			-1 * sin(rotation[0]), cos(rotation[0]), 0,
+			0, 0, 1
 		);
-		vec2 zRotCoords = zRotMatrix * vec2(pos.x, pos.y);
 
 		mat3 yRotMatrix = mat3(
 			cos(rotation[1]), 0, -1 * sin(rotation[1]),
 			0, 1, 0,
 			sin(rotation[1]), 0, cos(rotation[1])
 		);
-		vec3 finalRotCoords = yRotMatrix * vec3(zRotCoords.x, zRotCoords.y, pos.z);
-		// vec3 finalRotCoords = yRotMatrix * vec3(zRotCoords.x, zRotCoords.y, 0.0); // For testing
 
+		vec3 finalRotCoords = (zRotMatrix * yRotMatrix) * pos;
+		// vec3 finalRotCoords = zRotMatrix * pos; // test case
 		finalPos = vec4(finalRotCoords, 0.0);
 //	}
 
 	finalPos += vec4(finalTranslation, 1.0);
 
-	texcoord_out = texcoord;
-	/* switch (gl_VertexID % 2) */
 	flatColor_out = color;
-	// flatColor_out = vec4(0.9f, 0.7f, 0.5f, 1.0f);
-
 	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
 }

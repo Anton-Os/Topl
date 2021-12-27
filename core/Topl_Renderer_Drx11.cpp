@@ -324,7 +324,7 @@ void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr p
 	_isPipelineReady = true;
 }
 
-void Topl_Renderer_Drx11::pipeline(shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	ID3DBlob* errorBuff;
 	HRESULT hr;
 	size_t sourceSize;

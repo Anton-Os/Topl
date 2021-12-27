@@ -2,38 +2,6 @@
 
 #include "Topl_Renderer_GL4.hpp"
 
-// This code is platform independent
-
-GLuint Topl_BufferAlloc_GL4::getAvailable() {
-	if (!mIsInit) init();
-	GLuint targetBuff = 0;
-
-	if (slotIndex > GL4_BUFFER_MAX) puts("Maximum buffer capacity exceeded!");
-	else { targetBuff = slots[slotIndex]; slotIndex++; }
-
-	return targetBuff;
-}
-
-GLuint Topl_VertexArrayAlloc_GL4::getAvailable(){
-	if (!mIsInit) init();
-	GLuint targetVAO = 0;
-
-	if (slotIndex > GL4_VERTEX_ARRAY_MAX) puts("Maximum VAO capacity exceeded!");
-	else { targetVAO = slots[slotIndex]; slotIndex++; }
-
-	return targetVAO;
-}
-
-GLuint Topl_TextureBindingAlloc_GL4::getAvailable(){
-	if (!mIsInit) init();
-	GLuint targetTextureB = 0;
-
-	if (slotIndex > GL4_TEXTURE_BINDINGS_MAX) puts("Maximum Texture Bindings capacity exceeded!");
-	else { targetTextureB = slots[slotIndex]; slotIndex++; }
-
-	return targetTextureB;
-}
-
 namespace _GL4 {
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
 		GLenum format;
@@ -279,6 +247,10 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
+	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
+	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -296,7 +268,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
  	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
 	// Generates object for single scene block buffer
 	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
-		_renderCtx.buffers.push_back(Buffer_GL4(_bufferAlloc.getAvailable()));
+		_renderCtx.buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
+		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -313,7 +286,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 		// Geo component block implementation
 		if (_entryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferAlloc.getAvailable()));
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
+			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -322,16 +296,22 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 		// Index creation procedures
 		if (geoTarget_iData != nullptr) {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), geoTarget_renderObj->getIndexCount()));
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], geoTarget_renderObj->getIndexCount()));
+			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
-		} else _renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferAlloc.getAvailable(), 0)); // 0 indicates empty buffer
+		} else {
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
+			_bufferIndex++; // increments to next available slot
+		}
 
-		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferAlloc.getAvailable(), geoTarget_renderObj->getVerticesCount()));
+		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], geoTarget_renderObj->getVerticesCount()));
+		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVerticesCount() * sizeof(Geo_Vertex), geoTarget_perVertex, GL_STATIC_DRAW);
 
-		_renderCtx.VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArrayAlloc.getAvailable()));
+		_renderCtx.VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArraySlots[_vertexArrayIndex]));
+		_vertexArrayIndex++; // increment to next available slot
 		VertexArray_GL4* currentVAO_ptr = &_renderCtx.VAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
 
@@ -395,7 +375,8 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 
 void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Check for format compatablitiy before this call, TEX_2D
-	GLuint texture = _textureBindingsAlloc.getAvailable();
+	GLuint texture = _textureSlots[_textureIndex];
+	_textureIndex++; // increments to next available slot
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here
@@ -498,10 +479,9 @@ void Topl_Renderer_GL4::pipeline(entry_shader_cptr vertexShader, shader_cptr fra
 	_isPipelineReady = true;
 }
 
-void Topl_Renderer_GL4::pipeline(shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+void Topl_Renderer_GL4::pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	GLint result;
 	const char* sourceStr_ptr;
-
 
 	// Vertex shader creation and valid file checking
 	_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);

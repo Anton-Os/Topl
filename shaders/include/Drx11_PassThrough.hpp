@@ -2,20 +2,11 @@
 
 struct PassThru_TessHullShader : public Topl_Shader {
     PassThru_TessHullShader()
-		: Topl_Shader(
-			SHDR_TessCtrl,
-			genPrefix_hlsl() + "TessHull_PassThru.hlsl",
-			{ Shader_Type({}) }// Inputs
-		){ }
+		: Topl_Shader(SHDR_TessCtrl,genPrefix_hlsl() + "TessHull_PassThru.hlsl"){ }
 };
 
 struct PassThru_TessDomainShader : public Topl_Shader {
-    PassThru_TessDomainShader()
-		: Topl_Shader(
-			SHDR_TessEval,
-			genPrefix_hlsl() + "TessDomain_PassThru.hlsl",
-			{ Shader_Type({}) }// Inputs
-		){ }
+    PassThru_TessDomainShader() : Topl_Shader(SHDR_TessEval,genPrefix_hlsl() + "TessDomain_PassThru.hlsl"){ }
 };
 
 struct PassThru_GeometryShader : public Topl_Shader {

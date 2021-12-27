@@ -41,13 +41,5 @@ struct Effect_VertexShader : public Topl_EntryShader {
 };
 
 struct Effect_FragmentShader : public Topl_Shader {
-	Effect_FragmentShader()
-		: Topl_Shader(
-			SHDR_Fragment,
-			genPrefix_glsl() + "Effect_Frag.glsl",
-			{ 
-				Shader_Type("screenRes", SHDR_uint_vec2), 
-				Shader_Type("cursorPos", SHDR_float_vec2) 
-			} // Inputs
-		) { }
+	Effect_FragmentShader(): Topl_Shader(SHDR_Fragment, genPrefix_glsl() + "Effect_Frag.glsl") { }
 };

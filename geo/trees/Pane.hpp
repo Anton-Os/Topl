@@ -1,8 +1,8 @@
 #include "primitives/Geo_Flat.hpp"
 #include "Geo_Tree.hpp"
 
-#define DEFAULT_Y_INC 0.01
-#define DEFAULT_Z_INC 0.0001
+#define DEFAULT_Y_INC 0.05
+#define DEFAULT_Z_INC 0.01
 
 class Geo_Pane {
 public:
