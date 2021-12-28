@@ -1,7 +1,8 @@
 #include "MovingSprite.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
-#include "GL4_Textured.hpp" // shader inclusion
+#include "Textured_Shader.hpp" // shader inclusion
+// #include "GL4_Textured.hpp" // shader inclusion
 
 // Entry Point
 
@@ -12,8 +13,10 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	Textured_VertexShader vertexShader = Textured_VertexShader();
-	Textured_FragmentShader fragmentShader = Textured_FragmentShader();
+	GL4_Textured_VertexShader vertexShader = GL4_Textured_VertexShader();
+	GL4_Textured_FragmentShader fragmentShader = GL4_Textured_FragmentShader();
+	// Textured_VertexShader vertexShader = Textured_VertexShader();
+	// Textured_FragmentShader fragmentShader = Textured_FragmentShader();
 
 	renderer.setCamera(&Topl::camera);
 	renderer.setPipeline(&vertexShader, &fragmentShader);

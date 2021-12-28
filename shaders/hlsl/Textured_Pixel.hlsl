@@ -12,11 +12,21 @@ struct PS_INPUT {
 	float2 texcoord : TEXCOORD0;
 };
 
+// switch red and blue color values
+float4 switchRB(float4 color){
+	float t = color[0];
+	color[0] = color[2];
+	color[2] = t;
+	return color;
+}
+
 float4 main(PS_INPUT input) : SV_TARGET{
 
 	uint height;
 	uint width;
 	baseTex.GetDimensions(width, height);
 
-	return baseTex.Sample(baseSampler, input.texcoord);
+	float4 color = baseTex.Sample(baseSampler, input.texcoord);
+	color = switchRB(color);
+	return color;
 }

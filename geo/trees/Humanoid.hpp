@@ -32,9 +32,9 @@ public:
 		(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
 	) {
 		headOffset = props[HUMANOID_Head].second;
-		bodyOffset = props[HUMANOID_LeftArm].second;
-		leftArmOffset = props[HUMANOID_RightArm].second;
-		rightArmOffset = props[HUMANOID_Body].second;
+		leftArmOffset = props[HUMANOID_LeftArm].second;
+		rightArmOffset = props[HUMANOID_RightArm].second;
+		bodyOffset = props[HUMANOID_Body].second;
 		leftLegOffset = props[HUMANOID_LeftLeg].second;
 		rightLegOffset = props[HUMANOID_RightLeg].second;
 
@@ -49,7 +49,9 @@ public:
 		HUMANOID_Body = 3,
 		HUMANOID_LeftLeg = 4,
 		HUMANOID_RightLeg = 5
-	} anatomyIndex;
+	};
+
+	void updateActor(HUMANOID_Anatomy target, Eigen::Vector3f pos, Eigen::Vector2f rot);
 private:
 	void fill(Topl_Scene* scene) override;
 

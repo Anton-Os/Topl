@@ -24,6 +24,5 @@ public:
     Geo_Node(const aiNode* node) : Geo_Actor(){  } // empty constructor for testing
 
 private:
-
     std::string parentName; // if root node then this will remain blank
 };

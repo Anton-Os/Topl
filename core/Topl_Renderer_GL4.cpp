@@ -224,6 +224,10 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDest
 
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
+	glDeleteBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
+	glDeleteVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
+	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+
 #ifdef _WIN32
 	cleanup_win(&_nativeContext.window, &_nativeContext.windowDevice_Ctx, &_nativeContext.GL_ctx);
 #elif defined(__linux__)

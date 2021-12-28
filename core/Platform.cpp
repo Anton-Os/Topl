@@ -51,7 +51,7 @@ void Platform::createWindow(){
 		return;
 	}
 	else { 
-		RECT windowRect;
+		/* RECT windowRect;
 		GetWindowRect(_context.window, &windowRect);
 
 		int x = 0; int y = 0;
@@ -85,7 +85,7 @@ void Platform::createWindow(){
 			NULL
 		);
 
-		ShowWindow(_context.childWindows[_windowCount - 1], 0);
+		ShowWindow(_context.childWindows[_windowCount - 1], 0); */
 	}
 
 	_windowCount++;

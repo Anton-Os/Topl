@@ -5,7 +5,7 @@ namespace _Chain {
 }
 
 void Geo_Chain::fill(Topl_Scene* scene){
-    Geo_Actor* prevGeo = nullptr;
+    Geo_Actor* prevActor = nullptr;
     Geo_Actor* actor = nullptr;
     
     for(unsigned c = 0; c < getActorCount(); c++){
@@ -16,11 +16,11 @@ void Geo_Chain::fill(Topl_Scene* scene){
         scene->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), actor);
         scene->addPhysics(getPrefix() + _Chain::genLinkName(c + 1), &phys.at(c));
 
-        if(prevGeo != nullptr){ // first link is ignored because it has no previous geo to link to
+        if(prevActor != nullptr){ // first link is ignored because it has no previous geo to link to
             links.push_back(Phys_Connector());
             scene->addConnector(&links.back(), getPrefix() + _Chain::genLinkName(c), getPrefix() + _Chain::genLinkName(c + 1));
         }
 
-        prevGeo = actor; // moves previous link up the chain
+        prevActor = actor; // moves previous link up the chain
     }
 }

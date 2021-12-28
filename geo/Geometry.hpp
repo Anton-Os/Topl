@@ -76,12 +76,12 @@ enum AXIS_Target{
     AXIS_Z
 };
 
-typedef float (*vTformCallback)(float, double); // Callback for transforming vertex attributes given input and modifier arguments
+typedef float (*vTformCallback)(float, double); // callback for transforming vertex attributes given input and modifier arguments
 
 class Geo_RenderObj {
 public:
-	Geo_RenderObj(unsigned v); // Vertex only constructor
-    Geo_RenderObj(unsigned v, unsigned i); // Vertex and Indices constructor
+	Geo_RenderObj(unsigned v); // vertex only constructor
+    Geo_RenderObj(unsigned v, unsigned i); // vertex and indices constructor
     
 	~Geo_RenderObj(){ cleanup(); }
 	void cleanup();

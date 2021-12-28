@@ -31,12 +31,12 @@ struct Textured_VertexShader : public Topl_EntryShader {
 };
 
 struct GL4_Textured_VertexShader : public Textured_VertexShader {
-    GL4_Textured_VertexShader() : Textured_VertexShader(genPrefix_glsl() + "Textured_Vertex.glsl"){}
-}
+	GL4_Textured_VertexShader() : Textured_VertexShader(genPrefix_glsl() + "Textured_Vertex.glsl") {}
+};
 
 struct Drx11_Textured_VertexShader : public Textured_VertexShader {
-    Drx11_Textured_VertexShader() : Textured_VertexShader(genPrefix_hlsl() + "Textured_Vertex.hlsl"){}
-}
+	Drx11_Textured_VertexShader() : Textured_VertexShader(genPrefix_hlsl() + "Textured_Vertex.hlsl") {}
+};
 
 // Fragment Shaders
 
@@ -45,8 +45,8 @@ struct Textured_FragmentShader : public Topl_Shader {
 };
 
 struct GL4_Textured_FragmentShader : public Textured_FragmentShader {
-    GL4_Textured_FragmentShader() : Textured_FragmentShader(genPrefix_glsl() + "Textured_Frag.glsl"){}
-}
+	GL4_Textured_FragmentShader() : Textured_FragmentShader(genPrefix_glsl() + "Textured_Frag.glsl") {}
+};
 
 struct Drx11_Textured_FragmentShader : public Textured_FragmentShader {
 	Drx11_Textured_FragmentShader() : Textured_FragmentShader(genPrefix_hlsl() + "Textured_Pixel.hlsl") { }
