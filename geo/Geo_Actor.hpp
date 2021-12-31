@@ -31,11 +31,10 @@ public:
 		_worldRot += angles;
 		clampAngles();
 	}
-	// void modify(vTformCallback callback, double mod, AXIS_Target axis){ _renderObj->modify(callback, mod, axis); }
+	
 	unsigned getId() const { return _id; } // id is immutable
 	std::string getName() const { return _name; }
 	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
-
 	vec3f_cptr getPos() const { return &_worldPos; }
 	vec2f_cptr getAngles() const { return &_worldRot; }
 private:

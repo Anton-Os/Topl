@@ -12,6 +12,7 @@ void Geo_PaneLayout::fill(Topl_Scene* scene){
 
     Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
     scene->addGeometry(getPrefix() + "root", rootActor);
+    _panes.resize(getActorCount() - 1);
 
     for(unsigned p = 1; p < getActorCount(); p++){
         actor = getNextActor();
@@ -20,7 +21,8 @@ void Geo_PaneLayout::fill(Topl_Scene* scene){
         // actor->setRot(Eigen::Vector2f(0.0f, DEFAULT_Y_INC * p)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 
-        _panes.push_back(Geo_Pane(actor));
-		// _panes.back.scalePane(_rows, _columns);
+        _panes[p - 1] = Geo_Pane();
+		_panes[p - 1].setActor(actor);
+		_panes[p - 1].scalePane(_rows, _columns);
     }
 }

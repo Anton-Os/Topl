@@ -41,9 +41,8 @@ struct Texture_GL4 : public Texture {
 // Instance Specific Containers
 
 struct Topl_Pipeline_GL4 {
-	GLuint vertexDataLayouts[GL4_VERTEX_ARRAY_MAX];
-
 	GLuint shaderProg; // Linked Shader Program
+
 	GLuint vShader; // Vertex Shader
 	GLuint fShader; // Fragment Shader
 	GLuint tcShader; // Tesselation Control Shader
@@ -65,11 +64,13 @@ public:
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
-	void buildScene(const Topl_Scene* scene) override;
-	void buildScene(const Topl_Scene* scene, const Topl_Camera* camera) override;
+	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
+	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void build(const Topl_Scene* scene) override;
+	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
 	Rasteron_Image* frame() override;
-	void genTexture(const Rasteron_Image* image, unsigned id) override;
+	void assignTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
@@ -84,11 +85,8 @@ private:
 
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
 	unsigned _bufferIndex = 0;
-	//Topl_BufferAlloc_GL4 _bufferAlloc; // Buffer allocator object // REPLACE!
 	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX];
 	unsigned _vertexArrayIndex = 0;
-	// Topl_VertexArrayAlloc_GL4 _vertexArrayAlloc; // Vertex Array allocator object // REPLACE!
 	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX];
 	unsigned _textureIndex = 0;
-	// Topl_TextureBindingAlloc_GL4 _textureBindingsAlloc; // Texture bindings allocator object // REPLACE!
 };

@@ -3,7 +3,7 @@
 #define SHADERS_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/master/shaders/"
 #if 1
     #include "Rasteron.h" // includes Rasteron main modules
-    // #include "Font.h" // includes Rasteron font loading module
+    #include "Font.h" // includes Rasteron font loading module
 #endif
 #if 1
     #include <assimp/Importer.hpp>      // C++ importer interface

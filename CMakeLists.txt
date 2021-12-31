@@ -132,7 +132,7 @@ if(Rasteron_FOUND)
 endif()
 if(Assimp_FOUND)
     # target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
-    target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
+    target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
 endif()
 set_target_properties(GL4_Engine
     PROPERTIES

@@ -7,33 +7,15 @@ namespace _GL4 {
 		GLenum format;
 
 		switch(type) {
-		case SHDR_float_vec4:
-		case SHDR_float_vec3:
-		case SHDR_float_vec2:
-		case SHDR_float:
-			format = GL_FLOAT;
-			break;
-		case SHDR_double_vec4:
-		case SHDR_double_vec3:
-		case SHDR_double_vec2:
-		case SHDR_double:
-			format = GL_DOUBLE;
-			break;
-		case SHDR_uint_vec4:
-		case SHDR_uint_vec3:
-		case SHDR_uint_vec2:
-		case SHDR_uint:
-			format = GL_UNSIGNED_INT;
-			break;
-		case SHDR_int_vec4:
-		case SHDR_int_vec3:
-		case SHDR_int_vec2:
-		case SHDR_int:
-			format = GL_INT;
-			break;
-		default:
-			puts("GL4 Shader Input Type Not Supported!");
-			break;
+		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float:
+			format = GL_FLOAT; break;
+		case SHDR_double_vec4: case SHDR_double_vec3: case SHDR_double_vec2: case SHDR_double:
+			format = GL_DOUBLE; break;
+		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint:
+			format = GL_UNSIGNED_INT; break;
+		case SHDR_int_vec4: case SHDR_int_vec3: case SHDR_int_vec2: case SHDR_int:
+			format = GL_INT; break;
+		default: puts("GL4 Shader Input Type Not Supported!"); break;
 		}
 
 		return format;
@@ -43,30 +25,14 @@ namespace _GL4 {
 		GLint size = 0;
 
 		switch(type){
-		case SHDR_float_vec4:
-		case SHDR_double_vec4:
-		case SHDR_uint_vec4:
-		case SHDR_int_vec4:
-			size = 4;
-			break;
-		case SHDR_float_vec3:
-		case SHDR_double_vec3:
-		case SHDR_uint_vec3:
-		case SHDR_int_vec3:
-			size = 3;
-			break;
-		case SHDR_float_vec2:
-		case SHDR_double_vec2:
-		case SHDR_uint_vec2:
-		case SHDR_int_vec2:
-			size = 2;
-			break;
-		case SHDR_float:
-		case SHDR_double:
-		case SHDR_uint:
-		case SHDR_int:
-			size = 2;
-			break;
+		case SHDR_float_vec4: case SHDR_double_vec4: case SHDR_uint_vec4: case SHDR_int_vec4:
+			size = 4; break;
+		case SHDR_float_vec3: case SHDR_double_vec3: case SHDR_uint_vec3: case SHDR_int_vec3:
+			size = 3; break;
+		case SHDR_float_vec2: case SHDR_double_vec2: case SHDR_uint_vec2: case SHDR_int_vec2:
+			size = 2; break;
+		case SHDR_float: case SHDR_double: case SHDR_uint: case SHDR_int:
+			size = 1; break;
 		}
 
 		return size;
@@ -77,38 +43,22 @@ namespace _GL4 {
 		unsigned offset = 0;
 
 		switch(type) {
-		case SHDR_float_vec4:
-			offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3:
-			offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2:
-			offset = sizeof(float) * 2; break;
-		case SHDR_float:
-			offset = sizeof(float); break;
-		case SHDR_double_vec4:
-			offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3:
-			offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2:
-			offset = sizeof(double) * 2; break;
-		case SHDR_double:
-			offset = sizeof(double); break;
-		case SHDR_uint_vec4:
-			offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3:
-			offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2:
-			offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint:
-			offset = sizeof(unsigned); break;
-		case SHDR_int_vec4:
-			offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3:
-			offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2:
-			offset = sizeof(int) * 2; break;
-		case SHDR_int:
-			offset = sizeof(int); break;
+		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
+		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
+		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
+		case SHDR_float: offset = sizeof(float); break;
+		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
+		case SHDR_double: offset = sizeof(double); break;
+		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
+		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
+		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
+		case SHDR_uint: offset = sizeof(unsigned); break;
+		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
+		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
+		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
+		case SHDR_int: offset = sizeof(int); break;
 		default:
 			puts("GL4 Type Shader Input Type Not Supported!");
 			break;
@@ -118,11 +68,11 @@ namespace _GL4 {
 	}
 
 	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** buffer_ptrs, unsigned short count) {
-		return *(buffer_ptrs + type); // We know the offset with the type argument
+		return *(buffer_ptrs + type); // offset is pre-determined by the type argument
 	}
 
 	static void discoverBuffers(Buffer_GL4** dBuffers, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
-		//TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
+		//TODO: No error checks for duplicate buffers are provided! bufferVector needs to be vetted first
 		for (std::vector<Buffer_GL4>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
 				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates
@@ -136,9 +86,9 @@ namespace _GL4 {
 			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
-		default:
-			break;
+		default: break;
 		}
+
 		return;
 	}
 
@@ -246,15 +196,15 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	glEnable(GL_DEPTH_TEST); // Make these customizable
-	glDepthFunc(GL_LESS); // Make these customizable
+	glEnable(GL_DEPTH_TEST); // make these customizable
+	glDepthFunc(GL_LESS); // make these customizable
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
-	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+	glassignTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -262,15 +212,14 @@ void Topl_Renderer_GL4::clearView(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene){
-	buildScene(scene, &_defaultCamera);
+void Topl_Renderer_GL4::build(const Topl_Scene* scene){
+	build(scene, &_defaultCamera);
 }
 
-void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-	std::vector<uint8_t> blockBytes; // For constant and uniform buffer updates
+void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera){
+	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
 
- 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_pipeline.vertexDataLayouts[0]);
-	// Generates object for single scene block buffer
+	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
 		_renderCtx.buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
 		_bufferIndex++; // increments to next available slot
@@ -282,14 +231,14 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned currentRenderID = g + 1;
-		geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
-		Geo_RenderObj* geoTarget_renderObj = (Geo_RenderObj*)geoTarget_ptr->getRenderObj();
+		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
 
-		geoVertex_cptr geoTarget_perVertex = geoTarget_renderObj->getVertices();
-		ui_cptr geoTarget_iData = geoTarget_renderObj->getIndices();
+		geoVertex_cptr actor_perVertex = actor_renderObj->getVertices();
+		ui_cptr actor_iData = actor_renderObj->getIndices();
 
-		// Geo component block implementation
-		if (_entryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
+		// component block buffer generation
+		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
 			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
@@ -298,21 +247,21 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
-		// Index creation procedures
-		if (geoTarget_iData != nullptr) {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], geoTarget_renderObj->getIndexCount()));
+		// index creation
+		if (actor_iData != nullptr) {
+			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], actor_renderObj->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, geoTarget_renderObj->getIndexCount() * sizeof(unsigned), geoTarget_iData, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, actor_renderObj->getIndexCount() * sizeof(unsigned), actor_iData, GL_STATIC_DRAW);
 		} else {
 			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
 			_bufferIndex++; // increments to next available slot
 		}
 
-		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], geoTarget_renderObj->getVerticesCount()));
+		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVerticesCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, geoTarget_renderObj->getVerticesCount() * sizeof(Geo_Vertex), geoTarget_perVertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVerticesCount() * sizeof(Geo_Vertex), actor_perVertex, GL_STATIC_DRAW);
 
 		_renderCtx.VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot
@@ -338,8 +287,8 @@ void Topl_Renderer_GL4::buildScene(const Topl_Scene* scene, const Topl_Camera* c
 
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = scene->getFirstTexture(geoTarget_ptr->getName());
-		if(baseTex != nullptr) genTexture(baseTex, currentRenderID); // Add the method definition
+		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
+		if(baseTex != nullptr) assignTexture(baseTex, currentRenderID); // Add the method definition
 #endif
 		_mainRenderIDs = currentRenderID; // Sets main graphics ID's to max value of currentRenderID
 	}
@@ -377,7 +326,7 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 	return image;
 }
 
-void Topl_Renderer_GL4::genTexture(const Rasteron_Image* image, unsigned id){
+void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
 	// TODO: Check for format compatablitiy before this call, TEX_2D
 	GLuint texture = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
@@ -409,8 +358,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		geo_cptr geoTarget_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
-		if (_entryShader->genGeoBlock(geoTarget_ptr, &blockBytes)) {
+		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
@@ -603,10 +552,8 @@ void Topl_Renderer_GL4::render(void){
 	if (_mainRenderIDs == 1) return; // no rendering can occur without targets to draw
 	else for (unsigned id = 1; id <= _mainRenderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _renderCtx.VAOs.begin(); currentVAO < _renderCtx.VAOs.end(); currentVAO++)
-			if (currentVAO->targetID == id)
-				glBindVertexArray(currentVAO->vao);
-			else
-				continue; // If it continues all the way through error has occured
+			if (currentVAO->targetID == id) glBindVertexArray(currentVAO->vao);
+			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
 		_GL4::discoverBuffers(buffer_ptrs, &_renderCtx.buffers, id);
