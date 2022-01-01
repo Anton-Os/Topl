@@ -28,7 +28,6 @@ namespace _Drx11 {
 		return format;
 	}
 
-	// Shared Renderer Code!
 	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
 		unsigned offset = 0;
 
@@ -151,7 +150,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_device->Release();
 	_deviceCtx->Release();
 
-	_pipeline.vertexShader->Release();
+	/* _pipeline.vertexShader->Release();
 	_pipeline.pixelShader->Release();
 	_pipeline.hullShader->Release();
 	_pipeline.domainShader->Release();
@@ -160,7 +159,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_pipeline.psBlob->Release();
 	_pipeline.hsBlob->Release();
 	_pipeline.dsBlob->Release();
-	_pipeline.gsBlob->Release();
+	_pipeline.gsBlob->Release(); */
 
 	_vertexDataLayout->Release();
 	_resourceView->Release();
@@ -266,132 +265,148 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
-
 	return;
 }
 
+Topl_Pipeline_Drx11 Topl_Renderer_Drx11::genPipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader){
+	Topl_Pipeline_Drx11 pipeline = Topl_Pipeline_Drx11();
+	HRESULT hr; // error checking variable
+
+	// vertex shader compilation and creation code
+	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline.vsBlob));
+	hr = _device->CreateVertexShader(
+		pipeline.vsBlob->GetBufferPointer(), pipeline.vsBlob->GetBufferSize(),
+		NULL, &pipeline.vertexShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	// pixel shader compilation and creation code
+	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline.psBlob));
+	hr = _device->CreatePixelShader(
+		pipeline.psBlob->GetBufferPointer(), pipeline.psBlob->GetBufferSize(),
+		NULL, &pipeline.pixelShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	pipeline.isReady = true;
+	_entryShader = vertexShader;
+	return pipeline;
+}
+
 void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader){
-	HRESULT hr;
+	HRESULT hr; // error checking variable
 
 	// Vertex shader compilation and creation code
 	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &_pipeline.vsBlob));
-
 	hr = _device->CreateVertexShader(
-		_pipeline.vsBlob->GetBufferPointer(), 
-		_pipeline.vsBlob->GetBufferSize(),
+		_pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
 		NULL, &_pipeline.vertexShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	// Pixel shader compilation and creation code
 	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &_pipeline.psBlob));
-
 	hr = _device->CreatePixelShader(
-		_pipeline.psBlob->GetBufferPointer(),
-		_pipeline.psBlob->GetBufferSize(),
+		_pipeline.psBlob->GetBufferPointer(), _pipeline.psBlob->GetBufferSize(),
 		NULL, &_pipeline.pixelShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	_deviceCtx->VSSetShader(_pipeline.vertexShader, 0, 0);
 	_deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
 
-	// Generating an input layout based on Vertex Shader Inputs
-
-	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
-	unsigned inputElementOffset = 0;
-	for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
-		*(layout_ptr + i) = _Drx11::getElementDescFromInput(vertexShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += _Drx11::getOffsetFromShaderVal(vertexShader->getInputAtIndex(i)->type);
-	}
-    UINT layoutElemCount = (unsigned)vertexShader->getInputCount();
-
-    _device->CreateInputLayout(
-        layout_ptr, layoutElemCount,
-        _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(), 
-        &_vertexDataLayout
-    );
-
-    _deviceCtx->IASetInputLayout(_vertexDataLayout);
-
-	free(layout_ptr); // Deallocating layout_ptr and all associated data
 	_isPipelineReady = true;
 }
 
+Topl_Pipeline_Drx11 Topl_Renderer_Drx11::genPipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+	Topl_Pipeline_Drx11 pipeline = Topl_Pipeline_Drx11();
+	HRESULT hr; // error checking variable
+
+	// vertex shader compilation and creation code
+	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline.vsBlob));
+	hr = _device->CreateVertexShader(
+		pipeline.vsBlob->GetBufferPointer(), pipeline.vsBlob->GetBufferSize(),
+		NULL, &pipeline.vertexShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	// hull shader compilation and creation code
+	if(!_Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline.hsBlob));
+	hr = _device->CreateHullShader(
+		pipeline.hsBlob->GetBufferPointer(), pipeline.hsBlob->GetBufferSize(),
+		NULL, &pipeline.hullShader);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	// domain shader compilation and creation code
+	if(!_Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline.dsBlob));
+	hr = _device->CreateDomainShader(
+		pipeline.dsBlob->GetBufferPointer(), pipeline.dsBlob->GetBufferSize(),
+		NULL, &pipeline.domainShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	// geometry shader compilation and creation code
+	if(!_Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline.gsBlob));
+	hr = _device->CreateGeometryShader(
+		pipeline.gsBlob->GetBufferPointer(), pipeline.gsBlob->GetBufferSize(),
+		NULL, &pipeline.geomShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	// pixel shader compilation and creation code
+	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline.psBlob));
+	hr = _device->CreatePixelShader(
+		pipeline.psBlob->GetBufferPointer(), pipeline.psBlob->GetBufferSize(),
+		NULL, &pipeline.pixelShader
+	);
+	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+
+	pipeline.isReady = true;
+	_entryShader = vertexShader;
+	return pipeline;
+}
+
 void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-	ID3DBlob* errorBuff;
-	HRESULT hr;
-	size_t sourceSize;
+	HRESULT hr; // error checking variable
 
 	// Vertex shader compilation and creation code
 	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &_pipeline.vsBlob));
-
 	hr = _device->CreateVertexShader(
-		_pipeline.vsBlob->GetBufferPointer(), 
-		_pipeline.vsBlob->GetBufferSize(),
+		_pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
 		NULL, &_pipeline.vertexShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	// Hull shader compilation and creation code
 	if(!_Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &_pipeline.hsBlob));
-
 	hr = _device->CreateHullShader(
-		_pipeline.hsBlob->GetBufferPointer(), 
-		_pipeline.hsBlob->GetBufferSize(),
+		_pipeline.hsBlob->GetBufferPointer(), _pipeline.hsBlob->GetBufferSize(),
 		NULL, &_pipeline.hullShader);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	// Domain shader compilation and creation code
 	if(!_Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &_pipeline.dsBlob));
-
 	hr = _device->CreateDomainShader(
-		_pipeline.dsBlob->GetBufferPointer(), 
-		_pipeline.dsBlob->GetBufferSize(),
+		_pipeline.dsBlob->GetBufferPointer(), _pipeline.dsBlob->GetBufferSize(),
 		NULL, &_pipeline.domainShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	// Geometry shader compilation and creation code
 	if(!_Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &_pipeline.gsBlob));
-
 	hr = _device->CreateGeometryShader(
-		_pipeline.gsBlob->GetBufferPointer(), 
-		_pipeline.gsBlob->GetBufferSize(),
+		_pipeline.gsBlob->GetBufferPointer(), _pipeline.gsBlob->GetBufferSize(),
 		NULL, &_pipeline.geomShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	// Pixel shader compilation and creation code
 	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &_pipeline.psBlob));
-
 	hr = _device->CreatePixelShader(
-		_pipeline.psBlob->GetBufferPointer(),
-		_pipeline.psBlob->GetBufferSize(),
+		_pipeline.psBlob->GetBufferPointer(), _pipeline.psBlob->GetBufferSize(),
 		NULL, &_pipeline.pixelShader
 	);
-	if (FAILED(hr)) {
-		_isPipelineReady = false;
-		return;
-	}
+	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
 	_deviceCtx->VSSetShader(_pipeline.vertexShader, 0, 0);
 	_deviceCtx->HSSetShader(_pipeline.hullShader, 0, 0);
@@ -399,25 +414,6 @@ void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr p
 	_deviceCtx->GSSetShader(_pipeline.geomShader, 0, 0);
 	_deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
 
-	// Generating an input layout based on Vertex Shader Inputs
-
-	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * vertexShader->getInputCount());
-	unsigned inputElementOffset = 0;
-	for(unsigned i = 0; i < vertexShader->getInputCount(); i++){
-		*(layout_ptr + i) = _Drx11::getElementDescFromInput(vertexShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += _Drx11::getOffsetFromShaderVal(vertexShader->getInputAtIndex(i)->type);
-	}
-    UINT layoutElemCount = (unsigned)vertexShader->getInputCount();
-
-    _device->CreateInputLayout(
-        layout_ptr, layoutElemCount,
-        _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(), 
-        &_vertexDataLayout
-    );
-
-    _deviceCtx->IASetInputLayout(_vertexDataLayout);
-
-	free(layout_ptr); // Deallocating layout_ptr and all associated data
 	_isPipelineReady = true;
 }
 
@@ -433,6 +429,25 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
+
+	// generating an input layout based on Vertex Shader Inputs
+	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
+	unsigned inputElementOffset = 0;
+	for(unsigned i = 0; i < _entryShader->getInputCount(); i++){
+		*(layout_ptr + i) = _Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
+		inputElementOffset += _Drx11::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
+	}
+    UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
+
+    _device->CreateInputLayout(
+        layout_ptr, layoutElemCount,
+        _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(), 
+        &_vertexDataLayout
+    );
+
+    _deviceCtx->IASetInputLayout(_vertexDataLayout);
+
+	free(layout_ptr); // deallocating layout_ptr and all associated data
 
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
@@ -626,7 +641,7 @@ void Topl_Renderer_Drx11::render(void){
 		return;
 	}
 
-	// Getting instance of scene block buffer at the very front of the buffer vector, if it exists
+	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_renderCtx.buffers.front();
 		_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
@@ -634,7 +649,7 @@ void Topl_Renderer_Drx11::render(void){
 
 	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
 
-	// Rendering Loop!
+	// rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
 		for (unsigned id = _mainRenderIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &_renderCtx.buffers, id);

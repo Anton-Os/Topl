@@ -48,13 +48,13 @@ struct Topl_Pipeline_GL4 {
 	GLuint tcShader; // Tesselation Control Shader
 	GLuint teShader; // Tesselation Evaluation Shader
 	GLuint gShader; // Geometry Shader
+
+	bool isReady; // internal check for compilation and link status
 };
 
-struct Topl_RenderContext_GL4 { // Groups items together to allow for switching between multiple scenes and pipelines
-	const Topl_Scene* scenePtr;
-	Topl_Pipeline_GL4 pipeline;
+struct Topl_RenderContext_GL4 { // groups together data for rendering
 	std::vector<Buffer_GL4> buffers;
-	std::vector<VertexArray_GL4> VAOs; // Vertex Array Objects
+	std::vector<VertexArray_GL4> VAOs; // vertex array objects
 	std::vector<Texture_GL4> textures;
 };
 
@@ -66,6 +66,11 @@ public:
 	void clearView() override;
 	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
 	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	/* void setPipeline(Topl_Pipeline_GL4* pipeline){
+		_pipeline_ptr = pipeline;
+		_isPipelineReady = pipeline->isReady;
+		if(_isPipelineReady) glUseProgram(pipeline->shaderProg);
+	} */
 	void build(const Topl_Scene* scene) override;
 	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
@@ -81,6 +86,7 @@ private:
 	void render(void) override;
 
 	Topl_RenderContext_GL4 _renderCtx;
+	Topl_Pipeline_GL4* _pipeline_ptr = nullptr;
   	Topl_Pipeline_GL4 _pipeline;
 
 	GLuint _bufferSlots[GL4_BUFFER_MAX];

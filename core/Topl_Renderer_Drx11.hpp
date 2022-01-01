@@ -28,21 +28,36 @@ struct Texture_Drx11 : public Texture {
 };
 
 struct Topl_Pipeline_Drx11 {
-	ID3D11VertexShader* vertexShader;
-	ID3D11PixelShader* pixelShader;
-	ID3D11HullShader* hullShader;
-	ID3D11DomainShader* domainShader;
-	ID3D11GeometryShader* geomShader;
-	ID3DBlob* vsBlob;
-	ID3DBlob* psBlob;
-	ID3DBlob* hsBlob;
-	ID3DBlob* dsBlob;
-	ID3DBlob* gsBlob;
+	Topl_Pipeline_Drx11(){}
+	~Topl_Pipeline_Drx11(){
+		if(vertexShader != nullptr) vertexShader->Release();
+		if(pixelShader != nullptr) pixelShader->Release();
+		if(hullShader != nullptr) hullShader->Release();
+		if(domainShader != nullptr) domainShader->Release();
+		if(geomShader != nullptr) geomShader->Release();
+		if(vsBlob != nullptr) vsBlob->Release();
+		if(psBlob != nullptr) psBlob->Release();
+		if(hsBlob != nullptr) hsBlob->Release();
+		if(dsBlob != nullptr) dsBlob->Release();
+		if(gsBlob != nullptr) gsBlob->Release();
+	}
+
+	ID3D11VertexShader* vertexShader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11HullShader* hullShader = nullptr;
+	ID3D11DomainShader* domainShader = nullptr;
+	ID3D11GeometryShader* geomShader = nullptr;
+	
+	ID3DBlob* vsBlob = nullptr;
+	ID3DBlob* psBlob = nullptr;
+	ID3DBlob* hsBlob = nullptr;
+	ID3DBlob* dsBlob = nullptr;
+	ID3DBlob* gsBlob = nullptr;
+
+	bool isReady; // internal check for compilation and link status
 };
 
-struct Topl_RenderContext_Drx11 { // Groups items together to allow for switching between multiple scenes and pipelines
-	const Topl_Scene* scenePtr;
-	Topl_Pipeline_Drx11 pipeline;
+struct Topl_RenderContext_Drx11 { // groups together data for rendering
 	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
 	std::vector<Buffer_Drx11> buffers;
 	std::vector<Texture_Drx11> textures;
@@ -56,6 +71,17 @@ public:
 	void clearView() override;
 	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
 	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	/* void setPipeline(Topl_Pipeline_Drx11* pipeline){
+		_pipeline_ptr = pipeline;
+		_isPipelineReady = pipeline->isReady;
+		if(_isPipelineReady){
+			if(_pipeline_ptr->vertexShader != nullptr) _deviceCtx->VSSetShader(_pipeline_ptr->vertexShader, 0, 0);
+			if(_pipeline_ptr->hullShader != nullptr) _deviceCtx->HSSetShader(_pipeline_ptr->hullShader, 0, 0);
+			if(_pipeline_ptr->domainShader != nullptr) _deviceCtx->DSSetShader(_pipeline_ptr->domainShader, 0, 0);
+			if(_pipeline_ptr->geomShader != nullptr) _deviceCtx->GSSetShader(_pipeline_ptr->geomShader, 0, 0);
+			if(_pipeline_ptr->pixelShader != nullptr) _deviceCtx->PSSetShader(_pipeline_ptr->pixelShader, 0, 0);
+		}
+	} */
 	void build(const Topl_Scene* scene) override;
 	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
@@ -72,6 +98,7 @@ private:
 
 	Topl_RenderContext_Drx11 _renderCtx;
 	Topl_Pipeline_Drx11 _pipeline;
+	Topl_Pipeline_Drx11* _pipeline_ptr = nullptr;
 	ID3D11InputLayout* _vertexDataLayout;
 
 	IDXGISwapChain* _swapChain;

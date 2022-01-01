@@ -82,7 +82,6 @@ public:
         if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment) return;
 
         _entryShader = vertexShader;
-        _shaders.assign(1, fragShader);
         pipeline(vertexShader, fragShader);
     }
     // extended pipeline creation
@@ -90,10 +89,6 @@ public:
         if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment || tessCtrlShader->getType() != SHDR_TessCtrl || tessEvalShader->getType() != SHDR_TessEval || geomShader->getType() != SHDR_Geom) return;
 
         _entryShader = vertexShader;
-        _shaders.push_back(tessCtrlShader);
-        _shaders.push_back(tessEvalShader);
-        _shaders.push_back(geomShader);
-        _shaders.push_back(fragShader);
         pipeline(vertexShader, fragShader, tessCtrlShader, tessEvalShader, geomShader);
     }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
@@ -149,13 +144,7 @@ public:
 #endif
     NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
-    shader_cptr findShader(SHDR_Type type){
-        for(std::vector<shader_cptr>::iterator currentShader = _shaders.begin(); currentShader < _shaders.end(); currentShader++)
-            if((*currentShader)->getType() == type) return *currentShader;
-        return nullptr; // If shader is not found return null pointer
-    }
     entry_shader_cptr _entryShader;
-    std::vector<shader_cptr> _shaders;
     enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // Switch to true when elements of the scene are built

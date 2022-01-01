@@ -46,13 +46,13 @@ void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rastI
 	if (rastImage->data == nullptr || rastImage->height == 0 || rastImage->width == 0) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			_geoTex_map.insert({ *actor, rastImage });
+			_actorTexture_map.insert({ *actor, rastImage });
 			return;
 		}
 }
 
 const Rasteron_Image* Topl_Scene::getFirstTexture(const std::string& name) const {
-	for (std::map<Geo_Actor*, const Rasteron_Image*>::const_iterator currentMap = _geoTex_map.cbegin(); currentMap != _geoTex_map.cend(); currentMap++)
+	for (std::map<Geo_Actor*, const Rasteron_Image*>::const_iterator currentMap = _actorTexture_map.cbegin(); currentMap != _actorTexture_map.cend(); currentMap++)
 		if (name == currentMap->first->getName()) return currentMap->second;
 
 	return nullptr; // Error

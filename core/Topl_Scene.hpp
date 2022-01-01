@@ -82,13 +82,13 @@ private:
 
 	std::vector<Geo_Actor*> _namedActor; // Stores all geometries
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
-	std::map<Geo_Actor*, Phys_Actor*> _geoToPhys_map; // Associates geometry to a physics structure
+	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
 	// std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
 	// const Platform* _platform; // Provides useful system information and parameters
 #ifdef RASTERON_H
-	std::map<Geo_Actor*, const Rasteron_Image*> _geoTex_map; // Associates geometry to a single texture structure
+	std::map<Geo_Actor*, const Rasteron_Image*> _actorTexture_map; // Associates geometry to a single texture structure
 #endif
 };
 

@@ -17,7 +17,7 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	// Find matching geometry component
 	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if((*actor)->getName() == name){
-			_geoToPhys_map.insert({ *actor, physActor });
+			_actorPhys_map.insert({ *actor, physActor });
 			return;
 		}
 
@@ -29,9 +29,9 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 	// Find matching geometry component
 	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			if (_geoToPhys_map.find(*actor) == _geoToPhys_map.end()) return error_notFound("physics", name); // Error
+			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) return error_notFound("physics", name); // Error
 
-			Phys_Actor* physActor = _geoToPhys_map.find(*actor)->second;
+			Phys_Actor* physActor = _actorPhys_map.find(*actor)->second;
 			vec3f_cptr targetPos = (*actor)->getPos();
 
 			if(!physActor->addForce(forceVec)) return error_forcesExcess(); // Error
@@ -150,7 +150,7 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve general movement here
-	for (std::map<Geo_Actor*, Phys_Actor*>::iterator currentMap = _geoToPhys_map.begin(); currentMap != _geoToPhys_map.end(); currentMap++) {
+	for (std::map<Geo_Actor*, Phys_Actor*>::iterator currentMap = _actorPhys_map.begin(); currentMap != _actorPhys_map.end(); currentMap++) {
 		Geo_Actor* targetGeo = currentMap->first;
 		Phys_Actor* physActor = currentMap->second;
 		

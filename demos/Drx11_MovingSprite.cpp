@@ -17,10 +17,12 @@ int main(int argc, char** argv) {
 	// Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
 	Textured_VertexShader vertexShader = Textured_VertexShader();
 	Textured_PixelShader pixelShader = Textured_PixelShader();
-
-	renderer.setCamera(&Topl::camera);
+	Topl_Pipeline_Drx11 pipeline = renderer.genPipeline(&vertexShader, &pixelShader);
+	// renderer.setPipeline(&pipeline);
 	renderer.setPipeline(&vertexShader, &pixelShader);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	
+	renderer.setCamera(&Topl::camera);
+	renderer.buildScene(&Topl::scene);
 
 	Main::gameLoop(&platform, &renderer);
 
