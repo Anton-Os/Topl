@@ -7,8 +7,8 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		: Topl_EntryShader(
 			SHDR_Vertex, name,
 			{ 
-				Shader_Type("pos", SHDR_float_vec3), 
-				Shader_Type("texcoord", SHDR_float_vec2) 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
 			} // Inputs
 		) {  }
 

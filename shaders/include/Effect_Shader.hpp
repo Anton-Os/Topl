@@ -7,8 +7,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		: Topl_EntryShader(
 			platform, SHDR_Vertex, name,
 			{ 
-				Shader_Type("pos", SHDR_float_vec3), 
-				Shader_Type("texcoord", SHDR_float_vec2) 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
 			} // Inputs
 		) { }
 
@@ -27,9 +27,6 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Eigen::Vector2f cursorPos;
 		bool isOnScreen = _platform_cptr->getCursorCoords(&cursorPos.x(), &cursorPos.y());
 		if (!isOnScreen) cursorPos = Eigen::Vector2f(0.0f, 0.0f);
-		else {
-			unsigned i = 1;
-		}
 
 		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
 		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
@@ -42,11 +39,11 @@ struct Effect_VertexShader : public Topl_EntryShader {
 
 struct GL4_Effect_VertexShader : public Effect_VertexShader {
     GL4_Effect_VertexShader(const Platform* platform) : Effect_VertexShader(platform, genPrefix_glsl() + "Effect_Vertex.glsl"){}
-}
+};
 
 struct Drx11_Effect_VertexShader : public Effect_VertexShader {
     Drx11_Effect_VertexShader(const Platform* platform) : Effect_VertexShader(platform, genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
-}
+};
 
 // Fragment Shaders
 

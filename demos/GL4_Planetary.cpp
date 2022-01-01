@@ -1,7 +1,7 @@
 #include "Planetary.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
-#include "GL4_Flat.hpp" // shader inclusion
+#include "Flat_Shader.hpp"
 
 // Entry Point
 
@@ -12,16 +12,13 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	Flat_VertexShader vertexShader = Flat_VertexShader();
-	Flat_FragmentShader fragmentShader = Flat_FragmentShader();
+	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
+	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
-	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.buildScene(&Topl::scene);
 
-	glPointSize(5.0f);
-	glLineWidth(2.0f);
-	
 	Main::gameLoop(&platform, &renderer);
 
 	return 0;

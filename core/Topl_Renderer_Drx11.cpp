@@ -457,10 +457,10 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned currentRenderID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // IDs begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
 		
-		geoVertex_cptr actor_perVertex = actor_renderObj->getVertices();
+		geoVertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
@@ -480,8 +480,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff,
-												actor_perVertex, actor_renderObj->getVerticesCount());
+		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVerticesCount());
 
 		_renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;

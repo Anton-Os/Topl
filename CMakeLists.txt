@@ -76,20 +76,20 @@ if(WIN32)
         CXX_EXTENSIONS ON
     )
 
-    add_executable(Drx11_MovingSprite
+    add_executable(Drx11_Pawns
         geo/trees/Humanoid.cpp
 
-        demos/Drx11_MovingSprite.cpp
+        demos/Drx11_Pawns.cpp
     )
-    target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
+    target_link_libraries(Drx11_Pawns PRIVATE Drx11_Engine)
 
-	add_executable(Drx11_SimpleShapes
+	add_executable(Drx11_Blocks
 		geo/trees/Chain.cpp
 		geo/trees/Grid.cpp
 
-		demos/Drx11_SimpleShapes.cpp
+		demos/Drx11_Blocks.cpp
 	)
-	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Blocks PRIVATE Drx11_Engine)
 
     add_executable(Drx11_Planetary demos/Drx11_Planetary.cpp)
 	target_link_libraries(Drx11_Planetary PRIVATE Drx11_Engine)
@@ -144,21 +144,21 @@ if(NOT WIN32) # decreases Windows build time
     add_dependencies(GL4_Engine GLEW Eigen)
 endif()
 
-add_executable(GL4_MovingSprite
+add_executable(GL4_Pawns
     geo/trees/Humanoid.cpp
 
-    demos/GL4_MovingSprite.cpp
+    demos/GL4_Pawns.cpp
 )
-# target_include_directories(GL4_MovingSprite PRIVATE demos)
-target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
+# target_include_directories(GL4_Pawns PRIVATE demos)
+target_link_libraries(GL4_Pawns PRIVATE GL4_Engine)
 
-add_executable(GL4_SimpleShapes
+add_executable(GL4_Blocks
 	geo/trees/Chain.cpp
     geo/trees/Grid.cpp
 
-    demos/GL4_SimpleShapes.cpp
+    demos/GL4_Blocks.cpp
 )
-target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
+target_link_libraries(GL4_Blocks PRIVATE GL4_Engine)
 
 add_executable(GL4_Planetary demos/GL4_Planetary.cpp)
 target_link_libraries(GL4_Planetary PRIVATE GL4_Engine)

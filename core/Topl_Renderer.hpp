@@ -103,6 +103,7 @@ public:
         if(!_isPipelineReady) puts("Pipeline not set for build call!");
         if(!_isPipelineReady) return false; // failure
 
+        // _activeCamera = camera;
         build(scene, camera);
         return true; // success
     }
@@ -145,12 +146,12 @@ public:
     NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
     entry_shader_cptr _entryShader;
-    enum DRAW_Type _drawType = DRAW_Triangles; // Primitive to use to draw standard scene objects
-    bool _isPipelineReady = false; // Switch to true when graphics pipeline is ready
-    bool _isSceneReady = false; // Switch to true when elements of the scene are built
-	unsigned _mainRenderIDs = 1; // Indicator for number of drawable graphics objects
-    unsigned _frameCapID = 1; // Increments as more frames are captured
-    Topl_Camera _defaultCamera;
+    enum DRAW_Type _drawType = DRAW_Triangles; // primitive to use to draw standard scene objects
+    bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
+    bool _isSceneReady = false; // switch to true when elements of the scene are built
+	unsigned _mainRenderIDs = 1; // indicator for number of drawable graphics objects
+    unsigned _frameCapID = 1; // increments as more frames are captured
+    Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;

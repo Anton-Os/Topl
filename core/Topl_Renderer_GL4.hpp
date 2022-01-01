@@ -49,7 +49,7 @@ struct Topl_Pipeline_GL4 {
 	GLuint teShader; // Tesselation Evaluation Shader
 	GLuint gShader; // Geometry Shader
 
-	bool isReady; // internal check for compilation and link status
+	bool isReady = false; // internal check for compilation and link status
 };
 
 struct Topl_RenderContext_GL4 { // groups together data for rendering

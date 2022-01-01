@@ -1,14 +1,14 @@
 #version 440
 
 layout(packed, binding = 0) uniform Block {
-	vec2 rotation; // padded to vec4
 	vec3 offset; // padded to vec4
+	vec2 rotation; // padded to vec4
 	vec4 color;
 };
 
 layout(packed, binding = 1) uniform SceneBlock {
-	vec3 cameraPos; // padded to vec4
 	vec3 lookPos; // padded to vec4
+	vec3 cameraPos; // padded to vec4
 	mat4 projMatrix;
 	vec3 lightSource; // padded to vec4
 };

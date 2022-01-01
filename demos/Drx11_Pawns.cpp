@@ -1,8 +1,8 @@
-#include "MovingSprite.hpp"
+#include "Pawns.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
-// #include "Textured_Shader.hpp" // shader inclusion
-#include "Drx11_Textured.hpp" // shader inclusion
+#include "Textured_Shader.hpp" // shader inclusion
+// #include "Drx11_Textured.hpp" // shader inclusion
 
 // Entry Point
 
@@ -13,10 +13,8 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 
-	// Drx11_Textured_VertexShader vertexShader = Drx11_Textured_VertexShader();
-	// Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
-	Textured_VertexShader vertexShader = Textured_VertexShader();
-	Textured_PixelShader pixelShader = Textured_PixelShader();
+	Drx11_Textured_VertexShader vertexShader = Drx11_Textured_VertexShader();
+	Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
 	Topl_Pipeline_Drx11 pipeline = renderer.genPipeline(&vertexShader, &pixelShader);
 	// renderer.setPipeline(&pipeline);
 	renderer.setPipeline(&vertexShader, &pixelShader);

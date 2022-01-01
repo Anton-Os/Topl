@@ -1,7 +1,8 @@
 #include "Surface.hpp"
 
 #include "Topl_Renderer_Drx11.hpp"
-#include "Drx11_Effect.hpp" // shader inclusion
+#include "Effect_Shader.hpp"
+// #include "Drx11_Effect.hpp" // shader inclusion
 
 // Entry Point
 
@@ -12,12 +13,12 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow());
 
-	Effect_VertexShader vertexShader = Effect_VertexShader(&platform);
-	Effect_PixelShader fragmentShader = Effect_PixelShader();
+	Drx11_Effect_VertexShader vertexShader = Drx11_Effect_VertexShader(&platform);
+	Drx11_Effect_FragmentShader fragmentShader = Drx11_Effect_FragmentShader();
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
-	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.buildScene(&Topl::scene);
 
 	Main::gameLoop(&platform, &renderer);
 

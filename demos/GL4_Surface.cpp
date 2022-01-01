@@ -1,7 +1,8 @@
 #include "Surface.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
-#include "GL4_Effect.hpp" // shader inclusion
+#include "Effect_Shader.hpp"
+// #include "GL4_Effect.hpp" // shader inclusion
 
 // Entry Point
 
@@ -12,12 +13,12 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 
-	Effect_VertexShader vertexShader = Effect_VertexShader(&platform);
-	Effect_FragmentShader fragmentShader = Effect_FragmentShader();
+	GL4_Effect_VertexShader vertexShader = GL4_Effect_VertexShader(&platform);
+	GL4_Effect_FragmentShader fragmentShader = GL4_Effect_FragmentShader();
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
-	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.buildScene(&Topl::scene);
 
 	glPointSize(5.0f);
 	glLineWidth(3.0f);

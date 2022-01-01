@@ -577,16 +577,16 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Slot index will signify how many buffers exist
-		unsigned currentRenderID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		unsigned rID = g + 1;
+		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
 
-		geoVertex_cptr actor_perVertex = actor_renderObj->getVertices();
+		geoVertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
 		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
+			_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -596,21 +596,21 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 
 		// index creation
 		if (actor_iData != nullptr) {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], actor_renderObj->getIndexCount()));
+			_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Index_UI, _bufferSlots[_bufferIndex], actor_renderObj->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, actor_renderObj->getIndexCount() * sizeof(unsigned), actor_iData, GL_STATIC_DRAW);
 		} else {
-			_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
+			_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
 			_bufferIndex++; // increments to next available slot
 		}
 
-		_renderCtx.buffers.push_back(Buffer_GL4(currentRenderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVerticesCount()));
+		_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVerticesCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _renderCtx.buffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVerticesCount() * sizeof(Geo_Vertex), actor_perVertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVerticesCount() * sizeof(Geo_Vertex), actor_vData, GL_STATIC_DRAW);
 
-		_renderCtx.VAOs.push_back(VertexArray_GL4(currentRenderID, _vertexArraySlots[_vertexArrayIndex]));
+		_renderCtx.VAOs.push_back(VertexArray_GL4(rID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot
 		VertexArray_GL4* currentVAO_ptr = &_renderCtx.VAOs.back(); // Check to see if all parameters are valid
 		glBindVertexArray(currentVAO_ptr->vao);
@@ -635,9 +635,9 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
-		if(baseTex != nullptr) assignTexture(baseTex, currentRenderID); // Add the method definition
+		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
-		_mainRenderIDs = currentRenderID; // Sets main graphics ID's to max value of currentRenderID
+		_mainRenderIDs = rID; // Sets main graphics ID's to max value of rID
 	}
 
 	GLint blockCount; glGetProgramiv(_pipeline.shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
@@ -660,7 +660,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_GL4::frame(){
-	// Custom Image format creation
+	// custom Image format creation
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 
 	image->width = TOPL_WIN_WIDTH;
@@ -704,14 +704,13 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		unsigned currentRenderID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		unsigned rID = g + 1;
+		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
+				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
-			if (targetBuff == nullptr)
-				puts("Block buffer could not be located! ");
+			if (targetBuff == nullptr) puts("Block buffer could not be located! ");
 			else {
 				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
 				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();

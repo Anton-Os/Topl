@@ -1,8 +1,7 @@
-#include "MovingSprite.hpp"
+#include "Pawns.hpp"
 
 #include "Topl_Renderer_GL4.hpp"
-#include "Textured_Shader.hpp" // shader inclusion
-// #include "GL4_Textured.hpp" // shader inclusion
+#include "Textured_Shader.hpp"
 
 // Entry Point
 
@@ -15,12 +14,10 @@ int main(int argc, char** argv) {
 
 	GL4_Textured_VertexShader vertexShader = GL4_Textured_VertexShader();
 	GL4_Textured_FragmentShader fragmentShader = GL4_Textured_FragmentShader();
-	// Textured_VertexShader vertexShader = Textured_VertexShader();
-	// Textured_FragmentShader fragmentShader = Textured_FragmentShader();
+	renderer.setPipeline(&vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
-	renderer.setPipeline(&vertexShader, &fragmentShader);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.buildScene(&Topl::scene);
 
 	Main::gameLoop(&platform, &renderer);
 
