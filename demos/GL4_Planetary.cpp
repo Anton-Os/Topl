@@ -1,6 +1,6 @@
 #include "Planetary.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Graphics_GL4.hpp"
 #include "Flat_Shader.hpp"
 
 // Entry Point
@@ -14,7 +14,9 @@ int main(int argc, char** argv) {
 
 	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
 	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
+	// Topl_Pipeline_GL4 pipeline = renderer.genPipeline(&vertexShader, &fragmentShader);
 	renderer.setPipeline(&vertexShader, &fragmentShader);
+	// renderer.setPipeline(&pipeline);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

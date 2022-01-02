@@ -1,6 +1,6 @@
 #include "Surface.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Graphics_GL4.hpp"
 #include "Effect_Shader.hpp"
 // #include "GL4_Effect.hpp" // shader inclusion
 

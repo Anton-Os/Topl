@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
 #include "Topl_Scene.hpp"
-#include "Topl_Renderer.hpp"
+#include "Topl_Graphics.hpp"
 
 #include "primitives/Geo_Flat.hpp"
 #include "trees/Pane.hpp"

@@ -1,6 +1,6 @@
 #include "Overlay.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "Topl_Graphics_GL4.hpp"
 #include "GL4_Flat.hpp" // shader inclusion
 
 // Entry Point

@@ -1,4 +1,4 @@
-#include "Topl_Renderer.hpp"
+#include "Topl_Graphics.hpp"
 
 #define GLEW_STATIC // OpenGL Renderer Specific
 #include "GL/glew.h" // OpenGL Renderer Specific
@@ -40,7 +40,10 @@ struct Texture_GL4 : public Texture {
 
 // Instance Specific Containers
 
-struct Topl_Pipeline_GL4 {
+struct Topl_Pipeline_GL4 : public Topl_Pipeline {
+	Topl_Pipeline_GL4() : Topl_Pipeline(){}
+	Topl_Pipeline_GL4(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
+
 	GLuint shaderProg; // Linked Shader Program
 
 	GLuint vShader; // Vertex Shader
@@ -48,8 +51,6 @@ struct Topl_Pipeline_GL4 {
 	GLuint tcShader; // Tesselation Control Shader
 	GLuint teShader; // Tesselation Evaluation Shader
 	GLuint gShader; // Geometry Shader
-
-	bool isReady = false; // internal check for compilation and link status
 };
 
 struct Topl_RenderContext_GL4 { // groups together data for rendering
@@ -67,7 +68,9 @@ public:
 	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
 	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 	/* void setPipeline(Topl_Pipeline_GL4* pipeline){
-		_pipeline_ptr = pipeline;
+		//_pipeline_ptr = pipeline;
+		_pipeline = pipeline;
+		_entryShader = pipeline->entryShader;
 		_isPipelineReady = pipeline->isReady;
 		if(_isPipelineReady) glUseProgram(pipeline->shaderProg);
 	} */
@@ -79,15 +82,15 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
-	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) override;
-	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
+	void pipeline(entry_shader_cptr vertex, shader_cptr frag) override;
+	void pipeline(entry_shader_cptr vertex, shader_cptr frag, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	Topl_RenderContext_GL4 _renderCtx;
-	Topl_Pipeline_GL4* _pipeline_ptr = nullptr;
-  	Topl_Pipeline_GL4 _pipeline;
+  	// Topl_Pipeline_GL4* _pipeline;
+	Topl_Pipeline_GL4 _pipeline;
 
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
 	unsigned _bufferIndex = 0;

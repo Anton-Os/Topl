@@ -1,4 +1,4 @@
-#include "Topl_Renderer.hpp"
+#include "Topl_Graphics.hpp"
 
 #include <d3dx10.h> // DirectX Renderer Specific
 #include <d3dx11.h> // DirectX Renderer Specific
@@ -27,8 +27,9 @@ struct Texture_Drx11 : public Texture {
 	ID3D11ShaderResourceView* resView = nullptr;
 };
 
-struct Topl_Pipeline_Drx11 {
-	Topl_Pipeline_Drx11(){}
+struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
+	Topl_Pipeline_Drx11() : Topl_Pipeline(){}
+	Topl_Pipeline_Drx11(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
 	~Topl_Pipeline_Drx11(){
 		if(vertexShader != nullptr) vertexShader->Release();
 		if(pixelShader != nullptr) pixelShader->Release();
@@ -53,8 +54,6 @@ struct Topl_Pipeline_Drx11 {
 	ID3DBlob* hsBlob = nullptr;
 	ID3DBlob* dsBlob = nullptr;
 	ID3DBlob* gsBlob = nullptr;
-
-	bool isReady; // internal check for compilation and link status
 };
 
 struct Topl_RenderContext_Drx11 { // groups together data for rendering
@@ -72,14 +71,16 @@ public:
 	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
 	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 	/* void setPipeline(Topl_Pipeline_Drx11* pipeline){
-		_pipeline_ptr = pipeline;
+		// _pipeline = pipeline;
+		_pipeline = pipeline;
+		_entryShader = pipeline->entryShader;
 		_isPipelineReady = pipeline->isReady;
 		if(_isPipelineReady){
-			if(_pipeline_ptr->vertexShader != nullptr) _deviceCtx->VSSetShader(_pipeline_ptr->vertexShader, 0, 0);
-			if(_pipeline_ptr->hullShader != nullptr) _deviceCtx->HSSetShader(_pipeline_ptr->hullShader, 0, 0);
-			if(_pipeline_ptr->domainShader != nullptr) _deviceCtx->DSSetShader(_pipeline_ptr->domainShader, 0, 0);
-			if(_pipeline_ptr->geomShader != nullptr) _deviceCtx->GSSetShader(_pipeline_ptr->geomShader, 0, 0);
-			if(_pipeline_ptr->pixelShader != nullptr) _deviceCtx->PSSetShader(_pipeline_ptr->pixelShader, 0, 0);
+			if(_pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(_pipeline->vertexShader, 0, 0);
+			if(_pipeline->hullShader != nullptr) _deviceCtx->HSSetShader(_pipeline->hullShader, 0, 0);
+			if(_pipeline->domainShader != nullptr) _deviceCtx->DSSetShader(_pipeline->domainShader, 0, 0);
+			if(_pipeline->geomShader != nullptr) _deviceCtx->GSSetShader(_pipeline->geomShader, 0, 0);
+			if(_pipeline->pixelShader != nullptr) _deviceCtx->PSSetShader(_pipeline->pixelShader, 0, 0);
 		}
 	} */
 	void build(const Topl_Scene* scene) override;
@@ -90,15 +91,15 @@ public:
 #endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
-	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) override;
-	void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) override;
+	void pipeline(entry_shader_cptr vertex, shader_cptr frag) override;
+	void pipeline(entry_shader_cptr vertex, shader_cptr frag, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;
 	Topl_Pipeline_Drx11 _pipeline;
-	Topl_Pipeline_Drx11* _pipeline_ptr = nullptr;
+	// Topl_Pipeline_Drx11* _pipeline = nullptr;
 	ID3D11InputLayout* _vertexDataLayout;
 
 	IDXGISwapChain* _swapChain;

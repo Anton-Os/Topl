@@ -47,7 +47,7 @@ endif()
 # DirectX Windows Dependent Demos
 if(WIN32)
 
-    add_library(Drx11_Engine
+    add_library(Drx11_ENGINE
         ${common_Src}
     	${geo_Src}
         core/Topl_Scene_Builder.cpp
@@ -55,21 +55,22 @@ if(WIN32)
         # core/File3D.cpp
         core/ValueGen.cpp
 
+        core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_Engine PUBLIC core geo shaders/include)
-    target_include_directories(Drx11_Engine PUBLIC
+    target_include_directories(Drx11_ENGINE PUBLIC core geo shaders/include)
+    target_include_directories(Drx11_ENGINE PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
     if(Rasteron_FOUND)
-        target_link_libraries(Drx11_Engine PUBLIC Rasteron)
+        target_link_libraries(Drx11_ENGINE PUBLIC Rasteron)
     endif()
     if(Assimp_FOUND)
-        # target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
-        target_link_libraries(Drx11_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
+        # target_link_libraries(Drx11_ENGINE PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+        target_link_libraries(Drx11_ENGINE PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
     endif()
-    set_target_properties(Drx11_Engine
+    set_target_properties(Drx11_ENGINE
         PROPERTIES
         CXX_STANDARD 11
         CXX_STANDARD_REQUIRED ON
@@ -81,7 +82,7 @@ if(WIN32)
 
         demos/Drx11_Pawns.cpp
     )
-    target_link_libraries(Drx11_Pawns PRIVATE Drx11_Engine)
+    target_link_libraries(Drx11_Pawns PRIVATE Drx11_ENGINE)
 
 	add_executable(Drx11_Blocks
 		geo/trees/Chain.cpp
@@ -89,30 +90,30 @@ if(WIN32)
 
 		demos/Drx11_Blocks.cpp
 	)
-	target_link_libraries(Drx11_Blocks PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Blocks PRIVATE Drx11_ENGINE)
 
     add_executable(Drx11_Planetary demos/Drx11_Planetary.cpp)
-	target_link_libraries(Drx11_Planetary PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Planetary PRIVATE Drx11_ENGINE)
     
     add_executable(Drx11_Surface demos/Drx11_Surface.cpp)
-	target_link_libraries(Drx11_Surface PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Surface PRIVATE Drx11_ENGINE)
 
     add_executable(Drx11_Overlay 
         geo/trees/Pane.cpp
 
         demos/Drx11_Overlay.cpp
     )
-	target_link_libraries(Drx11_Overlay PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Overlay PRIVATE Drx11_ENGINE)
 
     add_executable(Drx11_Assets demos/Drx11_Assets.cpp)
-	target_link_libraries(Drx11_Assets PRIVATE Drx11_Engine)
+	target_link_libraries(Drx11_Assets PRIVATE Drx11_ENGINE)
 
-  # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
+  # add_dependencies(Drx11_ENGINE DXSDK GLEW Eigen)
 endif()
 
 # OpenGL Rendering Demos
 
-add_library(GL4_Engine
+add_library(GL4_ENGINE
     ${common_Src}
     ${geo_Src}
     core/Topl_Scene_Builder.cpp
@@ -120,28 +121,29 @@ add_library(GL4_Engine
     # core/File3D.cpp
     core/ValueGen.cpp
 
+    core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_Engine PUBLIC core geo shaders/include)
-target_include_directories(GL4_Engine PUBLIC
+target_include_directories(GL4_ENGINE PUBLIC core geo shaders/include)
+target_include_directories(GL4_ENGINE PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 )
-target_link_libraries(GL4_Engine PUBLIC GLEW_lib)
+target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 if(Rasteron_FOUND)
-    target_link_libraries(GL4_Engine PUBLIC Rasteron)
+    target_link_libraries(GL4_ENGINE PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    # target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
-    target_link_libraries(GL4_Engine PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
+    # target_link_libraries(GL4_ENGINE PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+    target_link_libraries(GL4_ENGINE PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
 endif()
-set_target_properties(GL4_Engine
+set_target_properties(GL4_ENGINE
     PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
 )
 if(NOT WIN32) # decreases Windows build time
-    add_dependencies(GL4_Engine GLEW Eigen)
+    add_dependencies(GL4_ENGINE GLEW Eigen)
 endif()
 
 add_executable(GL4_Pawns
@@ -150,7 +152,7 @@ add_executable(GL4_Pawns
     demos/GL4_Pawns.cpp
 )
 # target_include_directories(GL4_Pawns PRIVATE demos)
-target_link_libraries(GL4_Pawns PRIVATE GL4_Engine)
+target_link_libraries(GL4_Pawns PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Blocks
 	geo/trees/Chain.cpp
@@ -158,36 +160,34 @@ add_executable(GL4_Blocks
 
     demos/GL4_Blocks.cpp
 )
-target_link_libraries(GL4_Blocks PRIVATE GL4_Engine)
+target_link_libraries(GL4_Blocks PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Planetary demos/GL4_Planetary.cpp)
-target_link_libraries(GL4_Planetary PRIVATE GL4_Engine)
+target_link_libraries(GL4_Planetary PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Surface demos/GL4_Surface.cpp)
-target_link_libraries(GL4_Surface PRIVATE GL4_Engine)
+target_link_libraries(GL4_Surface PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Overlay
     geo/trees/Pane.cpp
 
     demos/GL4_Overlay.cpp
 )
-target_link_libraries(GL4_Overlay PRIVATE GL4_Engine)
+target_link_libraries(GL4_Overlay PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Assets demos/GL4_Assets.cpp)
-target_link_libraries(GL4_Assets PRIVATE GL4_Engine)
+target_link_libraries(GL4_Assets PRIVATE GL4_ENGINE)
 
 
 # Copying and managing implemented here with custom targets
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/hlsl/*.hlsl)
 file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/glsl/*.glsl)
-add_custom_target(ShaderEdit
-                  SOURCES ${drx11_Shaders} ${gl4_Shaders})
-                  # Add GLSL shaders too
+add_custom_target(ShaderEdit SOURCES ${drx11_Shaders} ${gl4_Shaders})
 
-add_dependencies(ShaderEdit GL4_Engine)
+add_dependencies(ShaderEdit GL4_ENGINE)
 if(WIN32)
-  add_dependencies(ShaderEdit Drx11_Engine)
+  add_dependencies(ShaderEdit Drx11_ENGINE)
 endif()
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")

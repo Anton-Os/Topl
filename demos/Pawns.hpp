@@ -2,7 +2,7 @@
 #include "Platform.hpp"
 
 #include "Topl_Scene.hpp"
-#include "Topl_Renderer.hpp"
+#include "Topl_Graphics.hpp"
 
 #include "Geo_Tree.hpp"
 #include "trees/Humanoid.hpp"

@@ -1,6 +1,6 @@
 #include "Overlay.hpp"
 
-#include "Topl_Renderer_Drx11.hpp"
+#include "Topl_Graphics_Drx11.hpp"
 #include "Textured_Shader.hpp" // shader inclusion
 #include "Drx11_Flat.hpp" // shader inclusion
 

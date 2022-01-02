@@ -72,6 +72,15 @@ enum DRAW_Type {
 	DRAW_Strip
 };
 
+struct Topl_Pipeline {
+    Topl_Pipeline(){}
+    Topl_Pipeline(entry_shader_cptr entry){
+        entryShader = entry;
+    }
+    entry_shader_cptr entryShader = nullptr; // saves entryShader internally
+	bool isReady; // internal check for compilation and link status
+};
+
 class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
