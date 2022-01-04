@@ -42,8 +42,8 @@ Geo_SpriteTable::~Geo_SpriteTable(){
         if(_fileImages != nullptr) free(_fileImages); // free allocated space
 
         for(unsigned i = 0; i < _spriteCount; i++)
-            deleteImg(*(_rastImages + i)); // free all Rasteron specific raw images
-        if(_rastImages != nullptr) free(_rastImages); // free allocated space
+            deleteImg(*(_images + i)); // free all Rasteron specific raw images
+        if(_images != nullptr) free(_images); // free allocated space
 
         for(unsigned i = 0; i < _spriteCount; i++)
             deleteSprite(*(_rastSprites + i)); // free all Rasteron specific sprite objects
@@ -60,7 +60,7 @@ void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
     // Rasteron specific object allocation
     _fileImages = (FileImage*)malloc(_spriteCount * sizeof(FileImage));
     _squares = (Geo_FlatSquare**)malloc(_spriteCount * sizeof(Geo_FlatSquare*));
-    _rastImages = (Rasteron_Image**)malloc(_spriteCount * sizeof(Rasteron_Image*));
+    _images = (Rasteron_Image**)malloc(_spriteCount * sizeof(Rasteron_Image*));
     _rastSprites = (Rasteron_Sprite**)malloc(_spriteCount * sizeof(Rasteron_Sprite*));
 
     unsigned offset = 0;
@@ -70,8 +70,8 @@ void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
 		std::replace(newFileName.begin(), newFileName.end(), '/', '\\');
 
         loadFileImage(newFileName.c_str(), &(*(_fileImages + offset)));
-        *(_rastImages + offset) = createImgRef(&(*(_fileImages + offset)));
-        *(_rastSprites + offset) = createSprite(*(_rastImages + offset));
+        *(_images + offset) = createImgRef(&(*(_fileImages + offset)));
+        *(_rastSprites + offset) = createSprite(*(_images + offset));
         
         offset++;
     }

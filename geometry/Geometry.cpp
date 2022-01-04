@@ -9,7 +9,7 @@ Geo_Vertex::Geo_Vertex(Eigen::Vector3f pos){
 
 Geo_Vertex::Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc){
     position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-		texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
+	texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
 }
 
 // Geo_RenderObj Operations

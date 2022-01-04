@@ -1,4 +1,3 @@
-#include "FileIO.hpp"
 #include "Topl_Graphics_GL4.hpp"
 
 namespace _GL4 {
@@ -254,7 +253,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
 		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
-		_mainRenderIDs = rID; // Sets main graphics ID's to max value of rID
+		_renderIDs = rID; // Sets main graphics ID's to max value of rID
 	}
 
 	GLint blockCount; glGetProgramiv(_pipeline.shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
@@ -360,8 +359,8 @@ void Topl_Renderer_GL4::render(void){
 	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
-	if (_mainRenderIDs == 1) return; // no rendering can occur without targets to draw
-	else for (unsigned id = 1; id <= _mainRenderIDs; id++) {
+	if (_renderIDs == 1) return; // no rendering can occur without targets to draw
+	else for (unsigned id = 1; id <= _renderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _renderCtx.VAOs.begin(); currentVAO < _renderCtx.VAOs.end(); currentVAO++)
 			if (currentVAO->targetID == id) glBindVertexArray(currentVAO->vao);
 			else continue; // if it continues all the way through error has occured

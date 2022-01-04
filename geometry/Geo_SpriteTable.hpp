@@ -45,7 +45,7 @@ private:
     unsigned _spriteCount;
 	std::vector<spriteSquare_pair> _spriteSquares;
     FileImage* _fileImages = nullptr;
-    Rasteron_Image** _rastImages = nullptr;
+    Rasteron_Image** _images = nullptr;
     Rasteron_Sprite** _rastSprites = nullptr;
 	Geo_FlatSquare** _squares = nullptr;
 };

@@ -158,7 +158,7 @@ protected:
     enum DRAW_Type _drawType = DRAW_Triangles; // primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
-	unsigned _mainRenderIDs = 1; // indicator for number of drawable graphics objects
+	unsigned _renderIDs = 1; // indicator for number of drawable graphics objects
     unsigned _frameCapID = 1; // increments as more frames are captured
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user

@@ -14,21 +14,21 @@ list(APPEND common_Src
 )
 
 list(APPEND geo_Src
-    geo/primitives/Geo_Flat.cpp
-    geo/primitives/Geo_Conic.cpp
-    geo/primitives/Geo_Extruded.cpp
-    # geo/primitives/Geo_Node.cpp
-    geo/primitives/Geo_Sphere.cpp
+    geometry/primitives/Geo_Flat.cpp
+    geometry/primitives/Geo_Conic.cpp
+    geometry/primitives/Geo_Extruded.cpp
+    # geometry/primitives/Geo_Node.cpp
+    geometry/primitives/Geo_Sphere.cpp
 
-    geo/Geo_Tree.cpp
-    geo/Geo_SpriteTable.cpp
-    geo/Geometry.cpp
-    geo/ShapesGen.cpp
+    geometry/Geo_Tree.cpp
+    geometry/Geo_SpriteTable.cpp
+    geometry/Geometry.cpp
+    geometry/ShapesGen.cpp
 )
 if(SUPPORT_3D_ASSETS)
     list(APPEND geo_Src
-        geo/trees/Model.cpp
-        geo/primitives/Geo_Node.cpp
+        geometry/trees/Model.cpp
+        geometry/primitives/Geo_Node.cpp
     )
 endif()
 
@@ -58,7 +58,7 @@ if(WIN32)
         core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PUBLIC core geo shaders/include)
+    target_include_directories(Drx11_ENGINE PUBLIC core geometry shaders/include)
     target_include_directories(Drx11_ENGINE PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -78,15 +78,15 @@ if(WIN32)
     )
 
     add_executable(Drx11_Pawns
-        geo/trees/Humanoid.cpp
+        geometry/trees/Humanoid.cpp
 
         demos/Drx11_Pawns.cpp
     )
     target_link_libraries(Drx11_Pawns PRIVATE Drx11_ENGINE)
 
 	add_executable(Drx11_Blocks
-		geo/trees/Chain.cpp
-		geo/trees/Grid.cpp
+		geometry/trees/Chain.cpp
+		geometry/trees/Grid.cpp
 
 		demos/Drx11_Blocks.cpp
 	)
@@ -99,7 +99,7 @@ if(WIN32)
 	target_link_libraries(Drx11_Surface PRIVATE Drx11_ENGINE)
 
     add_executable(Drx11_Overlay 
-        geo/trees/Pane.cpp
+        geometry/trees/Pane.cpp
 
         demos/Drx11_Overlay.cpp
     )
@@ -124,7 +124,7 @@ add_library(GL4_ENGINE
     core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PUBLIC core geo shaders/include)
+target_include_directories(GL4_ENGINE PUBLIC core geometry shaders/include)
 target_include_directories(GL4_ENGINE PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 )
@@ -147,7 +147,7 @@ if(NOT WIN32) # decreases Windows build time
 endif()
 
 add_executable(GL4_Pawns
-    geo/trees/Humanoid.cpp
+    geometry/trees/Humanoid.cpp
 
     demos/GL4_Pawns.cpp
 )
@@ -155,8 +155,8 @@ add_executable(GL4_Pawns
 target_link_libraries(GL4_Pawns PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Blocks
-	geo/trees/Chain.cpp
-    geo/trees/Grid.cpp
+	geometry/trees/Chain.cpp
+    geometry/trees/Grid.cpp
 
     demos/GL4_Blocks.cpp
 )
@@ -169,7 +169,7 @@ add_executable(GL4_Surface demos/GL4_Surface.cpp)
 target_link_libraries(GL4_Surface PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Overlay
-    geo/trees/Pane.cpp
+    geometry/trees/Pane.cpp
 
     demos/GL4_Overlay.cpp
 )

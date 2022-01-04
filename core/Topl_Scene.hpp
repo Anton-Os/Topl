@@ -56,7 +56,7 @@ public:
 	void addGeometry(const std::string& name, Geo_Actor* geo);
 	void addLightSource(Topl_LightSource ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, const Rasteron_Image* rastImage);
+	void addTexture(const std::string& name, const Rasteron_Image* image);
 #endif
 	unsigned getActorCount() const { return _namedActor.size(); }
 	geo_cptr getGeoActor(unsigned index) const; // access to geometry by index

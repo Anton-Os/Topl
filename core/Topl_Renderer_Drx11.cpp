@@ -1,4 +1,3 @@
-// #include "FileIO.hpp"
 #include "Topl_Graphics_Drx11.hpp"
 
 namespace _Drx11 {
@@ -273,8 +272,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 	}
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
-		unsigned currentRenderID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // IDs begin at 1, conversion is required
+		unsigned rID = g + 1;
+		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // IDs begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
 		
 		geoVertex_cptr actor_vData = actor_renderObj->getVertices();
@@ -284,7 +283,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
-			_renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Render_Block, renderBlockBuff));
+			_renderCtx.buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
 		}
 		if (!_isSceneReady) return; // Error
 
@@ -292,22 +291,22 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 		ID3D11Buffer* indexBuff = nullptr;
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
 			_isSceneReady = _Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
-			_renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
-		} else _renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Index_UI, indexBuff, 0));
+			_renderCtx.buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
+		} else _renderCtx.buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVerticesCount());
 
-		_renderCtx.buffers.push_back(Buffer_Drx11(currentRenderID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
+		_renderCtx.buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
 		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
-		if(baseTex != nullptr) assignTexture(baseTex, currentRenderID); // Add the method definition
+		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
 		if(!_isSceneReady) return;
-		_mainRenderIDs = currentRenderID; // Gives us the greatest buffer ID number
+		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
 
     _isSceneReady = true;
@@ -422,12 +421,12 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* cam
 		_Drx11::createBlockBuff(&_device, &_renderCtx.buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
-		unsigned currentRenderID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(currentRenderID - 1); // ids begin at 1, conversion is required
+		unsigned rID = g + 1;
+		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 
 		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
-				if (currentBuff->targetID == currentRenderID && currentBuff->type == BUFF_Render_Block) {
+				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*currentBuff);
 					break;
 				}
@@ -467,7 +466,7 @@ void Topl_Renderer_Drx11::render(void){
 
 	// rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
-		for (unsigned id = _mainRenderIDs; id >= 1; id--) {
+		for (unsigned id = _renderIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &_renderCtx.buffers, id);
 
 			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);

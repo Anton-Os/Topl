@@ -42,11 +42,11 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
 
 #ifdef RASTERON_H
 
-void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* rastImage) {
-	if (rastImage->data == nullptr || rastImage->height == 0 || rastImage->width == 0) return; // Error
+void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* image) {
+	if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			_actorTexture_map.insert({ *actor, rastImage });
+			_actorTexture_map.insert({ *actor, image });
 			return;
 		}
 }

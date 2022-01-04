@@ -1,6 +1,7 @@
 #include "Pane.hpp"
 
 Geo_FlatSquare Geo_PaneLayout::_square = Geo_FlatSquare(0.5f);
+// Geo_FlatSquare Geo_Pane::_square = Geo_FlatSquare(0.1f); // change to non-static member
 Geo_Actor Geo_PaneLayout::_squareGeo = Geo_Actor((Geo_RenderObj*)&_square);
 
 namespace _Pane {
@@ -12,17 +13,17 @@ void Geo_PaneLayout::fill(Topl_Scene* scene){
 
     Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
     scene->addGeometry(getPrefix() + "root", rootActor);
-    _panes.resize(getActorCount() - 1);
 
     for(unsigned p = 1; p < getActorCount(); p++){
         actor = getNextActor();
 
         actor->setPos(Eigen::Vector3f(0.0f, DEFAULT_Y_INC * p, -1.0f * DEFAULT_Z_INC * p));
-        // actor->setRot(Eigen::Vector2f(0.0f, DEFAULT_Y_INC * p)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 
-        _panes[p - 1] = Geo_Pane();
-		_panes[p - 1].setActor(actor);
+		// currentPane->setActor(actor);
 		_panes[p - 1].scalePane(_rows, _columns);
+#ifdef RASTERON_H
+        // scene->addTexture(getPrefix() + _Pane::genPaneName(p), _panes[p - 1].getBackground());
+#endif
     }
 }

@@ -41,8 +41,8 @@ public:
             isFirstCall = false; // makes sure this segment doesnt repeat
         }
 
-        seqCount = static_cast<unsigned>(std::floor(getSeqProgress(currentSecs)));
-        double seqProgressFrac = getSeqProgress(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
+        seqCount = static_cast<unsigned>(std::floor(getSeqProg(currentSecs)));
+        double seqProgressFrac = getSeqProg(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
 
 		switch (type) {
 		case MOTION_Instant: return (seqProgressFrac - 1.0f) * motionVec1; // implement instant!
@@ -53,7 +53,7 @@ public:
     }
 
 private:
-    double getSeqProgress(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets the progression in the sequence
+    double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets the progression in the sequence
 
     // MOTION_Type motionType = MOTION_Linear;
 	MOTION_Type type;
@@ -97,20 +97,6 @@ struct Phys_Connector {
 };
 
 #define MAX_PHYS_FORCES 64
-
-/* struct Phys_Colliders {
-    Phys_Colliders(){}
-    Phys_Colliders(const Eigen::Vector3f* o){ origin = o; }
-
-    bool is3D = true; // indicates whether collider is 3D
-    float radii = 0.0f; // all colliding spheres that are uniform in size
-    std::vector<Eigen::Vector3f> offsets; // offsets from origin of colliders
-    const Eigen::Vector3f* origin = nullptr; // origin of associated geometry object
-}; */
-
-/* struct Phys_ColliderObj { // allows a derived class to 
-    virtual void genColliders(Phys_Colliders* colliders) = 0;
-} */
 
 struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor object
     Phys_Actor(){ // Freeform constructor

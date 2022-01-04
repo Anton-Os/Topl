@@ -73,28 +73,22 @@ public:
     Topl_Shader(
 		enum SHDR_Type type, 
 		std::string fileSrc
-		// std::initializer_list<Shader_Type> inputs
     ){    
         _shaderType = type;
         _shaderFileSrc = fileSrc;
 		_shaderFileSrc = SHADERS_DIR + fileSrc;
 		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
-        /* for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            _inputs.push_back(*currentInput); */
     }
     // Platform support variable constructor
 	Topl_Shader(
 		const Platform* platform,
 		enum SHDR_Type type, 
 		std::string fileSrc
-		// std::initializer_list<Shader_Type> inputs
     ){
 		_platform_cptr = platform;
         _shaderType = type;
         _shaderFileSrc = SHADERS_DIR + fileSrc;
-		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
-        /* for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
-            _inputs.push_back(*currentInput); */
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');    
     }
     enum SHDR_Type getType() const { return _shaderType; }
     const char* getFilePath() const { return _shaderFileSrc.c_str(); }
