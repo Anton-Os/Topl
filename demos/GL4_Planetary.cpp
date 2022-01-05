@@ -11,12 +11,11 @@ int main(int argc, char** argv) {
 	Main::init(&platform);
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
+	Topl_Pipeline_GL4 pipeline;
 
 	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
 	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
-	// Topl_Pipeline_GL4 pipeline = renderer.genPipeline(&vertexShader, &fragmentShader);
-	renderer.setPipeline(&vertexShader, &fragmentShader);
-	// renderer.setPipeline(&pipeline);
+	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

@@ -13,7 +13,7 @@
 #include "Topl_Camera.hpp"
 #include "Geo_Actor.hpp"
 
-typedef const Geo_Actor* const geo_cptr;
+typedef const Geo_Actor* const actor_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
 
 struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
@@ -59,8 +59,8 @@ public:
 	void addTexture(const std::string& name, const Rasteron_Image* image);
 #endif
 	unsigned getActorCount() const { return _namedActor.size(); }
-	geo_cptr getGeoActor(unsigned index) const; // access to geometry by index
-	geo_cptr getGeoActor(const std::string& name) const; // access to geometry by name
+	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
+	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	unsigned getLightSourceCount() const { return _lightSrc.size(); }
 	lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H

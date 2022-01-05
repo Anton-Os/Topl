@@ -40,7 +40,7 @@ struct Geo_Vertex {
 	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
-typedef const Geo_Vertex* const geoVertex_cptr; // Safe const pointer type
+typedef const Geo_Vertex* const vertex_cptr; // Safe const pointer type
 
 struct Geo_Face {
 	Geo_Face(){}
@@ -90,7 +90,7 @@ public:
     unsigned getVerticesCount() const { return _verticesCount; } // get Vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get Index Count
 
-	geoVertex_cptr getVertices();
+	vertex_cptr getVertices();
     ui_cptr getIndices() const { return _indices; }
 	vec3f_cptr getPosData() const { return _posData; }
 	vec3f_cptr getNormalsData() const { return _normalsData; }

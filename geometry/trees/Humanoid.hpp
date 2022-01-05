@@ -3,8 +3,6 @@
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
-// TODO: Make this a derived class of Web.hpp !!!
-
 class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
 public:
 	Geo_Humanoid( // Customizable constructor

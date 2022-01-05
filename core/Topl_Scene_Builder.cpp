@@ -10,12 +10,12 @@ static void error_notFound(const std::string& objTypeStr, const std::string& nam
 
 unsigned Geo_Actor::_id_count = 0;
 
-geo_cptr Topl_Scene::getGeoActor(unsigned index) const {
+actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
 	if(index >= _namedActor.size()) return nullptr; // Error
 	else return _namedActor.at(index); 
 }
 
-geo_cptr Topl_Scene::getGeoActor(const std::string& name) const {
+actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
 		if((*actor)->getName() == name) return *actor;
 

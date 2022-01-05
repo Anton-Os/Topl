@@ -56,7 +56,7 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
         (*(_posData + v))[vAttributeOffset] = callback((*(_posData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 }
 
-geoVertex_cptr Geo_RenderObj::getVertices(){
+vertex_cptr Geo_RenderObj::getVertices(){
     if (_vertices == nullptr) {
         _vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
         for (unsigned v = 0; v < _verticesCount; v++)

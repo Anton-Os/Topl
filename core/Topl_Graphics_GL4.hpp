@@ -65,15 +65,9 @@ public:
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
-	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
-	Topl_Pipeline_GL4 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
-	/* void setPipeline(Topl_Pipeline_GL4* pipeline){
-		//_pipeline_ptr = pipeline;
-		_pipeline = pipeline;
-		_entryShader = pipeline->entryShader;
-		_isPipelineReady = pipeline->isReady;
-		if(_isPipelineReady) glUseProgram(pipeline->shaderProg);
-	} */
+	void setPipeline(Topl_Pipeline_GL4* pipeline);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 	void build(const Topl_Scene* scene) override;
 	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
@@ -89,8 +83,8 @@ private:
 	void render(void) override;
 
 	Topl_RenderContext_GL4 _renderCtx;
-  	// Topl_Pipeline_GL4* _pipeline;
-	Topl_Pipeline_GL4 _pipeline;
+  	Topl_Pipeline_GL4* _pipeline;
+	// Topl_Pipeline_GL4 _pipeline;
 
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
 	unsigned _bufferIndex = 0;

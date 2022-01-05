@@ -15,7 +15,7 @@ namespace Topl {
     Geo_FlatTriangle trig = Geo_FlatTriangle(0.5f);
     Geo_Actor trigGeo  = Geo_Actor((Geo_RenderObj*)&trig);
 
-	Geo_PaneLayout paneLayout("layout", &scene, 2, 2);
+	Geo_PaneLayout paneLayout("layout", &scene, 1, 1);
 }
 
 // Shared functions

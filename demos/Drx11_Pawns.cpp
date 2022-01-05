@@ -12,12 +12,11 @@ int main(int argc, char** argv) {
 	Main::init(&platform);
 
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
+	Topl_Pipeline_Drx11 pipeline; // Pipeline declaration
 
 	Drx11_Textured_VertexShader vertexShader = Drx11_Textured_VertexShader();
 	Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
-	Topl_Pipeline_Drx11 pipeline = renderer.genPipeline(&vertexShader, &pixelShader);
-	// renderer.setPipeline(&pipeline);
-	renderer.setPipeline(&vertexShader, &pixelShader);
+	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 	
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

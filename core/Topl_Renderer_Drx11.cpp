@@ -74,7 +74,7 @@ namespace _Drx11 {
 		return true;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, geoVertex_cptr pvData, unsigned vCount) {
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr pvData, unsigned vCount) {
 		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, pvData);
 	}
 
@@ -256,8 +256,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 
     _device->CreateInputLayout(
         layout_ptr, layoutElemCount,
-        _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
-		// _pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
+        // _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
+		_pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
         &_vertexDataLayout
     );
 
@@ -273,14 +273,14 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // IDs begin at 1, conversion is required
-		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
+		actor_cptr actor = scene->getGeoActor(rID - 1); // IDs begin at 1, conversion is required
+		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 		
-		geoVertex_cptr actor_vData = actor_renderObj->getVertices();
+		vertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
-		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
+		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			_renderCtx.buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
@@ -302,7 +302,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
-		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
+		const Rasteron_Image* baseTex = scene->getFirstTexture(actor->getName());
 		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
 		if(!_isSceneReady) return;
@@ -422,9 +422,9 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* cam
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 
-		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
+		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*currentBuff);

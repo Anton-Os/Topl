@@ -25,7 +25,7 @@ enum MOUSE_Button {
     MOUSE_Scroll_Down
 };
 
-#define TRACER_STEPS 64 // number of iterations inside each trace member
+#define TRACER_PATH_COUNT 64 // number of iterations inside each trace member
 
 struct Input_TracerStep {
     float xPos;
@@ -35,10 +35,11 @@ struct Input_TracerStep {
 class Input_MouseLogger {
 public:
     Input_MouseLogger(){}
-    // void addMouseEvent(enum MOUSE_Button mb, float xNewPos, float yNewPos); // Translates mouse button enum to keystate
     void addMousePress(enum MOUSE_Button mb);
     void addCallback(enum MOUSE_Button mb, keyCallback callback);
+
+    std::vector<Input_TracerStep[TRACER_PATH_COUNT]> _tracerPaths; // records paths traced
+    std::vector<Input_TracerStep> _tracerSteps; // records points traced
 private:
 	std::map<MOUSE_Button, keyCallback> _mouseCallback_map;
-    std::vector<Input_TracerStep[TRACER_STEPS]> _tracerSteps;
 };

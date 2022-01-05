@@ -2,6 +2,7 @@
 
 #include "Geo_Tree.hpp"
 
+#define DEFAULT_PANE_SIZE 0.1
 #define DEFAULT_Y_INC 0.05
 #define DEFAULT_Z_INC 0.01
 
@@ -31,13 +32,10 @@ public:
 
     void scalePane(unsigned rows, unsigned columns){
 		if (_square == nullptr) return; // object cannot be modified if null[tr
-        _square->modify(stretchTform, 1.0 / rows, AXIS_Y);
-        _square->modify(stretchTform, 1.0 / columns, AXIS_X);
-        // _actor->setRenderObj((Geo_RenderObj*)&_square);
+        // _square->modify(stretchTform, 1.0 / rows, AXIS_Y);
+        // _square->modify(stretchTform, 1.0 / columns, AXIS_X);
     }
 
-    // void setActor(Geo_Actor* actor){ _actor = actor; }
-	void setRenderObj(Geo_FlatSquare* square) { _square = square; }
 	void createSolidBk(unsigned color) {
 		_bkColor = color;
 #ifdef RASTERON_H
@@ -47,9 +45,10 @@ public:
 #ifdef RASTERON_H
     Rasteron_Image* getBackground(){ return _background; }
 #endif
+    void setRenderObj(Geo_FlatSquare* square){ _square = square; }
+    Geo_RenderObj* getRenderObj(){ return (Geo_RenderObj*)_square; }
 private:
 	Geo_FlatSquare* _square = nullptr;
-    // Geo_Actor* _actor = nullptr;
     unsigned _bkColor = 0xFF000000; // starting background is black
 #ifdef RASTERON_H
     Rasteron_Image* _background = nullptr; // background image available if Rasteron is supported
@@ -58,37 +57,31 @@ private:
 
 class Geo_PaneLayout : public Geo_Tree {
 public:
-    Geo_PaneLayout(
-        const std::string& prefix,
-        Topl_Scene* scene,
-        unsigned rows,
-        unsigned columns
-	) : Geo_Tree(prefix, scene, &_squareGeo, (rows * columns) + 1) {
+	Geo_PaneLayout(
+		const std::string& prefix,
+		Topl_Scene* scene,
+		unsigned rows,
+		unsigned columns
+	) : Geo_Tree(prefix, scene, &_dummyGeo, (rows * columns) + 1) {
 		_panes.resize(getActorCount() - 1);
-		_paneSquares = (Geo_FlatSquare**)malloc(((rows * columns) + 1) * sizeof(Geo_FlatSquare*));
-		for(unsigned p = 0; p < (rows * columns) + 1; p++){
-			*(_paneSquares + p) = (Geo_FlatSquare*)malloc(sizeof(Geo_FlatSquare));
-			*(*(_paneSquares + p)) = _square;
+		_childSquare.modify(stretchTform, 1.0 / rows, AXIS_Y);
+		_childSquare.modify(stretchTform, 1.0 / columns, AXIS_X);
+		for (std::vector<Geo_Pane>::iterator currentPane = _panes.begin(); currentPane < _panes.end(); currentPane++)
+			currentPane->setRenderObj(&_childSquare);
 
-		}
-
-        _rows = rows;
-        _columns = columns;
-        fill(scene);
-    }
-
-	~Geo_PaneLayout() {
-		for (unsigned p = 0; p < (_rows * _columns) + 1; p++) free(*(_paneSquares + p));
-		free(_paneSquares);
+		_rows = rows;
+		_columns = columns;
+		fill(scene);
 	}
 private:
     void fill(Topl_Scene* scene) override;
 
-	static Geo_FlatSquare _square;
-	static Geo_Actor _squareGeo;
-	Geo_FlatSquare** _paneSquares;
-    Geo_Pane _rootPane = Geo_Pane(); // all panes are children positioned relative to the root pane
-	std::vector<Geo_Pane> _panes;
+	static Geo_FlatSquare _dummy;
+	static Geo_Actor _dummyGeo;
+    Geo_Pane _rootPane = Geo_Pane(); // root
+	std::vector<Geo_Pane> _panes; // children
+	Geo_FlatSquare _rootSquare = Geo_FlatSquare(DEFAULT_PANE_SIZE);
+	Geo_FlatSquare _childSquare = Geo_FlatSquare(DEFAULT_PANE_SIZE * 0.5);
     
     unsigned _rows; 
     unsigned _columns;

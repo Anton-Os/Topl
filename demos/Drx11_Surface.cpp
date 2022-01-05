@@ -11,11 +11,12 @@ int main(int argc, char** argv) {
 	Platform platform(argv[0], "Drx11 Surface");
 	Main::init(&platform);
 
-	Topl_Renderer_Drx11 renderer(platform.getParentWindow());
+	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
+	Topl_Pipeline_Drx11 pipeline; // Pipeline declaration
 
 	Drx11_Effect_VertexShader vertexShader = Drx11_Effect_VertexShader(&platform);
 	Drx11_Effect_FragmentShader fragmentShader = Drx11_Effect_FragmentShader();
-	renderer.setPipeline(&vertexShader, &fragmentShader);
+	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

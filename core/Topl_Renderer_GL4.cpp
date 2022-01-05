@@ -168,6 +168,9 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
 	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+
+	glLineWidth(1.5f);
+	glPointSize(3.0f);
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -194,14 +197,14 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Slot index will signify how many buffers exist
 		unsigned rID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
-		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor_ptr->getRenderObj();
+		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
+		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
-		geoVertex_cptr actor_vData = actor_renderObj->getVertices();
+		vertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
-		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
+		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
@@ -250,18 +253,18 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera
 
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = scene->getFirstTexture(actor_ptr->getName());
+		const Rasteron_Image* baseTex = scene->getFirstTexture(actor->getName());
 		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
 		_renderIDs = rID; // Sets main graphics ID's to max value of rID
 	}
 
-	GLint blockCount; glGetProgramiv(_pipeline.shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+	GLint blockCount; glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
 	if (blockCount == TOPL_SINGLE_BLOCK_COUNT) // Render uniforms supported
-		glUniformBlockBinding(_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 	else if (blockCount == TOPL_FULL_BLOCK_COUNT) { // Render and Scene uniforms supported
-		glUniformBlockBinding(_pipeline.shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
-		glUniformBlockBinding(_pipeline.shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
 	}
 	else {
 		_isSceneReady = false; // Error
@@ -321,8 +324,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camer
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
-		geo_cptr actor_ptr = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
-		if (_entryShader->genGeoBlock(actor_ptr, &blockBytes)) {
+		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
+		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 

@@ -29,7 +29,13 @@ struct Texture_Drx11 : public Texture {
 
 struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	Topl_Pipeline_Drx11() : Topl_Pipeline(){}
-	Topl_Pipeline_Drx11(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
+	/* Topl_Pipeline_Drx11(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel) : Topl_Pipeline(){
+		genPipeline(renderer, vertex, pixel);
+	}
+	Topl_Pipeline_Drx11(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) : Topl_Pipeline() {
+		genPipeline(renderer, vertex, pixel, tessCtrl, tessEval, geom);
+	} */
+	// Topl_Pipeline_Drx11(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
 	~Topl_Pipeline_Drx11(){
 		if(vertexShader != nullptr) vertexShader->Release();
 		if(pixelShader != nullptr) pixelShader->Release();
@@ -43,6 +49,9 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 		if(gsBlob != nullptr) gsBlob->Release();
 	}
 
+	// void genPipeline(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel);
+	// void genPipeline(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom);
+
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
 	ID3D11HullShader* hullShader = nullptr;
@@ -54,6 +63,8 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* hsBlob = nullptr;
 	ID3DBlob* dsBlob = nullptr;
 	ID3DBlob* gsBlob = nullptr;
+private:
+	friend class Topl_Renderer_Drx11;
 };
 
 struct Topl_RenderContext_Drx11 { // groups together data for rendering
@@ -68,27 +79,17 @@ public:
 	~Topl_Renderer_Drx11();
 
 	void clearView() override;
-	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader);
-	Topl_Pipeline_Drx11 genPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
-	/* void setPipeline(Topl_Pipeline_Drx11* pipeline){
-		// _pipeline = pipeline;
-		_pipeline = pipeline;
-		_entryShader = pipeline->entryShader;
-		_isPipelineReady = pipeline->isReady;
-		if(_isPipelineReady){
-			if(_pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(_pipeline->vertexShader, 0, 0);
-			if(_pipeline->hullShader != nullptr) _deviceCtx->HSSetShader(_pipeline->hullShader, 0, 0);
-			if(_pipeline->domainShader != nullptr) _deviceCtx->DSSetShader(_pipeline->domainShader, 0, 0);
-			if(_pipeline->geomShader != nullptr) _deviceCtx->GSSetShader(_pipeline->geomShader, 0, 0);
-			if(_pipeline->pixelShader != nullptr) _deviceCtx->PSSetShader(_pipeline->pixelShader, 0, 0);
-		}
-	} */
+	void setPipeline(Topl_Pipeline_Drx11* pipeline);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	// void setPipeline(Topl_Pipeline_Drx11* pipeline) { _pipeline = pipeline; }
 	void build(const Topl_Scene* scene) override;
 	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
     void assignTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
+	// static ID3D11Device* getDevice() { return _device; }
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void pipeline(entry_shader_cptr vertex, shader_cptr frag) override;
@@ -98,12 +99,12 @@ private:
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;
-	Topl_Pipeline_Drx11 _pipeline;
-	// Topl_Pipeline_Drx11* _pipeline = nullptr;
+	//Topl_Pipeline_Drx11 _pipeline;
+	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	ID3D11InputLayout* _vertexDataLayout;
 
-	IDXGISwapChain* _swapChain;
 	ID3D11Device* _device;
+	IDXGISwapChain* _swapChain;
 	ID3D11DeviceContext* _deviceCtx;
 	ID3D11RenderTargetView* _rtv;
 	ID3D11ShaderResourceView* _resourceView;

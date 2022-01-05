@@ -25,32 +25,46 @@ namespace _Drx11 {
 	}
 }
 
-Topl_Pipeline_Drx11 Topl_Renderer_Drx11::genPipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader){
-	Topl_Pipeline_Drx11 pipeline = Topl_Pipeline_Drx11(vertexShader);
+void Topl_Renderer_Drx11::setPipeline(Topl_Pipeline_Drx11* pipeline) {
+	_pipeline = pipeline;
+	_entryShader = pipeline->entryShader;
+	_isPipelineReady = pipeline->isReady;
+
+	if (_isPipelineReady) {
+		if (pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(pipeline->vertexShader, 0, 0);
+		if (pipeline->hullShader != nullptr) _deviceCtx->HSSetShader(pipeline->hullShader, 0, 0);
+		if (pipeline->domainShader != nullptr) _deviceCtx->DSSetShader(pipeline->domainShader, 0, 0);
+		if (pipeline->geomShader != nullptr) _deviceCtx->GSSetShader(pipeline->geomShader, 0, 0);
+		if (pipeline->pixelShader != nullptr) _deviceCtx->PSSetShader(pipeline->pixelShader, 0, 0);
+	}
+}
+
+void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline.vsBlob));
+	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob));
 	hr = _device->CreateVertexShader(
-		pipeline.vsBlob->GetBufferPointer(), pipeline.vsBlob->GetBufferSize(),
-		NULL, &pipeline.vertexShader
+		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
+		NULL, &pipeline->vertexShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// pixel shader compilation and creation code
-	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline.psBlob));
+	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob));
 	hr = _device->CreatePixelShader(
-		pipeline.psBlob->GetBufferPointer(), pipeline.psBlob->GetBufferSize(),
-		NULL, &pipeline.pixelShader
+		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
+		NULL, &pipeline->pixelShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
-	pipeline.isReady = true;
-	return pipeline;
+	pipeline->entryShader = vertexShader;
+	pipeline->isReady = true;
+	setPipeline(pipeline);
 }
 
 void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader){
-	HRESULT hr; // error checking variable
+	/* HRESULT hr; // error checking variable
 
 	// Vertex shader compilation and creation code
 	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &_pipeline.vsBlob));
@@ -68,61 +82,62 @@ void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr p
 	);
 	if (FAILED(hr)) { _isPipelineReady = false; return; }
 
-	_deviceCtx->VSSetShader(_pipeline.vertexShader, 0, 0);
-	_deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
+	// _deviceCtx->VSSetShader(_pipeline.vertexShader, 0, 0);
+	// _deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
 
-	_isPipelineReady = true;
+	_isPipelineReady = true; */
 }
 
-Topl_Pipeline_Drx11 Topl_Renderer_Drx11::genPipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-	Topl_Pipeline_Drx11 pipeline = Topl_Pipeline_Drx11(vertexShader);
+void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline.vsBlob));
+	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob));
 	hr = _device->CreateVertexShader(
-		pipeline.vsBlob->GetBufferPointer(), pipeline.vsBlob->GetBufferSize(),
-		NULL, &pipeline.vertexShader
+		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
+		NULL, &pipeline->vertexShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// hull shader compilation and creation code
-	if(!_Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline.hsBlob));
+	if(!_Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline->hsBlob));
 	hr = _device->CreateHullShader(
-		pipeline.hsBlob->GetBufferPointer(), pipeline.hsBlob->GetBufferSize(),
-		NULL, &pipeline.hullShader);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+		pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(),
+		NULL, &pipeline->hullShader);
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// domain shader compilation and creation code
-	if(!_Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline.dsBlob));
+	if(!_Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline->dsBlob));
 	hr = _device->CreateDomainShader(
-		pipeline.dsBlob->GetBufferPointer(), pipeline.dsBlob->GetBufferSize(),
-		NULL, &pipeline.domainShader
+		pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(),
+		NULL, &pipeline->domainShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// geometry shader compilation and creation code
-	if(!_Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline.gsBlob));
+	if(!_Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline->gsBlob));
 	hr = _device->CreateGeometryShader(
-		pipeline.gsBlob->GetBufferPointer(), pipeline.gsBlob->GetBufferSize(),
-		NULL, &pipeline.geomShader
+		pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(),
+		NULL, &pipeline->geomShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// pixel shader compilation and creation code
-	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline.psBlob));
+	if(!_Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob));
 	hr = _device->CreatePixelShader(
-		pipeline.psBlob->GetBufferPointer(), pipeline.psBlob->GetBufferSize(),
-		NULL, &pipeline.pixelShader
+		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
+		NULL, &pipeline->pixelShader
 	);
-	if (FAILED(hr)) { pipeline.isReady = false; return pipeline; }
+	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
-	pipeline.isReady = true;
-	return pipeline;
+	pipeline->entryShader = vertexShader;
+	pipeline->isReady = true;
+	setPipeline(pipeline);
 }
 
+
 void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-	HRESULT hr; // error checking variable
+	/* HRESULT hr; // error checking variable
 
 	// Vertex shader compilation and creation code
 	if(!_Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &_pipeline.vsBlob));
@@ -169,5 +184,5 @@ void Topl_Renderer_Drx11::pipeline(entry_shader_cptr vertexShader, shader_cptr p
 	_deviceCtx->GSSetShader(_pipeline.geomShader, 0, 0);
 	_deviceCtx->PSSetShader(_pipeline.pixelShader, 0, 0);
 
-	_isPipelineReady = true;
+	_isPipelineReady = true; */
 }

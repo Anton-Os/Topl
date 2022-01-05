@@ -12,16 +12,14 @@ int main(int argc, char** argv) {
 	Main::init(&platform);
 
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
+	Topl_Pipeline_GL4 pipeline;
 
 	GL4_Effect_VertexShader vertexShader = GL4_Effect_VertexShader(&platform);
 	GL4_Effect_FragmentShader fragmentShader = GL4_Effect_FragmentShader();
-	renderer.setPipeline(&vertexShader, &fragmentShader);
+	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);
-
-	glPointSize(5.0f);
-	glLineWidth(3.0f);
 
 	Main::gameLoop(&platform, &renderer);
 
