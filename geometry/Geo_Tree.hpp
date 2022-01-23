@@ -45,8 +45,8 @@ private:
 struct Geo_DynamicSet { // A container that holds objects used in physics
     Geo_DynamicSet(unsigned setCount){ phys.resize(setCount); }
 
-    std::vector<Phys_Actor> phys;
-    std::vector<Phys_Connector> links;
+    std::vector<Phys_Actor> phys; // container for physics actors
+    std::vector<Phys_Connector> links; // contatiner for links
 };
 
 #define GEO_CONSTRUCT_H

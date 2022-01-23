@@ -1,4 +1,4 @@
-#include "Topl_Graphics_GL4.hpp"
+#include "Topl_Renderer_GL4.hpp"
 
 namespace _GL4 {
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
@@ -174,7 +174,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 }
 
 void Topl_Renderer_GL4::clearView(){
-	glClearColor(0.0f, 1.0f, 1.0f, 1.0f); // cyan
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 

@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
 #include "Topl_Scene.hpp"
-#include "Topl_Graphics.hpp"
+#include "Topl_Renderer.hpp"
 
 #include "primitives/Geo_Sphere.hpp"
 
@@ -12,8 +12,8 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(4.0f));
 	Timer_Ticker gameTicker;
 
-	NGon3D ngon = { 0.4, 6, 6 };
-	NGon3D ngon2 = { 0.1, 105, 1000 };
+	NGon3D ngon = { 0.4, 12, 12 };
+	NGon3D ngon2 = { 0.1, 6, 30 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
@@ -66,7 +66,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(DRAW_Triangles);
+			renderer->renderScene(DRAW_Points);
 
 			platform->handleEvents();
 			Topl::gameTicker.updateTimer();

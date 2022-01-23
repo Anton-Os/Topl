@@ -10,7 +10,7 @@ public:
     (refShape.segments + 1, // vertex count is number of segments +1 for the center point
      refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
         _shape2D = refShape; // copy to internal data
-        fillRenderObject();
+        fillRenderObj();
     }
 
     // Z Value Constructor
@@ -20,7 +20,7 @@ public:
      refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
         _shape2D = refShape; // copy to internal data
         _depth = z;
-        fillRenderObject();
+        fillRenderObj();
     }
 
     float getRadius() const { return _shape2D.radius; }
@@ -44,10 +44,6 @@ class Geo_FlatSquare : public Geo_Flat {
 public:
     Geo_FlatSquare(float radius) : Geo_Flat({ radius, 4 }){}
     Geo_FlatSquare(float radius, float z) : Geo_Flat({ radius, 4 }, z){}
-
-    face_cptr getFace() const { return &_face; }
-private:
-    Geo_Face _face;
 };
 
 struct Geo_FlatHex : public Geo_Flat {

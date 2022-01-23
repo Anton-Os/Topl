@@ -1,6 +1,6 @@
 #include "Planetary.hpp"
 
-#include "Topl_Graphics_GL4.hpp"
+#include "Topl_Renderer_GL4.hpp"
 #include "Flat_Shader.hpp"
 
 // Entry Point

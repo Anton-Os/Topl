@@ -9,7 +9,7 @@ public:
      refShape.segments * 6){ // Each segment requires 1 triangle for base and 1 triangle to connect to apex (6 vertices total)
         _shape2D = refShape; // copy to internal data
         mApex = apex;
-        fillRenderObject();
+        fillRenderObj();
     }
 
     float getRadius() const { return _shape2D.radius; }

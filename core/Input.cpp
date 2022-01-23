@@ -17,6 +17,13 @@ void Input_MouseLogger::addMousePress(enum MOUSE_Button mb){
 		if(mb == currentCallback->first) currentCallback->second(); // Makes callback go off
 }
 
+void Input_MouseLogger::addMousePress(enum MOUSE_Button mb, float x, float y){
+	for(std::map<MOUSE_Button, keyCallback>::const_iterator currentCallback = _mouseCallback_map.cbegin(); currentCallback != _mouseCallback_map.end(); currentCallback++)
+		if(mb == currentCallback->first) currentCallback->second(); // Makes callback go off
+	
+	_tracerSteps.push_back({ mb, x, y}); // record the movement
+}
+
 void Input_MouseLogger::addCallback(enum MOUSE_Button mb, keyCallback callback) {
 	_mouseCallback_map.insert(std::make_pair(mb, callback));
 }

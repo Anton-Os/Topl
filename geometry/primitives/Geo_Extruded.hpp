@@ -10,7 +10,7 @@ public:
         refShape.segments * 12 ){ // for testing! replace this!
         _shape2D = refShape; // copy to internal data
         _depth = depth;
-        fillRenderObject();
+        fillRenderObj();
     }
 
     float getRadius() const { return _shape2D.radius; }
@@ -32,12 +32,6 @@ struct Geo_ExtrudedTriangle : public Geo_Extruded {
 class Geo_ExtrudedSquare : public Geo_Extruded { // i.e. Box
 public:
     Geo_ExtrudedSquare(float radius, float depth) : Geo_Extruded({ radius, 4 }, depth){}
-    /* face_cptr getFace(unsigned short index) const { 
-        if(index >= 6) return nullptr; // index out of range
-        else return &_faces[index]; 
-    } 
-private:
-    Geo_Face _faces[6]; // one for each side */
 };
 
 struct Geo_ExtrudedHex : public Geo_Extruded {

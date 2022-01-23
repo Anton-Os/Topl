@@ -1,4 +1,4 @@
-#include "Topl_Graphics_GL4.hpp"
+#include "Topl_Renderer_GL4.hpp"
 
 namespace _GL4 {
 	void errorNotFound(const char* shaderName){
@@ -103,57 +103,6 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
-}
-
-void Topl_Renderer_GL4::pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader){
-	/* GLint result;
-	const char* source;
-
-	// Vertex shader creation and valid file checking
-	_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
-
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath(), false);
-	source = vertexShaderSrc.c_str();
-	if (!vertexShaderSrc.empty()) glShaderSource(_pipeline.vShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Vertex");
-
-	// Vertex shader compilation and syntax checking
-	glCompileShader(_pipeline.vShader);
-	glGetShaderiv(_pipeline.vShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorShaderCompile("Vertex", _pipeline.vShader);
-
-
-	// Fragment shader creation and valid file checking
-	_pipeline.fShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	std::string fragShaderSrc = readFile(fragShader->getFilePath(), false);
-	source = fragShaderSrc.c_str();
-	if (!fragShaderSrc.empty()) glShaderSource(_pipeline.fShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Fragment");
-
-	// Fragment shader compilation and syntax checking
-	glCompileShader(_pipeline.fShader);
-	glGetShaderiv(_pipeline.fShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) _GL4::errorShaderCompile("Fragment", _pipeline.fShader);
-
-
-	// Program creation code
-
-	_pipeline.shaderProg = glCreateProgram();
-	glAttachShader(_pipeline.shaderProg, _pipeline.vShader);
-	glAttachShader(_pipeline.shaderProg, _pipeline.fShader);
-	glLinkProgram(_pipeline.shaderProg);
-
-	glGetProgramiv(_pipeline.shaderProg, GL_LINK_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorProgramLink(_pipeline.shaderProg);
-	else {
-		// Always detach after successful link
-		glDetachShader(_pipeline.shaderProg, _pipeline.vShader);
-		glDetachShader(_pipeline.shaderProg, _pipeline.fShader);
-		glUseProgram(_pipeline.shaderProg);
-	}
-
-	_isPipelineReady = true; */
 }
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
@@ -275,97 +224,4 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
-}
-
-void Topl_Renderer_GL4::pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-	/* GLint result;
-	const char* source;
-
-	// Vertex shader creation and valid file checking
-	_pipeline.vShader = glCreateShader(GL_VERTEX_SHADER);
-
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath(), false);
-	source = vertexShaderSrc.c_str();
-	if (!vertexShaderSrc.empty()) glShaderSource(_pipeline.vShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Vertex");
-
-	// Vertex shader compilation and syntax checking
-	glCompileShader(_pipeline.vShader);
-	glGetShaderiv(_pipeline.vShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorShaderCompile("Vertex", _pipeline.vShader);
-
-
-	// Tesselation Control shader creation and valid file checking
-	_pipeline.tcShader = glCreateShader(GL_TESS_CONTROL_SHADER);
-
-	std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath(), false);
-	source = tessCtrlShaderSrc.c_str();
-	if (!tessCtrlShaderSrc.empty()) glShaderSource(_pipeline.tcShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Tess Control");
-
-	// Tesselation Control compilation and syntax checking
-	glCompileShader(_pipeline.tcShader);
-	glGetShaderiv(_pipeline.tcShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorShaderCompile("Tess Control", _pipeline.tcShader);
-
-
-	// Tesselation Evaluation shader creation and valid file checking
-	_pipeline.teShader = glCreateShader(GL_TESS_EVALUATION_SHADER);
-
-	std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath(), false);
-	source = tessEvalShaderSrc.c_str();
-	if (!tessEvalShaderSrc.empty()) glShaderSource(_pipeline.teShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Tess Evaluation");
-
-	// Tesselation Evaluation compilation and syntax checking
-	glCompileShader(_pipeline.teShader);
-	glGetShaderiv(_pipeline.teShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorShaderCompile("Tess Evaluation", _pipeline.teShader);
-
-
-	// Geometry shader creation and valid file checking
-	_pipeline.gShader = glCreateShader(GL_GEOMETRY_SHADER);
-
-	std::string geomShaderSrc = readFile(geomShader->getFilePath(), false);
-	source = geomShaderSrc.c_str();
-	if (!geomShaderSrc.empty()) glShaderSource(_pipeline.gShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Geometry");
-
-	// Geometry shader compilation and syntax checking
-	glCompileShader(_pipeline.gShader);
-	glGetShaderiv(_pipeline.gShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorShaderCompile("Geometry", _pipeline.gShader);
-
-
-	// Fragment shader creation and valid file checking
-	_pipeline.fShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	std::string fragShaderSrc = readFile(fragShader->getFilePath(), false);
-	source = fragShaderSrc.c_str();
-	if (!fragShaderSrc.empty()) glShaderSource(_pipeline.fShader, 1, &source, NULL);
-	else return _GL4::errorNotFound("Fragment");
-
-	// Fragment shader compilation and syntax checking
-	glCompileShader(_pipeline.fShader);
-	glGetShaderiv(_pipeline.fShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) _GL4::errorShaderCompile("Fragment", _pipeline.fShader);
-
-
-	// Program creation code
-
-	_pipeline.shaderProg = glCreateProgram();
-	glAttachShader(_pipeline.shaderProg, _pipeline.vShader);
-	glAttachShader(_pipeline.shaderProg, _pipeline.fShader);
-	glLinkProgram(_pipeline.shaderProg);
-
-	glGetProgramiv(_pipeline.shaderProg, GL_LINK_STATUS, &result);
-	if (result == GL_FALSE) return _GL4::errorProgramLink(_pipeline.shaderProg);
-	else {
-		// Always detach after successful link
-		glDetachShader(_pipeline.shaderProg, _pipeline.vShader);
-		glDetachShader(_pipeline.shaderProg, _pipeline.fShader);
-		glUseProgram(_pipeline.shaderProg);
-	}
-
-	_isPipelineReady = true; */
 }

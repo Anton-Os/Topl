@@ -1,4 +1,4 @@
-#include "Topl_Graphics.hpp"
+#include "Topl_Renderer.hpp"
 
 #define GLEW_STATIC // OpenGL Renderer Specific
 #include "GL/glew.h" // OpenGL Renderer Specific
@@ -76,15 +76,12 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
-	void pipeline(entry_shader_cptr vertex, shader_cptr frag) override;
-	void pipeline(entry_shader_cptr vertex, shader_cptr frag, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	Topl_RenderContext_GL4 _renderCtx;
   	Topl_Pipeline_GL4* _pipeline;
-	// Topl_Pipeline_GL4 _pipeline;
 
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
 	unsigned _bufferIndex = 0;

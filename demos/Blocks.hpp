@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
 #include "Topl_Scene.hpp"
-#include "Topl_Graphics.hpp"
+#include "Topl_Renderer.hpp"
 
 #include "Geo_Tree.hpp"
 #include "primitives/Geo_Flat.hpp"
@@ -15,18 +15,19 @@
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
-	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
+	Topl_Camera camera;
+	// Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
 
 	// Primitive Geometry Objects
-	Geo_FlatHex hex1 = Geo_FlatHex(0.1f);
-	Geo_ExtrudedSquare rect1 = Geo_ExtrudedSquare(0.1f, 0.4f);
-	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.2f));
+	Geo_FlatSquare rect1 = Geo_FlatSquare(0.1f);
+	Geo_ExtrudedHex hex1 = Geo_ExtrudedHex(0.1f, 0.1f);
+	Geo_ConicSquare cone1 = Geo_ConicSquare(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.1f));
 	// Complex Geometry Objects
-	Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
+	/* Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
 	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
-	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 4);
-	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&rect1);
-	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(1, 0.5f));
+	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 4); */
+	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&hex1);
+	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(2, 0.5f));
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 }
 
@@ -51,7 +52,7 @@ namespace Main {
 		Timer_Ticker gameTicker;
 
 		while (1) {
-			Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
+			// Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
 			Topl::grid.rotate(&Topl::scene, Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
 			// Topl::scene.resolvePhysics();
 

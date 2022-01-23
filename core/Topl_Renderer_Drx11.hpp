@@ -1,4 +1,4 @@
-#include "Topl_Graphics.hpp"
+#include "Topl_Renderer.hpp"
 
 #include <d3dx10.h> // DirectX Renderer Specific
 #include <d3dx11.h> // DirectX Renderer Specific
@@ -29,13 +29,6 @@ struct Texture_Drx11 : public Texture {
 
 struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	Topl_Pipeline_Drx11() : Topl_Pipeline(){}
-	/* Topl_Pipeline_Drx11(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel) : Topl_Pipeline(){
-		genPipeline(renderer, vertex, pixel);
-	}
-	Topl_Pipeline_Drx11(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) : Topl_Pipeline() {
-		genPipeline(renderer, vertex, pixel, tessCtrl, tessEval, geom);
-	} */
-	// Topl_Pipeline_Drx11(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
 	~Topl_Pipeline_Drx11(){
 		if(vertexShader != nullptr) vertexShader->Release();
 		if(pixelShader != nullptr) pixelShader->Release();
@@ -48,9 +41,6 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 		if(dsBlob != nullptr) dsBlob->Release();
 		if(gsBlob != nullptr) gsBlob->Release();
 	}
-
-	// void genPipeline(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel);
-	// void genPipeline(Topl_Renderer_Drx11& renderer, entry_shader_cptr vertex, shader_cptr pixel, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom);
 
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
@@ -82,24 +72,19 @@ public:
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
-	// void setPipeline(Topl_Pipeline_Drx11* pipeline) { _pipeline = pipeline; }
 	void build(const Topl_Scene* scene) override;
 	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
     void assignTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
-	// static ID3D11Device* getDevice() { return _device; }
 private:
 	void init(NATIVE_WINDOW hwnd) override;
-	void pipeline(entry_shader_cptr vertex, shader_cptr frag) override;
-	void pipeline(entry_shader_cptr vertex, shader_cptr frag, shader_cptr tessCtrl, shader_cptr tessEval, shader_cptr geom) override;
 	void update(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;
-	//Topl_Pipeline_Drx11 _pipeline;
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	ID3D11InputLayout* _vertexDataLayout;
 

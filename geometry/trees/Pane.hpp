@@ -2,44 +2,32 @@
 
 #include "Geo_Tree.hpp"
 
-#define DEFAULT_PANE_SIZE 0.1
-#define DEFAULT_Y_INC 0.05
-#define DEFAULT_Z_INC 0.01
+#define PANE_RADIUS 0.5
+#define PANE_BORDER 0.01
+// #define DEFAULT_PANE_Y 0.05
+#define PANE_Z 0.05
 
 static float stretchTform(float input, double mod){ return input * mod; }
 
 class Geo_Pane {
 public:
-    Geo_Pane(){
-		createSolidBk(0xFF000000); // black background
-    }
-    Geo_Pane(unsigned color){
-		createSolidBk(color); // custom color background
-    }
-#ifdef RASTERON_H
-	Geo_Pane(std::string filePath) {
-		// create image from filePath, set as background
-	}
-	Geo_Pane(std::string text, std::string fontFilePath, unsigned fgColor, unsigned bkColor) {
-		// render text using font and fontFilePath
-	}
-#endif
+    Geo_Pane(){}
     ~Geo_Pane(){
 #ifdef RASTERON_H
         if(_background != nullptr) deleteImg(_background);
 #endif
     }
 
-    void scalePane(unsigned rows, unsigned columns){
-		if (_square == nullptr) return; // object cannot be modified if null[tr
-        // _square->modify(stretchTform, 1.0 / rows, AXIS_Y);
-        // _square->modify(stretchTform, 1.0 / columns, AXIS_X);
-    }
 
 	void createSolidBk(unsigned color) {
 		_bkColor = color;
 #ifdef RASTERON_H
-		// _background = createImgBlank(256, 256, _bkColor);
+		_background = createImgBlank(256, 256, _bkColor);
+#endif
+	}
+	void createImageBk(Rasteron_Image* image){
+#ifdef RASTERON_H
+		_background = image;
 #endif
 	}
 #ifdef RASTERON_H
@@ -63,11 +51,15 @@ public:
 		unsigned rows,
 		unsigned columns
 	) : Geo_Tree(prefix, scene, &_dummyGeo, (rows * columns) + 1) {
+		// _rootPane.setRenderObj(&_rootSquare);
+		_rootPane.createSolidBk(0xFF0000FF); // blue backgroud
+
 		_panes.resize(getActorCount() - 1);
-		_childSquare.modify(stretchTform, 1.0 / rows, AXIS_Y);
-		_childSquare.modify(stretchTform, 1.0 / columns, AXIS_X);
+		_childSquare.modify(stretchTform, (1.0 / rows) - PANE_BORDER, AXIS_Y);
+		_childSquare.modify(stretchTform, (1.0 / columns) - PANE_BORDER, AXIS_X);
 		for (std::vector<Geo_Pane>::iterator currentPane = _panes.begin(); currentPane < _panes.end(); currentPane++)
-			currentPane->setRenderObj(&_childSquare);
+			currentPane->createSolidBk(0xFFFF0000); // red background
+			// currentPane->setRenderObj(&_childSquare);
 
 		_rows = rows;
 		_columns = columns;
@@ -80,8 +72,8 @@ private:
 	static Geo_Actor _dummyGeo;
     Geo_Pane _rootPane = Geo_Pane(); // root
 	std::vector<Geo_Pane> _panes; // children
-	Geo_FlatSquare _rootSquare = Geo_FlatSquare(DEFAULT_PANE_SIZE);
-	Geo_FlatSquare _childSquare = Geo_FlatSquare(DEFAULT_PANE_SIZE * 0.5);
+	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS);
+	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS);
     
     unsigned _rows; 
     unsigned _columns;

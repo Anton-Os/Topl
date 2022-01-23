@@ -1,6 +1,6 @@
 #include "Pawns.hpp"
 
-#include "Topl_Graphics_Drx11.hpp"
+#include "Topl_Renderer_Drx11.hpp"
 #include "Textured_Shader.hpp" // shader inclusion
 // #include "Drx11_Textured.hpp" // shader inclusion
 
@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
 	Drx11_Textured_VertexShader vertexShader = Drx11_Textured_VertexShader();
 	Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
-	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
+	renderer.genPipeline(&pipeline, &vertexShader, &pixelShader);
 	
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

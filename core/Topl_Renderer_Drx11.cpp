@@ -1,4 +1,4 @@
-#include "Topl_Graphics_Drx11.hpp"
+#include "Topl_Renderer_Drx11.hpp"
 
 namespace _Drx11 {
 	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
@@ -233,7 +233,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
+	const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
 	// _deviceCtx->ClearDepthStencilView(_rtv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }

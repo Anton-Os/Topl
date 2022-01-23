@@ -85,20 +85,9 @@ class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
 
-    void setCamera(const Topl_Camera* camera){ _activeCamera = camera; }
-    // basic pipeline creation
-    void setPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader){
-        if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment) return;
-
-        _entryShader = vertexShader;
-        pipeline(vertexShader, fragShader);
-    }
-    // extended pipeline creation
-    void setPipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-        if(vertexShader->getType() != SHDR_Vertex || fragShader->getType() != SHDR_Fragment || tessCtrlShader->getType() != SHDR_TessCtrl || tessEvalShader->getType() != SHDR_TessEval || geomShader->getType() != SHDR_Geom) return;
-
-        _entryShader = vertexShader;
-        pipeline(vertexShader, fragShader, tessCtrlShader, tessEvalShader, geomShader);
+    void setCamera(const Topl_Camera* camera){ 
+        if(camera != nullptr) _activeCamera = camera;
+        else _activeCamera = &_defaultCamera;
     }
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
     bool buildScene(const Topl_Scene* scene){
@@ -164,8 +153,6 @@ protected:
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
-    virtual void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader) = 0;
-    virtual void pipeline(entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void build(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
     virtual void update(const Topl_Scene* scene) = 0;

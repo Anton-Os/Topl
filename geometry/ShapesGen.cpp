@@ -17,16 +17,6 @@ void ShapesGen::modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCal
     renderObj->modify(zCallback, mod, AXIS_Z);
 }
 
-// Render Object Generation
-
-/* Geo_RenderObj ShapesGen::genTessShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, unsigned iter){
-    // Implement body
-}
-
-Geo_RenderObj ShapesGen::genDuplexShape(Geo_RenderObj* newObj, const Geo_RenderObj* refObj, Geo_RenderObj* duplexObj){
-    // Implement body
-} */
-
 // Tiling Operations
 
 /* void ShapesGen::tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){

@@ -1,6 +1,6 @@
 #include "Pawns.hpp"
 
-#include "Topl_Graphics_GL4.hpp"
+#include "Topl_Renderer_GL4.hpp"
 #include "Textured_Shader.hpp"
 
 // Entry Point

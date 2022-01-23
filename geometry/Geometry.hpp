@@ -42,23 +42,6 @@ struct Geo_Vertex {
 
 typedef const Geo_Vertex* const vertex_cptr; // Safe const pointer type
 
-struct Geo_Face {
-	Geo_Face(){}
-	Geo_Face(Eigen::Vector3f p1, Eigen::Vector3f p2, Eigen::Vector3f p3, Eigen::Vector3f p4){
-		point1 = p1;
-		point2 = p2;
-		point3 = p3;
-		point4 = p4;
-	}
-
-	Eigen::Vector3f point1 = Eigen::Vector3f(1.0f, 1.0f, DEFAULT_Z_VAL); // top right
-	Eigen::Vector3f point2 = Eigen::Vector3f(-1.0f, 1.0f, DEFAULT_Z_VAL); // top left
-	Eigen::Vector3f point3 = Eigen::Vector3f(1.0f, -1.0f, DEFAULT_Z_VAL); // bottom right
-	Eigen::Vector3f point4 = Eigen::Vector3f(-1.0f, -1.0f, DEFAULT_Z_VAL); // bottom left
-};
-
-typedef const Geo_Face* const face_cptr;
-
 struct NGon2D {
     float radius;
     unsigned short segments;
@@ -96,7 +79,7 @@ public:
 	vec3f_cptr getNormalsData() const { return _normalsData; }
     vec2f_cptr getTexCoordData() const { return _texCoordData; }
 protected:
-	void fillRenderObject();
+	void fillRenderObj();
     virtual void genVertices(Eigen::Vector3f* data) = 0;
 	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;

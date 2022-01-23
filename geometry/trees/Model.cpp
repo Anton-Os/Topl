@@ -1,5 +1,7 @@
 #include "Model.hpp"
 
+Geo_Node Geo_Model::_dummyGeo = Geo_Node(nullptr, nullptr);
+
 namespace _Model {
     std::string genNodeName(unsigned num){ return "node" + std::to_string(num); }
 }
@@ -13,10 +15,7 @@ void Geo_Model::fill(Topl_Scene* scene){
 		aiFlags
 	);
 
-	if (aiScene != nullptr) {
-		puts("Scene importation failed");
-		return;
-	}
-
-	// Perform processing here
+	_nodes.assign(aiScene->mRootNode->mNumChildren, Geo_Node(aiScene, aiScene->mRootNode));
+	for(unsigned c = 0; c < aiScene->mRootNode->mNumChildren; c++)
+		_nodes[c] = Geo_Node(aiScene, aiScene->mRootNode->mChildren[c]);
 }

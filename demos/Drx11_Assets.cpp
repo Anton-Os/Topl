@@ -1,7 +1,7 @@
 #include "Assets.hpp"
 
-#include "Topl_Graphics_Drx11.hpp"
-#include "Drx11_Flat.hpp" // shader inclusion
+#include "Topl_Renderer_Drx11.hpp"
+#include "Flat_Shader.hpp" // shader inclusion
 
 // Entry Point
 
@@ -13,8 +13,8 @@ int main(int argc, char** argv) {
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 	Topl_Pipeline_Drx11 pipeline; // Pipeline declaration
 
-	Flat_VertexShader vertexShader = Flat_VertexShader();
-	Flat_PixelShader fragmentShader = Flat_PixelShader();
+	Drx11_Flat_VertexShader vertexShader = Drx11_Flat_VertexShader();
+	Drx11_Flat_FragmentShader fragmentShader = Drx11_Flat_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
 	renderer.setCamera(&Topl::camera);

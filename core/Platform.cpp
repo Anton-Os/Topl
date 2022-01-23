@@ -19,7 +19,6 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
 	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
-	case (WM_MBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_MiddleBtn_Down); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -33,62 +32,17 @@ void Platform::createWindow(){
 	_context.windowClass.lpszClassName = "Topl";
 	RegisterClass(&_context.windowClass);
 
-	if (_windowCount == 0) { // Parent window is being created
-		_context.window = CreateWindow(
-			"Topl",
-			_winName,
-			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
-			NULL, NULL, GetModuleHandle(NULL), NULL
-		);
+	_context.window = CreateWindow(
+		"Topl",
+		_winName,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
+		NULL, NULL, GetModuleHandle(NULL), NULL
+	);
 
-		ShowWindow(_context.window, 1);
-		UpdateWindow(_context.window);
-	}
-	else if (_windowCount >= _windowMax) { 
-		OutputDebugStringA("Exceeding maximum number of windows!"); 
-		return;
-	}
-	else { 
-		/* RECT windowRect;
-		GetWindowRect(_context.window, &windowRect);
-
-		int x = 0; int y = 0;
-		int w = 200; int h = 200;
-		switch(_windowCount){
-		case 1: // Left Pane
-			w = 200; h = TOPL_WIN_HEIGHT;
-		break;
-		case 2: // Right Pane
-			x = 1200;
-			w = 200; h = TOPL_WIN_HEIGHT;
-		break;
-		case 3: // Top Pane
-			x = 200;
-			w = TOPL_WIN_WIDTH - 200; h = 200;
-		break;
-		case 4: // Bottom Pane
-			x = 200; y = TOPL_WIN_HEIGHT - 200;
-			w = TOPL_WIN_WIDTH - 200; h = 200;
-		break;
-		}
-
-		_context.childWindows[_windowCount - 1] = CreateWindow(
-			"Topl",
-			(LPCTSTR) NULL,
-			WS_CHILD | WS_BORDER,
-			x, y, w, h,
-			_context.window,
-			(HMENU)(int)(_windowCount),
-			GetModuleHandle(NULL),
-			NULL
-		);
-
-		ShowWindow(_context.childWindows[_windowCount - 1], 0); */
-	}
-
-	_windowCount++;
+	ShowWindow(_context.window, 1);
+	UpdateWindow(_context.window);
 }
 
 void Platform::handleEvents(){
@@ -147,14 +101,6 @@ void Platform::createWindow(const char* windowName){
 
 	XSelectInput(_context.display, _context.window, );
 	XMapWindow(_context.display, _context.window);
-}
-
-void createQuadGUI(NATIVE_WINDOW parentWindow, UI_QuadLayout quadLayout) {
-	// TODO: Implement Body Here
-}
-
-void createTreeGUI(NATIVE_WINDOW parentWindow /* UI_QuadLayout quadLayout */) {
-	// TODO: Implement Body Here
 }
 
 void Platform::handleEvents(){

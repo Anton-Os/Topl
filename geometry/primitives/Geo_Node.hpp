@@ -6,23 +6,35 @@
 
 class Geo_Mesh : public Geo_RenderObj {
 public:
-    Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)){  }
+    Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)){
+        _mesh = mesh;
+    }
 
 private:
-    static unsigned getIndexCount(const aiMesh* mesh);
+    static unsigned getIndexCount(const aiMesh* mesh); // gets indices by iterating through faces
 
     void genVertices(Eigen::Vector3f* data) override;
 	void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
 
-    unsigned _boneCount;
+    const aiMesh* _mesh = nullptr;
+    // unsigned _boneCount;
 };
 
 class Geo_Node : public Geo_Actor {
 public:
-    Geo_Node(const aiNode* node) : Geo_Actor(){  } // empty constructor for testing
-
+    Geo_Node(const aiScene* scene, const aiNode* node) : 
+    Geo_Actor(){
+		if (scene != nullptr && node != nullptr)
+			init(scene, node);
+    }
 private:
-    std::string parentName; // if root node then this will remain blank
+	void init(const aiScene* scene, const aiNode* node);
+
+    const aiScene* _scene = nullptr;
+    const aiNode* _node = nullptr;
+
+    unsigned short _meshCount = 0;
+    Geo_Mesh* _meshes;
 };

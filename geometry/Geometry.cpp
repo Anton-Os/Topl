@@ -18,9 +18,11 @@ Geo_RenderObj::Geo_RenderObj(unsigned v){ // Vertex only constructor
     _verticesCount = v;
     if(_verticesCount % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
 
-    _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-    _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-    _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+    if(_verticesCount != 0){
+        _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+    }
 }
 
 Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
@@ -28,9 +30,11 @@ Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices cons
     _indicesCount = i;
     if((_verticesCount - 1) % 2 == 0) _startAngle = TOPL_PI / (_verticesCount - 1); // offset angle for each even side length
 
-    _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-    _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-    _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+    if(_verticesCount != 0){
+        _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+    }
     if(_indicesCount != 0) _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
 }
 
@@ -65,7 +69,7 @@ vertex_cptr Geo_RenderObj::getVertices(){
     return _vertices;
 }
 
-void Geo_RenderObj::fillRenderObject(){
+void Geo_RenderObj::fillRenderObj(){
     genVertices(_posData);
     genNormals(_normalsData);
     genTexCoords(_texCoordData);

@@ -19,7 +19,7 @@ public:
     // : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, refShape.ySegments * 12) { // only indexes top and bottom
         _shape3D = refShape; // copy to internal data
         _sphereType = SPHERE_UV;
-        fillRenderObject();
+        fillRenderObj();
     }
 
 	float getRadius() const { return _shape3D.radius; }
@@ -31,5 +31,4 @@ private:
 
     NGon3D _shape3D;
     SPHERE_Type _sphereType; // Add support for multiple rendering types!
-    std::vector<Geo_Face> _faces;
 };

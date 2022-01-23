@@ -3,7 +3,28 @@
 #include "Geometry.hpp"
 
 struct ShapesGen {
-    ShapesGen(){}
+    class Geo_DuplexShape : public Geo_RenderObj { // shape that generates itself recursively
+    public:
+        Geo_DuplexShape(const Geo_RenderObj* refObj, unsigned short iterations)
+        : Geo_RenderObj
+        (pow(refObj->getVerticesCount(), iterations),
+        pow(refObj->getIndexCount(), iterations)){
+            _refObj = refObj;
+            _iterations = iterations;
+            fillRenderObj();
+        }
+
+        const Geo_RenderObj* getRenderObj(){ return _refObj; }
+        unsigned short getIterations(){ return _iterations; }
+    private:
+        void genVertices(Eigen::Vector3f* data) override;
+        void genNormals(Eigen::Vector3f* data) override;
+        void genTexCoords(Eigen::Vector2f* data) override;
+        void genIndices(unsigned* data) override;
+
+        const Geo_RenderObj* _refObj = nullptr;
+        unsigned short _iterations = 1;
+    };
 
     // Modify shape through vertex transform callbacks
     static void modify(Geo_RenderObj* renderObj, double mod, vTformCallback callback, AXIS_Target axis);
