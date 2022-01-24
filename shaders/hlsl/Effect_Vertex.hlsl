@@ -26,7 +26,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f;
 
 	output.screenRes = screenRes;
-	output.cursorPos = cursorPosAdj;
+	output.cursorPos = cursorPosAdj; // adjusted coordinates
 	output.pos = finalPos;
 
 	return output;

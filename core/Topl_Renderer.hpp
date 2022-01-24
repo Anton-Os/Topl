@@ -88,7 +88,10 @@ public:
         if(camera != nullptr) _activeCamera = camera;
         else _activeCamera = &_defaultCamera;
     }
-    // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
+    void setPipeline(Topl_Pipeline* pipeline){
+        _entryShader = pipeline->entryShader;
+        _isPipelineReady = pipeline->isReady;
+    }
     bool buildScene(const Topl_Scene* scene){
         if(!_isPipelineReady) puts("Pipeline not set for build call!");
         if(!_isPipelineReady) return false; // failure
@@ -115,7 +118,7 @@ public:
     bool renderScene(enum DRAW_Type drawType){
         if(!_isPipelineReady) puts("Pipeline not set for draw call!");
         if(!_isSceneReady) puts("Scene not built for draw call!");
-        if(_renderIDs <= 1) puts("No render targets for draw call!");
+        if(_renderIDs == 0) puts("No render targets for draw call!");
         if(!_isPipelineReady || !_isSceneReady) return false; // failure
 
         _drawType = drawType;
@@ -123,6 +126,7 @@ public:
 		return true; // success
     }
     virtual void clearView()  = 0;
+    // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
 #ifdef RASTERON_H
     Rasteron_Image* getFrame(){
         Rasteron_Image* frameImg = frame();
@@ -135,22 +139,19 @@ public:
 #endif
     NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
+    // const Topl_Pipeline* _pipeline;
     entry_shader_cptr _entryShader;
     enum DRAW_Type _drawType = DRAW_Triangles; // primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
-	unsigned _renderIDs = 1; // indicator for number of drawable graphics objects
-    unsigned _frameCapID = 1; // increments as more frames are captured
+	unsigned _renderIDs = 0; // indicator for number of drawable graphics objects
+    unsigned _frameCapID = 0; // increments as more frames are captured
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
-    // void build(const Topl_Scene* scene, const Topl_Camera* camera){ build(scene); } // camera is already set in the buildScene() call
-    // virtual void build(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
     virtual void update(const Topl_Scene* scene) = 0;
-    // virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
-    // void update(const Topl_Scene* scene, const Topl_Camera* camera){ update(scene); } // camera is already set in the updateScene() call
 	virtual void render(void) = 0;
 };
 

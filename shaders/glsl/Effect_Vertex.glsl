@@ -19,9 +19,10 @@ layout(location = 1) flat out vec2 cursorPos_out;
 layout(location = 2) flat out uint renderID_out;
 
 void main() {
-	// renderID_out = renderID;
+	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f;
+	
     screenRes_out = screenRes;
-	cursorPos_out = cursorPos; // change to uniform value
+	cursorPos_out = cursorPosAdj; // adjusted coordinates
 	renderID_out = renderID;
 	gl_Position = vec4(pos, 1.0);
 }

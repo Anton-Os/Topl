@@ -23,9 +23,6 @@ namespace Main {
 		platform->createWindow();
 
 		Topl::scene.addGeometry("plane", &Topl::planeActor);
-
-		// Topl::circleActor.setPos(Eigen::Vector3f(0.9f, -0.9f, 0.05f));
-		// Topl::scene.addGeometry("circle", &Topl::circleActor);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
