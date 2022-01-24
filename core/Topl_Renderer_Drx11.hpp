@@ -73,7 +73,6 @@ public:
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 	void build(const Topl_Scene* scene) override;
-	void build(const Topl_Scene* scene, const Topl_Camera* camera) override;
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
     void assignTexture(const Rasteron_Image* image, unsigned id) override;
@@ -81,7 +80,6 @@ public:
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_Scene* scene) override;
-	void update(const Topl_Scene* scene, const Topl_Camera* camera) override;
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;

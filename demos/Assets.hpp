@@ -13,7 +13,7 @@ namespace Topl {
 	std::string assetsPath = ASSETS_DIR;
 	std::string modelsSubPath = "models/";
 
-	// Geo_Model model("model", assetsPath + modelsSubPath + "UrkwinAlien.obj", &scene);
+	Geo_Model model("model", assetsPath + modelsSubPath + "UrkwinAlien.obj", &scene);
 }
 
 // Shared functions

@@ -30,3 +30,45 @@ void ShapesGen::tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, u
 void ShapesGen::tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){
     return; // implement here
 } */
+
+
+void ShapesGen::Geo_DuplexShape::genVertices(Eigen::Vector3f* data){
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_DuplexShape::genNormals(Eigen::Vector3f* data){
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_DuplexShape::genTexCoords(Eigen::Vector2f* data) {
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_DuplexShape::genIndices(unsigned* data){
+    // Implement Body
+    return;
+}
+
+
+void ShapesGen::Geo_TessShape::genVertices(Eigen::Vector3f* data){
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_TessShape::genNormals(Eigen::Vector3f* data){
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_TessShape::genTexCoords(Eigen::Vector2f* data) {
+    // Implement Body
+    return;
+}
+
+void ShapesGen::Geo_TessShape::genIndices(unsigned* data){
+    // Implement Body
+    return;
+}

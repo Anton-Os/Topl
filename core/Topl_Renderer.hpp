@@ -74,10 +74,9 @@ enum DRAW_Type {
 
 struct Topl_Pipeline {
     Topl_Pipeline(){}
-    Topl_Pipeline(entry_shader_cptr entry){
-        entryShader = entry;
-    }
-    entry_shader_cptr entryShader = nullptr; // saves entryShader internally
+    Topl_Pipeline(entry_shader_cptr entry){ entryShader = entry; }
+
+    entry_shader_cptr entryShader = nullptr; // entryShader needs to be saved internally
 	bool isReady; // internal check for compilation and link status
 };
 
@@ -98,12 +97,8 @@ public:
         return true; // success
     }
     bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-        if(!_isPipelineReady) puts("Pipeline not set for build call!");
-        if(!_isPipelineReady) return false; // failure
-
-        // _activeCamera = camera;
-        build(scene, camera);
-        return true; // success
+		_activeCamera = camera; // switch to new camera
+		return (buildScene(scene)) ? true : false;
     }
     bool updateScene(const Topl_Scene* scene){
         if(!_isPipelineReady) puts("Pipeline not set for update call!");
@@ -114,16 +109,13 @@ public:
         return true; // success
     }
     bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
-        if(!_isPipelineReady) puts("Pipeline not set for update call!");
-        if(!_isSceneReady) puts("Scene not built for update call!");
-        if(!_isPipelineReady || !_isSceneReady) return false; // failure
-
-        update(scene, camera);
-        return true; // success
+        _activeCamera = camera; // switch to new camera
+		return (updateScene(scene)) ? true : false;
     }
     bool renderScene(enum DRAW_Type drawType){
         if(!_isPipelineReady) puts("Pipeline not set for draw call!");
         if(!_isSceneReady) puts("Scene not built for draw call!");
+        if(_renderIDs <= 1) puts("No render targets for draw call!");
         if(!_isPipelineReady || !_isSceneReady) return false; // failure
 
         _drawType = drawType;
@@ -154,9 +146,11 @@ protected:
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
-    virtual void build(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
+    // void build(const Topl_Scene* scene, const Topl_Camera* camera){ build(scene); } // camera is already set in the buildScene() call
+    // virtual void build(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
     virtual void update(const Topl_Scene* scene) = 0;
-    virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
+    // virtual void update(const Topl_Scene* scene, const Topl_Camera* camera) = 0; // for custom camera control
+    // void update(const Topl_Scene* scene, const Topl_Camera* camera){ update(scene); } // camera is already set in the updateScene() call
 	virtual void render(void) = 0;
 };
 

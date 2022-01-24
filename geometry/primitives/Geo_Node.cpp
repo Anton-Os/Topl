@@ -10,23 +10,36 @@ unsigned Geo_Mesh::getIndexCount(const aiMesh* mesh){
 }
 
 void Geo_Mesh::genVertices(Eigen::Vector3f* data){
-	// TODO: Implement body here
-	return;
+	for(unsigned v = 0; v < _verticesCount; v++){
+		aiVector3D* vertex = _mesh->mVertices + v;
+		*(data + v) = Eigen::Vector3f(vertex->x, vertex->y, vertex->z);
+	}
 }
 
 void Geo_Mesh::genNormals(Eigen::Vector3f* data) {
-	// TODO: Implement body here
-	return;
+	for(unsigned n = 0; n < _verticesCount; n++){
+		aiVector3D* normal = _mesh->mNormals + n;
+		*(data + n) = Eigen::Vector3f(normal->x, normal->y, normal->z);
+	}
 }
 
 void Geo_Mesh::genTexCoords(Eigen::Vector2f* data) {
-	// TODO: Implement body here
-	return;
+	for(unsigned t = 0; t < _verticesCount; t++){
+		// aiVector3D* texcoord = _mesh->mTextureCoords + t;
+		// *(data + t) = Eigen::Vector2f(texcoord->x, texcoord->y);
+		*(data + t) = Eigen::Vector2f(0.0f, 0.0f); // for testing
+	}
 }
 
 void Geo_Mesh::genIndices(unsigned* data){
-	// TODO: Implement body here
-	return;
+	unsigned i = 0;
+	for(unsigned f = 0; f < _mesh->mNumFaces; f++){
+		const aiFace* face = _mesh->mFaces + f;
+		for(unsigned n = 0; n < face->mNumIndices; n++){
+			*(data + i) = *(face->mIndices + n); // index into the current face
+			i++;
+		}
+	}
 }
 
 // Internal Initialization Code

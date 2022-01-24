@@ -29,12 +29,16 @@ public:
 		if (scene != nullptr && node != nullptr)
 			init(scene, node);
     }
+
+    unsigned getMeshCount(){ return _meshCount; }
+    Geo_Mesh* getFirstMesh(){ return _meshes; }
+    Geo_Mesh* getMesh(unsigned index){ return _meshes + index; }
 private:
 	void init(const aiScene* scene, const aiNode* node);
 
     const aiScene* _scene = nullptr;
     const aiNode* _node = nullptr;
 
-    unsigned short _meshCount = 0;
+    unsigned _meshCount = 0;
     Geo_Mesh* _meshes;
 };

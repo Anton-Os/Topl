@@ -65,7 +65,7 @@ public:
 	lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(const std::string& name) const;
-	unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
+	// unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
 #endif
 
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
@@ -84,9 +84,7 @@ private:
 	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // Associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
-	// std::vector<Phys_Colliders> _colliders; // Stores physics data specific to collision
 	Timer_Ticker _physTicker; // This ticker is specific to physics updates
-	// const Platform* _platform; // Provides useful system information and parameters
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTexture_map; // Associates geometry to a single texture structure
 #endif

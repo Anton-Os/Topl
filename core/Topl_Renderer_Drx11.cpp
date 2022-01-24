@@ -239,10 +239,6 @@ void Topl_Renderer_Drx11::clearView(){
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	build(scene, &_defaultCamera);
-}
-
-void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
 
 	// generating an input layout based on Vertex Shader Inputs
@@ -266,7 +262,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene, const Topl_Camera* came
 	free(layout_ptr); // deallocating layout_ptr and all associated data
 
 	// scene uniform block buffer generation
-	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
 		_isSceneReady = _Drx11::createBlockBuff(&_device, &_renderCtx.sceneBlockBuff, &blockBytes);
 		_renderCtx.buffers.push_back(Buffer_Drx11(_renderCtx.sceneBlockBuff));
 	}
@@ -409,15 +405,11 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
-	update(scene, &_defaultCamera);
-}
-
-void Topl_Renderer_Drx11::update(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes; // New Implementation
 	Buffer_Drx11* renderBlockBuff = nullptr;
 	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&_device, &_renderCtx.buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {

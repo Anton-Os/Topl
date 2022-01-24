@@ -179,14 +179,10 @@ void Topl_Renderer_GL4::clearView(){
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
-	build(scene, &_defaultCamera);
-}
-
-void Topl_Renderer_GL4::build(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
 
 	// scene uniform block buffer generation
-	if (_entryShader->genSceneBlock(scene, camera, &blockBytes)) {
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
 		_renderCtx.buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.back().buffer);
@@ -309,14 +305,10 @@ void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
-	update(scene, &_defaultCamera);
-}
-
-void Topl_Renderer_GL4::update(const Topl_Scene* scene, const Topl_Camera* camera){
 	std::vector<uint8_t> blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, camera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		glBindBuffer(GL_UNIFORM_BUFFER, _renderCtx.buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
