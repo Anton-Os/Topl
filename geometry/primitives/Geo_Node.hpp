@@ -29,6 +29,7 @@ public:
 		if (scene != nullptr && node != nullptr)
 			init(scene, node);
     }
+    ~Geo_Node(){ if(_meshes != nullptr) free(_meshes); }
 
     unsigned getMeshCount(){ return _meshCount; }
     Geo_Mesh* getFirstMesh(){ return _meshes; }
@@ -40,5 +41,5 @@ private:
     const aiNode* _node = nullptr;
 
     unsigned _meshCount = 0;
-    Geo_Mesh* _meshes;
+    Geo_Mesh* _meshes = nullptr;
 };

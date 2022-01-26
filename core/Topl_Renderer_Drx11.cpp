@@ -127,6 +127,8 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 
 	_vertexDataLayout->Release();
 	_resourceView->Release();
+	_rtView->Release();
+	_dsView->Release();
 	_blendState->Release();
 	_rasterizerState->Release();
 }
@@ -172,10 +174,10 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 	if(FAILED(hr)) return; // Provide error handling code
 
-    _device->CreateRenderTargetView(backBuffer, NULL, &_rtv);
+    _device->CreateRenderTargetView(backBuffer, NULL, &_rtView);
     backBuffer->Release();
 
-    _deviceCtx->OMSetRenderTargets(1, &_rtv, NULL);
+    _deviceCtx->OMSetRenderTargets(1, &_rtView, NULL);
 
 	// Viewport Creation
 
@@ -186,10 +188,12 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     viewport.TopLeftY = 0;
     viewport.Height = TOPL_WIN_HEIGHT;
     viewport.Width = TOPL_WIN_WIDTH;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	_deviceCtx->RSSetViewports(1, &viewport);
 
-	// Blend State creation
+	// Blend State Creation
 
 	D3D11_BLEND_DESC blendStateDesc;
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
@@ -210,12 +214,34 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	_deviceCtx->OMSetBlendState(_blendState, blendFactor, blendMask);
 
+	// Depth Stencil View Creation
+
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	
+	depthStencilDesc.Height = TOPL_WIN_HEIGHT;
+	depthStencilDesc.Width = TOPL_WIN_WIDTH;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthStencilTex;
+	_device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilTex);
+	_device->CreateDepthStencilView(depthStencilTex, NULL, &_dsView);
+
+	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
+
 	// Rasterizer State creation
 
-	D3D11_RASTERIZER_DESC rasterizerStateDesc;
+	/* D3D11_RASTERIZER_DESC rasterizerStateDesc;
 	ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
 
-	/* rasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerStateDesc.CullMode = D3D11_CULL_FRONT;
 	rasterizerStateDesc.FrontCounterClockwise = true;
 	rasterizerStateDesc.DepthBias = false;
@@ -234,8 +260,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 void Topl_Renderer_Drx11::clearView(){
 	const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-    _deviceCtx->ClearRenderTargetView(_rtv, clearColor);
-	// _deviceCtx->ClearDepthStencilView(_rtv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+    _deviceCtx->ClearRenderTargetView(_rtView, clearColor);
+	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {

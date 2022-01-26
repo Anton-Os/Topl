@@ -54,7 +54,7 @@ private:
 	// Internal Types
 	Eigen::Vector3f _worldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
 	Eigen::Vector2f _worldRot = Eigen::Vector2f(0.0, 0.0); // Angles by which to rotate
-	const Geo_RenderObj* _renderObj;
+	const Geo_RenderObj* _renderObj = nullptr;
 };
 
 #define GEO_COMPONENT_H

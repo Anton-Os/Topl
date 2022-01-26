@@ -20,6 +20,13 @@ Eigen::Matrix4f ValueGen::genOrthoMatrix(SpatialBounds3D bounds){
     return projMatrix;
 }
 
+unsigned ValueGen::genRandColorVal(){
+    uint8_t redBit = rand() % 255;
+	uint8_t greenBit = rand() % 255;
+	uint8_t blueBit = rand() % 255;
+	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
+}
+
 void ValueGen::appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
     size_t paddingSize = PADDING_WIDTH - (dataSize % PADDING_WIDTH); // manually computed padding value
     appendDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);

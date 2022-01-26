@@ -87,9 +87,10 @@ private:
 	ID3D11InputLayout* _vertexDataLayout;
 
 	ID3D11Device* _device;
-	IDXGISwapChain* _swapChain;
+	IDXGISwapChain* _swapChain; // used for switching between views used for rendering
 	ID3D11DeviceContext* _deviceCtx;
-	ID3D11RenderTargetView* _rtv;
+	ID3D11RenderTargetView* _rtView;
+	ID3D11DepthStencilView* _dsView;
 	ID3D11ShaderResourceView* _resourceView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;

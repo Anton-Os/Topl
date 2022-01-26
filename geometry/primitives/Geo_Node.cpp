@@ -55,4 +55,8 @@ void Geo_Node::init(const aiScene* scene, const aiNode* node){
 		for(unsigned m = 0; m < _meshCount; m++) // retrives mesh from correct index
 			*(_meshes + m) = Geo_Mesh(*(_scene->mMeshes + (*(_node->mMeshes + m))));
 	}
+
+	if(_meshCount == 1) setRenderObj((Geo_RenderObj*)getFirstMesh());
+	else if(_meshCount > 1) puts("Multiple meshes detected!");
+	else puts("No meshes detected!");
 }

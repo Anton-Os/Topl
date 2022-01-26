@@ -33,12 +33,11 @@ struct SpatialBounds3D { // Used in Matrix calculations
 };
 
 struct ValueGen {
-    ValueGen(){
-        srand(time(NULL)); // random value seeder
-    }
+    ValueGen(){ srand(time(NULL)); } // random value seeder
 
     static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
     static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
+    static unsigned genRandColorVal();
     static float genRandFloat(){ return genRandFloat(0.0, 1.0); }
     static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
     static Eigen::Vector2f genRandVec2(){ return Eigen::Vector2f(genRandFloat(), genRandFloat()); }

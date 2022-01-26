@@ -20,11 +20,6 @@ void Geo_Model::fill(Topl_Scene* scene){
 		_nodes[c] = Geo_Node(aiScene, aiScene->mRootNode->mChildren[c]);
 
 	for (std::vector<Geo_Node>::iterator currentNode = _nodes.begin(); currentNode < _nodes.end(); currentNode++)
-		if (currentNode->getMeshCount() == 1) {
-			// currentNode->setRenderObj((Geo_RenderObj*)currentNode->getFirstMesh());
-			// scene->addGeometry(currentNode->getName(), &(*currentNode));
-		}
-		else if (currentNode->getMeshCount() > 1)
-			puts("Multpile meshes detected!");
-
+		if((*currentNode).getMeshCount() == 1)
+			scene->addGeometry(currentNode->getName(), &(*currentNode));
 }
