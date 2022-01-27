@@ -6,6 +6,8 @@
 #include "Timer.hpp";
 #include "Input.hpp";
 
+#define BAD_CURSOR_POS -1.0f
+
 struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;
@@ -16,14 +18,19 @@ struct Platform {
     void handleEvents(); // handles platform specific events
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
-    bool getCursorCoords(float* xPos, float* yPos) const; // returns true if within window bounds
-    
+    static float getCursorX(){ return xCursorPos; }
+    static float getCursorY(){ return yCursorPos; }
+
     static Input_KeyLogger keyLogger;
     static Input_MouseLogger mouseLogger;
 private:
+    bool getCursorCoords(float* xPos, float* yPos) const; // returns true if within window bounds
+    
+    NATIVE_PLATFORM_CONTEXT _context;
 	const char* _execPath; // full path to executable
 	const char* _winName; // parent window display name
-	NATIVE_PLATFORM_CONTEXT _context;
+    static float xCursorPos; // internally tracks cursor position along x axis of window
+    static float yCursorPos; // internally tracks cursor position along y axis of window
 };
 
 #define TOPL_PLATFORM_H

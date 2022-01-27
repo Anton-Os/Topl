@@ -3,7 +3,7 @@
 #include <map>
 #include <cctype>
 
-typedef void (*keyCallback)(void); // Triggers action on a particular keypress, no arguments required
+typedef void (*keyCallback)(void); // Triggers action on a particular keypress
 
 class Input_KeyLogger {
 public:
@@ -26,6 +26,8 @@ enum MOUSE_Button {
 };
 
 #define TRACER_PATH_COUNT 64 // number of iterations inside each trace member
+
+// typedef void (*pressCallback)(float x, float y); // Triggers action on a particular mouse press, x and y cursor positions taken as input
 
 struct Input_TracerStep {
     MOUSE_Button button;

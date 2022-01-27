@@ -18,8 +18,14 @@ namespace Topl {
 	unsigned clicks = 0; // tracks presses with mouse
 }
 
-void mouseCallback_l(void){ if(Topl::clicks > 0) Topl::clicks--; }
-void mouseCallback_r(void){ Topl::clicks++; }
+void mouseCallback_l(void){ 
+	if(Topl::clicks > 0) Topl::clicks--; 
+	puts("Left Button Down!");
+}
+void mouseCallback_r(void){ 
+	Topl::clicks++; 
+	puts("Right Button Down");
+}
 
 // Shared functions
 
@@ -41,7 +47,7 @@ namespace Main {
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);
 
-            bool isInWindowBounds = platform->getCursorCoords(&mouseX, &mouseY);
+            // bool isInWindowBounds = platform->getCursorCoords(&mouseX, &mouseY);
 			platform->handleEvents();
 		}
 	}

@@ -2,6 +2,8 @@
 
 Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of KeyLogger class
 Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of MouseLogger class
+float Platform::xCursorPos = BAD_CURSOR_POS;
+float Platform::yCursorPos = BAD_CURSOR_POS;
 
 #ifdef _WIN32
 
@@ -17,7 +19,11 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
-	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_LBUTTONDOWN): {
+		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down)
+		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down, Platform::getCursorX(), Platform::getCursorY());
+	}
 	case (WM_LBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
 	case (WM_RBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up); }
@@ -48,6 +54,11 @@ void Platform::createWindow(){
 }
 
 void Platform::handleEvents(){
+	if(!getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos)){
+		xCursorPos = BAD_CURSOR_POS;
+		yCursorPos = BAD_CURSOR_POS;
+	} // sets cursor positions back to default values if out of window bounds
+
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&_context.eventMsg);
 		DispatchMessage(&_context.eventMsg);
