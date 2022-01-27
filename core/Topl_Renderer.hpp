@@ -119,20 +119,28 @@ public:
         if(!_isPipelineReady) puts("Pipeline not set for draw call!");
         if(!_isSceneReady) puts("Scene not built for draw call!");
         if(_renderIDs == 0) puts("No render targets for draw call!");
-        if(!_isPipelineReady || !_isSceneReady) return false; // failure
+        if(!_isPipelineReady || !_isSceneReady || _renderIDs == 0) return false; // failure
 
         _drawType = drawType;
         render(); // call virtual method
+        _frameIDs++; // increment frame counter
 		return true; // success
     }
-    virtual void clearView()  = 0;
+    virtual void clearView() = 0;
+    // virtual unsigned getPixColor(float x, float y) = 0; // takes mouse coordinates as inputs
+	unsigned getPixColor(float x, float y) {
+		if (x < 0.0) x = 0.0; else if (x > 1.0) x = 1.0; // clamping x
+		if (y < 0.0) y = 0.0; else if (y > 1.0) y = 1.0; // clamping y
+
+		Rasteron_Image* image = frame();
+		unsigned xOffset = (unsigned)(x * (float)image->width);
+		unsigned yOffset = (unsigned)(y * (float)image->height);
+		unsigned color = *(image->data + (yOffset * image->width) + xOffset);
+		deleteImg(image);
+		return color; // return color computed at offsets
+	}
     // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
 #ifdef RASTERON_H
-    Rasteron_Image* getFrame(){
-        Rasteron_Image* frameImg = frame();
-        _frameCapID++;
-        return frameImg;
-    }
     virtual Rasteron_Image* frame() = 0;
     // May need a renderer specific texture type here // Texture should be linked to graphics object id!!!
     virtual void assignTexture(const Rasteron_Image* image, unsigned id) = 0;
@@ -144,8 +152,8 @@ protected:
     enum DRAW_Type _drawType = DRAW_Triangles; // primitive to use to draw standard scene objects
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
-	unsigned _renderIDs = 0; // indicator for number of drawable graphics objects
-    unsigned _frameCapID = 0; // increments as more frames are captured
+	unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
+    unsigned long _frameIDs = 0; // increments with each frame drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:

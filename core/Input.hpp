@@ -16,13 +16,13 @@ private:
 };
 
 enum MOUSE_Button {
-    // MOUSE_LeftBtn_Up,
     MOUSE_LeftBtn_Down,
-    // MOUSE_RightBtn_Up,
+    MOUSE_LeftBtn_Up,
     MOUSE_RightBtn_Down,
-    MOUSE_MiddleBtn_Down,
+    MOUSE_RightBtn_Up,
+    /* MOUSE_MiddleBtn_Down,
     MOUSE_Scroll_Up,
-    MOUSE_Scroll_Down
+    MOUSE_Scroll_Down */
 };
 
 #define TRACER_PATH_COUNT 64 // number of iterations inside each trace member

@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
-Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of static member class
-Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of static member class
+Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of KeyLogger class
+Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of MouseLogger class
 
 #ifdef _WIN32
 
@@ -18,7 +18,9 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case(WM_MOUSEMOVE):{}
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_LBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
+	case (WM_RBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -57,14 +59,11 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	POINT point;
 	GetCursorPos(&point);
 
-	// HWND window = *(_context.window_ptr);
 	RECT windowRect;
 	GetWindowRect(_context.window, &windowRect);
 	
-	// if (point.x > windowRect.right && point.x < windowRect.left && point.y > windowRect.top&& point.y < windowRect.bottom) {
+	// Check if cursor is inside screen space
 	if (point.x < windowRect.right && point.x > windowRect.left && point.y > windowRect.top && point.y < windowRect.bottom) {
-		// Cursor is inside screen space!
-
 		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
 		LONG centerX = windowRect.left + halfWidth;
 		*xPos = (point.x - centerX) / (float)halfWidth;

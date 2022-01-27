@@ -14,13 +14,21 @@ namespace Topl {
     Geo_Actor planeActor  = Geo_Actor((Geo_RenderObj*)&plane);
 	Geo_FlatCircle circle = Geo_FlatCircle(0.1f);
 	Geo_Actor circleActor = Geo_Actor((Geo_RenderObj*)&circle);
+
+	unsigned clicks = 0; // tracks presses with mouse
 }
+
+void mouseCallback_l(void){ if(Topl::clicks > 0) Topl::clicks--; }
+void mouseCallback_r(void){ Topl::clicks++; }
 
 // Shared functions
 
 namespace Main {
     void init(Platform* platform) {
 		platform->createWindow();
+
+		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseCallback_l);
+		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseCallback_r);
 
 		Topl::scene.addGeometry("plane", &Topl::planeActor);
 	}

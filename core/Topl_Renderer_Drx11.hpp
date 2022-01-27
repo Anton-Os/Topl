@@ -69,6 +69,7 @@ public:
 	~Topl_Renderer_Drx11();
 
 	void clearView() override;
+	// unsigned getPixColor(float x, float y) override;
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);

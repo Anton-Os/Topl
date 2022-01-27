@@ -13,8 +13,10 @@ namespace Topl {
 	std::string imagesSubPath = "images/";
 	ValueGen valueGen = ValueGen(); // seeds random number generation
 
-    Geo_FlatTriangle trig = Geo_FlatTriangle(0.5f); 
-    Geo_Actor trigGeo  = Geo_Actor((Geo_RenderObj*)&trig);
+	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
+	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
+	Geo_FlatCircle pickerCircle = Geo_FlatCircle(0.25f);
+	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
 	Geo_PaneLayout defaultLayout("layout1", &scene, 3, 3);
 	Geo_PaneLayout customLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
@@ -27,13 +29,19 @@ namespace Main {
 		platform->createWindow();
 
 		Topl::customLayout.move(&Topl::scene, Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
+		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
+		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
+		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
+
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);
+			unsigned pixel = renderer->getPixColor(0, 0); // for testing
 
 			platform->handleEvents();
 		}

@@ -174,9 +174,22 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 }
 
 void Topl_Renderer_GL4::clearView(){
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	// glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
+
+/* unsigned Topl_Renderer_GL4::getPixColor(float x, float y){
+	if(x < 0.0) x = 0.0; else if(x > 1.0) x = 1.0; // clamping x
+	if(y < 0.0) y = 0.0; else if(y > 1.0) y = 1.0; // clamping y
+
+	Rasteron_Image* image = frame();
+	unsigned xOffset = (unsigned)(x * (float)image->width);
+	unsigned yOffset = (unsigned)(y * (float)image->height);
+	unsigned color = *(image->data + (yOffset * image->width) + xOffset);
+	deleteImg(image);
+	return color; // return color computed at offsets
+} */
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
@@ -275,14 +288,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 // EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_GL4::frame(){
-	// custom Image format creation
-	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
-
-	image->width = TOPL_WIN_WIDTH;
-	image->height = TOPL_WIN_HEIGHT;
-	image->name = "framebuff"; // TODO: Make this incremental, i.e framebuff1 framebuff2
-
-	image->data = (uint32_t*)malloc(image->width * image->height * sizeof(uint32_t));
+	// Framebuffer Copying Operation
+	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
 	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 
 	return image;
