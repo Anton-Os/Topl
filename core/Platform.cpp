@@ -20,21 +20,25 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case(WM_MOUSEMOVE):{}
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): {
+		if(wParam & MK_LBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down)
 		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down, Platform::getCursorX(), Platform::getCursorY());
 	}
-	case (WM_LBUTTONUP): { 
+	case (WM_LBUTTONUP): {
+		// if(wParam & MK_LBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up)
 		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up, Platform::getCursorX(), Platform::getCursorY()); 
 	}
-	case (WM_RBUTTONDOWN): { 
+	case (WM_RBUTTONDOWN): {
+		if(wParam & MK_RBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down)
 		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down, Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_RBUTTONUP): { 
+		// if(wParam & MK_RBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up)
 		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up, Platform::getCursorX(), Platform::getCursorY());

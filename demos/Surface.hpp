@@ -27,6 +27,9 @@ void mouseCallback_r(void){
 	puts("Right Button Down");
 }
 
+void mouseCallback_l2(void) { puts("Left Button Up"); }
+void mouseCallback_r2(void) { puts("Right Button Up"); }
+
 // Shared functions
 
 namespace Main {
@@ -35,6 +38,8 @@ namespace Main {
 
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseCallback_l);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseCallback_r);
+		// Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, mouseCallback_l2);
+		// Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, mouseCallback_r2);
 
 		Topl::scene.addGeometry("plane", &Topl::planeActor);
 	}
