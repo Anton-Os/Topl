@@ -90,6 +90,7 @@ namespace Main {
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		while (1) {
+			Topl::gameTicker.updateTimer();
 			Topl::scene.resolvePhysics();
 
 			renderer->clearView();
@@ -97,7 +98,7 @@ namespace Main {
 			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
-			Topl::gameTicker.updateTimer();
+			renderer->switchFramebuff();
 		}
 	}
 }

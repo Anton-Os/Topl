@@ -44,6 +44,7 @@ namespace Main {
 			unsigned pixel = renderer->getPixColor(0, 0); // for testing
 
 			platform->handleEvents();
+			renderer->switchFramebuff();
 		}
 	}
 }

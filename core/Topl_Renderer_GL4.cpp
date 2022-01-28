@@ -179,17 +179,14 @@ void Topl_Renderer_GL4::clearView(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-/* unsigned Topl_Renderer_GL4::getPixColor(float x, float y){
-	if(x < 0.0) x = 0.0; else if(x > 1.0) x = 1.0; // clamping x
-	if(y < 0.0) y = 0.0; else if(y > 1.0) y = 1.0; // clamping y
-
-	Rasteron_Image* image = frame();
-	unsigned xOffset = (unsigned)(x * (float)image->width);
-	unsigned yOffset = (unsigned)(y * (float)image->height);
-	unsigned color = *(image->data + (yOffset * image->width) + xOffset);
-	deleteImg(image);
-	return color; // return color computed at offsets
-} */
+void Topl_Renderer_GL4::switchFramebuff(){
+	if(_isSceneDrawn)
+#ifdef _WIN32 // Swap buffers in windows
+	swapBuffers_win(&_nativeContext.windowDevice_Ctx);
+#elif defined(__linux__)
+	swapBuffers_linux(_nativeContext.display, _nativeContext.window_ptr);
+#endif
+}
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
@@ -286,12 +283,16 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 #ifdef RASTERON_H
 
-// EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_GL4::frame(){
 	// Framebuffer Copying Operation
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	/* glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadBuffer(GL_BACK); glFinish(); glFlush(); // potential fix */
 	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
-
+	/* unsigned char* colorBytes = (unsigned char*)malloc(image->width * image->height * 4 * sizeof(char)); // 4 values per pixel
+	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, colorBytes);
+	free(colorBytes); */
 	return image;
 }
 
@@ -396,11 +397,5 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-
 	free(buffer_ptrs);
-#ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&_nativeContext.windowDevice_Ctx);
-#elif defined(__linux__)
-	swapBuffers_linux(_nativeContext.display, _nativeContext.window_ptr);
-#endif
 }

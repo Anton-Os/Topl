@@ -24,9 +24,21 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down)
 		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down, Platform::getCursorX(), Platform::getCursorY());
 	}
-	case (WM_LBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up); }
-	case (WM_RBUTTONDOWN): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down); }
-	case (WM_RBUTTONUP): { Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up); }
+	case (WM_LBUTTONUP): { 
+		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up)
+		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up, Platform::getCursorX(), Platform::getCursorY()); 
+	}
+	case (WM_RBUTTONDOWN): { 
+		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down)
+		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down, Platform::getCursorX(), Platform::getCursorY());
+	}
+	case (WM_RBUTTONUP): { 
+		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up)
+		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up, Platform::getCursorX(), Platform::getCursorY());
+	 }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}

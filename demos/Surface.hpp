@@ -49,6 +49,7 @@ namespace Main {
 
             // bool isInWindowBounds = platform->getCursorCoords(&mouseX, &mouseY);
 			platform->handleEvents();
+			renderer->switchFramebuff();
 		}
 	}
 }

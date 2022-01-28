@@ -61,6 +61,7 @@ namespace Main {
 			renderer->renderScene(DRAW_Triangles);
 
 			platform->handleEvents();
+			renderer->switchFramebuff();
 		}
 	}
 }

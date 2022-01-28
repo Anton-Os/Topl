@@ -89,7 +89,7 @@ protected:
 	std::string genPrefix_hlsl() { return "hlsl/"; }
 };
 
-// Primary shader contains virtual functions in order to pass uniforms into bytes container
+// Primary shader contains virtual functions in order to pass uniforms
 class Topl_EntryShader : public Topl_Shader {
 public:
     // Basic constructor

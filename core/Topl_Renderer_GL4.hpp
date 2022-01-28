@@ -65,6 +65,7 @@ public:
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
+	void switchFramebuff() override;
 	// unsigned getPixColor(float x, float y) override;
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);

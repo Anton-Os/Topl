@@ -64,12 +64,13 @@ namespace Main {
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
 		while (1) {
+			Topl::gameTicker.updateTimer();
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Points);
 
 			platform->handleEvents();
-			Topl::gameTicker.updateTimer();
+			renderer->switchFramebuff();
 		}
 	}
 }

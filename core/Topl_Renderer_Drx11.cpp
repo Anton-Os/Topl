@@ -265,18 +265,9 @@ void Topl_Renderer_Drx11::clearView(){
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
-/* unsigned Topl_Renderer_Drx11::getPixColor(float x, float y){
-	if(x < 0.0) x = 0.0; else if (x > 1.0) x = 1.0; // clamping x
-	if (y < 0.0) y = 0.0; else if (y > 1.0) y = 1.0; // clamping y
-
-	Rasteron_Image* image = frame();
-	unsigned xOffset = (unsigned)(x * (float)image->width);
-	unsigned yOffset = (unsigned)(y * (float)image->height);
-	unsigned color = *(image->data + (yOffset * image->width) + xOffset);
-	deleteImg(image);
-	return color; // return color computed at offsets
-} */
-
+void Topl_Renderer_Drx11::switchFramebuff(){
+	if(_isSceneDrawn) _swapChain->Present(0, 0);
+}
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
@@ -530,6 +521,4 @@ void Topl_Renderer_Drx11::render(void){
 		}
 
 	free(dBuffers);
-
-    _swapChain->Present(0, 0);
 }
