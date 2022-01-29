@@ -265,9 +265,7 @@ void Topl_Renderer_Drx11::clearView(){
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
-void Topl_Renderer_Drx11::switchFramebuff(){
-	if(_isSceneDrawn) _swapChain->Present(0, 0);
-}
+void Topl_Renderer_Drx11::switchFramebuff(){ _swapChain->Present(0, 0); }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates

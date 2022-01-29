@@ -6,6 +6,7 @@
 
 class Geo_Mesh : public Geo_RenderObj {
 public:
+    Geo_Mesh() : Geo_RenderObj(){}
     Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)){
         _mesh = mesh;
     }
@@ -29,11 +30,11 @@ public:
 		if (scene != nullptr && node != nullptr)
 			init(scene, node);
     }
-    ~Geo_Node(){ if(_meshes != nullptr) free(_meshes); }
+    // ~Geo_Node(){ if(_meshes != nullptr) free(_meshes); }
 
     unsigned getMeshCount(){ return _meshCount; }
-    Geo_Mesh* getFirstMesh(){ return _meshes; }
-    Geo_Mesh* getMesh(unsigned index){ return _meshes + index; }
+    /* Geo_Mesh* getFirstMesh(){ return _meshes; }
+    Geo_Mesh* getMesh(unsigned index){ return _meshes + index; } */
 private:
 	void init(const aiScene* scene, const aiNode* node);
 
@@ -41,5 +42,6 @@ private:
     const aiNode* _node = nullptr;
 
     unsigned _meshCount = 0;
-    Geo_Mesh* _meshes = nullptr;
+    Geo_Mesh _mesh;
+    // Geo_Mesh* _meshes = nullptr;
 };

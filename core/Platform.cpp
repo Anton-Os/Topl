@@ -69,11 +69,9 @@ void Platform::createWindow(){
 	UpdateWindow(_context.window);
 }
 
-void Platform::handleEvents(){
-	if(!getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos)){
-		xCursorPos = BAD_CURSOR_POS;
-		yCursorPos = BAD_CURSOR_POS;
-	} // sets cursor positions back to default values if out of window bounds
+void Platform::handleEvents(bool isCursorUpdate){
+	if(!isCursorUpdate) resetCursor();
+	else if(!getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos)) resetCursor();
 
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&_context.eventMsg);

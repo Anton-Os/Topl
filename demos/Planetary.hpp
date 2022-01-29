@@ -68,9 +68,9 @@ namespace Main {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Points);
-
-			platform->handleEvents();
 			renderer->switchFramebuff();
+
+			platform->handleEvents(false);
 		}
 	}
 }

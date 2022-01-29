@@ -51,10 +51,9 @@ namespace Main {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);
-
-            // bool isInWindowBounds = platform->getCursorCoords(&mouseX, &mouseY);
-			platform->handleEvents();
 			renderer->switchFramebuff();
+
+			platform->handleEvents(true);
 		}
 	}
 }

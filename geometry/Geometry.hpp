@@ -63,6 +63,7 @@ typedef float (*vTformCallback)(float, double); // callback for transforming ver
 
 class Geo_RenderObj {
 public:
+	Geo_RenderObj(){} // empty constructor
 	Geo_RenderObj(unsigned v); // vertex only constructor
     Geo_RenderObj(unsigned v, unsigned i); // vertex and indices constructor
     

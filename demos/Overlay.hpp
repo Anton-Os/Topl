@@ -41,10 +41,13 @@ namespace Main {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);
-			unsigned pixel = renderer->getPixColor(0, 0); // for testing
-
-			platform->handleEvents();
+			// if(Platform::getIsCursorInClient())
+			float x = Platform::getCursorX(); float y = Platform::getCursorY();
+			if(x != BAD_CURSOR_POS && y != BAD_CURSOR_POS)
+				unsigned pixel = renderer->getPixColor(Platform::getCursorX(), Platform::getCursorY()); // for testing
 			renderer->switchFramebuff();
+
+			platform->handleEvents(true);
 		}
 	}
 }
