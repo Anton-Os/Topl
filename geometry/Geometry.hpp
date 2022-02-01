@@ -71,10 +71,10 @@ public:
 	void cleanup();
 	void modify(vTformCallback callback, double mod, AXIS_Target axis);
 
-    unsigned getVerticesCount() const { return _verticesCount; } // get Vertex Count
-    unsigned getIndexCount() const { return _indicesCount; } // get Index Count
+    unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count
+    unsigned getIndexCount() const { return _indicesCount; } // get index Count
 
-	vertex_cptr getVertices();
+	vertex_cptr getVertices() const { return _vertices; }
     ui_cptr getIndices() const { return _indices; }
 	vec3f_cptr getPosData() const { return _posData; }
 	vec3f_cptr getNormalsData() const { return _normalsData; }
@@ -88,14 +88,14 @@ protected:
 
 	double _startAngle = 0.0; // starting angle for vertex generation
 
-    unsigned _verticesCount = 0; // Vertex count
-    unsigned _indicesCount = 0; // Index count
+    unsigned _verticesCount = 0; // vertex count
 	Geo_Vertex* _vertices = nullptr; // formatted vertex data
-	unsigned* _indices = nullptr; // index data
-
     Eigen::Vector3f* _posData = nullptr; // position data
 	Eigen::Vector3f* _normalsData = nullptr; // normals data
     Eigen::Vector2f* _texCoordData = nullptr; // texture coordinate data
+
+	unsigned _indicesCount = 0; // index count
+	unsigned* _indices = nullptr; // index data
 };
 
 #define GEOMETRY_H

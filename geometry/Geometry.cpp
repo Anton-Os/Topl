@@ -60,18 +60,17 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
         (*(_posData + v))[vAttributeOffset] = callback((*(_posData + v))[vAttributeOffset], mod); // updates specific vertex attribute
 }
 
-vertex_cptr Geo_RenderObj::getVertices(){
-    if (_vertices == nullptr) {
-        _vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
-        for (unsigned v = 0; v < _verticesCount; v++)
-            *(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
-    }
-    return _vertices;
-}
-
 void Geo_RenderObj::fillRenderObj(){
     genVertices(_posData);
     genNormals(_normalsData);
     genTexCoords(_texCoordData);
-    if(_indicesCount != 0) genIndices(_indices);
+
+	// Generate Vertices Immediately
+	if (_vertices == nullptr) {
+		_vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
+		for (unsigned v = 0; v < _verticesCount; v++)
+			*(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
+	}
+
+	if (_indicesCount != 0) genIndices(_indices);
 } 

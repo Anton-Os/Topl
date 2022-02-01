@@ -179,6 +179,29 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
     _deviceCtx->OMSetRenderTargets(1, &_rtView, NULL);
 
+	// Depth Stencil View Creation
+
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+	depthStencilDesc.Height = TOPL_WIN_HEIGHT;
+	depthStencilDesc.Width = TOPL_WIN_WIDTH;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthStencilTex;
+	_device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilTex);
+	_device->CreateDepthStencilView(depthStencilTex, NULL, &_dsView);
+
+	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
+
+
 	// Viewport Creation
 
     D3D11_VIEWPORT viewport;
@@ -205,7 +228,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	_device->CreateBlendState(&blendStateDesc, &_blendState);
     
@@ -213,28 +236,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	UINT blendMask = 0xffffffff;
 
 	_deviceCtx->OMSetBlendState(_blendState, blendFactor, blendMask);
-
-	// Depth Stencil View Creation
-
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	
-	depthStencilDesc.Height = TOPL_WIN_HEIGHT;
-	depthStencilDesc.Width = TOPL_WIN_WIDTH;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	ID3D11Texture2D* depthStencilTex;
-	_device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilTex);
-	_device->CreateDepthStencilView(depthStencilTex, NULL, &_dsView);
-
-	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
 
 	// Rasterizer State creation
 
@@ -255,7 +256,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
-	return;
 }
 
 void Topl_Renderer_Drx11::clearView(){
