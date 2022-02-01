@@ -4,7 +4,7 @@
 
 #define PANE_RADIUS 0.5
 #define PANE_BORDER 0.05f
-// #define DEFAULT_PANE_Y 0.05
+#define PANE_BK_COLOR 0xFFFFFFFF // default is white
 #define PANE_ROOT_Z 0.000002
 #define PANE_CHILD_Z 0.000001
 
@@ -30,7 +30,7 @@ public:
 #endif
 private:
 	Geo_FlatSquare* _square = nullptr;
-    unsigned _bkColor = 0xFFFFFFFF; // default background is white
+    unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
     Rasteron_Image* _background = nullptr; // background image available if Rasteron is supported
 #endif

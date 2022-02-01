@@ -186,6 +186,7 @@ void Topl_Renderer_GL4::switchFramebuff(){
 #elif defined(__linux__)
 	swapBuffers_linux(_nativeContext.display, _nativeContext.window_ptr);
 #endif
+	_isSceneDrawn = false; // awaiting another draw call
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
@@ -209,7 +210,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		vertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
-		// component block buffer generation
+		// render block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			_renderCtx.buffers.push_back(Buffer_GL4(rID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
@@ -284,15 +285,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_GL4::frame(){
-	// Framebuffer Copying Operation
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	/* glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glReadBuffer(GL_BACK); glFinish(); glFlush(); // potential fix */
 	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
-	/* unsigned char* colorBytes = (unsigned char*)malloc(image->width * image->height * 4 * sizeof(char)); // 4 values per pixel
-	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, colorBytes);
-	free(colorBytes); */
 	return image;
 }
 
@@ -338,6 +332,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		}
 	}
 
+	// TODO: update textures here if necessary
+
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	_isSceneReady = true;
 	return;
@@ -359,7 +355,7 @@ void Topl_Renderer_GL4::render(void){
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx.buffers.front().buffer);
 
-	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_GL4*));
+	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _renderIDs; id++) {
@@ -370,18 +366,18 @@ void Topl_Renderer_GL4::render(void){
 		// Buffer discovery and binding step
 		_GL4::discoverBuffers(buffer_ptrs, &_renderCtx.buffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, buffer_ptrs, MAX_BUFFERS_PER_TARGET);
+		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
+		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 		for (unsigned t = 0; t < _renderCtx.textures.size(); t++) {
-			if (_renderCtx.textures.at(t).targetID > id) break; // This means we have passed it in sequence
+			if (_renderCtx.textures.at(t).targetID > id) break; // Geometry actor is passed in sequence 
 			else if (_renderCtx.textures.at(t).targetID == id) {
 				glBindTexture(GL_TEXTURE_2D, _renderCtx.textures.at(t).texture);
 				break;
@@ -398,4 +394,6 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	free(buffer_ptrs);
+
+	_isSceneDrawn = true;
 }

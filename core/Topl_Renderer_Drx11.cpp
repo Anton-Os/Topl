@@ -187,11 +187,12 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 	depthStencilDesc.Width = TOPL_WIN_WIDTH;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	depthStencilDesc.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
 	depthStencilDesc.SampleDesc.Count = 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	// depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
@@ -265,7 +266,10 @@ void Topl_Renderer_Drx11::clearView(){
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
-void Topl_Renderer_Drx11::switchFramebuff(){ _swapChain->Present(0, 0); }
+void Topl_Renderer_Drx11::switchFramebuff(){ 
+	_swapChain->Present(0, 0); 
+	_isSceneDrawn = false; // awaiting another draw call
+}
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
@@ -340,7 +344,6 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 #ifdef RASTERON_H
 
-// EXPERIMENTAL SCREEN CAPTURE CODE!
 Rasteron_Image* Topl_Renderer_Drx11::frame(){
 	HRESULT hr;
 
@@ -429,9 +432,8 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
-	std::vector<uint8_t> blockBytes; // New Implementation
+	std::vector<uint8_t> blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
-	// Buffer_Drx11* sceneBlockBuff = nullptr;
 
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		_Drx11::createBlockBuff(&_device, &_renderCtx.buffers.front().buffer, &blockBytes); // Update code should work
@@ -447,21 +449,19 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 					break;
 				}
 
-			if (renderBlockBuff == nullptr) { // TODO: Replace this!
-				OutputDebugStringA("Block buffer could not be located!");
-				return;
-			} else _isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
-
+			if(renderBlockBuff != nullptr) _isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
 			if (!_isSceneReady) return; // Error
 		}
 	}
+
+	// TODO: update textures here if necessary
 
     _isSceneReady = true;
 	return;
 }
 
 void Topl_Renderer_Drx11::render(void){
-	switch(_drawType) { // Change draw type depending on what is configured
+	switch(_drawType) { // TODO: This code needs to be optimized and grouped separately
 	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
 	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
@@ -469,40 +469,44 @@ void Topl_Renderer_Drx11::render(void){
 	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
 	default:
 		OutputDebugStringA("Draw type not supported yet!");
-		return;
+		_isSceneDrawn = false; return;
 	}
 
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_renderCtx.buffers.front();
-		_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+		if(sceneBlockBuff != nullptr)
+			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(MAX_BUFFERS_PER_TARGET * sizeof(Buffer_Drx11*));
+	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
 
-	// rendering Loop!
+	// Rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
 			_Drx11::discoverBuffers(dBuffers, &_renderCtx.buffers, id);
 
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, MAX_BUFFERS_PER_TARGET);
-			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Render_Block, dBuffers, MAX_BUFFERS_PER_TARGET);
-			if (indexBuff == nullptr || vertexBuff == nullptr) {
-				OutputDebugStringA("One of the required buffers was not ready for drawing. Oops");
-				return;
-			}
+			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, BUFFERS_PER_RENDERTARGET);
+			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, BUFFERS_PER_RENDERTARGET);
+			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Render_Block, dBuffers, BUFFERS_PER_RENDERTARGET);
 
-			// TODO: Check for renderBlockBuff validity
-			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+			if(renderBlockBuff != nullptr)
+				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 
 			UINT stride = sizeof(Geo_Vertex);
 			UINT offset = 0;
-			_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
-			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+
+			if(vertexBuff == nullptr || vertexBuff->count == 0){
+				OutputDebugStringA("Vertex buffer has been corrupted!");
+				_isSceneDrawn = false; return;
+			}
+			else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			
+			if(indexBuff != nullptr && indexBuff->count > 0)
+				_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			for (unsigned t = 0; t < _renderCtx.textures.size(); t++) {
-				if (_renderCtx.textures.at(t).targetID > id) break; // This means we have passed it in sequence
+				if (_renderCtx.textures.at(t).targetID > id) break; // Geometry actor is passed in sequence 
 				else if (_renderCtx.textures.at(t).targetID == id) {
 					ID3D11SamplerState* baseSampler = _renderCtx.textures.at(t).sampler;
 					ID3D11ShaderResourceView* resView = _renderCtx.textures.at(t).resView;
@@ -514,9 +518,10 @@ void Topl_Renderer_Drx11::render(void){
 			}
 
 			// Draw Call!
-			if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0);
-			else _deviceCtx->Draw(vertexBuff->count, 0);
+			if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+			else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 		}
 
 	free(dBuffers);
+	_isSceneDrawn = true;
 }

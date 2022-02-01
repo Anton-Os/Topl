@@ -9,18 +9,22 @@
 
 #define SPECIAL_SCENE_RENDER_ID 0
 
+#define SEQUENTIAL_DRAW 0 // for targets drawn sequentially
+#define REVERSE_DRAW 1 // for targets drawn in reverse
+
 struct RenderTarget {
 	RenderTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
 	RenderTarget(unsigned id) { targetID = id; }
 	unsigned targetID;
 };
 
-#define MAX_BUFFERS_PER_TARGET 3 // KEEP THIS UPDATED ALWAYS!
+#define BUFFERS_PER_RENDERTARGET 3 // Each render target has fixed number of associated buffers!
+// BUFFERS_PER_RENDERTARGET matches the number of enumerations inside BUFF_Type
 
 enum BUFF_Type {
-    BUFF_Vertex_Type = 0, // custom vertex format
-    BUFF_Index_UI = 1, // unsigned int Index Type
-    BUFF_Render_Block = 2, // stores constants per draw object
+    BUFF_Vertex_Type = 0, // vertex buffer type
+    BUFF_Index_UI = 1, // index buffer type
+    BUFF_Render_Block = 2, // render block buffer types
 };
 
 struct Buffer : public RenderTarget {
@@ -129,10 +133,9 @@ public:
         }
 
         _drawType = drawType;
-        render(); // call virtual method
+		render();
         _frameIDs++; // increment frame counter
-        _isSceneDrawn = true;
-		return true; // success
+		return _isSceneDrawn; // render call sets variable internally
     }
     // virtual unsigned getPixColor(float x, float y) = 0; // takes mouse coordinates as inperror
 	unsigned getPixColor(float x, float y) {

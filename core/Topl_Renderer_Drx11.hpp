@@ -4,6 +4,9 @@
 #include <d3dx11.h> // DirectX Renderer Specific
 #include <d3dx10math.h> // DirectX Renderer Specific
 
+// see Topl_Renderer.h
+#define DRAW_ORDER 1 // last render target is drawn first, reverse order
+
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}
 	Buffer_Drx11(ID3D11Buffer* b) : Buffer(){ buffer = b; }

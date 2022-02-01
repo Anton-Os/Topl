@@ -65,7 +65,7 @@ public:
 	lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
 	const Rasteron_Image* getFirstTexture(const std::string& name) const;
-	// unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see MAX_BUFFERS_PER_TARGET in Renderer.hpp
+	// unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see BUFFERS_PER_RENDERTARGET in Renderer.hpp
 #endif
 
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);

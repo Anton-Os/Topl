@@ -66,11 +66,7 @@ void Geo_RenderObj::fillRenderObj(){
     genTexCoords(_texCoordData);
 
 	// Generate Vertices Immediately
-	/* if (_vertices == nullptr) {
-		_vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
-		for (unsigned v = 0; v < _verticesCount; v++)
-			*(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
-	} */
+	// genVertices();
 
 	if (_indicesCount != 0) genIndices(_indices);
 }

@@ -4,8 +4,6 @@
 #include "Textured_Shader.hpp"
 #include "Flat_Shader.hpp"
 
-// Entry Point
-
 int main(int argc, char** argv) {
 
 	Platform platform(argv[0], "GL4 Overlay");

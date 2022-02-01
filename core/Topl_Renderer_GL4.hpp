@@ -1,11 +1,14 @@
 #include "Topl_Renderer.hpp"
 
-#define GLEW_STATIC // OpenGL Renderer Specific
-#include "GL/glew.h" // OpenGL Renderer Specific
-#include <GL/gl.h> // OpenGL Renderer Specific
- #include <GL/glu.h> // OpenGL Renderer Specific
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
+
+// see Topl_Renderer.h
+#define DRAW_ORDER 0 // first render target is drawn first, sequential order
 
 // Buffer Object Allocation Helpers
 
@@ -21,7 +24,6 @@ struct Buffer_GL4 : public Buffer {
 // Vertex Array Object Allocation Helpers
 
 #define GL4_VERTEX_ARRAY_MAX 1024
-
 struct VertexArray_GL4 : public RenderTarget {
 	VertexArray_GL4() : RenderTarget() {}
 	VertexArray_GL4(unsigned id, GLuint v) : RenderTarget(id){ vao = v; }
