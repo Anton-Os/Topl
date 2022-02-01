@@ -1,6 +1,6 @@
 #include "Geo_Flat.hpp"
 
-void Geo_Flat::genVertices(Eigen::Vector3f* data){
+void Geo_Flat::genPos(Eigen::Vector3f* data){
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 

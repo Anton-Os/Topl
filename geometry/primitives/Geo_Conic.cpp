@@ -1,6 +1,6 @@
 #include "Geo_Conic.hpp"
 
-void Geo_Conic::genVertices(Eigen::Vector3f* data){
+void Geo_Conic::genPos(Eigen::Vector3f* data){
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 	const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically

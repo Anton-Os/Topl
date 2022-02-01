@@ -16,7 +16,7 @@ public:
 private:
     static unsigned getIndexCount(const aiMesh* mesh); // gets indices by iterating through faces
 
-    void genVertices(Eigen::Vector3f* data) override;
+    void genPos(Eigen::Vector3f* data) override;
 	void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;

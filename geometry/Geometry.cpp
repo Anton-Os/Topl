@@ -61,16 +61,23 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
 }
 
 void Geo_RenderObj::fillRenderObj(){
-    genVertices(_posData);
+    genPos(_posData);
     genNormals(_normalsData);
     genTexCoords(_texCoordData);
 
 	// Generate Vertices Immediately
-	if (_vertices == nullptr) {
+	/* if (_vertices == nullptr) {
 		_vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
 		for (unsigned v = 0; v < _verticesCount; v++)
 			*(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
-	}
+	} */
 
 	if (_indicesCount != 0) genIndices(_indices);
-} 
+}
+
+void Geo_RenderObj::genVertices(){
+    if(_vertices == nullptr) _vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
+		
+    for (unsigned v = 0; v < _verticesCount; v++)
+        *(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
+}

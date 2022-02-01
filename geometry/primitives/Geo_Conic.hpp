@@ -15,7 +15,7 @@ public:
     float getRadius() const { return _shape2D.radius; }
     unsigned getSegments() const { return _shape2D.segments; }
 private:
-    void genVertices(Eigen::Vector3f* data) override;
+    void genPos(Eigen::Vector3f* data) override;
     void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;

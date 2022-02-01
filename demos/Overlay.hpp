@@ -20,13 +20,36 @@ namespace Topl {
 
 	Geo_PaneLayout defaultLayout("layout1", &scene, 3, 3);
 	Geo_PaneLayout customLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
+
+	bool isPressPend;
+#ifdef RASTERON_H
+	Rasteron_Image* pickerBk = nullptr;
+	Rasteron_Image* captureBk = nullptr;
+#endif
 }
 
 // Shared functions
+void mouseCallback(void) {
+	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS)
+		Topl::isPressPend = true;
+}
+
+unsigned getPressPixel(Topl_Renderer* renderer) {
+	unsigned pixel;
+	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS) // captures pixel at cursor position
+		pixel = renderer->getPixColor(Platform::getCursorX(), Platform::getCursorY());
+#ifdef RASTERON_H
+	if (Topl::pickerBk == nullptr) Topl::scene.addTexture("picker", createImgBlank(255, 255, pixel)); // picks out the color
+#endif
+	return pixel;
+}
 
 namespace Main {
     void init(Platform* platform) {
 		platform->createWindow();
+
+		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseCallback);
+		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseCallback);
 
 		Topl::customLayout.move(&Topl::scene, Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
@@ -36,18 +59,28 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
-
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(DRAW_Triangles);
-			// if(Platform::getIsCursorInClient())
-			float x = Platform::getCursorX(); float y = Platform::getCursorY();
-			if(x != BAD_CURSOR_POS && y != BAD_CURSOR_POS)
-				unsigned pixel = renderer->getPixColor(Platform::getCursorX(), Platform::getCursorY()); // for testing
-			renderer->switchFramebuff();
 
+			if (Topl::isPressPend) {
+				unsigned pixel = getPressPixel(renderer);
+				Topl::isPressPend = false; // mouse callback has been handled
+			}
+
+			if (Topl::captureBk == nullptr) {
+				Topl::captureBk = renderer->frame(); // attempt to capture screen
+				Topl::scene.addTexture("capture", Topl::captureBk);
+			}
+
+			renderer->switchFramebuff();
 			platform->handleEvents(true);
 		}
+	}
+
+	void cleanup() {
+		if(Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk);
+		if(Topl::captureBk != nullptr) deleteImg(Topl::captureBk);
 	}
 }

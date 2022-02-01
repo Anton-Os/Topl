@@ -1,6 +1,6 @@
 #include "Geo_Sphere.hpp"
 
-void Geo_SphereUV::genVertices(Eigen::Vector3f* data){
+void Geo_SphereUV::genPos(Eigen::Vector3f* data){
     Eigen::Vector3f topVertex = Eigen::Vector3f(0.0f, _shape3D.radius, 0.0f);
     *(data + 0) = topVertex; // first vertex is the top of the sphere
 

@@ -1,6 +1,6 @@
 #include "Geo_Extruded.hpp"
 
-void Geo_Extruded::genVertices(Eigen::Vector3f* data){
+void Geo_Extruded::genPos(Eigen::Vector3f* data){
 	// Vertices for FRONT FACE
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;

@@ -3,7 +3,7 @@
 #include "Geo_Tree.hpp"
 
 #define PANE_RADIUS 0.5
-#define PANE_BORDER 0.00
+#define PANE_BORDER 0.05f
 // #define DEFAULT_PANE_Y 0.05
 #define PANE_ROOT_Z 0.000002
 #define PANE_CHILD_Z 0.000001

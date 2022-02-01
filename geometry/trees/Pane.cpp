@@ -21,8 +21,8 @@ void Geo_PaneLayout::init(unsigned rows, unsigned columns) {
 	_rows = rows;
 	_columns = columns;
 
-	_rootSquare.modify(stretchTform, (_radius * 2) - _border, AXIS_Y);
-	_rootSquare.modify(stretchTform, (_radius * 2) - _border, AXIS_X);
+	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_Y);
+	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_X);
 	Rasteron_Image* rootBk = createImgBlank(256, 256, _rootPane.getColor()); // white solid background
 	_rootPane.setImageBk(rootBk);
 
@@ -30,7 +30,8 @@ void Geo_PaneLayout::init(unsigned rows, unsigned columns) {
 	_childSquare.modify(stretchTform, ((_radius * 2) / _rows) - _border, AXIS_Y);
 	_childSquare.modify(stretchTform, ((_radius * 2) / _columns) - _border, AXIS_X);
 	for (std::vector<Geo_Pane>::iterator currentPane = _panes.begin(); currentPane < _panes.end(); currentPane++)
-		currentPane->setImageBk(createImgBlank(256, 256, ValueGen::genRandColorVal())); // red background
+		currentPane->setImageBk(createImgBlank(256, 256, 0xFFFF0000)); // red color
+		// currentPane->setImageBk(createImgBlank(256, 256, ValueGen::genRandColorVal())); // random background
 }
 
 void Geo_PaneLayout::fill(Topl_Scene* scene) {

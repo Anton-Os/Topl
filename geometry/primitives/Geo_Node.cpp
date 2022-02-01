@@ -9,7 +9,7 @@ unsigned Geo_Mesh::getIndexCount(const aiMesh* mesh){
 	return iCount;
 }
 
-void Geo_Mesh::genVertices(Eigen::Vector3f* data){
+void Geo_Mesh::genPos(Eigen::Vector3f* data){
 	for(unsigned v = 0; v < _verticesCount; v++){
 		aiVector3D* vertex = _mesh->mVertices + v;
 		*(data + v) = Eigen::Vector3f(vertex->x, vertex->y, vertex->z);

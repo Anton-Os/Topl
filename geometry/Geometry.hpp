@@ -74,14 +74,18 @@ public:
     unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get index Count
 
-	vertex_cptr getVertices() const { return _vertices; }
+	vertex_cptr getVertices() {
+		genVertices();
+		return _vertices;
+	}
     ui_cptr getIndices() const { return _indices; }
 	vec3f_cptr getPosData() const { return _posData; }
 	vec3f_cptr getNormalsData() const { return _normalsData; }
     vec2f_cptr getTexCoordData() const { return _texCoordData; }
 protected:
 	void fillRenderObj();
-    virtual void genVertices(Eigen::Vector3f* data) = 0;
+	void genVertices();
+    virtual void genPos(Eigen::Vector3f* data) = 0;
 	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;
     virtual void genIndices(unsigned* data) = 0;

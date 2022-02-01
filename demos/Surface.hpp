@@ -27,9 +27,6 @@ void mouseCallback_r(void){
 	puts("Right Button Down");
 }
 
-void mouseCallback_l2(void) { puts("Left Button Up"); }
-void mouseCallback_r2(void) { puts("Right Button Up"); }
-
 // Shared functions
 
 namespace Main {

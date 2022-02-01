@@ -32,7 +32,7 @@ void ShapesGen::tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, un
 } */
 
 
-void ShapesGen::Geo_DuplexShape::genVertices(Eigen::Vector3f* data){
+void ShapesGen::Geo_DuplexShape::genPos(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
@@ -53,7 +53,7 @@ void ShapesGen::Geo_DuplexShape::genIndices(unsigned* data){
 }
 
 
-void ShapesGen::Geo_TessShape::genVertices(Eigen::Vector3f* data){
+void ShapesGen::Geo_TessShape::genPos(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
