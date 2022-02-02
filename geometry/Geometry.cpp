@@ -67,6 +67,29 @@ void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
     }
 }
 
+/* void Geo_RenderObj::fuse(const Geo_RenderObj* refObj){
+    Geo_RenderObj tempObj;
+    tempObj->clone(&this);
+
+    cleanup(); // erase all items internally
+    _verticesCount = tempObj.getVerticesCount() + refObj->getVerticesCount();
+    _indicesCount = tempObj.getIndicesCount() + refObj->getIndicesCount();
+
+    if(_verticesCount != 0){
+        _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _texcoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+
+        // TODO: implement copying code here
+    }
+
+    if(_indicesCount != 0){ 
+        _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
+
+        // TODO: implement copying code here
+    }
+} */
+
 void Geo_RenderObj::cleanup() {
     _verticesCount = 0;
     _indicesCount = 0;

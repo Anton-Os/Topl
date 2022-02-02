@@ -56,17 +56,21 @@ public:
 			else puts("No meshes detected!");
 		}
     }
+	/* Geo_Node::Geo_Node(const Geo_Node& node){
+		const Geo_Mesh* meshRef = node.getMesh();
+		if (meshRef != nullptr && node.getMeshCount() > 0) {
+			_meshCount = node.getMeshCount();
+			_mesh->clone(meshRef);
+		}
+	} // copy constructor */
 	~Geo_Node() { if(_mesh != nullptr) delete(_mesh); }
-    // ~Geo_Node(){ if(_meshes != nullptr) free(_meshes); }
 
-	unsigned getMeshCount() { return _meshCount; }
-	Geo_Mesh* getMesh() { return _mesh; }
+	unsigned getMeshCount() const { return _meshCount; }
+	const Geo_Mesh* getMesh() const { return _mesh; }
 private:
     const aiScene* _scene = nullptr;
     const aiNode* _node = nullptr;
 
 	unsigned _meshCount = 0;
-    // Geo_Mesh* _mesh = nullptr;
-	// Geo_Mesh _mesh;
 	Geo_Mesh* _mesh = new Geo_Mesh();
 };

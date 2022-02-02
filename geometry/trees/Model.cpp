@@ -6,6 +6,15 @@ namespace _Model {
     std::string genNodeName(unsigned num){ return "node" + std::to_string(num); }
 }
 
+Geo_Model::~Geo_Model(){
+	if(_nodes != nullptr){
+		for(unsigned n = 0; n < _nodeCount; n++) 
+			delete(*(_nodes + n));
+		free(_nodes);
+		_nodes = nullptr;
+	}
+}
+
 void Geo_Model::fill(Topl_Scene* scene){
 	Assimp::Importer aiImporter;
 	unsigned aiFlags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType;
@@ -15,11 +24,16 @@ void Geo_Model::fill(Topl_Scene* scene){
 		aiFlags
 	);
 
-	_nodes.assign(aiScene->mRootNode->mNumChildren, Geo_Node(aiScene, aiScene->mRootNode));
-	for (unsigned c = 0; c < aiScene->mRootNode->mNumChildren; c++)
-		_nodes[c] = Geo_Node(aiScene, aiScene->mRootNode->mChildren[c]);
+	_nodeCount = aiScene->mRootNode->mNumChildren;
+	_nodes = (Geo_Node**)malloc(_nodeCount * sizeof(Geo_Node*));
+	for (unsigned n = 0; n < _nodeCount; n++) 
+		*(_nodes + n) = new Geo_Node(aiScene, aiScene->mRootNode->mChildren[n]);
 
-	for (std::vector<Geo_Node>::iterator currentNode = _nodes.begin(); currentNode < _nodes.end(); currentNode++)
-		if((*currentNode).getMeshCount() == 1)
-			scene->addGeometry(currentNode->getName(), &(*currentNode));
+	for (unsigned n = 0; n < _nodeCount; n++) {
+		Geo_Node* currentNode = *(_nodes + n);
+		if (currentNode->getMeshCount() > 0) {
+			_geoNodeList.push_back(currentNode);
+			scene->addGeometry(getPrefix() + currentNode->getName(), currentNode);
+		}
+	}
 }
