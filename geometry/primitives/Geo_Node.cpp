@@ -11,21 +11,21 @@ unsigned Geo_Mesh::getIndexCount(const aiMesh* mesh){
 
 void Geo_Mesh::genPos(Eigen::Vector3f* data){
 	for(unsigned v = 0; v < _verticesCount; v++){
-		aiVector3D* vertex = _mesh->mVertices + v;
+		aiVector3D* vertex = _assimpMeshRef->mVertices + v;
 		*(data + v) = Eigen::Vector3f(vertex->x, vertex->y, vertex->z);
 	}
 }
 
 void Geo_Mesh::genNormals(Eigen::Vector3f* data) {
 	for(unsigned n = 0; n < _verticesCount; n++){
-		aiVector3D* normal = _mesh->mNormals + n;
+		aiVector3D* normal = _assimpMeshRef->mNormals + n;
 		*(data + n) = Eigen::Vector3f(normal->x, normal->y, normal->z);
 	}
 }
 
 void Geo_Mesh::genTexCoords(Eigen::Vector2f* data) {
 	for(unsigned t = 0; t < _verticesCount; t++){
-		// aiVector3D* texcoord = _mesh->mTextureCoords + t;
+		// aiVector3D* texcoord = _assimpMeshRef->mTextureCoords + t;
 		// *(data + t) = Eigen::Vector2f(texcoord->x, texcoord->y);
 		*(data + t) = Eigen::Vector2f(0.0f, 0.0f); // for testing
 	}
@@ -33,8 +33,8 @@ void Geo_Mesh::genTexCoords(Eigen::Vector2f* data) {
 
 void Geo_Mesh::genIndices(unsigned* data){
 	unsigned i = 0;
-	for(unsigned f = 0; f < _mesh->mNumFaces; f++){
-		const aiFace* face = _mesh->mFaces + f;
+	for(unsigned f = 0; f < _assimpMeshRef->mNumFaces; f++){
+		const aiFace* face = _assimpMeshRef->mFaces + f;
 		for(unsigned n = 0; n < face->mNumIndices; n++){
 			*(data + i) = *(face->mIndices + n); // index into the current face
 			i++;

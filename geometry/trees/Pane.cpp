@@ -6,7 +6,7 @@ Geo_Actor Geo_PaneLayout::_dummyGeo = Geo_Actor((Geo_RenderObj*)&_dummy);
 namespace _Pane {
 	std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
 
-	void sendPaneThruScene(Topl_Scene* scene, std::string prefix, Geo_Pane* pane, Geo_Actor* paneActor, Geo_RenderObj* rootSquare){
+	void sendRootPaneThruScene(Topl_Scene* scene, std::string prefix, Geo_Pane* pane, Geo_Actor* paneActor, Geo_RenderObj* rootSquare){
 		paneActor->setRenderObj(rootSquare);
 		scene->addGeometry(prefix + "root", paneActor);
 #ifdef RASTERON_H
@@ -46,6 +46,7 @@ void Geo_PaneLayout::fill(Topl_Scene* scene) {
 	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
 	Geo_Actor* actor = nullptr; // keeps track of child actor being processed 
 
+	// sending child panes thru scene
 	for (unsigned p = 1; p < getActorCount(); p++) {
 		actor = getNextActor();
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
@@ -67,6 +68,6 @@ void Geo_PaneLayout::fill(Topl_Scene* scene) {
 #endif
 	}
 
-	// utilizing helper function
-	_Pane::sendPaneThruScene(scene, getPrefix(), &_rootPane, rootActor, (Geo_RenderObj*)&_rootSquare);
+	// utilizing helper function to send root pane thru scene
+	_Pane::sendRootPaneThruScene(scene, getPrefix(), &_rootPane, rootActor, (Geo_RenderObj*)&_rootSquare);
 }

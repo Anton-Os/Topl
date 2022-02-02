@@ -6,23 +6,28 @@
 
 class Geo_Mesh : public Geo_RenderObj {
 public:
-    Geo_Mesh() : Geo_RenderObj(){}
-    Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)){
-        _mesh = mesh;
+	Geo_Mesh() : Geo_RenderObj() {}
+	Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)) {
+		_assimpMeshRef = mesh;
 		fillRenderObj();
-    }
-	~Geo_Mesh(){} // check when this is called!
+	}
+	virtual ~Geo_Mesh() {}
 
+	void cloneMesh(const Geo_Mesh* mesh) {
+		clone((Geo_RenderObj*)mesh);
+		_assimpMeshRef = mesh->getAssimpMeshRef();
+	}
+	const aiMesh* getAssimpMeshRef() const { return _assimpMeshRef; }
 private:
-    static unsigned getIndexCount(const aiMesh* mesh); // gets indices by iterating through faces
+	static unsigned getIndexCount(const aiMesh* mesh); // gets indices by iterating through faces
 
-    void genPos(Eigen::Vector3f* data) override;
+	void genPos(Eigen::Vector3f* data) override;
 	void genNormals(Eigen::Vector3f* data) override;
 	void genTexCoords(Eigen::Vector2f* data) override;
-    void genIndices(unsigned* data) override;
+	void genIndices(unsigned* data) override;
 
-    const aiMesh* _mesh = nullptr;
-    // unsigned _boneCount;
+	const aiMesh* _assimpMeshRef = nullptr;
+	// Add extra mesh parameters here!
 };
 
 class Geo_Node : public Geo_Actor {
@@ -36,12 +41,18 @@ public:
 
 			_meshCount = node->mNumMeshes;
 			if (_meshCount == 1) {
-				_mesh = (Geo_Mesh*)malloc(sizeof(Geo_Mesh));
-				*_mesh = Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
-				// _mesh = new Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
-				setRenderObj((Geo_RenderObj*)&_mesh);
+				Geo_Mesh mesh = Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
+				_mesh->cloneMesh(&mesh);
+				setRenderObj((Geo_RenderObj*)_mesh);
 			}
-			else if (_meshCount > 1) puts("Multiple meshes detected!");
+			else if (_meshCount > 1) {
+				puts("Multiple meshes detected!");
+				// TODO: implement code to fuse multiple meshes together!
+
+				Geo_Mesh mesh = Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
+				_mesh->cloneMesh(&mesh);
+				setRenderObj((Geo_RenderObj*)_mesh);
+			}
 			else puts("No meshes detected!");
 		}
     }
@@ -55,5 +66,7 @@ private:
     const aiNode* _node = nullptr;
 
 	unsigned _meshCount = 0;
-    Geo_Mesh* _mesh = nullptr;
+    // Geo_Mesh* _mesh = nullptr;
+	// Geo_Mesh _mesh;
+	Geo_Mesh* _mesh = new Geo_Mesh();
 };

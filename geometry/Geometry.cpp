@@ -4,12 +4,12 @@
 
 Geo_Vertex::Geo_Vertex(Eigen::Vector3f pos){
     position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-	texCoord[U_OFFSET] = 0.0f; texCoord[V_OFFSET] = 0.0f;
+	texcoord[U_OFFSET] = 0.0f; texcoord[V_OFFSET] = 0.0f;
 }
 
 Geo_Vertex::Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc){
     position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-	texCoord[U_OFFSET] = texc[U_OFFSET]; texCoord[V_OFFSET] = texc[V_OFFSET];
+	texcoord[U_OFFSET] = texc[U_OFFSET]; texcoord[V_OFFSET] = texc[V_OFFSET];
 }
 
 // Geo_RenderObj Operations
@@ -21,7 +21,7 @@ Geo_RenderObj::Geo_RenderObj(unsigned v){ // Vertex only constructor
     if(_verticesCount != 0){
         _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
         _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-        _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+        _texcoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
     }
 }
 
@@ -33,18 +33,52 @@ Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices cons
     if(_verticesCount != 0){
         _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
         _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
-        _texCoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+        _texcoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
     }
     if(_indicesCount != 0) _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
 }
 
-void Geo_RenderObj::cleanup() {
-    if (_vertices != nullptr) free(_vertices);
+// Geo_RenderObj::Geo_RenderObj(const Geo_RenderObj& renderObj){ // copy constructor
+void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
+    cleanup(); // make sure to completely erase old object first
+    _verticesCount = refObj->getVerticesCount();
+    _indicesCount = refObj->getIndexCount();
 
+    if(_verticesCount != 0){
+        _posData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _normalsData = (Eigen::Vector3f*)malloc(_verticesCount * sizeof(Eigen::Vector3f));
+        _texcoordData = (Eigen::Vector2f*)malloc(_verticesCount * sizeof(Eigen::Vector2f));
+
+        vec3f_cptr posData_ref = refObj->getPosData();
+        vec3f_cptr normalsData_ref = refObj->getNormalsData();
+        vec2f_cptr texcoordData_ref = refObj->getTexCoordData();
+        for(unsigned v = 0; v < _verticesCount; v++){
+            *(_posData + v) = *(posData_ref + v); // copy position data
+            *(_normalsData + v) = *(normalsData_ref + v); // copy normals data
+            *(_texcoordData + v) = *(texcoordData_ref + v); // copy texcoord data
+        }
+    }
+
+    if(_indicesCount != 0){ 
+        _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
+
+        ui_cptr indices_ref = refObj->getIndices();
+        for(unsigned i = 0; i < _indicesCount; i++) *(_indices + i) = *(indices_ref + i);
+    }
+}
+
+void Geo_RenderObj::cleanup() {
+    _verticesCount = 0;
+    _indicesCount = 0;
+
+    if (_vertices != nullptr) free(_vertices);
     if (_posData != nullptr) free(_posData);
     if (_normalsData != nullptr) free(_normalsData);
-    if (_texCoordData != nullptr) free(_texCoordData);
+    if (_texcoordData != nullptr) free(_texcoordData);
+    _vertices = nullptr; _posData = nullptr; _normalsData = nullptr; _texcoordData = nullptr;
+
     if (_indices != nullptr) free(_indices);
+    _indices = nullptr;
 } 
 
 void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis){
@@ -63,7 +97,7 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
 void Geo_RenderObj::fillRenderObj(){
     genPos(_posData);
     genNormals(_normalsData);
-    genTexCoords(_texCoordData);
+    genTexCoords(_texcoordData);
 
 	// Generate Vertices Immediately
 	// genVertices();
@@ -74,6 +108,6 @@ void Geo_RenderObj::fillRenderObj(){
 void Geo_RenderObj::genVertices(){
     if(_vertices == nullptr) _vertices = (Geo_Vertex*)malloc(_verticesCount * sizeof(Geo_Vertex));
 		
-    for (unsigned v = 0; v < _verticesCount; v++)
-        *(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texCoordData + v)); // TODO: Include normals
+    for (unsigned v = 0; v < _verticesCount; v++) // TODO: Make regeneration configurable!
+        *(_vertices + v) = Geo_Vertex(*(_posData + v), *(_texcoordData + v));
 }

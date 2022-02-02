@@ -3,8 +3,6 @@
 #include "Topl_Renderer_Drx11.hpp"
 #include "Flat_Shader.hpp" // shader inclusion
 
-// Entry Point
-
 int main(int argc, char** argv) {
 	
 	Platform platform(argv[0], "Drx11 Assets");

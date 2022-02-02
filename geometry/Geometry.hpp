@@ -36,7 +36,7 @@ struct Geo_Vertex {
 	Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc); // Extended constructor
 
 	float position[POSITION_COUNT];
-	float texCoord[TEXCOORD_COUNT];
+	float texcoord[TEXCOORD_COUNT];
 	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
@@ -66,25 +66,27 @@ public:
 	Geo_RenderObj(){} // empty constructor
 	Geo_RenderObj(unsigned v); // vertex only constructor
     Geo_RenderObj(unsigned v, unsigned i); // vertex and indices constructor
+	// Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
     
-	~Geo_RenderObj(){ cleanup(); }
-	void cleanup();
-	void modify(vTformCallback callback, double mod, AXIS_Target axis);
+	virtual ~Geo_RenderObj(){ cleanup(); }
+	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute
+	void clone(const Geo_RenderObj* refObj); // makes one object the copy of another (forgoes copy constructor)
+	// void fuse(const Geo_RenderObj* refObj); // fuses target object with reference object
 
     unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get index Count
 
 	vertex_cptr getVertices() {
-		genVertices();
+		genVertices(); // vertices are generated here since vertex format may be subject to change
 		return _vertices;
 	}
     ui_cptr getIndices() const { return _indices; }
 	vec3f_cptr getPosData() const { return _posData; }
 	vec3f_cptr getNormalsData() const { return _normalsData; }
-    vec2f_cptr getTexCoordData() const { return _texCoordData; }
+    vec2f_cptr getTexCoordData() const { return _texcoordData; }
 protected:
-	void fillRenderObj();
-	void genVertices();
+	void fillRenderObj(); // called by derived class to populate vertex attributes
+	void genVertices(); // internally generates data based on vertex format
     virtual void genPos(Eigen::Vector3f* data) = 0;
 	virtual void genNormals(Eigen::Vector3f* data) = 0;
     virtual void genTexCoords(Eigen::Vector2f* data) = 0;
@@ -96,10 +98,12 @@ protected:
 	Geo_Vertex* _vertices = nullptr; // formatted vertex data
     Eigen::Vector3f* _posData = nullptr; // position data
 	Eigen::Vector3f* _normalsData = nullptr; // normals data
-    Eigen::Vector2f* _texCoordData = nullptr; // texture coordinate data
+    Eigen::Vector2f* _texcoordData = nullptr; // texture coordinate data
 
 	unsigned _indicesCount = 0; // index count
 	unsigned* _indices = nullptr; // index data
+private:
+	void cleanup(); // used to erase all internal data (destroy)
 };
 
 #define GEOMETRY_H
