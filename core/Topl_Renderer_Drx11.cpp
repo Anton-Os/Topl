@@ -99,15 +99,22 @@ namespace _Drx11 {
 		return inputElementDesc;
 	}
 
-	static Buffer_Drx11* findBuffer(enum BUFF_Type type, Buffer_Drx11** dBuffers, unsigned short count) {
-		return *(dBuffers + type); // We know the offset with the type argument
+	static Buffer_Drx11* findBuff(Buffer_Drx11** renderBuffs, enum BUFF_Type type) {
+		return *(renderBuffs + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_Drx11** dBuffers, std::vector<Buffer_Drx11>* bufferVector, unsigned id) {
-		// TODO No error checks for duplicate buffers are provided, bufferVector needs to be vetted first
-		for (std::vector<Buffer_Drx11>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
+	static void discoverBuffers(Buffer_Drx11** renderBuffs, std::vector<Buffer_Drx11>* buffVec, unsigned id) {
+		for (std::vector<Buffer_Drx11>::iterator currentBuff = buffVec->begin(); currentBuff < buffVec->end(); currentBuff++)
 			if (currentBuff->targetID == id)
-				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates 
+				*(renderBuffs + currentBuff->type) = &(*currentBuff); // type arguments indicates the offset
+	}
+
+	static enum D3D11_TEXTURE_ADDRESS_MODE getTexMode(enum TEX_Mode mode){
+		switch(mode){
+			case(TEX_Wrap): return D3D11_TEXTURE_ADDRESS_WRAP;
+			case(TEX_Mirror): return D3D11_TEXTURE_ADDRESS_MIRROR;
+			case(TEX_Clamp): return D3D11_TEXTURE_ADDRESS_CLAMP;
+		}
 	}
 }
 
@@ -338,7 +345,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
 
-    _isSceneReady = true;
+    
     return;
 }
 
@@ -426,7 +433,7 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	_renderCtx.textures.push_back(Texture_Drx11(id, TEX_2D, TEX_Wrap, texture, sampler, resView));
+	_renderCtx.textures.push_back(Texture_Drx11(id, TEX_2D, _texMode, texture, sampler, resView));
 }
 
 #endif
@@ -453,15 +460,20 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 			if (!_isSceneReady) return; // Error
 		}
 	}
+}
 
-	// TODO: update textures here if necessary
-
-    _isSceneReady = true;
-	return;
+void Topl_Renderer_Drx11::updateTex(const Topl_Scene* scene){
+// Rasteron dependency required for updating textures
+#ifdef RASTERON_H
+for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	unsigned rID = g + 1;
+	// search for texture with matching render id
+}
+#endif
 }
 
 void Topl_Renderer_Drx11::render(void){
-	switch(_drawType) { // TODO: This code needs to be optimized and grouped separately
+	switch(_drawMode) { // TODO: This code needs to be optimized and grouped separately
 	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
 	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
@@ -479,16 +491,16 @@ void Topl_Renderer_Drx11::render(void){
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
-	Buffer_Drx11** dBuffers = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
+	Buffer_Drx11** renderBuffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
 
 	// Rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
-			_Drx11::discoverBuffers(dBuffers, &_renderCtx.buffers, id);
+			_Drx11::discoverBuffers(renderBuffs, &_renderCtx.buffers, id);
 
-			Buffer_Drx11* vertexBuff = _Drx11::findBuffer(BUFF_Vertex_Type, dBuffers, BUFFERS_PER_RENDERTARGET);
-			Buffer_Drx11* indexBuff = _Drx11::findBuffer(BUFF_Index_UI, dBuffers, BUFFERS_PER_RENDERTARGET);
-			Buffer_Drx11* renderBlockBuff = _Drx11::findBuffer(BUFF_Render_Block, dBuffers, BUFFERS_PER_RENDERTARGET);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuff(renderBuffs, BUFF_Vertex_Type);
+			Buffer_Drx11* indexBuff = _Drx11::findBuff(renderBuffs, BUFF_Index_UI);
+			Buffer_Drx11* renderBlockBuff = _Drx11::findBuff(renderBuffs, BUFF_Render_Block);
 
 			if(renderBlockBuff != nullptr)
 				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
@@ -522,6 +534,6 @@ void Topl_Renderer_Drx11::render(void){
 			else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 		}
 
-	free(dBuffers);
+	free(renderBuffs);
 	_isSceneDrawn = true;
 }

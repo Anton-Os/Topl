@@ -68,7 +68,7 @@ struct Texture : public RenderTarget {
 	enum TEX_Mode mode;
 };
 
-enum DRAW_Type {
+enum DRAW_Mode {
 	DRAW_Points,
 	DRAW_Lines,
 	DRAW_Triangles, // Default
@@ -117,13 +117,20 @@ public:
         if(!_isPipelineReady || !_isSceneReady) return false; // failure
 
         update(scene);
+        if(!_isTexDrawn){ // textures need to be redrawn
+            updateTex(scene);
+            _isTexDrawn = true;
+        }
+        _isSceneReady = true;
         return true; // success
     }
     bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
         _activeCamera = camera; // switch to new camera
 		return (updateScene(scene)) ? true : false;
     }
-    bool renderScene(enum DRAW_Type drawType){
+    void setTexMode(enum TEX_Mode mode){ _texMode = mode; }
+    void redrawTex(){ _isTexDrawn = false; } // textures need to be redrawn by update call
+    bool renderScene(enum DRAW_Mode drawMode){
         if(!_isPipelineReady) perror("Pipeline not set for draw call!");
         if(!_isSceneReady) perror("Scene not built for draw call!");
         if(_renderIDs == 0) perror("No render targets for draw call!");
@@ -132,13 +139,12 @@ public:
             return false; // failure
         }
 
-        _drawType = drawType;
+        _drawMode = drawMode;
 		render();
         _frameIDs++; // increment frame counter
-		return _isSceneDrawn; // render call sets variable internally
+		return _isSceneDrawn; // render call sets variable to true on success
     }
-    // virtual unsigned getPixColor(float x, float y) = 0; // takes mouse coordinates as inperror
-	unsigned getPixColor(float x, float y) {
+    unsigned getPixColor(float x, float y) {
 		if (x < 0.0) x = 0.0; else if (x > 1.0) x = 1.0; // clamping x
 		if (y < 0.0) y = 0.0; else if (y > 1.0) y = 1.0; // clamping y
 
@@ -151,28 +157,29 @@ public:
 	}
     virtual void clearView() = 0;
     virtual void switchFramebuff() = 0; // switches front and back buffers
-    // void setTexMode(enum TEX_Mode mode){ mTexMode = mode; }
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
-    // May need a renderer specific texture type here // Texture should be linked to graphics object id!!!
     virtual void assignTexture(const Rasteron_Image* image, unsigned id) = 0;
 #endif
     NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
     // const Topl_Pipeline* _pipeline;
     entry_shader_cptr _entryShader;
-    enum DRAW_Type _drawType = DRAW_Triangles; // primitive to use to draw standard scene objects
+    enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
+    enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
+    Topl_Camera _defaultCamera; // identity matrix by default, no transformation
+    const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
     bool _isSceneDrawn = false; // switch true after draw call and off after swap
-	unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
+	bool _isTexDrawn = true; // switches to false once textures need to be redrawn
+    unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
-    Topl_Camera _defaultCamera; // identity matrix by default, no transformation
-    const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
+    virtual void updateTex(const Topl_Scene* scene) = 0;
 	virtual void render(void) = 0;
 };
 

@@ -27,7 +27,7 @@ namespace Topl {
 	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 4); */
 	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&hex1);
-	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(2, 0.5f));
+	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(3, 0.5f));
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 }
 

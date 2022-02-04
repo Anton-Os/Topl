@@ -68,8 +68,8 @@ void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
 }
 
 /* void Geo_RenderObj::fuse(const Geo_RenderObj* refObj){
-    Geo_RenderObj tempObj;
-    tempObj->clone(&this);
+    Geo_RenderObj tempObj = Geo_RenderObj(*refObj);
+    // tempObj->clone(&this);
 
     cleanup(); // erase all items internally
     _verticesCount = tempObj.getVerticesCount() + refObj->getVerticesCount();

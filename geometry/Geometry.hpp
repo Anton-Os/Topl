@@ -66,7 +66,7 @@ public:
 	Geo_RenderObj(){} // empty constructor
 	Geo_RenderObj(unsigned v); // vertex only constructor
     Geo_RenderObj(unsigned v, unsigned i); // vertex and indices constructor
-	// Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
+	Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
     
 	virtual ~Geo_RenderObj(){ cleanup(); }
 	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute

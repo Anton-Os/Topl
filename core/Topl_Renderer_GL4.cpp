@@ -13,7 +13,7 @@ namespace _GL4 {
 			format = GL_UNSIGNED_INT; break;
 		case SHDR_int_vec4: case SHDR_int_vec3: case SHDR_int_vec2: case SHDR_int:
 			format = GL_INT; break;
-		default: puts("GL4 Shader Input Type Not Supported!"); break;
+		default: perror("GL4 Shader Input Type Not Supported!"); break;
 		}
 		return format;
 	}
@@ -56,21 +56,20 @@ namespace _GL4 {
 		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
 		case SHDR_int: offset = sizeof(int); break;
 		default:
-			puts("GL4 Type Shader Input Type Not Supported!");
+			perror("GL4 Type Shader Input Type Not Supported!");
 			break;
 		}
 		return offset;
 	}
 
-	static Buffer_GL4* findBuffer(enum BUFF_Type type, Buffer_GL4** buffer_ptrs, unsigned short count) {
-		return *(buffer_ptrs + type); // offset is pre-determined by the type argument
+	static Buffer_GL4* findBuff(Buffer_GL4** renderBuffs, enum BUFF_Type type) {
+		return *(renderBuffs + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_GL4** dBuffers, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
-		//TODO: No error checks for duplicate buffers are provided! bufferVector needs to be vetted first
+	static void discoverBuffers(Buffer_GL4** renderBuffs, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
 		for (std::vector<Buffer_GL4>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
 			if (currentBuff->targetID == id)
-				*(dBuffers + currentBuff->type) = &(*currentBuff); // Type indicates
+				*(renderBuffs + currentBuff->type) = &(*currentBuff); // type arguments indicates the offset
 	}
 
 	static void setTextureProperties(GLenum type, TEX_Mode m) {
@@ -78,12 +77,18 @@ namespace _GL4 {
 		case TEX_Wrap:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
-		default: break;
+		case TEX_Mirror:
+			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+			break;
+		case TEX_Clamp:
+			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			break;
 		}
-		return;
+		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
 }
@@ -277,9 +282,6 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		_isSceneReady = false; // Error
 		return;
 	}
-
-	_isSceneReady = true;
-    return; // To be continued
 }
 
 #ifdef RASTERON_H
@@ -291,17 +293,16 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 }
 
 void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
-	// TODO: Check for format compatablitiy before this call, TEX_2D
 	GLuint texture = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
+
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	_GL4::setTextureProperties(GL_TEXTURE_2D, TEX_Wrap); // Setting this here
-
+	_GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	_renderCtx.textures.push_back(Texture_GL4(id, TEX_2D, TEX_Wrap, texture));
+	_renderCtx.textures.push_back(Texture_GL4(id, TEX_2D, _texMode, texture));
 }
 
 #endif
@@ -323,7 +324,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
 				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
 
-			if (targetBuff == nullptr) puts("Block buffer could not be located! ");
+			if (targetBuff == nullptr) perror("Block buffer could not be located! ");
 			else {
 				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
 				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -332,30 +333,37 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		}
 	}
 
-	// TODO: update textures here if necessary
-
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	_isSceneReady = true;
 	return;
+}
+
+void Topl_Renderer_GL4::updateTex(const Topl_Scene* scene){
+// Rasteron dependency required for updating textures
+#ifdef RASTERON_H
+for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	unsigned rID = g + 1;
+	// search for texture with matching render id
+}
+#endif
 }
 
 void Topl_Renderer_GL4::render(void){
 	GLenum drawType;
-	switch(_drawType){
+	switch(_drawMode){
 	case DRAW_Triangles: drawType = GL_TRIANGLES; break;
 	case DRAW_Points: drawType = GL_POINTS; break;
 	case DRAW_Lines: drawType = GL_LINES; break;
 	case DRAW_Fan: drawType = GL_TRIANGLE_FAN; break;
 	case DRAW_Strip: drawType = GL_TRIANGLE_STRIP; break;
 	default:
-		puts("Draw type not supported yet!");
+		perror("Draw type not supported yet!");
 		return;
 	}
 
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx.buffers.front().buffer);
 
-	Buffer_GL4** buffer_ptrs = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
+	Buffer_GL4** renderBuffs = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _renderIDs; id++) {
@@ -364,14 +372,14 @@ void Topl_Renderer_GL4::render(void){
 			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(buffer_ptrs, &_renderCtx.buffers, id);
+		_GL4::discoverBuffers(renderBuffs, &_renderCtx.buffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuffer(BUFF_Render_Block, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuff(renderBuffs, BUFF_Render_Block);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		Buffer_GL4* vertexBuff = _GL4::findBuffer(BUFF_Vertex_Type, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
-		Buffer_GL4* indexBuff = _GL4::findBuffer(BUFF_Index_UI, buffer_ptrs, BUFFERS_PER_RENDERTARGET);
+		Buffer_GL4* vertexBuff = _GL4::findBuff(renderBuffs, BUFF_Vertex_Type);
+		Buffer_GL4* indexBuff = _GL4::findBuff(renderBuffs, BUFF_Index_UI);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
@@ -393,7 +401,7 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	free(buffer_ptrs);
+	free(renderBuffs);
 
 	_isSceneDrawn = true;
 }

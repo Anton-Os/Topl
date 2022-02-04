@@ -56,13 +56,6 @@ public:
 			else puts("No meshes detected!");
 		}
     }
-	/* Geo_Node::Geo_Node(const Geo_Node& node){
-		const Geo_Mesh* meshRef = node.getMesh();
-		if (meshRef != nullptr && node.getMeshCount() > 0) {
-			_meshCount = node.getMeshCount();
-			_mesh->clone(meshRef);
-		}
-	} // copy constructor */
 	~Geo_Node() { if(_mesh != nullptr) delete(_mesh); }
 
 	unsigned getMeshCount() const { return _meshCount; }

@@ -73,7 +73,6 @@ public:
 
 	void clearView() override;
 	void switchFramebuff() override;
-	// unsigned getPixColor(float x, float y) override;
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
@@ -85,6 +84,7 @@ public:
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_Scene* scene) override;
+	void updateTex(const Topl_Scene* scene) override;
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;
