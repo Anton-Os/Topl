@@ -138,6 +138,8 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_dsView->Release();
 	_blendState->Release();
 	_rasterizerState->Release();
+
+	free(__renderCtx); // free the render contexts
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -264,8 +266,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
-
-	drawMode(); // TODO: Move to constructor body!
 }
 
 void Topl_Renderer_Drx11::clearView(){

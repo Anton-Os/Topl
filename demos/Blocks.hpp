@@ -58,7 +58,7 @@ namespace Main {
 
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene, &Topl::camera);
-			renderer->renderScene(DRAW_Triangles);
+			renderer->renderAll();
 			renderer->switchFramebuff();
 
 			platform->handleEvents(false);

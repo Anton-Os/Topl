@@ -151,6 +151,8 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 #elif defined(__linux__)
 	cleanup_linux(_nativeContext.display, _nativeContext.GL_ctx);
 #endif
+
+	free(__renderCtx); // free the render contexts
 }
 
 
@@ -176,8 +178,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
-
-	drawMode(); // TODO: Move to constructor body!
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -274,9 +274,9 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	}
 
 	GLint blockCount; glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
-	if (blockCount == TOPL_SINGLE_BLOCK_COUNT) // Render uniforms supported
+	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
-	else if (blockCount == TOPL_FULL_BLOCK_COUNT) { // Render and Scene uniforms supported
+	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
 	}

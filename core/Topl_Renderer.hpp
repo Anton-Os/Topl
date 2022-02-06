@@ -9,9 +9,6 @@
 
 #define SPECIAL_SCENE_RENDER_ID 0
 
-#define SEQUENTIAL_DRAW 0 // for targets drawn sequentially
-#define REVERSE_DRAW 1 // for targets drawn in reverse
-
 struct RenderTarget {
 	RenderTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
 	RenderTarget(unsigned id) { targetID = id; }
@@ -36,15 +33,13 @@ struct Buffer : public RenderTarget {
     unsigned count = 1; // no. of primitives
 };
 
-#define TOPL_SINGLE_BLOCK_COUNT 1 // for singly supported block, no scene uniform data
-#define TOPL_FULL_BLOCK_COUNT 2 // number of fully supported uniform blocks
 #define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
 #define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
 #define MAX_TEXTURES_PER_TARGET 12
-#define MAX_PIPELINE_COUNT 12
+#define MAX_RENDERER_CONTEXTS 24 // limits number of unique scenes and render contexts to 24
 
 enum TEX_Frmt {
     TEX_1D,
@@ -118,9 +113,16 @@ public:
             _isSceneReady = false;
             return false; // failure
         }
+        if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS) {
+            perror("Too many render contexts!");
+            _renderCtxIndex = 0;
+            _isSceneReady = false;
+            return false;
+        }
 
         build(scene);
         _isSceneReady = true;
+        _renderCtxIndex++;
         return true; // success
     }
     bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
@@ -150,7 +152,10 @@ public:
         _drawMode = mode;
         drawMode(); // sets the proper draw mode
     }
-    bool renderScene(enum DRAW_Mode drawMode){
+    bool renderScene(Topl_Scene* scene){
+        // draws only render objects associated with scene argument
+    }
+    bool renderAll(){ // draws all render objects
         if(!_isPipelineReady) perror("Pipeline not set for draw call!");
         if(!_isSceneReady) perror("Scene not built for draw call!");
         if(_renderIDs == 0) perror("No render targets for draw call!");
@@ -159,7 +164,6 @@ public:
             return false; // failure
         }
 
-        _drawMode = drawMode;
 		render();
         _frameIDs++; // increment frame counter
 		return _isSceneDrawn; // render call sets variable to true on success
@@ -187,8 +191,9 @@ protected:
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
+    unsigned _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
-    const Topl_Camera* _activeCamera = &_defaultCamera; // needs to be updated by user
+    const Topl_Camera* _activeCamera = &_defaultCamera; // updated by user
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
     bool _isSceneDrawn = false; // switch true after draw call and off after swap

@@ -47,7 +47,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(DRAW_Triangles);
+			renderer->renderAll();
 			renderer->switchFramebuff();
 
 			platform->handleEvents(true);

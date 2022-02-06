@@ -7,8 +7,8 @@
 
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
-// see Topl_Renderer.h
-#define DRAW_ORDER 0 // first render target is drawn first, sequential order
+#define RENDER_BLOCK_SUPPORT 1 // render block support only
+#define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
 
 // Buffer Object Allocation Helpers
 
@@ -55,7 +55,17 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint gShader; // Geometry Shader
 };
 
-struct Topl_RenderContext_GL4 { // groups together data for rendering
+struct Topl_DrawContext_GL4 { // groups together data for rendering
+	std::vector<Buffer_GL4> buffers;
+	std::vector<VertexArray_GL4> VAOs; // vertex array objects
+	std::vector<Texture_GL4> textures;
+};
+
+// Use this to replace legacy DrawContext
+struct Topl_RenderContext_GL4 : public Topl_RenderContext {
+	Topl_RenderContext_GL4(const Topl_Scene *const s) : Topl_RenderContext(s){}
+	Topl_RenderContext_GL4(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
+
 	std::vector<Buffer_GL4> buffers;
 	std::vector<VertexArray_GL4> VAOs; // vertex array objects
 	std::vector<Texture_GL4> textures;
@@ -63,7 +73,12 @@ struct Topl_RenderContext_GL4 { // groups together data for rendering
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
-	Topl_Renderer_GL4(NATIVE_WINDOW window){ init(window); }
+	Topl_Renderer_GL4(NATIVE_WINDOW window){ 
+		init(window);
+		drawMode(); // sets default draw mode
+
+		__renderCtx = (Topl_RenderContext_GL4*)malloc(sizeof(Topl_RenderContext_GL4) * MAX_RENDERER_CONTEXTS);
+	}
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
@@ -83,8 +98,9 @@ private:
 	void drawMode(void) override;
 	void render(void) override;
 
-	Topl_RenderContext_GL4 _renderCtx;
-  	Topl_Pipeline_GL4* _pipeline;
+	Topl_Pipeline_GL4* _pipeline;
+	Topl_DrawContext_GL4 _renderCtx;
+	Topl_RenderContext_GL4* __renderCtx; // stores multiple render contexts with unique scenes and ids
 
 	GLenum _drawModeGL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX];

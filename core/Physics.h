@@ -24,47 +24,51 @@ enum MOTION_Type {
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
 public:
     Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
-        motionVec1 = m;
+		type = t;
+		startPos = m;
+        endPos = -1.0f * m;
+
         endSecs = d;
     }
+    Phys_Motion(MOTION_Type t, Eigen::Vector3f m1, Eigen::Vector3f m2, double d){ // Start and End Motion Vec
+		type = t;
+		startPos = m1;
+		endPos = m2;
 
-    Phys_Motion(Eigen::Vector3f m1, Eigen::Vector3f m2, double d){ // Start and End Motion Vec
-        motionVec1 = m1;
-		motionVec2 = m2;
         endSecs = d;
     }
-
     Eigen::Vector3f getMotion(double currentSecs){
         if(isFirstCall){
             startSecs += currentSecs;
             endSecs += currentSecs;
-            isFirstCall = false; // makes sure this segment doesnt repeat
+            isFirstCall = false;
         }
 
         seqCount = static_cast<unsigned>(std::floor(getSeqProg(currentSecs)));
-        double seqProgressFrac = getSeqProg(currentSecs) - seqCount; // gets what fraction of the sequence has elapsed (0.0 to 1.0)
+        double seqProgFrac = getSeqProg(currentSecs) - seqCount; // computes what fraction of sequence elapsed (0.0 to 1.0)
 
 		switch (type) {
-		case MOTION_Instant: return (seqProgressFrac - 1.0f) * motionVec1; // implement instant!
-		case MOTION_Linear : return (seqProgressFrac - 1.0f) * motionVec1;
-		case MOTION_Smooth: return (seqProgressFrac - 1.0f) * motionVec1; // implement smooth!
-		case MOTION_Pivot: return (seqProgressFrac - 1.0f) * motionVec1; // implement pivot!
+		case MOTION_Instant: return (seqProgFrac <= 0.5f)? startPos : endPos;
+		case MOTION_Linear : return getLinear(startPos, endPos, seqProgFrac);
+		case MOTION_Smooth: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement smooth motion!
+		case MOTION_Pivot: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
 		}
     }
 
 private:
-    double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets the progression in the sequence
+    double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
+    Eigen::Vector3f getLinear(const Eigen::Vector3f& m1, const Eigen::Vector3f& m2, double progFrac){ // linear motion computation
+        return (progFrac <= 0.5f)? m1 + (m2 * progFrac) : m2 + (m1 * progFrac);
+    }
 
-    // MOTION_Type motionType = MOTION_Linear;
 	MOTION_Type type;
+    Eigen::Vector3f startPos = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
+    Eigen::Vector3f endPos = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
+
     double startSecs = 0.0f;
     double endSecs = 0.0f;
-    unsigned maxIter = 0; // by default repeats infinitely
-    unsigned seqCount = 0;
-    bool isFirstCall = true; // set to false after first call to get position
-
-    Eigen::Vector3f motionVec1 = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
-    Eigen::Vector3f motionVec2 = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
+    unsigned seqCount = 0; // tracks how many sequence iterations have occured
+    bool isFirstCall = true; // required to correct the timekeeping
 };
 
 enum CONNECT_Type {
@@ -90,7 +94,7 @@ struct Phys_Connector {
     Eigen::Vector3f restAngleNormVec1, restAngleNormVec2; // AT REST normalized vectors that point to 1st and 2nd linked items
     Eigen::Vector3f angleNormVec1, angleNormVec2; // CURRENT normalized vectors that point to 1st and 2nd linked items
 
-    CONNECT_Type type = CONNECT_Rod;
+    CONNECT_Type type = CONNECT_Spring;
     double length = 0.5f; // tries to reach rest length from here
     double restLength = 0.5f; // zero forces act at this length
 	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal

@@ -20,7 +20,7 @@ namespace Topl {
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
 	// Phys_Motion bounceMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(0.0f, 0.3f, 0.0), 2.0 );
-	Phys_Motion motion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(1.0f, 2.0f, 0.0), 8.0);
+	Phys_Motion motion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 2.0f, 0.0), 2.0);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -34,7 +34,7 @@ void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 
 } */
 
 void swivelCallback(double absSecs) {
-	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
+	Eigen::Vector3f motionVec = Topl::motion.getMotion(absSecs);
 	Topl::sphereGeo.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
 }
 
@@ -67,7 +67,7 @@ namespace Main {
 			Topl::gameTicker.updateTimer();
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(DRAW_Triangles);
+			renderer->renderAll();
 			renderer->switchFramebuff();
 
 			platform->handleEvents(false);

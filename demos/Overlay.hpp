@@ -62,7 +62,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(DRAW_Triangles);
+			renderer->renderAll();
 
 			if (Topl::isPressPend) {
 				unsigned pixel = getPressPixel(renderer);

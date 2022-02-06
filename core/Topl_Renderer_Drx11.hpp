@@ -4,9 +4,6 @@
 #include <d3dx11.h> // DirectX Renderer Specific
 #include <d3dx10math.h> // DirectX Renderer Specific
 
-// see Topl_Renderer.h
-#define DRAW_ORDER 1 // last render target is drawn first, reverse order
-
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}
 	Buffer_Drx11(ID3D11Buffer* b) : Buffer(){ buffer = b; }
@@ -58,7 +55,17 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* gsBlob = nullptr;
 };
 
-struct Topl_RenderContext_Drx11 { // groups together data for rendering
+struct Topl_DrawContext_Drx11 { // groups together data for rendering
+	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
+	std::vector<Buffer_Drx11> buffers;
+	std::vector<Texture_Drx11> textures;
+};
+
+// Use this to replace legacy DrawContext
+struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
+	Topl_RenderContext_Drx11(const Topl_Scene *const s) : Topl_RenderContext(s){}
+	Topl_RenderContext_Drx11(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
+
 	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
 	std::vector<Buffer_Drx11> buffers;
 	std::vector<Texture_Drx11> textures;
@@ -66,7 +73,12 @@ struct Topl_RenderContext_Drx11 { // groups together data for rendering
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
-	Topl_Renderer_Drx11(HWND hwnd) { init(hwnd); }
+	Topl_Renderer_Drx11(HWND hwnd) { 
+		init(hwnd);
+		drawMode(); // sets default draw mode
+
+		__renderCtx = (Topl_RenderContext_Drx11*)malloc(sizeof(Topl_RenderContext_Drx11) * MAX_RENDERER_CONTEXTS);
+	}
 	~Topl_Renderer_Drx11();
 
 	void clearView() override;
@@ -86,8 +98,9 @@ private:
 	void drawMode(void) override;
 	void render(void) override;
 
-	Topl_RenderContext_Drx11 _renderCtx;
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
+	Topl_DrawContext_Drx11 _renderCtx;
+	Topl_RenderContext_Drx11* __renderCtx; // stores multiple render contexts with unique scenes and ids
 	ID3D11InputLayout* _vertexDataLayout;
 
 	ID3D11Device* _device;
