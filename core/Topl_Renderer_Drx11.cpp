@@ -264,6 +264,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
+
+	drawMode(); // TODO: Move to constructor body!
 }
 
 void Topl_Renderer_Drx11::clearView(){
@@ -344,9 +346,6 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if(!_isSceneReady) return;
 		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
-
-    
-    return;
 }
 
 #ifdef RASTERON_H
@@ -472,8 +471,8 @@ for (unsigned g = 0; g < scene->getActorCount(); g++) {
 #endif
 }
 
-void Topl_Renderer_Drx11::render(void){
-	switch(_drawMode) { // TODO: This code needs to be optimized and grouped separately
+void Topl_Renderer_Drx11::drawMode(){
+	switch(_drawMode) {
 	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
 	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
@@ -483,7 +482,9 @@ void Topl_Renderer_Drx11::render(void){
 		OutputDebugStringA("Draw type not supported yet!");
 		_isSceneDrawn = false; return;
 	}
+}
 
+void Topl_Renderer_Drx11::render(void){
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_renderCtx.buffers.front();

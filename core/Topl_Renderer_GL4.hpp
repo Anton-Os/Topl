@@ -80,15 +80,17 @@ private:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
 	void updateTex(const Topl_Scene* scene) override;
+	void drawMode(void) override;
 	void render(void) override;
 
 	Topl_RenderContext_GL4 _renderCtx;
   	Topl_Pipeline_GL4* _pipeline;
 
+	GLenum _drawModeGL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
-	unsigned _bufferIndex = 0;
+	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot
 	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX];
-	unsigned _vertexArrayIndex = 0;
+	unsigned _vertexArrayIndex = 0; // increments to indicate next available vertex array slot
 	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX];
-	unsigned _textureIndex = 0;
+	unsigned _textureIndex = 0; // increments to indicate next available texture slot
 };

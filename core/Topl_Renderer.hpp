@@ -61,7 +61,8 @@ enum TEX_Mode {
 struct Texture : public RenderTarget {
 	Texture() : RenderTarget(){}
 	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
-		format = f; mode = m;
+		format = f; 
+        mode = m;
 	}
 	// Additional data fields when needed and Derived texture object types
     enum TEX_Frmt format;
@@ -82,6 +83,21 @@ struct Topl_Pipeline {
 
     entry_shader_cptr entryShader = nullptr; // entryShader needs to be saved internally
 	bool isReady; // internal check for compilation and link status
+};
+
+struct Topl_RenderContext {
+    Topl_RenderContext(const Topl_Scene *const s) : scene(s) { // Rigid Scene Constructor
+        renderIDs = (unsigned long*)malloc(scene->getActorCount());
+    }
+    Topl_RenderContext(const Topl_Scene *const s, unsigned idCount) : scene(s) { // Dynamic Scene Constructor
+        renderIDs = (unsigned long*)malloc(idCount);
+    }
+    ~Topl_RenderContext(){
+        if(renderIDs != nullptr) free(renderIDs);
+        renderIDs = nullptr;
+    }
+    const Topl_Scene *const scene;
+    unsigned long* renderIDs = nullptr; // render ids associated with scene object
 };
 
 class Topl_Renderer {
@@ -130,6 +146,10 @@ public:
     }
     void setTexMode(enum TEX_Mode mode){ _texMode = mode; }
     void redrawTex(){ _isTexDrawn = false; } // textures need to be redrawn by update call
+    void setDrawMode(enum DRAW_Mode mode){
+        _drawMode = mode;
+        drawMode(); // sets the proper draw mode
+    }
     bool renderScene(enum DRAW_Mode drawMode){
         if(!_isPipelineReady) perror("Pipeline not set for draw call!");
         if(!_isSceneReady) perror("Scene not built for draw call!");
@@ -179,8 +199,9 @@ private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
-    virtual void updateTex(const Topl_Scene* scene) = 0;
-	virtual void render(void) = 0;
+    virtual void updateTex(const Topl_Scene* scene) = 0; // update for textures only
+    virtual void drawMode() = 0;
+	virtual void render(void) = 0; // change this to take scene as input
 };
 
 #define TOPL_RENDERER_H

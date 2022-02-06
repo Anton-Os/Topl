@@ -56,8 +56,6 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* hsBlob = nullptr;
 	ID3DBlob* dsBlob = nullptr;
 	ID3DBlob* gsBlob = nullptr;
-private:
-	friend class Topl_Renderer_Drx11;
 };
 
 struct Topl_RenderContext_Drx11 { // groups together data for rendering
@@ -85,6 +83,7 @@ private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_Scene* scene) override;
 	void updateTex(const Topl_Scene* scene) override;
+	void drawMode(void) override;
 	void render(void) override;
 
 	Topl_RenderContext_Drx11 _renderCtx;

@@ -67,7 +67,7 @@ namespace Main {
 			Topl::gameTicker.updateTimer();
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(DRAW_Points);
+			renderer->renderScene(DRAW_Triangles);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(false);

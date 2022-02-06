@@ -176,6 +176,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
+
+	drawMode(); // TODO: Move to constructor body!
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -347,19 +349,20 @@ for (unsigned g = 0; g < scene->getActorCount(); g++) {
 #endif
 }
 
-void Topl_Renderer_GL4::render(void){
-	GLenum drawType;
+void Topl_Renderer_GL4::drawMode(){
 	switch(_drawMode){
-	case DRAW_Triangles: drawType = GL_TRIANGLES; break;
-	case DRAW_Points: drawType = GL_POINTS; break;
-	case DRAW_Lines: drawType = GL_LINES; break;
-	case DRAW_Fan: drawType = GL_TRIANGLE_FAN; break;
-	case DRAW_Strip: drawType = GL_TRIANGLE_STRIP; break;
+	case DRAW_Triangles: _drawModeGL4 = GL_TRIANGLES; break;
+	case DRAW_Points: _drawModeGL4 = GL_POINTS; break;
+	case DRAW_Lines: _drawModeGL4 = GL_LINES; break;
+	case DRAW_Fan: _drawModeGL4 = GL_TRIANGLE_FAN; break;
+	case DRAW_Strip: _drawModeGL4 = GL_TRIANGLE_STRIP; break;
 	default:
 		perror("Draw type not supported yet!");
 		return;
 	}
+}
 
+void Topl_Renderer_GL4::render(void){
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx.buffers.front().buffer);
 
@@ -393,8 +396,8 @@ void Topl_Renderer_GL4::render(void){
 		}
 
 		// Drawing Call!
-		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(drawType, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
-		else glDrawArrays(drawType, 0, vertexBuff->count); // When no indices are present
+		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawModeGL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+		else glDrawArrays(_drawModeGL4, 0, vertexBuff->count); // When no indices are present
 
 		// Unbinding
 		glBindVertexArray(0);
