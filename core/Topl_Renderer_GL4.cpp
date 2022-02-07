@@ -197,8 +197,9 @@ void Topl_Renderer_GL4::switchFramebuff(){
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
-	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
+	// *(__renderCtx + _renderCtxIndex) = Topl_RenderContext_GL4(scene); // creation of new render context
 
+	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
 		_renderCtx.buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
@@ -273,17 +274,16 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		_renderIDs = rID; // Sets main graphics ID's to max value of rID
 	}
 
-	GLint blockCount; glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+	GLint blockCount; 
+	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
 	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
 	}
-	else {
-		_isSceneReady = false; // Error
-		return;
-	}
+
+	_isSceneReady = true;
 }
 
 #ifdef RASTERON_H
@@ -310,7 +310,7 @@ void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
-	std::vector<uint8_t> blockBytes;
+	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
@@ -408,3 +408,9 @@ void Topl_Renderer_GL4::render(void){
 
 	_isSceneDrawn = true;
 }
+
+/* void Topl_Renderer_GL4::render(const Topl_Scene* scene){
+	Topl_RenderContext_GL4* targetRenderCtx;
+
+	render(); // call main function for now
+} */

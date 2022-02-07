@@ -121,9 +121,8 @@ public:
         }
 
         build(scene);
-        _isSceneReady = true;
         _renderCtxIndex++;
-        return true; // success
+        return _isSceneReady;
     }
     bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
 		_activeCamera = camera; // switch to new camera
@@ -139,8 +138,7 @@ public:
             updateTex(scene);
             _isTexDrawn = true;
         }
-        _isSceneReady = true;
-        return true; // success
+        return _isSceneReady;
     }
     bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
         _activeCamera = camera; // switch to new camera
@@ -206,7 +204,8 @@ private:
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void updateTex(const Topl_Scene* scene) = 0; // update for textures only
     virtual void drawMode() = 0;
-	virtual void render(void) = 0; // change this to take scene as input
+	virtual void render(void) = 0;
+    // virtual void render(const Topl_Scene* scene); // updated version of render call
 };
 
 #define TOPL_RENDERER_H

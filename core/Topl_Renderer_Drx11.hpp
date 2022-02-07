@@ -97,6 +97,7 @@ private:
 	void updateTex(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(void) override;
+	// void render(const Topl_Scene* scene) override;
 
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	Topl_DrawContext_Drx11 _renderCtx;

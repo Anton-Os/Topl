@@ -24,16 +24,14 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 typedef const LinkedItems* const linkedItems_cptr;
 
 struct Topl_LightSource {
-	Topl_LightSource(Eigen::Vector3f p) {
-		pos = p;
-	}
+	Topl_LightSource(Eigen::Vector3f p) { pos = p; }
 	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
 		pos = p;
 		lightColor = lc;
 		intensity = i;
 	}
 	Eigen::Vector3f pos;
-	Eigen::Vector3f lightColor;
+	Eigen::Vector3f lightColor = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
 	double intensity = 1.0;
 };
 

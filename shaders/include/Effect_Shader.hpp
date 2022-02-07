@@ -12,7 +12,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) { }
 
-	virtual bool genGeoBlock(const Geo_Actor* const component, std::vector<uint8_t>* bytes) const override {
+	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 		const unsigned renderId = component->getId();
 
@@ -22,7 +22,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		return true;
 	}
 
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, std::vector<uint8_t>* bytes) const {
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		const Eigen::Vector2i screenRes = Eigen::Vector2i(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 		Eigen::Vector2f cursorPos = Eigen::Vector2f(Platform::getCursorX(), Platform::getCursorY());
 

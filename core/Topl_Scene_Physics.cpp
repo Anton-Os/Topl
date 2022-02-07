@@ -52,23 +52,24 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 
 	if (link2 == nullptr) return error_notFound("link geometry", name2);
 
+	if(!connector->getIsPreset()){
+		vec3f_cptr pos1 = link1->getPos();
+		vec3f_cptr pos2 = link2->getPos();
 
-	vec3f_cptr pos1 = link1->getPos();
-	vec3f_cptr pos2 = link2->getPos();
+		// Compute the length of the distance between both vectors
+		Eigen::Vector3f diffPos = *pos1 - *pos2;
+		connector->length = sqrt(pow(diffPos.x(), 2) + pow(diffPos.y(), 2) + pow(diffPos.z(), 2));
+		// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
+		connector->restLength = connector->length;
+		// Compute the center point which needs to be updated in the resolvePhysics() method
+		connector->centerPoint = (*pos1 + *pos2) / 2;
 
-	// Compute the length of the distance between both vectors
-	Eigen::Vector3f diffPos = *pos1 - *pos2;
-	connector->length = sqrt(pow(diffPos.x(), 2) + pow(diffPos.y(), 2) + pow(diffPos.z(), 2));
-	// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
-	connector->restLength = connector->length;
-	// Compute the center point which needs to be updated in the resolvePhysics() method
-	connector->centerPoint = (*pos1 + *pos2) / 2;
-
-	// Compute the INITIAL, NORMALIZED angle vector between the center and linked items
-	connector->restAngleNormVec1 = *pos1 - connector->centerPoint;
-	connector->restAngleNormVec1.normalize();
-	connector->restAngleNormVec2 = *pos2 - connector->centerPoint;
-	connector->restAngleNormVec2.normalize();
+		// Compute the INITIAL NORMALIZED angle vector between the center and linked items
+		connector->restAngle_NVec1 = *pos1 - connector->centerPoint;
+		connector->restAngle_NVec1.normalize();
+		connector->restAngle_NVec2 = *pos2 - connector->centerPoint;
+		connector->restAngle_NVec2.normalize();
+	}
 
 	// Add the new linked items to the scene manager data
 	_linkedItems.push_back({connector, std::make_pair(link1, link2)});
@@ -80,10 +81,10 @@ void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector3f rot
 			
 			currentLink->connector->restLength *= lengthScale;
 			
-			currentLink->connector->restAngleNormVec1 = rotAnglesVec; // TODO: Make this rotate!
-			currentLink->connector->restAngleNormVec1.normalize();
-			currentLink->connector->restAngleNormVec2 = -1 * rotAnglesVec; // TODO: Make this rotate!
-			currentLink->connector->restAngleNormVec2.normalize();
+			currentLink->connector->restAngle_NVec1 = rotAnglesVec; // TODO: Make this rotate!
+			currentLink->connector->restAngle_NVec1.normalize();
+			currentLink->connector->restAngle_NVec2 = -1 * rotAnglesVec; // TODO: Make this rotate!
+			currentLink->connector->restAngle_NVec2.normalize();
 		}
 }
 
@@ -110,13 +111,13 @@ void Topl_Scene::resolvePhysics() {
 		);
 
 		connector->centerPoint = (*linkItem1->getPos() + *linkItem2->getPos()) / 2;
-		connector->angleNormVec1 = *linkItem1->getPos() - connector->centerPoint;
-		connector->angleNormVec1.normalize();
-		connector->angleNormVec2 = *linkItem2->getPos() - connector->centerPoint;
-		connector->angleNormVec2.normalize();
+		connector->angle_NVec1 = *linkItem1->getPos() - connector->centerPoint;
+		connector->angle_NVec1.normalize();
+		connector->angle_NVec2 = *linkItem2->getPos() - connector->centerPoint;
+		connector->angle_NVec2.normalize();
  
 		// Forces acting by length displacement
-		if(abs(connector->length - connector->restLength) > TOPL_CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
+		if(abs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
 			// Determines direction of force for first geometry link
 			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
 				? *(linkItem1->getPos()) - connector->centerPoint // Outward push because length is shorter
@@ -140,12 +141,12 @@ void Topl_Scene::resolvePhysics() {
 		}
 
 		// Forces acting by angular displacement // TODO: Add a Threshold value!!!
-		if (connector->restAngleNormVec1 != connector->angleNormVec1 && connector->restAngleNormVec2 != connector->angleNormVec2) {
-			const Eigen::Vector3f forceAngle1 = connector->restAngleNormVec1 - connector->angleNormVec1;
-			const Eigen::Vector3f forceAngle2 = connector->restAngleNormVec2 - connector->angleNormVec2;
+		if (connector->restAngle_NVec1 != connector->angle_NVec1 && connector->restAngle_NVec2 != connector->angle_NVec2) {
+			const Eigen::Vector3f forceAngle1 = connector->restAngle_NVec1 - connector->angle_NVec1;
+			const Eigen::Vector3f forceAngle2 = connector->restAngle_NVec2 - connector->angle_NVec2;
 
-			addForce(linkItem1->getName(), forceAngle1 * TOPL_CONNECTOR_ANGLE_MULT);
-			addForce(linkItem2->getName(), forceAngle2 * TOPL_CONNECTOR_ANGLE_MULT);
+			addForce(linkItem1->getName(), forceAngle1 * CONNECTOR_ANGLE_SCALE);
+			addForce(linkItem2->getName(), forceAngle2 * CONNECTOR_ANGLE_SCALE);
 		}
 	}
 

@@ -82,7 +82,7 @@ namespace _Drx11 {
 		return createBuff(device, iBuff, sizeof(DWORD) * iCount, D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER, 0, iData);
 	}
 
-	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const std::vector<uint8_t> *const blockBytes) {
+	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const blockBytes_t *const blockBytes) {
 		return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
 	}
 
@@ -281,8 +281,9 @@ void Topl_Renderer_Drx11::switchFramebuff(){
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	std::vector<uint8_t> blockBytes; // container for constant and uniform buffer updates
+	// *(__renderCtx + _renderCtxIndex) = Topl_RenderContext_Drx11(scene); // creation of new render context
 
+	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// generating an input layout based on Vertex Shader Inputs
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 	unsigned inputElementOffset = 0;
@@ -346,6 +347,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if(!_isSceneReady) return;
 		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
+
+	_isSceneReady = true;
 }
 
 #ifdef RASTERON_H
@@ -438,7 +441,7 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
-	std::vector<uint8_t> blockBytes;
+	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
@@ -538,3 +541,9 @@ void Topl_Renderer_Drx11::render(void){
 	free(renderBuffs);
 	_isSceneDrawn = true;
 }
+
+/* void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
+	Topl_RenderContext_Drx11* targetRenderCtx;
+
+	render(); // call main function for now
+} */

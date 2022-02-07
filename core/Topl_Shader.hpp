@@ -11,6 +11,8 @@
 #include "Geo_Actor.hpp"
 #include "Topl_Scene.hpp"
 
+typedef std::vector<uint8_t> blockBytes_t; // format used for passing data to shaders
+
 enum SHDR_Type {
     SHDR_Vertex,
     SHDR_Fragment,
@@ -49,7 +51,6 @@ enum SHDR_ValueType {
     SHDR_matrix_4x3,
     SHDR_matrix_4x4,
 };
-
 
 struct Shader_Type {
     Shader_Type(){}
@@ -103,8 +104,8 @@ public:
     }
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
-	virtual bool genGeoBlock(const Geo_Actor *const component, std::vector<uint8_t>* bytes) const = 0;
-    virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, std::vector<uint8_t>* bytes) const = 0;
+	virtual bool genGeoBlock(const Geo_Actor *const component, blockBytes_t* bytes) const = 0;
+    virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, blockBytes_t* bytes) const = 0;
 
     std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };

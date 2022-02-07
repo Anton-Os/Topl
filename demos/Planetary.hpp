@@ -12,7 +12,7 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(4.0f));
 	Timer_Ticker gameTicker;
 
-	NGon3D ngon = { 0.4, 12, 12 };
+	NGon3D ngon = { 0.2, 12, 12 };
 	NGon3D ngon2 = { 0.1, 6, 30 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
@@ -20,7 +20,7 @@ namespace Topl {
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
 	// Phys_Motion bounceMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(0.0f, 0.3f, 0.0), 2.0 );
-	Phys_Motion motion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 2.0f, 0.0), 2.0);
+	Phys_Motion motion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 0.0f, 0.0), 4.0);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -35,7 +35,8 @@ void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 
 
 void swivelCallback(double absSecs) {
 	Eigen::Vector3f motionVec = Topl::motion.getMotion(absSecs);
-	Topl::sphereGeo.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
+	// Topl::sphereGeo.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
+	Topl::sphereGeo.setPos(Eigen::Vector3f(motionVec.x() - 0.5f, motionVec.y() - 0.5f, 0.0f));
 }
 
 void moveUpCallback() {

@@ -4,15 +4,19 @@
 
 #include <Eigen/Dense>
 
-// TODO: ADD DEFINITIONS TO SCALE PHYSICS REACTIONS
+#define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
+#define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
+#define PHYS_DEFAULT_MASS 15.0 // default mass of Entities
 
-#define TOPL_FORCE_UNIT 0.04 // Easy unit to work in screen coordinates
-#define TOPL_DEFAULT_DAMPING 1 // 1 For Testing Purpose, no slow down
-#define TOPL_DEFAULT_MASS 15.0 // Default Mass of Entities
-#define TOPL_DEFAULT_K 3000.0 // K Value for Springs
-#define TOPL_CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
-#define TOPL_CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
-#define TOPL_CONNECTOR_ANGLE_MULT 20
+#define PHYS_DEFAULT_K 2000.0 // K value by default
+#define PHYS_ROD_K 1000000.0 // K value for rod connector
+#define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
+#define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
+#define CONNECTOR_ANGLE_SCALE 20
+#define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
+
+#define BARRIER_DIM 1.0f // default barrier dimention
+#define BARRIER_EXPAND 10000.0f // barrier infinite expanse
 
 enum MOTION_Type {
 	MOTION_Instant,
@@ -58,12 +62,13 @@ public:
 private:
     double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
     Eigen::Vector3f getLinear(const Eigen::Vector3f& m1, const Eigen::Vector3f& m2, double progFrac){ // linear motion computation
-        return (progFrac <= 0.5f)? m1 + (m2 * progFrac) : m2 + (m1 * progFrac);
+        return (progFrac <= 0.5f)? m1 + (m2 * progFrac * 2.0f) : m2 + (m1 * progFrac * 2.0f);
     }
 
 	MOTION_Type type;
     Eigen::Vector3f startPos = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
     Eigen::Vector3f endPos = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
+    double smoothFactor = 1.0f;
 
     double startSecs = 0.0f;
     double endSecs = 0.0f;
@@ -80,24 +85,54 @@ enum CONNECT_Type {
 };
 
 struct Phys_Connector {
-    Phys_Connector(){ }
-    Phys_Connector(double l, double rl, double a, CONNECT_Type t, double k){
+    Phys_Connector(){ } // Empty Constructor
+    // Phys_Connector(double l, double rl, double a, CONNECT_Type t, double k){
+    Phys_Connector(double l, double k){ // Basic Constructor
+        type = CONNECT_Spring;
         length = l;
-        restLength = rl;
-        // angle = a;
-        type = t;
+        restLength = l;
         kVal = k;
+    }
+    Phys_Connector(CONNECT_Type t, double l, double k){ // Extended Constructor
+        type = t;
+        length = l;
+        restLength = l;
+        kVal = (type != CONNECT_Rod)? k : PHYS_ROD_K;
+    }
+    bool getIsPreset(){ // determines whether internals are correctly set
+       return (length == BAD_CONNECTOR_LEN || restLength == BAD_CONNECTOR_LEN)? false : true;
     }
 
     // Updatable 
 	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
-    Eigen::Vector3f restAngleNormVec1, restAngleNormVec2; // AT REST normalized vectors that point to 1st and 2nd linked items
-    Eigen::Vector3f angleNormVec1, angleNormVec2; // CURRENT normalized vectors that point to 1st and 2nd linked items
+    Eigen::Vector3f restAngle_NVec1, restAngle_NVec2; // AT REST normalized vectors pointing to 1st and 2nd links
+    Eigen::Vector3f angle_NVec1, angle_NVec2; // CURRENT normalized vectors pointing to 1st and 2nd links
 
     CONNECT_Type type = CONNECT_Spring;
-    double length = 0.5f; // tries to reach rest length from here
-    double restLength = 0.5f; // zero forces act at this length
-	double kVal = TOPL_DEFAULT_K; // 100.0 seems to be normal
+    double length = BAD_CONNECTOR_LEN; // current length of the connector
+    double restLength = BAD_CONNECTOR_LEN; // tries to reach this rest length
+	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
+};
+
+struct Phys_Barrier {
+    Phys_Barrier(Eigen::Vector3f p){ pos = p; } // Basic Position Constructor
+    Phys_Barrier(Eigen::Vector3f p, float w, float h, float d){ // Extended Constructor
+        pos = p;
+
+        width = w;
+        height = h;
+        depth = d;
+    }
+    Eigen::Vector3f pos;
+
+    float height = BARRIER_DIM;
+    float width = BARRIER_DIM * 3;
+    float depth = BARRIER_EXPAND;
+};
+
+struct Phys_Constraint { // Limits an objects freedom of motion
+    std::vector<Phys_Barrier> rigidBarrs;
+    std::vector<std::pair<Eigen::Vector2f, Phys_Barrier>> angleBarrs;
 };
 
 #define MAX_PHYS_FORCES 64
@@ -123,8 +158,8 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
     }
 
     bool isGravityEnabled = false;
-	const double damping = TOPL_DEFAULT_DAMPING;
-    double mass = TOPL_DEFAULT_MASS;
+	const double damping = PHYS_DEFAULT_DAMPING;
+    double mass = PHYS_DEFAULT_MASS;
 
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
     Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
