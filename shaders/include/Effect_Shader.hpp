@@ -16,9 +16,9 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		bytes->clear(); // Make sure there is no preexisting data
 		const unsigned renderId = component->getId();
 
-		const uint8_t* renderId_bptr = reinterpret_cast<const uint8_t*>(&renderId);
+		bytes_cptr renderId_bytes = reinterpret_cast<bytes_cptr>(&renderId);
 
-		ValueGen::appendDataToBytes(renderId_bptr, sizeof(unsigned), bytes);
+		ValueGen::appendDataToBytes(renderId_bytes, sizeof(unsigned), bytes);
 		return true;
 	}
 
@@ -26,11 +26,11 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		const Eigen::Vector2i screenRes = Eigen::Vector2i(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 		Eigen::Vector2f cursorPos = Eigen::Vector2f(Platform::getCursorX(), Platform::getCursorY());
 
-		const uint8_t* screenRes_bptr = reinterpret_cast<const uint8_t*>(screenRes.data());
-		const uint8_t* cursorPos_bptr = reinterpret_cast<const uint8_t*>(cursorPos.data());
+		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(screenRes.data());
+		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(cursorPos.data());
 
-		ValueGen::appendDataToBytes(screenRes_bptr, screenRes.size() * sizeof(int), 0, bytes);
-		ValueGen::appendDataToBytes(cursorPos_bptr, cursorPos.size() * sizeof(float), 0, bytes);
+		ValueGen::appendDataToBytes(screenRes_bytes, screenRes.size() * sizeof(int), 0, bytes);
+		ValueGen::appendDataToBytes(cursorPos_bytes, cursorPos.size() * sizeof(float), 0, bytes);
 		return true;
 	}
 };

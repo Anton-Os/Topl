@@ -11,12 +11,12 @@ static void error_notFound(const std::string& objTypeStr, const std::string& nam
 unsigned Geo_Actor::_id_count = 0;
 
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
-	if(index >= _namedActor.size()) return nullptr; // Error
-	else return _namedActor.at(index); 
+	if(index >= _geoActors.size()) return nullptr; // Error
+	else return _geoActors.at(index); 
 }
 
 actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
-	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if((*actor)->getName() == name) return *actor;
 
 	return nullptr; // Error
@@ -24,7 +24,7 @@ actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 
 lightSource_cptr Topl_Scene::getLightSource(unsigned index) const {
 	if(index > _lightSrc.size()) return nullptr;
-	else return &_lightSrc.at(index);
+	else return _lightSrc.at(index);
 }
 
 linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
@@ -37,14 +37,27 @@ linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 
 void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
 	geo->setName(name);
-	_namedActor.push_back(geo);
+	_geoActors.push_back(geo);
 }
 
 #ifdef RASTERON_H
 
+/* void Topl_Rasteron_AnimWrap::addFrame(const Rasteron_Image *const refImg){
+	if(frameIndex >= MAX_TEXTURES_PER_ACTOR){
+		frameIndex = 0;
+		isOverride = true;
+	}
+	addFrameData(animation, refImg, frameIndex);
+	frameIndex++;
+}
+
+Rasteron_Image* Topl_Rasteron_AnimWrap::getFrameNamed(std::string name){
+	return nullptr; // TODO: search through and retrieve animation contents here
+} */
+
 void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* image) {
 	if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
-	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_actorTexture_map.insert({ *actor, image });
 			return;

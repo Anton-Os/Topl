@@ -38,10 +38,6 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, f
 
 Geo_SpriteTable::~Geo_SpriteTable(){
         for(unsigned i = 0; i < _spriteCount; i++)
-            delFileImage(_fileImages + i); // free all Rasteron specific file images
-        if(_fileImages != nullptr) free(_fileImages); // free allocated space
-
-        for(unsigned i = 0; i < _spriteCount; i++)
             deleteImg(*(_images + i)); // free all Rasteron specific raw images
         if(_images != nullptr) free(_images); // free allocated space
 
@@ -57,20 +53,18 @@ Geo_SpriteTable::~Geo_SpriteTable(){
 void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
     _spriteCount = filePaths.size();
 
-    // Rasteron specific object allocation
-    _fileImages = (FileImage*)malloc(_spriteCount * sizeof(FileImage));
     _squares = (Geo_FlatSquare**)malloc(_spriteCount * sizeof(Geo_FlatSquare*));
     _images = (Rasteron_Image**)malloc(_spriteCount * sizeof(Rasteron_Image*));
     _rastSprites = (Rasteron_Sprite**)malloc(_spriteCount * sizeof(Rasteron_Sprite*));
 
     unsigned offset = 0;
     for (std::initializer_list<std::string>::iterator currentFileName = filePaths.begin(); currentFileName < filePaths.end(); currentFileName++) {
-		// std::replace((*(currentFileName)).begin(), (*(currentFileName)).end(), '/', '\\');
 		std::string newFileName = *currentFileName;
 		std::replace(newFileName.begin(), newFileName.end(), '/', '\\');
 
-        loadFileImage(newFileName.c_str(), &(*(_fileImages + offset)));
-        *(_images + offset) = createImgRef(&(*(_fileImages + offset)));
+        // loadFileImage(newFileName.c_str(), &(*(_fileImages + offset)));
+		*(_images + offset) = nullptr;
+        *(_images + offset) = createImgRef(newFileName.c_str());
         *(_rastSprites + offset) = createSprite(*(_images + offset));
         
         offset++;

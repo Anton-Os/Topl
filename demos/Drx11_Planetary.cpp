@@ -2,6 +2,7 @@
 
 #include "Topl_Renderer_Drx11.hpp"
 #include "Flat_Shader.hpp"
+#include "Beams_Shader.hpp"
 
 // Entry Point
 

@@ -18,32 +18,33 @@ namespace Topl {
 	Timer_Ticker gameTicker;
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagesSubPath = "images/";
+	std::string fullImgPath = assetsPath + imagesSubPath;
 
 	std::pair<std::string, Eigen::Vector3f> demonActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(assetsPath + imagesSubPath + "Demon-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Demon-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Demon-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Demon-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Demon-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Demon-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(fullImgPath + "Demon-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Demon-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Demon-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Demon-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Demon-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Demon-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	std::pair<std::string, Eigen::Vector3f> angelActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(assetsPath + imagesSubPath + "Angel-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Angel-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Angel-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Angel-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Angel-LeftLeg.png", Eigen::Vector3f(0.06f, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Angel-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(fullImgPath + "Angel-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Angel-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Angel-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Angel-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Angel-LeftLeg.png", Eigen::Vector3f(0.06f, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Angel-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	std::pair<std::string, Eigen::Vector3f> ghostActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-LeftArm.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-RightArm.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(assetsPath + imagesSubPath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(fullImgPath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Ghost-LeftArm.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Ghost-RightArm.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Ghost-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(fullImgPath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	Geo_Humanoid demon("demon", &scene, demonActor, 0.25f);

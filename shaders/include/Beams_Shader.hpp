@@ -1,0 +1,78 @@
+#include "Topl_Shader.hpp"
+
+// Vertex Shaders
+
+struct Beams_VertexShader : public Topl_EntryShader {
+	Beams_VertexShader(std::string name)
+		: Topl_EntryShader(
+			SHDR_Vertex, name,
+			{ 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+			} // Inputs
+		) { }
+
+	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
+		bytes->clear(); // Make sure there is no preexisting data
+
+		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
+		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
+		Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
+		bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(color.data());
+	
+		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(lightColor_bytes, color.size() * sizeof(float), bytes);
+		
+		return true;
+	}
+
+	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos()->data());
+		bytes_cptr cameraRot_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos()->data());
+		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
+
+		ValueGen::appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
+
+        if(scene->getLightSourceCount() > 0) appendLightSource(scene, 0, bytes); // 1st light source
+        if(scene->getLightSourceCount() > 1) appendLightSource(scene, 1, bytes); // 2nd light source
+        if(scene->getLightSourceCount() > 2) appendLightSource(scene, 2, bytes); // 3rd light source
+		
+        return true;
+	}
+
+private:
+    static void appendLightSource(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
+        bytes_cptr lightPos_bytes = reinterpret_cast<bytes_cptr>(scene->getLightSource(i)->pos.data());
+        bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(scene->getLightSource(i)->lightColor.data());
+        bytes_cptr intensity_bytes = reinterpret_cast<bytes_cptr>(&scene->getLightSource(i)->intensity);
+
+        ValueGen::appendDataToBytes(lightPos_bytes, scene->getLightSource(i)->pos.size() * sizeof(float), bytes);
+        ValueGen::appendDataToBytes(lightColor_bytes, scene->getLightSource(i)->lightColor.size() * sizeof(float), bytes);
+        ValueGen::appendDataToBytes(intensity_bytes, sizeof(float), bytes);
+    }
+};
+
+struct GL4_Beams_VertexShader : public Beams_VertexShader {
+	GL4_Beams_VertexShader() : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl") {}
+};
+
+struct Drx11_Beams_VertexShader : public Beams_VertexShader {
+	Drx11_Beams_VertexShader() : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl") {}
+};
+
+// Fragment Shaders
+
+struct Beams_FragmentShader : public Topl_Shader {
+	Beams_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name){ }
+};
+
+struct GL4_Beams_FragmentShader : public Beams_FragmentShader {
+	GL4_Beams_FragmentShader() : Beams_FragmentShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
+};
+
+struct Drx11_Beams_FragmentShader : public Beams_FragmentShader {
+	Drx11_Beams_FragmentShader() : Beams_FragmentShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
+};

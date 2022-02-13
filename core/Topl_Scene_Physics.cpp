@@ -15,7 +15,7 @@ static void error_forcesExcess() {
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	// Find matching geometry component
-	for(std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if((*actor)->getName() == name){
 			_actorPhys_map.insert({ *actor, physActor });
 			return;
@@ -27,7 +27,7 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 
 void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceVec) {
 	// Find matching geometry component
-	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) return error_notFound("physics", name); // Error
 
@@ -41,13 +41,13 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
 
 	const Geo_Actor* link1 = nullptr;
-	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
 
 	if (link1 == nullptr) return error_notFound("link geometry", name1); // Error
 
 	const Geo_Actor* link2 = nullptr;
-	for (std::vector<Geo_Actor*>::const_iterator actor = _namedActor.cbegin(); actor < _namedActor.cend(); actor++)
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name2 == (*actor)->getName()) link2 = *actor;
 
 	if (link2 == nullptr) return error_notFound("link geometry", name2);

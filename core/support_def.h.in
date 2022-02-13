@@ -4,6 +4,7 @@
 #if ${Rasteron_FOUND}
     #include "Rasteron.h" // includes Rasteron main modules
     #include "Font.h" // includes Rasteron font loading module
+    #include "Animation.h" // includes Rateron animation support
 #endif
 #if ${Assimp_FOUND}
     #include <assimp/Importer.hpp>      // C++ importer interface

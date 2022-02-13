@@ -10,6 +10,12 @@ layout(packed, binding = 1) uniform SceneBlock {
 	vec3 lookPos; // padded to vec4
 	vec3 cameraPos; // padded to vec4
 	mat4 projMatrix;
+
+	vec3 light1_pos; // padded to vec4
+	vec3 light1_color; float light1_intensity;
+
+	vec3 light2_pos; // padded to vec4
+	vec3 light2_color; float light2_intensity;
 };
 
 layout(location = 0) in vec3 pos;

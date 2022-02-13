@@ -15,8 +15,7 @@ struct RenderTarget {
 	unsigned targetID;
 };
 
-#define BUFFERS_PER_RENDERTARGET 3 // Each render target has fixed number of associated buffers!
-// BUFFERS_PER_RENDERTARGET matches the number of enumerations inside BUFF_Type
+#define BUFFERS_PER_RENDERTARGET 3 // Each render target has fixed number buffers, see BUFF_Type below
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
@@ -38,7 +37,7 @@ struct Buffer : public RenderTarget {
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
-#define MAX_TEXTURES_PER_TARGET 12
+#define MAX_TEXTURES_PER_TARGET 12 // corresponds to MAX_TEXTURES_PER_ACTOR in Topl_Scene.hpp
 #define MAX_RENDERER_CONTEXTS 24 // limits number of unique scenes and render contexts to 24
 
 enum TEX_Frmt {

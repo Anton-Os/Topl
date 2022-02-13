@@ -12,6 +12,7 @@
 #include "Topl_Scene.hpp"
 
 typedef std::vector<uint8_t> blockBytes_t; // format used for passing data to shaders
+typedef const uint8_t* bytes_cptr;
 
 enum SHDR_Type {
     SHDR_Vertex,
@@ -23,33 +24,15 @@ enum SHDR_Type {
 };
 
 enum SHDR_ValueType {
-    SHDR_float_vec4,
-    SHDR_float_vec3,
-    SHDR_float_vec2,
-    SHDR_float,
-    SHDR_double_vec4,
-    SHDR_double_vec3,
-    SHDR_double_vec2,
-    SHDR_double,
-    SHDR_int_vec4,
-    SHDR_int_vec3,
-    SHDR_int_vec2,
-    SHDR_int,
-    SHDR_uint_vec4,
-    SHDR_uint_vec3,
-    SHDR_uint_vec2,
-    SHDR_uint,
+    SHDR_float, SHDR_float_vec2, SHDR_float_vec3, SHDR_float_vec4,
+    SHDR_double, SHDR_double_vec2, SHDR_double_vec3, SHDR_double_vec4,
+    SHDR_int, SHDR_int_vec2, SHDR_int_vec3, SHDR_int_vec4,
+    SHDR_uint, SHDR_uint_vec2, SHDR_uint_vec3, SHDR_uint_vec4,
     // Skip the boolean vector types for now
     SHDR_bool,
-    SHDR_matrix_2x2, // 2 by matrices
-    SHDR_matrix_2x3,
-    SHDR_matrix_2x4,
-    SHDR_matrix_3x2, // 3 by matrices
-    SHDR_matrix_3x3,
-    SHDR_matrix_3x4,
-    SHDR_matrix_4x2, // 4 by matrices
-    SHDR_matrix_4x3,
-    SHDR_matrix_4x4,
+    SHDR_matrix_2x2, SHDR_matrix_2x3, SHDR_matrix_2x4, // 2 by matrices
+    SHDR_matrix_3x2, SHDR_matrix_3x3, SHDR_matrix_3x4, // 3 by matrices
+    SHDR_matrix_4x2, SHDR_matrix_4x3, SHDR_matrix_4x4, // 4 by matrices
 };
 
 struct Shader_Type {

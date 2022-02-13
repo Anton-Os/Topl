@@ -4,24 +4,14 @@
 
 #include <Eigen/Dense>
 
-#define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
-#define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
-#define PHYS_DEFAULT_MASS 15.0 // default mass of Entities
-
-#define PHYS_DEFAULT_K 2000.0 // K value by default
-#define PHYS_ROD_K 1000000.0 // K value for rod connector
-#define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
-#define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
-#define CONNECTOR_ANGLE_SCALE 20
-#define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
-
-#define BARRIER_DIM 1.0f // default barrier dimention
-#define BARRIER_EXPAND 10000.0f // barrier infinite expanse
+#define MOTION_NO_CURVE 0.0f // curve has no alterations
+#define MOTION_IN_CURVE 1.0f // curve is x2 towards center and 1/2 away
+#define MOTION_OUT_CURVE 1.0f // curve is 1/2 towards center and x2 away
 
 enum MOTION_Type {
 	MOTION_Instant,
 	MOTION_Linear,
-	MOTION_Smooth,
+	// MOTION_Smooth,
 	MOTION_Pivot,
 };
 
@@ -54,27 +44,36 @@ public:
 		switch (type) {
 		case MOTION_Instant: return (seqProgFrac <= 0.5f)? startPos : endPos;
 		case MOTION_Linear : return getLinear(startPos, endPos, seqProgFrac);
-		case MOTION_Smooth: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement smooth motion!
+		// case MOTION_Smooth: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement smooth motion!
 		case MOTION_Pivot: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
 		}
     }
+    void setCurve(double c){ motionCurve = c; }
 
 private:
     double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
     Eigen::Vector3f getLinear(const Eigen::Vector3f& m1, const Eigen::Vector3f& m2, double progFrac){ // linear motion computation
+        // TODO: implement curve logic here!
         return (progFrac <= 0.5f)? m1 + (m2 * progFrac * 2.0f) : m2 + (m1 * progFrac * 2.0f);
     }
 
 	MOTION_Type type;
     Eigen::Vector3f startPos = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
     Eigen::Vector3f endPos = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
-    double smoothFactor = 1.0f;
+    double motionCurve = MOTION_NO_CURVE; // no modification of time argument
 
     double startSecs = 0.0f;
     double endSecs = 0.0f;
     unsigned seqCount = 0; // tracks how many sequence iterations have occured
     bool isFirstCall = true; // required to correct the timekeeping
 };
+
+#define PHYS_DEFAULT_K 2000.0 // K value by default
+#define PHYS_ROD_K 1000000.0 // K value for rod connector
+#define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
+#define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
+#define CONNECTOR_ANGLE_SCALE 20
+#define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
 
 enum CONNECT_Type {
     CONNECT_Spring, // Oscillating force both ways
@@ -114,8 +113,11 @@ struct Phys_Connector {
 	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
 };
 
+#define BARRIER_DIM 1.0f // default barrier dimention
+#define BARRIER_EXPAND 10000.0f // barrier infinite expanse
+
 struct Phys_Barrier {
-    Phys_Barrier(Eigen::Vector3f p){ pos = p; } // Basic Position Constructor
+    Phys_Barrier(Eigen::Vector3f p){ pos = p; } // Positioned Constructor
     Phys_Barrier(Eigen::Vector3f p, float w, float h, float d){ // Extended Constructor
         pos = p;
 
@@ -131,10 +133,15 @@ struct Phys_Barrier {
 };
 
 struct Phys_Constraint { // Limits an objects freedom of motion
-    std::vector<Phys_Barrier> rigidBarrs;
-    std::vector<std::pair<Eigen::Vector2f, Phys_Barrier>> angleBarrs;
+    std::vector<const Phys_Barrier*> rigidBarrs;
+    std::vector<std::pair<Eigen::Vector2f, const Phys_Barrier*>> angleBarrs;
+
+    // Include other constraints as necessary
 };
 
+#define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
+#define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
+#define PHYS_DEFAULT_MASS 15.0 // default mass of entities
 #define MAX_PHYS_FORCES 64
 
 struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor object
@@ -156,6 +163,14 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
             return true;
         } else return false;
     }
+    void addConstraint(const Phys_Barrier* barrier){
+        constraints.rigidBarrs.push_back(barrier);
+    }
+    void addConstraint(Eigen::Vector2f angles, const Phys_Barrier* barrier){
+        constraints.angleBarrs.push_back(std::make_pair(angles, barrier));
+    }
+
+    Phys_Constraint constraints; // use this to limit freedom of motion
 
     bool isGravityEnabled = false;
 	const double damping = PHYS_DEFAULT_DAMPING;
@@ -163,7 +178,6 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
 
 	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
     Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
-
     unsigned short actingForceCount = 0; // number of acting forces on theobject
     Eigen::Vector3f* forces = nullptr;
     // const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection

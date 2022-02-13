@@ -20,7 +20,6 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 	Phys_Connector* connector;
 	geo_pair linkedItems;
 };
-
 typedef const LinkedItems* const linkedItems_cptr;
 
 struct Topl_LightSource {
@@ -34,12 +33,26 @@ struct Topl_LightSource {
 	Eigen::Vector3f lightColor = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
 	double intensity = 1.0;
 };
-
 typedef const Topl_LightSource* const lightSource_cptr; // typedef for safety
 
-#ifdef RASTERON_H
-	typedef std::pair<unsigned, const Rasteron_Image*> idToImage_pair;
-#endif
+/* #ifdef RASTERON_H
+#define MAX_TEXTURES_PER_ACTOR 12 // corresponds to MAX_TEXTURES_PER_TARGET in Topl_Renderer.hpp
+#define ANIM_BACKGROUND 0xFFFFFF00 // overrides macro set inside Rasterons Animation.h
+
+struct Topl_Rasteron_AnimWrap { // wrapper object for working with Rasteron_Animation
+	Topl_Rasteron_AnimWrap(std::string prefix, unsigned height, unsigned width){
+		animation = allocNewAnim(prefix.c_str(), height, width, MAX_TEXTURES_PER_ACTOR);
+	}
+	~Topl_Rasteron_AnimWrap(){ deleteAnim(animation); }
+	
+	void addFrame(const Rasteron_Image *const refImg);
+	Rasteron_Image* getFrameNamed(std::string name);
+
+	Rasteron_Animation* animation;
+	unsigned frameIndex = 0;
+	bool isOverride = false; // switch to true when images begin to override one another
+};
+#endif */
 
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------
@@ -52,11 +65,11 @@ public:
 	~Topl_Scene() {}
 
 	void addGeometry(const std::string& name, Geo_Actor* geo);
-	void addLightSource(Topl_LightSource ls){ _lightSrc.push_back(ls); }
+	void addLightSource(Topl_LightSource* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
 #endif
-	unsigned getActorCount() const { return _namedActor.size(); }
+	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	unsigned getLightSourceCount() const { return _lightSrc.size(); }
@@ -69,7 +82,7 @@ public:
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
-	void modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale); // Rotates and scales all connectors associated with named geometry
+	void modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale); // rotates and scales all connectors associated with named geometry
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 
@@ -77,14 +90,15 @@ public:
 	linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 private:
 	Topl_Camera _camera;
+	std::vector<Topl_LightSource*> _lightSrc; // stores all light sources
 
-	std::vector<Geo_Actor*> _namedActor; // Stores all geometries
-	std::vector<Topl_LightSource> _lightSrc; // Stores all light sources
-	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // Associates geometry to a physics structure
-	std::vector<LinkedItems> _linkedItems; // Stores geometry connector data
-	Timer_Ticker _physTicker; // This ticker is specific to physics updates
+	std::vector<Geo_Actor*> _geoActors; // stores all geometries
+	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure
+	std::vector<LinkedItems> _linkedItems; // stores geometry connector data
+	Timer_Ticker _physTicker; // this ticker is specific to physics updates
 #ifdef RASTERON_H
-	std::map<Geo_Actor*, const Rasteron_Image*> _actorTexture_map; // Associates geometry to a single texture structure
+	std::map<Geo_Actor*, const Rasteron_Image*> _actorTexture_map; // associates geometry to a single texture structure
+	// std::map<Geo_Actor*, Topl_Rasteron_AnimWrap*> __actorTexture_map; // associates geometry to multiple textures held within wrapper
 #endif
 };
 

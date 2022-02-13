@@ -15,29 +15,26 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
-		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
-		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
+		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
+		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
 		Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
-		const uint8_t* color_bptr = reinterpret_cast<const uint8_t*>(color.data());
+		bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(color.data());
 	
-		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(color_bptr, color.size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(color_bytes, color.size() * sizeof(float), bytes);
 		
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		const uint8_t* cameraPos_bptr = reinterpret_cast<const uint8_t*>(camera->getPos()->data());
-		const uint8_t* cameraRot_bptr = reinterpret_cast<const uint8_t*>(camera->getLookPos()->data());
-		const uint8_t* matrix_bptr = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
-		// const uint8_t* lightSrc_bptr = reinterpret_cast<const uint8_t*>(scene->getLightSource(0)->pos->data());
+		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos()->data());
+		bytes_cptr cameraRot_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos()->data());
+		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
 
-		ValueGen::appendDataToBytes(cameraPos_bptr, camera->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bptr, camera->getLookPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bptr, camera->getProjMatrix()->size() * sizeof(float), bytes);
-		// ValueGen::appendDataToBytes(lightSrc_bptr, 4 * sizeof(float), bytes);
-	
+		ValueGen::appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

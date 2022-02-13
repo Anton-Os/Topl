@@ -8,6 +8,14 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 cameraPos;
 	float4 lookPos;
 	float4x4 projMatrix;
+
+	float4 light1_pos;
+	float3 light1_color; float light1_intensity;
+
+	float4 light2_pos;
+	float3 light2_color; float light2_intensity;
+
+	// potentially room for 3rd light source
 }
 
 struct VS_INPUT {

@@ -15,16 +15,16 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
-		const uint8_t* offset_bptr = reinterpret_cast<const uint8_t*>(component->getPos()->data());
-		const uint8_t* rotation_bptr = reinterpret_cast<const uint8_t*>(component->getAngles()->data());
+		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
+		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
 	
-		ValueGen::appendDataToBytes(offset_bptr, component->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotation_bptr, component->getAngles()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
+		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		const uint8_t* matrixBytes = reinterpret_cast<const uint8_t*>(camera->getProjMatrix()->data());
+		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
 		ValueGen::assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
