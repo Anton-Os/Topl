@@ -17,12 +17,12 @@ struct Beams_VertexShader : public Topl_EntryShader {
 
 		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
 		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
-		Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
-		bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(color.data());
+		// Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
+		// bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(color.data());
 	
 		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
 		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(lightColor_bytes, color.size() * sizeof(float), bytes);
+		// ValueGen::appendDataToBytes(lightColor_bytes, color.size() * sizeof(float), bytes);
 		
 		return true;
 	}
@@ -36,21 +36,21 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		ValueGen::appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
 		ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 
-        if(scene->getLightSourceCount() > 0) appendLightSource(scene, 0, bytes); // 1st light source
-        if(scene->getLightSourceCount() > 1) appendLightSource(scene, 1, bytes); // 2nd light source
-        if(scene->getLightSourceCount() > 2) appendLightSource(scene, 2, bytes); // 3rd light source
+        if(scene->getLightCount() > 0) appendLight(scene, 0, bytes); // 1st light source
+        if(scene->getLightCount() > 1) appendLight(scene, 1, bytes); // 2nd light source
+        if(scene->getLightCount() > 2) appendLight(scene, 2, bytes); // 3rd light source
 		
         return true;
 	}
 
 private:
-    static void appendLightSource(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
-        bytes_cptr lightPos_bytes = reinterpret_cast<bytes_cptr>(scene->getLightSource(i)->pos.data());
-        bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(scene->getLightSource(i)->lightColor.data());
-        bytes_cptr intensity_bytes = reinterpret_cast<bytes_cptr>(&scene->getLightSource(i)->intensity);
+    static void appendLight(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
+        bytes_cptr lightPos_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->pos.data());
+        bytes_cptr lightColor_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->lightColor.data());
+        bytes_cptr intensity_bytes = reinterpret_cast<bytes_cptr>(&scene->getLight(i)->intensity);
 
-        ValueGen::appendDataToBytes(lightPos_bytes, scene->getLightSource(i)->pos.size() * sizeof(float), bytes);
-        ValueGen::appendDataToBytes(lightColor_bytes, scene->getLightSource(i)->lightColor.size() * sizeof(float), bytes);
+        ValueGen::appendDataToBytes(lightPos_bytes, scene->getLight(i)->pos.size() * sizeof(float), bytes);
+        ValueGen::appendDataToBytes(lightColor_bytes, scene->getLight(i)->lightColor.size() * sizeof(float), bytes);
         ValueGen::appendDataToBytes(intensity_bytes, sizeof(float), bytes);
     }
 };

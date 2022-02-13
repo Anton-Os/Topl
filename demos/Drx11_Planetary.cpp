@@ -16,7 +16,10 @@ int main(int argc, char** argv) {
 
 	Drx11_Flat_VertexShader vertexShader = Drx11_Flat_VertexShader();
 	Drx11_Flat_FragmentShader fragmentShader = Drx11_Flat_FragmentShader();
-	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
+	Drx11_Beams_VertexShader vertexBeams = Drx11_Beams_VertexShader();
+	Drx11_Beams_FragmentShader fragBeams = Drx11_Beams_FragmentShader();
+	// renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
+	renderer.genPipeline(&pipeline, &vertexBeams, &fragBeams);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene, &Topl::camera);

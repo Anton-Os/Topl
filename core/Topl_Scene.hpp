@@ -22,9 +22,9 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 };
 typedef const LinkedItems* const linkedItems_cptr;
 
-struct Topl_LightSource {
-	Topl_LightSource(Eigen::Vector3f p) { pos = p; }
-	Topl_LightSource(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
+struct Topl_Light {
+	Topl_Light(Eigen::Vector3f p) { pos = p; }
+	Topl_Light(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
 		pos = p;
 		lightColor = lc;
 		intensity = i;
@@ -33,26 +33,26 @@ struct Topl_LightSource {
 	Eigen::Vector3f lightColor = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
 	double intensity = 1.0;
 };
-typedef const Topl_LightSource* const lightSource_cptr; // typedef for safety
+typedef const Topl_Light* const light_cptr; // typedef for safety
 
-/* #ifdef RASTERON_H
+#ifdef RASTERON_H
 #define MAX_TEXTURES_PER_ACTOR 12 // corresponds to MAX_TEXTURES_PER_TARGET in Topl_Renderer.hpp
-#define ANIM_BACKGROUND 0xFFFFFF00 // overrides macro set inside Rasterons Animation.h
+#define ANIM_BACKGROUND 0xFFFFFF00 // overrides macro set inside Rasterons Animation.h to change background
 
-struct Topl_Rasteron_AnimWrap { // wrapper object for working with Rasteron_Animation
-	Topl_Rasteron_AnimWrap(std::string prefix, unsigned height, unsigned width){
+struct Topl_MultiTex { // object for working with multiple textures, wraps around Rasteron_Animation
+	Topl_MultiTex(std::string prefix, unsigned height, unsigned width){
 		animation = allocNewAnim(prefix.c_str(), height, width, MAX_TEXTURES_PER_ACTOR);
 	}
-	~Topl_Rasteron_AnimWrap(){ deleteAnim(animation); }
+	~Topl_MultiTex(){ deleteAnim(animation); }
 	
 	void addFrame(const Rasteron_Image *const refImg);
-	Rasteron_Image* getFrameNamed(std::string name);
+	Rasteron_Image* getFrameNamed(const std::string& name) const;
 
 	Rasteron_Animation* animation;
 	unsigned frameIndex = 0;
 	bool isOverride = false; // switch to true when images begin to override one another
 };
-#endif */
+#endif
 
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------
@@ -64,21 +64,24 @@ public:
 	}
 	~Topl_Scene() {}
 
+	// Scene Builder
 	void addGeometry(const std::string& name, Geo_Actor* geo);
-	void addLightSource(Topl_LightSource* ls){ _lightSrc.push_back(ls); }
+	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
+	void addMultiTex(const std::string& name, const Topl_MultiTex* multiTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
-	unsigned getLightSourceCount() const { return _lightSrc.size(); }
-	lightSource_cptr getLightSource(unsigned index) const; // access to light source by index
+	unsigned getLightCount() const { return _lightSrc.size(); }
+	light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
-	const Rasteron_Image* getFirstTexture(const std::string& name) const;
-	// unsigned getTextures(unsigned index, const Rasteron_Image** images) const; // Sequential access, see BUFFERS_PER_RENDERTARGET in Renderer.hpp
+	const Rasteron_Image* getTexture(const std::string& name) const;
+	const Rasteron_Image* getTexture(const std::string& name, unsigned frameIndex) const;
 #endif
 
+	// Scene Physics
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
@@ -90,16 +93,16 @@ public:
 	linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 private:
 	Topl_Camera _camera;
-	std::vector<Topl_LightSource*> _lightSrc; // stores all light sources
+	std::vector<Topl_Light*> _lightSrc; // stores all light sources
+#ifdef RASTERON_H
+	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture
+	std::map<Geo_Actor*, const Topl_MultiTex*> _actorMultiTex_map; // associates geometry actor to multiple textures
+#endif
 
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // stores geometry connector data
 	Timer_Ticker _physTicker; // this ticker is specific to physics updates
-#ifdef RASTERON_H
-	std::map<Geo_Actor*, const Rasteron_Image*> _actorTexture_map; // associates geometry to a single texture structure
-	// std::map<Geo_Actor*, Topl_Rasteron_AnimWrap*> __actorTexture_map; // associates geometry to multiple textures held within wrapper
-#endif
 };
 
 #define TOPL_SCENE_H

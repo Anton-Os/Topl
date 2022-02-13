@@ -341,7 +341,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if (!_isSceneReady) return;
 
 #ifdef RASTERON_H
-		const Rasteron_Image* baseTex = scene->getFirstTexture(actor->getName());
+		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
 		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
 		if(!_isSceneReady) return;

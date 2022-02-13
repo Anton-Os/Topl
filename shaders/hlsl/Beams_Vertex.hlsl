@@ -1,7 +1,7 @@
 cbuffer CONST_BLOCK : register(b0) {
 	float4 offset;
 	float4 rotation;
-	float4 color;
+	// float4 color;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -24,7 +24,10 @@ struct VS_INPUT {
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	float4 flatColor : COLOR0;
+
+	float4 ambient : COLOR0;
+	float4 diffuse : COLOR1;
+	float4 specular : COLOR2;
 };
 
 float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
@@ -48,7 +51,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	VS_OUTPUT output;
 
 	float4 finalPos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
-	float4 finalTranslation = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
+	float4 finalTrans = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
 
 	// if (rotation.x != 0.0 || rotation.y != 0.0) { // Rotation operations
 		float3x3 zRotMatrix = {
@@ -63,20 +66,19 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 			-1.0 * sin(rotation.y), 0, cos(rotation.y)
 		};
 
-		float3 finalRotCoords = mul(mul(zRotMatrix, yRotMatrix), float3(input.pos.x, input.pos.y, input.pos.z));
-		finalPos = float4(finalRotCoords, 0.0);
+		float3 rotCoords = mul(mul(zRotMatrix, yRotMatrix), float3(input.pos.x, input.pos.y, input.pos.z));
+		finalPos = float4(rotCoords, 0.0);
 	
 	// }
 
-	finalPos += finalTranslation;
-
-	/* switch (vertexID % 2)*/
-	output.flatColor = color;
-	// output.flatColor = float4(0.5f, 0.7f, 0.9f, 1.0f);
+	finalPos += finalTrans;
 
 	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
 	output.pos = mul(finalPos, cameraMatrix); // no projection
 	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
+	output.ambient = float4(1.0f, 0.0, 0.0, 1.0f); // red
+	output.diffuse = float4(0.0, 1.0f, 0.0, 1.0f); // green
+	output.specular = float4(0.0, 0.0, 1.0f, 1.0f); // blue
 
 	return output;
 }

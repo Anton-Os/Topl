@@ -268,7 +268,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 #ifdef RASTERON_H
 		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = scene->getFirstTexture(actor->getName());
+		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
 		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
 #endif
 		_renderIDs = rID; // Sets main graphics ID's to max value of rID

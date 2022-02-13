@@ -11,8 +11,8 @@ namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
-	Topl_LightSource whiteLight = Topl_LightSource(Eigen::Vector3f(0.1f, 0.0f, 10.0f));
-	Topl_LightSource redLight = Topl_LightSource(Eigen::Vector3f(3.0f, 0.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0), 10.0f);
+	Topl_Light whiteLight = Topl_Light(Eigen::Vector3f(0.1f, 0.0f, 10.0f));
+	Topl_Light redLight = Topl_Light(Eigen::Vector3f(3.0f, 0.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0), 10.0f);
 
 	NGon3D ngon = { 0.2, 12, 12 };
 	NGon3D ngon2 = { 0.1, 6, 30 };
@@ -56,9 +56,9 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		// Topl::scene.addLightSource(Topl_LightSource(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
-		Topl::scene.addLightSource(&Topl::whiteLight);
-		Topl::scene.addLightSource(&Topl::redLight);
+		// Topl::scene.addLight(Topl_Light(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
+		Topl::scene.addLight(&Topl::whiteLight);
+		Topl::scene.addLight(&Topl::redLight);
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 

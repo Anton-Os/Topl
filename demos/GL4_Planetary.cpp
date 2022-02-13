@@ -16,7 +16,10 @@ int main(int argc, char** argv) {
 
 	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
 	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
-	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
+	GL4_Beams_VertexShader vertexBeams = GL4_Beams_VertexShader();
+	GL4_Beams_FragmentShader fragBeams = GL4_Beams_FragmentShader();
+	// renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
+	renderer.genPipeline(&pipeline, &vertexBeams, &fragBeams);
 
 	renderer.setCamera(&Topl::camera);
 	renderer.buildScene(&Topl::scene);

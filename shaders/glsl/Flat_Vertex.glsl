@@ -36,7 +36,7 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 
 void main() {
 	vec4 finalPos = vec4(0.0, 0.0, 0.0, 0.0);
-	vec3 finalTranslation = pos + offset;
+	vec3 finalTrans = pos + offset;
 
 //	if (rotation[0] != 0 || rotation[1] != 0) {
 		mat3 zRotMatrix = mat3(
@@ -51,14 +51,14 @@ void main() {
 			sin(rotation[1]), 0, cos(rotation[1])
 		);
 
-		vec3 finalRotCoords = (zRotMatrix * yRotMatrix) * pos;
-		// vec3 finalRotCoords = zRotMatrix * pos; // test case
-		finalPos = vec4(finalRotCoords, 0.0);
+		vec3 rotCoords = (zRotMatrix * yRotMatrix) * pos;
+		// vec3 rotCoords = zRotMatrix * pos; // test case
+		finalPos = vec4(rotCoords, 0.0);
 //	}
 
-	finalPos += vec4(finalTranslation, 1.0);
+	finalPos += vec4(finalTrans, 1.0);
 
-	flatColor_out = color;
-	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
 	gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos);
+	// gl_Position = finalPos * calcCameraMatrix(cameraPos, lookPos) * projMatrix;
+	flatColor_out = color;
 }

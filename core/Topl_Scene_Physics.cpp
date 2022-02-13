@@ -151,9 +151,9 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve general movement here
-	for (std::map<Geo_Actor*, Phys_Actor*>::iterator currentMap = _actorPhys_map.begin(); currentMap != _actorPhys_map.end(); currentMap++) {
-		Geo_Actor* targetGeo = currentMap->first;
-		Phys_Actor* physActor = currentMap->second;
+	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _actorPhys_map.begin(); m != _actorPhys_map.end(); m++) {
+		Geo_Actor* targetGeo = m->first;
+		Phys_Actor* physActor = m->second;
 		
 		if (physActor->actingForceCount > 0) 
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
