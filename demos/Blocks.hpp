@@ -17,6 +17,7 @@ namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera;
 	// Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
+	Input_CursorRange cursorRange = Input_CursorRange(0.0f, 0.5f, 0.0f, 0.5f);
 
 	// Primitive Geometry Objects
 	Geo_FlatSquare rect1 = Geo_FlatSquare(0.1f);
@@ -31,6 +32,8 @@ namespace Topl {
 	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 }
 
+void hoverCallback_quad(float x, float y) { puts("Inside Hover Zone!"); } // for testing
+
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
 void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
 void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
@@ -42,6 +45,7 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
+		Platform::mouseLogger.addHoverCallback(&Topl::cursorRange, hoverCallback_quad);
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
@@ -61,7 +65,7 @@ namespace Main {
 			renderer->renderAll();
 			renderer->switchFramebuff();
 
-			platform->handleEvents(false);
+			platform->handleEvents(true); // enables mouse events
 		}
 	}
 }

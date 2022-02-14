@@ -1,5 +1,7 @@
 #include "Topl_Shader.hpp"
 
+#define EFFECT_MODE_DEFAULT 0
+
 // Vertex Shaders
 
 struct Effect_VertexShader : public Topl_EntryShader {
@@ -33,14 +35,22 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		ValueGen::appendDataToBytes(cursorPos_bytes, cursorPos.size() * sizeof(float), 0, bytes);
 		return true;
 	}
+protected:
+	unsigned renderMode = EFFECT_MODE_DEFAULT;
 };
 
 struct GL4_Effect_VertexShader : public Effect_VertexShader {
     GL4_Effect_VertexShader() : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){}
+	GL4_Effect_VertexShader(unsigned rm) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){
+		renderMode = rm;
+	}
 };
 
 struct Drx11_Effect_VertexShader : public Effect_VertexShader {
     Drx11_Effect_VertexShader() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
+	Drx11_Effect_VertexShader(unsigned rm) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){
+		renderMode = rm;
+	}
 };
 
 // Fragment Shaders

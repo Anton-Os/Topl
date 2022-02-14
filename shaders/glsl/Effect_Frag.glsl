@@ -2,7 +2,7 @@
 
 layout(location = 0) flat in ivec2 screenRes;
 layout(location = 1) flat in vec2 cursorPos;
-layout(location = 2) flat in uint renderID;
+layout(location = 2) flat in uint actorID;
 
 out vec4 color;
 

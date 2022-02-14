@@ -26,7 +26,7 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down, Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_LBUTTONUP): {
-		// if(wParam & MK_LBUTTON)
+		if(wParam & MK_LBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up)
 		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up, Platform::getCursorX(), Platform::getCursorY()); 
@@ -38,7 +38,7 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down, Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_RBUTTONUP): { 
-		// if(wParam & MK_RBUTTON)
+		if(wParam & MK_RBUTTON)
 		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up)
 		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up, Platform::getCursorX(), Platform::getCursorY());
@@ -71,7 +71,11 @@ void Platform::createWindow(){
 
 void Platform::handleEvents(bool isCursorUpdate){
 	if(!isCursorUpdate) resetCursor();
-	else if(!getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos)) resetCursor();
+	else {	
+		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
+		if(!isCursorBound) resetCursor();
+		else Platform::mouseLogger.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
+	}
 
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&_context.eventMsg);

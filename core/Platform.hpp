@@ -6,8 +6,6 @@
 #include "Timer.hpp";
 #include "Input.hpp";
 
-#define BAD_CURSOR_POS -2.0f
-
 struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;

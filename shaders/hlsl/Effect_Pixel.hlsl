@@ -2,6 +2,7 @@ struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	uint2 screenRes : RESOLUTION;
 	float2 cursorPos : CURSOR;
+	uint actorID : ACTOR;
 };
 
 float3 mandlebrot(float2 fragCoord){

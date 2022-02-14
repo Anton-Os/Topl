@@ -28,12 +28,15 @@ namespace Topl {
 #endif
 }
 
-// Shared functions
-void mouseCallback(void) {
+void downCallback(float x, float y) {
 	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS)
 		Topl::isPressPend = true;
+	puts("Key pressed");
 }
 
+void upCallback(float x, float y) { puts("Key released"); } // for testing
+
+// Attempts to retrieve the pixel where the cursor is
 unsigned getPressPixel(Topl_Renderer* renderer) {
 	unsigned pixel;
 	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS) // captures pixel at cursor position
@@ -48,8 +51,10 @@ namespace Main {
     void init(Platform* platform) {
 		platform->createWindow();
 
-		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseCallback);
-		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseCallback);
+		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, downCallback);
+		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, downCallback);
+		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
+		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
 		Topl::customLayout.move(&Topl::scene, Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
