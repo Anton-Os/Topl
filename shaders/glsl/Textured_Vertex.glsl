@@ -15,19 +15,19 @@ layout(location = 1) in vec2 texcoord;
 layout(location = 0) out vec2 texcoord_out;
 
 void main() {
-	vec4 finalPos = vec4(pos, 1.0f);
+	vec4 final_pos = vec4(pos, 1.0f);
 	if (rotation.x != 0) {
 		mat2 rotMatrix = mat2(
-			cos(rotation.x), sin(rotation.x),
-			-1 * sin(rotation.x), cos(rotation.x)
+			cos(rotation.x), -1.0f * sin(rotation.x),
+			sin(rotation.x), cos(rotation.x)
 		);
 
-		vec2 rotCoords = rotMatrix * vec2(finalPos.x, finalPos.y);
-		finalPos.x = rotCoords.x; finalPos.y = rotCoords.y;
+		vec2 rotCoords = rotMatrix * vec2(final_pos.x, final_pos.y);
+		final_pos.x = rotCoords.x; final_pos.y = rotCoords.y;
 	}
 
 	texcoord_out = texcoord;
 
 	mat4 identityMatrix = mat4(1.0); // identity matrix
-	gl_Position = finalPos + (vec4(offset, 0.0f) * projMatrix);
+	gl_Position = final_pos + (vec4(offset, 0.0f) * projMatrix);
 }

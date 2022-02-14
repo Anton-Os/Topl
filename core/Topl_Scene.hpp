@@ -23,14 +23,14 @@ struct LinkedItems { // Wrapper around a physics connector and the two objects b
 typedef const LinkedItems* const linkedItems_cptr;
 
 struct Topl_Light {
-	Topl_Light(Eigen::Vector3f p) { pos = p; }
+	Topl_Light(Eigen::Vector3f p) { pos = p; } // Simple Constructor
 	Topl_Light(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
 		pos = p;
-		lightColor = lc;
+		color = lc;
 		intensity = i;
 	}
 	Eigen::Vector3f pos;
-	Eigen::Vector3f lightColor = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
+	Eigen::Vector3f color = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
 	double intensity = 1.0;
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety

@@ -5,15 +5,17 @@ cbuffer CONST_BLOCK : register(b0) {
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	float4 cameraPos;
-	float4 lookPos;
-	float4x4 projMatrix;
+	float4 cam_pos;
+	float4 look_pos;
+	// float4x4 projMatrix;
 
-	float4 light1_pos;
-	float3 light1_color; float light1_intensity;
+	float3 skyLight_pos;
+	float3 skyLight_color; 
+	//float skyLight_intensity;
 
-	float4 light2_pos;
-	float3 light2_color; float light2_intensity;
+	float3 flashLight_pos;
+	float3 flashLight_color; 
+	// float flashLight_intensity;
 
 	// potentially room for 3rd light source
 }
@@ -25,10 +27,34 @@ struct VS_INPUT {
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 
-	float4 ambient : COLOR0;
-	float4 diffuse : COLOR1;
-	float4 specular : COLOR2;
+	float3 ambient : COLOR0;
+	float3 diffuse : COLOR1;
+	float3 specular : COLOR2;
 };
+
+float calcDiffuseIntensity(float3 light, float3 target){
+	float intensity = dot(normalize(light), normalize(target));
+	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
+	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
+	// return intensity;
+	return intensity * attenuation;
+}
+
+float3x3 calcRotMatrix(float2 rotCoords){
+	float3x3 zRotMatrix = {
+		cos(rotation.x), sin(rotation.x), 0,
+		-1 * sin(rotation.x), cos(rotation.x), 0,
+		0, 0, 1
+	};
+	
+	float3x3 yRotMatrix = {
+		cos(rotation.y), 0, sin(rotation.y),
+		0, 1, 0,
+		-1.0 * sin(rotation.y), 0, cos(rotation.y)
+	};
+
+	return mul(zRotMatrix, yRotMatrix);
+}
 
 float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
 	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
@@ -50,35 +76,23 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
-	float4 finalPos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
-	float4 finalTrans = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
+	float3 vertex_pos = float3(input.pos.x, input.pos.y, input.pos.z);
+	float4 final_pos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
+	float4 final_trans = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
 
-	// if (rotation.x != 0.0 || rotation.y != 0.0) { // Rotation operations
-		float3x3 zRotMatrix = {
-			cos(rotation.x), sin(rotation.x), 0,
-			-1 * sin(rotation.x), cos(rotation.x), 0,
-			0, 0, 1
-		};
-		
-		float3x3 yRotMatrix = {
-			cos(rotation.y), 0, sin(rotation.y),
-			0, 1, 0,
-			-1.0 * sin(rotation.y), 0, cos(rotation.y)
-		};
+	float3 rotCoords = mul(calcRotMatrix(float2(rotation.x, rotation.y)), vertex_pos);
+	final_pos = float4(rotCoords, 0.0) + final_trans; // rotation and translation
 
-		float3 rotCoords = mul(mul(zRotMatrix, yRotMatrix), float3(input.pos.x, input.pos.y, input.pos.z));
-		finalPos = float4(rotCoords, 0.0);
-	
-	// }
+	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
+	output.pos = mul(final_pos, cameraMatrix); // no projection
+	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
 
-	finalPos += finalTrans;
-
-	float4x4 cameraMatrix = calcCameraMatrix(cameraPos, lookPos);
-	output.pos = mul(finalPos, cameraMatrix); // no projection
-	// output.pos = mul(mul(projMatrix, cameraMatrix), finalPos);
-	output.ambient = float4(1.0f, 0.0, 0.0, 1.0f); // red
-	output.diffuse = float4(0.0, 1.0f, 0.0, 1.0f); // green
-	output.specular = float4(0.0, 0.0, 1.0f, 1.0f); // blue
+	const float ambient_intensity = 0.1f; // ambient light intensity
+	output.ambient = ambient_intensity * skyLight_color;
+	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, vertex_pos);
+	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, vertex_pos);
+	output.diffuse = (skyLight_intensity * skyLight_color) + (flashLight_intensity * flashLight_color);
+	output.specular = float3(1.0f, 1.0f, 1.0f); // calculate intensity here
 
 	return output;
 }

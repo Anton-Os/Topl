@@ -5,14 +5,15 @@
 
 #include "primitives/Geo_Sphere.hpp"
 
+#define LIGHT_DISTANCE 2.0f
 #define MOVE_AMOUNT 0.5
 
 namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
-	Topl_Light whiteLight = Topl_Light(Eigen::Vector3f(0.1f, 0.0f, 10.0f));
-	Topl_Light redLight = Topl_Light(Eigen::Vector3f(3.0f, 0.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0), 10.0f);
+	Topl_Light skyLight = Topl_Light(Eigen::Vector3f(0.0f, LIGHT_DISTANCE, 0.0f));
+	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0), 10.0f);
 
 	NGon3D ngon = { 0.2, 12, 12 };
 	NGon3D ngon2 = { 0.1, 6, 30 };
@@ -57,8 +58,8 @@ namespace Main {
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 		// Topl::scene.addLight(Topl_Light(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
-		Topl::scene.addLight(&Topl::whiteLight);
-		Topl::scene.addLight(&Topl::redLight);
+		Topl::scene.addLight(&Topl::skyLight);
+		Topl::scene.addLight(&Topl::flashLight);
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
@@ -67,6 +68,8 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
+		renderer->setDrawMode(DRAW_Strip);
+
 		while (1) {
 			Topl::gameTicker.updateTimer();
 			renderer->clearView();
