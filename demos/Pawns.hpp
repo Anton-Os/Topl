@@ -17,34 +17,33 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
 	std::string assetsPath = ASSETS_DIR;
-	std::string imagesSubPath = "images/";
-	std::string fullImgPath = assetsPath + imagesSubPath;
+	std::string imagePath = assetsPath + "images/";
 
 	std::pair<std::string, Eigen::Vector3f> demonActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(fullImgPath + "Demon-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Demon-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Demon-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Demon-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Demon-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Demon-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(imagePath + "Demon-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Demon-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Demon-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Demon-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Demon-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Demon-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	std::pair<std::string, Eigen::Vector3f> angelActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(fullImgPath + "Angel-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Angel-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Angel-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Angel-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Angel-LeftLeg.png", Eigen::Vector3f(0.06f, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Angel-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(imagePath + "Angel-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Angel-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Angel-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Angel-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Angel-LeftLeg.png", Eigen::Vector3f(0.06f, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Angel-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	std::pair<std::string, Eigen::Vector3f> ghostActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(fullImgPath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Ghost-LeftArm.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Ghost-RightArm.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Ghost-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(fullImgPath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+		std::make_pair(imagePath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Ghost-LeftArm.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Ghost-RightArm.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Ghost-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
+		std::make_pair(imagePath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
 	};
 
 	Geo_Humanoid demon("demon", &scene, demonActor, 0.25f);
@@ -52,11 +51,11 @@ namespace Topl {
 	Geo_Humanoid ghost("ghost", &scene, ghostActor, 0.25f);
 }
 
-void buttonCallback_w(void) { Topl::demon.move(&Topl::scene, Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { Topl::demon.move(&Topl::scene, Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
-void buttonCallback_s(void) { Topl::demon.move(&Topl::scene, Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { Topl::demon.move(&Topl::scene, Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
-void buttonCallback_r(void) { Topl::demon.rotate(&Topl::scene, Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
+void buttonCallback_w(void) { Topl::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
+void buttonCallback_a(void) { Topl::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
+void buttonCallback_s(void) { Topl::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
+void buttonCallback_d(void) { Topl::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_r(void) { Topl::demon.rotate(Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
 
 void actionCallback() {
 	// adding movements for testing
@@ -85,9 +84,9 @@ namespace Main {
 
 		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
 
-		Topl::demon.move(&Topl::scene, Eigen::Vector3f(-1.5f, 0.0f, 0.0f));
-		Topl::angel.move(&Topl::scene, Eigen::Vector3f(1.5f, 0.0f, 0.0f));
-		Topl::ghost.move(&Topl::scene, Eigen::Vector3f(0.0, -0.5f, 0.0f));
+		Topl::demon.move(Eigen::Vector3f(-1.5f, 0.0f, 0.0f));
+		Topl::angel.move(Eigen::Vector3f(1.5f, 0.0f, 0.0f));
+		Topl::ghost.move(Eigen::Vector3f(0.0, -0.5f, 0.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

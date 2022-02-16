@@ -13,9 +13,9 @@ namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	std::string assetsPath = ASSETS_DIR;
-	std::string modelsSubPath = "models/";
+	std::string modelsPath = assetsPath + "models/";
 
-	Geo_Model model("model", assetsPath + modelsSubPath + "UrkwinAlien.obj", &scene);
+	Geo_Model model("model", modelsPath + "UrkwinAlien.obj", &scene);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up

@@ -67,15 +67,13 @@ namespace Main {
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 		// Topl::camera.setPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT));
-		// Topl::chain.move(Eigen::Vector3f(0.0f, 0.8f, 0.0f));
+		Topl::chain.move(Eigen::Vector3f(0.0f, 0.8f, 0.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		Timer_Ticker gameTicker;
 
 		while (1) {
-			// Topl::chain.rotate(&Topl::scene, Eigen::Vector2f(-0.0001 * gameTicker.getAbsSecs(), 0.0));
-			// Topl::grid.rotate(Eigen::Vector2f(0.0, 0.0001 * gameTicker.getAbsSecs()));
 			// Topl::scene.resolvePhysics();
 
 			renderer->clearView();

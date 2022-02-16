@@ -18,11 +18,11 @@ namespace Topl {
 	unsigned clicks = 0; // tracks presses with mouse
 }
 
-void mouseCallback_l(void){ 
+void mouseCallback_l(float x, float y){ 
 	if(Topl::clicks > 0) Topl::clicks--; 
 	puts("Left Button Down!");
 }
-void mouseCallback_r(void){ 
+void mouseCallback_r(float x, float y){ 
 	Topl::clicks++; 
 	puts("Right Button Down");
 }

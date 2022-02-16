@@ -10,8 +10,10 @@ namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(); // identity matrix
     std::string assetsPath = ASSETS_DIR;
-	std::string imagesSubPath = "images/";
-	ValueGen valueGen = ValueGen(); // seeds random number generation
+	std::string fontsPath = assetsPath + "fonts/";
+	std::string font1 = fontsPath + "CutiveMono-Regular.ttf";
+	std::string font2 = fontsPath + "NerkoOne-Regular.ttf";
+	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
@@ -21,6 +23,7 @@ namespace Topl {
 	Geo_PaneLayout defaultLayout("layout1", &scene, 3, 3);
 	Geo_PaneLayout customLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
 
+	ValueGen valueGen = ValueGen(); // seeds random number generation
 	bool isPressPend;
 #ifdef RASTERON_H
 	Rasteron_Image* pickerBk = nullptr;

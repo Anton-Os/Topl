@@ -4,16 +4,16 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 # Extrenal Libraries
 include(externalTargets.cmake)
 
-list(APPEND common_Src
-	core/FileIO.cpp
-	core/Input.cpp
-    core/Timer.cpp
-    core/Platform.cpp
+list(APPEND helper_Src
+	helper/FileIO.cpp
+	helper/Input.cpp
+    helper/Timer.cpp
+    helper/Platform.cpp
+    helper/ValueGen.cpp
     # core/File3D.cpp
-    # core/ValueGen.cpp
 )
 
-list(APPEND geo_Src
+list(APPEND geometry_Src
     geometry/primitives/Geo_Flat.cpp
     geometry/primitives/Geo_Conic.cpp
     geometry/primitives/Geo_Extruded.cpp
@@ -26,7 +26,7 @@ list(APPEND geo_Src
     geometry/ShapesGen.cpp
 )
 if(SUPPORT_3D_ASSETS)
-    list(APPEND geo_Src
+    list(APPEND geometry_Src
         geometry/trees/Model.cpp
         geometry/primitives/Geo_Node.cpp
     )
@@ -48,17 +48,16 @@ endif()
 if(WIN32)
 
     add_library(Drx11_ENGINE
-        ${common_Src}
-    	${geo_Src}
+        ${helper_Src}
+    	${geometry_Src}
+
         core/Topl_Scene_Builder.cpp
         core/Topl_Scene_Physics.cpp
-        # core/File3D.cpp
-        core/ValueGen.cpp
 
         core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PUBLIC core geometry shaders/include)
+    target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
     target_include_directories(Drx11_ENGINE PUBLIC
         ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
@@ -114,17 +113,16 @@ endif()
 # OpenGL Rendering Demos
 
 add_library(GL4_ENGINE
-    ${common_Src}
-    ${geo_Src}
+    ${helper_Src}
+    ${geometry_Src}
+
     core/Topl_Scene_Builder.cpp
     core/Topl_Scene_Physics.cpp
-    # core/File3D.cpp
-    core/ValueGen.cpp
 
     core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PUBLIC core geometry shaders/include)
+target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
 target_include_directories(GL4_ENGINE PUBLIC
     ${CMAKE_INSTALL_PREFIX}/include/eigen3
 )
@@ -192,4 +190,4 @@ endif()
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
-configure_file("${CMAKE_SOURCE_DIR}/core/support_def.h.in" "${CMAKE_SOURCE_DIR}/core/support_def.h")
+configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
