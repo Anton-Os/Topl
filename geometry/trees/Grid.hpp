@@ -1,10 +1,10 @@
 #include "Geo_Tree.hpp"
 
-struct Geo_Grid_CellIndex{
+/* struct Geo_Grid_CellIndex{
 	unsigned xOffset;
 	unsigned yOffset;
 	unsigned zOffset;
-};
+}; */
 
 struct Geo_Grid_Properties {
 	Geo_Grid_Properties() {}
@@ -49,21 +49,21 @@ public:
         const Geo_Grid_Properties* props
 	) : Geo_Tree(prefix, scene, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
-        grid_prop = *props;
-		originPos = Eigen::Vector3f(
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5),
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5),
+        properties = *props;
+		origin = Eigen::Vector3f(
+			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5) + (props->xAttr.second / 2),
+			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5) + (props->yAttr.second / 2),
 			0.0f
 		);
 
 		fill(scene);
     }
 
-	void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
+	// void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
 private:
     void fill(Topl_Scene* scene) override;
 	
-	Eigen::Vector3f originPos; // use this to determine grid item position
-	std::vector<Geo_Grid_CellIndex> blocks; // blocked cells are not rendered to screen 
-    Geo_Grid_Properties grid_prop;
+	Eigen::Vector3f origin; // determines starting position for geometry
+	// std::vector<Geo_Grid_CellIndex> blocks; // blocked cells are not rendered to screen 
+    Geo_Grid_Properties properties;
 };

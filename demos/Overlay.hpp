@@ -56,7 +56,7 @@ namespace Main {
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
-		Topl::customLayout.move(&Topl::scene, Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		Topl::customLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
 		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));

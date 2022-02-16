@@ -13,7 +13,7 @@ namespace Topl {
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
 	Topl_Light skyLight = Topl_Light(Eigen::Vector3f(0.0f, LIGHT_DISTANCE, 0.0f));
-	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0), 10.0f);
+	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0));
 
 	NGon3D ngon = { 0.2, 12, 12 };
 	NGon3D ngon2 = { 0.1, 6, 30 };

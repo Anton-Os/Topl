@@ -14,15 +14,21 @@ public:
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
         const Geo_Chain_Properties* props,
-        unsigned linkCount)
-    : Geo_Tree(prefix, scene, geo, linkCount),
-    Geo_DynamicSet(linkCount){
-		chain_props = *props;
-        
+        unsigned count)
+    : Geo_Tree(prefix, scene, geo, count),
+    Geo_DynamicSet(count){
+		properties = *props;
+        origin = Eigen::Vector3f(
+            (-1.0 * props->directionVec.x() * count) / 2,
+            (-1.0 * props->directionVec.y() * count) / 2,
+            (-1.0 * props->directionVec.z() * count) / 2
+        );
+
         fill(scene);
     }
 private:
     void fill(Topl_Scene* scene) override;
 
-    Geo_Chain_Properties chain_props;
+    Eigen::Vector3f origin; // determines starting position for geometry
+    Geo_Chain_Properties properties;
 };

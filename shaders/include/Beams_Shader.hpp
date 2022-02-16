@@ -47,11 +47,11 @@ struct Beams_VertexShader : public Topl_EntryShader {
 private:
     static void appendLight(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
         bytes_cptr pos_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->pos.data());
-        bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->color.data());
+        bytes_cptr value_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->value.data());
         // bytes_cptr intensity_bytes = reinterpret_cast<bytes_cptr>(&scene->getLight(i)->intensity);
 
         ValueGen::appendDataToBytes(pos_bytes, scene->getLight(i)->pos.size() * sizeof(float), bytes);
-        ValueGen::appendDataToBytes(color_bytes, scene->getLight(i)->color.size() * sizeof(float), bytes);
+        ValueGen::appendDataToBytes(value_bytes, scene->getLight(i)->value.size() * sizeof(float), bytes);
         // ValueGen::appendDataToBytes(intensity_bytes, sizeof(float), bytes);
     }
 };

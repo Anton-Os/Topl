@@ -23,10 +23,10 @@ public:
 
 	~Geo_Tree();
 
-    void move(Topl_Scene* scene, Eigen::Vector3f vec){ 
+    void move(Eigen::Vector3f vec){ 
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updatePos(vec); 
     }
-    void rotate(Topl_Scene* scene, Eigen::Vector2f angles){
+    void rotate(Eigen::Vector2f angles){
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updateRot(angles);
     }
     std::string getPrefix(){ return _prefix + "_"; }

@@ -24,14 +24,12 @@ typedef const LinkedItems* const linkedItems_cptr;
 
 struct Topl_Light {
 	Topl_Light(Eigen::Vector3f p) { pos = p; } // Simple Constructor
-	Topl_Light(Eigen::Vector3f p, Eigen::Vector3f lc, double i) { // Extended Constructor
+	Topl_Light(Eigen::Vector3f p, Eigen::Vector3f lc) { // Extended Constructor
 		pos = p;
-		color = lc;
-		intensity = i;
+		value = lc;
 	}
 	Eigen::Vector3f pos;
-	Eigen::Vector3f color = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // white light
-	double intensity = 1.0;
+	Eigen::Vector3f value = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // indicates both color and intensity
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety
 

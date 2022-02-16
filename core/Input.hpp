@@ -37,21 +37,22 @@ struct Input_TracerStep {
 
 // CursorRange is used to trigger callbacks on mouse motion
 struct Input_CursorRange {
-    // TODO: Implement certain details inside ValueGen to simplify code
-    Input_CursorRange(float x1, float x2, float y1, float y2){
-        x1 = clamp(x1); x2 = clamp(x2); y1 = clamp(y1); y2 = clamp(y2); // clamping values
+    Input_CursorRange(float xRange[2], float yRange[2]){
+        xRange[0] = clamp(xRange[0]); xRange[1] = clamp(xRange[1]); 
+		yRange[0] = clamp(yRange[0]); yRange[1] = clamp(yRange[1]); // clamping values
         
-        xMin = (x1 < x2)? x1 : x2; xMax = (x1 > x2)? x1 : x2; // setting min and max x values
-        yMin = (y1 < y2)? y1 : y2; yMax = (y1 > y2)? y1 : y2; // setting min and max y values
+        xMin = (xRange[0] < xRange[1])? xRange[0] : xRange[1]; xMax = (xRange[0] > xRange[1])? xRange[0] : xRange[1]; // setting min and max x values
+        yMin = (yRange[0] < yRange[1])? yRange[0] : yRange[1]; yMax = (yRange[0] > yRange[1])? yRange[0] : yRange[1]; // setting min and max y values
     }
     static float clamp(float val){
         if(val > MAX_CURSOR_POS) val = MAX_CURSOR_POS; else if(val < MIN_CURSOR_POS) val = MIN_CURSOR_POS;
+		return val;
     }
     float xMin; float xMax;
     float yMin; float yMax;
 };
 
-typedef std::pair<unsigned, unsigned> tracerPath_t; // indicates a range of tracer steps inside of a path
+typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of tracer steps inside of a path
 
 typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
 typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region

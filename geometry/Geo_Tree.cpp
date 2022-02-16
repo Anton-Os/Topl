@@ -29,5 +29,5 @@ Geo_Actor* Geo_Tree::getNextActor(){
     if(_actorOffset <= _actorCount){
         _actorOffset++;   
         return *(_actorData + _actorOffset - 1); // to increment offset above in one line
-    } else return nullptr;
+    } else return nullptr; // error has occured here
 }

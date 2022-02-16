@@ -6,21 +6,25 @@ namespace _Grid {
 
 void Geo_Grid::fill(Topl_Scene* scene){
     Geo_Actor* actor = nullptr;
-    Eigen::Vector3f offsetVec = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    Eigen::Vector3f offset = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 
-    unsigned short width = grid_prop.xAttr.first;
-    unsigned short height = grid_prop.yAttr.first;
-    unsigned short depth = grid_prop.zAttr.first;
+    const unsigned short width = properties.xAttr.first;
+    const float x = properties.xAttr.second;
+    const unsigned short height = properties.yAttr.first;
+    const float y = properties.yAttr.second;
+    const unsigned short depth = properties.zAttr.first;
+    const float z = properties.zAttr.second;
     
     for(unsigned c = 0; c < getActorCount(); c++){
         actor = getNextActor();
 
-		offsetVec = Eigen::Vector3f(
-			(c % width) * grid_prop.xAttr.second,
-			((c % (height * width)) / width) * grid_prop.zAttr.second,
-			(c / (height * width)) * grid_prop.zAttr.second
+		offset = Eigen::Vector3f(
+			((c % width) * x),
+			((c % (height * width)) / width) * y,
+			(c / (height * width)) * z
 		);
-        actor->updatePos(originPos + offsetVec);
+
+        actor->updatePos(origin + offset);
         scene->addGeometry(getPrefix() + _Grid::genCellName(c + 1), actor);
 		scene->addPhysics(getPrefix() + _Grid::genCellName(c + 1), &phys.at(c));
     }
