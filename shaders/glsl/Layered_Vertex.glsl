@@ -5,9 +5,9 @@ layout(packed, binding = 0) uniform Block {
 	vec2 rotation; // padded to vec4
 };
 
-layout(packed, binding = 0) uniform SceneBlock {
+/* layout(packed, binding = 0) uniform SceneBlock {
 	mat4 projMatrix;
-};
+}; */
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;

@@ -24,14 +24,7 @@ struct Layered_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos()->data());
-		bytes_cptr cameraRot_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos()->data());
-		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
-
-		ValueGen::appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
-		return true;
+		return false;
 	}
 };
 
