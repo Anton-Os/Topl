@@ -7,17 +7,15 @@ layout(packed, binding = 0) uniform Block {
 };
 
 layout(packed, binding = 1) uniform SceneBlock {
-	vec3 look_pos; // padded to vec4
-	vec3 cam_pos; // padded to vec4
+	vec3 look_pos;
+	vec3 cam_pos;
 	// mat4 projMatrix;
 
-	vec3 skyLight_pos; // padded to vec4
-	vec3 skyLight_color; 
-	// float skyLight_intensity;
+	vec3 skyLight_pos;
+	vec3 skyLight_value;
 
-	vec3 flashLight_pos; // padded to vec4
-	vec3 flashLight_color; 
-	// float flashLight_intensity;
+	vec3 flashLight_pos;
+	vec3 flashLight_value;
 };
 
 layout(location = 0) in vec3 pos;

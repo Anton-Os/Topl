@@ -10,14 +10,10 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	// float4x4 projMatrix;
 
 	float3 skyLight_pos;
-	float3 skyLight_color; 
-	//float skyLight_intensity;
+	float3 skyLight_value;
 
 	float3 flashLight_pos;
-	float3 flashLight_color; 
-	// float flashLight_intensity;
-
-	// potentially room for 3rd light source
+	float3 flashLight_value;
 }
 
 struct VS_INPUT {
@@ -88,10 +84,10 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
 
 	const float ambient_intensity = 0.1f; // ambient light intensity
-	output.ambient = ambient_intensity * skyLight_color;
+	output.ambient = ambient_intensity * skyLight_value;
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, vertex_pos);
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, vertex_pos);
-	output.diffuse = (skyLight_intensity * skyLight_color) + (flashLight_intensity * flashLight_color);
+	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
 	output.specular = float3(1.0f, 1.0f, 1.0f); // calculate intensity here
 
 	return output;

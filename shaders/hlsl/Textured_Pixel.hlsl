@@ -21,10 +21,9 @@ float4 switchRB(float4 color){
 }
 
 float4 main(PS_INPUT input) : SV_TARGET{
-
-	uint height;
+	/* uint height;
 	uint width;
-	baseTex.GetDimensions(width, height);
+	baseTex.GetDimensions(width, height); */
 
 	float4 color = baseTex.Sample(baseSampler, input.texcoord);
 	color = switchRB(color);

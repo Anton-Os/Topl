@@ -16,18 +16,8 @@ layout(location = 0) out vec2 texcoord_out;
 
 void main() {
 	vec4 final_pos = vec4(pos, 1.0f);
+	final_pos += vec4(offset, 0.0f);
 
-	// Rotation Operation
-	if (rotation.x != 0) {
-		mat2 rotMatrix = mat2(
-			cos(rotation.x), -1.0f * sin(rotation.x),
-			sin(rotation.x), cos(rotation.x)
-		);
-
-		vec2 rotCoords = rotMatrix * vec2(final_pos.x, final_pos.y);
-		final_pos.x = rotCoords.x; final_pos.y = rotCoords.y;
-	}
-
-	gl_Position = final_pos + (vec4(offset, 0.0f) * projMatrix);
+	gl_Position = final_pos;
 	texcoord_out = texcoord;
 }

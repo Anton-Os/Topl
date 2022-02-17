@@ -62,14 +62,14 @@ namespace _GL4 {
 		return offset;
 	}
 
-	static Buffer_GL4* findBuff(Buffer_GL4** renderBuffs, enum BUFF_Type type) {
-		return *(renderBuffs + type); // type arguments indicates the offset
+	static Buffer_GL4* findBuff(Buffer_GL4** buffers, enum BUFF_Type type) {
+		return *(buffers + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_GL4** renderBuffs, std::vector<Buffer_GL4> * bufferVector, unsigned id) {
-		for (std::vector<Buffer_GL4>::iterator currentBuff = bufferVector->begin(); currentBuff < bufferVector->end(); currentBuff++)
-			if (currentBuff->targetID == id)
-				*(renderBuffs + currentBuff->type) = &(*currentBuff); // type arguments indicates the offset
+	static void discoverBuffers(Buffer_GL4** buffers, std::vector<Buffer_GL4>* targetBuffs, unsigned id) {
+		for (std::vector<Buffer_GL4>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
+			if (buff->targetID == id)
+				*(buffers + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
 	static void setTextureProperties(GLenum type, TEX_Mode m) {
@@ -323,8 +323,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		unsigned rID = g + 1;
 		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			for (std::vector<Buffer_GL4>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
-				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) targetBuff = &(*currentBuff);
+			for (std::vector<Buffer_GL4>::iterator buff = _renderCtx.buffers.begin(); buff < _renderCtx.buffers.end(); buff++)
+				if (buff->targetID == rID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
 			if (targetBuff == nullptr) perror("Block buffer could not be located! ");
 			else {
@@ -366,7 +366,7 @@ void Topl_Renderer_GL4::render(void){
 	if (_renderCtx.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx.buffers.front().buffer);
 
-	Buffer_GL4** renderBuffs = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
+	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _renderIDs; id++) {
@@ -375,14 +375,14 @@ void Topl_Renderer_GL4::render(void){
 			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(renderBuffs, &_renderCtx.buffers, id);
+		_GL4::discoverBuffers(buffers, &_renderCtx.buffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuff(renderBuffs, BUFF_Render_Block);
+		Buffer_GL4* renderBlockBuff = _GL4::findBuff(buffers, BUFF_Render_Block);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		Buffer_GL4* vertexBuff = _GL4::findBuff(renderBuffs, BUFF_Vertex_Type);
-		Buffer_GL4* indexBuff = _GL4::findBuff(renderBuffs, BUFF_Index_UI);
+		Buffer_GL4* vertexBuff = _GL4::findBuff(buffers, BUFF_Vertex_Type);
+		Buffer_GL4* indexBuff = _GL4::findBuff(buffers, BUFF_Index_UI);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
@@ -404,7 +404,7 @@ void Topl_Renderer_GL4::render(void){
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	free(renderBuffs);
+	free(buffers);
 
 	_isSceneDrawn = true;
 }

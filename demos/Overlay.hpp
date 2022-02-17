@@ -9,11 +9,13 @@
 namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(); // identity matrix
-    std::string assetsPath = ASSETS_DIR;
+    
+	std::string assetsPath = ASSETS_DIR;
 	std::string fontsPath = assetsPath + "fonts/";
 	std::string font1 = fontsPath + "CutiveMono-Regular.ttf";
 	std::string font2 = fontsPath + "NerkoOne-Regular.ttf";
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
+	std::string text = "Hello World";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
@@ -28,6 +30,8 @@ namespace Topl {
 #ifdef RASTERON_H
 	Rasteron_Image* pickerBk = nullptr;
 	Rasteron_Image* captureBk = nullptr;
+	FT_Library freetypeLib; // required for loading glyphs
+	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
 #endif
 }
 
@@ -64,6 +68,13 @@ namespace Main {
 		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
 		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
+
+		/* initFreeType(&Topl::freetypeLib);
+		for (unsigned short r = 0; r < Topl::customLayout.getRowCount(); r++) {
+			Geo_Pane* pane = Topl::customLayout.getChildPane(r, 0);
+			// pane->setImageBk(createImgBlank(256, 256, 0xFF0000FF)); // overrides to blue color
+			// pane->setImageBk(bakeImgText(&Topl::textObj, &Topl::freetypeLib, 20)); // overrides to text display
+		} */
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

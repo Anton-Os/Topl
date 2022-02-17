@@ -99,14 +99,14 @@ namespace _Drx11 {
 		return inputElementDesc;
 	}
 
-	static Buffer_Drx11* findBuff(Buffer_Drx11** renderBuffs, enum BUFF_Type type) {
-		return *(renderBuffs + type); // type arguments indicates the offset
+	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) {
+		return *(buffs + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_Drx11** renderBuffs, std::vector<Buffer_Drx11>* buffVec, unsigned id) {
-		for (std::vector<Buffer_Drx11>::iterator currentBuff = buffVec->begin(); currentBuff < buffVec->end(); currentBuff++)
-			if (currentBuff->targetID == id)
-				*(renderBuffs + currentBuff->type) = &(*currentBuff); // type arguments indicates the offset
+	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) {
+		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
+			if (buff->targetID == id)
+				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
 	static enum D3D11_TEXTURE_ADDRESS_MODE getTexMode(enum TEX_Mode mode){
@@ -452,9 +452,9 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			for (std::vector<Buffer_Drx11>::iterator currentBuff = _renderCtx.buffers.begin(); currentBuff < _renderCtx.buffers.end(); currentBuff++)
-				if (currentBuff->targetID == rID && currentBuff->type == BUFF_Render_Block) {
-					renderBlockBuff = &(*currentBuff);
+			for (std::vector<Buffer_Drx11>::iterator buff = _renderCtx.buffers.begin(); buff < _renderCtx.buffers.end(); buff++)
+				if (buff->targetID == rID && buff->type == BUFF_Render_Block) {
+					renderBlockBuff = &(*buff);
 					break;
 				}
 
@@ -495,16 +495,16 @@ void Topl_Renderer_Drx11::render(void){
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
-	Buffer_Drx11** renderBuffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
+	Buffer_Drx11** buffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
 
 	// Rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
-			_Drx11::discoverBuffers(renderBuffs, &_renderCtx.buffers, id);
+			_Drx11::discoverBuffers(buffs, &_renderCtx.buffers, id);
 
-			Buffer_Drx11* vertexBuff = _Drx11::findBuff(renderBuffs, BUFF_Vertex_Type);
-			Buffer_Drx11* indexBuff = _Drx11::findBuff(renderBuffs, BUFF_Index_UI);
-			Buffer_Drx11* renderBlockBuff = _Drx11::findBuff(renderBuffs, BUFF_Render_Block);
+			Buffer_Drx11* vertexBuff = _Drx11::findBuff(buffs, BUFF_Vertex_Type);
+			Buffer_Drx11* indexBuff = _Drx11::findBuff(buffs, BUFF_Index_UI);
+			Buffer_Drx11* renderBlockBuff = _Drx11::findBuff(buffs, BUFF_Render_Block);
 
 			if(renderBlockBuff != nullptr)
 				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
@@ -538,7 +538,7 @@ void Topl_Renderer_Drx11::render(void){
 			else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 		}
 
-	free(renderBuffs);
+	free(buffs);
 	_isSceneDrawn = true;
 }
 

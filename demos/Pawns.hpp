@@ -16,6 +16,7 @@ namespace Topl {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
+
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagePath = assetsPath + "images/";
 

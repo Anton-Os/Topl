@@ -11,12 +11,16 @@
 #include "trees/Grid.hpp"
 
 #define MOVE_AMOUNT 0.25
+#define CAM_INC_ANGLE 3.14159 / 64
+#define CAM_MAX_ANGLE 3.14159 / 2.0 // roughly 90 degrees
+#define CAM_MIN_ANGLE 3.14159 / -2.0 // roughly -90 degrees
 
 namespace Topl {
 	// Management Objects
 	Topl_Scene scene;
 	// Topl_Camera camera;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
+	Eigen::Vector2f camRotAngles = Eigen::Vector2f(0.0f, 0.0f);
 
 	// Primitive Geometry Objects
 	Geo_FlatSquare rect1 = Geo_FlatSquare(0.1f);
@@ -29,7 +33,7 @@ namespace Topl {
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 9);
 	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&hex1);
 	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(3, 0.4f));
-	// Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
+	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
 
 	float allRange[2] = { -1.0f, 1.0f }; // encompass entire screen area
 	float posRange[2] = { 0.9f, 1.0f }; // encompass positive-side screen segment
@@ -40,11 +44,26 @@ namespace Topl {
 	Input_CursorRange botRange = Input_CursorRange(allRange, negRange);
 }
 
-// Modify camera look position inside of hover callback
-void hoverCallback_top(float x, float y) { puts("Inside Top Zone!"); }
-void hoverCallback_right(float x, float y) { puts("Inside Right Zone!"); }
-void hoverCallback_left(float x, float y) { puts("Inside Left Zone!"); }
-void hoverCallback_bot(float x, float y) { puts("Inside Bottom Zone!"); }
+static void calcCamera() {
+	// TODO: Perform rotation calculation here!
+	Topl::camera.setLookPos(Eigen::Vector3f(Topl::camRotAngles[0], Topl::camRotAngles[1], 0.0f));
+}
+void hoverCallback_top(float x, float y) {
+	if (Topl::camRotAngles[1] < CAM_MAX_ANGLE) Topl::camRotAngles[1] += CAM_INC_ANGLE;
+	calcCamera();
+}
+void hoverCallback_right(float x, float y) {
+	if (Topl::camRotAngles[0] < CAM_MAX_ANGLE) Topl::camRotAngles[0] += CAM_INC_ANGLE;
+	calcCamera();
+}
+void hoverCallback_left(float x, float y) { 
+	if (Topl::camRotAngles[0] > CAM_MIN_ANGLE) Topl::camRotAngles[0] -= CAM_INC_ANGLE;
+	calcCamera();
+}
+void hoverCallback_bot(float x, float y) {
+	if (Topl::camRotAngles[1] > CAM_MIN_ANGLE) Topl::camRotAngles[1] -= CAM_INC_ANGLE;
+	calcCamera();
+}
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
 void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
@@ -71,8 +90,6 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
-		Timer_Ticker gameTicker;
-
 		while (1) {
 			// Topl::scene.resolvePhysics();
 

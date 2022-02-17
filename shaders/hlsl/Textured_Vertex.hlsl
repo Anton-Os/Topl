@@ -17,12 +17,13 @@ struct VS_OUTPUT {
 	float2 texcoord : TEXCOORD0;
 };
 
-VS_OUTPUT main(VS_INPUT input) { // Only output is position
+VS_OUTPUT main(VS_INPUT input) {
 	VS_OUTPUT output;
 
 	output.pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0); // Initial assignment
 
-	if (rotation.x != 0.0) { // Rotation operations
+	 // Rotation Operation
+	if (rotation.x != 0.0) {
 		float2x2 rotMatrix = {
 			cos(rotation.x), sin(rotation.x),
 			-1 * sin(rotation.x), cos(rotation.x)
@@ -33,8 +34,8 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 		output.pos.y = rotCoords.y;
 	}
 
-	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 	output.pos += mul(projMatrix, offset);
+	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 
 	return output;
 }

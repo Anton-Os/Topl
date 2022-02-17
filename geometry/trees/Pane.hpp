@@ -24,7 +24,8 @@ public:
 	void setImageBk(Rasteron_Image* image) {
 		if (_background != nullptr) deleteImg(_background); // previous image needs to be erased for override
 		_background = image;
-		if(std::string(image->name) == "blank")  _bkColor = *(image->data); // simplifies setting background color
+		if(std::string(image->name) == "blank")  _bkColor = *(image->data); // sets background color if image is solid
+		else _bkColor = PANE_BK_COLOR; // resets back to default
 	}
 	Rasteron_Image* getBackground() { return _background; }
 #endif
@@ -64,6 +65,8 @@ public:
 
 	Geo_Pane* getRootPane(){ return &_rootPane; }
 	Geo_Pane* getChildPane(unsigned r, unsigned c);
+	unsigned getRowCount(){ return _rows; }
+	unsigned getColCount(){ return _columns; }
 private:
 	void init(unsigned rows, unsigned columns); // creates panes and replaces all render objects
     void fill(Topl_Scene* scene) override;

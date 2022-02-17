@@ -5,8 +5,8 @@
 #include <Eigen/Dense>
 
 #define MOTION_NO_CURVE 0.0f // curve has no alterations
-#define MOTION_IN_CURVE 1.0f // curve is x2 towards center and 1/2 away
-#define MOTION_OUT_CURVE 1.0f // curve is 1/2 towards center and x2 away
+#define MOTION_IN_CURVE 1.0f // curve is x2 towards center and 1/2 away (convergance)
+#define MOTION_OUT_CURVE -1.0f // curve is 1/2 towards center and x2 away (divergance)
 
 enum MOTION_Type {
 	MOTION_Instant,
@@ -48,19 +48,27 @@ public:
 		case MOTION_Pivot: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
 		}
     }
-    void setCurve(double c){ motionCurve = c; }
+    void setCurve(double c){ curve = c; }
 
 private:
     double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
     Eigen::Vector3f getLinear(const Eigen::Vector3f& m1, const Eigen::Vector3f& m2, double progFrac){ // linear motion computation
-        // TODO: implement curve logic here!
+        /* if(curve > 0.0f){
+            if(progFrac < 0.25f && progFrac != 0.0) // progFrac is slowed to reach 0.0
+            else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is slowed to reach 1.0
+            else if(progFrac != 0.5f) // curve is hastened to reach 0.5 (halfway)
+        } else if(curve < 0.0f){
+            if(progFrac < 0.25f && progFrac != 0.0) // progFrac is hastened to reach 0.0
+            else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is hastened to reach 1.0
+            else if(progFrac != 0.5f) // curve is slowed to reach 0.5 (halfway)
+        } */
         return (progFrac <= 0.5f)? m1 + (m2 * progFrac * 2.0f) : m2 + (m1 * progFrac * 2.0f);
     }
 
 	MOTION_Type type;
     Eigen::Vector3f startPos = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
     Eigen::Vector3f endPos = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
-    double motionCurve = MOTION_NO_CURVE; // no modification of time argument
+    double curve = MOTION_NO_CURVE; // no curve by default
 
     double startSecs = 0.0f;
     double endSecs = 0.0f;
