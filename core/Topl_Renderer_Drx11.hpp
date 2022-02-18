@@ -77,7 +77,7 @@ public:
 		init(hwnd);
 		drawMode(); // sets default draw mode
 
-		__renderCtx = (Topl_RenderContext_Drx11*)malloc(sizeof(Topl_RenderContext_Drx11) * MAX_RENDERER_CONTEXTS);
+		__renderCtx = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_Drx11();
 
@@ -101,12 +101,12 @@ private:
 
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	Topl_DrawContext_Drx11 _renderCtx;
-	Topl_RenderContext_Drx11* __renderCtx; // stores multiple render contexts with unique scenes and ids
-	ID3D11InputLayout* _vertexDataLayout;
+	Topl_RenderContext_Drx11** __renderCtx; // stores multiple render contexts with unique scenes and ids
 
 	ID3D11Device* _device;
-	IDXGISwapChain* _swapChain; // used for switching between views used for rendering
+	IDXGISwapChain* _swapChain;
 	ID3D11DeviceContext* _deviceCtx;
+	ID3D11InputLayout* _vertexDataLayout;
 	ID3D11RenderTargetView* _rtView;
 	ID3D11DepthStencilView* _dsView;
 	ID3D11ShaderResourceView* _resourceView;

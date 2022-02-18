@@ -77,7 +77,7 @@ public:
 		init(window);
 		drawMode(); // sets default draw mode
 
-		__renderCtx = (Topl_RenderContext_GL4*)malloc(sizeof(Topl_RenderContext_GL4) * MAX_RENDERER_CONTEXTS);
+		__renderCtx = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_GL4();
 
@@ -101,7 +101,7 @@ private:
 
 	Topl_Pipeline_GL4* _pipeline;
 	Topl_DrawContext_GL4 _renderCtx;
-	Topl_RenderContext_GL4* __renderCtx; // stores multiple render contexts with unique scenes and ids
+	Topl_RenderContext_GL4** __renderCtx; // stores multiple render contexts with unique scenes and ids
 
 	GLenum _drawModeGL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX];

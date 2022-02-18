@@ -10,7 +10,6 @@
 #include "Timer.hpp"
 #include "ValueGen.hpp"
 
-#include "Topl_Camera.hpp"
 #include "Geo_Actor.hpp"
 
 typedef const Geo_Actor* const actor_cptr;
@@ -41,6 +40,9 @@ struct Topl_MultiTex { // object for working with multiple textures, wraps aroun
 	Topl_MultiTex(std::string prefix, unsigned height, unsigned width){
 		animation = allocNewAnim(prefix.c_str(), height, width, MAX_TEXTURES_PER_ACTOR);
 	}
+	Topl_MultiTex(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
+		animation = allocNewAnim(prefix.c_str(), height, width, frameCount);
+	}
 	~Topl_MultiTex(){ deleteAnim(animation); }
 	
 	void addFrame(const Rasteron_Image *const refImg);
@@ -51,6 +53,28 @@ struct Topl_MultiTex { // object for working with multiple textures, wraps aroun
 	bool isOverride = false; // switch to true when images begin to override one another
 };
 #endif
+
+class Topl_Camera {
+public:
+	// Identity projection constructor
+	Topl_Camera() { _projMatrix = Eigen::Matrix4f::Identity(); } // Identity matrix by default
+	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
+		if (projType == PROJECTION_Perspective) _projMatrix = ValueGen::genPerspectiveMatrix(bounds);
+		else if(projType == PROJECTION_Ortho) _projMatrix = ValueGen::genOrthoMatrix(bounds);
+	}
+	void setPos(const Eigen::Vector3f& pos){ _pos = pos; }
+	void movePos(const Eigen::Vector3f& move){ _pos += move; }
+	void setLookPos(const Eigen::Vector3f& lookPos){ _lookPos = lookPos; }
+	vec3f_cptr getPos() const { return &_pos; }
+	vec3f_cptr getLookPos() const { return &_lookPos; }
+	mat4f_cptr getProjMatrix() const { return &_projMatrix; }
+private:
+	Eigen::Vector3f _pos = Eigen::Vector3f(0.0, 0.0, -1.0);
+	Eigen::Vector3f _lookPos = Eigen::Vector3f(0.0, 0.0, 0.0);
+	Eigen::Matrix4f _projMatrix = Eigen::Matrix4f::Zero();
+};
+
+typedef const Topl_Camera* const camera_cptr;
 
 // Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
 // --------------------------------------------------------------------------------------------------------------------

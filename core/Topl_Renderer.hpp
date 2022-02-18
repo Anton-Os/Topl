@@ -143,13 +143,14 @@ public:
         _activeCamera = camera; // switch to new camera
 		return (updateScene(scene)) ? true : false;
     }
-    void setTexMode(enum TEX_Mode mode){ _texMode = mode; }
-    void redrawTex(){ _isTexDrawn = false; } // textures need to be redrawn by update call
     void setDrawMode(enum DRAW_Mode mode){
         _drawMode = mode;
         drawMode(); // sets the proper draw mode
     }
+	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
+	void refreshTex() { _isTexDrawn = false; } // textures need to be redrawn
     bool renderScene(Topl_Scene* scene){
+		// TODO: need a method of fetching correct scene from renderContext heap
         // draws only render objects associated with scene argument
     }
     bool renderAll(){ // draws all render objects
@@ -166,13 +167,15 @@ public:
 		return _isSceneDrawn; // render call sets variable to true on success
     }
     unsigned getPixColor(float x, float y) {
-		if (x < 0.0) x = 0.0; else if (x > 1.0) x = 1.0; // clamping x
-		if (y < 0.0) y = 0.0; else if (y > 1.0) y = 1.0; // clamping y
+		if (x < -1.0) x = -1.0; else if (x > 1.0) x = 1.0; // clamping x
+		if (y < -1.0) y = -1.0; else if (y > 1.0) y = 1.0; // clamping y
 
 		Rasteron_Image* image = frame();
-		unsigned xOffset = (unsigned)(x * (float)image->width);
+		/* unsigned xOffset = (unsigned)(x * (float)image->width);
 		unsigned yOffset = (unsigned)(y * (float)image->height);
-		unsigned color = *(image->data + (yOffset * image->width) + xOffset);
+		unsigned color = *(image->data + (yOffset * image->width) + xOffset); */
+		unsigned offset = (image->width * image->height) / 2; // get offset halfway for testing
+		unsigned color = *(image->data + offset);
 		deleteImg(image);
 		return color; // return color computed at offsets
 	}

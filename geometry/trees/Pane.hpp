@@ -5,6 +5,8 @@
 #define PANE_RADIUS 0.5
 #define PANE_BORDER 0.05f
 #define PANE_BK_COLOR 0xFFFFFFFF // default is white
+#define PANE_BK_WIDTH 256
+#define PANE_BK_HEIGHT 256
 #define PANE_ROOT_Z 0.000002
 #define PANE_CHILD_Z 0.000001
 
@@ -17,8 +19,8 @@ public:
 #endif
     }
 
-    void setRenderObj(Geo_FlatSquare* square){ _square = square; }
-    Geo_RenderObj* getRenderObj(){ return (Geo_RenderObj*)_square; }
+    // void setRenderObj(Geo_FlatSquare* square){ _square = square; }
+    // Geo_RenderObj* getRenderObj(){ return (Geo_RenderObj*)_square; }
 	unsigned getColor() { return _bkColor; }
 #ifdef RASTERON_H
 	void setImageBk(Rasteron_Image* image) {
@@ -30,7 +32,7 @@ public:
 	Rasteron_Image* getBackground() { return _background; }
 #endif
 private:
-	Geo_FlatSquare* _square = nullptr;
+	// Geo_FlatSquare* _square = nullptr;
     unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
     Rasteron_Image* _background = nullptr; // background image available if Rasteron is supported
@@ -64,15 +66,13 @@ public:
 	}
 
 	Geo_Pane* getRootPane(){ return &_rootPane; }
-	Geo_Pane* getChildPane(unsigned r, unsigned c);
+	Geo_Pane* getChildPane(unsigned index);
 	unsigned getRowCount(){ return _rows; }
 	unsigned getColCount(){ return _columns; }
 private:
 	void init(unsigned rows, unsigned columns); // creates panes and replaces all render objects
     void fill(Topl_Scene* scene) override;
 
-	static Geo_FlatSquare _dummy;
-	static Geo_Actor _dummyGeo;
     Geo_Pane _rootPane = Geo_Pane(); // root
 	std::vector<Geo_Pane> _panes; // children
 	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_ROOT_Z);
@@ -82,4 +82,7 @@ private:
     unsigned _columns;
 	float _radius = PANE_RADIUS;
 	float _border = PANE_BORDER;
+
+	static Geo_FlatSquare _dummy;
+	static Geo_Actor _dummyGeo;
 };

@@ -152,7 +152,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	cleanup_linux(_nativeContext.display, _nativeContext.GL_ctx);
 #endif
 
-	free(__renderCtx); // free the render contexts
+	for (unsigned r = 0; r < _renderCtxIndex; r++) 
+		delete(*(__renderCtx + r)); // delete individual render contexts
+	free(__renderCtx); // free the render context heap
 }
 
 
@@ -197,7 +199,7 @@ void Topl_Renderer_GL4::switchFramebuff(){
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
-	// *(__renderCtx + _renderCtxIndex) = Topl_RenderContext_GL4(scene); // creation of new render context
+	*(__renderCtx + _renderCtxIndex) = new Topl_RenderContext_GL4(scene); // creation of new render context
 
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// scene uniform block buffer generation
@@ -307,6 +309,8 @@ void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
 	_renderCtx.textures.push_back(Texture_GL4(id, TEX_2D, _texMode, texture));
 }
 
+// TODO: Include support for additional formats, notably Topl_MultiTex
+
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
@@ -342,10 +346,16 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 void Topl_Renderer_GL4::updateTex(const Topl_Scene* scene){
 // Rasteron dependency required for updating textures
 #ifdef RASTERON_H
-for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	unsigned rID = g + 1;
-	// search for texture with matching render id
-}
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+		unsigned rID = g + 1;
+		// TODO: Find cooresponding image within scene
+		
+		for(unsigned t = 0; t < _renderCtx.textures.size(); t++)
+			if (_renderCtx.textures.at(t).targetID == rID) {
+				GLuint texture = _renderCtx.textures.at(t).texture;
+				// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+			}
+	}
 #endif
 }
 

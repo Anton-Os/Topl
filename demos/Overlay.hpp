@@ -22,16 +22,19 @@ namespace Topl {
 	Geo_FlatCircle pickerCircle = Geo_FlatCircle(0.25f);
 	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
-	Geo_PaneLayout defaultLayout("layout1", &scene, 3, 3);
-	Geo_PaneLayout customLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
+	Geo_PaneLayout boxedLayout("layout1", &scene, 3, 3);
+	Geo_PaneLayout readLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
 
 	ValueGen valueGen = ValueGen(); // seeds random number generation
 	bool isPressPend;
 #ifdef RASTERON_H
 	Rasteron_Image* pickerBk = nullptr;
 	Rasteron_Image* captureBk = nullptr;
-	FT_Library freetypeLib; // required for loading glyphs
+
 	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
+	FT_Library freetypeLib; // required for loading glyphs
+
+	// Topl_MultiTex symbolsMTex = Topl_MultiTex("symbols", 256, 256, 9); // used as textures for boxedLayout
 #endif
 }
 
@@ -63,23 +66,24 @@ namespace Main {
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
-		Topl::customLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		Topl::readLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
 		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
 		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
 
-		/* initFreeType(&Topl::freetypeLib);
-		for (unsigned short r = 0; r < Topl::customLayout.getRowCount(); r++) {
-			Geo_Pane* pane = Topl::customLayout.getChildPane(r, 0);
+		// initFreeType(&Topl::freetypeLib);
+		for (unsigned short p = 0; p < Topl::readLayout.getRowCount() * Topl::readLayout.getColCount(); p++) {
+			Geo_Pane* pane = Topl::readLayout.getChildPane(p);
 			// pane->setImageBk(createImgBlank(256, 256, 0xFF0000FF)); // overrides to blue color
 			// pane->setImageBk(bakeImgText(&Topl::textObj, &Topl::freetypeLib, 20)); // overrides to text display
-		} */
+		}
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		while (1) {
 			renderer->clearView();
+			renderer->refreshTex();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderAll();
 
@@ -101,5 +105,6 @@ namespace Main {
 	void cleanup() {
 		if(Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk);
 		if(Topl::captureBk != nullptr) deleteImg(Topl::captureBk);
+		// cleanupFreeType(&Topl::freetypeLib);
 	}
 }

@@ -139,7 +139,9 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_blendState->Release();
 	_rasterizerState->Release();
 
-	free(__renderCtx); // free the render contexts
+	for (unsigned r = 0; r < _renderCtxIndex; r++)
+		delete(*(__renderCtx + r)); // delete individual render contexts
+	free(__renderCtx); // free the render context heap
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
@@ -281,7 +283,7 @@ void Topl_Renderer_Drx11::switchFramebuff(){
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	// *(__renderCtx + _renderCtxIndex) = Topl_RenderContext_Drx11(scene); // creation of new render context
+	*(__renderCtx + _renderCtxIndex) = new Topl_RenderContext_Drx11(scene); // creation of new render context
 
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// generating an input layout based on Vertex Shader Inputs
@@ -469,7 +471,14 @@ void Topl_Renderer_Drx11::updateTex(const Topl_Scene* scene){
 #ifdef RASTERON_H
 for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	unsigned rID = g + 1;
-	// search for texture with matching render id
+	// TODO: Find cooresponding image within scene
+
+	for (unsigned t = 0; t < _renderCtx.textures.size(); t++)
+		if (_renderCtx.textures.at(t).targetID == rID) {
+			ID3D11Texture2D** texture = &_renderCtx.textures.at(t).texture;
+			// TODO: Update internal texture data
+		}
+
 }
 #endif
 }
