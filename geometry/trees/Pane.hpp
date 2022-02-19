@@ -19,8 +19,6 @@ public:
 #endif
     }
 
-    // void setRenderObj(Geo_FlatSquare* square){ _square = square; }
-    // Geo_RenderObj* getRenderObj(){ return (Geo_RenderObj*)_square; }
 	unsigned getColor() { return _bkColor; }
 #ifdef RASTERON_H
 	void setImageBk(Rasteron_Image* image) {
@@ -32,7 +30,6 @@ public:
 	Rasteron_Image* getBackground() { return _background; }
 #endif
 private:
-	// Geo_FlatSquare* _square = nullptr;
     unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
     Rasteron_Image* _background = nullptr; // background image available if Rasteron is supported

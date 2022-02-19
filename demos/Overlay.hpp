@@ -83,7 +83,6 @@ namespace Main {
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		while (1) {
 			renderer->clearView();
-			renderer->refreshTex();
 			renderer->updateScene(&Topl::scene);
 			renderer->renderAll();
 

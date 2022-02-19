@@ -99,7 +99,9 @@ public:
 	unsigned getLightCount() const { return _lightSrc.size(); }
 	light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
+	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
+	unsigned getMultiTexCount() const { return _actorMultiTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name, unsigned frameIndex) const;
 #endif
 

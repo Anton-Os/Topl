@@ -114,12 +114,13 @@ public:
         }
         if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS) {
             perror("Too many render contexts!");
-            _renderCtxIndex = 0;
+            // _renderCtxIndex = 0;
             _isSceneReady = false;
             return false;
         }
 
         build(scene);
+        texturize(scene);
         _renderCtxIndex++;
         return _isSceneReady;
     }
@@ -133,10 +134,6 @@ public:
         if(!_isPipelineReady || !_isSceneReady) return false; // failure
 
         update(scene);
-        if(!_isTexDrawn){ // textures need to be redrawn
-            updateTex(scene);
-            _isTexDrawn = true;
-        }
         return _isSceneReady;
     }
     bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
@@ -148,7 +145,6 @@ public:
         drawMode(); // sets the proper draw mode
     }
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
-	void refreshTex() { _isTexDrawn = false; } // textures need to be redrawn
     bool renderScene(Topl_Scene* scene){
 		// TODO: need a method of fetching correct scene from renderContext heap
         // draws only render objects associated with scene argument
@@ -166,7 +162,12 @@ public:
         _frameIDs++; // increment frame counter
 		return _isSceneDrawn; // render call sets variable to true on success
     }
-    unsigned getPixColor(float x, float y) {
+    virtual void clearView() = 0; // clears view to predefined background color
+    virtual void switchFramebuff() = 0; // switches front and back buffers
+	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
+#ifdef RASTERON_H
+    virtual Rasteron_Image* frame() = 0;
+	unsigned getPixColor(float x, float y) {
 		if (x < -1.0) x = -1.0; else if (x > 1.0) x = 1.0; // clamping x
 		if (y < -1.0) y = -1.0; else if (y > 1.0) y = 1.0; // clamping y
 
@@ -179,14 +180,9 @@ public:
 		deleteImg(image);
 		return color; // return color computed at offsets
 	}
-    virtual void clearView() = 0;
-    virtual void switchFramebuff() = 0; // switches front and back buffers
-#ifdef RASTERON_H
-    virtual Rasteron_Image* frame() = 0;
-    virtual void assignTexture(const Rasteron_Image* image, unsigned id) = 0;
 #endif
-    NATIVE_PLATFORM_CONTEXT _nativeContext; // Contains system specific information
 protected:
+	NATIVE_PLATFORM_CONTEXT _nativeContext; // system specific information
     // const Topl_Pipeline* _pipeline;
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
@@ -196,17 +192,18 @@ protected:
     const Topl_Camera* _activeCamera = &_defaultCamera; // updated by user
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
-    bool _isSceneDrawn = false; // switch true after draw call and off after swap
-	bool _isTexDrawn = true; // switches to false once textures need to be redrawn
+    bool _isSceneDrawn = false; // true after draw call, false after framebuffer swap
     unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
-    virtual void updateTex(const Topl_Scene* scene) = 0; // update for textures only
     virtual void drawMode() = 0;
 	virtual void render(void) = 0;
+#ifdef RASTERON_H
+	virtual void assignTexture(const Rasteron_Image* image, unsigned id) = 0;
+#endif
     // virtual void render(const Topl_Scene* scene); // updated version of render call
 };
 

@@ -77,31 +77,33 @@ public:
 		init(hwnd);
 		drawMode(); // sets default draw mode
 
-		__renderCtx = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
+		__renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_Drx11();
 
 	void clearView() override;
 	void switchFramebuff() override;
+	void build(const Topl_Scene* scene) override;
+	void texturize(const Topl_Scene* scene) override;
+
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
-	void build(const Topl_Scene* scene) override;
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
-    void assignTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_Scene* scene) override;
-	void updateTex(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(void) override;
-	// void render(const Topl_Scene* scene) override;
+#ifdef RASTERON_H
+	void assignTexture(const Rasteron_Image* image, unsigned id) override;
+#endif
 
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
-	Topl_DrawContext_Drx11 _renderCtx;
-	Topl_RenderContext_Drx11** __renderCtx; // stores multiple render contexts with unique scenes and ids
+	Topl_DrawContext_Drx11 _renderCtx_Drx11; // replace this!!!
+	Topl_RenderContext_Drx11** __renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
 
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;

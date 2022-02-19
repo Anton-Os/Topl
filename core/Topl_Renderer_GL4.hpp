@@ -77,33 +77,35 @@ public:
 		init(window);
 		drawMode(); // sets default draw mode
 
-		__renderCtx = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
+		__renderCtx_GL4 = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
 	void switchFramebuff() override;
+	void build(const Topl_Scene* scene) override;
+	void texturize(const Topl_Scene* scene) override;
+
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
-	void build(const Topl_Scene* scene) override;
 #ifdef RASTERON_H
 	Rasteron_Image* frame() override;
-	void assignTexture(const Rasteron_Image* image, unsigned id) override;
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
-	void updateTex(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(void) override;
-	// void render(const Topl_Scene* scene) override;
+#ifdef RASTERON_H
+	void assignTexture(const Rasteron_Image* image, unsigned id) override;
+#endif
 
 	Topl_Pipeline_GL4* _pipeline;
-	Topl_DrawContext_GL4 _renderCtx;
-	Topl_RenderContext_GL4** __renderCtx; // stores multiple render contexts with unique scenes and ids
+	Topl_DrawContext_GL4 _renderCtx_GL4; // replace this!!!
+	Topl_RenderContext_GL4** __renderCtx_GL4; // stores multiple render contexts with unique scenes and ids
 
-	GLenum _drawModeGL4; // OpenGL specific draw mode
+	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX];
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot
 	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX];
