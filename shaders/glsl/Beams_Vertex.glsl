@@ -1,12 +1,12 @@
 #version 440
 
-layout(packed, binding = 0) uniform Block {
+layout(std140, binding = 0) uniform Block {
 	vec3 offset; // padded to vec4
 	vec2 rotation; // padded to vec4
 	// vec4 color;
 };
 
-layout(packed, binding = 1) uniform SceneBlock {
+layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	vec3 cam_pos;
 	// mat4 projMatrix;
@@ -21,9 +21,22 @@ layout(packed, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out vec4 ambient_out;
-layout(location = 1) out vec4 diffuse_out;
-layout(location = 2) out vec4 specular_out;
+layout(location = 0) out vec3 ambient_out;
+layout(location = 1) out vec3 diffuse_out;
+layout(location = 2) out vec3 specular_out;
+
+float calcDiffuseIntensity(vec3 light, vec3 target){
+	float intensity = dot(normalize(light), normalize(target));
+	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
+	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
+	// return intensity;
+	return intensity * attenuation;
+}
+
+float calcSpecIntensity(vec3 light, vec3 target, float curve){
+	// TODO: Calculate specular equation
+	return 0.0;
+}
 
 mat3 calcRotMatrix(vec2 rotCoords){
 	mat3 zRotMatrix = mat3(
@@ -66,8 +79,13 @@ void main() {
 	final_pos = vec4(rotCoords, 0.0) + vec4(final_trans, 1.0); // rotation and translation
 	
 	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
-	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
-	ambient_out = vec4(1.0, 0.0, 0.0, 1.0f); // red
-	diffuse_out = vec4(0.0, 1.0f, 0.0, 1.0f); // green
-	specular_out = vec4(0.0, 0.0, 1.0f, 1.0f); // blue
+
+	const float ambient_intensity = 0.1f; // ambient light intensity
+	ambient_out = ambient_intensity * skyLight_value; // only sky light affects ambient property
+	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, pos);
+	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, pos);
+	diffuse_out = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
+	const float specular_curve = 1.0;
+	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, specular_curve);
+	specular_out = specular_intensity * flashLight_value; // blue
 }

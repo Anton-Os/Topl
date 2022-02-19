@@ -36,6 +36,11 @@ float calcDiffuseIntensity(float3 light, float3 target){
 	return intensity * attenuation;
 }
 
+float calcSpecIntensity(float3 light, float3 target, float curve){
+	// TODO: Calculate specular equation
+	return 0.0;
+}
+
 float3x3 calcRotMatrix(float2 rotCoords){
 	float3x3 zRotMatrix = {
 		cos(rotation.x), sin(rotation.x), 0,
@@ -83,12 +88,15 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.pos = mul(final_pos, cameraMatrix); // no projection
 	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
 
+	// Light Source Shadings
 	const float ambient_intensity = 0.1f; // ambient light intensity
-	output.ambient = ambient_intensity * skyLight_value;
+	output.ambient = ambient_intensity * skyLight_value; // only sky light affects ambient property
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, vertex_pos);
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, vertex_pos);
 	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
-	output.specular = float3(1.0f, 1.0f, 1.0f); // calculate intensity here
+	const float specular_curve = 1.0;
+	const float specular_intensity = calcSpecIntensity(flashLight_pos, vertex_pos, specular_curve);
+	output.specular = specular_intensity * flashLight_value; // only flash light affects specular 
 
 	return output;
 }

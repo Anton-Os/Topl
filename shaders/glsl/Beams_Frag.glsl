@@ -1,11 +1,12 @@
 #version 440
 
-layout(location = 0) in vec4 ambient;
-layout(location = 1) in vec4 diffuse;
-layout(location = 2) in vec4 specular;
+layout(location = 0) in vec3 ambient;
+layout(location = 1) in vec3 diffuse;
+layout(location = 2) in vec3 specular;
 
 out vec4 color;
 
 void main() {
-	color = ambient;
+	vec3 light_color = ambient + diffuse + specular;
+	color = vec4(light_color, 1.0f);
 }
