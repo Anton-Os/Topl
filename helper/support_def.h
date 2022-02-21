@@ -2,9 +2,9 @@
 #define ASSETS_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/master/assets/"
 #define SHADERS_DIR "C:/AntonDocs/Codex/Ao-Project/Topl/master/shaders/"
 #if 1
+    #define RASTERON_ENABLE_PLUGIN
+    #define RASTERON_ENABLE_FONT
     #include "Rasteron.h" // includes Rasteron main modules
-    #include "Font.h" // includes Rasteron font loading module
-    #include "Animation.h" // includes Rateron animation support
 #endif
 #if 1
     #include <assimp/Importer.hpp>      // C++ importer interface

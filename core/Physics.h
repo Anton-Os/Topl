@@ -76,7 +76,7 @@ private:
     bool isFirstCall = true; // required to correct the timekeeping
 };
 
-#define PHYS_DEFAULT_K 2000.0 // K value by default
+#define PHYS_DEFAULT_K 1000.0 // K value by default
 #define PHYS_ROD_K 1000000.0 // K value for rod connector
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 #define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)

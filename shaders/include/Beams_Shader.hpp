@@ -37,9 +37,9 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		// ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 
 		const unsigned lightCount = scene->getLightCount();
-        if(lightCount > 0) appendLight(scene, 0, bytes); // 1st light source
-        if(lightCount > 1) appendLight(scene, 1, bytes); // 2nd light source
-        if(lightCount > 2) appendLight(scene, 2, bytes); // 3rd light source
+        if(lightCount > 0) appendLight(scene, 0, bytes); // 1st light source (sky light)
+        if(lightCount > 1) appendLight(scene, 1, bytes); // 2nd light source (flash light)
+        if(lightCount > 2) appendLight(scene, 2, bytes); // 3rd light source (lamp light)
 		
         return true;
 	}

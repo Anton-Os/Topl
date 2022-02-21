@@ -68,8 +68,8 @@ namespace _Drx11 {
 		ZeroMemory(&buffData, sizeof(buffData));
 		buffData.pSysMem = data;
 
-		HRESULT hr = (*(device))->CreateBuffer(&buffDesc, &buffData, buffer);
-		if (FAILED(hr)) return false;
+		HRESULT result = (*(device))->CreateBuffer(&buffDesc, &buffData, buffer);
+		if (FAILED(result)) return false;
 
 		return true;
 	}
@@ -174,16 +174,16 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	HRESULT hr; // Error handler
+	HRESULT result; // Error handler
 
-	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
+	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&swapChainDesc, &_swapChain, &_device, NULL, &_deviceCtx);
-	if (FAILED(hr)) return;
+	if (FAILED(result)) return;
     
     // ID3D11Texture2D* backBuffer;
 	ID3D11Resource* backBuffer; // bgfx renderer_d3d11.cpp line 4660
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-	if(FAILED(hr)) return; // Provide error handling code
+	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	if(FAILED(result)) return; // Provide error handling code
 
     _device->CreateRenderTargetView(backBuffer, NULL, &_rtView);
     backBuffer->Release();
@@ -341,12 +341,6 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 		_renderCtx_Drx11.buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;
-		/*
-#ifdef RASTERON_H
-		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
-		if(baseTex != nullptr) assignTexture(baseTex, rID); // Add the method definition
-#endif
-		*/
 
 		if(!_isSceneReady) return;
 		_renderIDs = rID; // Gives us the greatest buffer ID number
@@ -358,30 +352,30 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_Drx11::frame(){
-	HRESULT hr;
+	HRESULT result;
 
-	ID3D11Texture2D* framebuff;
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&framebuff);
-
+	ID3D11Texture2D* surface;
+	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&surface));
+	
 	D3D11_TEXTURE2D_DESC framebuffDesc;
-	framebuff->GetDesc(&framebuffDesc);
+	surface->GetDesc(&framebuffDesc);
 	framebuffDesc.BindFlags = 0;
 	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 	framebuffDesc.Usage = D3D11_USAGE_STAGING;
 
-	ID3D11Texture2D* srcTexture;
-	hr = _device->CreateTexture2D(&framebuffDesc, NULL, &srcTexture);
-	
-	// Copying phase and subresource mapping
-	_deviceCtx->CopyResource(srcTexture, framebuff);
+	ID3D11Texture2D* framebuffTex;
+	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
+
+	// Copying and Mapping
+
+	_deviceCtx->CopyResource(framebuffTex, surface);
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
-	hr = _deviceCtx->Map(srcTexture, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
-	const uint32_t* srcTexData = static_cast<const uint32_t*>(resource.pData);
+	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
+	const unsigned int* sourcePix = static_cast<const unsigned int*>(resource.pData);
 
-	// Framebuffer Copying Operation
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	memcpy(image->data, srcTexData, image->width * image->height * sizeof(uint32_t));
+	memcpy(image->data, sourcePix, TOPL_WIN_HEIGHT * TOPL_WIN_WIDTH * 4);
 
 	return image;
 }
@@ -408,7 +402,7 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 }
 
 void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id){
-	HRESULT hrCode; // For viewing potential issues
+	HRESULT result; // For viewing potential issues
 
 	D3D11_SAMPLER_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
@@ -423,7 +417,7 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 	sd.MaxLOD = D3D11_FLOAT32_MAX;
 
 	ID3D11SamplerState* sampler;
-	hrCode = _device->CreateSamplerState(&sd, &sampler);
+	result = _device->CreateSamplerState(&sd, &sampler);
 	
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
@@ -446,7 +440,7 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
-    hrCode = _device->CreateTexture2D( &texDesc, &texData, &texture);
+    result = _device->CreateTexture2D( &texDesc, &texData, &texture);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resViewDesc;
 	ZeroMemory(&resViewDesc, sizeof(resViewDesc));

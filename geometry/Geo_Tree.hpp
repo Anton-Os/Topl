@@ -19,17 +19,19 @@ public:
     // Fixed items constructor
     Geo_Tree(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs);
     // Duplicate items constructor
-    Geo_Tree(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* geoc, unsigned count);
+    Geo_Tree(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* actor, unsigned count);
 
 	~Geo_Tree();
 
     void move(Eigen::Vector3f vec){ 
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updatePos(vec); 
     }
-    void rotate(Eigen::Vector2f angles){
+	void rotate(const Eigen::Vector2f& angles); // rotation of actors around origin
+    void rotateAll(const Eigen::Vector2f& angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updateRot(angles);
     }
     std::string getPrefix(){ return _prefix + "_"; }
+    Eigen::Vector3f getOrigin();
 protected:
     virtual void fill(Topl_Scene* scene) = 0; 
 
@@ -40,7 +42,7 @@ private:
 	unsigned _actorCount = 0;
     unsigned _actorOffset = 0;
 	Geo_Actor** _actorData = nullptr; // actor data is stored here and retrieved sequentially by derived class
-}; // needs work! could use more abstraction
+};
 
 struct Geo_DynamicSet { // A container that holds objects used in physics
     Geo_DynamicSet(unsigned setCount){ phys.resize(setCount); }

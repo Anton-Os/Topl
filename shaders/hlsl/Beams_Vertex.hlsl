@@ -14,6 +14,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	float3 flashLight_pos;
 	float3 flashLight_value;
+
+	float3 lampLight_pos;
+	float3 lampLight_value;
 }
 
 struct VS_INPUT {

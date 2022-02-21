@@ -5,8 +5,10 @@
 
 #include "primitives/Geo_Sphere.hpp"
 
+#define MOVE_AMOUNT 0.5f
 #define LIGHT_DISTANCE 2.0f
-#define MOVE_AMOUNT 0.5
+#define SMALL_RADIUS 0.1f
+#define LARGE_RADIUS 0.2f
 
 namespace Topl {
 	Topl_Scene scene;
@@ -14,15 +16,17 @@ namespace Topl {
 	Timer_Ticker gameTicker;
 	Topl_Light skyLight = Topl_Light(Eigen::Vector3f(0.0f, LIGHT_DISTANCE, 0.0f));
 	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0));
+	Topl_Light lampLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // this light will be moving
 
-	NGon3D ngon = { 0.2, 12, 12 };
-	NGon3D ngon2 = { 0.1, 6, 30 };
+	NGon3D ngon = { LARGE_RADIUS, 1000, 1000 };
+	NGon3D ngon2 = { SMALL_RADIUS, 12, 5 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
-	Phys_Motion motion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 0.0f, 0.0), 4.0);
+	Phys_Motion pongMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 0.0f, 0.0), 4.0);
+	Phys_Motion orbitMotion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(1.0f, 0.0f, 0.0), 2.0);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -30,23 +34,21 @@ void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_
 void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
 void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
-/* void orbitCallback(double absSecs){
-	Eigen::Vector3f motionVec = 10.0 * Topl::motion.getMotion(absSecs);
-	Topl::sphereGeo.setPos(Eigen::Vector3f(std::sin(motionVec.x()), std::cos(motionVec.y()), 0.0));
-} */
-
-void pongCallback(double absSecs) {
-	Eigen::Vector3f motionVec = Topl::motion.getMotion(absSecs);
-	// Topl::sphereGeo.setRot(Eigen::Vector2f(motionVec.x(), motionVec.y()));
-	Topl::sphereGeo.setPos(Eigen::Vector3f(motionVec.x() - 0.5f, motionVec.y() - 0.5f, 0.0f));
-}
-
-void moveUpCallback() {
+void moveUpEvent() {
 	Eigen::Vector3f updatePos = Eigen::Vector3f(*Topl::sphereGeo2.getPos()) + Eigen::Vector3f(0.0f, 0.1f, 0.0f);
 	Topl::sphereGeo2.setPos(updatePos);
 }
 
-// Shared functions
+void pongEvent(double absSecs) {
+	Eigen::Vector3f motionVec = Topl::pongMotion.getMotion(absSecs);
+	Topl::sphereGeo.setPos(Eigen::Vector3f(motionVec.x() - 0.5f, motionVec.y() - 0.5f, 0.0f));
+}
+
+void orbitEvent(double absSecs){
+	Eigen::Vector3f motionVec = Topl::orbitMotion.getMotion(absSecs);
+	Topl::lampLight.pos = Eigen::Vector3f(motionVec.x(), motionVec.y(), 0.0);
+}
+
 
 namespace Main {
 	void init(Platform* platform){
@@ -60,11 +62,13 @@ namespace Main {
 		// Topl::scene.addLight(Topl_Light(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
 		Topl::scene.addLight(&Topl::skyLight);
 		Topl::scene.addLight(&Topl::flashLight);
+		Topl::scene.addLight(&Topl::lampLight);
 		Topl::scene.addGeometry("sphere", &Topl::sphereGeo);
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
-		Topl::gameTicker.addRecurringEvent(&pongCallback);
-		Topl::gameTicker.addPeriodicEvent(2000, moveUpCallback);
+		Topl::gameTicker.addRecurringEvent(&pongEvent);
+		Topl::gameTicker.addRecurringEvent(&orbitEvent);
+		Topl::gameTicker.addPeriodicEvent(2000, moveUpEvent);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){

@@ -2,9 +2,9 @@
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define SHADERS_DIR "${SHADERS_DIR}"
 #if ${Rasteron_FOUND}
+    #define RASTERON_ENABLE_PLUGIN
+    #define RASTERON_ENABLE_FONT
     #include "Rasteron.h" // includes Rasteron main modules
-    #include "Font.h" // includes Rasteron font loading module
-    #include "Animation.h" // includes Rateron animation support
 #endif
 #if ${Assimp_FOUND}
     #include <assimp/Importer.hpp>      // C++ importer interface

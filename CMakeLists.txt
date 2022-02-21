@@ -176,7 +176,6 @@ target_link_libraries(GL4_Overlay PRIVATE GL4_ENGINE)
 add_executable(GL4_Assets demos/GL4_Assets.cpp)
 target_link_libraries(GL4_Assets PRIVATE GL4_ENGINE)
 
-
 # Copying and managing implemented here with custom targets
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/hlsl/*.hlsl)
@@ -191,3 +190,8 @@ endif()
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
+
+# Modern Demos
+
+add_executable(Inception demos/Inception.cpp)
+target_link_libraries(Inception GL4_ENGINE Drx11_ENGINE)

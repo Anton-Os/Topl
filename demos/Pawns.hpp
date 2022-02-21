@@ -9,6 +9,7 @@
 
 
 #define SHIFT_AMOUNT 0.2
+#define ROTATE_AMOUNT 0.3
 #define PARTS_SCALE 3
 #define MOVE_SCALE 22
 
@@ -56,14 +57,21 @@ void buttonCallback_w(void) { Topl::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUN
 void buttonCallback_a(void) { Topl::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
 void buttonCallback_s(void) { Topl::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
 void buttonCallback_d(void) { Topl::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
-void buttonCallback_r(void) { Topl::demon.rotate(Eigen::Vector2f(1.0f, 0.0f)); } // Rotate
+void buttonCallback_r(void) { 
+	Topl::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
+	Topl::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
+
+	/* for(unsigned l = 0; l < Topl::scene.getLinkedItemsCount(); l++) */
+	Topl::scene.modConnector("angel_body", Eigen::Vector2f(ROTATE_AMOUNT, 0.0f), 1.0f);
+
+} // rotateAll
 
 void actionCallback() {
 	// adding movements for testing
-	Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 10.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -10.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(3.0f * MOVE_SCALE, 0.0f, 0.0f));
-	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-3.0f * MOVE_SCALE, 0.0f, 0.0f));
+	Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 30.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -30.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(10.0f * MOVE_SCALE, 0.0f, 0.0f));
+	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-10.0f * MOVE_SCALE, 0.0f, 0.0f));
 
 	Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
 	Topl::scene.addForce("angel_body", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));

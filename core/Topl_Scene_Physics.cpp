@@ -57,8 +57,8 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 		vec3f_cptr pos2 = link2->getPos();
 
 		// Compute the length of the distance between both vectors
-		Eigen::Vector3f diffPos = *pos1 - *pos2;
-		connector->length = sqrt(pow(diffPos.x(), 2) + pow(diffPos.y(), 2) + pow(diffPos.z(), 2));
+		Eigen::Vector3f posDiff = *pos1 - *pos2;
+		connector->length = ValueGen::getVecLength(posDiff);
 		// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
 		connector->restLength = connector->length;
 		// Compute the center point which needs to be updated in the resolvePhysics() method
@@ -75,23 +75,34 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 	_linkedItems.push_back({connector, std::make_pair(link1, link2)});
 }
 
-void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector3f rotAnglesVec, double lengthScale) {
-	for(std::vector<LinkedItems>::iterator currentLink = _linkedItems.begin(); currentLink != _linkedItems.end(); currentLink++)
-		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName){
+void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector2f rotAnglesVec, double lengthScale) {
+	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++)
+		if(link->linkedItems.first->getName() == targetName || link->linkedItems.second->getName() == targetName){
+			// Length Modification
+			link->connector->restLength *= lengthScale;
 			
-			currentLink->connector->restLength *= lengthScale;
-			
-			currentLink->connector->restAngle_NVec1 = rotAnglesVec; // TODO: Make this rotate!
-			currentLink->connector->restAngle_NVec1.normalize();
-			currentLink->connector->restAngle_NVec2 = -1 * rotAnglesVec; // TODO: Make this rotate!
-			currentLink->connector->restAngle_NVec2.normalize();
+			// Position Modification
+			// TODO: Center point needs to pivot
+
+			// Angles Modification	
+			Eigen::Vector3f* NVec2 = &link->connector->restAngle_NVec2;
+			*NVec2 = Eigen::Vector3f(-1.0f * NVec2->x() * rotAnglesVec.x(), -1.0f * NVec2->y() * rotAnglesVec.y(), NVec2->z());
+			// *NVec2 = Eigen::Vector3f(-1.0f * NVec2->x() * sin(rotAnglesVec.x()), -1.0f * NVec2->y() * cos(rotAnglesVec.y()), NVec2->z());
+			// *NVec2 = *link->linkedItems.second->getPos() - link->connector->centerPoint; // recompute 2nd rest angle
+			NVec2->normalize();
+
+			Eigen::Vector3f* NVec1 = &link->connector->restAngle_NVec1;
+			*NVec1 = Eigen::Vector3f(NVec1->x() * rotAnglesVec.x(), NVec1->y() * rotAnglesVec.y(), NVec1->z());
+			// *NVec1 = Eigen::Vector3f(NVec1->x() * sin(rotAnglesVec.x()), NVec1->y() * cos(rotAnglesVec.y()), NVec1->z());
+			// *NVec1 = *link->linkedItems.first->getPos() - link->connector->centerPoint; // recompute 1st rest angle
+			NVec1->normalize();
 		}
 }
 
 void Topl_Scene::remConnector(const std::string& targetName){
-	for(std::vector<LinkedItems>::iterator currentLink = _linkedItems.begin(); currentLink != _linkedItems.end(); currentLink++)
-		if(currentLink->linkedItems.first->getName() == targetName || currentLink->linkedItems.second->getName() == targetName)
-			_linkedItems.erase(currentLink);
+	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++)
+		if(link->linkedItems.first->getName() == targetName || link->linkedItems.second->getName() == targetName)
+			_linkedItems.erase(link);
 }
 
 
@@ -99,17 +110,13 @@ void Topl_Scene::resolvePhysics() {
 	double physElapseSecs = _physTicker.getRelSecs();
 
 	// Resolve connector and link forces here and general computations
-	for(std::vector<LinkedItems>::iterator currentLink = _linkedItems.begin(); currentLink != _linkedItems.end(); currentLink++){
-		Phys_Connector* connector = currentLink->connector;
-		const Geo_Actor* linkItem1 = currentLink->linkedItems.first;
-		const Geo_Actor* linkItem2 = currentLink->linkedItems.second;
+	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
+		Phys_Connector* connector = link->connector;
+		const Geo_Actor* linkItem1 = link->linkedItems.first;
+		const Geo_Actor* linkItem2 = link->linkedItems.second;
 
-		connector->length = sqrt( // Length needs to be updated
-			pow(linkItem1->getPos()->x() - linkItem2->getPos()->x(), 2)
-			+ pow(linkItem1->getPos()->y() - linkItem2->getPos()->y(), 2)
-			+ pow(linkItem1->getPos()->z() - linkItem2->getPos()->z(), 2)
-		);
-
+		Eigen::Vector3f linkDiff = *(linkItem1->getPos()) - *(linkItem2->getPos());
+		connector->length = ValueGen::getVecLength(linkDiff);
 		connector->centerPoint = (*linkItem1->getPos() + *linkItem2->getPos()) / 2;
 		connector->angle_NVec1 = *linkItem1->getPos() - connector->centerPoint;
 		connector->angle_NVec1.normalize();

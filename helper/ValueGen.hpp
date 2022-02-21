@@ -40,6 +40,8 @@ struct ValueGen {
     static unsigned genRandColorVal();
     static float genRandFloat(){ return genRandFloat(0.0, 1.0); }
     static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
+    static float getVecLength(const Eigen::Vector2f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2)); }
+    static float getVecLength(const Eigen::Vector3f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2)); }
     static Eigen::Vector2f genRandVec2(){ return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
     static Eigen::Vector3f genRandVec3(){ return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
     static Eigen::Vector4f genRandVec4(){ return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
