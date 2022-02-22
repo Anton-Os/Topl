@@ -42,15 +42,6 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
 
 #ifdef RASTERON_H
 
-void Topl_MultiTex::addFrame(const Rasteron_Image *const refImg){
-	if(frameIndex >= MAX_TEXTURES_PER_ACTOR){
-		frameIndex = 0;
-		isOverride = true;
-	}
-	// addFrameData(animation, refImg, frameIndex);
-	frameIndex++;
-}
-
 void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* image) {
 	if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
@@ -58,23 +49,9 @@ void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* image
 			_actorTex_map.insert({ *actor, image });
 }
 
-void Topl_Scene::addMultiTex(const std::string& name, const Topl_MultiTex* multiTex) {
-	if(multiTex->frameIndex == 0) return; // Error
-	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if (name == (*actor)->getName())
-			_actorMultiTex_map.insert({ *actor, multiTex });
-}
-
 const Rasteron_Image* Topl_Scene::getTexture(const std::string& name) const {
 	for (std::map<Geo_Actor*, const Rasteron_Image*>::const_iterator m = _actorTex_map.cbegin(); m != _actorTex_map.cend(); m++)
 		if (name == m->first->getName()) return m->second;
-	return nullptr; // Error
-}
-
-const Rasteron_Image* Topl_Scene::getTexture(const std::string& name, unsigned frameIndex) const {
-	for (std::map<Geo_Actor*, const Topl_MultiTex*>::const_iterator m = _actorMultiTex_map.cbegin(); m != _actorMultiTex_map.cend(); m++)
-		if (name == m->first->getName()) 
-			return m->second->getFrameAt(frameIndex);
 	return nullptr; // Error
 }
 

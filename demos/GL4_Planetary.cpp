@@ -14,8 +14,6 @@ int main(int argc, char** argv) {
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 	Topl_Pipeline_GL4 pipeline;
 
-	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
-	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
 	GL4_Beams_VertexShader vertexBeams = GL4_Beams_VertexShader();
 	GL4_Beams_FragmentShader fragBeams = GL4_Beams_FragmentShader();
 	// renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);

@@ -23,18 +23,19 @@ namespace Topl {
 	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
 	Geo_PaneLayout boxedLayout("layout1", &scene, 3, 3);
-	Geo_PaneLayout readLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
+	Geo_PaneLayout scanLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
 
 	ValueGen valueGen = ValueGen(); // seeds random number generation
 	bool isPressPend;
 #ifdef RASTERON_H
 	Rasteron_Image* pickerBk = nullptr;
 	Rasteron_Image* captureBk = nullptr;
+	Rasteron_Image* textDisplayBk = nullptr;
 
 	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
 	FT_Library freetypeLib; // required for loading glyphs
 
-	Topl_MultiTex symbolsMTex = Topl_MultiTex("symbols", 256, 256, 9); // used as textures for boxedLayout
+	Topl_Frames symbols = Topl_Frames("symbols", 256, 256, 9); // used as textures for boxedLayout
 #endif
 }
 
@@ -52,13 +53,23 @@ void captureBk(Topl_Renderer* renderer) {
 	renderer->texturize(&Topl::scene);
 }
 
-void setupPaneBoxes() {
+void setupPanes() {
 	initFreeType(&Topl::freetypeLib);
-	for (unsigned short p = 0; p < Topl::readLayout.getRowCount() * Topl::readLayout.getColCount(); p++) {
-		Geo_Pane* pane = Topl::readLayout.getChildPane(p);
-		// pane->setImageBk(Topl::symbolsMTex.getFrameAt(p)); // overrides to blue color
-		// pane->setImageBk(bakeImgText(&Topl::textObj, &Topl::freetypeLib, 20)); // overrides to text display
+	Topl::textDisplayBk = bakeImgText(&Topl::textObj, &Topl::freetypeLib, 20);
+
+	for (unsigned short p = 0; p < Topl::boxedLayout.getRowCount() * Topl::boxedLayout.getColCount(); p++) {
+		Geo_Pane* pane = Topl::boxedLayout.getChildPane(p);
+		Rasteron_Image* frameImg = Topl::symbols.getFrameAt(p);
+
+		// Create Image Here
 	}
+	
+	for (unsigned short p = 0; p < Topl::scanLayout.getRowCount() * Topl::scanLayout.getColCount(); p++) {
+		Geo_Pane* pane = Topl::scanLayout.getChildPane(p);
+
+		// Create Image Here
+	}
+
 }
 
 // Retrieves the pixel where the cursor is positioned
@@ -81,13 +92,13 @@ namespace Main {
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
-		Topl::readLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		Topl::scanLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
 		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
 		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
 
-		setupPaneBoxes();
+		setupPanes();
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
@@ -113,6 +124,7 @@ namespace Main {
 	void cleanup() {
 		if(Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk);
 		if(Topl::captureBk != nullptr) deleteImg(Topl::captureBk);
-		// cleanupFreeType(&Topl::freetypeLib);
+		if(Topl::textDisplayBk != nullptr) deleteImg(Topl::textDisplayBk);
+		cleanupFreeType(&Topl::freetypeLib);
 	}
 }

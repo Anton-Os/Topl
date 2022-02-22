@@ -12,27 +12,36 @@
 
 class Geo_Pane {
 public:
-    Geo_Pane(){}
+	Geo_Pane(unsigned color){ // Fixed 	Color Constructor
+		_bkColor = color;
+#ifdef RASTERON_H
+		_bkInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+#endif
+	}
+    Geo_Pane(){ // Random Color Constructor
+		_bkColor = ValueGen::genRandColorVal();
+#ifdef RASTERON_H
+		_bkInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+#endif
+	}
     ~Geo_Pane(){
 #ifdef RASTERON_H
-        if(_background != nullptr) deleteImg(_background);
+        if(_bkInternal != nullptr) deleteImg(_bkInternal);
 #endif
     }
 
 	unsigned getColor() { return _bkColor; }
 #ifdef RASTERON_H
-	void setImageBk(Rasteron_Image* image) {
-		if (_background != nullptr) deleteImg(_background); // previous image needs to be erased for override
-		_background = image;
-		if(std::string(image->name) == "blank")  _bkColor = *(image->data); // sets background color if image is solid
-		else _bkColor = PANE_BK_COLOR; // resets back to default
+	void selectBk(const Rasteron_Image* image) { _bkSelection = image; }
+	const Rasteron_Image* getBackground() {
+		return (_bkSelection == nullptr)? _bkInternal : _bkSelection; 
 	}
-	Rasteron_Image* getBackground() { return _background; }
 #endif
 private:
     unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
-    Rasteron_Image* _background = nullptr; // background image available if Rasteron is supported
+    Rasteron_Image* _bkInternal = nullptr; // default background managed internally
+	const Rasteron_Image* _bkSelection = nullptr; // selected background managed externally
 #endif
 };
 
@@ -70,7 +79,7 @@ private:
 	void init(unsigned rows, unsigned columns); // creates panes and replaces all render objects
     void fill(Topl_Scene* scene) override;
 
-    Geo_Pane _rootPane = Geo_Pane(); // root
+    Geo_Pane _rootPane = Geo_Pane(PANE_BK_COLOR); // root
 	std::vector<Geo_Pane> _panes; // children
 	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_ROOT_Z);
 	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_CHILD_Z);

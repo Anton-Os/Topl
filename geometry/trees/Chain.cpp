@@ -23,4 +23,5 @@ void Geo_Chain::fill(Topl_Scene* scene){
 
         prevActor = actor; // moves previous link up the chain
     }
+
 }

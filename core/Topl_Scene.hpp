@@ -1,9 +1,7 @@
 // More Complex types
 #ifndef TOPL_SCENE_H
 
-#include <vector>
 #include <map>
-#include <string>
 
 #include "support_def.h"
 
@@ -11,6 +9,10 @@
 #include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
+
+#ifdef RASTERON_H
+#include "Topl_Image.h"
+#endif
 
 typedef const Geo_Actor* const actor_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
@@ -32,27 +34,6 @@ struct Topl_Light {
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety
 
-#ifdef RASTERON_H
-#define MAX_TEXTURES_PER_ACTOR 12 // corresponds to MAX_TEXTURES_PER_TARGET in Topl_Renderer.hpp
-#define ANIM_BACKGROUND 0xFFEEEEEE // overrides macro set inside Rasterons Animation.h to change background
-
-struct Topl_MultiTex { // object for working with multiple textures, wraps around Rasteron_Animation
-	Topl_MultiTex(std::string prefix, unsigned height, unsigned width){
-		animation = allocNewAnim(prefix.c_str(), height, width, MAX_TEXTURES_PER_ACTOR);
-	}
-	Topl_MultiTex(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
-		animation = allocNewAnim(prefix.c_str(), height, width, frameCount);
-	}
-	~Topl_MultiTex(){ deleteAnim(animation); }
-	
-	void addFrame(const Rasteron_Image *const refImg);
-	Rasteron_Image* getFrameAt(unsigned index) const { return getFrame(animation, index); };
-
-	Rasteron_Animation* animation;
-	unsigned frameIndex = 0;
-	bool isOverride = false; // switch to true when images begin to override one another
-};
-#endif
 
 class Topl_Camera {
 public:
@@ -82,7 +63,7 @@ typedef const Topl_Camera* const camera_cptr;
 class Topl_Scene {
 public:
 	Topl_Scene() {
-		_physTicker.reset(); // Resets timer for dynamic scene manager operations
+		_physTicker.reset(); // resets timer for dynamic scene manager operations
 	}
 	~Topl_Scene() {}
 
@@ -91,7 +72,7 @@ public:
 	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
-	void addMultiTex(const std::string& name, const Topl_MultiTex* multiTex);
+	void addMaterial(const std::string& name, const Topl_Material* material);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
@@ -101,8 +82,8 @@ public:
 #ifdef RASTERON_H
 	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
-	unsigned getMultiTexCount() const { return _actorMultiTex_map.size(); }
-	const Rasteron_Image* getTexture(const std::string& name, unsigned frameIndex) const;
+	unsigned getMaterialCount() const { return _actorMaterial_map.size(); }
+	const Rasteron_Image* getTexture(const std::string& name, MATERIAL_Property property) const;
 #endif
 
 	// Scene Physics
@@ -120,7 +101,8 @@ private:
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture
-	std::map<Geo_Actor*, const Topl_MultiTex*> _actorMultiTex_map; // associates geometry actor to multiple textures
+	std::map<Geo_Actor*, const Topl_Image*> __actorTex_map; // associates geometry actor to a single texture
+	std::map<Geo_Actor*, const Topl_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
 #endif
 
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries

@@ -29,16 +29,14 @@ void Geo_PaneLayout::init(unsigned rows, unsigned columns) {
 	_rows = rows;
 	_columns = columns;
 
+	// Modifying Root Pane RenderObj
 	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_Y);
 	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_X);
-	Rasteron_Image* rootBk = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _rootPane.getColor()); // white solid background
-	_rootPane.setImageBk(rootBk);
 
+	// Modifying Child Panes RenderObj
 	_panes.resize(getActorCount() - 1);
 	_childSquare.modify(stretchTform, ((_radius * 2) / _rows) - _border, AXIS_Y);
 	_childSquare.modify(stretchTform, ((_radius * 2) / _columns) - _border, AXIS_X);
-	for (std::vector<Geo_Pane>::iterator currentPane = _panes.begin(); currentPane < _panes.end(); currentPane++)
-		currentPane->setImageBk(createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, ValueGen::genRandColorVal())); // random background
 }
 
 void Geo_PaneLayout::fill(Topl_Scene* scene) {

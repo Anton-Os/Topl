@@ -1,11 +1,5 @@
 #include "Geo_Tree.hpp"
 
-/* struct Geo_Grid_CellIndex{
-	unsigned xOffset;
-	unsigned yOffset;
-	unsigned zOffset;
-}; */
-
 struct Geo_Grid_Properties {
 	Geo_Grid_Properties() {}
 	Geo_Grid_Properties(std::pair<unsigned short, float> attribs) { // Uniform sides constructor
@@ -35,9 +29,9 @@ struct Geo_Grid_Properties {
 		return xAttr.first * yAttr.first * zAttr.first;
 	}
 
-	std::pair<unsigned short, float> xAttr; // unit count and spacing along x axis
-	std::pair<unsigned short, float> yAttr; // unit count and spacing along y axis
-	std::pair<unsigned short, float> zAttr; // unit count and spacing along z axis
+	std::pair<unsigned short, float> xAttr; // x axis count and distance
+	std::pair<unsigned short, float> yAttr; // y axis count and distance
+	std::pair<unsigned short, float> zAttr; // z axis count and distance
 };
 
 class Geo_Grid : public Geo_Tree, public Geo_DynamicSet {
@@ -64,6 +58,5 @@ private:
     void fill(Topl_Scene* scene) override;
 	
 	Eigen::Vector3f origin; // determines starting position for geometry
-	// std::vector<Geo_Grid_CellIndex> blocks; // blocked cells are not rendered to screen 
     Geo_Grid_Properties properties;
 };
