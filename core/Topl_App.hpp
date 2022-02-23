@@ -32,5 +32,8 @@ struct Topl_App {
 	Renderer* _renderer;
     Platform* _platform = nullptr;
 
+    Topl_Ticker _ticker;
     std::vector<Topl_Scene> _scenes;
+    std::vector<Topl_Light> _lights;
+    std::vector<Topl_Camera> _cameras;
 };

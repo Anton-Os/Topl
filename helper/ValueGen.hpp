@@ -16,14 +16,9 @@ enum PROJECTION_Type {
 
 struct SpatialBounds3D { // Used in Matrix calculations
     SpatialBounds3D(){}
-    SpatialBounds3D(float scaleFactor){
-        left *= scaleFactor;
-        right *= scaleFactor;
-        bottom *= scaleFactor;
-        top *= scaleFactor;
-        nearPlane *= scaleFactor;
-        farPlane *= scaleFactor;
-    }
+    SpatialBounds3D(float scaleFactor);
+    SpatialBounds3D(float l, float r, float b, float t, float n, float f);
+    
     float left = -1.0f;
     float right = 1.0f;
     float bottom = -1.0f;

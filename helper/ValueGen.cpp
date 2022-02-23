@@ -1,5 +1,23 @@
 #include "ValueGen.hpp"
 
+SpatialBounds3D::SpatialBounds3D(float scaleFactor){
+    left *= scaleFactor;
+    right *= scaleFactor;
+    bottom *= scaleFactor;
+    top *= scaleFactor;
+    nearPlane *= scaleFactor;
+    farPlane *= scaleFactor;
+}
+
+SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, float f){
+    float left = l;
+    float right = r;
+    float bottom = b;
+    float top = t;
+    float nearPlane = n;
+    float farPlane = f;
+}
+
 Eigen::Matrix4f ValueGen::genPerspectiveMatrix(SpatialBounds3D bounds){
     Eigen::Matrix4f projMatrix;
     projMatrix << // From OpenGL SuperBible starting page 86

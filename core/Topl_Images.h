@@ -4,7 +4,7 @@
 
 #define ANIM_BACKGROUND 0xFFEEEEEE // overrides macro set inside Rasterons Frames.h to change background
 
-struct Topl_Image { // wrapper around Rasteron_Image
+/* struct Topl_Image { // wrapper around Rasteron_Image
     Topl_Image(const Rasteron_Image* refImg){
         image = allocNewImg(refImg->name, refImg->height, refImg->width);
         for(unsigned p = 0; p < refImg->height * refImg->width; p++)
@@ -13,7 +13,7 @@ struct Topl_Image { // wrapper around Rasteron_Image
     ~Topl_Image(){ deleteImg(image); }
 private:
     Rasteron_Image* image; // underlying data
-};
+}; */
 
 struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Frames
 	Topl_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){

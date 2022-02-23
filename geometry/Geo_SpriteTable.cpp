@@ -1,71 +1,78 @@
 #include "Geo_SpriteTable.hpp"
 
-Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths){
-    init(filePaths);
-    // Topl specific object loading
-    for(unsigned offset = 0; offset < _spriteCount; offset++){
-        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_rastSprites + offset);
-        *(_squares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
-        _spriteSquares.push_back(std::make_pair(currentSprite, *(_squares + offset)));
-        if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
-            float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
-            stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTform, stretchFactorX, AXIS_X);
-            float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
-            stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTform, stretchFactorY, AXIS_Y);
-        }
+static float getSpriteWidth(const Rasteron_Sprite* sprite) {
+	return sprite->bounds.topRight_point[X_OFFSET] * 2;
+}
+static float getSpriteHeight(const Rasteron_Sprite* sprite) {
+	return sprite->bounds.topRight_point[Y_OFFSET] * 2;
+}
+
+static float stretchTform(float input, double mod){ return input * mod; }
+
+static void resizeSquare(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
+    float width = sprite->bounds.topRight_point[X_OFFSET] * 2;
+    float height = sprite->bounds.topRight_point[Y_OFFSET] * 2;
+
+    if (width != height) { // no stretch required for matchin width and height
+        float stretchX = width / height; // get ratio between width and height
+        stretchX += (stretchX < 1.0f) ? (1.0f - stretchX) / 2 : -1 * ((stretchX - 1.0f) / 2); // halve the stretch amount
+        square->modify(stretchTform, stretchX, AXIS_X);
+        
+        float stretchY = height / width; // get ratio between height and width
+        stretchY += (stretchY < 1.0f) ? (1.0f - stretchY) / 2 : -1 * ((stretchY - 1.0f) / 2); // halve the stretch amount
+        square->modify(stretchTform, stretchY, AXIS_Y);
     }
 }
 
-Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, float scaleFactor){
+Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths){
     init(filePaths);
-    // Topl specific object loading
+
     for(unsigned offset = 0; offset < _spriteCount; offset++){
-        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_rastSprites + offset);
-        *(_squares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scaleFactor);
-        _spriteSquares.push_back(std::make_pair(currentSprite, *(_squares + offset)));
-        if (getSpriteWidth(currentSprite) != getSpriteHeight(currentSprite)) { // render object stretching
-            float stretchFactorX = getSpriteWidth(currentSprite) / getSpriteHeight(currentSprite); // get ratio between width and height
-            stretchFactorX += (stretchFactorX < 1.0f) ? (1.0f - stretchFactorX) / 2 : -1 * ((stretchFactorX - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTform, stretchFactorX, AXIS_X);
-            float stretchFactorY = getSpriteHeight(currentSprite) / getSpriteWidth(currentSprite); // get ratio between height and width
-            stretchFactorY += (stretchFactorY < 1.0f) ? (1.0f - stretchFactorY) / 2 : -1 * ((stretchFactorY - 1.0f) / 2); // halve the stretch amount
-            _spriteSquares.back().second->modify(stretchTform, stretchFactorY, AXIS_Y);
-        }
+        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_sprites + offset);
+        *(_squares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
+        Geo_FlatSquare* currentSquare = *(_squares + offset);
+        
+        resizeSquare(currentSprite, currentSquare);
+    }
+}
+
+Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, float scale){
+    init(filePaths);
+    
+    for(unsigned offset = 0; offset < _spriteCount; offset++){
+        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_sprites + offset);
+        *(_squares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scale);
+        Geo_FlatSquare* currentSquare = *(_squares + offset);
+        
+        resizeSquare(currentSprite, currentSquare);
     }
 }
 
 Geo_SpriteTable::~Geo_SpriteTable(){
-        for(unsigned i = 0; i < _spriteCount; i++)
-            deleteImg(*(_images + i)); // free all Rasteron specific raw images
-        if(_images != nullptr) free(_images); // free allocated space
+        for(unsigned i = 0; i < _spriteCount; i++) deleteImg(*(_images + i));
+        if(_images != nullptr) free(_images);
 
-        for(unsigned i = 0; i < _spriteCount; i++)
-            deleteSprite(*(_rastSprites + i)); // free all Rasteron specific sprite objects
-        if(_rastSprites != nullptr) free(_rastSprites); // free allocated space
+        for(unsigned i = 0; i < _spriteCount; i++) deleteSprite(*(_sprites + i));
+        if(_sprites != nullptr) free(_sprites);
 
-		for(unsigned i = 0; i < _spriteCount; i++) // delete Topl Flat Shapes
-			delete(*(_squares + i));
-		if(_squares != nullptr) free(_squares);  // free allocated space
+		for(unsigned i = 0; i < _spriteCount; i++) delete(*(_squares + i));
+		if(_squares != nullptr) free(_squares);
 }
 
 void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
     _spriteCount = filePaths.size();
 
-    _squares = (Geo_FlatSquare**)malloc(_spriteCount * sizeof(Geo_FlatSquare*));
     _images = (Rasteron_Image**)malloc(_spriteCount * sizeof(Rasteron_Image*));
-    _rastSprites = (Rasteron_Sprite**)malloc(_spriteCount * sizeof(Rasteron_Sprite*));
+    _sprites = (Rasteron_Sprite**)malloc(_spriteCount * sizeof(Rasteron_Sprite*));
+    _squares = (Geo_FlatSquare**)malloc(_spriteCount * sizeof(Geo_FlatSquare*));
 
     unsigned offset = 0;
     for (std::initializer_list<std::string>::iterator currentFileName = filePaths.begin(); currentFileName < filePaths.end(); currentFileName++) {
 		std::string newFileName = *currentFileName;
-		std::replace(newFileName.begin(), newFileName.end(), '/', '\\');
+		std::replace(newFileName.begin(), newFileName.end(), '/', '\\'); // filepath fix
 
-        // loadFileImage(newFileName.c_str(), &(*(_fileImages + offset)));
-		*(_images + offset) = nullptr;
         *(_images + offset) = createImgRef(newFileName.c_str());
-        *(_rastSprites + offset) = createSprite(*(_images + offset));
+        *(_sprites + offset) = createSprite(*(_images + offset));
         
         offset++;
     }

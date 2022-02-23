@@ -11,7 +11,7 @@
 #include "Geo_Actor.hpp"
 
 #ifdef RASTERON_H
-#include "Topl_Image.h"
+#include "Topl_Images.h"
 #endif
 
 typedef const Geo_Actor* const actor_cptr;
@@ -101,7 +101,7 @@ private:
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture
-	std::map<Geo_Actor*, const Topl_Image*> __actorTex_map; // associates geometry actor to a single texture
+	// std::map<Geo_Actor*, const Topl_Image*> __actorTex_map; // associates geometry actor to a single texture
 	std::map<Geo_Actor*, const Topl_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
 #endif
 
