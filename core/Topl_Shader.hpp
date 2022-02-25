@@ -11,9 +11,6 @@
 #include "Geo_Actor.hpp"
 #include "Topl_Scene.hpp"
 
-typedef std::vector<uint8_t> blockBytes_t; // format used for passing data to shaders
-typedef const uint8_t* bytes_cptr;
-
 enum SHDR_Type {
     SHDR_Vertex,
     SHDR_Fragment,

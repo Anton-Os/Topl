@@ -27,25 +27,27 @@ struct SpatialBounds3D { // Used in Matrix calculations
     float farPlane = 1.0f;
 };
 
-struct ValueGen {
-    ValueGen(){ srand(time(NULL)); } // random value seeder
+typedef std::vector<uint8_t> blockBytes_t; // format used for passing data to shaders
+typedef const uint8_t* bytes_cptr;
 
-    static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
-    static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
-    static unsigned genRandColorVal();
-    static float genRandFloat(){ return genRandFloat(0.0, 1.0); }
-    static float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
-    static float getVecLength(const Eigen::Vector2f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2)); }
-    static float getVecLength(const Eigen::Vector3f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2)); }
-    static Eigen::Vector2f genRandVec2(){ return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
-    static Eigen::Vector3f genRandVec3(){ return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
-    static Eigen::Vector4f genRandVec4(){ return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
+// Memory Operations
 
-    static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes); // default padding
-    static void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes); // custom padding
-    static void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes);
-    // void assignDataToBytes(void* dataPtr, std::vector<uint8_t>* bytes);
-};
+void assignDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes);
+void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes); // default padding
+void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize, blockBytes_t* targetBytes); // custom padding
+
+// Mathematic Operations
+
+Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
+Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
+unsigned genRandColor();
+float genRandFloat(); // { return genRandFloat(0.0, 1.0); }
+float genRandFloat(float min, float max); // { return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
+float getVecLength(const Eigen::Vector2f& vec); // { return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2)); }
+float getVecLength(const Eigen::Vector3f& vec); // { return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2)); }
+Eigen::Vector2f genRandVec2(); // { return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
+Eigen::Vector3f genRandVec3(); // { return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
+Eigen::Vector4f genRandVec4(); // { return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
 
 #define VALUEGEN_H
 #endif

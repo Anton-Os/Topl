@@ -58,7 +58,7 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 
 		// Compute the length of the distance between both vectors
 		Eigen::Vector3f posDiff = *pos1 - *pos2;
-		connector->length = ValueGen::getVecLength(posDiff);
+		connector->length = getVecLength(posDiff);
 		// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
 		connector->restLength = connector->length;
 		// Compute the center point which needs to be updated in the resolvePhysics() method
@@ -116,7 +116,7 @@ void Topl_Scene::resolvePhysics() {
 		const Geo_Actor* linkItem2 = link->linkedItems.second;
 
 		Eigen::Vector3f linkDiff = *(linkItem1->getPos()) - *(linkItem2->getPos());
-		connector->length = ValueGen::getVecLength(linkDiff);
+		connector->length = getVecLength(linkDiff);
 		connector->centerPoint = (*linkItem1->getPos() + *linkItem2->getPos()) / 2;
 		connector->angle_NVec1 = *linkItem1->getPos() - connector->centerPoint;
 		connector->angle_NVec1.normalize();

@@ -20,7 +20,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 
 		bytes_cptr renderId_bytes = reinterpret_cast<bytes_cptr>(&renderId);
 
-		ValueGen::appendDataToBytes(renderId_bytes, sizeof(unsigned), bytes);
+		appendDataToBytes(renderId_bytes, sizeof(unsigned), bytes);
 		return true;
 	}
 
@@ -31,8 +31,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(screenRes.data());
 		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(cursorPos.data());
 
-		ValueGen::appendDataToBytes(screenRes_bytes, screenRes.size() * sizeof(int), 0, bytes);
-		ValueGen::appendDataToBytes(cursorPos_bytes, cursorPos.size() * sizeof(float), 0, bytes);
+		appendDataToBytes(screenRes_bytes, screenRes.size() * sizeof(int), 0, bytes);
+		appendDataToBytes(cursorPos_bytes, cursorPos.size() * sizeof(float), 0, bytes);
 		return true;
 	}
 protected:

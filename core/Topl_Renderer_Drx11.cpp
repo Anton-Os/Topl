@@ -271,8 +271,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	// const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
+	const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	// const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
     _deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
@@ -291,18 +291,18 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	unsigned inputElementOffset = 0;
 	for(unsigned i = 0; i < _entryShader->getInputCount(); i++){
 		*(layout_ptr + i) = _Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += _Drx11::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
+inputElementOffset += _Drx11::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
 	}
-    UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
+	UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
 
-    _device->CreateInputLayout(
-        layout_ptr, layoutElemCount,
-        // _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
+	_device->CreateInputLayout(
+		layout_ptr, layoutElemCount,
+		// _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
 		_pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
-        &_vertexDataLayout
-    );
+		&_vertexDataLayout
+	);
 
-    _deviceCtx->IASetInputLayout(_vertexDataLayout);
+	_deviceCtx->IASetInputLayout(_vertexDataLayout);
 
 	free(layout_ptr); // deallocating layout_ptr and all associated data
 
@@ -312,11 +312,11 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_renderCtx_Drx11.buffers.push_back(Buffer_Drx11(_renderCtx_Drx11.sceneBlockBuff));
 	}
 
-	for(unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
 		actor_cptr actor = scene->getGeoActor(rID - 1); // IDs begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
-		
+
 		vertex_cptr actor_vData = actor_renderObj->getVertices();
 		ui_cptr actor_iData = actor_renderObj->getIndices();
 
@@ -333,7 +333,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
 			_isSceneReady = _Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
 			_renderCtx_Drx11.buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
-		} else _renderCtx_Drx11.buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
+		}
+		else _renderCtx_Drx11.buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
@@ -342,7 +343,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_renderCtx_Drx11.buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;
 
-		if(!_isSceneReady) return;
+		if (!_isSceneReady) return;
 		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
 
@@ -351,31 +352,53 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 #ifdef RASTERON_H
 
-Rasteron_Image* Topl_Renderer_Drx11::frame(){
+Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	HRESULT result;
 
 	ID3D11Texture2D* surface;
 	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&surface));
-	
+	/* ID3D11Resource* surfaceRes;
+	_rtView->GetResource(&surfaceRes); */
+
 	D3D11_TEXTURE2D_DESC framebuffDesc;
 	surface->GetDesc(&framebuffDesc);
 	framebuffDesc.BindFlags = 0;
 	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 	framebuffDesc.Usage = D3D11_USAGE_STAGING;
+	/* ZeroMemory(&framebuffDesc, sizeof(framebuffDesc));
+	framebuffDesc.ArraySize = 1;
+	framebuffDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	framebuffDesc.Height = TOPL_WIN_HEIGHT;
+	framebuffDesc.Width = TOPL_WIN_WIDTH;
+	framebuffDesc.MipLevels = 1;
+	framebuffDesc.SampleDesc.Count = 1;
+	framebuffDesc.SampleDesc.Quality = 0;
+	framebuffDesc.BindFlags = 0;
+	framebuffDesc.CPUAccessFlags = 0;
+	framebuffDesc.Usage = D3D11_USAGE_DEFAULT; */
 
-	ID3D11Texture2D* framebuffTex;
+	ID3D11Texture2D* framebuffTex = NULL;
 	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
 
 	// Copying and Mapping
 
 	_deviceCtx->CopyResource(framebuffTex, surface);
+	// _deviceCtx->ResolveSubresource(framebuffTex, 0, surface, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+	// _deviceCtx->CopyResource(framebuffTex, surfaceRes);
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
 	const unsigned int* sourcePix = static_cast<const unsigned int*>(resource.pData);
 
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	memcpy(image->data, sourcePix, TOPL_WIN_HEIGHT * TOPL_WIN_WIDTH * 4);
+	for (unsigned h = 0; h < TOPL_WIN_HEIGHT; h++) {
+	// for (unsigned h = 0; h < 6; h++) { // for testing
+		for (unsigned w = 0; w < TOPL_WIN_WIDTH; w++) {
+			unsigned dstOffset = (h * TOPL_WIN_WIDTH) + w;
+			unsigned srcOffset = (h * TOPL_WIN_WIDTH) + (w >> 8);
+			*(image->data + dstOffset) = *(sourcePix + srcOffset);
+		}
+	}
 
 	return image;
 }

@@ -13,11 +13,27 @@ enum APP_Backend {
     // Add Vulkan Support
 };
 
-struct Topl_App {
-    Topl_App(APP_Backend backend) : _backend(backend) {
-        // implement constructor body
+class Topl_App {
+public:
+    Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
+		_platform = new Platform(execPath, name);
+		int test = 1;
     }
+	~Topl_App() {
+		delete(_platform);
+	}
 
+	void run() {
+		init();
+
+		while (1) { 
+			_ticker.updateTimer();
+			loop();
+			_platform->handleEvents(false); // TODO: handle cursor updates periodically
+		}
+	}
+
+protected:
     virtual void init() = 0;
     virtual void loop() = 0;
 
@@ -32,7 +48,7 @@ struct Topl_App {
 	Renderer* _renderer;
     Platform* _platform = nullptr;
 
-    Topl_Ticker _ticker;
+    Timer_Ticker _ticker;
     std::vector<Topl_Scene> _scenes;
     std::vector<Topl_Light> _lights;
     std::vector<Topl_Camera> _cameras;

@@ -19,7 +19,7 @@ public:
 #endif
 	}
     Geo_Pane(){ // Random Color Constructor
-		_bkColor = ValueGen::genRandColorVal();
+		_bkColor = genRandColorVal();
 #ifdef RASTERON_H
 		_bkInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
 #endif

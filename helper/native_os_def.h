@@ -2,8 +2,6 @@
 
 #define TOPL_WIN_HEIGHT 1400
 #define TOPL_WIN_WIDTH 1400
-#define TOPL_WIN_MAX_COUNT 5
-#define TOPL_WIN_MAX_CHILDREN 4
 
 #include "support_def.h"
 
@@ -19,7 +17,7 @@
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
         NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
-		NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN];
+		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN];
         NATIVE_GL_CONTEXT GL_ctx;
         HDC windowDevice_Ctx;
         POINT cursorPos;

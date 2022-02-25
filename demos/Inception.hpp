@@ -1,7 +1,8 @@
 #include "Topl_App.hpp"
 
 struct Inception_App : public Topl_App {
-    Inception_App(APP_Backend b) : Topl_App(b){}
+    Inception_App(const char* execPath, APP_Backend b) 
+		: Topl_App(execPath, "Inception", b){}
 
     void init() override {
         return;

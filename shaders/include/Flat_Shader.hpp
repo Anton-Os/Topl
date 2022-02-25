@@ -20,9 +20,9 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
 		bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(color.data());
 	
-		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(color_bytes, color.size() * sizeof(float), bytes);
+		appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
+		appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		appendDataToBytes(color_bytes, color.size() * sizeof(float), bytes);
 		
 		return true;
 	}
@@ -32,9 +32,9 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		bytes_cptr cameraRot_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos()->data());
 		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
 
-		ValueGen::appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
+		appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
+		appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
+		appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };

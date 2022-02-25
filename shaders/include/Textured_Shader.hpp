@@ -18,14 +18,14 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
 		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
 	
-		ValueGen::appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
-		ValueGen::appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
+		appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
-		ValueGen::assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
+		assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 		return true;
 	}
 };
