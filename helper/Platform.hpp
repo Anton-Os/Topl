@@ -8,6 +8,8 @@
 
 struct Platform {
     Platform(const char* execPath, const char* winName){
+        _ticker.reset();
+
         _execPath = execPath;
 		_winName = winName;
         resetCursor();
@@ -35,8 +37,11 @@ private:
 	const char* _execPath; // full path to executable
 	const char* _winName; // parent window display name
     // static bool isCursorInClient; // internally tracks if cursor is in client space
-    static float xCursorPos; // internally tracks cursor position along x axis of window
-    static float yCursorPos; // internally tracks cursor position along y axis of window
+    static float xCursorPos; // internally tracks cursor position along x axis
+    static float yCursorPos; // internally tracks cursor position along y axis
+
+    static double _eventTstamp; // tracks speed of event
+    Timer_Ticker _ticker; // used for internal updates
 };
 
 #define TOPL_PLATFORM_H

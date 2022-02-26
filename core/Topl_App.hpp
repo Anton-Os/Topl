@@ -19,10 +19,17 @@ public:
 		_platform = new Platform(execPath, name);
 		_platform->createWindow();
 
+		// _renderer = new Renderer->GL4();
 		srand(time(NULL)); // seed random number generation
+#ifdef RASTERON_H
+		initFreeType(&Topl::freetypeLib);
+#endif
     }
 	~Topl_App() {
 		delete(_platform);
+#ifdef RASTERON_H
+		cleanupFreeType(&Topl::freetypeLib);
+#endif
 	}
 
 	void run() {
@@ -47,11 +54,14 @@ protected:
 	};
     const enum APP_Backend _backend;
     
-	Renderer* _renderer;
+	Renderer* _renderer = nullptr;
     Platform* _platform = nullptr;
 
     Timer_Ticker _ticker;
     std::vector<Topl_Scene> _scenes;
     std::vector<Topl_Light> _lights;
     std::vector<Topl_Camera> _cameras;
+#ifdef RASTERON_H
+	FT_Library _freetypeLib; // required for working with fonts
+#endif
 };

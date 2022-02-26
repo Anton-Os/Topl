@@ -68,15 +68,15 @@ void buttonCallback_r(void) {
 
 void actionCallback() {
 	// adding movements for testing
-	Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 30.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -30.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(10.0f * MOVE_SCALE, 0.0f, 0.0f));
-	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-10.0f * MOVE_SCALE, 0.0f, 0.0f));
+	Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(MOVE_SCALE, 0.0f, 0.0f));
+	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f));
 
-	Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_body", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_rightLeg", Eigen::Vector3f(-4.0f, 8.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_leftLeg", Eigen::Vector3f(4.0f, -8.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("angel_body", Eigen::Vector3f(0.0f, MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("angel_rightLeg", Eigen::Vector3f(-2.0f, 4.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f));
 }
 
 // Shared functions

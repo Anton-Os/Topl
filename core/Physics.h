@@ -1,8 +1,4 @@
-#include <cstdlib>
-#include <cmath>
-#include <vector>
-
-#include <Eigen/Dense>
+#include "ValueGen.hpp"
 
 #define MOTION_NO_CURVE 0.0f // curve has no alterations
 #define MOTION_IN_CURVE 1.0f // curve is x2 towards center and 1/2 away (convergance)
@@ -11,8 +7,7 @@
 enum MOTION_Type {
 	MOTION_Instant,
 	MOTION_Linear,
-	// MOTION_Smooth,
-	MOTION_Pivot,
+	MOTION_Orbit,
 };
 
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
@@ -44,8 +39,7 @@ public:
 		switch (type) {
 		case MOTION_Instant: return (seqProgFrac <= 0.5f)? startPos : endPos;
 		case MOTION_Linear : return getLinear(startPos, endPos, seqProgFrac);
-		// case MOTION_Smooth: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement smooth motion!
-		case MOTION_Pivot: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
+		case MOTION_Orbit: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
 		}
     }
     void setCurve(double c){ curve = c; }
@@ -79,7 +73,8 @@ private:
 #define PHYS_DEFAULT_K 1000.0 // K value by default
 #define PHYS_ROD_K 1000000.0 // K value for rod connector
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
-#define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
+// #define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
+#define CONNECTOR_ANGLE_PRESET Eigen::Vector3f(0.0f, 1.0f, 0.0);
 #define CONNECTOR_ANGLE_SCALE 20
 #define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
 
@@ -106,14 +101,26 @@ struct Phys_Connector {
         restLength = l;
         kVal = (type != CONNECT_Rod)? k : PHYS_ROD_K;
     }
+
+    void preset(const Eigen::Vector3f& pos1, const Eigen::Vector3f& pos2){ // presets the connector values given positions
+        Eigen::Vector3f diffVec = pos1 - pos2;
+        length = getVecLength(diffVec); // presets length between points
+        restLength = length; // rest length set to default length
+        centerPoint = (pos1 + pos2) / 2; // midpoint equation
+
+        restAngle_NVec1 = pos1 - centerPoint; restAngle_NVec1.normalize(); // computes the norm vector towards pos1
+        restAngle_NVec2 = pos2 - centerPoint; restAngle_NVec2.normalize(); // computes the norm vector towards pos2
+    }
     bool getIsPreset(){ // determines whether internals are correctly set
        return (length == BAD_CONNECTOR_LEN || restLength == BAD_CONNECTOR_LEN)? false : true;
     }
 
     // Updatable 
 	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
-    Eigen::Vector3f restAngle_NVec1, restAngle_NVec2; // AT REST normalized vectors pointing to 1st and 2nd links
-    Eigen::Vector3f angle_NVec1, angle_NVec2; // CURRENT normalized vectors pointing to 1st and 2nd links
+    Eigen::Vector3f restAngle_NVec1 = CONNECTOR_ANGLE_PRESET; // pos1 tries to stabilize to rest angle
+    Eigen::Vector3f restAngle_NVec2 = -1.0f * CONNECTOR_ANGLE_PRESET; // pos2 tries to stabilize to rest angle
+    Eigen::Vector3f angle_NVec1 = CONNECTOR_ANGLE_PRESET; // current angle towards pos1
+    Eigen::Vector3f angle_NVec2 = -1.0f * CONNECTOR_ANGLE_PRESET; // current angle towards pos2
 
     CONNECT_Type type = CONNECT_Spring;
     double length = BAD_CONNECTOR_LEN; // current length of the connector

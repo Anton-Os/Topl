@@ -6,7 +6,7 @@
 #include "support_def.h"
 
 #include "Timer.hpp"
-#include "ValueGen.hpp"
+#include "Physics.h"
 
 #include "Geo_Actor.hpp"
 
@@ -62,12 +62,10 @@ typedef const Topl_Camera* const camera_cptr;
 
 class Topl_Scene {
 public:
-	Topl_Scene() {
-		_physTicker.reset(); // resets timer for dynamic scene manager operations
-	}
+	Topl_Scene() { _ticker.reset(); }
 	~Topl_Scene() {}
 
-	// Scene Builder
+	// Statics Section
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add geometry and override name
 	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
@@ -87,7 +85,7 @@ public:
 	const Rasteron_Image* getTexture(const std::string& name, MATERIAL_Property property) const;
 #endif
 
-	// Scene Physics
+	// Dynamics Section
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
@@ -105,11 +103,11 @@ private:
 	// std::map<Geo_Actor*, const Topl_Image*> __actorTex_map; // associates geometry actor to a single texture
 	std::map<Geo_Actor*, const Topl_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
 #endif
-
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure
 	std::vector<LinkedItems> _linkedItems; // stores geometry connector data
-	Timer_Ticker _physTicker; // this ticker is specific to physics updates
+	
+	Timer_Ticker _ticker; // used for internal updates
 };
 
 #define TOPL_SCENE_H

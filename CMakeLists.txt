@@ -51,8 +51,8 @@ if(WIN32)
         ${helper_Src}
     	${geometry_Src}
 
-        core/Topl_Scene_Builder.cpp
-        core/Topl_Scene_Physics.cpp
+        core/Topl_Scene_Statics.cpp
+        core/Topl_Scene_Dynamics.cpp
 
         core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
@@ -116,8 +116,8 @@ add_library(GL4_ENGINE
     ${helper_Src}
     ${geometry_Src}
 
-    core/Topl_Scene_Builder.cpp
-    core/Topl_Scene_Physics.cpp
+    core/Topl_Scene_Statics.cpp
+    core/Topl_Scene_Dynamics.cpp
 
     core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp

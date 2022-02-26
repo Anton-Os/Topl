@@ -7,6 +7,12 @@ float Platform::yCursorPos = BAD_CURSOR_POS;
 
 #ifdef _WIN32
 
+static void addMousePress(enum MOUSE_Button button){
+	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+		? Platform::mouseLogger.addMousePress(button)
+		: Platform::mouseLogger.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
+}
+
 LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -20,28 +26,24 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case(WM_MOUSEMOVE):{}
 	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): {
-		if(wParam & MK_LBUTTON)
-		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
-		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down)
-		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Down, Platform::getCursorX(), Platform::getCursorY());
+		if(wParam & MK_LBUTTON){
+			addMousePress(MOUSE_LeftBtn_Down);
+		}
 	}
 	case (WM_LBUTTONUP): {
-		if(wParam & MK_LBUTTON)
-		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
-		? Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up)
-		: Platform::mouseLogger.addMousePress(MOUSE_LeftBtn_Up, Platform::getCursorX(), Platform::getCursorY()); 
+		if(wParam & MK_LBUTTON){
+			addMousePress(MOUSE_LeftBtn_Up);
+		}
 	}
 	case (WM_RBUTTONDOWN): {
-		if(wParam & MK_RBUTTON)
-		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
-		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down)
-		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Down, Platform::getCursorX(), Platform::getCursorY());
+		if(wParam & MK_RBUTTON){
+			addMousePress(MOUSE_RightBtn_Down);
+		}
 	}
 	case (WM_RBUTTONUP): { 
-		if(wParam & MK_RBUTTON)
-		(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
-		? Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up)
-		: Platform::mouseLogger.addMousePress(MOUSE_RightBtn_Up, Platform::getCursorX(), Platform::getCursorY());
+		if(wParam & MK_RBUTTON){
+			addMousePress(MOUSE_RightBtn_Up);
+		}
 	 }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);

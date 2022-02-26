@@ -2,12 +2,12 @@
 
 static void error_notFound(const std::string& objTypeStr, const std::string& name) {
 	printf("ERROR! Could not find %s object: \n", objTypeStr.c_str());
-	puts(name.c_str());
+	perror(name.c_str());
 	putchar('\n');
 }
 
 static void error_forcesExcess() {
-	puts("ERROR! Too many forces on one object!");
+	perror("ERROR! Too many forces on one object!");
 	putchar('\n');
 }
 
@@ -52,27 +52,10 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 
 	if (link2 == nullptr) return error_notFound("link geometry", name2);
 
-	if(!connector->getIsPreset()){
-		vec3f_cptr pos1 = link1->getPos();
-		vec3f_cptr pos2 = link2->getPos();
+	if(!connector->getIsPreset()) 
+		connector->preset(*link1->getPos(), *link2->getPos()); // presets link data to defaults
 
-		// Compute the length of the distance between both vectors
-		Eigen::Vector3f posDiff = *pos1 - *pos2;
-		connector->length = getVecLength(posDiff);
-		// FOR NOW make length and rest length the same value, therefore no force would act on the linked items
-		connector->restLength = connector->length;
-		// Compute the center point which needs to be updated in the resolvePhysics() method
-		connector->centerPoint = (*pos1 + *pos2) / 2;
-
-		// Compute the INITIAL NORMALIZED angle vector between the center and linked items
-		connector->restAngle_NVec1 = *pos1 - connector->centerPoint;
-		connector->restAngle_NVec1.normalize();
-		connector->restAngle_NVec2 = *pos2 - connector->centerPoint;
-		connector->restAngle_NVec2.normalize();
-	}
-
-	// Add the new linked items to the scene manager data
-	_linkedItems.push_back({connector, std::make_pair(link1, link2)});
+	_linkedItems.push_back({connector, std::make_pair(link1, link2)}); // add new link
 }
 
 void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector2f rotAnglesVec, double lengthScale) {
@@ -107,7 +90,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 
 
 void Topl_Scene::resolvePhysics() {
-	double physElapseSecs = _physTicker.getRelSecs();
+	double elapseSecs = _ticker.getRelSecs();
 
 	// Resolve connector and link forces here and general computations
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
@@ -170,12 +153,12 @@ void Topl_Scene::resolvePhysics() {
 		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // We have resolved all the forces, resetting force count
 		
 		// Velocity integrator
-		physActor->velocity += (physActor->acceleration) * physElapseSecs; // Division converts elapsed time to seconds from milliseconds
+		physActor->velocity += (physActor->acceleration) * elapseSecs; // Division converts elapsed time to seconds from milliseconds
 		// Velocity damping, to avoid infinite displacement
 		physActor->velocity *= physActor->damping;
 
 		// Position integrator
-		targetGeo->updatePos((physActor->velocity * physElapseSecs) + 0.5 * (physActor->acceleration * pow(physElapseSecs, 2))); // For now not factoring in acceleration
+		targetGeo->updatePos((physActor->velocity * elapseSecs) + 0.5 * (physActor->acceleration * pow(elapseSecs, 2))); // For now not factoring in acceleration
 
 		physActor->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
 	}
