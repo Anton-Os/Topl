@@ -7,15 +7,15 @@ public:
 		const std::string& prefix,
         std::string filePath,
         Topl_Scene* scene
-    ) : Geo_Tree(prefix, scene, &_dummyGeo, 1){
+    ) : Geo_Tree(prefix, &_dummyGeo, 1){
         _filePath = filePath;
 
-        fill(scene);
+        init(scene);
     }
     ~Geo_Model(); 
-private:
-    void fill(Topl_Scene* scene) override;
 
+    void init(Topl_Scene* scene) override;
+private:
     static Geo_Node _dummyGeo;
     std::string _filePath; // nodes are read from file
 

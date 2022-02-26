@@ -17,7 +17,9 @@ class Topl_App {
 public:
     Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
 		_platform = new Platform(execPath, name);
-		int test = 1;
+		_platform->createWindow();
+
+		srand(time(NULL)); // seed random number generation
     }
 	~Topl_App() {
 		delete(_platform);

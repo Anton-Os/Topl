@@ -4,7 +4,25 @@ namespace _Grid {
     std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
 }
 
-void Geo_Grid::fill(Topl_Scene* scene){
+Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair attribs){
+    xAttr = attribs; yAttr = attribs; zAttr = attribs;
+    setNonZeroUnits();
+}
+
+Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair xA, gridAttrib_pair yA, gridAttrib_pair zA){
+    xAttr = xA; yAttr = yA; zAttr = zA;
+    setNonZeroUnits();
+}
+
+Geo_Grid_Properties::setNonZeroUnits(){
+    if(xAttr.first == 0) xAttr.first++;
+	if(yAttr.first == 0) yAttr.first++;
+	if(zAttr.first == 0) zAttr.first++;
+}
+
+// Grid Class Code
+
+void Geo_Grid::init(Topl_Scene* scene){
     Geo_Actor* actor = nullptr;
     Eigen::Vector3f offset = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 

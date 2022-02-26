@@ -11,7 +11,6 @@ public:
 		std::pair<std::string, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // humanoid property list of sprite images and positions
 		float scaleFactor 
 	)
-		
 	: Geo_SpriteTable({
 		props[HUMANOID_Head].first,
 		props[HUMANOID_LeftArm].first,
@@ -21,7 +20,7 @@ public:
 		props[HUMANOID_RightLeg].first
 		}, scaleFactor
 	),
-	Geo_Tree(prefix, scene, {
+	Geo_Tree(prefix, {
 		(Geo_RenderObj*)getSquare(HUMANOID_Head),
 		(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
 		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),
@@ -36,7 +35,7 @@ public:
 		leftLegOffset = props[HUMANOID_LeftLeg].second;
 		rightLegOffset = props[HUMANOID_RightLeg].second;
 
-		fill(scene);
+		init(scene);
 	}
 	~Geo_Humanoid() {}
 	
@@ -49,10 +48,9 @@ public:
 		HUMANOID_RightLeg = 5
 	};
 
-	void updateActor(HUMANOID_Anatomy target, Eigen::Vector3f pos, Eigen::Vector2f rot);
+	void init(Topl_Scene* scene) override;
+	// void updateActor(HUMANOID_Anatomy target, Eigen::Vector3f pos, Eigen::Vector2f rot);
 private:
-	void fill(Topl_Scene* scene) override;
-
 	// Offsets associated with each body part to positon them appropriately
 	Eigen::Vector3f headOffset, bodyOffset, rightArmOffset, leftArmOffset, rightLegOffset, leftLegOffset;
 	// Physics properties associated with each body part

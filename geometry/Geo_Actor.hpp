@@ -1,7 +1,8 @@
-#ifndef GEO_COMPONENT_H
+#ifndef GEO_ACTOR_H
 
 #include "Geometry.hpp"
-// #include "Physics.hpp"
+
+#define DEFAULT_ACTOR_NAME "actor"
 
 class Geo_Actor {
 public:
@@ -14,9 +15,7 @@ public:
 		_id = _id_count;
 		_renderObj = renderObj; 
 	}
-	~Geo_Actor() {
-		_id_count--;
-	}
+	~Geo_Actor() { _id_count--; }
 
 	void setName(const std::string& name) { _name = name; }
 	void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }
@@ -49,7 +48,7 @@ private:
 	// Identification Types
 	static unsigned _id_count; // Grows/shrinks when objects are created/deleted
 	unsigned _id; // Each object has a unique id
-	std::string _name = "_"; // Default is just an underscore
+	std::string _name = DEFAULT_ACTOR_NAME;
 
 	// Internal Types
 	Eigen::Vector3f _worldPos = Eigen::Vector3f(0.0, 0.0, 0.0); // Positions by which to offset
@@ -57,5 +56,5 @@ private:
 	const Geo_RenderObj* _renderObj = nullptr;
 };
 
-#define GEO_COMPONENT_H
+#define GEO_ACTOR_H
 #endif

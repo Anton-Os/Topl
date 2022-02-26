@@ -15,7 +15,7 @@ Geo_Model::~Geo_Model(){
 	}
 }
 
-void Geo_Model::fill(Topl_Scene* scene){
+void Geo_Model::init(Topl_Scene* scene){
 	Assimp::Importer aiImporter;
 	unsigned aiFlags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType;
 

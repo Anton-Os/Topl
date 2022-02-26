@@ -49,35 +49,36 @@ class Geo_PaneLayout : public Geo_Tree {
 public:
 	Geo_PaneLayout(
 		const std::string& prefix,
-		Topl_Scene* scene,
+		// Topl_Scene* scene,
 		unsigned rows,
 		unsigned columns
-	) : Geo_Tree(prefix, scene, &_dummyGeo, (rows * columns) + 1) {
-		init(rows, columns);
-		fill(scene);
+	) : Geo_Tree(prefix, &_dummyGeo, (rows * columns) + 1) {
+		resize(rows, columns);
+		// init(scene);
 	}
 
 	Geo_PaneLayout(
 		const std::string& prefix,
-		Topl_Scene* scene,
+		// Topl_Scene* scene,
 		unsigned rows,
 		unsigned columns,
 		float radius,
 		float border
-	) : Geo_Tree(prefix, scene, &_dummyGeo, (rows * columns) + 1) {
+	) : Geo_Tree(prefix, &_dummyGeo, (rows * columns) + 1) {
 		_radius = radius;
 		_border = border;
-		init(rows, columns);
-		fill(scene);
+		resize(rows, columns);
+		// init(scene);
 	}
 
 	Geo_Pane* getRootPane(){ return &_rootPane; }
 	Geo_Pane* getChildPane(unsigned index);
 	unsigned getRowCount(){ return _rows; }
 	unsigned getColCount(){ return _columns; }
+
+	void init(Topl_Scene* scene) override;
 private:
-	void init(unsigned rows, unsigned columns); // creates panes and replaces all render objects
-    void fill(Topl_Scene* scene) override;
+	void resize(unsigned rows, unsigned columns); // creates panes and replaces all render objects
 
     Geo_Pane _rootPane = Geo_Pane(PANE_BK_COLOR); // root
 	std::vector<Geo_Pane> _panes; // children

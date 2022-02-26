@@ -271,8 +271,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	// const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
+	// const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
     _deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
@@ -365,17 +365,6 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	framebuffDesc.BindFlags = 0;
 	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 	framebuffDesc.Usage = D3D11_USAGE_STAGING;
-	/* ZeroMemory(&framebuffDesc, sizeof(framebuffDesc));
-	framebuffDesc.ArraySize = 1;
-	framebuffDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	framebuffDesc.Height = TOPL_WIN_HEIGHT;
-	framebuffDesc.Width = TOPL_WIN_WIDTH;
-	framebuffDesc.MipLevels = 1;
-	framebuffDesc.SampleDesc.Count = 1;
-	framebuffDesc.SampleDesc.Quality = 0;
-	framebuffDesc.BindFlags = 0;
-	framebuffDesc.CPUAccessFlags = 0;
-	framebuffDesc.Usage = D3D11_USAGE_DEFAULT; */
 
 	ID3D11Texture2D* framebuffTex = NULL;
 	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
@@ -383,22 +372,24 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	// Copying and Mapping
 
 	_deviceCtx->CopyResource(framebuffTex, surface);
-	// _deviceCtx->ResolveSubresource(framebuffTex, 0, surface, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
-	// _deviceCtx->CopyResource(framebuffTex, surfaceRes);
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
-	const unsigned int* sourcePix = static_cast<const unsigned int*>(resource.pData);
+	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData);
 
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	/* unsigned dstOffset = 0; unsigned srcOffset = 0;
+	unsigned pitch = TOPL_WIN_WIDTH << 2; // for testing
 	for (unsigned h = 0; h < TOPL_WIN_HEIGHT; h++) {
-	// for (unsigned h = 0; h < 6; h++) { // for testing
 		for (unsigned w = 0; w < TOPL_WIN_WIDTH; w++) {
-			unsigned dstOffset = (h * TOPL_WIN_WIDTH) + w;
-			unsigned srcOffset = (h * TOPL_WIN_WIDTH) + (w >> 8);
-			*(image->data + dstOffset) = *(sourcePix + srcOffset);
+			*(image->data + dstOffset + w) = *(sourceData + srcOffset + (w >> 8));
 		}
-	}
+		// memcpy(image->data + dstOffset, sourceData + srcOffset, TOPL_WIN_WIDTH * 4);
+		srcOffset += TOPL_WIN_WIDTH;
+		dstOffset += TOPL_WIN_WIDTH;
+	} */
+	for (unsigned p = 0; p < image->width * image->height; p++)
+		*(image->data + p) = 0xFF0000FF;
 
 	return image;
 }

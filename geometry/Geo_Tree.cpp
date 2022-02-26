@@ -1,6 +1,6 @@
 #include "Geo_Tree.hpp"
 
-Geo_Tree::Geo_Tree(const std::string& prefix, Topl_Scene* scene, std::initializer_list<Geo_RenderObj*> renderObjs){
+Geo_Tree::Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs){
     _prefix = prefix;
     _actorData = (Geo_Actor**)malloc(renderObjs.size() * sizeof(Geo_Actor*));
     for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
@@ -9,7 +9,7 @@ Geo_Tree::Geo_Tree(const std::string& prefix, Topl_Scene* scene, std::initialize
     }
 }
 
-Geo_Tree::Geo_Tree(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* actor, unsigned count){
+Geo_Tree::Geo_Tree(const std::string& prefix, const Geo_Actor* actor, unsigned count){
     _prefix = prefix;
     _actorCount = count;
     _actorData = (Geo_Actor**)malloc(count * sizeof(Geo_Actor));

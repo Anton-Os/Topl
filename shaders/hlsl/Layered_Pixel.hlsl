@@ -1,7 +1,7 @@
 SamplerState baseSampler : register(s0);
 Texture2D baseTex : register(t0);
-SamplerState lineSampler : register(s1);
-Texture1D lineTex : register(t1);
+// SamplerState lineSampler : register(s1);
+// Texture1D lineTex : register(t1);
 SamplerState areaSampler : register(s2);
 Texture3D areaTex : register(t2);
 

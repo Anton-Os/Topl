@@ -9,7 +9,7 @@ static float getSpriteHeight(const Rasteron_Sprite* sprite) {
 
 static float stretchTform(float input, double mod){ return input * mod; }
 
-static void resizeSquare(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
+static void resize(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
     float width = sprite->bounds.topRight_point[X_OFFSET] * 2;
     float height = sprite->bounds.topRight_point[Y_OFFSET] * 2;
 
@@ -32,7 +32,7 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths){
         *(_squares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
         Geo_FlatSquare* currentSquare = *(_squares + offset);
         
-        resizeSquare(currentSprite, currentSquare);
+        resize(currentSprite, currentSquare);
     }
 }
 
@@ -44,7 +44,7 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, f
         *(_squares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scale);
         Geo_FlatSquare* currentSquare = *(_squares + offset);
         
-        resizeSquare(currentSprite, currentSquare);
+        resize(currentSprite, currentSquare);
     }
 }
 

@@ -15,7 +15,7 @@ public:
         const Geo_Actor* geo, 
         const Geo_Chain_Properties* props,
         unsigned count)
-    : Geo_Tree(prefix, scene, geo, count),
+    : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
 		properties = *props;
         origin = Eigen::Vector3f(
@@ -24,11 +24,11 @@ public:
             (-1.0 * props->directionVec.z() * count) / 2
         );
 
-        fill(scene);
+        init(scene);
     }
-private:
-    void fill(Topl_Scene* scene) override;
 
+    void init(Topl_Scene* scene) override;
+private:
     Eigen::Vector3f origin; // determines starting position for geometry
     Geo_Chain_Properties properties;
 };

@@ -1,37 +1,22 @@
 #include "Geo_Tree.hpp"
 
+typedef std::pair<unsigned short, float> gridAttrib_pair;
+
 struct Geo_Grid_Properties {
 	Geo_Grid_Properties() {}
-	Geo_Grid_Properties(std::pair<unsigned short, float> attribs) { // Uniform sides constructor
-		xAttr = attribs;
-		yAttr = attribs;
-		zAttr = attribs;
-		setNonZeroUnits();
-    }
+	Geo_Grid_Properties(gridAttrib_pair attribs); // Uniform sides constructor
 	Geo_Grid_Properties( // Variable sides constructor
-		std::pair<unsigned short, float> xa,
-		std::pair<unsigned short, float> ya,
-		std::pair<unsigned short, float> za
-	) {
-		xAttr = xa;
-		yAttr = ya;
-		zAttr = za;
-		setNonZeroUnits();
-	}
+		gridAttrib_pair xA,
+		gridAttrib_pair yA,
+		gridAttrib_pair zA
+	);
 
-	void setNonZeroUnits(){ // makes sure that all counts are set tonon-zero
-		if(xAttr.first == 0) xAttr.first++;
-		if(yAttr.first == 0) yAttr.first++;
-		if(zAttr.first == 0) zAttr.first++;
-	}
+	void setNonZeroUnits(); // makes sure that all attribute counts are set to non-zero
+	unsigned getCellCount() const { return xAttr.first * yAttr.first * zAttr.first; }
 
-	unsigned getCellCount() const {
-		return xAttr.first * yAttr.first * zAttr.first;
-	}
-
-	std::pair<unsigned short, float> xAttr; // x axis count and distance
-	std::pair<unsigned short, float> yAttr; // y axis count and distance
-	std::pair<unsigned short, float> zAttr; // z axis count and distance
+	gridAttrib_pair xAttr = std::make_pair(1, 0.0f); // x axis attributes
+	gridAttrib_pair yAttr = std::make_pair(1, 0.0f); // y axis attributes
+	gridAttrib_pair zAttr = std::make_pair(1, 0.0f); // z axis attributes
 };
 
 class Geo_Grid : public Geo_Tree, public Geo_DynamicSet {
@@ -41,7 +26,7 @@ public:
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
         const Geo_Grid_Properties* props
-	) : Geo_Tree(prefix, scene, geo, props->getCellCount()),
+	) : Geo_Tree(prefix, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
         properties = *props;
 		origin = Eigen::Vector3f(
@@ -50,13 +35,12 @@ public:
 			0.0f
 		);
 
-		fill(scene);
+		init(scene);
     }
 
 	// void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
+	void init(Topl_Scene* scene) override;
 private:
-    void fill(Topl_Scene* scene) override;
-	
 	Eigen::Vector3f origin; // determines starting position for geometry
     Geo_Grid_Properties properties;
 };

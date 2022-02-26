@@ -22,8 +22,8 @@ namespace Topl {
 	Geo_FlatCircle pickerCircle = Geo_FlatCircle(0.25f);
 	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
-	Geo_PaneLayout boxedLayout("layout1", &scene, 3, 3);
-	Geo_PaneLayout scanLayout("layout2", &scene, 12, 1, 0.25f, 0.02f);
+	Geo_PaneLayout boxedLayout("layout1", 3, 3);
+	Geo_PaneLayout scanLayout("layout2", 8, 1, 0.25f, 0.02f);
 
 	// ValueGen valueGen = ValueGen(); // seeds random number generation
 	bool isPressPend;
@@ -61,13 +61,13 @@ void genImages() {
 		Geo_Pane* pane = Topl::boxedLayout.getChildPane(p);
 		Rasteron_Image* frameImg = Topl::symbols.getFrameAt(p);
 
-		pane->selectBk(frameImg);
+		// pane->selectBk(frameImg);
 	}
 	
 	for (unsigned short p = 0; p < Topl::scanLayout.getRowCount() * Topl::scanLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::scanLayout.getChildPane(p);
 
-		pane->selectBk(Topl::textDisplayBk);
+		// pane->selectBk(Topl::textDisplayBk);
 	}
 
 	// Topl::scene.addTexture("picker", Topl::pickerBk);
@@ -96,13 +96,15 @@ namespace Main {
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
-		Topl::scanLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		Topl::scanLayout.move(Eigen::Vector3f(0.0f, 0.75f, 0.0f));
 		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
 		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
-		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
+		// Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
 
 		genImages();
+		Topl::boxedLayout.init(&Topl::scene);
+		Topl::scanLayout.init(&Topl::scene);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

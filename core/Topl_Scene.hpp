@@ -68,7 +68,8 @@ public:
 	~Topl_Scene() {}
 
 	// Scene Builder
-	void addGeometry(const std::string& name, Geo_Actor* geo);
+	void addGeometry(Geo_Actor* actor); // add geometry
+	void addGeometry(const std::string& name, Geo_Actor* actor); // add geometry and override name
 	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);

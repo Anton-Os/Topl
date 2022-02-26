@@ -25,7 +25,7 @@ Geo_Pane* Geo_PaneLayout::getChildPane(unsigned index) {
 	return &_panes.at(index);
 }
 
-void Geo_PaneLayout::init(unsigned rows, unsigned columns) {
+void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_rows = rows;
 	_columns = columns;
 
@@ -39,7 +39,7 @@ void Geo_PaneLayout::init(unsigned rows, unsigned columns) {
 	_childSquare.modify(stretchTform, ((_radius * 2) / _columns) - _border, AXIS_X);
 }
 
-void Geo_PaneLayout::fill(Topl_Scene* scene) {
+void Geo_PaneLayout::init(Topl_Scene* scene) {
 	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
 	Geo_Actor* actor = nullptr; // keeps track of child actor being processed 
 
@@ -58,7 +58,7 @@ void Geo_PaneLayout::fill(Topl_Scene* scene) {
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
-		actor->setPos(Eigen::Vector3f(origin.x() + (xInc * xOffset), origin.y() + (-1.0 * yInc * yOffset), 0.0f)); // adjust these values
+		actor->updatePos(Eigen::Vector3f(origin.x() + (xInc * xOffset), origin.y() + (-1.0 * yInc * yOffset), 0.0f)); // adjust these values
 		// actor->setRot(Eigen::Vector2f(0.1f, 0.1f)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 #ifdef RASTERON_H

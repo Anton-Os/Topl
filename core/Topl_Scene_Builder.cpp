@@ -35,9 +35,18 @@ linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
 	return &_linkedItems.at(index);
 }
 
-void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* geo) {
-	geo->setName(name);
-	_geoActors.push_back(geo);
+void Topl_Scene::addGeometry(Geo_Actor* actor) {
+	for(unsigned a = 0; a < _geoActors.size(); a ++)
+		if(_geoActors[a]->getName() == actor->getName()){
+			_geoActors[a] = actor; // overwrite geometry
+			return;
+		}
+	_geoActors.push_back(actor); // add new geometry
+}
+
+void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
+	actor->setName(name);
+	addGeometry(actor);
 }
 
 #ifdef RASTERON_H
