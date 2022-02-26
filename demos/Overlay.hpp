@@ -111,7 +111,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderAll();
+			renderer->renderScene(&Topl::scene);
 
 			if (Topl::isPressPend) {
 				unsigned pixel = getPressPixel(renderer);

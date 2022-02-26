@@ -147,9 +147,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
 #ifdef _WIN32
-	cleanup_win(&_nativeContext.window, &_nativeContext.windowDevice_Ctx, &_nativeContext.GL_ctx);
+	cleanup_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
 #elif defined(__linux__)
-	cleanup_linux(_nativeContext.display, _nativeContext.GL_ctx);
+	cleanup_linux(_platformCtx.display, _platformCtx.GL_ctx);
 #endif
 
 	for (unsigned r = 0; r < _renderCtxIndex; r++) 
@@ -159,11 +159,11 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	_nativeContext.window = hwnd;
+	_platformCtx.window = hwnd;
 #ifdef _WIN32
-    init_win(&_nativeContext.window, &_nativeContext.windowDevice_Ctx, &_nativeContext.GL_ctx);
+    init_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
 #elif defined(__linux__)
-	init_linux(_nativeContext.GL_ctx, _nativeContext.display, _nativeContext.window_ptr);
+	init_linux(_platformCtx.GL_ctx, _platformCtx.display, _platformCtx.window_ptr);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -191,15 +191,16 @@ void Topl_Renderer_GL4::clearView(){
 void Topl_Renderer_GL4::switchFramebuff(){
 	if(_isSceneDrawn)
 #ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&_nativeContext.windowDevice_Ctx);
+	swapBuffers_win(&_platformCtx.windowDevice_Ctx);
 #elif defined(__linux__)
-	swapBuffers_linux(_nativeContext.display, _nativeContext.window_ptr);
+	swapBuffers_linux(_platformCtx.display, _platformCtx.window_ptr);
 #endif
 	_isSceneDrawn = false; // awaiting another draw call
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	*(__renderCtx_GL4 + _renderCtxIndex) = new Topl_RenderContext_GL4(scene); // creation of new render context
+	Topl_RenderContext_GL4* activeCtx = *(__renderCtx_GL4 + _renderCtxIndex);
 
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// scene uniform block buffer generation
@@ -291,6 +292,11 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 }
 
 void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
+	/* Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		perror("Render Context could not be found!");
+		return;
+	} */
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Need to clear saved textures entirely for texture update
 	_renderCtx_GL4.textures.clear();
@@ -303,12 +309,12 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
-		if (baseTex != nullptr) assignTexture(baseTex, rID);
+		if (baseTex != nullptr) attachTexture(baseTex, rID);
 	}
 #endif
 }
 
-void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
+void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned id){
 	GLuint texture = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
@@ -321,11 +327,19 @@ void Topl_Renderer_GL4::assignTexture(const Rasteron_Image* image, unsigned id){
 	_renderCtx_GL4.textures.push_back(Texture_GL4(id, TEX_2D, _texMode, texture));
 }
 
-// TODO: Include support for additional formats, notably Topl_MultiTex
+void Topl_Renderer_GL4::attachMaterial(const Topl_Material* material, unsigned id) {
+	// Implement Body
+}
 
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
+	Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		perror("Render Context could not be found!");
+		return;
+	}
+
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
@@ -368,7 +382,13 @@ void Topl_Renderer_GL4::drawMode(){
 	}
 }
 
-void Topl_Renderer_GL4::render(void){
+void Topl_Renderer_GL4::render(const Topl_Scene* scene){
+	Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		perror("Render Context could not be found!");
+		return;
+	}
+
 	if (_renderCtx_GL4.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _renderCtx_GL4.buffers.front().buffer);
 
@@ -414,9 +434,3 @@ void Topl_Renderer_GL4::render(void){
 
 	_isSceneDrawn = true;
 }
-
-/* void Topl_Renderer_GL4::render(const Topl_Scene* scene){
-	Topl_RenderContext_GL4* targetRenderCtx;
-
-	render(); // call main function for now
-} */

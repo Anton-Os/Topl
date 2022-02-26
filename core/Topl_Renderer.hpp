@@ -146,10 +146,19 @@ public:
     }
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool renderScene(Topl_Scene* scene){
-		// TODO: need a method of fetching correct scene from renderContext heap
-        // draws only render objects associated with scene argument
+		if (!_isPipelineReady) perror("Pipeline not set for draw call!");
+		if (!_isSceneReady) perror("Scene not built for draw call!");
+		if (_renderIDs == 0) perror("No render targets for draw call!");
+		if (!_isPipelineReady || !_isSceneReady || _renderIDs == 0) {
+			_isSceneDrawn = false;
+			return false; // failure
+		}
+
+		render(scene);
+		_frameIDs++; // increment frame counter
+		return _isSceneDrawn; // render call sets variable to true on success
     }
-    bool renderAll(){ // draws all render objects
+    /* bool renderAll(){ // draws all render objects
         if(!_isPipelineReady) perror("Pipeline not set for draw call!");
         if(!_isSceneReady) perror("Scene not built for draw call!");
         if(_renderIDs == 0) perror("No render targets for draw call!");
@@ -158,10 +167,10 @@ public:
             return false; // failure
         }
 
-		render();
+		render(nullptr);
         _frameIDs++; // increment frame counter
 		return _isSceneDrawn; // render call sets variable to true on success
-    }
+    } */
     virtual void clearView() = 0; // clears view to predefined background color
     virtual void switchFramebuff() = 0; // switches front and back buffers
 	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
@@ -182,7 +191,7 @@ public:
 	}
 #endif
 protected:
-	NATIVE_PLATFORM_CONTEXT _nativeContext; // system specific information
+	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific variables
     // const Topl_Pipeline* _pipeline;
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
@@ -195,16 +204,17 @@ protected:
     bool _isSceneDrawn = false; // true after draw call, false after framebuffer swap
     unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
+	// TODO: Add method for fetching render context based on scene
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void drawMode() = 0;
-	virtual void render(void) = 0;
+	virtual void render(const Topl_Scene* scene) = 0;
 #ifdef RASTERON_H
-	virtual void assignTexture(const Rasteron_Image* image, unsigned id) = 0;
+	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
+	virtual void attachMaterial(const Topl_Material* material, unsigned id) = 0;
 #endif
-    // virtual void render(const Topl_Scene* scene); // updated version of render call
 };
 
 #define TOPL_RENDERER_H

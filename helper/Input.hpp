@@ -3,7 +3,7 @@
 #include <map>
 #include <cctype>
 
-#define BAD_CURSOR_POS -2.0f // indicates that cursor is off the screen
+#define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
 #define MAX_CURSOR_POS 1.0f
 #define MIN_CURSOR_POS -1.0f
 

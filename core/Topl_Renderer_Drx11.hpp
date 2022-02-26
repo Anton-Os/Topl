@@ -96,14 +96,21 @@ private:
 	void init(NATIVE_WINDOW hwnd) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
-	void render(void) override;
+	void render(const Topl_Scene* scene) override;
 #ifdef RASTERON_H
-	void assignTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachMaterial(const Topl_Material* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	Topl_DrawContext_Drx11 _renderCtx_Drx11; // replace this!!!
 	Topl_RenderContext_Drx11** __renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
+
+	Topl_RenderContext_Drx11* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
+		for (unsigned r = 0; r < _renderCtxIndex; r++)
+			if ((*(__renderCtx_Drx11 + r))->scene == scene) return *(__renderCtx_Drx11 + r);
+		return nullptr; // error
+	}
 
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;

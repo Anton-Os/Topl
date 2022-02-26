@@ -2,8 +2,11 @@
 
 Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of KeyLogger class
 Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of MouseLogger class
+
 float Platform::xCursorPos = BAD_CURSOR_POS;
 float Platform::yCursorPos = BAD_CURSOR_POS;
+
+double Platform::_tstamp = 0.0f;
 
 #ifdef _WIN32
 
@@ -11,6 +14,8 @@ static void addMousePress(enum MOUSE_Button button){
 	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(button)
 		: Platform::mouseLogger.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
+
+	// Platform::updateTimer(); // updates timer after mouse press handled
 }
 
 LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -24,27 +29,14 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
-	case (WM_CHAR): { Platform::keyLogger.addKeyPress((char)wParam); }
-	case (WM_LBUTTONDOWN): {
-		if(wParam & MK_LBUTTON){
-			addMousePress(MOUSE_LeftBtn_Down);
-		}
+	case (WM_CHAR): { 
+		Platform::keyLogger.addKeyPress((char)wParam);
+		// Platform::updateTimer(); // updates timer after key press handled
 	}
-	case (WM_LBUTTONUP): {
-		if(wParam & MK_LBUTTON){
-			addMousePress(MOUSE_LeftBtn_Up);
-		}
-	}
-	case (WM_RBUTTONDOWN): {
-		if(wParam & MK_RBUTTON){
-			addMousePress(MOUSE_RightBtn_Down);
-		}
-	}
-	case (WM_RBUTTONUP): { 
-		if(wParam & MK_RBUTTON){
-			addMousePress(MOUSE_RightBtn_Up);
-		}
-	 }
+	case (WM_LBUTTONDOWN): { if(wParam & MK_LBUTTON) addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_LBUTTONUP): { if(wParam & MK_LBUTTON) addMousePress(MOUSE_LeftBtn_Up); }
+	case (WM_RBUTTONDOWN): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Down); }
+	case (WM_RBUTTONUP): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Up); }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}

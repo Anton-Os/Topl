@@ -47,7 +47,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderAll();
+			renderer->renderScene(&Topl::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(true);

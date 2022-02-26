@@ -43,7 +43,7 @@ namespace Main {
 		while (1) {
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene);
-			renderer->renderAll();
+			renderer->renderScene(&Topl::scene);
 
 			platform->handleEvents();
 		}

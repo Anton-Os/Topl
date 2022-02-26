@@ -145,7 +145,7 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	_nativeContext.window = hwnd; // Supplying platform specific stuff
+	_platformCtx.window = hwnd; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -170,7 +170,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     // swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = _nativeContext.window; 
+	swapChainDesc.OutputWindow = _platformCtx.window; 
     swapChainDesc.Windowed = TRUE; 
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -284,6 +284,7 @@ void Topl_Renderer_Drx11::switchFramebuff(){
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	*(__renderCtx_Drx11 + _renderCtxIndex) = new Topl_RenderContext_Drx11(scene); // creation of new render context
+	Topl_RenderContext_Drx11* activeCtx = *(__renderCtx_Drx11 + _renderCtxIndex);
 
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// generating an input layout based on Vertex Shader Inputs
@@ -395,6 +396,11 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 }
 
 void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
+	/* Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		OutputDebugStringA("Render Context could not be found!");
+		return;
+	} */
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Need to clear saved textures entirely for texture update
 	for (unsigned t = 0; t < _renderCtx_Drx11.textures.size(); t++) {
@@ -410,12 +416,12 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
-		if (baseTex != nullptr) assignTexture(baseTex, rID);
+		if (baseTex != nullptr) attachTexture(baseTex, rID);
 	}
 #endif
 }
 
-void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id){
+void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned id){
 	HRESULT result; // For viewing potential issues
 
 	D3D11_SAMPLER_DESC sd;
@@ -471,9 +477,19 @@ void Topl_Renderer_Drx11::assignTexture(const Rasteron_Image* image, unsigned id
 	_renderCtx_Drx11.textures.push_back(Texture_Drx11(id, TEX_2D, _texMode, texture, sampler, resView));
 }
 
+void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned id) {
+	// Implement Body
+}
+
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
+	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		OutputDebugStringA("Render Context could not be found!");
+		return;
+	}
+
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
@@ -510,7 +526,13 @@ void Topl_Renderer_Drx11::drawMode(){
 	}
 }
 
-void Topl_Renderer_Drx11::render(void){
+void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
+	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
+	if (activeCtx == nullptr) {
+		OutputDebugStringA("Render Context could not be found!");
+		return;
+	}
+
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (_renderCtx_Drx11.buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_renderCtx_Drx11.buffers.front();
@@ -564,9 +586,3 @@ void Topl_Renderer_Drx11::render(void){
 	free(buffs);
 	_isSceneDrawn = true;
 }
-
-/* void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
-	Topl_RenderContext_Drx11* targetRenderCtx;
-
-	render(); // call main function for now
-} */

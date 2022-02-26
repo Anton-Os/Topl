@@ -8,18 +8,19 @@
 
 struct Platform {
     Platform(const char* execPath, const char* winName){
-        _ticker.reset();
-
         _execPath = execPath;
 		_winName = winName;
         resetCursor();
     }
 
     void createWindow();
-    void handleEvents(bool isCursorUpdate); // handles platform specific events, updates cursor if argument is set to true
+    void handleEvents(bool isCursorUpdate); // handles platform specific events, updates cursor position if arg true
+    /* static void updateTimer(){
+		if (_tstampMilli == 0.0f) _ticker.reset(); // first update requires timer reset
+		else _tstampMilli = _ticker.getRelMillisecs(); // updates timer and timestamp
+	} */
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
-    // static bool getIsCursorInClient(){ return isCursorInClient; }
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
 
@@ -28,7 +29,6 @@ struct Platform {
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true if within window bounds
     void resetCursor(){
-        // isCursorInClient = false;
         xCursorPos = BAD_CURSOR_POS;
 		yCursorPos = BAD_CURSOR_POS;
     }
@@ -40,7 +40,7 @@ private:
     static float xCursorPos; // internally tracks cursor position along x axis
     static float yCursorPos; // internally tracks cursor position along y axis
 
-    static double _eventTstamp; // tracks speed of event
+    static double _tstamp; // timestamp for most recent event
     Timer_Ticker _ticker; // used for internal updates
 };
 

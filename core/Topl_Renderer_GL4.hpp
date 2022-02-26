@@ -96,14 +96,21 @@ private:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
-	void render(void) override;
+	void render(const Topl_Scene* scene) override;
 #ifdef RASTERON_H
-	void assignTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachMaterial(const Topl_Material* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_GL4* _pipeline;
 	Topl_DrawContext_GL4 _renderCtx_GL4; // replace this!!!
 	Topl_RenderContext_GL4** __renderCtx_GL4; // stores multiple render contexts with unique scenes and ids
+
+	Topl_RenderContext_GL4* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
+		for (unsigned r = 0; r < _renderCtxIndex; r++)
+			if ((*(__renderCtx_GL4 + r))->scene == scene) return *(__renderCtx_GL4 + r);
+		return nullptr; // error
+	}
 
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX];

@@ -14,7 +14,7 @@ Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair xA, gridAttrib_pair yA,
     setNonZeroUnits();
 }
 
-Geo_Grid_Properties::setNonZeroUnits(){
+void Geo_Grid_Properties::setNonZeroUnits(){
     if(xAttr.first == 0) xAttr.first++;
 	if(yAttr.first == 0) yAttr.first++;
 	if(zAttr.first == 0) zAttr.first++;

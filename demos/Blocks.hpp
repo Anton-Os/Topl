@@ -95,7 +95,7 @@ namespace Main {
 
 			renderer->clearView();
 			renderer->updateScene(&Topl::scene, &Topl::camera);
-			renderer->renderAll();
+			renderer->renderScene(&Topl::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(true); // enables mouse events
