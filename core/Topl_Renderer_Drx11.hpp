@@ -77,7 +77,7 @@ public:
 		init(hwnd);
 		drawMode(); // sets default draw mode
 
-		__renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
+		_renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_Drx11();
 
@@ -103,12 +103,12 @@ private:
 #endif
 
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
-	Topl_DrawContext_Drx11 _renderCtx_Drx11; // replace this!!!
-	Topl_RenderContext_Drx11** __renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
+	Topl_RenderContext_Drx11** _renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
 
 	Topl_RenderContext_Drx11* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
 		for (unsigned r = 0; r < _renderCtxIndex; r++)
-			if ((*(__renderCtx_Drx11 + r))->scene == scene) return *(__renderCtx_Drx11 + r);
+			if ((*(_renderCtx_Drx11 + r))->scene == scene) 
+				return *(_renderCtx_Drx11 + r);
 		return nullptr; // error
 	}
 

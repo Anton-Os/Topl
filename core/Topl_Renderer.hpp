@@ -120,8 +120,8 @@ public:
         }
 
         build(scene);
+		_renderCtxIndex++;
         texturize(scene);
-        _renderCtxIndex++;
         return _isSceneReady;
     }
     bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera){

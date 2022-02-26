@@ -77,7 +77,7 @@ public:
 		init(window);
 		drawMode(); // sets default draw mode
 
-		__renderCtx_GL4 = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
+		_renderCtx_GL4 = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
 	}
 	~Topl_Renderer_GL4();
 
@@ -103,12 +103,12 @@ private:
 #endif
 
 	Topl_Pipeline_GL4* _pipeline;
-	Topl_DrawContext_GL4 _renderCtx_GL4; // replace this!!!
-	Topl_RenderContext_GL4** __renderCtx_GL4; // stores multiple render contexts with unique scenes and ids
+	Topl_RenderContext_GL4** _renderCtx_GL4; // stores multiple render contexts with unique scenes and ids
 
 	Topl_RenderContext_GL4* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
 		for (unsigned r = 0; r < _renderCtxIndex; r++)
-			if ((*(__renderCtx_GL4 + r))->scene == scene) return *(__renderCtx_GL4 + r);
+			if ((*(_renderCtx_GL4 + r))->scene == scene) 
+				return *(_renderCtx_GL4 + r);
 		return nullptr; // error
 	}
 
