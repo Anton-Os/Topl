@@ -62,7 +62,7 @@ void buttonCallback_r(void) {
 	Topl::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
 
 	/* for(unsigned l = 0; l < Topl::scene.getLinkedItemsCount(); l++) */
-	Topl::scene.modConnector("angel_body", Eigen::Vector2f(ROTATE_AMOUNT, 0.0f), 1.0f);
+	// Topl::scene.modConnector("angel_body", Eigen::Vector2f(ROTATE_AMOUNT, 0.0f), 1.0f);
 
 } // rotateAll
 

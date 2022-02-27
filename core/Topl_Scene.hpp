@@ -15,13 +15,21 @@
 #endif
 
 typedef const Geo_Actor* const actor_cptr;
-typedef std::pair<const Geo_Actor*, const Geo_Actor*> geo_pair;
+typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
+typedef std::pair<const Geo_Actor*, const Eigen::Vector3f*> anchor_pair;
 
-struct LinkedItems { // Wrapper around a physics connector and the two objects being linked
+struct LinkedItems { // Wrapper around connector with 2 actors being linked
 	Phys_Connector* connector;
-	geo_pair linkedItems;
+	link_pair linkedItems;
 };
 typedef const LinkedItems* const linkedItems_cptr;
+
+struct AnchoredItems { // Wrapper around connector with 1 actor being anchored
+	Phys_Connector* connector;
+	anchor_pair anchoredItems;
+};
+typedef const AnchoredItems* const anchorItem_cptr;
+
 
 struct Topl_Light {
 	Topl_Light(Eigen::Vector3f p) { pos = p; } // Simple Constructor
@@ -88,8 +96,8 @@ public:
 	// Dynamics Section
 	void addForce(const std::string& name, const Eigen::Vector3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
-	void addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2);
-	void modConnector(const std::string& targetName, Eigen::Vector2f rotAnglesVec, double lengthScale); // rotates and scales all connectors associated with named geometry
+	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
+	void addAnchor(Phys_Connector* connector, const std::string& name, const Eigen::Vector3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 
@@ -105,7 +113,8 @@ private:
 #endif
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure
-	std::vector<LinkedItems> _linkedItems; // stores geometry connector data
+	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors
+	std::vector<AnchoredItems> _anchoredItems; // stores anchored actors and connectors
 	
 	Timer_Ticker _ticker; // used for internal updates
 };

@@ -11,6 +11,17 @@ static void error_forcesExcess() {
 	putchar('\n');
 }
 
+// Recomputes connector attributes
+static void calcConnectorAttrib(Phys_Connector* connector, const Eigen::Vector3f& pos1, const Eigen::Vector3f& pos2){
+	Eigen::Vector3f linkDiff = pos1 - pos2;
+	connector->length = getVecLength(linkDiff);
+	connector->centerPoint = (pos1 + pos2) / 2;
+	connector->angle_NVec1 = pos1 - connector->centerPoint;
+	connector->angle_NVec1.normalize();
+	connector->angle_NVec2 = pos2 - connector->centerPoint;
+	connector->angle_NVec2.normalize();
+}
+
 // Scene Builder implementation code
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
@@ -38,18 +49,16 @@ void Topl_Scene::addForce(const std::string& name, const Eigen::Vector3f& forceV
 		}
 }
 
-void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
+void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
 
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
-
 	if (link1 == nullptr) return error_notFound("link geometry", name1); // Error
 
 	const Geo_Actor* link2 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name2 == (*actor)->getName()) link2 = *actor;
-
 	if (link2 == nullptr) return error_notFound("link geometry", name2);
 
 	if(!connector->getIsPreset()) 
@@ -58,76 +67,62 @@ void Topl_Scene::addConnector(Phys_Connector* connector, const std::string& name
 	_linkedItems.push_back({connector, std::make_pair(link1, link2)}); // add new link
 }
 
-void Topl_Scene::modConnector(const std::string& targetName, Eigen::Vector2f rotAnglesVec, double lengthScale) {
-	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++)
-		if(link->linkedItems.first->getName() == targetName || link->linkedItems.second->getName() == targetName){
-			// Length Modification
-			link->connector->restLength *= lengthScale;
-			
-			// Position Modification
-			// TODO: Center point needs to pivot
+void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, const Eigen::Vector3f* pos) {
 
-			// Angles Modification	
-			Eigen::Vector3f* NVec2 = &link->connector->restAngle_NVec2;
-			*NVec2 = Eigen::Vector3f(-1.0f * NVec2->x() * rotAnglesVec.x(), -1.0f * NVec2->y() * rotAnglesVec.y(), NVec2->z());
-			// *NVec2 = Eigen::Vector3f(-1.0f * NVec2->x() * sin(rotAnglesVec.x()), -1.0f * NVec2->y() * cos(rotAnglesVec.y()), NVec2->z());
-			// *NVec2 = *link->linkedItems.second->getPos() - link->connector->centerPoint; // recompute 2nd rest angle
-			NVec2->normalize();
+	const Geo_Actor* targetActor = nullptr;
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if (name == (*actor)->getName()) targetActor = *actor;
+	if (targetActor == nullptr) return error_notFound("link geometry", name); // Error
 
-			Eigen::Vector3f* NVec1 = &link->connector->restAngle_NVec1;
-			*NVec1 = Eigen::Vector3f(NVec1->x() * rotAnglesVec.x(), NVec1->y() * rotAnglesVec.y(), NVec1->z());
-			// *NVec1 = Eigen::Vector3f(NVec1->x() * sin(rotAnglesVec.x()), NVec1->y() * cos(rotAnglesVec.y()), NVec1->z());
-			// *NVec1 = *link->linkedItems.first->getPos() - link->connector->centerPoint; // recompute 1st rest angle
-			NVec1->normalize();
-		}
+	if(!connector->getIsPreset()) 
+		connector->preset(*targetActor->getPos(), *pos); // presets anchor data to defaults
+
+	_anchoredItems.push_back({connector, std::make_pair(targetActor, pos)}); // add new anchor
 }
+
 
 void Topl_Scene::remConnector(const std::string& targetName){
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++)
 		if(link->linkedItems.first->getName() == targetName || link->linkedItems.second->getName() == targetName)
 			_linkedItems.erase(link);
+
+	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++)
+		if(anchor->anchoredItems.first->getName() == targetName)
+			_anchoredItems.erase(anchor);
 }
 
 
 void Topl_Scene::resolvePhysics() {
 	double elapseSecs = _ticker.getRelSecs();
 
-	// Resolve connector and link forces here and general computations
+	// Resolve Link Forces
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
 		Phys_Connector* connector = link->connector;
 		const Geo_Actor* linkItem1 = link->linkedItems.first;
 		const Geo_Actor* linkItem2 = link->linkedItems.second;
 
-		Eigen::Vector3f linkDiff = *(linkItem1->getPos()) - *(linkItem2->getPos());
-		connector->length = getVecLength(linkDiff);
-		connector->centerPoint = (*linkItem1->getPos() + *linkItem2->getPos()) / 2;
-		connector->angle_NVec1 = *linkItem1->getPos() - connector->centerPoint;
-		connector->angle_NVec1.normalize();
-		connector->angle_NVec2 = *linkItem2->getPos() - connector->centerPoint;
-		connector->angle_NVec2.normalize();
- 
+		calcConnectorAttrib(connector, *linkItem1->getPos(), *linkItem2->getPos());
+
 		// Forces acting by length displacement
 		if(abs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
-			// Determines direction of force for first geometry link
-			Eigen::Vector3f forceDirection1 = (connector->length < connector->restLength)
-				? *(linkItem1->getPos()) - connector->centerPoint // Outward push because length is shorter
-				: connector->centerPoint - *(linkItem1->getPos()); // Inward pull because length is longer
-			forceDirection1.norm(); // Normalizing for directional unit vector
+			// determines direction of force for first geometry link
+			Eigen::Vector3f force1 = (connector->length < connector->restLength)
+				? *(linkItem1->getPos()) - connector->centerPoint // length is shorter, push outward
+				: connector->centerPoint - *(linkItem1->getPos()); // length is longer, pull inward
+			force1.norm(); // normalizing for directional unit vector
 
-			// Determines direction of force for second geometry link
-			Eigen::Vector3f forceDirection2 = (connector->length < connector->restLength)
-				? *(linkItem2->getPos()) - connector->centerPoint // Outward push because length is shorter
-				: connector->centerPoint - *(linkItem2->getPos()); // Inward pull because length is longer
-			forceDirection2.norm(); // Normalizing for directional unit vector
+			// determines direction of force for second geometry link
+			Eigen::Vector3f force2 = (connector->length < connector->restLength)
+				? *(linkItem2->getPos()) - connector->centerPoint // length is shorter, push outward
+				: connector->centerPoint - *(linkItem2->getPos()); // length is longer, pull inward
+			force2.norm(); // normalizing for directional unit vector
 
-			double lengthDiff = abs(connector->length - connector->restLength); // Get how much displacement occured
-			
-			const Eigen::Vector3f forceFinal1 = forceDirection1 * ((lengthDiff * connector->kVal) * 0.5f);
-			const Eigen::Vector3f forceFinal2 = forceDirection2 * ((lengthDiff * connector->kVal) * 0.5f);
+			double lengthDiff = abs(connector->length - connector->restLength); // get how much displacement occured
+			const Eigen::Vector3f forceFinal1 = force1 * ((lengthDiff * connector->kVal) * 0.5f);
+			const Eigen::Vector3f forceFinal2 = force2 * ((lengthDiff * connector->kVal) * 0.5f);
 
-			// Adding forces to target objects, most important step!
-			addForce(linkItem1->getName(), forceFinal1);
-			addForce(linkItem2->getName(), forceFinal2);
+			addForce(linkItem1->getName(), forceFinal1); // add force to first actor
+			addForce(linkItem2->getName(), forceFinal2); // add force to second actor
 		}
 
 		// Forces acting by angular displacement // TODO: Add a Threshold value!!!
@@ -140,6 +135,34 @@ void Topl_Scene::resolvePhysics() {
 		}
 	}
 
+	// Resolve Anchor Forces
+	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++){
+		Phys_Connector* connector = anchor->connector;
+		const Geo_Actor* actor = anchor->anchoredItems.first;
+		const Eigen::Vector3f* anchorPos = anchor->anchoredItems.second;
+
+		calcConnectorAttrib(connector, *actor->getPos(), *anchorPos);
+
+		// Forces acting by length displacement
+		if(abs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // no forces act unless threshhold exceeded!
+			// determines direction of force
+			Eigen::Vector3f force = (connector->length < connector->restLength)
+				? *(actor->getPos()) - connector->centerPoint // length is shorter, push outward
+				: connector->centerPoint - *(actor->getPos()); // length is longer, pull inward
+			force.norm(); // normalizing for directional unit vector
+
+			double lengthDiff = abs(connector->length - connector->restLength); // get how much displacement occured
+			const Eigen::Vector3f forceFinal = force * ((lengthDiff * connector->kVal) * 0.5f);
+
+			addForce(actor->getName(), forceFinal); // adding forces to target actor!
+		}
+	
+		if (connector->restAngle_NVec1 != connector->angle_NVec1 && connector->restAngle_NVec2 != connector->angle_NVec2) {
+			const Eigen::Vector3f forceAngle = connector->restAngle_NVec1 - connector->angle_NVec1;
+			addForce(actor->getName(), forceAngle * CONNECTOR_ANGLE_SCALE);
+		}
+	}
+
 	// Resolve general movement here
 	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _actorPhys_map.begin(); m != _actorPhys_map.end(); m++) {
 		Geo_Actor* targetGeo = m->first;
@@ -148,18 +171,15 @@ void Topl_Scene::resolvePhysics() {
 		if (physActor->actingForceCount > 0) 
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
 				physActor->acceleration += (*(physActor->forces + forceIndex)) / physActor->mass;
-				*(physActor->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // Disabling current force
+				*(physActor->forces + forceIndex) = Eigen::Vector3f(0.0, 0.0, 0.0); // removing current resolved force
 			}
-		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // We have resolved all the forces, resetting force count
+		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
 		
-		// Velocity integrator
-		physActor->velocity += (physActor->acceleration) * elapseSecs; // Division converts elapsed time to seconds from milliseconds
-		// Velocity damping, to avoid infinite displacement
-		physActor->velocity *= physActor->damping;
+		physActor->velocity += (physActor->acceleration) * elapseSecs; // velocity integration
+		physActor->velocity *= physActor->damping; // velocity damping
 
-		// Position integrator
-		targetGeo->updatePos((physActor->velocity * elapseSecs) + 0.5 * (physActor->acceleration * pow(elapseSecs, 2))); // For now not factoring in acceleration
+		targetGeo->updatePos((physActor->velocity * elapseSecs) + 0.5 * (physActor->acceleration * pow(elapseSecs, 2))); // position integration
 
-		physActor->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // Resetting acceleration
+		physActor->acceleration = Eigen::Vector3f(0.0, 0.0, 0.0); // resetting acceleration
 	}
 }

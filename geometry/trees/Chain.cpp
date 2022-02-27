@@ -18,7 +18,7 @@ void Geo_Chain::init(Topl_Scene* scene){
 
         if(prevActor != nullptr){ // first link is ignored because it has no previous geo to link to
             links.push_back(Phys_Connector());
-            scene->addConnector(&links.back(), getPrefix() + _Chain::genLinkName(c), getPrefix() + _Chain::genLinkName(c + 1));
+            scene->addLink(&links.back(), getPrefix() + _Chain::genLinkName(c), getPrefix() + _Chain::genLinkName(c + 1));
         }
 
         prevActor = actor; // moves previous link up the chain

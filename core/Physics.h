@@ -109,7 +109,9 @@ struct Phys_Connector {
         centerPoint = (pos1 + pos2) / 2; // midpoint equation
 
         restAngle_NVec1 = pos1 - centerPoint; restAngle_NVec1.normalize(); // computes the norm vector towards pos1
+        angle_NVec1 = restAngle_NVec1; // sets current angle to the rest angle
         restAngle_NVec2 = pos2 - centerPoint; restAngle_NVec2.normalize(); // computes the norm vector towards pos2
+        angle_NVec2 = restAngle_NVec2; // sets current angle to the rest angle
     }
     bool getIsPreset(){ // determines whether internals are correctly set
        return (length == BAD_CONNECTOR_LEN || restLength == BAD_CONNECTOR_LEN)? false : true;
@@ -126,32 +128,6 @@ struct Phys_Connector {
     double length = BAD_CONNECTOR_LEN; // current length of the connector
     double restLength = BAD_CONNECTOR_LEN; // tries to reach this rest length
 	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
-};
-
-#define BARRIER_DIM 1.0f // default barrier dimention
-#define BARRIER_EXPAND 10000.0f // barrier infinite expanse
-
-struct Phys_Barrier {
-    Phys_Barrier(Eigen::Vector3f p){ pos = p; } // Positioned Constructor
-    Phys_Barrier(Eigen::Vector3f p, float w, float h, float d){ // Extended Constructor
-        pos = p;
-
-        width = w;
-        height = h;
-        depth = d;
-    }
-    Eigen::Vector3f pos;
-
-    float height = BARRIER_DIM;
-    float width = BARRIER_DIM * 3;
-    float depth = BARRIER_EXPAND;
-};
-
-struct Phys_Constraint { // Limits an objects freedom of motion
-    std::vector<const Phys_Barrier*> rigidBarrs;
-    std::vector<std::pair<Eigen::Vector2f, const Phys_Barrier*>> angleBarrs;
-
-    // Include other constraints as necessary
 };
 
 #define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
@@ -178,14 +154,6 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
             return true;
         } else return false;
     }
-    void addConstraint(const Phys_Barrier* barrier){
-        constraints.rigidBarrs.push_back(barrier);
-    }
-    void addConstraint(Eigen::Vector2f angles, const Phys_Barrier* barrier){
-        constraints.angleBarrs.push_back(std::make_pair(angles, barrier));
-    }
-
-    Phys_Constraint constraints; // use this to limit freedom of motion
 
     bool isGravityEnabled = false;
 	const double damping = PHYS_DEFAULT_DAMPING;

@@ -99,16 +99,16 @@ void Geo_Humanoid::init(Topl_Scene* scene) { // Trying with displacements for no
 	scene->addPhysics(getPrefix() + "rightLeg", &rightLeg_phys);
 
 	// Main links "starfish"
-	scene->addConnector(&body_head_link, getPrefix() + "body", getPrefix() +  "head");
-	scene->addConnector(&body_leftArm_link, getPrefix() + "body", getPrefix() + "leftArm");
-	scene->addConnector(&body_rightArm_link, getPrefix() + "body", getPrefix() + "rightArm");
-	scene->addConnector(&body_leftLeg_link, getPrefix() + "body", getPrefix() + "leftLeg");
-	scene->addConnector(&body_rightLeg_link, getPrefix() + "body", getPrefix() + "rightLeg");
+	scene->addLink(&body_head_link, getPrefix() + "body", getPrefix() +  "head");
+	scene->addLink(&body_leftArm_link, getPrefix() + "body", getPrefix() + "leftArm");
+	scene->addLink(&body_rightArm_link, getPrefix() + "body", getPrefix() + "rightArm");
+	scene->addLink(&body_leftLeg_link, getPrefix() + "body", getPrefix() + "leftLeg");
+	scene->addLink(&body_rightLeg_link, getPrefix() + "body", getPrefix() + "rightLeg");
 
 	// Stability links "pentagon"
-	scene->addConnector(&head_leftArm_link, getPrefix() + "head", getPrefix() + "leftArm");
-	scene->addConnector(&head_rightArm_link, getPrefix() + "head", getPrefix() + "rightArm");
-	scene->addConnector(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
-	scene->addConnector(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
-	scene->addConnector(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
+	scene->addLink(&head_leftArm_link, getPrefix() + "head", getPrefix() + "leftArm");
+	scene->addLink(&head_rightArm_link, getPrefix() + "head", getPrefix() + "rightArm");
+	scene->addLink(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
+	scene->addLink(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
+	scene->addLink(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
 }
