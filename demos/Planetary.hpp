@@ -26,7 +26,7 @@ namespace Topl {
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
 	Phys_Motion pongMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 0.0f, 0.0), 4.0);
-	Phys_Motion orbitMotion = Phys_Motion(MOTION_Pivot, Eigen::Vector3f(1.0f, 0.0f, 0.0), 2.0);
+	Phys_Motion orbitMotion = Phys_Motion(MOTION_Orbit, Eigen::Vector3f(1.0f, 0.0f, 0.0), 2.0);
 }
 
 void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
@@ -72,7 +72,7 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
-		renderer->setDrawMode(DRAW_Strip);
+		renderer->setDrawMode(DRAW_Points);
 
 		while (1) {
 			Topl::gameTicker.updateTimer();

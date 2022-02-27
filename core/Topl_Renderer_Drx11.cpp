@@ -347,12 +347,34 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	HRESULT result;
 
-	ID3D11Texture2D* surface;
-	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&surface));
-	/* ID3D11Resource* surfaceRes;
-	_rtView->GetResource(&surfaceRes); */
+	ID3D11Texture2D* framebuff;
+	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&framebuff));
 
 	D3D11_TEXTURE2D_DESC framebuffDesc;
+	framebuff->GetDesc(&framebuffDesc);
+	framebuffDesc.BindFlags = 0;
+	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+	framebuffDesc.Usage = D3D11_USAGE_STAGING;
+
+	ID3D11Texture2D* framebuffTex = NULL;
+	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
+
+	// Implement ScreenGrab inside DirectXTK
+
+	/* IDXGISurface1* surface;
+	framebuff->QueryInterface(__uuidof(IDXGISurface1), reinterpret_cast<VOID**>(&surface));
+
+	HDC surfaceDC;
+	surface->GetDC(FALSE, &surfaceDC);
+
+	unsigned width = GetSystemMetrics(SM_CXSCREEN);
+	unsigned height = GetSystemMetrics(SM_CYSCREEN);
+
+	HWND desktopWnd = GetDesktopWindow();
+	HDC captureDC = CreateCompatibleDC(surfaceDC);
+	HBITMAP captureBmap = CreateCompatibleBitmap(_platformCtx.windowDevice_Ctx, width, height); */
+
+	/*D3D11_TEXTURE2D_DESC framebuffDesc;
 	surface->GetDesc(&framebuffDesc);
 	framebuffDesc.BindFlags = 0;
 	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
@@ -367,21 +389,12 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
-	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData);
+	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData); */
+
 
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	/* unsigned dstOffset = 0; unsigned srcOffset = 0;
-	unsigned pitch = TOPL_WIN_WIDTH << 2; // for testing
-	for (unsigned h = 0; h < TOPL_WIN_HEIGHT; h++) {
-		for (unsigned w = 0; w < TOPL_WIN_WIDTH; w++) {
-			*(image->data + dstOffset + w) = *(sourceData + srcOffset + (w >> 8));
-		}
-		// memcpy(image->data + dstOffset, sourceData + srcOffset, TOPL_WIN_WIDTH * 4);
-		srcOffset += TOPL_WIN_WIDTH;
-		dstOffset += TOPL_WIN_WIDTH;
-	} */
 	for (unsigned p = 0; p < image->width * image->height; p++)
-		*(image->data + p) = 0xFF0000FF;
+		*(image->data + p) = 0xFF0000FF; // blue color
 
 	return image;
 }

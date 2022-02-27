@@ -36,9 +36,12 @@ float calcDiffuseIntensity(vec3 light, vec3 target){
 	return intensity * attenuation;
 }
 
-float calcSpecIntensity(vec3 light, vec3 target, float curve){
-	// TODO: Calculate specular equation
-	return 0.0;
+float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
+	float dn = 2 * dot(light, target);
+	vec3 reflectVec = light - (target * dn);
+
+	// return dot(camera, reflectVec);
+	return dot(vec3(0.0f, 0.0f, -1.0f), reflectVec);
 }
 
 mat3 calcRotMatrix(vec2 rotCoords){
@@ -88,7 +91,7 @@ void main() {
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, pos);
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, pos);
 	diffuse_out = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
-	const float specular_curve = 1.0;
-	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, specular_curve);
+	// const float specular_curve = 1.0;
+	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, cam_pos);
 	specular_out = specular_intensity * flashLight_value; // blue
 }

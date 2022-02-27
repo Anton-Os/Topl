@@ -5,9 +5,8 @@
 #include <cstdint>
 #include <vector>
 
+// #include "Maths.h" // replace Eigen library
 #include <Eigen/Dense>
-
-#define PADDING_WIDTH 16 // padding should be aligned by 4 byte boundaries
 
 enum PROJECTION_Type {
     PROJECTION_Perspective,
@@ -32,6 +31,8 @@ typedef const uint8_t* bytes_cptr;
 
 // Memory Operations
 
+#define PADDING_WIDTH 16 // padding should be aligned by 4 byte boundaries
+
 void assignDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes);
 void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes); // default padding
 void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize, blockBytes_t* targetBytes); // custom padding
@@ -41,13 +42,13 @@ void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize,
 Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
 Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
 unsigned genRandColor();
-float genRandFloat(); // { return genRandFloat(0.0, 1.0); }
-float genRandFloat(float min, float max); // { return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
-float getVecLength(const Eigen::Vector2f& vec); // { return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2)); }
-float getVecLength(const Eigen::Vector3f& vec); // { return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2)); }
-Eigen::Vector2f genRandVec2(); // { return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
-Eigen::Vector3f genRandVec3(); // { return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
-Eigen::Vector4f genRandVec4(); // { return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
+float genRandFloat();
+float genRandFloat(float min, float max);
+float getVecLength(const Eigen::Vector2f& vec); // move over to Maths.h
+float getVecLength(const Eigen::Vector3f& vec); // move over to Maths.h
+Eigen::Vector2f genRandVec2();
+Eigen::Vector3f genRandVec3();
+Eigen::Vector4f genRandVec4();
 
 #define VALUEGEN_H
 #endif
