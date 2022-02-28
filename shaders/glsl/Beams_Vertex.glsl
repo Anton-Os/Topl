@@ -27,6 +27,7 @@ layout(location = 1) in vec2 texcoord;
 layout(location = 0) out vec3 ambient_out;
 layout(location = 1) out vec3 diffuse_out;
 layout(location = 2) out vec3 specular_out;
+layout(location = 3) out vec4 lampShine_out;
 
 float calcDiffuseIntensity(vec3 light, vec3 target){
 	float intensity = dot(normalize(light), normalize(target));
@@ -94,4 +95,6 @@ void main() {
 	// const float specular_curve = 1.0;
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, cam_pos);
 	specular_out = specular_intensity * flashLight_value; // blue
+
+	lampShine_out = vec4(0.0, 0.0, 0.0, 0.0); // default shine
 }

@@ -2,73 +2,66 @@
 
 // Shape Modification Operations
 
-void ShapesGen::modify(Geo_RenderObj* renderObj, double mod, vTformCallback callback, AXIS_Target axis){
+void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback callback, AXIS_Target axis){
     renderObj->modify(callback, mod, axis);
 }
 
-void ShapesGen::modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback){ // Transofrms x and y attributes
+void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback){ // Transofrms x and y attributes
     renderObj->modify(xCallback, mod, AXIS_X);
     renderObj->modify(yCallback, mod, AXIS_Y);
 }
 
-void ShapesGen::modify(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback, vTformCallback zCallback){ // Transofrms x, y, and z attributes
+void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback, vTformCallback zCallback){ // Transofrms x, y, and z attributes
     renderObj->modify(xCallback, mod, AXIS_X);
     renderObj->modify(yCallback, mod, AXIS_Y);
     renderObj->modify(zCallback, mod, AXIS_Z);
 }
 
-// Tiling Operations
+float shiftTForm(float input, double amount){ return input + amount; }
+float stretchTForm(float input, double factor){ return input * factor; }
+float spinTForm(float input, double angle){ return input; } // implement
+float waveTform(float input, double rest){ return input; } // implement
+float starTForm(float input, double circles){ return input; } // implement
 
-/* void ShapesGen::tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){
-    return; // implement here
-}
+// Complex Shape Types
 
-void ShapesGen::tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){
-    return; // implement here
-}
-
-void ShapesGen::tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations){
-    return; // implement here
-} */
-
-
-void ShapesGen::Geo_DuplexShape::genPos(Eigen::Vector3f* data){
+void Geo_DuplexShape::genPos(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_DuplexShape::genNormals(Eigen::Vector3f* data){
+void Geo_DuplexShape::genNormals(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_DuplexShape::genTexCoords(Eigen::Vector2f* data) {
+void Geo_DuplexShape::genTexCoords(Eigen::Vector2f* data) {
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_DuplexShape::genIndices(unsigned* data){
+void Geo_DuplexShape::genIndices(unsigned* data){
     // Implement Body
     return;
 }
 
 
-void ShapesGen::Geo_TessShape::genPos(Eigen::Vector3f* data){
+void Geo_TessShape::genPos(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_TessShape::genNormals(Eigen::Vector3f* data){
+void Geo_TessShape::genNormals(Eigen::Vector3f* data){
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_TessShape::genTexCoords(Eigen::Vector2f* data) {
+void Geo_TessShape::genTexCoords(Eigen::Vector2f* data) {
     // Implement Body
     return;
 }
 
-void ShapesGen::Geo_TessShape::genIndices(unsigned* data){
+void Geo_TessShape::genIndices(unsigned* data){
     // Implement Body
     return;
 }

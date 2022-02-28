@@ -36,7 +36,8 @@ namespace Topl {
 	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
 	FT_Library freetypeLib; // required for loading glyphs
 
-	Topl_Frames symbols = Topl_Frames("symbols", 256, 256, 9); // used as textures for boxedLayout
+	Topl_Frames symbols = Topl_Frames("symbols", 256, 256, 9); // used for boxedLayout
+	Topl_Frames sequence = Topl_Frames("sequence", 256, 256, 9); // used for unitLayout
 #endif
 }
 
@@ -60,7 +61,7 @@ void genImages() {
 
 	for (unsigned short p = 0; p < Topl::boxedLayout.getRowCount() * Topl::boxedLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::boxedLayout.getChildPane(p);
-		Rasteron_Image* frameImg = Topl::symbols.getFrameAt(p);
+		// Rasteron_Image* frameImg = Topl::symbols.getFrameAt(p);
 
 		// pane->selectBk(frameImg);
 	}
@@ -70,8 +71,6 @@ void genImages() {
 
 		// pane->selectBk(Topl::textDisplayBk);
 	}
-
-	// Topl::scene.addTexture("picker", Topl::pickerBk);
 }
 
 // Retrieves the pixel where the cursor is positioned

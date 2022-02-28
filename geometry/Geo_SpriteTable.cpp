@@ -7,8 +7,6 @@ static float getSpriteHeight(const Rasteron_Sprite* sprite) {
 	return sprite->bounds.topRight_point[Y_OFFSET] * 2;
 }
 
-static float stretchTform(float input, double mod){ return input * mod; }
-
 static void resize(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
     float width = sprite->bounds.topRight_point[X_OFFSET] * 2;
     float height = sprite->bounds.topRight_point[Y_OFFSET] * 2;
@@ -16,11 +14,11 @@ static void resize(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
     if (width != height) { // no stretch required for matchin width and height
         float stretchX = width / height; // get ratio between width and height
         stretchX += (stretchX < 1.0f) ? (1.0f - stretchX) / 2 : -1 * ((stretchX - 1.0f) / 2); // halve the stretch amount
-        square->modify(stretchTform, stretchX, AXIS_X);
+        square->modify(stretchTForm, stretchX, AXIS_X);
         
         float stretchY = height / width; // get ratio between height and width
         stretchY += (stretchY < 1.0f) ? (1.0f - stretchY) / 2 : -1 * ((stretchY - 1.0f) / 2); // halve the stretch amount
-        square->modify(stretchTform, stretchY, AXIS_Y);
+        square->modify(stretchTForm, stretchY, AXIS_Y);
     }
 }
 

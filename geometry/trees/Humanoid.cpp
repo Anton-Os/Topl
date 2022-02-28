@@ -58,10 +58,6 @@ namespace _Humanoid {
 	}
 }
 
-/* void Geo_Humanoid::updateActor(HUMANOID_Anatomy target, Eigen::Vector3f pos, Eigen::Vector2f rot){
-	return;
-} */
-
 void Geo_Humanoid::init(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	

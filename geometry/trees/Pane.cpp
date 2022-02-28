@@ -15,8 +15,6 @@ namespace _Pane {
 	}
 }
 
-static float stretchTform(float input, double mod) { return input * mod; } // stretch transformation
-
 Geo_Pane* Geo_PaneLayout::getChildPane(unsigned index) {
 	if (index > _panes.size()) {
 		perror("Pane index is out of bounds!");
@@ -30,13 +28,13 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_columns = columns;
 
 	// Modifying Root Pane RenderObj
-	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_Y);
-	_rootSquare.modify(stretchTform, (_radius * 2) + _border, AXIS_X);
+	_rootSquare.modify(::stretchTForm, (_radius * 2) + _border, AXIS_Y);
+	_rootSquare.modify(::stretchTForm, (_radius * 2) + _border, AXIS_X);
 
 	// Modifying Child Panes RenderObj
 	_panes.resize(getActorCount() - 1);
-	_childSquare.modify(stretchTform, ((_radius * 2) / _rows) - _border, AXIS_Y);
-	_childSquare.modify(stretchTform, ((_radius * 2) / _columns) - _border, AXIS_X);
+	_childSquare.modify(::stretchTForm, ((_radius * 2) / _rows) - _border, AXIS_Y);
+	_childSquare.modify(::stretchTForm, ((_radius * 2) / _columns) - _border, AXIS_X);
 }
 
 void Geo_PaneLayout::init(Topl_Scene* scene) {

@@ -4,6 +4,8 @@ struct PS_INPUT {
 	float3 ambient : COLOR0;
 	float3 diffuse : COLOR1;
 	float3 specular : COLOR2;
+
+	float4 lampShine : COLOR4; // shine based on distance
 };
 
 float4 main(PS_INPUT input) : SV_TARGET{

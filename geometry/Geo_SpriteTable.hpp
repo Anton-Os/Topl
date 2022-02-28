@@ -6,7 +6,7 @@
 
 #include "Rasteron.h"
 
-#include "Geometry.hpp"
+#include "ShapesGen.hpp" // #include "Geometry.hpp"
 #include "primitives/Geo_Flat.hpp"
 
 typedef std::pair<const Rasteron_Sprite*, Geo_FlatSquare*> spriteSquare_pair;

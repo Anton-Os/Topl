@@ -29,6 +29,8 @@ struct VS_OUTPUT {
 	float3 ambient : COLOR0;
 	float3 diffuse : COLOR1;
 	float3 specular : COLOR2;
+
+	float4 lampShine : COLOR4; // shine based on distance
 };
 
 float calcDiffuseIntensity(float3 light, float3 target){
@@ -103,6 +105,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	// const float specular_curve = 1.0;
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, vertex_pos, cam_pos);
 	output.specular = specular_intensity * flashLight_value; // only flash light affects specular 
+
+	output.lampShine = float4(0.0f, 0.0f, 0.0f, 0.0f); // default shine
 
 	return output;
 }
