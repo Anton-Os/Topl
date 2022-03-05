@@ -5,28 +5,21 @@ struct PS_INPUT {
 	uint actorID : ACTOR;
 };
 
-float3 mandlebrot(float2 fragCoord){
-	const float origin_len = 1.0f;
-	const float max_steps = 1000.0f;
-	float steps = 0.0f;
-
-	// TODO: Add set generation logic
-
-	float f = steps / max_steps;
-	return float3(f, f, f); // should return black color without any further calculations
+float3 mandlebrot(float2 pixelCoord){
+	// generate set
 }
 
-float3 cursorDist(float2 cursorPos, float2 fragCoord){
-	float red = 1.0f - (distance(cursorPos, fragCoord) * 5); // receding color from center
-	float green = (distance(cursorPos, fragCoord) < 0.03) ? 1.0 : 0.0; // small acute bullseye center
-	float blue = (distance(cursorPos, fragCoord) - 0.1) / 5; // increasing color from center
+float3 cursorDist(float2 cursorPos, float2 pixelCoord){
+	float red = 1.0f - (distance(cursorPos, pixelCoord) * 5); // receding color from center
+	float green = (distance(cursorPos, pixelCoord) < 0.03) ? 1.0 : 0.0; // small acute bullseye center
+	float blue = (distance(cursorPos, pixelCoord) - 0.1) / 5; // increasing color from center
 	return float3(red, green, blue);
 }
 
-float3 colorQuad(float2 fragCoord){
-	if(fragCoord.x > 0.5 & fragCoord.y > 0.0) return float3(1.0f, 0.0f, 0.0f);
-	else if(fragCoord.x < 0.5 & fragCoord.y > 0.0) return float3(0.0f, 1.0f, 0.0f);
-	else if(fragCoord.x < 0.5 & fragCoord.y < 0.0) return float3(0.0f, 0.0f, 1.0f);
+float3 colorQuad(float2 pixelCoord){
+	if(pixelCoord.x > 0.5 & pixelCoord.y > 0.0) return float3(1.0f, 0.0f, 0.0f);
+	else if(pixelCoord.x < 0.5 & pixelCoord.y > 0.0) return float3(0.0f, 1.0f, 0.0f);
+	else if(pixelCoord.x < 0.5 & pixelCoord.y < 0.0) return float3(0.0f, 0.0f, 1.0f);
 	else return float3(0.0f, 0.0f, 0.0f);
 }
 

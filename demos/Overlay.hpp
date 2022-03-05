@@ -17,6 +17,8 @@ namespace Topl {
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
 	std::string text = "Hello World";
 
+	// Geo_FlatSquare testSquare = Geo_FlatSquare(1.0f);
+	// Geo_Actor testSquareGeo = Geo_Actor((Geo_RenderObj*)&testSquare); // testing square
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
 	Geo_FlatCircle pickerCircle = Geo_FlatCircle(0.25f);
@@ -49,10 +51,15 @@ void downCallback(float x, float y) {
 
 void upCallback(float x, float y) { puts("Key released"); } // for testing
 
-void captureBk(Topl_Renderer* renderer) {
+void setCaptureBk(Topl_Renderer* renderer) {
 	Topl::captureBk = renderer->frame(); // attempt to capture screen
 	Topl::scene.addTexture("capture", Topl::captureBk);
 	renderer->texturize(&Topl::scene);
+}
+
+void setPickerBk() {
+	Topl::pickerBk = createImgBlank(255, 255, 0xFFFF00FF);
+	Topl::scene.addTexture("picker", Topl::pickerBk);
 }
 
 void genImages() {
@@ -75,13 +82,12 @@ void genImages() {
 
 // Retrieves the pixel where the cursor is positioned
 unsigned getPressPixel(Topl_Renderer* renderer) {
-	unsigned pixel = genRandColorVal(); // yellow color by default
+	unsigned pixel = genRandColorVal(); // random color
 	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS) // captures pixel at cursor position
 		pixel = renderer->getPixColor(Platform::getCursorX(), Platform::getCursorY());
 #ifdef RASTERON_H
-	if (Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk); // deletes previous image
-	Topl::pickerBk = createImgBlank(255, 255, pixel);
-	// Topl::scene.addTexture("picker", Topl::pickerBk);
+	// if (Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk); // deletes previous image
+	// Topl::pickerBk = createImgBlank(255, 255, pixel);
 #endif
 	return pixel;
 }
@@ -99,10 +105,10 @@ namespace Main {
 		Topl::unitLayout.move(Eigen::Vector3f(0.0f, 0.75f, 0.0f));
 		Topl::rowLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
 
-		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
-		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 		Topl::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
 		Topl::scene.addGeometry("picker", &Topl::pickerCircleGeo);
+		Topl::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
+		Topl::scene.addGeometry("capture", &Topl::captureSquareGeo);
 
 		genImages();
 		Topl::unitLayout.init(&Topl::scene);
@@ -116,14 +122,16 @@ namespace Main {
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(&Topl::scene);
 
+			if (Topl::pickerBk == nullptr)
+				setPickerBk();
+			if (Topl::captureBk == nullptr) 
+				setCaptureBk(renderer);
+
 			if (Topl::isPressPend) {
 				unsigned pixel = getPressPixel(renderer);
 				renderer->texturize(&Topl::scene);
 				Topl::isPressPend = false; // mouse callback has been handled
 			}
-
-			if (Topl::captureBk == nullptr) 
-				captureBk(renderer);
 
 			renderer->switchFramebuff();
 			platform->handleEvents(true);

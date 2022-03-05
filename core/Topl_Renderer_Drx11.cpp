@@ -359,43 +359,25 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	ID3D11Texture2D* framebuffTex = NULL;
 	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
 
-	// Implement ScreenGrab inside DirectXTK
-
-	/* IDXGISurface1* surface;
-	framebuff->QueryInterface(__uuidof(IDXGISurface1), reinterpret_cast<VOID**>(&surface));
-
-	HDC surfaceDC;
-	surface->GetDC(FALSE, &surfaceDC);
-
-	unsigned width = GetSystemMetrics(SM_CXSCREEN);
-	unsigned height = GetSystemMetrics(SM_CYSCREEN);
-
-	HWND desktopWnd = GetDesktopWindow();
-	HDC captureDC = CreateCompatibleDC(surfaceDC);
-	HBITMAP captureBmap = CreateCompatibleBitmap(_platformCtx.windowDevice_Ctx, width, height); */
-
-	/*D3D11_TEXTURE2D_DESC framebuffDesc;
-	surface->GetDesc(&framebuffDesc);
-	framebuffDesc.BindFlags = 0;
-	framebuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
-	framebuffDesc.Usage = D3D11_USAGE_STAGING;
-
-	ID3D11Texture2D* framebuffTex = NULL;
-	result = _device->CreateTexture2D(&framebuffDesc, NULL, &framebuffTex);
-
 	// Copying and Mapping
 
-	_deviceCtx->CopyResource(framebuffTex, surface);
+	_deviceCtx->CopyResource(framebuffTex, framebuff);
 	D3D11_MAPPED_SUBRESOURCE resource;
 	unsigned subresource = D3D11CalcSubresource(0, 0, 0);
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
-	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData); */
-
+	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData);
 
 	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	for (unsigned p = 0; p < image->width * image->height; p++)
-		*(image->data + p) = 0xFF0000FF; // blue color
-
+	unsigned srcOffset = 0; unsigned dstOffset = 0;
+	unsigned pitch = resource.RowPitch / 4; // << 2;
+	for (unsigned r = 0; r < image->height - 1; r++) {
+		for(unsigned c = 0; c < image->width; c++) 
+			*(image->data + dstOffset + c) = *(sourceData + srcOffset + c);
+		srcOffset += pitch; // resource.RowPitch;
+		dstOffset += image->width;
+	}
+	
+	_deviceCtx->Unmap(framebuffTex, 0);
 	return image;
 }
 

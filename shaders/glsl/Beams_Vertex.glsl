@@ -94,7 +94,7 @@ void main() {
 	diffuse_out = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
 	// const float specular_curve = 1.0;
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, cam_pos);
-	specular_out = specular_intensity * flashLight_value; // blue
+	specular_out = specular_intensity * flashLight_value;
 
 	lampShine_out = vec4(0.0, 0.0, 0.0, 0.0); // default shine
 }
