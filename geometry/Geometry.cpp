@@ -1,6 +1,6 @@
 #include "Geometry.hpp"
 
-// GeoVertex Operations
+// Geo_Vertex Operations
 
 Geo_Vertex::Geo_Vertex(Eigen::Vector3f pos){
     position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];

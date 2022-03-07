@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <cmath>
 
-// #include "Physics.h" // added to generate collision objects
-
 #define DEFAULT_CIRCLE_SEGS 1001 // this is a chiliagon + 1 for odd sides
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
@@ -13,7 +11,6 @@
 #define POSITION_COUNT 3
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
-// #define BLENDWEIGHTS_COUNT 3
 
 // #define DEFAULT_Z_VAL 0.1f
 #define DEFAULT_Z_VAL 0.0f

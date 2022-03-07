@@ -59,7 +59,6 @@ if(WIN32)
     )
     target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
     target_include_directories(Drx11_ENGINE PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
         ${CMAKE_INSTALL_PREFIX}/include/eigen3
     )
     if(Rasteron_FOUND)

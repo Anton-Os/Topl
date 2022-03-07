@@ -60,12 +60,8 @@
 
 #if defined (_WIN32) && defined (_MSC_VER) // DirectX Specific Code
     #include <d3d11_1.h>
-	#include <dxgi.h> // additional
-    #include <wrl/client.h> // additional
-
     #include <dxgi1_4.h>
     #include <d3dcompiler.h>
-    // #include <xnamath.h>
 
     #pragma comment(lib, "d3d11.lib")
     #pragma comment(lib, "d3dcompiler.lib")

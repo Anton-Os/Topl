@@ -19,7 +19,6 @@ void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback,
 
 float shiftTForm(float input, double amount){ return input + amount; }
 float stretchTForm(float input, double factor){ return input * factor; }
-float spinTForm(float input, double angle){ return input; } // implement
 float waveTform(float input, double rest){ return input; } // implement
 float starTForm(float input, double circles){ return input; } // implement
 

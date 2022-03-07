@@ -14,17 +14,6 @@ endif()
 include(ExternalProject)
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
-if(WIN32)
-ExternalProject_Add(DXSDK
-        GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
-        GIT_TAG "5fbd5e1158db72421bc32709136131451e6c8c37"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/dxsdk
-    )
-endif()
-
 ExternalProject_Add(GLEW
         GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
         GIT_TAG "e9aa3dd0e3e82b4fa656d282ea1f652cf6575296"

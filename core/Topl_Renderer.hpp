@@ -174,6 +174,7 @@ public:
     virtual void clearView() = 0; // clears view to predefined background color
     virtual void switchFramebuff() = 0; // switches front and back buffers
 	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
+    unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
 	unsigned getPixColor(float x, float y) {

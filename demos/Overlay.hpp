@@ -17,8 +17,6 @@ namespace Topl {
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
 	std::string text = "Hello World";
 
-	// Geo_FlatSquare testSquare = Geo_FlatSquare(1.0f);
-	// Geo_Actor testSquareGeo = Geo_Actor((Geo_RenderObj*)&testSquare); // testing square
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
 	Geo_FlatCircle pickerCircle = Geo_FlatCircle(0.25f);
@@ -28,7 +26,6 @@ namespace Topl {
 	Geo_RowLayout rowLayout("L2", 8, 0.25f, 0.03f);
 	Geo_BoxedLayout boxedLayout("L3", 8, 0.3f, 0.1f);
 
-	// ValueGen valueGen = ValueGen(); // seeds random number generation
 	bool isPressPend;
 #ifdef RASTERON_H
 	Rasteron_Image* pickerBk = nullptr;

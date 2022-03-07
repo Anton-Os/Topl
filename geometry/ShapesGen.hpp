@@ -10,7 +10,6 @@ static void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCa
 
 float shiftTForm(float input, double amount); // shifts point by amount
 float stretchTForm(float input, double factor); // stretches point by factor
-float spinTForm(float input, double angle); // rotates point by anchor
 float waveTform(float input, double rest); // makes point equalize to rest value
 float starTForm(float input, double circles); // distorts point based on concentric circles
 
