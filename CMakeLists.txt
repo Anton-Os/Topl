@@ -56,6 +56,8 @@ if(WIN32)
 
         core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
+
+        core/Topl_App.cpp
     )
     target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
     target_include_directories(Drx11_ENGINE PUBLIC
@@ -120,6 +122,8 @@ add_library(GL4_ENGINE
 
     core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp
+    
+    core/Topl_App.cpp
 )
 target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
 target_include_directories(GL4_ENGINE PUBLIC
@@ -192,5 +196,9 @@ configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR
 
 # Modern Demos
 
-add_executable(Inception demos/Inception.cpp)
+add_executable(Inception
+    geometry/trees/Pane.cpp
+
+    demos/Inception.cpp
+)
 target_link_libraries(Inception GL4_ENGINE Drx11_ENGINE)

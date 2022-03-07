@@ -41,7 +41,7 @@ void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 	if(_isPipelineReady) glUseProgram(pipeline->shaderProg);
 }
 
-void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader){
+void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	GLint result;
 	const char* source;
 
@@ -66,9 +66,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	// fragment shader creation and valid file checking
 	pipeline->fShader = glCreateShader(GL_FRAGMENT_SHADER);
-	std::string fragShaderSrc = readFile(fragShader->getFilePath(), false);
-	source = fragShaderSrc.c_str();
-	if (!fragShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
+	std::string pixelShaderSrc = readFile(pixelShader->getFilePath(), false);
+	source = pixelShaderSrc.c_str();
+	if (!pixelShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
 	else {
 		_GL4::errorNotFound("Fragment");
 		pipeline->isReady = false;
@@ -105,7 +105,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	setPipeline(pipeline);
 }
 
-void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	GLint result;
 	const char* source;
 
@@ -187,9 +187,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	// fragment shader creation and valid file checking
 	pipeline->fShader = glCreateShader(GL_FRAGMENT_SHADER);
-	std::string fragShaderSrc = readFile(fragShader->getFilePath(), false);
-	source = fragShaderSrc.c_str();
-	if (!fragShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
+	std::string pixelShaderSrc = readFile(pixelShader->getFilePath(), false);
+	source = pixelShaderSrc.c_str();
+	if (!pixelShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
 	else {
 		_GL4::errorNotFound("Fragment");
 		pipeline->isReady = false;

@@ -55,12 +55,6 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* gsBlob = nullptr;
 };
 
-struct Topl_DrawContext_Drx11 { // groups together data for rendering
-	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
-	std::vector<Buffer_Drx11> buffers;
-	std::vector<Texture_Drx11> textures;
-};
-
 // Use this to replace legacy DrawContext
 struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
 	Topl_RenderContext_Drx11(const Topl_Scene *const s) : Topl_RenderContext(s){}
@@ -87,8 +81,8 @@ public:
 	void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
-	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
-	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
 #endif

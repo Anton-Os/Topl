@@ -1,4 +1,4 @@
-#include "Topl_Shader.hpp"
+#include "Topl_Shader.h"
 
 #define EFFECT_MODE_DEFAULT 0
 

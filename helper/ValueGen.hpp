@@ -41,11 +41,12 @@ void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize,
 
 Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds);
 Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds);
+Eigen::Matrix4f genHyperbolicMatrix(SpatialBounds3D bounds); // implement later
 unsigned genRandColor();
 float genRandFloat();
 float genRandFloat(float min, float max);
-float getVecLength(const Eigen::Vector2f& vec); // move over to Maths.h
-float getVecLength(const Eigen::Vector3f& vec); // move over to Maths.h
+float getVecLength(const Eigen::Vector2f& vec);
+float getVecLength(const Eigen::Vector3f& vec);
 Eigen::Vector2f genRandVec2();
 Eigen::Vector3f genRandVec3();
 Eigen::Vector4f genRandVec4();

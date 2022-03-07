@@ -51,6 +51,11 @@ namespace Topl {
 	Geo_Humanoid demon("demon", &scene, demonActor, 0.25f);
 	Geo_Humanoid angel("angel", &scene, angelActor, 0.25f);
 	Geo_Humanoid ghost("ghost", &scene, ghostActor, 0.25f);
+
+	Phys_Connector demonAnchor, angelAnchor;
+	Eigen::Vector3f demonOffset = Eigen::Vector3f(-1.5f, 0.0f, 0.0f);
+	Eigen::Vector3f angelOffset = Eigen::Vector3f(1.5f, 0.0f, 0.0f);
+	Eigen::Vector3f ghostOffset = Eigen::Vector3f(0.0, -0.5f, 0.0f);
 }
 
 void buttonCallback_w(void) { Topl::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
@@ -60,11 +65,7 @@ void buttonCallback_d(void) { Topl::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0
 void buttonCallback_r(void) { 
 	Topl::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
 	Topl::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
-
-	/* for(unsigned l = 0; l < Topl::scene.getLinkedItemsCount(); l++) */
-	// Topl::scene.modConnector("angel_body", Eigen::Vector2f(ROTATE_AMOUNT, 0.0f), 1.0f);
-
-} // rotateAll
+} 
 
 void actionCallback() {
 	// adding movements for testing
@@ -93,9 +94,13 @@ namespace Main {
 
 		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
 
-		Topl::demon.move(Eigen::Vector3f(-1.5f, 0.0f, 0.0f));
-		Topl::angel.move(Eigen::Vector3f(1.5f, 0.0f, 0.0f));
-		Topl::ghost.move(Eigen::Vector3f(0.0, -0.5f, 0.0f));
+		// Initial Positions
+		Topl::demon.move(Topl::demonOffset);
+		Topl::angel.move(Topl::angelOffset);
+		Topl::ghost.move(Topl::ghostOffset);
+
+		Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
+		Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

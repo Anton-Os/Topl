@@ -1,24 +1,23 @@
 #ifndef GEOMETRY_H
 
 #include <cstdlib>
-#include <cmath>
 
-#define DEFAULT_CIRCLE_SEGS 1001 // this is a chiliagon + 1 for odd sides
-#define TOPL_PI 3.141592653
-#define TOPL_HALF_PI 1.57079633
-#include <Eigen/Dense> // Examine documentation
+#include "Maths.h" // replace Eigen library!
+#include <Eigen/Dense>
 
 #define POSITION_COUNT 3
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
 
-// #define DEFAULT_Z_VAL 0.1f
-#define DEFAULT_Z_VAL 0.0f
 #define X_OFFSET 0
 #define Y_OFFSET 1
 #define Z_OFFSET 2
 #define U_OFFSET 0
 #define V_OFFSET 1
+
+#define DEFAULT_CIRCLE_SEGS 1001
+// #define DEFAULT_Z_VAL 0.1f
+#define DEFAULT_Z_VAL 0.0f
 
 // Typedefs for const safe types
 typedef const Eigen::Vector3f* const vec3f_cptr;

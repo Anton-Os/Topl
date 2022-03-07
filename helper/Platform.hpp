@@ -21,13 +21,14 @@ struct Platform {
 	} */
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
+    static bool getIsMouseHeld(); // checks whether mouse is held
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
 
     static Input_KeyLogger keyLogger;
     static Input_MouseLogger mouseLogger;
 private:
-    bool getCursorCoords(float* xPos, float* yPos) const; // returns true if within window bounds
+    bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){
         xCursorPos = BAD_CURSOR_POS;
 		yCursorPos = BAD_CURSOR_POS;

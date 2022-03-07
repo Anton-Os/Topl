@@ -44,7 +44,6 @@ struct Texture_GL4 : public Texture {
 
 struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	Topl_Pipeline_GL4() : Topl_Pipeline(){}
-	Topl_Pipeline_GL4(entry_shader_cptr entryShader) : Topl_Pipeline(entryShader){}
 
 	GLuint shaderProg; // Linked Shader Program
 
@@ -53,12 +52,6 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint tcShader; // Tesselation Control Shader
 	GLuint teShader; // Tesselation Evaluation Shader
 	GLuint gShader; // Geometry Shader
-};
-
-struct Topl_DrawContext_GL4 { // groups together data for rendering
-	std::vector<Buffer_GL4> buffers;
-	std::vector<VertexArray_GL4> VAOs; // vertex array objects
-	std::vector<Texture_GL4> textures;
 };
 
 // Use this to replace legacy DrawContext
@@ -87,8 +80,8 @@ public:
 	void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr fragShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H
 	Rasteron_Image* frame() override;
 #endif

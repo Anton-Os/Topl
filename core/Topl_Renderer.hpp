@@ -4,7 +4,7 @@
 
 #include "Rasteron.h" // For texturing support, should be conditional
 
-#include "Topl_Shader.hpp"
+#include "Topl_Shader.h"
 #include "Topl_Scene.hpp"
 
 #define SPECIAL_SCENE_RENDER_ID 0
@@ -37,8 +37,9 @@ struct Buffer : public RenderTarget {
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
-#define MAX_TEXTURES_PER_TARGET 12 // corresponds to MAX_TEXTURES_PER_ACTOR in Topl_Scene.hpp
-#define MAX_RENDERER_CONTEXTS 24 // limits number of unique scenes and render contexts to 24
+#define MAX_PIPELINES 24 // limits number of unique pipelines
+#define MAX_SHADERS 24 * 5  // limits number of unique shaders
+#define MAX_RENDERER_CONTEXTS 24 // limits number of unique render contexts
 
 enum TEX_Frmt {
     TEX_1D,
@@ -75,8 +76,8 @@ struct Topl_Pipeline {
     Topl_Pipeline(){}
     Topl_Pipeline(entry_shader_cptr entry){ entryShader = entry; }
 
-    entry_shader_cptr entryShader = nullptr; // entryShader needs to be saved internally
-	bool isReady; // internal check for compilation and link status
+    entry_shader_cptr entryShader = nullptr; // entryShader is saved internally
+	bool isReady; // check for compilation and link status
 };
 
 struct Topl_RenderContext {
@@ -197,7 +198,7 @@ protected:
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
-    unsigned _renderCtxIndex = 0; // tracks the render context in use
+    unsigned short _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // updated by user
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
