@@ -41,12 +41,19 @@ float calcDiffuseIntensity(float3 light, float3 target){
 	return intensity * attenuation;
 }
 
+float sharpen(float intensity, uint power, uint scale){
+	if(intensity <= 0.05) return intensity;
+	else return intensity * scale;
+	// else return pow(intensity, power) * scale;
+}
+
 float calcSpecIntensity(float3 light, float3 target, float3 camera){
-	float dn = 2 * dot(light, target);
-	float3 reflectVec = light - (target * dn);
+	float ldp = dot(normalize(light), target); // light dot product
+	float cdp = dot(normalize(camera), target); // camera dot product
 
 	// return dot(camera, reflectVec);
-	return dot(float3(0.0f, 0.0f, -1.0f), reflectVec);
+	// return 0.5 * dot(float3(0.0f, 0.0f, -1.0f), normalize(reflectVec));
+	return sharpen(cdp, 3, 2);
 }
 
 float3x3 calcRotMatrix(float2 rotCoords){
@@ -102,7 +109,6 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, vertex_pos);
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, vertex_pos);
 	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
-	// const float specular_curve = 1.0;
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, vertex_pos, cam_pos);
 	output.specular = specular_intensity * flashLight_value; // only flash light affects specular 
 

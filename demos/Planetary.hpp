@@ -18,8 +18,8 @@ namespace Topl {
 	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0));
 	Topl_Light lampLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // this light will be moving
 
-	NGon3D ngon = { LARGE_RADIUS, 1000, 1000 };
-	NGon3D ngon2 = { SMALL_RADIUS, 12, 5 };
+	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
+	NGon3D ngon2 = { SMALL_RADIUS, 12, 64 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
@@ -72,7 +72,7 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
-		renderer->setDrawMode(DRAW_Points);
+		renderer->setDrawMode(DRAW_Lines);
 
 		while (1) {
 			Topl::gameTicker.updateTimer();

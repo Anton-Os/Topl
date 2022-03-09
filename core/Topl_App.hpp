@@ -14,6 +14,26 @@ enum APP_Backend {
     // Add Vulkan Support
 };
 
+class Topl_App_Factory { // supplies and generates all interfaces for Topl_App class
+	static Topl_Renderer* genRenderer(APP_Backend backend);
+	static Topl_Pipeline* genPipeline(APP_Backend backend, const std::string& vertexSource, const std::string& pixelSource);
+	static Topl_Pipeline* genPipeline(APP_Backend backend,
+		const std::string& vertexSource,
+		const std::string& pixelSource,
+		const std::string& tessCtrlSource,
+		const std::string& tessEvalSource,
+		const std::string& geomSource
+	);
+private:
+	// Internally Managed Structures
+	static Topl_Renderer_GL4* _renderer_GL4;
+	static Topl_Renderer_Drx11* _renderer_Drx11;
+
+	static Topl_Pipeline_GL4** _pipelines_GL4;
+	static Topl_Pipeline_Drx11** _pipelines_Drx11;
+	static Topl_Shader** _shaders;
+};
+
 class Topl_App {
 public:
     Topl_App(const char* execPath, const char* name, APP_Backend backend);
