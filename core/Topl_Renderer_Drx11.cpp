@@ -143,8 +143,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 
     bufferDesc.Width = TOPL_WIN_WIDTH;
     bufferDesc.Height = TOPL_WIN_HEIGHT;
-    // bufferDesc.RefreshRate.Numerator = 60;
-    // bufferDesc.RefreshRate.Denominator = 1;
 	bufferDesc.RefreshRate.Numerator = 1;
 	bufferDesc.RefreshRate.Denominator = 60;
     bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

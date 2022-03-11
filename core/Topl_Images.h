@@ -2,18 +2,21 @@
 
 #ifdef RASTERON_H // required library for loading images
 
-#define ANIM_BACKGROUND 0xFFEEEEEE // overrides macro set inside Rasterons Frames.h to change background
-
-/* struct Topl_Image { // wrapper around Rasteron_Image
-    Topl_Image(const Rasteron_Image* refImg){
-        image = allocNewImg(refImg->name, refImg->height, refImg->width);
-        for(unsigned p = 0; p < refImg->height * refImg->width; p++)
-            *(image->data + p) = *(refImg->data + p);
-    }
+struct Topl_Image { // wrapper around Rasteron_Image
+    Topl_Image(){} // no image
+    Topl_Image(unsigned color){ image = createImgBlank(256, 256, color); } // solid image
+    Topl_Image(std::string filePath){ image = createImgRef(filePath.c_str()); } // file image
+    Topl_Image(Rasteron_Image* refImage){ image = refImage; } // custom image
     ~Topl_Image(){ deleteImg(image); }
+
+    void setImage(Rasteron_Image* refImage){
+        if(image != NULL) deleteImg(image);
+        image = refImage;
+    }
+    Rasteron_Image* getImage(){ return image; }
 private:
-    Rasteron_Image* image; // underlying data
-}; */
+    Rasteron_Image* image = NULL; // underlying data
+};
 
 struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Frames
 	Topl_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){

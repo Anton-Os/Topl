@@ -179,20 +179,18 @@ public:
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
 	unsigned getPixColor(float x, float y) {
-		if (x < -1.0) x = -1.0; else if (x > 1.0) x = 1.0; // clamping x
-		if (y < -1.0) y = -1.0; else if (y > 1.0) y = 1.0; // clamping y
+		Rasteron_PixelPoint pixPoint = { x, y };
 
 		Rasteron_Image* image = frame();
-		/* unsigned xOffset = (unsigned)(x * (float)image->width);
-		unsigned yOffset = (unsigned)(y * (float)image->height);
-		unsigned color = *(image->data + (yOffset * image->width) + xOffset); */
-		unsigned offset = (image->width * image->height) / 2; // get offset halfway for testing
+		unsigned offset = getPixCursorOffset(&pixPoint, image);
 		unsigned color = *(image->data + offset);
 		deleteImg(image);
 		return color; // return color computed at offsets
 	}
 #endif
 protected:
+    // TODO: Add method for fetching render context based on scene
+
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific variables
     // const Topl_Pipeline* _pipeline;
     entry_shader_cptr _entryShader;
@@ -206,7 +204,6 @@ protected:
     bool _isSceneDrawn = false; // true after draw call, false after framebuffer swap
     unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
-	// TODO: Add method for fetching render context based on scene
 private:
     virtual void init(NATIVE_WINDOW hwnd) = 0;
     virtual void build(const Topl_Scene* scene) = 0;

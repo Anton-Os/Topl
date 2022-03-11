@@ -15,7 +15,7 @@ namespace Topl {
 	std::string font1 = fontsPath + "CutiveMono-Regular.ttf";
 	std::string font2 = fontsPath + "NerkoOne-Regular.ttf";
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
-	std::string text = "Hello World";
+	std::string text = "O";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
@@ -23,20 +23,20 @@ namespace Topl {
 	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
 	Geo_UnitLayout unitLayout("L1");
-	Geo_RowLayout rowLayout("L2", 8, 0.25f, 0.03f);
-	Geo_BoxedLayout boxedLayout("L3", 8, 0.3f, 0.1f);
+	Geo_RowLayout rowLayout("L2", 4, 0.25f, 0.03f);
+	Geo_BoxedLayout boxedLayout("L3", 3, 0.3f, 0.1f);
 
 	bool isPressPend;
 #ifdef RASTERON_H
-	Rasteron_Image* pickerBk = nullptr;
-	Rasteron_Image* captureBk = nullptr;
-	Rasteron_Image* textDisplayBk = nullptr;
+	Topl_Image pickerBk;
+	Topl_Image captureBk;
+	Topl_Image textDisplayBk;
 
 	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
 	FT_Library freetypeLib; // required for loading glyphs
 
-	Topl_Frames symbols = Topl_Frames("symbols", 256, 256, 9); // used for boxedLayout
-	Topl_Frames sequence = Topl_Frames("sequence", 256, 256, 9); // used for unitLayout
+	Topl_Frames windows = Topl_Frames("windows", 256, 256, 9); // used for boxedLayout
+	Topl_Frames texting = Topl_Frames("texting", 256, 256, 9); // used for unitLayout
 #endif
 }
 
@@ -49,31 +49,38 @@ void downCallback(float x, float y) {
 void upCallback(float x, float y) { puts("Key released"); } // for testing
 
 void setCaptureBk(Topl_Renderer* renderer) {
-	Topl::captureBk = renderer->frame(); // attempt to capture screen
-	Topl::scene.addTexture("capture", Topl::captureBk);
+	Topl::captureBk.setImage(renderer->frame()); // attempt to capture screen
+	Topl::scene.addTexture("capture", Topl::captureBk.getImage());
 	renderer->texturize(&Topl::scene);
 }
 
 void setPickerBk() {
-	Topl::pickerBk = createImgBlank(255, 255, 0xFFFF00FF);
-	Topl::scene.addTexture("picker", Topl::pickerBk);
+	Topl::pickerBk.setImage(createImgBlank(255, 255, 0xFFFF00FF));
+	Topl::scene.addTexture("picker", Topl::pickerBk.getImage());
 }
 
 void genImages() {
 	initFreeType(&Topl::freetypeLib);
-	Topl::textDisplayBk = bakeImgText(&Topl::textObj, &Topl::freetypeLib, 20);
+	Topl::textDisplayBk.setImage(bakeImgText(&Topl::textObj, &Topl::freetypeLib, 100));
 
+	Rasteron_ColorPointTable colorPointTable = { {}, 0 };
+	addColorPoint(&colorPointTable, 0xFFFFFF00, 0.5f, 0.5f); // origin point
+	// colorPointTable.pixelPointCount = 0;
 	for (unsigned short p = 0; p < Topl::boxedLayout.getRowCount() * Topl::boxedLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::boxedLayout.getChildPane(p);
-		// Rasteron_Image* frameImg = Topl::symbols.getFrameAt(p);
+		// Rasteron_Image* frameImg = Topl::windows.getFrameAt(p);
 
-		// pane->selectBk(frameImg);
+		addColorPoint(&colorPointTable, genRandColor(), genRandFloat(), genRandFloat());
+		// Rasteron_Image* tempImage = genImgProxim(Topl::windows.getFrameAt(p), &colorPointTable);
+		// Topl::windows.addFrame(tempImage);
+		pane->selectBk(Topl::windows.getFrameAt(p));
+		// deleteImg(tempImage);
 	}
 	
 	for (unsigned short p = 0; p < Topl::rowLayout.getRowCount() * Topl::rowLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::rowLayout.getChildPane(p);
 
-		// pane->selectBk(Topl::textDisplayBk);
+		pane->selectBk(Topl::textDisplayBk.getImage());
 	}
 }
 
@@ -119,9 +126,9 @@ namespace Main {
 			renderer->updateScene(&Topl::scene);
 			renderer->renderScene(&Topl::scene);
 
-			if (Topl::pickerBk == nullptr)
+			if (Topl::pickerBk.getImage() == nullptr)
 				setPickerBk();
-			if (Topl::captureBk == nullptr) 
+			if (Topl::captureBk.getImage() == nullptr) 
 				setCaptureBk(renderer);
 
 			if (Topl::isPressPend) {
@@ -135,10 +142,5 @@ namespace Main {
 		}
 	}
 
-	void cleanup() {
-		if(Topl::pickerBk != nullptr) deleteImg(Topl::pickerBk);
-		if(Topl::captureBk != nullptr) deleteImg(Topl::captureBk);
-		if(Topl::textDisplayBk != nullptr) deleteImg(Topl::textDisplayBk);
-		cleanupFreeType(&Topl::freetypeLib);
-	}
+	void cleanup() { cleanupFreeType(&Topl::freetypeLib); }
 }

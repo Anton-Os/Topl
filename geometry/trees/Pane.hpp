@@ -16,33 +16,33 @@ public:
 	Geo_Pane(unsigned color){ // Fixed 	Color Constructor
 		_bkColor = color;
 #ifdef RASTERON_H
-		_bkInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+		_imgInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
 #endif
 	}
     Geo_Pane(){ // Random Color Constructor
 		_bkColor = genRandColorVal();
 #ifdef RASTERON_H
-		_bkInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+		_imgInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
 #endif
 	}
     ~Geo_Pane(){
 #ifdef RASTERON_H
-        if(_bkInternal != nullptr) deleteImg(_bkInternal);
+        if(_imgInternal != nullptr) deleteImg(_imgInternal);
 #endif
     }
 
 	unsigned getColor() { return _bkColor; }
 #ifdef RASTERON_H
-	void selectBk(const Rasteron_Image* image) { _bkSelection = image; }
+	void selectBk(const Rasteron_Image* image) { _imgSelect = image; }
 	const Rasteron_Image* getBackground() {
-		return (_bkSelection == nullptr)? _bkInternal : _bkSelection; 
+		return (_imgSelect == nullptr)? _imgInternal : _imgSelect; 
 	}
 #endif
 private:
     unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
-    Rasteron_Image* _bkInternal = nullptr; // default background managed internally
-	const Rasteron_Image* _bkSelection = nullptr; // selected background managed externally
+    Rasteron_Image* _imgInternal = nullptr; // default internal background
+	const Rasteron_Image* _imgSelect = nullptr; // selected external backgroundd
 #endif
 };
 

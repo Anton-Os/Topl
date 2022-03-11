@@ -16,7 +16,7 @@ namespace Topl {
 	Timer_Ticker gameTicker;
 	Topl_Light skyLight = Topl_Light(Eigen::Vector3f(0.0f, LIGHT_DISTANCE, 0.0f));
 	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0));
-	Topl_Light lampLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // this light will be moving
+	Topl_Light lampLight = Topl_Light(Eigen::Vector3f(0.0f, -1.0 * LIGHT_DISTANCE, 0.0f)); // this light will be moving
 
 	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
 	NGon3D ngon2 = { SMALL_RADIUS, 12, 64 };
@@ -67,7 +67,7 @@ namespace Main {
 		Topl::scene.addGeometry("sphere2", &Topl::sphereGeo2);
 
 		Topl::gameTicker.addRecurringEvent(&pongEvent);
-		Topl::gameTicker.addRecurringEvent(&orbitEvent);
+		// Topl::gameTicker.addRecurringEvent(&orbitEvent);
 		Topl::gameTicker.addPeriodicEvent(2000, moveUpEvent);
 	}
 
