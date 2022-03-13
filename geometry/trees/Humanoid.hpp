@@ -1,23 +1,47 @@
 #include "Geo_Tree.hpp"
 #include "Geo_SpriteTable.hpp"
+// #include "Model.hpp"
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
-class Geo_Humanoid : protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
+enum HUMANOID_Anatomy {
+	HUMANOID_Head = 0,
+	HUMANOID_LeftArm = 1,
+	HUMANOID_RightArm = 2,
+	HUMANOID_Body = 3,
+	HUMANOID_LeftLeg = 4,
+	HUMANOID_RightLeg = 5
+};
+
+class Geo_Humanoid {
+protected:
+	Geo_Humanoid(){}
+	// Geometry Actors
+	Geo_Actor *head, *leftArm, *rightArm, *body, *leftLeg, *rightLeg;
+	// Physics properties associated with each body part
+    Phys_Actor head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
+	// Main links "Starfish" Shape
+	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
+	// Stability links "Pentagon" Shape
+	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
+};
+
+class Geo_Humanoid2D : protected Geo_Humanoid, protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
 public:
-	Geo_Humanoid( // Customizable constructor
+	Geo_Humanoid2D( // Assets constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
-		std::pair<std::string, Eigen::Vector3f> props[HUMANOID_PARTS_COUNT], // humanoid property list of sprite images and positions
+		std::string assets[HUMANOID_PARTS_COUNT], // image paths
 		float scaleFactor 
 	)
-	: Geo_SpriteTable({
-		props[HUMANOID_Head].first,
-		props[HUMANOID_LeftArm].first,
-		props[HUMANOID_RightArm].first,
-		props[HUMANOID_Body].first,
-		props[HUMANOID_LeftLeg].first,
-		props[HUMANOID_RightLeg].first
+	: Geo_Humanoid(),
+	Geo_SpriteTable({
+		assets[HUMANOID_Head],
+		assets[HUMANOID_LeftArm],
+		assets[HUMANOID_RightArm],
+		assets[HUMANOID_Body],
+		assets[HUMANOID_LeftLeg],
+		assets[HUMANOID_RightLeg]
 		}, scaleFactor
 	),
 	Geo_Tree(prefix, {
@@ -27,36 +51,27 @@ public:
 		(Geo_RenderObj*)getSquare(HUMANOID_Body),
 		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
 		(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
-	) {
-		headOffset = props[HUMANOID_Head].second;
-		leftArmOffset = props[HUMANOID_LeftArm].second;
-		rightArmOffset = props[HUMANOID_RightArm].second;
-		bodyOffset = props[HUMANOID_Body].second;
-		leftLegOffset = props[HUMANOID_LeftLeg].second;
-		rightLegOffset = props[HUMANOID_RightLeg].second;
-
-		init(scene);
-	}
-	~Geo_Humanoid() {}
+	) 
+	{ init(scene); }
 	
-	enum HUMANOID_Anatomy {
-		HUMANOID_Head = 0,
-		HUMANOID_LeftArm = 1,
-		HUMANOID_RightArm = 2,
-		HUMANOID_Body = 3,
-		HUMANOID_LeftLeg = 4,
-		HUMANOID_RightLeg = 5
-	};
+	~Geo_Humanoid2D() {}
 
 	void init(Topl_Scene* scene) override;
-	// void updateActor(HUMANOID_Anatomy target, Eigen::Vector3f pos, Eigen::Vector2f rot);
-private:
-	// Offsets associated with each body part to positon them appropriately
-	Eigen::Vector3f headOffset, bodyOffset, rightArmOffset, leftArmOffset, rightLegOffset, leftLegOffset;
-	// Physics properties associated with each body part
-    Phys_Actor head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
-	// Main links "Starfish" Shape
-	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
-	// Stability links "Pentagon" Shape
-	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
+	void orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles); // orients body parts
+	void orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]); // orients all body parts
 };
+
+/* class Geo_Humanoid3D : protected Geo_Humanoid, public Geo_Model {
+public:
+	Geo_Model(
+		const std::string& prefix,
+        const std::string& filePath,
+        Topl_Scene* scene
+    )
+	: Geo_Humanoid(),
+	: Geo_Model(prefix, filePath, scene){
+		// init(scene);
+	}
+
+	// void init(Topl_Scene* scene) override;
+}; */

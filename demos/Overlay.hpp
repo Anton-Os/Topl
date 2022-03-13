@@ -33,7 +33,6 @@ namespace Topl {
 	Topl_Image textDisplayBk;
 
 	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
-	FT_Library freetypeLib; // required for loading glyphs
 
 	Topl_Frames windows = Topl_Frames("windows", 256, 256, 9); // used for boxedLayout
 	Topl_Frames texting = Topl_Frames("texting", 256, 256, 9); // used for unitLayout
@@ -60,8 +59,7 @@ void setPickerBk() {
 }
 
 void genImages() {
-	initFreeType(&Topl::freetypeLib);
-	Topl::textDisplayBk.setImage(bakeImgText(&Topl::textObj, &Topl::freetypeLib, 100));
+	Topl::textDisplayBk.setTextImage(&Topl::textObj, 100);
 
 	Rasteron_ColorPointTable colorPointTable = { {}, 0 };
 	addColorPoint(&colorPointTable, 0xFFFFFF00, 0.5f, 0.5f); // origin point
@@ -141,6 +139,4 @@ namespace Main {
 			platform->handleEvents(true);
 		}
 	}
-
-	void cleanup() { cleanupFreeType(&Topl::freetypeLib); }
 }

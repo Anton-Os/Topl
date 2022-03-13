@@ -4,7 +4,7 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 # Extrenal Libraries
 include(externalTargets.cmake)
 
-list(APPEND helper_Src
+list(APPEND helper_src
 	helper/FileIO.cpp
 	helper/Input.cpp
     helper/Timer.cpp
@@ -13,7 +13,7 @@ list(APPEND helper_Src
     # core/File3D.cpp
 )
 
-list(APPEND geometry_Src
+list(APPEND geometry_src
     geometry/primitives/Geo_Flat.cpp
     geometry/primitives/Geo_Conic.cpp
     geometry/primitives/Geo_Extruded.cpp
@@ -26,7 +26,7 @@ list(APPEND geometry_Src
     geometry/ShapesGen.cpp
 )
 if(SUPPORT_3D_ASSETS)
-    list(APPEND geometry_Src
+    list(APPEND geometry_src
         geometry/trees/Model.cpp
         geometry/primitives/Geo_Node.cpp
     )
@@ -48,8 +48,8 @@ endif()
 if(WIN32)
 
     add_library(Drx11_ENGINE
-        ${helper_Src}
-    	${geometry_Src}
+        ${helper_src}
+    	${geometry_src}
 
         core/Topl_Scene_Statics.cpp
         core/Topl_Scene_Dynamics.cpp
@@ -114,8 +114,8 @@ endif()
 # OpenGL Rendering Demos
 
 add_library(GL4_ENGINE
-    ${helper_Src}
-    ${geometry_Src}
+    ${helper_src}
+    ${geometry_src}
 
     core/Topl_Scene_Statics.cpp
     core/Topl_Scene_Dynamics.cpp

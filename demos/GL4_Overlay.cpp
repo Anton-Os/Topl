@@ -23,6 +23,5 @@ int main(int argc, char** argv) {
 
 	Main::gameLoop(&platform, &renderer);
 
-	Main::cleanup();
 	return 0;
 }

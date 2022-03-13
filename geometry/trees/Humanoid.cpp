@@ -1,89 +1,37 @@
 #include "trees/Humanoid.hpp"
 
-namespace _Humanoid {
-	// TODO: Replace hard offsets, offsets need to vary depending on object constructor!
-	const Eigen::Vector2f hardQuartRot = Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0); // Hardcoded quarter rotation
-	const Eigen::Vector2f hardHalfRot = Eigen::Vector2f(-1.0 * TOPL_PI, 0.0); // Hardcoded half rotation
-
-	static void createHead(Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		actor->updateRot(hardQuartRot);
-		scene->addGeometry(name, actor);
-
-		if(sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-
-	static void createBody (Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		actor->updateRot(hardQuartRot);
-		scene->addGeometry(name, actor);
-
-		if (sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-
-	static void createLeftArm(Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		scene->addGeometry(name, actor);
-
-		if (sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-
-	static void createRightArm(Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		actor->updateRot(hardHalfRot);
-		scene->addGeometry(name, actor);
-
-		if (sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-
-	static void createLeftLeg(Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		scene->addGeometry(name, actor);
-
-		if (sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-
-	static void createRightLeg(Topl_Scene* scene, Geo_Actor* actor, Eigen::Vector3f offset, std::string name, Rasteron_Sprite* sprite) {
-		actor->updatePos(offset);
-		actor->updateRot(hardHalfRot);
-		scene->addGeometry(name, actor);
-
-		if (sprite != nullptr) // Check if a texture is associated
-			scene->addTexture(name, sprite->image);
-	}
-}
-
-void Geo_Humanoid::init(Topl_Scene* scene) { // Trying with displacements for now
+void Geo_Humanoid2D::init(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	
-	Geo_Actor* headActor = getNextActor();
+	head = getNextActor();
 	sprite = getSprite(HUMANOID_Head);
-	_Humanoid::createHead(scene, headActor, headOffset, getPrefix() + "head", sprite);
+	scene->addGeometry(getPrefix() + "head", head);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "head", sprite->image);
 
-	Geo_Actor* leftArmActor = getNextActor();
+	leftArm = getNextActor();
 	sprite = getSprite(HUMANOID_LeftArm);
-	_Humanoid::createLeftArm(scene, leftArmActor, leftArmOffset, getPrefix() + "leftArm", sprite);
+	scene->addGeometry(getPrefix() + "leftArm", leftArm);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "leftArm", sprite->image);
 
-	Geo_Actor* rightArmActor = getNextActor();
+	rightArm = getNextActor();
 	sprite = getSprite(HUMANOID_RightArm);
-	_Humanoid::createRightArm(scene, rightArmActor, rightArmOffset, getPrefix() + "rightArm", sprite);
+	scene->addGeometry(getPrefix() + "rightArm", rightArm);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "rightArm", sprite->image);
 
-	Geo_Actor* bodyActor = getNextActor();
+	body = getNextActor();
 	sprite = getSprite(HUMANOID_Body);
-	_Humanoid::createBody(scene, bodyActor, bodyOffset, getPrefix() + "body", sprite);
+	scene->addGeometry(getPrefix() + "body", body);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "body", sprite->image);
 
-	Geo_Actor* leftLegActor = getNextActor();
+	leftLeg = getNextActor();
 	sprite = getSprite(HUMANOID_LeftLeg);
-	_Humanoid::createLeftLeg(scene, leftLegActor, leftLegOffset, getPrefix() + "leftLeg", sprite);
+	scene->addGeometry(getPrefix() + "leftLeg", leftLeg);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "leftLeg", sprite->image);
 
-	Geo_Actor* rightLegActor = getNextActor();
+	rightLeg = getNextActor();
 	sprite = getSprite(HUMANOID_RightLeg);
-	_Humanoid::createRightLeg(scene, rightLegActor, rightLegOffset, getPrefix() + "rightLeg", sprite);
+	scene->addGeometry(getPrefix() + "rightLeg", rightLeg);
+	if (sprite != nullptr) scene->addTexture(getPrefix() + "rightLeg", sprite->image);
 
 	// All physics relevant functionality goes here
 
@@ -107,4 +55,24 @@ void Geo_Humanoid::init(Topl_Scene* scene) { // Trying with displacements for no
 	scene->addLink(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	scene->addLink(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
 	scene->addLink(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
+}
+
+void Geo_Humanoid2D::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles){
+	Geo_Actor* actor;
+	switch(target){
+	case HUMANOID_Head: actor = head; break;
+	case HUMANOID_LeftArm: actor = leftArm; break;
+	case HUMANOID_RightArm: actor = rightArm; break;
+	case HUMANOID_Body: actor = body; break;
+	case HUMANOID_LeftLeg: actor = leftArm; break;
+	case HUMANOID_RightLeg: actor = rightArm; break;
+	}
+
+	actor->setPos(pos);
+	actor->setRot(angles);
+}
+
+void Geo_Humanoid2D::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){
+	// TODO: Include body
+	return;
 }

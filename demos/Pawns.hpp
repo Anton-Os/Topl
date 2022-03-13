@@ -21,36 +21,46 @@ namespace Topl {
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagePath = assetsPath + "images/";
 
-	std::pair<std::string, Eigen::Vector3f> demonActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(imagePath + "Demon-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Demon-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Demon-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Demon-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Demon-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Demon-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+	std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
+		std::make_pair(Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
 	};
 
-	std::pair<std::string, Eigen::Vector3f> angelActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(imagePath + "Angel-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Angel-LeftWing.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Angel-RightWing.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.17f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Angel-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Angel-LeftLeg.png", Eigen::Vector3f(0.06f, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Angel-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+	std::string demonAssets[HUMANOID_PARTS_COUNT] = { 
+		imagePath + "Demon-Head.png", 
+		imagePath + "Demon-LeftWing.png", 
+		imagePath + "Demon-RightWing.png", 
+		imagePath + "Demon-Torso.png", 
+		imagePath + "Demon-LeftLeg.png", 
+		imagePath + "Demon-RightLeg.png" 
 	};
 
-	std::pair<std::string, Eigen::Vector3f> ghostActor[HUMANOID_PARTS_COUNT] = {
-		std::make_pair(imagePath + "Ghost-Head.png", Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Ghost-LeftArm.png", Eigen::Vector3f(0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Ghost-RightArm.png", Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.11f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Ghost-Torso.png", Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Ghost-LeftLeg.png", Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0)),
-		std::make_pair(imagePath + "Ghost-RightLeg.png", Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0))
+	std::string angelAssets[HUMANOID_PARTS_COUNT] = {
+		imagePath + "Angel-Head.png",
+		imagePath + "Angel-LeftWing.png",
+		imagePath + "Angel-RightWing.png",
+		imagePath + "Angel-Torso.png",
+		imagePath + "Angel-LeftLeg.png",
+		imagePath + "Angel-RightLeg.png"
 	};
 
-	Geo_Humanoid demon("demon", &scene, demonActor, 0.25f);
-	Geo_Humanoid angel("angel", &scene, angelActor, 0.25f);
-	Geo_Humanoid ghost("ghost", &scene, ghostActor, 0.25f);
+	std::string ghostAssets[HUMANOID_PARTS_COUNT] = {
+		imagePath + "Ghost-Head.png",
+		imagePath + "Ghost-LeftArm.png",
+		imagePath + "Ghost-RightArm.png",
+		imagePath + "Ghost-Torso.png",
+		imagePath + "Ghost-LeftLeg.png",
+		imagePath + "Ghost-RightLeg.png"
+	};
+
+	// Geo_Humanoid2D demon("demon", &scene, orientations, 0.25f);
+	Geo_Humanoid2D demon("demon", &scene, demonAssets, 0.25f);
+	Geo_Humanoid2D angel("angel", &scene, angelAssets, 0.25f);
+	Geo_Humanoid2D ghost("ghost", &scene, ghostAssets, 0.25f);
 
 	Phys_Connector demonAnchor, angelAnchor;
 	Eigen::Vector3f demonOffset = Eigen::Vector3f(-1.5f, 0.0f, 0.0f);
@@ -65,19 +75,19 @@ void buttonCallback_d(void) { Topl::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0
 void buttonCallback_r(void) { 
 	Topl::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
 	Topl::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
-} 
+}
 
 void actionCallback() {
 	// adding movements for testing
-	Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
+	/* Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
 	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
 	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(MOVE_SCALE, 0.0f, 0.0f));
-	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f));
+	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f)); */
 
-	Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
+	/* Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
 	Topl::scene.addForce("angel_body", Eigen::Vector3f(0.0f, MOVE_SCALE, 0.0f));
 	Topl::scene.addForce("angel_rightLeg", Eigen::Vector3f(-2.0f, 4.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f));
+	Topl::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f)); */
 }
 
 // Shared functions
@@ -86,21 +96,25 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
+		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
+
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 		Platform::keyLogger.addCallback('r', buttonCallback_r);
 
-		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
-
 		// Initial Positions
+		// Topl::demon.orient(HUMANOID_Head, Topl::orientations[HUMANOID_Head].first, Topl::orientations[HUMANOID_Head].second);
+		Topl::demon.orientAll(Topl::orientations);
 		Topl::demon.move(Topl::demonOffset);
+		Topl::angel.orientAll(Topl::orientations);
 		Topl::angel.move(Topl::angelOffset);
+		Topl::ghost.orientAll(Topl::orientations);
 		Topl::ghost.move(Topl::ghostOffset);
 
-		Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
-		Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
+		// Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
+		// Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
