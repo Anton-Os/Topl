@@ -105,16 +105,15 @@ namespace Main {
 		Platform::keyLogger.addCallback('r', buttonCallback_r);
 
 		// Initial Positions
-		// Topl::demon.orient(HUMANOID_Head, Topl::orientations[HUMANOID_Head].first, Topl::orientations[HUMANOID_Head].second);
 		Topl::demon.orientAll(Topl::orientations);
 		Topl::demon.move(Topl::demonOffset);
-		Topl::angel.orientAll(Topl::orientations);
+		// Topl::angel.orientAll(Topl::orientations);
 		Topl::angel.move(Topl::angelOffset);
-		Topl::ghost.orientAll(Topl::orientations);
+		// Topl::ghost.orientAll(Topl::orientations);
 		Topl::ghost.move(Topl::ghostOffset);
 
-		// Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
-		// Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
+		Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
+		Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

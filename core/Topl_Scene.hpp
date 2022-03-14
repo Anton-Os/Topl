@@ -12,6 +12,7 @@
 
 #ifdef RASTERON_H
 #include "Topl_Images.h"
+// FT_Library Topl_Image::freetypeLib = {}; // static member definition
 #endif
 
 typedef const Geo_Actor* const actor_cptr;

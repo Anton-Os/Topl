@@ -13,9 +13,10 @@ namespace Topl {
 	std::string assetsPath = ASSETS_DIR;
 	std::string fontsPath = assetsPath + "fonts/";
 	std::string font1 = fontsPath + "CutiveMono-Regular.ttf";
-	std::string font2 = fontsPath + "NerkoOne-Regular.ttf";
+	std::string font2 = fontsPath + "MajorMonoDisplay-Regular.ttf";
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
-	std::string text = "O";
+	std::string font4 = fontsPath + "NerkoOne-Regular.ttf";
+	std::string text = "o";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
@@ -23,32 +24,45 @@ namespace Topl {
 	Geo_Actor pickerCircleGeo = Geo_Actor((Geo_RenderObj*)&pickerCircle); // used for picking out cursor color
 
 	Geo_UnitLayout unitLayout("L1");
-	Geo_RowLayout rowLayout("L2", 4, 0.25f, 0.03f);
-	Geo_BoxedLayout boxedLayout("L3", 3, 0.3f, 0.1f);
+	Geo_RowLayout rowLayout("L2", 4, 0.3f, 0.03f);
+	Geo_BoxedLayout boxedLayout("L3", 3, 0.3f, 0.03f);
 
 	bool isPressPend;
 #ifdef RASTERON_H
-	Topl_Image pickerBk;
-	Topl_Image captureBk;
-	Topl_Image textDisplayBk;
+	Topl_Image pickerBk, captureBk, synthesisBk;
+	Topl_Image textBk1, textBk2, textBk3, textBk4;
 
-	Rasteron_FormatText textObj = { font1.c_str(), text.c_str(), 0xFF000000, 0xFFFFFFFF };
+	FT_Library freetypeLib;
+	Rasteron_FormatText textObj = { "", text.c_str(), WHITE_COLOR, BLACK_COLOR };
 
 	Topl_Frames windows = Topl_Frames("windows", 256, 256, 9); // used for boxedLayout
 	Topl_Frames texting = Topl_Frames("texting", 256, 256, 9); // used for unitLayout
 #endif
 }
 
+// Callbacks
+
+/* unsigned synthesisCallback(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
+	if (b == SEED_COLOR) return 0xFFFF0000;
+	else if (r == SEED_COLOR || l == SEED_COLOR) return 0xFF00FFF00;
+	else if (t == SEED_COLOR) return 0xFF0000FF;
+	else return ZERO_COLOR;
+} */
+
 void downCallback(float x, float y) {
-	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS)
+	if (Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS)
 		Topl::isPressPend = true;
 	puts("Key pressed");
 }
 
-void upCallback(float x, float y) { puts("Key released"); } // for testing
+void upCallback(float x, float y) {
+	puts("Key released");
+}
+
+// Helper Functions
 
 void setCaptureBk(Topl_Renderer* renderer) {
-	Topl::captureBk.setImage(renderer->frame()); // attempt to capture screen
+	Topl::captureBk.setImage(renderer->frame()); // screen capture code
 	Topl::scene.addTexture("capture", Topl::captureBk.getImage());
 	renderer->texturize(&Topl::scene);
 }
@@ -59,26 +73,52 @@ void setPickerBk() {
 }
 
 void genImages() {
-	Topl::textDisplayBk.setTextImage(&Topl::textObj, 100);
+	initFreeType(&Topl::freetypeLib);
+	/* Topl_Image seedBaseImage = Topl_Image(0xFF111111);
+	Topl_Image seededImage = createImgSeedRaw(seedBaseImage.getImage(), SEED_COLOR, 0.03);
+	Topl::synthesisBk.setImage(createCellPatImg8(seededImage.getImage(), synthesisCallback)); */
+	Rasteron_Image blankSlate = { "slate", 256, 256, NULL };
+	Rasteron_GradientNoise noise1 = { 3, 3, BLACK_COLOR, RED_CHANNEL };
+	Topl_Image noiseImage1 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise1));
+	Rasteron_GradientNoise noise2 = { 60, 6, BLACK_COLOR, GREEN_CHANNEL };
+	Topl_Image noiseImage2 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise2));
+	Rasteron_GradientNoise noise3 = { 33, 31, BLACK_COLOR, BLUE_CHANNEL };
+	Topl_Image noiseImage3 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise3));
+	Topl::synthesisBk.setImage(createImgFuse(noiseImage3.getImage(), noiseImage2.getImage()));
+	Topl::synthesisBk.setImage(createImgFuse(Topl::synthesisBk.getImage(), noiseImage1.getImage()));
+	Topl::unitLayout.getChildPane(0)->selectBk(Topl::synthesisBk.getImage());
 
 	Rasteron_ColorPointTable colorPointTable = { {}, 0 };
-	addColorPoint(&colorPointTable, 0xFFFFFF00, 0.5f, 0.5f); // origin point
+	addColorPoint(&colorPointTable, WHITE_COLOR, 0.5f, 0.5f);
 	// colorPointTable.pixelPointCount = 0;
 	for (unsigned short p = 0; p < Topl::boxedLayout.getRowCount() * Topl::boxedLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::boxedLayout.getChildPane(p);
 		// Rasteron_Image* frameImg = Topl::windows.getFrameAt(p);
 
 		addColorPoint(&colorPointTable, genRandColor(), genRandFloat(), genRandFloat());
-		// Rasteron_Image* tempImage = genImgProxim(Topl::windows.getFrameAt(p), &colorPointTable);
-		// Topl::windows.addFrame(tempImage);
+		Topl_Image layoutImage = Topl_Image(createImgProxim(Topl::windows.getFrameAt(p), &colorPointTable));
+		Topl::windows.addFrame(layoutImage.getImage());
 		pane->selectBk(Topl::windows.getFrameAt(p));
-		// deleteImg(tempImage);
 	}
+
+	Topl::textObj.fileName = Topl::font1.c_str();
+	Topl::textBk1.setTextImage(&Topl::freetypeLib, &Topl::textObj);
+	Topl::textObj.fileName = Topl::font2.c_str();
+	Topl::textBk2.setTextImage(&Topl::freetypeLib, &Topl::textObj);
+	Topl::textObj.fileName = Topl::font3.c_str();
+	Topl::textBk3.setTextImage(&Topl::freetypeLib, &Topl::textObj);
+	Topl::textObj.fileName = Topl::font4.c_str();
+	Topl::textBk4.setTextImage(&Topl::freetypeLib, &Topl::textObj);
 	
 	for (unsigned short p = 0; p < Topl::rowLayout.getRowCount() * Topl::rowLayout.getColCount(); p++) {
 		Geo_Pane* pane = Topl::rowLayout.getChildPane(p);
 
-		pane->selectBk(Topl::textDisplayBk.getImage());
+		switch (p % 4) {
+		case 0: pane->selectBk(Topl::textBk1.getImage()); break;
+		case 1: pane->selectBk(Topl::textBk2.getImage()); break;
+		case 2: pane->selectBk(Topl::textBk3.getImage()); break;
+		case 3: pane->selectBk(Topl::textBk4.getImage()); break;
+		}
 	}
 }
 
@@ -93,6 +133,8 @@ unsigned getPressPixel(Topl_Renderer* renderer) {
 #endif
 	return pixel;
 }
+
+// Main Operations
 
 namespace Main {
     void init(Platform* platform) {

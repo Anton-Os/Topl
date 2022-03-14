@@ -14,6 +14,9 @@ enum HUMANOID_Anatomy {
 };
 
 class Geo_Humanoid {
+public:
+	void orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles); // orients body parts
+	void orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]); // orients all body parts
 protected:
 	Geo_Humanoid(){}
 	// Geometry Actors
@@ -26,7 +29,7 @@ protected:
 	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
 };
 
-class Geo_Humanoid2D : protected Geo_Humanoid, protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
+class Geo_Humanoid2D : public Geo_Humanoid, protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
 public:
 	Geo_Humanoid2D( // Assets constructor
 		const std::string& prefix,
@@ -57,11 +60,9 @@ public:
 	~Geo_Humanoid2D() {}
 
 	void init(Topl_Scene* scene) override;
-	void orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles); // orients body parts
-	void orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]); // orients all body parts
 };
 
-/* class Geo_Humanoid3D : protected Geo_Humanoid, public Geo_Model {
+/* class Geo_Humanoid3D : public Geo_Humanoid, public Geo_Model {
 public:
 	Geo_Model(
 		const std::string& prefix,

@@ -5,7 +5,7 @@ class Geo_Model : public Geo_Tree {
 public:
     Geo_Model(
 		const std::string& prefix,
-        std::string filePath,
+        const std::string& filePath,
         Topl_Scene* scene
     ) : Geo_Tree(prefix, &_dummyGeo, 1){
         _filePath = filePath;

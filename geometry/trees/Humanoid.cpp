@@ -1,5 +1,29 @@
 #include "trees/Humanoid.hpp"
 
+void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles){
+	Geo_Actor* actor;
+	switch(target){
+	case HUMANOID_Head: actor = head; break;
+	case HUMANOID_LeftArm: actor = leftArm; break;
+	case HUMANOID_RightArm: actor = rightArm; break;
+	case HUMANOID_Body: actor = body; break;
+	case HUMANOID_LeftLeg: actor = leftArm; break;
+	case HUMANOID_RightLeg: actor = rightArm; break;
+	}
+
+	actor->setPos(pos);
+	actor->setRot(angles);
+}
+
+void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){
+	orient(HUMANOID_Head, orientations[HUMANOID_Head].first, orientations[HUMANOID_Head].second);
+	orient(HUMANOID_LeftArm, orientations[HUMANOID_LeftArm].first, orientations[HUMANOID_LeftArm].second);
+	orient(HUMANOID_RightArm, orientations[HUMANOID_RightArm].first, orientations[HUMANOID_RightArm].second);
+	orient(HUMANOID_Body, orientations[HUMANOID_Body].first, orientations[HUMANOID_Body].second);
+	orient(HUMANOID_LeftLeg, orientations[HUMANOID_LeftLeg].first, orientations[HUMANOID_LeftLeg].second);
+	orient(HUMANOID_RightLeg, orientations[HUMANOID_RightLeg].first, orientations[HUMANOID_RightLeg].second);
+}
+
 void Geo_Humanoid2D::init(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	
@@ -55,24 +79,4 @@ void Geo_Humanoid2D::init(Topl_Scene* scene) { // Trying with displacements for 
 	scene->addLink(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	scene->addLink(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
 	scene->addLink(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
-}
-
-void Geo_Humanoid2D::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles){
-	Geo_Actor* actor;
-	switch(target){
-	case HUMANOID_Head: actor = head; break;
-	case HUMANOID_LeftArm: actor = leftArm; break;
-	case HUMANOID_RightArm: actor = rightArm; break;
-	case HUMANOID_Body: actor = body; break;
-	case HUMANOID_LeftLeg: actor = leftArm; break;
-	case HUMANOID_RightLeg: actor = rightArm; break;
-	}
-
-	actor->setPos(pos);
-	actor->setRot(angles);
-}
-
-void Geo_Humanoid2D::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){
-	// TODO: Include body
-	return;
 }

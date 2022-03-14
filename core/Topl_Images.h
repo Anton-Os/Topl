@@ -6,11 +6,10 @@ struct Topl_Image { // wrapper around Rasteron_Image
     Topl_Image(){} // no image
     Topl_Image(unsigned color){ setColorImage(color); } // solid image
     Topl_Image(const std::string& filePath){ setFileImage(filePath); } // file image
-    Topl_Image(Rasteron_FormatText* textObj, unsigned scale){ setTextImage(textObj, scale); } // text image
+    Topl_Image(FT_Library* freetypeLib, Rasteron_FormatText* textObj){ setTextImage(freetypeLib, textObj); } // text image
     Topl_Image(Rasteron_Image* refImage){ setImage(refImage); } // custom image
     ~Topl_Image(){
-        if(freetypeLib != NULL) cleanupFreeType(&freetypeLib);
-        deleteImg(image);
+        if(image != NULL) deleteImg(image);
     }
 
     void setColorImage(unsigned color){
@@ -21,10 +20,12 @@ struct Topl_Image { // wrapper around Rasteron_Image
         if(image != NULL) deleteImg(image); // delte old image
         image = createImgRef(filePath.c_str());
     }
-    void setTextImage(Rasteron_FormatText* textObj, unsigned scale){
+    void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
         if(image != NULL) deleteImg(image); // delte old image
-        if(freetypeLib == NULL) initFreeType(&freetypeLib);
-        image = bakeImgText(textObj, &freetypeLib, scale);
+        if(freetypeLib == NULL) initFreeType(freetypeLib);
+        Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
+        image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
+        deleteImg(fontImage);
     }
     void setImage(Rasteron_Image* refImage){
         if(image != NULL) deleteImg(image); // delte old image
@@ -32,7 +33,6 @@ struct Topl_Image { // wrapper around Rasteron_Image
     }
     Rasteron_Image* getImage(){ return image; }
 private:
-    FT_Library freetypeLib; // make this member static!
     Rasteron_Image* image = NULL; // underlying data
 };
 
