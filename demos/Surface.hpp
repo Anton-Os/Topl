@@ -5,7 +5,7 @@
 
 #include "primitives/Geo_Flat.hpp"
 
-namespace Topl {
+namespace App {
 	// Management Objects
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
@@ -19,11 +19,11 @@ namespace Topl {
 }
 
 void mouseCallback_l(float x, float y){ 
-	if(Topl::clicks > 0) Topl::clicks--; 
+	if(App::clicks > 0) App::clicks--; 
 	puts("Left Button Down!");
 }
 void mouseCallback_r(float x, float y){ 
-	Topl::clicks++; 
+	App::clicks++; 
 	puts("Right Button Down");
 }
 
@@ -38,7 +38,7 @@ namespace Main {
 		// Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, mouseCallback_l2);
 		// Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, mouseCallback_r2);
 
-		Topl::scene.addGeometry("plane", &Topl::planeActor);
+		App::scene.addGeometry("plane", &App::planeActor);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
@@ -46,8 +46,8 @@ namespace Main {
 
 		while (1) {
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(&Topl::scene);
+			renderer->updateScene(&App::scene);
+			renderer->renderScene(&App::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(true);

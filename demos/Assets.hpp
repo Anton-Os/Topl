@@ -9,7 +9,7 @@
 
 #define MOVE_AMOUNT 1.5
 
-namespace Topl {
+namespace App {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	std::string assetsPath = ASSETS_DIR;
@@ -18,10 +18,10 @@ namespace Topl {
 	Geo_Model model("model", modelsPath + "UrkwinAlien.obj", &scene);
 }
 
-void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, -1.0f * MOVE_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.movePos(Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f)); } // Move up
+void buttonCallback_a(void) { App::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { App::camera.movePos(Eigen::Vector3f(0.0f, -1.0f * MOVE_AMOUNT, 0.0f)); } // Move down
+void buttonCallback_d(void) { App::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
 // Shared functions
 
@@ -34,15 +34,15 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		Topl::camera.setLookPos(Eigen::Vector3f(0.0, 10.0f, 0.0f));
+		App::camera.setLookPos(Eigen::Vector3f(0.0, 10.0f, 0.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 
 		while (1) {
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(&Topl::scene);
+			renderer->updateScene(&App::scene);
+			renderer->renderScene(&App::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(false);

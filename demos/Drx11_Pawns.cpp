@@ -18,8 +18,8 @@ int main(int argc, char** argv) {
 	Drx11_Textured_FragmentShader pixelShader = Drx11_Textured_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &pixelShader);
 	
-	renderer.setCamera(&Topl::camera);
-	renderer.buildScene(&Topl::scene);
+	renderer.setCamera(&App::camera);
+	renderer.buildScene(&App::scene);
 
 	Main::gameLoop(&platform, &renderer);
 

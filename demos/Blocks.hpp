@@ -15,7 +15,7 @@
 #define CAM_MAX_ANGLE 3.14159 / 2.0 // roughly 90 degrees
 #define CAM_MIN_ANGLE 3.14159 / -2.0 // roughly -90 degrees
 
-namespace Topl {
+namespace App {
 	// Management Objects
 	Topl_Scene scene;
 	// Topl_Camera camera;
@@ -46,29 +46,29 @@ namespace Topl {
 
 static void calcCamera() {
 	// TODO: Perform rotation calculation here!
-	Topl::camera.setLookPos(Eigen::Vector3f(Topl::camRotAngles[0], Topl::camRotAngles[1], 0.0f));
+	App::camera.setLookPos(Eigen::Vector3f(App::camRotAngles[0], App::camRotAngles[1], 0.0f));
 }
 void hoverCallback_top(float x, float y) {
-	if (Topl::camRotAngles[1] < CAM_MAX_ANGLE) Topl::camRotAngles[1] += CAM_INC_ANGLE;
+	if (App::camRotAngles[1] < CAM_MAX_ANGLE) App::camRotAngles[1] += CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_right(float x, float y) {
-	if (Topl::camRotAngles[0] < CAM_MAX_ANGLE) Topl::camRotAngles[0] += CAM_INC_ANGLE;
+	if (App::camRotAngles[0] < CAM_MAX_ANGLE) App::camRotAngles[0] += CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_left(float x, float y) { 
-	if (Topl::camRotAngles[0] > CAM_MIN_ANGLE) Topl::camRotAngles[0] -= CAM_INC_ANGLE;
+	if (App::camRotAngles[0] > CAM_MIN_ANGLE) App::camRotAngles[0] -= CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_bot(float x, float y) {
-	if (Topl::camRotAngles[1] > CAM_MIN_ANGLE) Topl::camRotAngles[1] -= CAM_INC_ANGLE;
+	if (App::camRotAngles[1] > CAM_MIN_ANGLE) App::camRotAngles[1] -= CAM_INC_ANGLE;
 	calcCamera();
 }
 
-void buttonCallback_w(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { Topl::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { Topl::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { Topl::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { App::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { App::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
 // Shared functions
 
@@ -76,26 +76,26 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
-		Platform::mouseLogger.addHoverCallback(&Topl::topRange, hoverCallback_top);
-		Platform::mouseLogger.addHoverCallback(&Topl::rightRange, hoverCallback_right);
-		Platform::mouseLogger.addHoverCallback(&Topl::leftRange, hoverCallback_left);
-		Platform::mouseLogger.addHoverCallback(&Topl::botRange, hoverCallback_bot);
+		Platform::mouseLogger.addHoverCallback(&App::topRange, hoverCallback_top);
+		Platform::mouseLogger.addHoverCallback(&App::rightRange, hoverCallback_right);
+		Platform::mouseLogger.addHoverCallback(&App::leftRange, hoverCallback_left);
+		Platform::mouseLogger.addHoverCallback(&App::botRange, hoverCallback_bot);
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		// Topl::camera.setPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT));
-		Topl::chain.move(Eigen::Vector3f(0.0f, 0.8f, 0.0f));
+		// App::camera.setPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT));
+		App::chain.move(Eigen::Vector3f(0.0f, 0.8f, 0.0f));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		while (1) {
-			// Topl::scene.resolvePhysics();
+			// App::scene.resolvePhysics();
 
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene, &Topl::camera);
-			renderer->renderScene(&Topl::scene);
+			renderer->updateScene(&App::scene, &App::camera);
+			renderer->renderScene(&App::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(true); // enables mouse events

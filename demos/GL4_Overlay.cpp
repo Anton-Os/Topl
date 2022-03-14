@@ -18,11 +18,11 @@ int main(int argc, char** argv) {
 	GL4_Textured_FragmentShader fragmentShader = GL4_Textured_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
-	renderer.setCamera(&Topl::camera);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.setCamera(&App::camera);
+	renderer.buildScene(&App::scene, &App::camera);
 
 	Main::gameLoop(&platform, &renderer);
 
-	cleanupFreeType(&Topl::freetypeLib);
+	cleanupFreeType(&App::freetypeLib);
 	return 0;
 }

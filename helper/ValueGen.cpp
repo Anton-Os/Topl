@@ -42,7 +42,7 @@ void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 
 // Mathematic Operations
 
-Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds){
+static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds){
     Eigen::Matrix4f projMatrix;
     projMatrix << // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
@@ -52,7 +52,7 @@ Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds){
     return projMatrix;
 }
 
-Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds){
+static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds){
     Eigen::Matrix4f projMatrix;
     projMatrix << // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, 0.0f, (bounds.left + bounds.right) / (bounds.left - bounds.right),
@@ -60,6 +60,23 @@ Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds){
         0.0f, 0.0f, 2.0f / (bounds.nearPlane - bounds.farPlane), (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
         0.0f, 0.0f, 0.0f, 1.0f;
     return projMatrix;
+}
+
+static Eigen::Matrix4f genStereographicMatrix(SpatialBounds3D bounds){
+    return Eigen::Matrix4f::Identity();
+}
+
+static Eigen::Matrix4f genGnomonicMatrix(SpatialBounds3D bounds){
+    return Eigen::Matrix4f::Identity();
+}
+
+Eigen::Matrix4f genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
+    switch(type){
+        case PROJECTION_Perspective: return genPerspectiveMatrix(bounds);
+        case PROJECTION_Ortho: return genOrthoMatrix(bounds);
+        case PROJECTION_Stereographic: return genStereographicMatrix(bounds);
+        case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
+    }
 }
 
 unsigned genRandColor(){

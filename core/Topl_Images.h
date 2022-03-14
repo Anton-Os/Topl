@@ -1,5 +1,7 @@
 #include "support_def.h"
 
+#include "Geometry.hpp"
+
 #ifdef RASTERON_H // required library for loading images
 
 struct Topl_Image { // wrapper around Rasteron_Image
@@ -22,7 +24,6 @@ struct Topl_Image { // wrapper around Rasteron_Image
     }
     void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
         if(image != NULL) deleteImg(image); // delte old image
-        if(freetypeLib == NULL) initFreeType(freetypeLib);
         Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
         image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
         deleteImg(fontImage);
@@ -79,6 +80,22 @@ struct Topl_Material { // Material of static images, wrapper around Rasteron_Fra
 
 private:
 	Rasteron_Animation* data; // underlying data
+};
+
+struct Topl_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Heightmap
+    Topl_Heightmap(const Rasteron_Image* refImage)
+    : Geo_RenderObj(refImage->height * refImage->width) {
+        heightmap = createHeightmap(refImage);
+    }
+
+    ~Topl_Heightmap(){ deleteHeightmap(heightmap); }
+private:
+    void genPos(Eigen::Vector3f* data) override { return; } // Implement here
+    void genNormals(Eigen::Vector3f* data) override { return; } // Implement here
+    void genTexCoords(Eigen::Vector2f* data) override { return; } // Implement here
+    void genIndices(unsigned* data) override { return; } // Implement here
+
+    Rasteron_Heightmap* heightmap = NULL;
 };
 
 #endif

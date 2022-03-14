@@ -44,8 +44,7 @@ vec3 reflect(vec3 light, vec3 target){
 float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
 	vec3 reflectVec = reflect(light, target);
 
-	// return dot(normalize(camera), reflectVec);
-	return dot(normalize(camera), reflectVec);
+	return dot(-1.0 * normalize(camera), reflectVec);
 }
 
 mat3 calcRotMatrix(vec2 rotCoords){

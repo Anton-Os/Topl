@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
 	Drx11_Flat_FragmentShader fragmentShader = Drx11_Flat_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 
-	renderer.setCamera(&Topl::camera);
-	renderer.buildScene(&Topl::scene);
+	renderer.setCamera(&App::camera);
+	renderer.buildScene(&App::scene);
 
 	Main::gameLoop(&platform, &renderer);
 

@@ -13,7 +13,7 @@
 #define PARTS_SCALE 3
 #define MOVE_SCALE 22
 
-namespace Topl {
+namespace App {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
@@ -68,26 +68,26 @@ namespace Topl {
 	Eigen::Vector3f ghostOffset = Eigen::Vector3f(0.0, -0.5f, 0.0f);
 }
 
-void buttonCallback_w(void) { Topl::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { Topl::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
-void buttonCallback_s(void) { Topl::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { Topl::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
+void buttonCallback_a(void) { App::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
+void buttonCallback_s(void) { App::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
+void buttonCallback_d(void) { App::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
 void buttonCallback_r(void) { 
-	Topl::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
-	Topl::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
+	App::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
+	App::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
 }
 
 void actionCallback() {
 	// adding movements for testing
-	/* Topl::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("demon_rightLeg", Eigen::Vector3f(MOVE_SCALE, 0.0f, 0.0f));
-	Topl::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f)); */
+	/* App::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("demon_rightLeg", Eigen::Vector3f(MOVE_SCALE, 0.0f, 0.0f));
+	App::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f)); */
 
-	/* Topl::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_body", Eigen::Vector3f(0.0f, MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_rightLeg", Eigen::Vector3f(-2.0f, 4.0f * MOVE_SCALE, 0.0f));
-	Topl::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f)); */
+	/* App::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("angel_body", Eigen::Vector3f(0.0f, MOVE_SCALE, 0.0f));
+	App::scene.addForce("angel_rightLeg", Eigen::Vector3f(-2.0f, 4.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f)); */
 }
 
 // Shared functions
@@ -96,7 +96,7 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
-		Topl::gameTicker.addPeriodicEvent(1000, actionCallback);
+		App::gameTicker.addPeriodicEvent(1000, actionCallback);
 
 		Platform::keyLogger.addCallback('w', buttonCallback_w);
 		Platform::keyLogger.addCallback('a', buttonCallback_a);
@@ -105,25 +105,25 @@ namespace Main {
 		Platform::keyLogger.addCallback('r', buttonCallback_r);
 
 		// Initial Positions
-		Topl::demon.orientAll(Topl::orientations);
-		Topl::demon.move(Topl::demonOffset);
-		// Topl::angel.orientAll(Topl::orientations);
-		Topl::angel.move(Topl::angelOffset);
-		// Topl::ghost.orientAll(Topl::orientations);
-		Topl::ghost.move(Topl::ghostOffset);
+		App::demon.orientAll(App::orientations);
+		App::demon.move(App::demonOffset);
+		// App::angel.orientAll(App::orientations);
+		App::angel.move(App::angelOffset);
+		// App::ghost.orientAll(App::orientations);
+		App::ghost.move(App::ghostOffset);
 
-		Topl::scene.addAnchor(&Topl::demonAnchor, "demon_body", &Topl::demonOffset);
-		Topl::scene.addAnchor(&Topl::angelAnchor, "angel_head", &Topl::angelOffset);
+		App::scene.addAnchor(&App::demonAnchor, "demon_body", &App::demonOffset);
+		App::scene.addAnchor(&App::angelAnchor, "angel_head", &App::angelOffset);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
 		while (1) {
-			Topl::gameTicker.updateTimer();
-			Topl::scene.resolvePhysics();
+			App::gameTicker.updateTimer();
+			App::scene.resolvePhysics();
 
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(&Topl::scene);
+			renderer->updateScene(&App::scene);
+			renderer->renderScene(&App::scene);
 			renderer->switchFramebuff();
 
 			platform->handleEvents(false);

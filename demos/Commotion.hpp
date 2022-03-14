@@ -8,7 +8,7 @@
 
 #define BIG_RADIUS 1.8
 
-namespace Topl {
+namespace App {
 	// Management Objects
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
@@ -42,8 +42,8 @@ namespace Main {
 
 		while (1) {
 			renderer->clearView();
-			renderer->updateScene(&Topl::scene);
-			renderer->renderScene(&Topl::scene);
+			renderer->updateScene(&App::scene);
+			renderer->renderScene(&App::scene);
 
 			platform->handleEvents();
 		}

@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
 	// renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 	renderer.genPipeline(&pipeline, &vertexBeams, &fragBeams);
 
-	renderer.setCamera(&Topl::camera);
-	renderer.buildScene(&Topl::scene, &Topl::camera);
+	renderer.setCamera(&App::camera);
+	renderer.buildScene(&App::scene, &App::camera);
 
 	Main::gameLoop(&platform, &renderer);
 
