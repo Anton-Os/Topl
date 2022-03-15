@@ -1,6 +1,6 @@
 #include "Topl_Renderer_Drx11.hpp"
 
-namespace _Drx11 {
+namespace Renderer {
 	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
 		DXGI_FORMAT format;
 
@@ -90,7 +90,7 @@ namespace _Drx11 {
 		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
 		inputElementDesc.SemanticName = input->semantic.c_str();
 		inputElementDesc.SemanticIndex = 0;
-		inputElementDesc.Format = _Drx11::getFormatFromShaderVal(input->type);
+		inputElementDesc.Format = Renderer::getFormatFromShaderVal(input->type);
 		inputElementDesc.InputSlot = 0;
 		inputElementDesc.AlignedByteOffset = offset;
 		inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -280,8 +280,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 	unsigned inputElementOffset = 0;
 	for(unsigned i = 0; i < _entryShader->getInputCount(); i++){
-		*(layout_ptr + i) = _Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += _Drx11::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
+		*(layout_ptr + i) = Renderer::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
+		inputElementOffset += Renderer::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
 	}
 	UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
 
@@ -298,7 +298,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_isSceneReady = _Drx11::createBlockBuff(&_device, &activeCtx->sceneBlockBuff, &blockBytes);
+		_isSceneReady = Renderer::createBlockBuff(&_device, &activeCtx->sceneBlockBuff, &blockBytes);
 		activeCtx->buffers.push_back(Buffer_Drx11(activeCtx->sceneBlockBuff));
 	}
 
@@ -313,7 +313,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		// component block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			_isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
+			_isSceneReady = Renderer::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
 		}
 		if (!_isSceneReady) return; // Error
@@ -321,14 +321,14 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		// index creation
 		ID3D11Buffer* indexBuff = nullptr;
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
-			_isSceneReady = _Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
+			_isSceneReady = Renderer::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
 			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
 		}
 		else activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isSceneReady = _Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVerticesCount());
+		_isSceneReady = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVerticesCount());
 
 		activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
 		if (!_isSceneReady) return;
@@ -486,7 +486,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && activeCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		_Drx11::createBlockBuff(&_device, &activeCtx->buffers.front().buffer, &blockBytes); // Update code should work
+		Renderer::createBlockBuff(&_device, &activeCtx->buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
@@ -499,7 +499,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 					break;
 				}
 
-			if(renderBlockBuff != nullptr) _isSceneReady = _Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
+			if(renderBlockBuff != nullptr) _isSceneReady = Renderer::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
 			if (!_isSceneReady) return; // Error
 		}
 	}
@@ -537,11 +537,11 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 	// Rendering Loop!
 	if (_isPipelineReady && _isSceneReady)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
-			_Drx11::discoverBuffers(buffs, &activeCtx->buffers, id);
+			Renderer::discoverBuffers(buffs, &activeCtx->buffers, id);
 
-			Buffer_Drx11* vertexBuff = _Drx11::findBuff(buffs, BUFF_Vertex_Type);
-			Buffer_Drx11* indexBuff = _Drx11::findBuff(buffs, BUFF_Index_UI);
-			Buffer_Drx11* renderBlockBuff = _Drx11::findBuff(buffs, BUFF_Render_Block);
+			Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
+			Buffer_Drx11* indexBuff = Renderer::findBuff(buffs, BUFF_Index_UI);
+			Buffer_Drx11* renderBlockBuff = Renderer::findBuff(buffs, BUFF_Render_Block);
 
 			if(renderBlockBuff != nullptr)
 				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);

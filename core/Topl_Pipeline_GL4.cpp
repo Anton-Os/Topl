@@ -1,6 +1,6 @@
 #include "Topl_Renderer_GL4.hpp"
 
-namespace _GL4 {
+namespace Renderer {
 	void errorNotFound(const char* shaderName){
 		printf("%s not found", shaderName);
 	}
@@ -51,7 +51,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = vertexShaderSrc.c_str();
 	if (!vertexShaderSrc.empty()) glShaderSource(pipeline->vShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Vertex");
+		Renderer::errorNotFound("Vertex");
 		pipeline->isReady = false;
 	}
 
@@ -59,7 +59,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->vShader);
 	glGetShaderiv(pipeline->vShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorShaderCompile("Vertex", pipeline->vShader);
+		Renderer::errorShaderCompile("Vertex", pipeline->vShader);
 		pipeline->isReady = false;
 	}
 
@@ -70,7 +70,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = pixelShaderSrc.c_str();
 	if (!pixelShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Fragment");
+		Renderer::errorNotFound("Fragment");
 		pipeline->isReady = false;
 	}
 
@@ -78,7 +78,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->fShader);
 	glGetShaderiv(pipeline->fShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorShaderCompile("Fragment", pipeline->fShader);
+		Renderer::errorShaderCompile("Fragment", pipeline->fShader);
 		pipeline->isReady = false;
 	}
 
@@ -91,7 +91,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorProgramLink(pipeline->shaderProg);
+		Renderer::errorProgramLink(pipeline->shaderProg);
 		pipeline->isReady = false;
 	}
 	else {
@@ -115,7 +115,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = vertexShaderSrc.c_str();
 	if (!vertexShaderSrc.empty()) glShaderSource(pipeline->vShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Vertex");
+		Renderer::errorNotFound("Vertex");
 		pipeline->isReady = false;
 	}
 
@@ -123,7 +123,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->vShader);
 	glGetShaderiv(pipeline->vShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorShaderCompile("Vertex", pipeline->vShader);
+		Renderer::errorShaderCompile("Vertex", pipeline->vShader);
 		pipeline->isReady = false;
 	}
 
@@ -134,7 +134,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = tessCtrlShaderSrc.c_str();
 	if (!tessCtrlShaderSrc.empty()) glShaderSource(pipeline->tcShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Tess Control");
+		Renderer::errorNotFound("Tess Control");
 		pipeline->isReady = false;
 	}
 
@@ -142,7 +142,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->tcShader);
 	glGetShaderiv(pipeline->tcShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorShaderCompile("Tess Control", pipeline->tcShader);
+		Renderer::errorShaderCompile("Tess Control", pipeline->tcShader);
 		pipeline->isReady = false;
 	}
 
@@ -153,7 +153,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = tessEvalShaderSrc.c_str();
 	if (!tessEvalShaderSrc.empty()) glShaderSource(pipeline->teShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Tess Evaluation");
+		Renderer::errorNotFound("Tess Evaluation");
 		pipeline->isReady = false;
 	}
 
@@ -161,7 +161,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->teShader);
 	glGetShaderiv(pipeline->teShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) {
-		_GL4::errorShaderCompile("Tess Evaluation", pipeline->teShader);
+		Renderer::errorShaderCompile("Tess Evaluation", pipeline->teShader);
 		pipeline->isReady = false;
 	}
 
@@ -172,7 +172,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = geomShaderSrc.c_str();
 	if (!geomShaderSrc.empty()) glShaderSource(pipeline->gShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Geometry");
+		Renderer::errorNotFound("Geometry");
 		pipeline->isReady = false;
 	}
 
@@ -180,7 +180,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->gShader);
 	glGetShaderiv(pipeline->gShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) {
-		_GL4::errorShaderCompile("Geometry", pipeline->gShader);
+		Renderer::errorShaderCompile("Geometry", pipeline->gShader);
 		pipeline->isReady = false;
 	}
 
@@ -191,7 +191,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	source = pixelShaderSrc.c_str();
 	if (!pixelShaderSrc.empty()) glShaderSource(pipeline->fShader, 1, &source, NULL);
 	else {
-		_GL4::errorNotFound("Fragment");
+		Renderer::errorNotFound("Fragment");
 		pipeline->isReady = false;
 	}
 
@@ -199,7 +199,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	glCompileShader(pipeline->fShader);
 	glGetShaderiv(pipeline->fShader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorShaderCompile("Fragment", pipeline->fShader);
+		Renderer::errorShaderCompile("Fragment", pipeline->fShader);
 		pipeline->isReady = false;
 	}
 
@@ -212,7 +212,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
 	if (result == GL_FALSE){
-		_GL4::errorProgramLink(pipeline->shaderProg);
+		Renderer::errorProgramLink(pipeline->shaderProg);
 		pipeline->isReady = false;
 	}
 	else {

@@ -5,8 +5,6 @@
 #include "Topl_Renderer_Drx11.hpp"
 #endif
 
-#include "Topl_Scene.hpp"
-
 
 enum APP_Backend {
     APP_OpenGL_4,
@@ -14,15 +12,17 @@ enum APP_Backend {
     // Add Vulkan Support
 };
 
-class Topl_App_Factory { // supplies and generates all interfaces for Topl_App class
-	static Topl_Renderer* genRenderer(APP_Backend backend);
-	static Topl_Pipeline* genPipeline(APP_Backend backend, const std::string& vertexSource, const std::string& pixelSource);
+class Topl_Factory { // supplies and generates all interfaces for Topl_App class
+public:
+	~Topl_Factory();
+	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
+	static Topl_Pipeline* genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	static Topl_Pipeline* genPipeline(APP_Backend backend,
-		const std::string& vertexSource,
-		const std::string& pixelSource,
-		const std::string& tessCtrlSource,
-		const std::string& tessEvalSource,
-		const std::string& geomSource
+		entry_shader_cptr vertexSource,
+		shader_cptr pixelSource,
+		shader_cptr tessCtrlSource,
+		shader_cptr tessEvalSource,
+		shader_cptr geomSource
 	);
 private:
 	// Internally Managed Structures
@@ -30,8 +30,9 @@ private:
 	static Topl_Renderer_Drx11* _renderer_Drx11;
 
 	static Topl_Pipeline_GL4** _pipelines_GL4;
+	static unsigned _pipelineIndex_GL4;
 	static Topl_Pipeline_Drx11** _pipelines_Drx11;
-	static Topl_Shader** _shaders;
+	static unsigned _pipelineIndex_Drx11;
 };
 
 class Topl_App {
@@ -42,14 +43,6 @@ public:
 	void run();
 
 	void setActivePipeline(const Topl_Pipeline* pipeline){ _activePipeline = pipeline; }
-	Topl_Pipeline* genPipeline(const std::string& vertexSource, const std::string& pixelSource);
-	Topl_Pipeline* genPipeline(
-		const std::string& vertexSource,
-		const std::string& pixelSource,
-		const std::string& tessCtrlSource,
-		const std::string& tessEvalSource,
-		const std::string& geomSource
-	);
 
 protected:
     virtual void init() = 0;
@@ -58,19 +51,8 @@ protected:
     const enum APP_Backend _backend;
  
 	Platform* _platform = nullptr;
-	union {
-		Topl_Renderer_GL4* _renderer_GL4;
-		Topl_Renderer_Drx11* _renderer_Drx11;
-	};
-	Topl_Renderer* _renderer;
-
-	union {
-		Topl_Pipeline_GL4** _pipelines_GL4;
-		Topl_Pipeline_Drx11** _pipelines_Drx11;
-	};
-	unsigned short _pipelineIndex = 0; // tracks the pipelines created
-	const Topl_Pipeline* _activePipeline; // only one active pipeline at a time
-	Topl_Shader** _shaders; // contains all shaders
+	Topl_Renderer* _renderer = nullptr;
+	const Topl_Pipeline* _activePipeline = nullptr;
 
     Timer_Ticker _ticker;
 #ifdef RASTERON_H

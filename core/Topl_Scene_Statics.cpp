@@ -27,14 +27,6 @@ light_cptr Topl_Scene::getLight(unsigned index) const {
 	else return _lightSrc.at(index);
 }
 
-linkedItems_cptr Topl_Scene::getLink(unsigned index) const {
-	if(index > _linkedItems.size()){
-		puts("Index for linked items is out of range!");
-		return nullptr;
-	}
-	return &_linkedItems.at(index);
-}
-
 void Topl_Scene::addGeometry(Geo_Actor* actor) {
 	for(unsigned a = 0; a < _geoActors.size(); a ++)
 		if(_geoActors[a]->getName() == actor->getName()){

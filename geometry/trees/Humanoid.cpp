@@ -11,8 +11,8 @@ void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, c
 	case HUMANOID_RightLeg: actor = rightArm; break;
 	}
 
-	actor->setPos(pos);
-	actor->setRot(angles);
+	actor->updatePos(pos);
+	actor->updateRot(angles);
 }
 
 void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){
@@ -22,6 +22,18 @@ void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orienta
 	orient(HUMANOID_Body, orientations[HUMANOID_Body].first, orientations[HUMANOID_Body].second);
 	orient(HUMANOID_LeftLeg, orientations[HUMANOID_LeftLeg].first, orientations[HUMANOID_LeftLeg].second);
 	orient(HUMANOID_RightLeg, orientations[HUMANOID_RightLeg].first, orientations[HUMANOID_RightLeg].second);
+
+	body_head_link.preset(*body->getPos(), *head->getPos());
+	body_leftArm_link.preset(*body->getPos(), *leftArm->getPos());
+	body_rightArm_link.preset(*body->getPos(), *rightArm->getPos());
+	body_leftLeg_link.preset(*body->getPos(), *leftLeg->getPos());
+	body_rightLeg_link.preset(*body->getPos(), *rightLeg->getPos());
+
+	head_leftArm_link.preset(*head->getPos(), *leftArm->getPos());
+	head_rightArm_link.preset(*head->getPos(), *rightArm->getPos());
+	leftArm_leftLeg_link.preset(*leftArm->getPos(), *leftLeg->getPos());
+	rightArm_rightLeg_link.preset(*rightArm->getPos(), *rightLeg->getPos());
+	leftLeg_rightLeg_link.preset(*leftLeg->getPos(), *rightLeg->getPos());
 }
 
 void Geo_Humanoid2D::init(Topl_Scene* scene) { // Trying with displacements for now

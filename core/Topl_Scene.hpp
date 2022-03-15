@@ -100,9 +100,8 @@ public:
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Eigen::Vector3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
-
-	unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
-	linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
+	// unsigned getLinkedItemsCount() const { return _linkedItems.size(); }
+	// linkedItems_cptr getLink(unsigned index) const; // Access to links sequentially
 private:
 	Topl_Camera _camera;
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources

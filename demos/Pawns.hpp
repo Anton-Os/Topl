@@ -105,12 +105,12 @@ namespace Main {
 		Platform::keyLogger.addCallback('r', buttonCallback_r);
 
 		// Initial Positions
-		App::demon.orientAll(App::orientations);
 		App::demon.move(App::demonOffset);
-		// App::angel.orientAll(App::orientations);
+		App::demon.orientAll(App::orientations);
 		App::angel.move(App::angelOffset);
-		// App::ghost.orientAll(App::orientations);
+		App::angel.orientAll(App::orientations);
 		App::ghost.move(App::ghostOffset);
+		App::ghost.orientAll(App::orientations);
 
 		App::scene.addAnchor(&App::demonAnchor, "demon_body", &App::demonOffset);
 		App::scene.addAnchor(&App::angelAnchor, "angel_head", &App::angelOffset);

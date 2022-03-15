@@ -1,6 +1,6 @@
 #include "Topl_Renderer_GL4.hpp"
 
-namespace _GL4 {
+namespace Renderer {
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
 		GLenum format;
 
@@ -259,14 +259,14 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(
 				i,
-				_GL4::getSizeFromShaderVal(shaderType->type),
-				_GL4::getFormatFromShaderVal(shaderType->type),
+				Renderer::getSizeFromShaderVal(shaderType->type),
+				Renderer::getFormatFromShaderVal(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
 				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
 			);
 
-			inputElementOffset += _GL4::getOffsetFromShaderVal(shaderType->type);
+			inputElementOffset += Renderer::getOffsetFromShaderVal(shaderType->type);
 		}
 		_renderIDs = rID; // Sets main graphics ID's to max value of rID
 	}
@@ -328,7 +328,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned id){
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	_GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
+	Renderer::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -409,14 +409,14 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		_GL4::discoverBuffers(buffers, &activeCtx->buffers, id);
+		Renderer::discoverBuffers(buffers, &activeCtx->buffers, id);
 
-		Buffer_GL4* renderBlockBuff = _GL4::findBuff(buffers, BUFF_Render_Block);
+		Buffer_GL4* renderBlockBuff = Renderer::findBuff(buffers, BUFF_Render_Block);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		Buffer_GL4* vertexBuff = _GL4::findBuff(buffers, BUFF_Vertex_Type);
-		Buffer_GL4* indexBuff = _GL4::findBuff(buffers, BUFF_Index_UI);
+		Buffer_GL4* vertexBuff = Renderer::findBuff(buffers, BUFF_Vertex_Type);
+		Buffer_GL4* indexBuff = Renderer::findBuff(buffers, BUFF_Index_UI);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
