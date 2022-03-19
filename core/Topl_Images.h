@@ -8,7 +8,7 @@ struct Topl_Image { // wrapper around Rasteron_Image
     Topl_Image(){} // no image
     Topl_Image(unsigned color){ setColorImage(color); } // solid image
     Topl_Image(const std::string& filePath){ setFileImage(filePath); } // file image
-    Topl_Image(FT_Library* freetypeLib, Rasteron_FormatText* textObj){ setTextImage(freetypeLib, textObj); } // text image
+    Topl_Image(FT_Library* freetypeLib, Rasteron_FormatText textObj){ setTextImage(freetypeLib, &textObj); } // text image
     Topl_Image(Rasteron_Image* refImage){ setImage(refImage); } // custom image
     ~Topl_Image(){
         if(image != NULL) deleteImg(image);

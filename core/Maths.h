@@ -11,27 +11,23 @@ struct VectorXF {
 
     float operator [](unsigned short i){ return data[i]; }
     VectorXF operator +(const VectorXF& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] += vector.data[e];
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] += vector.data[e];
     }
     VectorXF operator -(const VectorXF& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] -= vector.data[e];
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] -= vector.data[e];
     }
     VectorXF operator *(const VectorXF& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] *= vector.data[e];
+       for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] *= vector.data[e];
     }
     float len(){
         float length = 0.0;
-        for(unsigned e = 0; e < size; e++) length += pow(data[e], 2);
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) length += pow(data[e], 2);
         return sqrt(length); // pythagorean theorem
     }
     VectorXF norm(){
         VectorXF normVec;
-        unsigned size = sizeof(data) / sizeof(float);
         float length = len();
-        for(unsigned e = 0; e < size; e++) normVec.data[e] = data[e] / length;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) normVec.data[e] = data[e] / length;
     }
 };
 
@@ -41,20 +37,17 @@ struct VectorXI {
 
     int operator [](unsigned short i){ return data[i]; }
     VectorXI operator +(const VectorXI& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] += vector.data[e];
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] += vector.data[e];
     }
     VectorXI operator -(const VectorXI& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] -= vector.data[e];
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] -= vector.data[e];
     }
     VectorXI operator *(const VectorXI& vector){ 
-        unsigned size = sizeof(data) / sizeof(float);
-        for(unsigned e = 0; e < size; e++) data[e] *= vector.data[e];
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] *= vector.data[e];
     }
     int len(){
         int length = 0.0;
-        for(unsigned e = 0; e < size; e++) length += pow(data[e], 2);
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) length += pow(data[e], 2);
         return sqrt(length);
     }
 };

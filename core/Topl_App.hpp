@@ -41,21 +41,27 @@ public:
 	~Topl_App();
 
 	void run();
-
 	void setActivePipeline(const Topl_Pipeline* pipeline){ _activePipeline = pipeline; }
 
 protected:
     virtual void init() = 0;
     virtual void loop(double secs, unsigned long frame) = 0;
 
-    const enum APP_Backend _backend;
- 
+	// Rendering
+	const enum APP_Backend _backend;
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 	const Topl_Pipeline* _activePipeline = nullptr;
 
+	// Utility
     Timer_Ticker _ticker;
 #ifdef RASTERON_H
 	FT_Library _freetypeLib; // required for working with fonts
 #endif
+
+	// Paths
+	const std::string fontsPath = std::string(ASSETS_DIR) + "fonts/";
+	const std::string imagesPath = std::string(ASSETS_DIR) + "images/";
+	const std::string modelsPath = std::string(ASSETS_DIR) + "models/";
+	const std::string othersPath = std::string(ASSETS_DIR) + "others/";
 };

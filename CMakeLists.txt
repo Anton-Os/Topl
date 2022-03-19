@@ -15,10 +15,10 @@ list(APPEND helper_src
 
 list(APPEND geometry_src
     geometry/primitives/Geo_Flat.cpp
-    geometry/primitives/Geo_Conic.cpp
-    geometry/primitives/Geo_Extruded.cpp
+    # geometry/primitives/Geo_Conic.cpp
+    # geometry/primitives/Geo_Extruded.cpp
     # geometry/primitives/Geo_Node.cpp
-    geometry/primitives/Geo_Sphere.cpp
+    # geometry/primitives/Geo_Sphere.cpp
 
     geometry/Geo_Tree.cpp
     geometry/Geo_SpriteTable.cpp
@@ -196,9 +196,13 @@ configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR
 
 # Modern Demos
 
-add_executable(Inception
+add_executable(Exec
+    geometry/trees/Chain.cpp
+    geometry/trees/Grid.cpp
+    geometry/trees/Humanoid.cpp
+    geometry/trees/Model.cpp
     geometry/trees/Pane.cpp
 
-    demos/Inception.cpp
+    demos/Exec.cpp
 )
-target_link_libraries(Inception GL4_ENGINE Drx11_ENGINE)
+target_link_libraries(Exec GL4_ENGINE Drx11_ENGINE)

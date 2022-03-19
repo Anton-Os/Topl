@@ -23,6 +23,7 @@ Topl_Factory::~Topl_Factory(){
         free(_pipelines_Drx11);
     }
 }
+
 Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform){
     switch(backend){
     case APP_OpenGL_4:
@@ -58,7 +59,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
     srand(time(NULL)); // seed random number generation
 #ifdef RASTERON_H
-		initFreeType(&_freetypeLib);
+	initFreeType(&_freetypeLib);
 #endif
 		
     _platform = new Platform(execPath, name);

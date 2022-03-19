@@ -92,6 +92,7 @@ private:
 	void attachMaterial(const Topl_Material* material, unsigned id) override;
 #endif
 
+	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
 	Topl_RenderContext_Drx11** _renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
 
