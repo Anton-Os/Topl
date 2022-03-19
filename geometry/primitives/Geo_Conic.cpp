@@ -7,7 +7,7 @@ void Geo_Conic::genPos(Eigen::Vector3f* data){
 
     Eigen::Vector3f centerVertex = Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL);
     *(data + 0) = centerVertex; // first vertex is the center vertex
-	Eigen::Vector3f apexVertex = mApex;
+	Eigen::Vector3f apexVertex = _apex;
 	apexVertex[2] += DEFAULT_Z_VAL;
 	// apexVertex += Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL);
 	*(data + _verticesCount - 1) = apexVertex;

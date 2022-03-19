@@ -107,14 +107,14 @@ void Geo_RenderObj::cleanup() {
 void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis){
     if(_verticesCount == 0 || _posData == nullptr) return; // no processing can occur
 
-    unsigned vAttributeOffset;
+    unsigned vAttribOffset;
     switch(axis){
-        case AXIS_X: vAttributeOffset = 0; break;
-        case AXIS_Y: vAttributeOffset = 1; break;
-        case AXIS_Z: vAttributeOffset = 2; break;
+        case AXIS_X: vAttribOffset = X_OFFSET; break;
+        case AXIS_Y: vAttribOffset = Y_OFFSET; break;
+        case AXIS_Z: vAttribOffset = Z_OFFSET; break;
     }
     for(unsigned v = 0; v < _verticesCount; v++) // modify the position data of each vertex
-        (*(_posData + v))[vAttributeOffset] = callback((*(_posData + v))[vAttributeOffset], mod); // updates specific vertex attribute
+        (*(_posData + v))[vAttribOffset] = callback((*(_posData + v))[vAttribOffset], mod); // updates specific vertex attribute
 }
 
 void Geo_RenderObj::fillRenderObj(){

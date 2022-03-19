@@ -8,7 +8,7 @@ public:
     (refShape.segments + 2, // Vertex count is number of segments +1 for the center point and +1 for the apex point
      refShape.segments * 6){ // Each segment requires 1 triangle for base and 1 triangle to connect to apex (6 vertices total)
         _shape2D = refShape; // copy to internal data
-        mApex = apex;
+        _apex = apex;
         fillRenderObj();
     }
 
@@ -20,7 +20,7 @@ private:
 	void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
     NGon2D _shape2D;
-    Eigen::Vector3f mApex;
+    Eigen::Vector3f _apex;
 };
 
 struct Geo_ConicTriangle : public Geo_Conic { 

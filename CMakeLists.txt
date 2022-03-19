@@ -3,6 +3,7 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
 # Extrenal Libraries
 include(externalTargets.cmake)
+include(locateVulkan.cmake)
 
 list(APPEND helper_src
 	helper/FileIO.cpp
@@ -15,10 +16,10 @@ list(APPEND helper_src
 
 list(APPEND geometry_src
     geometry/primitives/Geo_Flat.cpp
-    # geometry/primitives/Geo_Conic.cpp
-    # geometry/primitives/Geo_Extruded.cpp
-    # geometry/primitives/Geo_Node.cpp
-    # geometry/primitives/Geo_Sphere.cpp
+    geometry/primitives/Geo_Conic.cpp
+    geometry/primitives/Geo_Extruded.cpp
+    geometry/primitives/Geo_Node.cpp
+    geometry/primitives/Geo_Sphere.cpp
 
     geometry/Geo_Tree.cpp
     geometry/Geo_SpriteTable.cpp
@@ -46,7 +47,6 @@ endif()
 
 # DirectX Windows Dependent Demos
 if(WIN32)
-
     add_library(Drx11_ENGINE
         ${helper_src}
     	${geometry_src}
@@ -80,7 +80,7 @@ if(WIN32)
     add_executable(Drx11_Pawns
         geometry/trees/Humanoid.cpp
 
-        demos/Drx11_Pawns.cpp
+        demos/legacy/Drx11_Pawns.cpp
     )
     target_link_libraries(Drx11_Pawns PRIVATE Drx11_ENGINE)
 
@@ -88,24 +88,24 @@ if(WIN32)
 		geometry/trees/Chain.cpp
 		geometry/trees/Grid.cpp
 
-		demos/Drx11_Blocks.cpp
+		demos/legacy/Drx11_Blocks.cpp
 	)
 	target_link_libraries(Drx11_Blocks PRIVATE Drx11_ENGINE)
 
-    add_executable(Drx11_Planetary demos/Drx11_Planetary.cpp)
+    add_executable(Drx11_Planetary demos/legacy/Drx11_Planetary.cpp)
 	target_link_libraries(Drx11_Planetary PRIVATE Drx11_ENGINE)
     
-    add_executable(Drx11_Surface demos/Drx11_Surface.cpp)
+    add_executable(Drx11_Surface demos/legacy/Drx11_Surface.cpp)
 	target_link_libraries(Drx11_Surface PRIVATE Drx11_ENGINE)
 
     add_executable(Drx11_Overlay 
         geometry/trees/Pane.cpp
 
-        demos/Drx11_Overlay.cpp
+        demos/legacy/Drx11_Overlay.cpp
     )
 	target_link_libraries(Drx11_Overlay PRIVATE Drx11_ENGINE)
 
-    add_executable(Drx11_Assets demos/Drx11_Assets.cpp)
+    add_executable(Drx11_Assets demos/legacy/Drx11_Assets.cpp)
 	target_link_libraries(Drx11_Assets PRIVATE Drx11_ENGINE)
 
   # add_dependencies(Drx11_ENGINE DXSDK GLEW Eigen)
@@ -150,7 +150,7 @@ endif()
 add_executable(GL4_Pawns
     geometry/trees/Humanoid.cpp
 
-    demos/GL4_Pawns.cpp
+    demos/legacy/GL4_Pawns.cpp
 )
 # target_include_directories(GL4_Pawns PRIVATE demos)
 target_link_libraries(GL4_Pawns PRIVATE GL4_ENGINE)
@@ -159,24 +159,24 @@ add_executable(GL4_Blocks
 	geometry/trees/Chain.cpp
     geometry/trees/Grid.cpp
 
-    demos/GL4_Blocks.cpp
+    demos/legacy/GL4_Blocks.cpp
 )
 target_link_libraries(GL4_Blocks PRIVATE GL4_ENGINE)
 
-add_executable(GL4_Planetary demos/GL4_Planetary.cpp)
+add_executable(GL4_Planetary demos/legacy/GL4_Planetary.cpp)
 target_link_libraries(GL4_Planetary PRIVATE GL4_ENGINE)
 
-add_executable(GL4_Surface demos/GL4_Surface.cpp)
+add_executable(GL4_Surface demos/legacy/GL4_Surface.cpp)
 target_link_libraries(GL4_Surface PRIVATE GL4_ENGINE)
 
 add_executable(GL4_Overlay
     geometry/trees/Pane.cpp
 
-    demos/GL4_Overlay.cpp
+    demos/legacy/GL4_Overlay.cpp
 )
 target_link_libraries(GL4_Overlay PRIVATE GL4_ENGINE)
 
-add_executable(GL4_Assets demos/GL4_Assets.cpp)
+add_executable(GL4_Assets demos/legacy/GL4_Assets.cpp)
 target_link_libraries(GL4_Assets PRIVATE GL4_ENGINE)
 
 # Copying and managing implemented here with custom targets
