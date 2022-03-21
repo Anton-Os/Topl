@@ -103,7 +103,7 @@ public:
         if(camera != nullptr) _activeCamera = camera;
         else _activeCamera = &_defaultCamera;
     }
-    void setPipeline(Topl_Pipeline* pipeline){
+    void setPipeline(const Topl_Pipeline* pipeline){
         _entryShader = pipeline->entryShader;
         _isPipelineReady = pipeline->isReady;
     }

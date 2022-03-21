@@ -17,6 +17,8 @@ class Geo_Humanoid {
 public:
 	void orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles); // orients body parts
 	void orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]); // orients all body parts
+
+	void presetLinks();
 protected:
 	Geo_Humanoid(){}
 	// Geometry Actors

@@ -41,7 +41,10 @@ public:
 	~Topl_App();
 
 	void run();
-	void setActivePipeline(const Topl_Pipeline* pipeline){ _activePipeline = pipeline; }
+	void setActivePipeline(const Topl_Pipeline* pipeline){ 
+		_activePipeline = pipeline;
+		_renderer->setPipeline(_activePipeline);
+	}
 
 protected:
     virtual void init() = 0;

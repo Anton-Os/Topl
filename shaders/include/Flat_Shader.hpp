@@ -3,6 +3,8 @@
 // Vertex Shaders
 
 struct Flat_VertexShader : public Topl_EntryShader {
+	Flat_VertexShader() : Topl_EntryShader(){} // Blank Constructor
+
 	Flat_VertexShader(std::string name)
 		: Topl_EntryShader(
 			SHDR_Vertex, name,
@@ -50,6 +52,7 @@ struct Drx11_Flat_VertexShader : public Flat_VertexShader {
 // Fragment Shaders
 
 struct Flat_FragmentShader : public Topl_Shader {
+	Flat_FragmentShader() : Topl_Shader(){} // Blank Constructor
 	Flat_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name){ }
 };
 

@@ -74,8 +74,10 @@ void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, c
 		if (name == (*actor)->getName()) targetActor = *actor;
 	if (targetActor == nullptr) return error_notFound("link geometry", name); // Error
 
-	if(!connector->getIsPreset()) 
+	if(!connector->getIsPreset()){
+		connector->kVal = PHYS_ROD_K; // TODO: Change to rod type instead of modifying k value
 		connector->preset(*targetActor->getPos(), *pos); // presets anchor data to defaults
+	}
 
 	_anchoredItems.push_back({connector, std::make_pair(targetActor, pos)}); // add new anchor
 }

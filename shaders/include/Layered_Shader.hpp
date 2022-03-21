@@ -3,6 +3,7 @@
 // Vertex Shaders
 
 struct Layered_VertexShader : public Topl_EntryShader {
+	Layered_VertexShader() : Topl_EntryShader(){}
 	Layered_VertexShader(std::string name)
 		: Topl_EntryShader(
 			SHDR_Vertex, name,
@@ -39,6 +40,7 @@ struct Drx11_Layered_VertexShader : public Layered_VertexShader {
 // Fragment Shaders
 
 struct Layered_FragmentShader : public Topl_Shader {
+	Layered_FragmentShader() : Topl_Shader(){}
 	Layered_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
 };
 

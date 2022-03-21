@@ -23,11 +23,11 @@ namespace App {
 
 	std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
 		std::make_pair(Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.06f * PARTS_SCALE, -0.19f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
+		std::make_pair(Eigen::Vector3f(0.12f * PARTS_SCALE, -0.15f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.15f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.05f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.05f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
 	};
 
 	std::string demonAssets[HUMANOID_PARTS_COUNT] = { 
@@ -68,26 +68,39 @@ namespace App {
 	Eigen::Vector3f ghostOffset = Eigen::Vector3f(0.0, -0.5f, 0.0f);
 }
 
-void buttonCallback_w(void) { App::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f)); } // Move up
-void buttonCallback_a(void) { App::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move left
-void buttonCallback_s(void) { App::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f)); } // Move down
-void buttonCallback_d(void) { App::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { 
+	App::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f));
+	App::angel.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f));
+}
+void buttonCallback_a(void) { 
+	App::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f));
+	App::angel.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f));
+}
+void buttonCallback_s(void) { 
+	App::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f));
+	App::angel.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f));
+}
+void buttonCallback_d(void) { 
+	App::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); 
+	App::angel.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f));
+}
 void buttonCallback_r(void) { 
 	App::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
 	App::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
+	App::ghost.presetLinks();
 }
 
 void actionCallback() {
 	// adding movements for testing
-	/* App::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("demon_head", Eigen::Vector3f(0.0f, 3.0f * MOVE_SCALE, 0.0f));
 	App::scene.addForce("demon_body", Eigen::Vector3f(0.0f, -3.0f * MOVE_SCALE, 0.0f));
 	App::scene.addForce("demon_rightLeg", Eigen::Vector3f(MOVE_SCALE, 0.0f, 0.0f));
-	App::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f)); */
+	App::scene.addForce("demon_leftLeg", Eigen::Vector3f(-1.0f * MOVE_SCALE, 0.0f, 0.0f));
 
-	/* App::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
+	App::scene.addForce("angel_head", Eigen::Vector3f(0.0f, -1.0f * MOVE_SCALE, 0.0f));
 	App::scene.addForce("angel_body", Eigen::Vector3f(0.0f, MOVE_SCALE, 0.0f));
 	App::scene.addForce("angel_rightLeg", Eigen::Vector3f(-2.0f, 4.0f * MOVE_SCALE, 0.0f));
-	App::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f)); */
+	App::scene.addForce("angel_leftLeg", Eigen::Vector3f(2.0f, -4.0f * MOVE_SCALE, 0.0f));
 }
 
 // Shared functions

@@ -38,21 +38,54 @@ Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform
 }
 
 Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
-    // if(_shaders == nullptr) (Topl_Shader**)malloc(MAX_SHADERS * sizeof(Topl_Shader*));
     if(_pipelines_GL4 == nullptr) _pipelines_GL4 = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
     if(_pipelines_Drx11 == nullptr) _pipelines_Drx11 = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
 
     switch(backend){
     case APP_OpenGL_4:
-        *(_pipelines_GL4 + _pipelineIndex_GL4) = new Topl_Pipeline_GL4();
-        _pipelineIndex_GL4++;
-        // generate pipeline here
-        return *(_pipelines_GL4 + _pipelineIndex_GL4);
+        if(_renderer_GL4 == nullptr) return nullptr; // error
+        else {
+            Topl_Pipeline_GL4* pipeline = *(_pipelines_GL4 + _pipelineIndex_GL4);
+            pipeline = new Topl_Pipeline_GL4();
+            _renderer_GL4->genPipeline(pipeline, vertexShader, pixelShader);
+            _pipelineIndex_GL4++;
+            return pipeline;
+        }
     case APP_DirectX_11:
-        *(_pipelines_Drx11 + _pipelineIndex_Drx11) = new Topl_Pipeline_Drx11();
-        _pipelineIndex_Drx11++;
-        // generate pipeline here
-        return *(_pipelines_Drx11 + _pipelineIndex_Drx11);
+        if(_renderer_Drx11 == nullptr) return nullptr; // error
+        else {
+            Topl_Pipeline_Drx11* pipeline = *(_pipelines_Drx11 + _pipelineIndex_Drx11);
+            pipeline = new Topl_Pipeline_Drx11();
+            _renderer_Drx11->genPipeline(pipeline, vertexShader, pixelShader);
+            _pipelineIndex_Drx11++;
+            return pipeline;
+        }
+    }
+}
+
+Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+    if(_pipelines_GL4 == nullptr) _pipelines_GL4 = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
+    if(_pipelines_Drx11 == nullptr) _pipelines_Drx11 = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+
+    switch(backend){
+    case APP_OpenGL_4:
+        if(_renderer_GL4 == nullptr) return nullptr; // error
+        else {
+            Topl_Pipeline_GL4* pipeline = *(_pipelines_GL4 + _pipelineIndex_GL4);
+            pipeline = new Topl_Pipeline_GL4();
+            _renderer_GL4->genPipeline(pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+            _pipelineIndex_GL4++;
+            return pipeline;
+        }
+    case APP_DirectX_11:
+        if(_renderer_Drx11 == nullptr) return nullptr; // error
+        else {
+            Topl_Pipeline_Drx11* pipeline = *(_pipelines_Drx11 + _pipelineIndex_Drx11);
+            pipeline = new Topl_Pipeline_Drx11();
+            _renderer_Drx11->genPipeline(pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+            _pipelineIndex_Drx11++;
+            return pipeline;
+        }
     }
 }
 

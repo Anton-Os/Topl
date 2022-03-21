@@ -12,11 +12,11 @@ namespace App {
     
 	std::string assetsPath = ASSETS_DIR;
 	std::string fontsPath = assetsPath + "fonts/";
-	std::string font1 = fontsPath + "CutiveMono-Regular.ttf";
+	std::string font1 = fontsPath + "Tw-Cen-MT.ttf";
 	std::string font2 = fontsPath + "MajorMonoDisplay-Regular.ttf";
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
 	std::string font4 = fontsPath + "NerkoOne-Regular.ttf";
-	std::string text = "o";
+	std::string text = "i";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer
@@ -85,7 +85,7 @@ void genImages() {
 	Rasteron_GradientNoise noise3 = { 33, 31, BLACK_COLOR, BLUE_CHANNEL };
 	Topl_Image noiseImage3 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise3));
 	App::synthesisBk.setImage(createImgFuse(noiseImage3.getImage(), noiseImage2.getImage()));
-	App::synthesisBk.setImage(createImgFuse(App::synthesisBk.getImage(), noiseImage1.getImage()));
+	// App::synthesisBk.setImage(createImgFuse(App::synthesisBk.getImage(), noiseImage1.getImage()));
 	App::unitLayout.getChildPane(0)->selectBk(App::synthesisBk.getImage());
 
 	Rasteron_ColorPointTable colorPointTable = { {}, 0 };
@@ -101,6 +101,7 @@ void genImages() {
 		pane->selectBk(App::windows.getFrameAt(p));
 	}
 
+	// TODO: Debug inside of Rasteron and compare!
 	App::textObj.fileName = App::font1.c_str();
 	App::textBk1.setTextImage(&App::freetypeLib, &App::textObj);
 	App::textObj.fileName = App::font2.c_str();

@@ -71,7 +71,7 @@ private:
 };
 
 #define PHYS_DEFAULT_K 1000.0 // K value by default
-#define PHYS_ROD_K 1000000.0 // K value for rod connector
+#define PHYS_ROD_K 10000.0 // K value for rod connector
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 // #define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
 #define CONNECTOR_ANGLE_PRESET Eigen::Vector3f(0.0f, 1.0f, 0.0);
@@ -131,7 +131,8 @@ struct Phys_Connector {
 };
 
 #define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
-#define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
+// #define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
+#define PHYS_DEFAULT_DAMPING 0.98
 #define PHYS_DEFAULT_MASS 15.0 // default mass of entities
 #define MAX_PHYS_FORCES 64
 

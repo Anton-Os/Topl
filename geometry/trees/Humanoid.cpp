@@ -7,8 +7,8 @@ void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, c
 	case HUMANOID_LeftArm: actor = leftArm; break;
 	case HUMANOID_RightArm: actor = rightArm; break;
 	case HUMANOID_Body: actor = body; break;
-	case HUMANOID_LeftLeg: actor = leftArm; break;
-	case HUMANOID_RightLeg: actor = rightArm; break;
+	case HUMANOID_LeftLeg: actor = leftLeg; break;
+	case HUMANOID_RightLeg: actor = rightLeg; break;
 	}
 
 	actor->updatePos(pos);
@@ -23,6 +23,10 @@ void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orienta
 	orient(HUMANOID_LeftLeg, orientations[HUMANOID_LeftLeg].first, orientations[HUMANOID_LeftLeg].second);
 	orient(HUMANOID_RightLeg, orientations[HUMANOID_RightLeg].first, orientations[HUMANOID_RightLeg].second);
 
+	presetLinks();
+}
+
+void Geo_Humanoid::presetLinks(){
 	body_head_link.preset(*body->getPos(), *head->getPos());
 	body_leftArm_link.preset(*body->getPos(), *leftArm->getPos());
 	body_rightArm_link.preset(*body->getPos(), *rightArm->getPos());

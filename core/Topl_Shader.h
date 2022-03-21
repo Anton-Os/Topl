@@ -50,8 +50,8 @@ struct Shader_Type {
 
 class Topl_Shader {
 public:
-    // Basic Input Value Constructor
-    Topl_Shader(
+    Topl_Shader(){} // Blank Constructor
+    Topl_Shader( // Named Constructor
 		enum SHDR_Type type, 
 		std::string fileSrc
     ){    
@@ -73,8 +73,8 @@ protected:
 // Primary shader contains virtual functions in order to pass uniforms
 class Topl_EntryShader : public Topl_Shader {
 public:
-    // Basic constructor
-    Topl_EntryShader(
+    Topl_EntryShader() : Topl_Shader(){} // Blank Constructor
+    Topl_EntryShader( // Named Constructor
 		enum SHDR_Type type, 
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs

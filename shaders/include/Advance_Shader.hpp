@@ -3,6 +3,7 @@
 // Control Shaders
 
 struct Advance_TessCtrlShader : public Topl_Shader {
+	Advance_TessCtrlShader() : Topl_Shader(){} // Blank Constructor
 	Advance_TessCtrlShader(std::string fileName) : Topl_Shader(SHDR_TessCtrl, fileName){ }
 };
 
@@ -17,6 +18,7 @@ struct Drx11_Advance_TessCtrlShader : public Advance_TessCtrlShader {
 // Evaluation Shaders
 
 struct Advance_TessEvalShader : public Topl_Shader {
+	Advance_TessEvalShader() : Topl_Shader(){} // Blank Constructor
 	Advance_TessEvalShader(std::string fileName) : Topl_Shader(SHDR_TessEval, fileName){ }
 };
 
@@ -31,13 +33,14 @@ struct Drx11_Advance_TessEvalShader : public Advance_TessEvalShader {
 // Geometry Shaders
 
 struct Advance_GeometryShader : public Topl_Shader {
+	Advance_GeometryShader() : Topl_Shader(){} // Blank Constructor
 	Advance_GeometryShader(std::string fileName) : Topl_Shader(SHDR_Geom, fileName){ }
 };
 
 struct GL4_Advance_GeometryShader : public Advance_GeometryShader {
-    GL4_Advance_GeometryShader() : Advance_GeometryShader(genPrefix_glsl() + "Geometry_Advance.glsl");
-}
+	GL4_Advance_GeometryShader() : Advance_GeometryShader(genPrefix_glsl() + "Geometry_Advance.glsl"){}
+};
 
 struct Drx11_Advance_GeometryShader : public Advance_GeometryShader {
-    Drx11_Advance_GeometryShader() : Advance_GeometryShader(genPrefix_hlsl() + "Geometry_Advance.hlsl");
-}
+	Drx11_Advance_GeometryShader() : Advance_GeometryShader(genPrefix_hlsl() + "Geometry_Advance.hlsl"){}
+};

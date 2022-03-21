@@ -10,9 +10,11 @@
 
 // Geometry wrapper class that can manage its states
 
-#define FIRST_UPDATE_NUM 0
-
 typedef std::pair<std::string, Geo_Actor*> geoName_pair;
+typedef std::pair<Eigen::Vector3f, Eigen::Vector2f> orientation_pair;
+
+#define NO_ORIENTATION std::make_pair(Eigen::Vector3f(0.0f, 0.0f, 0.0f), Eigen::Vector2f(0.0f, 0.0f));
+
 
 class Geo_Tree {
 public:

@@ -24,9 +24,10 @@ struct Topl_Image { // wrapper around Rasteron_Image
     }
     void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
         if(image != NULL) deleteImg(image); // delte old image
-        Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
+        /* Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
         image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
-        deleteImg(fontImage);
+        deleteImg(fontImage); */
+		image = bakeImgText(freetypeLib, textObj);
     }
     void setImage(Rasteron_Image* refImage){
         if(image != NULL) deleteImg(image); // delte old image
