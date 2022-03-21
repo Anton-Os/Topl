@@ -156,9 +156,9 @@ namespace Main {
 		App::scene.addGeometry("capture", &App::captureSquareGeo);
 
 		genImages();
-		App::unitLayout.init(&App::scene);
-		App::rowLayout.init(&App::scene);
-		App::boxedLayout.init(&App::scene);
+		App::unitLayout.configure(&App::scene);
+		App::rowLayout.configure(&App::scene);
+		App::boxedLayout.configure(&App::scene);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

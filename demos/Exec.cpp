@@ -28,8 +28,8 @@ void Exec_App::init() {
 	// Configurations, Geometry, and Building
 
 	scene_main.addGeometry(&triangleActor);
-	rowLayout.init(&scene_overlay);
-	boxedLayout.init(&scene_overlay);
+	rowLayout.configure(&scene_overlay);
+	boxedLayout.configure(&scene_overlay);
 
 	_renderer->buildScene(&scene_main);
 }

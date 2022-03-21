@@ -40,7 +40,7 @@ void Geo_Humanoid::presetLinks(){
 	leftLeg_rightLeg_link.preset(*leftLeg->getPos(), *rightLeg->getPos());
 }
 
-void Geo_Humanoid2D::init(Topl_Scene* scene) { // Trying with displacements for now
+void Geo_Humanoid2D::configure(Topl_Scene* scene) { // Trying with displacements for now
 	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
 	
 	head = getNextActor();

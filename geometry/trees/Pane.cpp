@@ -37,7 +37,7 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_childSquare.modify(::stretchTForm, ((_radius * 2) / _columns) - _border, AXIS_X);
 }
 
-void Geo_PaneLayout::init(Topl_Scene* scene) {
+void Geo_PaneLayout::configure(Topl_Scene* scene) {
 	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
 	Geo_Actor* actor = nullptr; // keeps track of child actor being processed 
 

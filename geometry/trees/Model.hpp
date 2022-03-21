@@ -3,18 +3,25 @@
 
 class Geo_Model : public Geo_Tree {
 public:
-    Geo_Model(
+    Geo_Model( // Prebake Constructor
+		const std::string& prefix,
+        const std::string& filePath
+    ) : Geo_Tree(prefix, &_dummyGeo, 1){
+        _filePath = filePath;
+    }
+
+    Geo_Model( // Config Constructor
 		const std::string& prefix,
         const std::string& filePath,
         Topl_Scene* scene
     ) : Geo_Tree(prefix, &_dummyGeo, 1){
         _filePath = filePath;
-
-        init(scene);
+        configure(scene);
     }
-    ~Geo_Model(); 
 
-    void init(Topl_Scene* scene) override;
+    ~Geo_Model();
+
+    void configure(Topl_Scene* scene) override;
 private:
     static Geo_Node _dummyGeo;
     std::string _filePath; // nodes are read from file

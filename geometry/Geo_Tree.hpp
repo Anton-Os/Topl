@@ -35,7 +35,7 @@ public:
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updateRot(angles);
     }
 
-    virtual void init(Topl_Scene* scene) = 0; // function to pass data into  scene
+    virtual void configure(Topl_Scene* scene) = 0; // function to pass data into  scene
 protected:
 	unsigned getActorCount() const { return _actorCount; }
     Geo_Actor* getNextActor();

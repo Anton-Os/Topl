@@ -9,7 +9,22 @@ struct Geo_Chain_Properties {
 
 class Geo_Chain : public Geo_Tree, public Geo_DynamicSet {
 public:
-    Geo_Chain(
+    Geo_Chain( // Prebake Constructor
+        const std::string& prefix, 
+        const Geo_Actor* geo, 
+        const Geo_Chain_Properties* props,
+        unsigned count)
+    : Geo_Tree(prefix, geo, count),
+    Geo_DynamicSet(count){
+		properties = *props;
+        origin = Eigen::Vector3f(
+            (-1.0 * props->directionVec.x() * count) / 2,
+            (-1.0 * props->directionVec.y() * count) / 2,
+            (-1.0 * props->directionVec.z() * count) / 2
+        );
+    }
+
+    Geo_Chain( // Config Constructor
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
@@ -23,11 +38,10 @@ public:
             (-1.0 * props->directionVec.y() * count) / 2,
             (-1.0 * props->directionVec.z() * count) / 2
         );
-
-        init(scene);
+        configure(scene);
     }
 
-    void init(Topl_Scene* scene) override;
+    void configure(Topl_Scene* scene) override;
 private:
     Eigen::Vector3f origin; // determines starting position for geometry
     Geo_Chain_Properties properties;

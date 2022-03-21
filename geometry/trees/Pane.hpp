@@ -73,7 +73,7 @@ public:
 	unsigned getRowCount(){ return _rows; }
 	unsigned getColCount(){ return _columns; }
 
-	void init(Topl_Scene* scene) override;
+	void configure(Topl_Scene* scene) override;
 protected:
 	void resize(unsigned rows, unsigned columns); // creates panes and replaces all render objects
 

@@ -22,7 +22,7 @@ void Geo_Grid_Properties::setNonZeroUnits(){
 
 // Grid Class Code
 
-void Geo_Grid::init(Topl_Scene* scene){
+void Geo_Grid::configure(Topl_Scene* scene){
     Geo_Actor* actor = nullptr;
     Eigen::Vector3f offset = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 

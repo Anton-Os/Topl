@@ -33,7 +33,24 @@ protected:
 
 class Geo_Humanoid2D : public Geo_Humanoid, protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
 public:
-	Geo_Humanoid2D( // Assets constructor
+	Geo_Humanoid2D( // Prebake Constructor
+		const std::string& prefix,
+		std::string assets[HUMANOID_PARTS_COUNT], // image paths
+		float scaleFactor 
+	)
+	: Geo_Humanoid(),
+	Geo_SpriteTable({
+		assets[HUMANOID_Head], assets[HUMANOID_LeftArm], assets[HUMANOID_RightArm],
+		assets[HUMANOID_Body], assets[HUMANOID_LeftLeg], assets[HUMANOID_RightLeg]
+		}, scaleFactor
+	),
+	Geo_Tree(prefix, {
+		(Geo_RenderObj*)getSquare(HUMANOID_Head), (Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
+		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),(Geo_RenderObj*)getSquare(HUMANOID_Body),
+		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg), (Geo_RenderObj*)getSquare(HUMANOID_RightLeg),
+	}) {}
+
+	Geo_Humanoid2D( // Config Constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
 		std::string assets[HUMANOID_PARTS_COUNT], // image paths
@@ -41,27 +58,17 @@ public:
 	)
 	: Geo_Humanoid(),
 	Geo_SpriteTable({
-		assets[HUMANOID_Head],
-		assets[HUMANOID_LeftArm],
-		assets[HUMANOID_RightArm],
-		assets[HUMANOID_Body],
-		assets[HUMANOID_LeftLeg],
-		assets[HUMANOID_RightLeg]
+		assets[HUMANOID_Head], assets[HUMANOID_LeftArm], assets[HUMANOID_RightArm],
+		assets[HUMANOID_Body],assets[HUMANOID_LeftLeg], assets[HUMANOID_RightLeg]
 		}, scaleFactor
 	),
 	Geo_Tree(prefix, {
-		(Geo_RenderObj*)getSquare(HUMANOID_Head),
-		(Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
-		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),
-		(Geo_RenderObj*)getSquare(HUMANOID_Body),
-		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg),
-		(Geo_RenderObj*)getSquare(HUMANOID_RightLeg), }
-	) 
-	{ init(scene); }
-	
-	~Geo_Humanoid2D() {}
+		(Geo_RenderObj*)getSquare(HUMANOID_Head), (Geo_RenderObj*)getSquare(HUMANOID_LeftArm), 
+		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),(Geo_RenderObj*)getSquare(HUMANOID_Body),
+		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg), (Geo_RenderObj*)getSquare(HUMANOID_RightLeg),
+	}) { configure(scene); }
 
-	void init(Topl_Scene* scene) override;
+	void configure(Topl_Scene* scene) override;
 };
 
 /* class Geo_Humanoid3D : public Geo_Humanoid, public Geo_Model {
@@ -73,8 +80,8 @@ public:
     )
 	: Geo_Humanoid(),
 	: Geo_Model(prefix, filePath, scene){
-		// init(scene);
+		// configure(scene);
 	}
 
-	// void init(Topl_Scene* scene) override;
+	// void configure(Topl_Scene* scene) override;
 }; */
