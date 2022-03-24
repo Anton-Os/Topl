@@ -18,6 +18,8 @@ typedef std::pair<Eigen::Vector3f, Eigen::Vector2f> orientation_pair;
 
 class Geo_Tree {
 public:
+    // No items constructor
+    Geo_Tree(const std::string& prefix){}
     // Fixed items constructor
     Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs);
     // Duplicate items constructor

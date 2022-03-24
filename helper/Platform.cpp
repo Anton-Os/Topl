@@ -6,8 +6,6 @@ Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit defin
 float Platform::xCursorPos = BAD_CURSOR_POS;
 float Platform::yCursorPos = BAD_CURSOR_POS;
 
-double Platform::_tstamp = 0.0f;
-
 #ifdef _WIN32
 
 static void addMousePress(enum MOUSE_Button button){

@@ -4,6 +4,7 @@
 #if 1
     #define RASTERON_ENABLE_PLUGIN
     #define RASTERON_ENABLE_FONT
+    
     #include "Rasteron.h" // includes Rasteron main modules
 #endif
 #if 1

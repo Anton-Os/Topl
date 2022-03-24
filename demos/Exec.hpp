@@ -3,6 +3,7 @@
 #include "Topl_App.hpp"
 
 #include "Flat_Shader.hpp"
+#include "Textured_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #include "trees/Pane.hpp"
@@ -22,8 +23,10 @@ struct Exec_App : public Topl_App {
 
 	// Geometries
 
-	Geo_FlatTriangle triangle = Geo_FlatTriangle(0.25f);
-	Geo_Actor triangleActor = Geo_Actor((Geo_RenderObj*)&triangle);
+	// Geo_FlatTriangle triangle = Geo_FlatTriangle(0.25f);
+	// Geo_Actor triangleActor = Geo_Actor((Geo_RenderObj*)&triangle);
+	Geo_FlatSquare square = Geo_FlatSquare(0.25f);
+	Geo_Actor squareActor = Geo_Actor((Geo_RenderObj*)&square);
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 5);
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 2);
 

@@ -22,8 +22,8 @@ void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize,
 // Mathematic Operations
 
 enum PROJECTION_Type {
-    PROJECTION_Perspective,
     PROJECTION_Ortho,
+    PROJECTION_Perspective,
     PROJECTION_Stereographic,
     PROJECTION_Gnomonic
 };
@@ -42,6 +42,7 @@ Eigen::Matrix4f genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bound
 unsigned genRandColor();
 float genRandFloat();
 float genRandFloat(float min, float max);
+// float clampFloat(float input, float range[2]);
 float getVecLength(const Eigen::Vector2f& vec);
 float getVecLength(const Eigen::Vector3f& vec);
 Eigen::Vector2f genRandVec2();

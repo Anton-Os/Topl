@@ -1,22 +1,38 @@
-
 #include <vector>
 #include <map>
 #include <cctype>
 
-#define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
-#define MAX_CURSOR_POS 1.0f
-#define MIN_CURSOR_POS -1.0f
+#include "Timer.hpp";
+
+struct Input_Logger {
+    double getLastEvent(){ return _lastEvent; }
+    double getEventCount(){ return _eventCount; }
+protected:
+    void stampEvent(){ // stamps that new event occured
+        if(_lastEvent == BAD_EVENT_TIME) _ticker.reset();
+        _lastEvent = _ticker.getRelMillisecs();
+        _eventCount++;
+    }
+
+    Timer_Ticker _ticker; // internal timer
+    unsigned _eventCount = 0;
+    double _lastEvent = BAD_EVENT_TIME; // timestamp tracking most recent event in milliseconds
+};
 
 typedef void (*keyCallback)(void); // Triggers action on a particular keypress
 
-class Input_KeyLogger {
+class Input_KeyLogger : public Input_Logger {
 public:
-	Input_KeyLogger(){}
+	Input_KeyLogger() : Input_Logger(){}
 	void addKeyPress(char keyCode);
 	void addCallback(char keyCode, keyCallback callback);
 private:
 	std::map<char, keyCallback> _keyCallback_map;
 };
+
+#define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
+#define MAX_CURSOR_POS 1.0f
+#define MIN_CURSOR_POS -1.0f
 
 enum MOUSE_Button {
     MOUSE_LeftBtn_Down,
@@ -35,10 +51,9 @@ struct Input_TracerStep {
     float yPos;
 };
 
-// CursorRange is used to trigger callbacks on mouse motion
 struct Input_CursorRange {
     Input_CursorRange(float xRange[2], float yRange[2]){
-        xRange[0] = clamp(xRange[0]); xRange[1] = clamp(xRange[1]); 
+        xRange[0] = clamp(xRange[0]); xRange[1] = clamp(xRange[1]); // clamping values
 		yRange[0] = clamp(yRange[0]); yRange[1] = clamp(yRange[1]); // clamping values
         
         xMin = (xRange[0] < xRange[1])? xRange[0] : xRange[1]; xMax = (xRange[0] > xRange[1])? xRange[0] : xRange[1]; // setting min and max x values
@@ -57,9 +72,9 @@ typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of
 typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
 typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region
 
-class Input_MouseLogger {
+class Input_MouseLogger : public Input_Logger {
 public:
-    Input_MouseLogger(){}
+    Input_MouseLogger() : Input_Logger(){}
     void addCallback(enum MOUSE_Button mb, pressCallback callback);
     void addMousePress(enum MOUSE_Button mb); // mouse press
     void addMousePress(enum MOUSE_Button mb, float x, float y); // positioned mouse press

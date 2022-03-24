@@ -8,6 +8,8 @@ void Input_KeyLogger::addKeyPress(char keyCode) {
 	if (keyCode == '\0') return; // null keycode can be skippedS
 	for (std::map<char, keyCallback>::const_iterator c = _keyCallback_map.cbegin(); c != _keyCallback_map.cend(); c++)
 		if (keyCode == c->first) c->second(); // Makes callback go off
+	
+	stampEvent();
 }
 
 void Input_KeyLogger::addCallback(char keyCode, keyCallback callback) {
@@ -23,6 +25,8 @@ void Input_MouseLogger::addCallback(enum MOUSE_Button mb, pressCallback callback
 void Input_MouseLogger::addMousePress(enum MOUSE_Button mb){
 	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
 		if(mb == c->first) c->second(BAD_CURSOR_POS, BAD_CURSOR_POS); // makes callback go off where keys match
+
+	stampEvent();
 }
 
 void Input_MouseLogger::addMousePress(enum MOUSE_Button mb, float x, float y){
@@ -30,6 +34,7 @@ void Input_MouseLogger::addMousePress(enum MOUSE_Button mb, float x, float y){
 		if(mb == c->first) c->second(x, y); // makes callback go off where keys match
 	
 	_tracerSteps.push_back({ mb, x, y}); // record the movement
+	stampEvent();
 }
 
 void Input_MouseLogger::addHoverCallback(const Input_CursorRange* range, hoverCallback callback) {

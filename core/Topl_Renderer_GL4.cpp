@@ -286,8 +286,17 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_GL4::frame(){
-	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	glReadPixels(0, 0, image->width, image->height, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+	// TODO: Crop to viewport!
+	// see https://stackoverflow.com/questions/29764925/how-to-get-set-the-width-and-height-of-the-default-framebuffer
+	/* GLint viewportDims[4] = { 0 };
+	glGetIntegerv(GL_VIEWPORT, viewportDims);
+	const unsigned viewportWidth = viewportDims[2];
+	const unsigned viewportHeight = viewportDims[3]; */
+
+	Rasteron_Image* rawImage = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
+	Rasteron_Image* image = createImgFlip(rawImage, FLIP_Upside);
+	deleteImg(rawImage);
 	return image;
 }
 
@@ -314,7 +323,7 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 #endif
 }
 
-void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned id){
+void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id){
 	// TODO: find id corresponding to proper render context
 	// Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
 	Topl_RenderContext_GL4* activeCtx = *(_renderCtx_GL4); // for now gets the first available render context
@@ -329,7 +338,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned id){
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	Renderer::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rawImage->height, rawImage->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	activeCtx->textures.push_back(Texture_GL4(id, TEX_2D, _texMode, texture));

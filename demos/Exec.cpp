@@ -1,6 +1,6 @@
 #include "Exec.hpp"
 
-#define APP_BACKEND APP_DirectX_11
+#define APP_BACKEND APP_OpenGL_4
 
 void Exec_App::init() {
 	// Shaders and Pipeline
@@ -16,6 +16,7 @@ void Exec_App::init() {
 	} else {
 		vertexShader = Drx11_Flat_VertexShader();
 		fragShader = Drx11_Flat_FragmentShader();
+
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();
 		geomShader = Drx11_Advance_GeometryShader();
@@ -23,11 +24,13 @@ void Exec_App::init() {
 
 	flatPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader, &fragShader);
 	// advancePipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader, &fragShader, &tessCtrlShader, &tessEvalShader, &geomShader);
-	setActivePipeline(flatPipeline);
 
 	// Configurations, Geometry, and Building
 
-	scene_main.addGeometry(&triangleActor);
+	squareActor.setPos(Eigen::Vector3f(-0.75f, 0.75f, 0.0f));
+
+	// scene_main.addGeometry(&triangleActor);
+	scene_main.addGeometry(&squareActor);
 	rowLayout.configure(&scene_overlay);
 	boxedLayout.configure(&scene_overlay);
 
@@ -37,6 +40,13 @@ void Exec_App::init() {
 void Exec_App::loop(double secs, unsigned long frame) {
 	_renderer->updateScene(&scene_main);
 	_renderer->renderScene(&scene_main);
+
+	if (_renderer->getFrameCount() == 2) {
+		unsigned pixel1 = _renderer->getPixColor(0.95f, 0.95f); // testing
+		unsigned pixel2 = _renderer->getPixColor(0.95f, -0.95f); // testing
+		unsigned pixel3 = _renderer->getPixColor(-0.95f, -0.95f); // testing
+		unsigned pixel4 = _renderer->getPixColor(-0.95f, 0.95f); // testing
+	}
 }
 
 int main(int argc, char** argv) {

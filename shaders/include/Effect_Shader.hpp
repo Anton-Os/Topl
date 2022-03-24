@@ -57,7 +57,7 @@ struct Drx11_Effect_VertexShader : public Effect_VertexShader {
 // Fragment Shaders
 
 struct Effect_FragmentShader : public Topl_Shader {
-	Effect_FragmentShader : Topl_Shader(){}
+	Effect_FragmentShader() : Topl_Shader(){}
 	Effect_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
 };
 

@@ -10,24 +10,25 @@
 
 #define SHIFT_AMOUNT 0.2
 #define ROTATE_AMOUNT 0.3
-#define PARTS_SCALE 3
-#define MOVE_SCALE 22
+
+#define VIEW_SPACE 3.0f
+#define MOVE_SCALE 20
 
 namespace App {
 	Topl_Scene scene;
-	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
+	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(VIEW_SPACE));
 	Timer_Ticker gameTicker;
 
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagePath = assetsPath + "images/";
 
 	std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
-		std::make_pair(Eigen::Vector3f(0.0f, 0.08f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.12f * PARTS_SCALE, -0.15f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.12f * PARTS_SCALE, -0.15f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.05f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.05f * PARTS_SCALE, -0.2f * PARTS_SCALE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
+		std::make_pair(Eigen::Vector3f(0.0f, 0.08f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
+		std::make_pair(Eigen::Vector3f(0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0), Eigen::Vector2f(0.0, 0.0)),
+		std::make_pair(Eigen::Vector3f(-0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
 	};
 
 	std::string demonAssets[HUMANOID_PARTS_COUNT] = { 

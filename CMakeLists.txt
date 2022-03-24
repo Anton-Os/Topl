@@ -45,7 +45,7 @@ if(Assimp_FOUND)
     message("Assimp built library zlibd_lib set to ${zlibd_lib}")
 endif()
 
-# DirectX Windows Dependent Demos
+# Building DirectX Engine
 if(WIN32)
     add_library(Drx11_ENGINE
         ${helper_src}
@@ -76,42 +76,9 @@ if(WIN32)
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
     )
-
-    add_executable(Drx11_Pawns
-        geometry/trees/Humanoid.cpp
-
-        demos/legacy/Drx11_Pawns.cpp
-    )
-    target_link_libraries(Drx11_Pawns PRIVATE Drx11_ENGINE)
-
-	add_executable(Drx11_Blocks
-		geometry/trees/Chain.cpp
-		geometry/trees/Grid.cpp
-
-		demos/legacy/Drx11_Blocks.cpp
-	)
-	target_link_libraries(Drx11_Blocks PRIVATE Drx11_ENGINE)
-
-    add_executable(Drx11_Planetary demos/legacy/Drx11_Planetary.cpp)
-	target_link_libraries(Drx11_Planetary PRIVATE Drx11_ENGINE)
-    
-    add_executable(Drx11_Surface demos/legacy/Drx11_Surface.cpp)
-	target_link_libraries(Drx11_Surface PRIVATE Drx11_ENGINE)
-
-    add_executable(Drx11_Overlay 
-        geometry/trees/Pane.cpp
-
-        demos/legacy/Drx11_Overlay.cpp
-    )
-	target_link_libraries(Drx11_Overlay PRIVATE Drx11_ENGINE)
-
-    add_executable(Drx11_Assets demos/legacy/Drx11_Assets.cpp)
-	target_link_libraries(Drx11_Assets PRIVATE Drx11_ENGINE)
-
-  # add_dependencies(Drx11_ENGINE DXSDK GLEW Eigen)
 endif()
 
-# OpenGL Rendering Demos
+# Building OpenGL eNGINE
 
 add_library(GL4_ENGINE
     ${helper_src}
@@ -147,37 +114,22 @@ if(NOT WIN32) # decreases Windows build time
     add_dependencies(GL4_ENGINE GLEW Eigen)
 endif()
 
-add_executable(GL4_Pawns
-    geometry/trees/Humanoid.cpp
 
-    demos/legacy/GL4_Pawns.cpp
-)
-# target_include_directories(GL4_Pawns PRIVATE demos)
-target_link_libraries(GL4_Pawns PRIVATE GL4_ENGINE)
+include(legacyDemos.cmake)
+# add_executable(Test_Image demos/test/ImageTest.cpp)
 
-add_executable(GL4_Blocks
-	geometry/trees/Chain.cpp
+# Modern Demos
+
+add_executable(Exec
+    geometry/trees/Chain.cpp
     geometry/trees/Grid.cpp
-
-    demos/legacy/GL4_Blocks.cpp
-)
-target_link_libraries(GL4_Blocks PRIVATE GL4_ENGINE)
-
-add_executable(GL4_Planetary demos/legacy/GL4_Planetary.cpp)
-target_link_libraries(GL4_Planetary PRIVATE GL4_ENGINE)
-
-add_executable(GL4_Surface demos/legacy/GL4_Surface.cpp)
-target_link_libraries(GL4_Surface PRIVATE GL4_ENGINE)
-
-add_executable(GL4_Overlay
+    geometry/trees/Humanoid.cpp
+    geometry/trees/Model.cpp
     geometry/trees/Pane.cpp
 
-    demos/legacy/GL4_Overlay.cpp
+    demos/Exec.cpp
 )
-target_link_libraries(GL4_Overlay PRIVATE GL4_ENGINE)
-
-add_executable(GL4_Assets demos/legacy/GL4_Assets.cpp)
-target_link_libraries(GL4_Assets PRIVATE GL4_ENGINE)
+target_link_libraries(Exec GL4_ENGINE Drx11_ENGINE)
 
 # Copying and managing implemented here with custom targets
 
@@ -193,16 +145,3 @@ endif()
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
-
-# Modern Demos
-
-add_executable(Exec
-    geometry/trees/Chain.cpp
-    geometry/trees/Grid.cpp
-    geometry/trees/Humanoid.cpp
-    geometry/trees/Model.cpp
-    geometry/trees/Pane.cpp
-
-    demos/Exec.cpp
-)
-target_link_libraries(Exec GL4_ENGINE Drx11_ENGINE)

@@ -4,6 +4,7 @@
 #if ${Rasteron_FOUND}
     #define RASTERON_ENABLE_PLUGIN
     #define RASTERON_ENABLE_FONT
+    
     #include "Rasteron.h" // includes Rasteron main modules
 #endif
 #if ${Assimp_FOUND}

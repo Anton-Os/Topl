@@ -5,24 +5,28 @@
 #include <cmath>
 #include <vector>
 
-#define TIME_MOTION_CALLBACK 30 // 30 millisonds
+#define FPS_60 1000.0 / 60.0 // fps in millisecs
+#define BAD_EVENT_TIME -1.0f // indicates that event timestamp is invalid
+#define CONCURRENT_THRESH 1000.0 / 240.0 // used for concurrent events
+#define MICROSEC_SEC_CONVERT 1000000.0
+#define MICROSEC_MILLI_CONVERT 1000.0
 
 typedef void (*periodicCallback)(void);
 
 class Timer_PeriodicEvent {
 public:
-	Timer_PeriodicEvent(unsigned period, periodicCallback callback) : millisPeriod(period){
+	Timer_PeriodicEvent(double period, periodicCallback callback) : periodMillisec(period){
 		callbackTrigger = callback;
 	}
-	void addTime(unsigned micros){
-		_secsElapsed += static_cast<double>(micros / 1000000.0); // conversion from microsecs to seconds
-		while(_secsElapsed >= static_cast<double>(millisPeriod / 1000.0)){
-			_secsElapsed -= static_cast<double>(millisPeriod / 1000.0);
+	void addTime(double micros){
+		_secsElapsed += static_cast<double>(micros / MICROSEC_SEC_CONVERT);
+		while(_secsElapsed >= static_cast<double>(periodMillisec / MICROSEC_MILLI_CONVERT)){
+			_secsElapsed -= static_cast<double>(periodMillisec / MICROSEC_MILLI_CONVERT);
 			callbackTrigger();
 		}
 	}
 private:
-	const unsigned millisPeriod;
+	const double periodMillisec;
 	periodicCallback callbackTrigger;
 	double _secsElapsed = 0.0;
 };
@@ -35,7 +39,7 @@ public:
 		callbackTrigger = callback;
 	}
 	void addTime(unsigned micros){
-		_secsElapsed += static_cast<double>(micros / 1000000.0); // conversion from microsecs to seconds
+		_secsElapsed += static_cast<double>(micros / MICROSEC_SEC_CONVERT); // conversion from microsecs to seconds
 		callbackTrigger(_secsElapsed);
 	}
 private:
@@ -57,11 +61,11 @@ public:
 
 	void updateTimer();
 	double getRelMicrosecs();
-	double getRelMillisecs() { return getRelMicrosecs() / 1000.0; } // gets millisonds secs since last invocation
-	double getRelSecs(){ return getRelMillisecs() / 1000.0; } // gets seconds secs since last invocation
+	double getRelMillisecs() { return getRelMicrosecs() / MICROSEC_MILLI_CONVERT; } // gets millisonds secs since last invocation
+	double getRelSecs(){ return getRelMicrosecs() / MICROSEC_SEC_CONVERT; } // gets seconds secs since last invocation
 	double getAbsMicrosecs();
-	double getAbsMillisecs() { return getAbsMicrosecs() / 1000.0; } // gets millisonds since timer creation
-	double getAbsSecs(){ return getAbsMillisecs() / 1000.0; } // gets seconds since timer creation
+	double getAbsMillisecs() { return getAbsMicrosecs() / MICROSEC_MILLI_CONVERT; } // gets millisonds since timer creation
+	double getAbsSecs(){ return getAbsMicrosecs() / MICROSEC_SEC_CONVERT; } // gets seconds since timer creation
 private:
 	std::chrono::duration<double, std::micro> _relMicrosElapsed = std::chrono::microseconds(0); // relative time since last call
 	std::chrono::duration<double, std::micro> _absMicrosElapsed = std::chrono::microseconds(0); // absolute time since creation

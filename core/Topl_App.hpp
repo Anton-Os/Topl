@@ -5,6 +5,7 @@
 #include "Topl_Renderer_Drx11.hpp"
 #endif
 
+#define EVENT_HANDLE_TIME 1.0 / 
 
 enum APP_Backend {
     APP_OpenGL_4,
@@ -16,6 +17,7 @@ class Topl_Factory { // supplies and generates all interfaces for Topl_App class
 public:
 	~Topl_Factory();
 	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
+
 	static Topl_Pipeline* genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	static Topl_Pipeline* genPipeline(APP_Backend backend,
 		entry_shader_cptr vertexSource,
@@ -26,14 +28,16 @@ public:
 	);
 private:
 	// Internally Managed Structures
-	static Topl_Renderer_GL4* _renderer_GL4;
-	static Topl_Renderer_Drx11* _renderer_Drx11;
+	static Topl_Renderer_GL4* GL4_renderer;
+	static Topl_Renderer_Drx11* Drx11_renderer;
 
-	static Topl_Pipeline_GL4** _pipelines_GL4;
-	static unsigned _pipelineIndex_GL4;
-	static Topl_Pipeline_Drx11** _pipelines_Drx11;
-	static unsigned _pipelineIndex_Drx11;
+	static Topl_Pipeline_GL4** GL4_pipelines;
+	static unsigned GL4_pipeIndex;
+	static Topl_Pipeline_Drx11** Drx11_pipelines;
+	static unsigned Drx11_pipeIndex;
 };
+
+#define FRAME_CACHE_COUNT 1024
 
 class Topl_App {
 public:
@@ -41,10 +45,8 @@ public:
 	~Topl_App();
 
 	void run();
-	void setActivePipeline(const Topl_Pipeline* pipeline){ 
-		_activePipeline = pipeline;
-		_renderer->setPipeline(_activePipeline);
-	}
+
+	void beginFrameCap(); // starts frame capture
 
 protected:
     virtual void init() = 0;
@@ -60,6 +62,7 @@ protected:
     Timer_Ticker _ticker;
 #ifdef RASTERON_H
 	FT_Library _freetypeLib; // required for working with fonts
+	Topl_Frames _frameCache = Topl_Frames("frame-cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
 
 	// Paths

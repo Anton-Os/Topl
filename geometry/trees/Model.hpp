@@ -6,7 +6,7 @@ public:
     Geo_Model( // Prebake Constructor
 		const std::string& prefix,
         const std::string& filePath
-    ) : Geo_Tree(prefix, &_dummyGeo, 1){
+    ) : Geo_Tree(prefix){
         _filePath = filePath;
     }
 
@@ -14,7 +14,7 @@ public:
 		const std::string& prefix,
         const std::string& filePath,
         Topl_Scene* scene
-    ) : Geo_Tree(prefix, &_dummyGeo, 1){
+    ) : Geo_Tree(prefix){
         _filePath = filePath;
         configure(scene);
     }

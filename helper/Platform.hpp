@@ -3,7 +3,6 @@
 #include "native_os_def.h"
 
 #include "FileIO.hpp";
-#include "Timer.hpp";
 #include "Input.hpp";
 
 struct Platform {
@@ -15,13 +14,9 @@ struct Platform {
 
     void createWindow();
     void handleEvents(bool isCursorUpdate); // handles platform specific events, updates cursor position if arg true
-    /* static void updateTimer(){
-		if (_tstampMilli == 0.0f) _ticker.reset(); // first update requires timer reset
-		else _tstampMilli = _ticker.getRelMillisecs(); // updates timer and timestamp
-	} */
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
-    static bool getIsMouseHeld(); // checks whether mouse is held
+    // static bool getIsMouseHeld(); // checks whether mouse is held
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
 
@@ -40,9 +35,6 @@ private:
     // static bool isCursorInClient; // internally tracks if cursor is in client space
     static float xCursorPos; // internally tracks cursor position along x axis
     static float yCursorPos; // internally tracks cursor position along y axis
-
-    static double _tstamp; // timestamp for most recent event
-    Timer_Ticker _ticker; // used for internal updates
 };
 
 #define TOPL_PLATFORM_H

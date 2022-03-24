@@ -68,7 +68,7 @@ struct Drx11_Beams_VertexShader : public Beams_VertexShader {
 // Fragment Shaders
 
 struct Beams_FragmentShader : public Topl_Shader {
-	Beams_FragmentShader : Topl_Shader(){}
+	Beams_FragmentShader() : Topl_Shader(){}
 	Beams_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name){ }
 };
 

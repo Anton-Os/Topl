@@ -10,12 +10,12 @@ static void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCa
 
 float shiftTForm(float input, double amount); // shifts point by amount
 float stretchTForm(float input, double factor); // stretches point by factor
-float waveTform(float input, double rest); // makes point equalize to rest value
-float starTForm(float input, double circles); // distorts point based on concentric circles
+float contortTform(float input, double rest); // equalizes values to rest value
+float distortTForm(float input, double radii); // distorts value based on concentric radii
 
 // Complex Shape Types
 
-class Geo_Iterative { // helper object for recursive render object generation
+class Geo_Iterative { // object for recursive render object generation
 public:
     Geo_Iterative(const Geo_RenderObj* refObj, unsigned short iterations){
         _refObj = refObj;
@@ -59,12 +59,6 @@ private:
     void genTexCoords(Eigen::Vector2f* data) override;
     void genIndices(unsigned* data) override;
 };
-
-
-// Tiling Functions
-/* static void tileSquare(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Square tiling
-static void tileTrig(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Triangular tiling
-static void tileHex(std::vector<Eigen::Vector3f>* posData, Geo_Face face, unsigned iterations); // Hexagonal tiling */
 
 #define SHAPESGEN_H
 #endif

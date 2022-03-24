@@ -1,6 +1,6 @@
 #include <assimp/scene.h>
 
-#include "Geometry.hpp"
+#include "ShapesGen.hpp"
 
 #include "Geo_Actor.hpp"
 
@@ -10,6 +10,7 @@ public:
 	Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)) {
 		_assimpMeshRef = mesh;
 		fillRenderObj();
+		// stretchT
 	}
 	virtual ~Geo_Mesh() {}
 
@@ -55,6 +56,7 @@ public:
 			}
 			else puts("No meshes detected!");
 		}
+
     }
 	~Geo_Node() { if(_mesh != nullptr) delete(_mesh); }
 
