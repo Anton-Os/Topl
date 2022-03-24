@@ -1,7 +1,5 @@
 #include "Model.hpp"
 
-Geo_Node Geo_Model::_dummyGeo = Geo_Node(nullptr, nullptr);
-
 namespace _Model {
     std::string genNodeName(unsigned num){ return "node" + std::to_string(num); }
 }
@@ -32,8 +30,12 @@ void Geo_Model::configure(Topl_Scene* scene){
 	for (unsigned n = 0; n < _nodeCount; n++) {
 		Geo_Node* currentNode = *(_nodes + n);
 		if (currentNode->getMeshCount() > 0) {
-			_geoNodeList.push_back(currentNode);
+			_targetNodes.push_back(currentNode);
 			scene->addGeometry(getPrefix() + currentNode->getName(), currentNode);
 		}
 	}
 }
+
+/* void Geo_Model::rotate(const Eigen::Vector2f& angles){
+	// Implement Rotation
+} */

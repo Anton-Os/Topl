@@ -12,7 +12,6 @@
 
 #ifdef RASTERON_H
 #include "Topl_Images.h"
-// FT_Library Topl_Image::freetypeLib = {}; // static member definition
 #endif
 
 typedef const Geo_Actor* const actor_cptr;
@@ -52,8 +51,9 @@ public:
 		_projMatrix = genProjMatrix(projType, bounds);
 	}
 	void setPos(const Eigen::Vector3f& pos){ _pos = pos; }
-	void movePos(const Eigen::Vector3f& move){ _pos += move; }
-	void setLookPos(const Eigen::Vector3f& lookPos){ _lookPos = lookPos; }
+	void updatePos(const Eigen::Vector3f& vec){ _pos += vec; }
+	void setLookPos(const Eigen::Vector3f& vec){ _lookPos = vec; }
+	void updateLookPos(const Eigen::Vector3f& vec){ _lookPos = _pos + vec; }
 	vec3f_cptr getPos() const { return &_pos; }
 	vec3f_cptr getLookPos() const { return &_lookPos; }
 	mat4f_cptr getProjMatrix() const { return &_projMatrix; }

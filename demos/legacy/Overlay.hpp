@@ -127,7 +127,7 @@ void genImages() {
 unsigned getPressPixel(Topl_Renderer* renderer) {
 	unsigned pixel = genRandColorVal(); // random color
 	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS) // captures pixel at cursor position
-		pixel = renderer->getPixColor(Platform::getCursorX(), Platform::getCursorY());
+		pixel = renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 #ifdef RASTERON_H
 	// if (App::pickerBk != nullptr) deleteImg(App::pickerBk); // deletes previous image
 	// App::pickerBk = createImgBlank(255, 255, pixel);

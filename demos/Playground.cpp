@@ -42,14 +42,18 @@ void Playground_App::loop(double secs, unsigned long frame) {
 	_renderer->renderScene(&scene_main);
 
 	if (_renderer->getFrameCount() == 2) {
-		unsigned pixel1 = _renderer->getPixColor(0.95f, 0.95f); // testing
-		unsigned pixel2 = _renderer->getPixColor(0.95f, -0.95f); // testing
-		unsigned pixel3 = _renderer->getPixColor(-0.95f, -0.95f); // testing
-		unsigned pixel4 = _renderer->getPixColor(-0.95f, 0.95f); // testing
+		unsigned pixel1 = _renderer->getPixelAt(0.95f, 0.95f); // testing
+		unsigned pixel2 = _renderer->getPixelAt(0.95f, -0.95f); // testing
+		unsigned pixel3 = _renderer->getPixelAt(-0.95f, -0.95f); // testing
+		unsigned pixel4 = _renderer->getPixelAt(-0.95f, 0.95f); // testing
 	}
 }
 
 int main(int argc, char** argv) {
+	{
+		Playground_App app = Playground_App(argv[0], APP_BACKEND); // test creation
+	}
+
     Playground_App app = Playground_App(argv[0], APP_BACKEND);
 
 	app.run();

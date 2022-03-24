@@ -65,10 +65,10 @@ void hoverCallback_bot(float x, float y) {
 	calcCamera();
 }
 
-void buttonCallback_w(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { App::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { App::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { App::camera.updatePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { App::camera.updatePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
 // Shared functions
 

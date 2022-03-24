@@ -178,7 +178,7 @@ public:
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
-	unsigned getPixColor(float x, float y) {
+	unsigned getPixelAt(float x, float y) {
 		Rasteron_PixelPoint pixPoint = { x, y };
 
 		Rasteron_Image* image = frame();

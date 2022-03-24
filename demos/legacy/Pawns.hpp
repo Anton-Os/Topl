@@ -12,7 +12,7 @@
 #define ROTATE_AMOUNT 0.3
 
 #define VIEW_SPACE 3.0f
-#define MOVE_SCALE 20
+#define MOVE_SCALE 30
 
 namespace App {
 	Topl_Scene scene;

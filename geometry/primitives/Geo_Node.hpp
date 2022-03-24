@@ -1,5 +1,7 @@
 #include <assimp/scene.h>
 
+#define MESH_SCALE 0.1
+
 #include "ShapesGen.hpp"
 
 #include "Geo_Actor.hpp"
@@ -10,7 +12,6 @@ public:
 	Geo_Mesh(const aiMesh* mesh) : Geo_RenderObj(mesh->mNumVertices, getIndexCount(mesh)) {
 		_assimpMeshRef = mesh;
 		fillRenderObj();
-		// stretchT
 	}
 	virtual ~Geo_Mesh() {}
 
@@ -33,31 +34,7 @@ private:
 
 class Geo_Node : public Geo_Actor {
 public:
-    Geo_Node(const aiScene* scene, const aiNode* node) : 
-    Geo_Actor(){
-		if (scene != nullptr && node != nullptr) {
-			setName(std::string(node->mName.C_Str()));
-			_scene = scene;
-			_node = node;
-
-			_meshCount = node->mNumMeshes;
-			if (_meshCount == 1) {
-				Geo_Mesh mesh = Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
-				_mesh->cloneMesh(&mesh);
-				setRenderObj((Geo_RenderObj*)_mesh);
-			}
-			else if (_meshCount > 1) {
-				puts("Multiple meshes detected!");
-				// TODO: implement code to fuse multiple meshes together!
-
-				Geo_Mesh mesh = Geo_Mesh(*(_scene->mMeshes + *(_node->mMeshes)));
-				_mesh->cloneMesh(&mesh);
-				setRenderObj((Geo_RenderObj*)_mesh);
-			}
-			else puts("No meshes detected!");
-		}
-
-    }
+    Geo_Node(const aiScene* scene, const aiNode* node);
 	~Geo_Node() { if(_mesh != nullptr) delete(_mesh); }
 
 	unsigned getMeshCount() const { return _meshCount; }

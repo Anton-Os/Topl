@@ -23,10 +23,9 @@ public:
 
     void configure(Topl_Scene* scene) override;
 private:
-    static Geo_Node _dummyGeo;
     std::string _filePath; // nodes are read from file
 
+    std::vector<Geo_Node*> _targetNodes; // contains only nodes with valid meshes
     unsigned _nodeCount = 0;
     Geo_Node** _nodes = nullptr; // dynamically allocated and managed
-    std::vector<Geo_Node*> _geoNodeList; // contains only nodes with valid meshes
 };

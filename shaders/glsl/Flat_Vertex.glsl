@@ -1,12 +1,12 @@
 #version 440
 
-layout(packed, binding = 0) uniform Block {
+layout(std140, binding = 0) uniform Block {
 	vec3 offset; // padded to vec4
 	vec2 rotation; // padded to vec4
 	vec4 color;
 };
 
-layout(packed, binding = 1) uniform SceneBlock {
+layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos; // padded to vec4
 	vec3 cam_pos; // padded to vec4
 	mat4 projMatrix;

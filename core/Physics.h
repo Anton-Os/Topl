@@ -110,10 +110,10 @@ struct Phys_Connector {
         restLength = length; // rest length set to default length
         centerPoint = (Vec3f(pos1) + Vec3f(pos2)) * 0.5f; // midpoint equation
 
-        restAngle_NVec1 = Vec3f(pos1) - centerPoint; restAngle_NVec1.normalize(); // computes the norm vector towards pos1
-        angle_NVec1 = restAngle_NVec1; // initially set to rest angle
-        restAngle_NVec2 = Vec3f(pos2) - centerPoint; restAngle_NVec2.normalize(); // computes the norm vector towards pos2
-        angle_NVec2 = restAngle_NVec2; // sets current angle to the rest angle
+        restAngleVecn1 = Vec3f(pos1) - centerPoint; restAngleVecn1.normalize(); // computes the norm vector towards pos1
+        angleVecn1 = restAngleVecn1; // initially set to rest angle
+        restAngleVecn2 = Vec3f(pos2) - centerPoint; restAngleVecn2.normalize(); // computes the norm vector towards pos2
+        angleVecn2 = restAngleVecn2; // sets current angle to the rest angle
     }
     bool getIsPreset(){ // determines whether internals are correctly set
        return (length == BAD_CONNECTOR_LEN || restLength == BAD_CONNECTOR_LEN)? false : true;
@@ -121,10 +121,10 @@ struct Phys_Connector {
 
     // Updatable 
 	Vec3f centerPoint = VEC_3F_ZERO;
-    Vec3f restAngle_NVec1 = CONNECTOR_ANGLE_PRESET; // pos1 tries to stabilize to rest angle
-    Vec3f restAngle_NVec2 = restAngle_NVec1.inverse(); // pos2 tries to stabilize to rest angle
-    Vec3f angle_NVec1 = CONNECTOR_ANGLE_PRESET; // current angle towards pos1
-    Vec3f angle_NVec2 = angle_NVec1.inverse(); // current angle towards pos2
+    Vec3f restAngleVecn1 = CONNECTOR_ANGLE_PRESET; // pos1 tries to stabilize to rest angle
+    Vec3f restAngleVecn2 = restAngleVecn1.inverse(); // pos2 tries to stabilize to rest angle
+    Vec3f angleVecn1 = CONNECTOR_ANGLE_PRESET; // current angle towards pos1
+    Vec3f angleVecn2 = angleVecn1.inverse(); // current angle towards pos2
 
     CONNECT_Type type = CONNECT_Spring;
     double length = BAD_CONNECTOR_LEN; // current length of the connector

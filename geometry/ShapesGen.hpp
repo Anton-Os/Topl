@@ -13,6 +13,21 @@ float stretchTForm(float input, double factor); // stretches point by factor
 float contortTform(float input, double rest); // equalizes values to rest value
 float distortTForm(float input, double radii); // distorts value based on concentric radii
 
+class Geo_ConstructShape : public Geo_RenderObj{
+public:
+    Geo_ConstructShape(const Geo_RenderObj* obj1, const Geo_RenderObj* obj2)
+    : Geo_RenderObj(
+        obj1->getVerticesCount() + obj2->getVerticesCount(),
+        obj1->getIndexCount() + obj2->getIndexCount()){
+        fillRenderObj();
+    }
+private:
+    void genPos(Eigen::Vector3f* data) override;
+    void genNormals(Eigen::Vector3f* data) override;
+    void genTexCoords(Eigen::Vector2f* data) override;
+    void genIndices(unsigned* data) override;
+};
+
 // Complex Shape Types
 
 class Geo_Iterative { // object for recursive render object generation
@@ -32,8 +47,8 @@ class Geo_DuplexShape : protected Geo_Iterative, public Geo_RenderObj { // shape
 public:
     Geo_DuplexShape(const Geo_RenderObj* refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
-    Geo_RenderObj
-    (pow(refObj->getVerticesCount(), iterations),
+    Geo_RenderObj(
+        pow(refObj->getVerticesCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
         fillRenderObj();
     }
@@ -48,8 +63,8 @@ class Geo_TessShape : protected Geo_Iterative, public Geo_RenderObj { // shape t
 public:
     Geo_TessShape(const Geo_RenderObj* refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
-    Geo_RenderObj
-    (pow(refObj->getVerticesCount(), iterations),
+    Geo_RenderObj(
+        pow(refObj->getVerticesCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
         fillRenderObj();
     }

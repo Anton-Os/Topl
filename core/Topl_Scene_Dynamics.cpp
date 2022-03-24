@@ -16,10 +16,10 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
 	connector->length = linkDiff.len();
 	connector->centerPoint = (Vec3f(pos1) + Vec3f(pos2)) * 0.5f;
-	connector->angle_NVec1 = Vec3f(pos1) - connector->centerPoint;
-	connector->angle_NVec1.normalize();
-	connector->angle_NVec2 = Vec3f(pos2) - connector->centerPoint;
-	connector->angle_NVec2.normalize();
+	connector->angleVecn1 = Vec3f(pos1) - connector->centerPoint;
+	connector->angleVecn1.normalize();
+	connector->angleVecn2 = Vec3f(pos2) - connector->centerPoint;
+	connector->angleVecn2.normalize();
 }
 
 // Scene Builder implementation code
@@ -130,9 +130,9 @@ void Topl_Scene::resolvePhysics() {
 		}
 
 		// Forces acting by angular displacement // TODO: Add a Threshold value!!!
-		if (connector->restAngle_NVec1 != connector->angle_NVec1 && connector->restAngle_NVec2 != connector->angle_NVec2) {
-			const Vec3f forceAngle1 = connector->restAngle_NVec1 - connector->angle_NVec1;
-			const Vec3f forceAngle2 = connector->restAngle_NVec2 - connector->angle_NVec2;
+		if (connector->restAngleVecn1 != connector->angleVecn1 && connector->restAngleVecn2 != connector->angleVecn2) {
+			const Vec3f forceAngle1 = connector->restAngleVecn1 - connector->angleVecn1;
+			const Vec3f forceAngle2 = connector->restAngleVecn2 - connector->angleVecn2;
 
 			addForce(linkItem1->getName(), forceAngle1 * CONNECTOR_ANGLE_SCALE);
 			addForce(linkItem2->getName(), forceAngle2 * CONNECTOR_ANGLE_SCALE);
@@ -161,8 +161,8 @@ void Topl_Scene::resolvePhysics() {
 			addForce(actor->getName(), forceFinal); // adding forces to target actor!
 		}
 	
-		if (connector->restAngle_NVec1 != connector->angle_NVec1 && connector->restAngle_NVec2 != connector->angle_NVec2) {
-			const Vec3f forceAngle = connector->restAngle_NVec1 - connector->angle_NVec1;
+		if (connector->restAngleVecn1 != connector->angleVecn1 && connector->restAngleVecn2 != connector->angleVecn2) {
+			const Vec3f forceAngle = connector->restAngleVecn1 - connector->angleVecn1;
 			addForce(actor->getName(), forceAngle * CONNECTOR_ANGLE_SCALE);
 		}
 	}

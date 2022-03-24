@@ -52,6 +52,10 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 	return camMatrix;
 }
 
+float4 checkMatrixValid(float4x4 input){
+	return float4(input[0][0], input[1][1], input[2][2], input[3][3]);
+}
+
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
@@ -64,7 +68,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
 	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
-	output.flatColor = color;
+	output.flatColor = checkMatrixValid(projMatrix);
 
 	return output;
 }

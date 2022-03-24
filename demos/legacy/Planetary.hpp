@@ -29,10 +29,10 @@ namespace App {
 	Phys_Motion orbitMotion = Phys_Motion(MOTION_Orbit, Eigen::Vector3f(1.0f, 0.0f, 0.0), 2.0);
 }
 
-void buttonCallback_w(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { App::camera.movePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { App::camera.movePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { App::camera.movePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
+void buttonCallback_a(void) { App::camera.updatePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
+void buttonCallback_s(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
+void buttonCallback_d(void) { App::camera.updatePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
 
 void moveUpEvent() {
 	Eigen::Vector3f updatePos = Eigen::Vector3f(*App::sphereGeo2.getPos()) + Eigen::Vector3f(0.0f, 0.1f, 0.0f);

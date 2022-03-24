@@ -1,10 +1,10 @@
 #version 440
 
-layout(packed, binding = 0) uniform Block {
+layout(std140, binding = 0) uniform Block {
 	uint actorID;
 };
 
-layout(packed, binding = 1) uniform SceneBlock {
+layout(std140, binding = 1) uniform SceneBlock {
 	ivec2 screenRes;
 	vec2 cursorPos;
 	// uint renderMode; // switches modes to implement different drawing functions
