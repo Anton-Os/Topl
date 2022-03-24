@@ -1,8 +1,8 @@
-#include "Exec.hpp"
+#include "Playground.hpp"
 
 #define APP_BACKEND APP_OpenGL_4
 
-void Exec_App::init() {
+void Playground_App::init() {
 	// Shaders and Pipeline
 
 	Topl_Pipeline pipeline;
@@ -37,7 +37,7 @@ void Exec_App::init() {
 	_renderer->buildScene(&scene_main);
 }
 
-void Exec_App::loop(double secs, unsigned long frame) {
+void Playground_App::loop(double secs, unsigned long frame) {
 	_renderer->updateScene(&scene_main);
 	_renderer->renderScene(&scene_main);
 
@@ -50,7 +50,7 @@ void Exec_App::loop(double secs, unsigned long frame) {
 }
 
 int main(int argc, char** argv) {
-    Exec_App app = Exec_App(argv[0], APP_BACKEND);
+    Playground_App app = Playground_App(argv[0], APP_BACKEND);
 
 	app.run();
     return 0;

@@ -19,8 +19,8 @@ void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback,
 
 float shiftTForm(float input, double amount){ return input + amount; }
 float stretchTForm(float input, double factor){ return input * factor; }
-float waveTform(float input, double rest){ return input; } // implement
-float starTForm(float input, double circles){ return input; } // implement
+float contortTform(float input, double rest){ return input; }
+float distortTForm(float input, double radii){ return input; }
 
 // Complex Shape Types
 

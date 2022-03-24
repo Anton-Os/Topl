@@ -27,7 +27,7 @@ struct Topl_Image { // wrapper around Rasteron_Image
         /* Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
         image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
         deleteImg(fontImage); */
-		image = bakeImgText(freetypeLib, textObj);
+		image = bakeImgTextInvert(freetypeLib, textObj);
     }
     void setImage(Rasteron_Image* refImage){
         if(image != NULL) deleteImg(image); // delte old image
@@ -87,14 +87,28 @@ struct Topl_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Height
     Topl_Heightmap(const Rasteron_Image* refImage)
     : Geo_RenderObj(refImage->height * refImage->width) {
         heightmap = createHeightmap(refImage);
+		fillRenderObj();
     }
 
     ~Topl_Heightmap(){ deleteHeightmap(heightmap); }
 private:
-    void genPos(Eigen::Vector3f* data) override { return; } // Implement here
-    void genNormals(Eigen::Vector3f* data) override { return; } // Implement here
-    void genTexCoords(Eigen::Vector2f* data) override { return; } // Implement here
-    void genIndices(unsigned* data) override { return; } // Implement here
+    void genPos(Eigen::Vector3f* data) override {
+		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
+			*(data + p) = Eigen::Vector3f(0.0f, *(heightmap->data + p), 0.0f);
+	}
+    void genNormals(Eigen::Vector3f* data) override { 
+		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
+			*(data + p) = Eigen::Vector3f(0.0f, *(heightmap->data + p), 0.0f);
+	} 
+    void genTexCoords(Eigen::Vector2f* data) override {
+		float xInc = 1.0f / heightmap->width;
+		float yInc = 1.0f / heightmap->height;
+
+		for (unsigned r = 0; r < heightmap->height; r++)
+			for (unsigned c = 0; c < heightmap->width; c++)
+				*(data + (r * heightmap->width) + c) = Eigen::Vector2f(xInc * c, yInc * r);
+	}
+    void genIndices(unsigned* data) override { return; } // No indices by default
 
     Rasteron_Heightmap* heightmap = NULL;
 };

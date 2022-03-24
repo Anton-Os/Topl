@@ -118,18 +118,24 @@ endif()
 include(legacyDemos.cmake)
 # add_executable(Test_Image demos/test/ImageTest.cpp)
 
-# Modern Demos
+# Modern Demos and Tests
 
-add_executable(Exec
+add_executable(Test_MathOps demos/test/MathOps.cpp)
+target_include_directories(Test_MathOps PUBLIC core)
+
+add_executable(Test_HelloVulkan demos/test/HelloVulkan.cpp)
+target_include_directories(Test_HelloVulkan PUBLIC core)
+
+add_executable(Demo_Playground
     geometry/trees/Chain.cpp
     geometry/trees/Grid.cpp
     geometry/trees/Humanoid.cpp
     geometry/trees/Model.cpp
     geometry/trees/Pane.cpp
 
-    demos/Exec.cpp
+    demos/Playground.cpp
 )
-target_link_libraries(Exec GL4_ENGINE Drx11_ENGINE)
+target_link_libraries(Demo_Playground GL4_ENGINE Drx11_ENGINE)
 
 # Copying and managing implemented here with custom targets
 

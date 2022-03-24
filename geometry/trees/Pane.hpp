@@ -11,6 +11,8 @@
 #define PANE_ROOT_Z 0.000002
 #define PANE_CHILD_Z 0.000001
 
+typedef void (*paneCallback)(void);
+
 class Geo_Pane {
 public:
 	Geo_Pane(unsigned color){ // Fixed 	Color Constructor
@@ -31,6 +33,7 @@ public:
 #endif
     }
 
+	void addCallback(paneCallback callback){ _callback = callback; }
 	unsigned getColor() { return _bkColor; }
 #ifdef RASTERON_H
 	void selectBk(const Rasteron_Image* image) { _imgSelect = image; }
@@ -39,6 +42,7 @@ public:
 	}
 #endif
 private:
+	paneCallback _callback = nullptr;
     unsigned _bkColor = PANE_BK_COLOR;
 #ifdef RASTERON_H
     Rasteron_Image* _imgInternal = nullptr; // default internal background

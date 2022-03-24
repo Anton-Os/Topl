@@ -10,24 +10,49 @@ struct VectorXF {
     float data[n];
 
     float operator [](unsigned short i){ return data[i]; }
-    VectorXF operator +(const VectorXF& vector){ 
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] += vector.data[e];
+    bool operator == (const VectorXF& inputVec) const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+            if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
+        return true;
     }
-    VectorXF operator -(const VectorXF& vector){ 
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] -= vector.data[e];
+    bool operator != (const VectorXF& inputVec) const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+            if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
+        return false;
     }
-    VectorXF operator *(const VectorXF& vector){ 
-       for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] *= vector.data[e];
+    VectorXF operator +(const VectorXF& inputVec) const {
+        VectorXF vec = {};
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] + inputVec.data[e];
+        return vec;
     }
-    float len(){
+    VectorXF operator -(const VectorXF& inputVec) const { 
+        VectorXF vec = {};
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] - inputVec.data[e];
+        return vec;
+    }
+    VectorXF operator *(const VectorXF& inputVec) const { 
+        VectorXF vec = {};
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * inputVec.data[e];
+        return vec;
+    }
+    VectorXF operator *(float scalar) const { 
+       VectorXF vec = {};
+       for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
+       return vec;
+    }
+    float len() const {
         float length = 0.0;
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) length += pow(data[e], 2);
         return sqrt(length); // pythagorean theorem
     }
-    VectorXF norm(){
-        VectorXF normVec;
+    void normalize() {
         float length = len();
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) normVec.data[e] = data[e] / length;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
+    }
+    VectorXF inverse() const {
+        VectorXF vec = {};
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] *= -1.0f;
+        return vec;
     }
 };
 
@@ -36,16 +61,37 @@ struct VectorXI {
     int data[n];
 
     int operator [](unsigned short i){ return data[i]; }
-    VectorXI operator +(const VectorXI& vector){ 
-        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] += vector.data[e];
+    bool operator == (const VectorXI& inputVec) const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+            if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
+        return true;
     }
-    VectorXI operator -(const VectorXI& vector){ 
-        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] -= vector.data[e];
+    bool operator != (const VectorXI& inputVec) const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+            if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
+        return false;
     }
-    VectorXI operator *(const VectorXI& vector){ 
-        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) data[e] *= vector.data[e];
+    VectorXI operator +(const VectorXI& inputVec) const {
+        VectorXI vec;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] + inputVec.data[e];
+        return vec;
     }
-    int len(){
+    VectorXI operator -(const VectorXI& inputVec) const { 
+        VectorXI vec;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] - inputVec.data[e];
+        return vec;
+    }
+    VectorXI operator *(const VectorXI& inputVec) const { 
+        VectorXI vec;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] * inputVec.data[e];
+        return vec;
+    }
+    VectorXI operator *(int scalar) const {
+        VectorXI vec;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] * scalar;
+        return vec;
+    }
+    int len() const{
         int length = 0.0;
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) length += pow(data[e], 2);
         return sqrt(length);
@@ -58,6 +104,10 @@ struct Matrix {
 	float operator () (unsigned short r, unsigned short c) {
 		return data[r][c];
 	}
+
+    Matrix operator* (const Matrix& input){
+        return {}; // Implement multiplication
+    }
 };
 
 typedef VectorXF<2> Vec2f;
@@ -80,6 +130,11 @@ typedef Matrix<3, 3> Mat3x3;
 typedef const Mat3x3* const mat3x3_cptr_t;
 typedef Matrix<4, 4> Mat4x4;
 typedef const Mat4x4* const mat4x4_cptr_t;
+
+#define VEC_2F_ZERO Vec2f({ 0.0f, 0.0f })
+#define VEC_3F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f })
+#define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
+#define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
 
 #define MATHS_H
 #endif

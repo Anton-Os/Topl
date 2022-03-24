@@ -27,17 +27,17 @@ void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orienta
 }
 
 void Geo_Humanoid::presetLinks(){
-	body_head_link.preset(*body->getPos(), *head->getPos());
-	body_leftArm_link.preset(*body->getPos(), *leftArm->getPos());
-	body_rightArm_link.preset(*body->getPos(), *rightArm->getPos());
-	body_leftLeg_link.preset(*body->getPos(), *leftLeg->getPos());
-	body_rightLeg_link.preset(*body->getPos(), *rightLeg->getPos());
+	body_head_link.preset(body->getPosition(), head->getPosition());
+	body_leftArm_link.preset(body->getPosition(), leftArm->getPosition());
+	body_rightArm_link.preset(body->getPosition(), rightArm->getPosition());
+	body_leftLeg_link.preset(body->getPosition(), leftLeg->getPosition());
+	body_rightLeg_link.preset(body->getPosition(), rightLeg->getPosition());
 
-	head_leftArm_link.preset(*head->getPos(), *leftArm->getPos());
-	head_rightArm_link.preset(*head->getPos(), *rightArm->getPos());
-	leftArm_leftLeg_link.preset(*leftArm->getPos(), *leftLeg->getPos());
-	rightArm_rightLeg_link.preset(*rightArm->getPos(), *rightLeg->getPos());
-	leftLeg_rightLeg_link.preset(*leftLeg->getPos(), *rightLeg->getPos());
+	head_leftArm_link.preset(head->getPosition(), leftArm->getPosition());
+	head_rightArm_link.preset(head->getPosition(), rightArm->getPosition());
+	leftArm_leftLeg_link.preset(leftArm->getPosition(), leftLeg->getPosition());
+	rightArm_rightLeg_link.preset(rightArm->getPosition(), rightLeg->getPosition());
+	leftLeg_rightLeg_link.preset(leftLeg->getPosition(), rightLeg->getPosition());
 }
 
 void Geo_Humanoid2D::configure(Topl_Scene* scene) { // Trying with displacements for now

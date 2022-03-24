@@ -12,21 +12,21 @@ enum MOTION_Type {
 
 class Phys_Motion { // Motion can be used for forces, absolute position updates, and even rotations!
 public:
-    Phys_Motion(MOTION_Type t, Eigen::Vector3f m, double d){ // Motion with Counter-Movement Constructor
+    Phys_Motion(MOTION_Type t, Vec3f m, double d){ // Motion with Counter-Movement Constructor
 		type = t;
 		startPos = m;
-        endPos = -1.0f * m;
+        endPos = m * -1.0f;
 
         endSecs = d;
     }
-    Phys_Motion(MOTION_Type t, Eigen::Vector3f m1, Eigen::Vector3f m2, double d){ // Start and End Motion Vec
+    Phys_Motion(MOTION_Type t, Vec3f m1, Vec3f m2, double d){ // Start and End Motion Vec
 		type = t;
 		startPos = m1;
 		endPos = m2;
 
         endSecs = d;
     }
-    Eigen::Vector3f getMotion(double currentSecs){
+    Vec3f getMotion(double currentSecs){
         if(isFirstCall){
             startSecs += currentSecs;
             endSecs += currentSecs;
@@ -39,14 +39,14 @@ public:
 		switch (type) {
 		case MOTION_Instant: return (seqProgFrac <= 0.5f)? startPos : endPos;
 		case MOTION_Linear : return getLinear(startPos, endPos, seqProgFrac);
-		case MOTION_Orbit: return Eigen::Vector3f(0.0, 0.0, 0.0); // implement pivot motion!
+		case MOTION_Orbit: return VEC_3F_ZERO; // implement pivot motion!
 		}
     }
     void setCurve(double c){ curve = c; }
 
 private:
     double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
-    Eigen::Vector3f getLinear(const Eigen::Vector3f& m1, const Eigen::Vector3f& m2, double progFrac){ // linear motion computation
+    Vec3f getLinear(const Vec3f& m1, const Vec3f& m2, double progFrac){ // linear motion computation
         /* if(curve > 0.0f){
             if(progFrac < 0.25f && progFrac != 0.0) // progFrac is slowed to reach 0.0
             else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is slowed to reach 1.0
@@ -56,12 +56,14 @@ private:
             else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is hastened to reach 1.0
             else if(progFrac != 0.5f) // curve is slowed to reach 0.5 (halfway)
         } */
-        return (progFrac <= 0.5f)? m1 + (m2 * progFrac * 2.0f) : m2 + (m1 * progFrac * 2.0f);
+        return (progFrac <= 0.5f)
+			? Vec3f(m1) + (Vec3f(m2) * (float)(progFrac * 2.0f)) // forward motion
+			: Vec3f(m2) + (Vec3f(m1) * (float)(progFrac * 2.0f)); // reverse motion
     }
 
 	MOTION_Type type;
-    Eigen::Vector3f startPos = Eigen::Vector3f(0.0, 0.0, 0.0); // start motion vector
-    Eigen::Vector3f endPos = Eigen::Vector3f(0.0, 0.0, 0.0); // end motion vector
+    Vec3f startPos = VEC_3F_ZERO; // start motion vector
+    Vec3f endPos = VEC_3F_ZERO; // end motion vector
     double curve = MOTION_NO_CURVE; // no curve by default
 
     double startSecs = 0.0f;
@@ -73,9 +75,9 @@ private:
 #define PHYS_DEFAULT_K 1000.0 // K value by default
 #define PHYS_ROD_K 10000.0 // K value for rod connector
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
-// #define CONNECTOR_ANGLE_THRESH Eigen::Vector3f(0.00005f, 0.00005f, 0.00005f)
-#define CONNECTOR_ANGLE_PRESET Eigen::Vector3f(0.0f, 1.0f, 0.0);
-#define CONNECTOR_ANGLE_SCALE 20
+// #define CONNECTOR_ANGLE_THRESH Vec3f(0.00005f, 0.00005f, 0.00005f)
+#define CONNECTOR_ANGLE_PRESET Vec3f({ 0.0f, 1.0f, 0.0 });
+#define CONNECTOR_ANGLE_SCALE 20.0f
 #define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
 
 enum CONNECT_Type {
@@ -102,15 +104,15 @@ struct Phys_Connector {
         kVal = (type != CONNECT_Rod)? k : PHYS_ROD_K;
     }
 
-    void preset(const Eigen::Vector3f& pos1, const Eigen::Vector3f& pos2){ // presets the connector values given positions
-        Eigen::Vector3f diffVec = pos1 - pos2;
-        length = getVecLength(diffVec); // presets length between points
+    void preset(const Vec3f& pos1, const Vec3f& pos2){ // presets the connector values given positions
+        Vec3f diffVec = Vec3f(pos1) - Vec3f(pos2);
+        length = diffVec.len(); // presets length between points
         restLength = length; // rest length set to default length
-        centerPoint = (pos1 + pos2) / 2; // midpoint equation
+        centerPoint = (Vec3f(pos1) + Vec3f(pos2)) * 0.5f; // midpoint equation
 
-        restAngle_NVec1 = pos1 - centerPoint; restAngle_NVec1.normalize(); // computes the norm vector towards pos1
-        angle_NVec1 = restAngle_NVec1; // sets current angle to the rest angle
-        restAngle_NVec2 = pos2 - centerPoint; restAngle_NVec2.normalize(); // computes the norm vector towards pos2
+        restAngle_NVec1 = Vec3f(pos1) - centerPoint; restAngle_NVec1.normalize(); // computes the norm vector towards pos1
+        angle_NVec1 = restAngle_NVec1; // initially set to rest angle
+        restAngle_NVec2 = Vec3f(pos2) - centerPoint; restAngle_NVec2.normalize(); // computes the norm vector towards pos2
         angle_NVec2 = restAngle_NVec2; // sets current angle to the rest angle
     }
     bool getIsPreset(){ // determines whether internals are correctly set
@@ -118,11 +120,11 @@ struct Phys_Connector {
     }
 
     // Updatable 
-	Eigen::Vector3f centerPoint = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
-    Eigen::Vector3f restAngle_NVec1 = CONNECTOR_ANGLE_PRESET; // pos1 tries to stabilize to rest angle
-    Eigen::Vector3f restAngle_NVec2 = -1.0f * CONNECTOR_ANGLE_PRESET; // pos2 tries to stabilize to rest angle
-    Eigen::Vector3f angle_NVec1 = CONNECTOR_ANGLE_PRESET; // current angle towards pos1
-    Eigen::Vector3f angle_NVec2 = -1.0f * CONNECTOR_ANGLE_PRESET; // current angle towards pos2
+	Vec3f centerPoint = VEC_3F_ZERO;
+    Vec3f restAngle_NVec1 = CONNECTOR_ANGLE_PRESET; // pos1 tries to stabilize to rest angle
+    Vec3f restAngle_NVec2 = restAngle_NVec1.inverse(); // pos2 tries to stabilize to rest angle
+    Vec3f angle_NVec1 = CONNECTOR_ANGLE_PRESET; // current angle towards pos1
+    Vec3f angle_NVec2 = angle_NVec1.inverse(); // current angle towards pos2
 
     CONNECT_Type type = CONNECT_Spring;
     double length = BAD_CONNECTOR_LEN; // current length of the connector
@@ -138,17 +140,17 @@ struct Phys_Connector {
 
 struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor object
     Phys_Actor(){ // Freeform constructor
-        forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
+        forces = (Vec3f*)malloc(MAX_PHYS_FORCES * sizeof(Vec3f));
     }
-    Phys_Actor(Eigen::Vector3f gravityVec){ // Gravity constructor
-        forces = (Eigen::Vector3f*)malloc(MAX_PHYS_FORCES * sizeof(Eigen::Vector3f));
+    Phys_Actor(Vec3f gravityVec){ // Gravity constructor
+        forces = (Vec3f*)malloc(MAX_PHYS_FORCES * sizeof(Vec3f));
         
         addForce(gravityVec);
         isGravityEnabled = true;
     }
     ~Phys_Actor(){ if(forces != nullptr) free(forces); }
 
-    bool addForce(Eigen::Vector3f force){
+    bool addForce(Vec3f force){
         if(actingForceCount < MAX_PHYS_FORCES){
             *(forces + actingForceCount) = force;
             actingForceCount++;
@@ -160,10 +162,10 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
 	const double damping = PHYS_DEFAULT_DAMPING;
     double mass = PHYS_DEFAULT_MASS;
 
-	Eigen::Vector3f velocity = Eigen::Vector3f(0.0, 0.0, 0.0);
-    Eigen::Vector3f acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
-    unsigned short actingForceCount = 0; // number of acting forces on theobject
-    Eigen::Vector3f* forces = nullptr;
-    // const Phys_Colliders* colliders = nullptr; // tracks colliding bodies for collision detection
+	Vec3f velocity = VEC_3F_ZERO;
+    Vec3f acceleration = VEC_3F_ZERO;
+
+    Vec3f* forces = nullptr;
+    unsigned short actingForceCount = 0; // number of acting forces on the object
 };
 

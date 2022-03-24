@@ -35,6 +35,7 @@ public:
 	std::string getName() const { return _name; }
 	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
 	vec3f_cptr getPos() const { return &_worldPos; }
+	Vec3f getPosition() const { return Vec3f({ _worldPos.x(), _worldPos.y(), _worldPos.z() }); } // change all references of getPos()
 	vec2f_cptr getAngles() const { return &_worldRot; }
 private:
 	void clampAngles(){

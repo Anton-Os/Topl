@@ -17,7 +17,7 @@
 
 typedef const Geo_Actor* const actor_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
-typedef std::pair<const Geo_Actor*, const Eigen::Vector3f*> anchor_pair;
+typedef std::pair<const Geo_Actor*, const Vec3f*> anchor_pair;
 
 struct LinkedItems { // Wrapper around connector with 2 actors being linked
 	Phys_Connector* connector;
@@ -94,10 +94,10 @@ public:
 #endif
 
 	// Dynamics Section
-	void addForce(const std::string& name, const Eigen::Vector3f& vec);
+	void addForce(const std::string& name, const Vec3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
-	void addAnchor(Phys_Connector* connector, const std::string& name, const Eigen::Vector3f* pos); // anchors target named geometry object
+	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 private:
