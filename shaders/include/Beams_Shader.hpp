@@ -13,28 +13,26 @@ struct Beams_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) { }
 
-	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
-		bytes->clear(); // Make sure there is no preexisting data
+	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+		bytes->clear(); // make sure there is no preexisting data
 
-		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
-		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
-		// Eigen::Vector4f color = Eigen::Vector4f(1.0f, 1.0f, 1.0f, 0.8f);
-		// bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(color.data());
+		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
+		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
 	
-		appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
-		appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
+		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
 		// appendDataToBytes(color_bytes, color.size() * sizeof(float), bytes);
 		
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos()->data());
-		bytes_cptr cameraRot_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos()->data());
+		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
+		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
 		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
 
-		appendDataToBytes(cameraPos_bytes, camera->getPos()->size() * sizeof(float), bytes);
-		appendDataToBytes(cameraRot_bytes, camera->getLookPos()->size() * sizeof(float), bytes);
+		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
+		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec2f), bytes);
 		// appendDataToBytes(matrix_bytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
 
 		const unsigned lightCount = scene->getLightCount();
@@ -47,12 +45,12 @@ struct Beams_VertexShader : public Topl_EntryShader {
 
 private:
     static void appendLight(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
-        bytes_cptr pos_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->pos.data());
-        bytes_cptr value_bytes = reinterpret_cast<bytes_cptr>(scene->getLight(i)->value.data());
+        bytes_cptr pos_bytes = reinterpret_cast<bytes_cptr>(&scene->getLight(i)->pos);
+        bytes_cptr value_bytes = reinterpret_cast<bytes_cptr>(&scene->getLight(i)->value);
         // bytes_cptr intensity_bytes = reinterpret_cast<bytes_cptr>(&scene->getLight(i)->intensity);
 
-        appendDataToBytes(pos_bytes, scene->getLight(i)->pos.size() * sizeof(float), bytes);
-        appendDataToBytes(value_bytes, scene->getLight(i)->value.size() * sizeof(float), bytes);
+        appendDataToBytes(pos_bytes, sizeof(Vec3f), bytes);
+        appendDataToBytes(value_bytes, sizeof(Vec2f), bytes);
         // appendDataToBytes(intensity_bytes, sizeof(float), bytes);
     }
 };

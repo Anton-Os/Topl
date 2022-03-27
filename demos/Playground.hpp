@@ -19,8 +19,10 @@ struct Playground_App : public Topl_App {
 	// Configurations
 
 	Topl_Camera camera_main;
-	Topl_Scene scene_main;
-	Topl_Scene scene_overlay;
+	Topl_Camera camera_back;
+	Topl_Scene scene_main; // for graphics
+	Topl_Scene scene_overlay; // for interaction
+	Topl_Scene scene_props; // for details
 
 	// Geometries and Drawable Objects
 
@@ -30,6 +32,7 @@ struct Playground_App : public Topl_App {
 	Geo_Actor squareActor = Geo_Actor((Geo_RenderObj*)&square);
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 5);
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 2);
+
 	Topl_Image heightmapImage = Topl_Image(imagesPath + "FlowerIllusion.png");
 	Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
 	Topl_Material material = Topl_Material("material1", 1024, 1024);

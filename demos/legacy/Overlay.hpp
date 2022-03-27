@@ -29,8 +29,8 @@ namespace App {
 
 	bool isPressPend;
 #ifdef RASTERON_H
-	Topl_Image pickerBk, captureBk, synthesisBk;
-	Topl_Image textBk1, textBk2, textBk3, textBk4;
+	Topl_Image pickerImage, captureImage, synthesisImage;
+	Topl_Image textImage1, textImage2, textImage3, textImage4;
 
 	FT_Library freetypeLib;
 	Rasteron_FormatText textObj = { "", text.c_str(), WHITE_COLOR, BLACK_COLOR };
@@ -61,22 +61,22 @@ void upCallback(float x, float y) {
 
 // Helper Functions
 
-void setCaptureBk(Topl_Renderer* renderer) {
-	App::captureBk.setImage(renderer->frame()); // screen capture code
-	App::scene.addTexture("capture", App::captureBk.getImage());
+void setCaptureImage(Topl_Renderer* renderer) {
+	App::captureImage.setImage(renderer->frame()); // screen capture code
+	App::scene.addTexture("capture", App::captureImage.getImage());
 	renderer->texturize(&App::scene);
 }
 
-void setPickerBk() {
-	App::pickerBk.setImage(createImgBlank(255, 255, 0xFFFF00FF));
-	App::scene.addTexture("picker", App::pickerBk.getImage());
+void setPickerImage() {
+	App::pickerImage.setImage(createImgBlank(255, 255, 0xFFFF00FF));
+	App::scene.addTexture("picker", App::pickerImage.getImage());
 }
 
 void genImages() {
 	initFreeType(&App::freetypeLib);
 	/* Topl_Image seedBaseImage = Topl_Image(0xFF111111);
 	Topl_Image seededImage = createImgSeedRaw(seedBaseImage.getImage(), SEED_COLOR, 0.03);
-	App::synthesisBk.setImage(createCellPatImg8(seededImage.getImage(), synthesisCallback)); */
+	App::synthesisImage.setImage(createCellPatImg8(seededImage.getImage(), synthesisCallback)); */
 	Rasteron_Image blankSlate = { "slate", 256, 256, NULL };
 	Rasteron_GradientNoise noise1 = { 3, 3, BLACK_COLOR, RED_CHANNEL };
 	Topl_Image noiseImage1 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise1));
@@ -84,9 +84,9 @@ void genImages() {
 	Topl_Image noiseImage2 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise2));
 	Rasteron_GradientNoise noise3 = { 33, 31, BLACK_COLOR, BLUE_CHANNEL };
 	Topl_Image noiseImage3 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise3));
-	App::synthesisBk.setImage(createImgFuse(noiseImage3.getImage(), noiseImage2.getImage()));
-	// App::synthesisBk.setImage(createImgFuse(App::synthesisBk.getImage(), noiseImage1.getImage()));
-	App::unitLayout.getChildPane(0)->selectBk(App::synthesisBk.getImage());
+	App::synthesisImage.setImage(createImgFuse(noiseImage3.getImage(), noiseImage2.getImage()));
+	// App::synthesisImage.setImage(createImgFuse(App::synthesisImage.getImage(), noiseImage1.getImage()));
+	App::unitLayout.getChildPane(0)->selectImage(App::synthesisImage.getImage());
 
 	Rasteron_ColorPointTable colorPointTable = { {}, 0 };
 	addColorPoint(&colorPointTable, WHITE_COLOR, 0.5f, 0.5f);
@@ -98,39 +98,42 @@ void genImages() {
 		addColorPoint(&colorPointTable, genRandColor(), genRandFloat(), genRandFloat());
 		Topl_Image layoutImage = Topl_Image(createImgProxim(App::windows.getFrameAt(p), &colorPointTable));
 		App::windows.addFrame(layoutImage.getImage());
-		pane->selectBk(App::windows.getFrameAt(p));
+		pane->selectImage(App::windows.getFrameAt(p));
 	}
 
 	// TODO: Debug inside of Rasteron and compare!
 	App::textObj.fileName = App::font1.c_str();
-	App::textBk1.setTextImage(&App::freetypeLib, &App::textObj);
+	App::textImage1.setTextImage(&App::freetypeLib, &App::textObj);
 	App::textObj.fileName = App::font2.c_str();
-	App::textBk2.setTextImage(&App::freetypeLib, &App::textObj);
+	App::textImage2.setTextImage(&App::freetypeLib, &App::textObj);
 	App::textObj.fileName = App::font3.c_str();
-	App::textBk3.setTextImage(&App::freetypeLib, &App::textObj);
+	App::textImage3.setTextImage(&App::freetypeLib, &App::textObj);
 	App::textObj.fileName = App::font4.c_str();
-	App::textBk4.setTextImage(&App::freetypeLib, &App::textObj);
+	App::textImage4.setTextImage(&App::freetypeLib, &App::textObj);
 	
 	for (unsigned short p = 0; p < App::rowLayout.getRowCount() * App::rowLayout.getColCount(); p++) {
 		Geo_Pane* pane = App::rowLayout.getChildPane(p);
 
 		switch (p % 4) {
-		case 0: pane->selectBk(App::textBk1.getImage()); break;
-		case 1: pane->selectBk(App::textBk2.getImage()); break;
-		case 2: pane->selectBk(App::textBk3.getImage()); break;
-		case 3: pane->selectBk(App::textBk4.getImage()); break;
+		case 0: pane->selectImage(App::textImage1.getImage()); break;
+		case 1: pane->selectImage(App::textImage2.getImage()); break;
+		case 2: pane->selectImage(App::textImage3.getImage()); break;
+		case 3: pane->selectImage(App::textImage4.getImage()); break;
 		}
 	}
 }
 
 // Retrieves the pixel where the cursor is positioned
 unsigned getPressPixel(Topl_Renderer* renderer) {
+	float xPos = Platform::getCursorX();
+	float yPos = Platform::getCursorY();
+
 	unsigned pixel = genRandColorVal(); // random color
-	if(Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS) // captures pixel at cursor position
+	if(xPos != BAD_CURSOR_POS && yPos != BAD_CURSOR_POS) // captures pixel at cursor position
 		pixel = renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 #ifdef RASTERON_H
-	// if (App::pickerBk != nullptr) deleteImg(App::pickerBk); // deletes previous image
-	// App::pickerBk = createImgBlank(255, 255, pixel);
+	App::rowLayout.interact(xPos, yPos, pixel);
+	App::boxedLayout.interact(xPos, yPos, pixel);
 #endif
 	return pixel;
 }
@@ -147,12 +150,12 @@ namespace Main {
 		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
 		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
 
-		App::unitLayout.move(Eigen::Vector3f(0.0f, 0.75f, 0.0f));
-		App::rowLayout.move(Eigen::Vector3f(0.75f, 0.0f, 0.0f));
+		App::unitLayout.move(Vec3f({ 0.0f, 0.75f, 0.0f }));
+		App::rowLayout.move(Vec3f({ 0.75f, 0.0f, 0.0f }));
 
-		App::pickerCircleGeo.setPos(Eigen::Vector3f(0.0f, -0.75f, 0.0f));
+		App::pickerCircleGeo.setPos(Vec3f({ 0.0f, -0.75f, 0.0f }));
 		App::scene.addGeometry("picker", &App::pickerCircleGeo);
-		App::captureSquareGeo.setPos(Eigen::Vector3f(-0.75f, 0.0f, 0.0f));
+		App::captureSquareGeo.setPos(Vec3f({ -0.75f, 0.0f, 0.0f }));
 		App::scene.addGeometry("capture", &App::captureSquareGeo);
 
 		genImages();
@@ -167,10 +170,10 @@ namespace Main {
 			renderer->updateScene(&App::scene);
 			renderer->renderScene(&App::scene);
 
-			if (App::pickerBk.getImage() == nullptr)
-				setPickerBk();
-			if (App::captureBk.getImage() == nullptr) 
-				setCaptureBk(renderer);
+			if (App::pickerImage.getImage() == nullptr)
+				setPickerImage();
+			if (App::captureImage.getImage() == nullptr) 
+				setCaptureImage(renderer);
 
 			if (App::isPressPend) {
 				unsigned pixel = getPressPixel(renderer);

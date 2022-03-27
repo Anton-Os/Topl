@@ -14,9 +14,9 @@ namespace App {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 	Timer_Ticker gameTicker;
-	Topl_Light skyLight = Topl_Light(Eigen::Vector3f(0.0f, LIGHT_DISTANCE, 0.0f));
-	Topl_Light flashLight = Topl_Light(Eigen::Vector3f(0.0f, 0.0f, -1.0f * LIGHT_DISTANCE), Eigen::Vector3f(1.0f, 0.0, 0.0));
-	Topl_Light lampLight = Topl_Light(Eigen::Vector3f(0.0f, -1.0 * LIGHT_DISTANCE, 0.0f)); // this light will be moving
+	Topl_Light skyLight = Topl_Light(Vec3f({ 0.0f, LIGHT_DISTANCE, 0.0f }));
+	Topl_Light flashLight = Topl_Light(Vec3f({ 0.0f, 0.0f, -1.0f * LIGHT_DISTANCE }), Vec3f({ 1.0f, 0.0, 0.0 }));
+	Topl_Light lampLight = Topl_Light(Vec3f({ 0.0f, -1.0 * LIGHT_DISTANCE, 0.0f })); // this light will be moving
 
 	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
 	NGon3D ngon2 = { SMALL_RADIUS, 12, 64 };
@@ -25,28 +25,28 @@ namespace App {
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 
-	Phys_Motion pongMotion = Phys_Motion(MOTION_Linear, Eigen::Vector3f(1.0f, 0.0f, 0.0), 4.0);
-	Phys_Motion orbitMotion = Phys_Motion(MOTION_Orbit, Eigen::Vector3f(1.0f, 0.0f, 0.0), 2.0);
+	Phys_Motion pongMotion = Phys_Motion(MOTION_Linear, Vec3f({ 1.0f, 0.0f, 0.0 }), 2.0);
+	Phys_Motion orbitMotion = Phys_Motion(MOTION_Orbit, Vec3f({ 1.0f, 0.0f, 0.0 }), 2.0);
 }
 
-void buttonCallback_w(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { App::camera.updatePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { App::camera.updatePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.updatePos(Vec3f({ 0.0f, 0.0f, MOVE_AMOUNT })); } // Move forward
+void buttonCallback_a(void) { App::camera.updatePos(Vec3f({ -1.0f * MOVE_AMOUNT, 0.0f, 0.0f })); } // Move left
+void buttonCallback_s(void) { App::camera.updatePos(Vec3f({ 0.0f, 0.0f, -1.0f * MOVE_AMOUNT })); } // Move backwards
+void buttonCallback_d(void) { App::camera.updatePos(Vec3f({ MOVE_AMOUNT, 0.0f, 0.0f })); } // Move right
 
 void moveUpEvent() {
-	Eigen::Vector3f updatePos = Eigen::Vector3f(*App::sphereGeo2.getPos()) + Eigen::Vector3f(0.0f, 0.1f, 0.0f);
+	Vec3f updatePos = App::sphereGeo2.getPosition() + Vec3f({0.0f, 0.1f, 0.0f});
 	App::sphereGeo2.setPos(updatePos);
 }
 
 void pongEvent(double absSecs) {
-	Eigen::Vector3f motionVec = App::pongMotion.getMotion(absSecs);
-	App::sphereGeo.setPos(Eigen::Vector3f(motionVec.x() - 0.5f, motionVec.y() - 0.5f, 0.0f));
+	Vec3f motionVec = App::pongMotion.getMotion(absSecs);
+	App::sphereGeo.setPos(Vec3f({ motionVec[0] - 0.5f, motionVec[1] - 0.5f, 0.0f }));
 }
 
 void orbitEvent(double absSecs){
-	Eigen::Vector3f motionVec = App::orbitMotion.getMotion(absSecs);
-	App::lampLight.pos = Eigen::Vector3f(motionVec.x(), motionVec.y(), 0.0);
+	Vec3f motionVec = App::orbitMotion.getMotion(absSecs);
+	App::lampLight.pos = Vec3f({ motionVec[0], motionVec[1], 0.0 });
 }
 
 

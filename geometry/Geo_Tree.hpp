@@ -11,9 +11,9 @@
 // Geometry wrapper class that can manage its states
 
 typedef std::pair<std::string, Geo_Actor*> geoName_pair;
-typedef std::pair<Eigen::Vector3f, Eigen::Vector2f> orientation_pair;
+typedef std::pair<Vec3f, Vec2f> orientation_pair;
 
-#define NO_ORIENTATION std::make_pair(Eigen::Vector3f(0.0f, 0.0f, 0.0f), Eigen::Vector2f(0.0f, 0.0f));
+#define NO_ORIENTATION std::make_pair(Vec3f(0.0f, 0.0f, 0.0f), Vec2f(0.0f, 0.0f));
 
 
 class Geo_Tree {
@@ -28,12 +28,12 @@ public:
 	~Geo_Tree();
 
     std::string getPrefix(){ return _prefix + "_"; }
-    Eigen::Vector3f getOrigin();
-    void move(Eigen::Vector3f vec){ 
+    Vec3f getOrigin();
+    void move(Vec3f vec){ 
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updatePos(vec); 
     }
-	void rotate(const Eigen::Vector2f& angles); // rotation of actors around origin
-    void rotateAll(const Eigen::Vector2f& angles){ // piecewise rotation of all actors
+	void rotate(Vec2f angles); // rotation of actors around origin
+    void rotateAll(Vec2f angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updateRot(angles);
     }
 

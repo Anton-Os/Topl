@@ -26,14 +26,14 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		const Eigen::Vector2i screenRes = Eigen::Vector2i(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
-		Eigen::Vector2f cursorPos = Eigen::Vector2f(Platform::getCursorX(), Platform::getCursorY());
+		Vec2i screenRes = Vec2i({ TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT });
+		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 
-		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(screenRes.data());
-		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(cursorPos.data());
+		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(&screenRes);
+		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(&cursorPos);
 
-		appendDataToBytes(screenRes_bytes, screenRes.size() * sizeof(int), 0, bytes);
-		appendDataToBytes(cursorPos_bytes, cursorPos.size() * sizeof(float), 0, bytes);
+		appendDataToBytes(screenRes_bytes, sizeof(Vec2i), bytes);
+		appendDataToBytes(cursorPos_bytes, sizeof(Vec2f), bytes);
 		return true;
 	}
 protected:

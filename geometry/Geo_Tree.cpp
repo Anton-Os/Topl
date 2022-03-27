@@ -14,7 +14,8 @@ Geo_Tree::Geo_Tree(const std::string& prefix, const Geo_Actor* actor, unsigned c
     _actorCount = count;
     _actorData = (Geo_Actor**)malloc(count * sizeof(Geo_Actor));
 
-    for(unsigned g = 0; g < count; g++) *(_actorData + g) = new Geo_Actor(*actor);
+    for(unsigned g = 0; g < count; g++) 
+        *(_actorData + g) = new Geo_Actor(*actor);
 }
 
 Geo_Tree::~Geo_Tree(){
@@ -25,30 +26,30 @@ Geo_Tree::~Geo_Tree(){
     }
 }
 
-void Geo_Tree::rotate(const Eigen::Vector2f& angles){
+void Geo_Tree::rotate(Vec2f angles){
     rotateAll(angles);
 
-    Eigen::Vector3f origin = getOrigin();
+    Vec3f origin = getOrigin();
     for(unsigned a = 0; a < _actorCount; a++){
         Geo_Actor* actor =  *(_actorData + a);
-        Eigen::Vector3f actor_pos = *(actor->getPos()) - origin;
-        // Eigen::Vector2f actor_angles = *(actor->getAngles());
+        Vec3f actor_pos = actor->getPosition() - origin;
+        // Vec2f actor_angles = *(actor->getRot());
         
-        double x = (actor_pos.x() * cos(angles[0])) - (actor_pos.y() * sin(angles[0]));
-        double y = (actor_pos.x() * sin(angles[0])) + (actor_pos.y() * cos(angles[0]));
-        double z = actor_pos.z();
-        actor_pos = Eigen::Vector3f(x, y, z);
+        float x = (actor_pos[0] * cos(angles[0])) - (actor_pos[1] * sin(angles[0]));
+        float y = (actor_pos[0] * sin(angles[0])) + (actor_pos[1] * cos(angles[0]));
+        float z = actor_pos[2];
+        actor_pos = Vec3f({ x, y, z });
         actor->setPos(origin + actor_pos);
     }
 }
 
-Eigen::Vector3f Geo_Tree::getOrigin(){
-    Eigen::Vector3f origin = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+Vec3f Geo_Tree::getOrigin(){
+    Vec3f origin = Vec3f({ 0.0f, 0.0f, 0.0f });
     for(unsigned a = 0; a < _actorCount; a++){
         Geo_Actor* actor =  *(_actorData + a);
-        origin += *actor->getPos();
+        origin = origin + actor->getPosition();
     }
-    origin = Eigen::Vector3f(origin.x() / _actorCount, origin.y() / _actorCount, origin.z() / _actorCount);
+    origin = Vec3f({ origin[0] / _actorCount, origin[1] / _actorCount, origin[2] / _actorCount });
     return origin;
 }
 

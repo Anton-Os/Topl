@@ -13,20 +13,20 @@ struct Textured_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) {  }
 
-	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
+	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		bytes->clear(); // Make sure there is no preexisting data
 
-		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(component->getPos()->data());
-		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(component->getAngles()->data());
+		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
+		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
 	
-		appendDataToBytes(offset_bytes, component->getPos()->size() * sizeof(float), bytes);
-		appendDataToBytes(rotation_bytes, component->getAngles()->size() * sizeof(float), bytes);
+		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
+		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
-		assignDataToBytes(matrixBytes, camera->getProjMatrix()->size() * sizeof(float), bytes);
+		assignDataToBytes(matrixBytes, sizeof(Eigen::Matrix4f), bytes);
 		return true;
 	}
 };

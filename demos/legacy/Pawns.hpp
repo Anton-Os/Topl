@@ -64,30 +64,30 @@ namespace App {
 	Geo_Humanoid2D ghost("ghost", &scene, ghostAssets, 0.25f);
 
 	Phys_Connector demonAnchor, angelAnchor;
-	Eigen::Vector3f demonOffset = Eigen::Vector3f(-1.5f, 0.0f, 0.0f);
-	Eigen::Vector3f angelOffset = Eigen::Vector3f(1.5f, 0.0f, 0.0f);
-	Eigen::Vector3f ghostOffset = Eigen::Vector3f(0.0, -0.5f, 0.0f);
+	Vec3f demonOffset = Vec3f({ -1.5f, 0.0f, 0.0f });
+	Vec3f angelOffset = Vec3f({ 1.5f, 0.0f, 0.0f });
+	Vec3f ghostOffset = Vec3f({ 0.0, -0.5f, 0.0f });
 }
 
 void buttonCallback_w(void) { 
-	App::demon.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f));
-	App::angel.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f));
+	App::demon.move(Vec3f({ 0.0f, SHIFT_AMOUNT, 0.0f } ));
+	App::angel.move(Vec3f({ 0.0f, -1 * SHIFT_AMOUNT, 0.0f }));
 }
 void buttonCallback_a(void) { 
-	App::demon.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f));
-	App::angel.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f));
+	App::demon.move(Vec3f({ -1 * SHIFT_AMOUNT, 0.0f, 0.0f }));
+	App::angel.move(Vec3f({ SHIFT_AMOUNT, 0.0f, 0.0f }));
 }
 void buttonCallback_s(void) { 
-	App::demon.move(Eigen::Vector3f(0.0f, -1 * SHIFT_AMOUNT, 0.0f));
-	App::angel.move(Eigen::Vector3f(0.0f, SHIFT_AMOUNT, 0.0f));
+	App::demon.move(Vec3f({ 0.0f, -1 * SHIFT_AMOUNT, 0.0f }));
+	App::angel.move(Vec3f({ 0.0f, SHIFT_AMOUNT, 0.0f }));
 }
 void buttonCallback_d(void) { 
-	App::demon.move(Eigen::Vector3f(SHIFT_AMOUNT, 0.0f, 0.0f)); 
-	App::angel.move(Eigen::Vector3f(-1 * SHIFT_AMOUNT, 0.0f, 0.0f));
+	App::demon.move(Vec3f({ SHIFT_AMOUNT, 0.0f, 0.0f }));
+	App::angel.move(Vec3f({ -1 * SHIFT_AMOUNT, 0.0f, 0.0f }));
 }
 void buttonCallback_r(void) { 
-	App::demon.rotateAll(Eigen::Vector2f(ROTATE_AMOUNT, ROTATE_AMOUNT));
-	App::ghost.rotate(Eigen::Vector2f(ROTATE_AMOUNT, 0.0f));
+	App::demon.rotateAll(Vec2f({ ROTATE_AMOUNT, ROTATE_AMOUNT }));
+	App::ghost.rotate(Vec2f({ ROTATE_AMOUNT, 0.0f }));
 	App::ghost.presetLinks();
 }
 

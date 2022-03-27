@@ -134,6 +134,7 @@ typedef const Mat4x4* const mat4x4_cptr_t;
 #define VEC_2F_ZERO Vec2f({ 0.0f, 0.0f })
 #define VEC_3F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f })
 #define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
+
 #define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
 
 #define MATHS_H

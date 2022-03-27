@@ -1,7 +1,7 @@
 #include "Pane.hpp"
 
-Geo_FlatSquare Geo_PaneLayout::_dummy = Geo_FlatSquare(PANE_RADIUS);
-Geo_Actor Geo_PaneLayout::_dummyGeo = Geo_Actor((Geo_RenderObj*)&_dummy);
+Geo_FlatSquare Geo_PaneLayout::_decoySquare = Geo_FlatSquare(PANE_RADIUS);
+Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_RenderObj*)&_decoySquare);
 
 namespace _Pane {
 	std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
@@ -56,7 +56,7 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
-		actor->updatePos(Eigen::Vector3f(origin.x() + (xInc * xOffset), origin.y() + (-1.0 * yInc * yOffset), 0.0f)); // adjust these values
+		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
 		// actor->setRot(Eigen::Vector2f(0.1f, 0.1f)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 #ifdef RASTERON_H
@@ -66,4 +66,14 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 
 	// utilizing helper function to send root pane thru scene
 	_Pane::sendRootPaneThruScene(scene, getPrefix(), &_rootPane, rootActor, (Geo_RenderObj*)&_rootSquare);
+}
+
+bool Geo_PaneLayout::interact(float xPos, float yPos, unsigned color){
+	if(xPos > getOrigin()[0] + _radius || xPos < getOrigin()[0] - _radius) return false; // lies out of x bounds
+	if(yPos > getOrigin()[1] + _radius || yPos < getOrigin()[1] - _radius) return false; // lies out of y bounds
+	
+	for(std::vector<Geo_Pane>::iterator pane = _panes.begin(); pane != _panes.end(); pane++)
+		if(pane->getColor() == color && pane->callback != nullptr)
+			pane->callback(); // pane interaction has occured
+	return true;
 }

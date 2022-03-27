@@ -43,7 +43,7 @@ void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) return error_notFound("physics", name); // Error
 
 			Phys_Actor* physActor = _actorPhys_map.find(*actor)->second;
-			vec3f_cptr targetPos = (*actor)->getPos();
+			vec3f_cptr_t targetPos = (*actor)->getPos();
 
 			if(!physActor->addForce(forceVec)) return error_forcesExcess(); // Error
 		}
@@ -183,7 +183,7 @@ void Topl_Scene::resolvePhysics() {
 		physActor->velocity = physActor->velocity * (float)physActor->damping; // velocity damping
 
 		Vec3f updatedPos = (physActor->velocity * (float)elapseSecs) + ((physActor->acceleration * pow(elapseSecs, 2))) * 0.5f;
-		targetGeo->updatePos(Eigen::Vector3f(updatedPos[0], updatedPos[1], updatedPos[2])); // position integration
+		targetGeo->updatePos(updatedPos); // position integration
 
 		physActor->acceleration = VEC_3F_ZERO; // resetting acceleration
 	}

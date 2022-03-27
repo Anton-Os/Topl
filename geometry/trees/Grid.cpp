@@ -42,7 +42,8 @@ void Geo_Grid::configure(Topl_Scene* scene){
 			(c / (height * width)) * z
 		);
 
-        actor->updatePos(origin + offset);
+		Eigen::Vector3f updatedPos = origin + offset;
+		actor->updatePos(Vec3f({ updatedPos.x(), updatedPos.y(), updatedPos.z() }));
         scene->addGeometry(getPrefix() + _Grid::genCellName(c + 1), actor);
 		scene->addPhysics(getPrefix() + _Grid::genCellName(c + 1), &phys.at(c));
     }

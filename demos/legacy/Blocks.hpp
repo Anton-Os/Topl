@@ -46,7 +46,7 @@ namespace App {
 
 static void calcCamera() {
 	// TODO: Perform rotation calculation here!
-	App::camera.setLookPos(Eigen::Vector3f(App::camRotAngles[0], App::camRotAngles[1], 0.0f));
+	App::camera.setLookPos(Vec3f({ App::camRotAngles[0], App::camRotAngles[1], 0.0f }));
 }
 void hoverCallback_top(float x, float y) {
 	if (App::camRotAngles[1] < CAM_MAX_ANGLE) App::camRotAngles[1] += CAM_INC_ANGLE;
@@ -65,10 +65,10 @@ void hoverCallback_bot(float x, float y) {
 	calcCamera();
 }
 
-void buttonCallback_w(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT)); } // Move forward
-void buttonCallback_a(void) { App::camera.updatePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); } // Move left
-void buttonCallback_s(void) { App::camera.updatePos(Eigen::Vector3f(0.0f, 0.0f, -1.0f * MOVE_AMOUNT)); } // Move backwards
-void buttonCallback_d(void) { App::camera.updatePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); } // Move right
+void buttonCallback_w(void) { App::camera.updatePos(Vec3f({ 0.0f, 0.0f, MOVE_AMOUNT })); } // Move forward
+void buttonCallback_a(void) { App::camera.updatePos(Vec3f({ -1.0f * MOVE_AMOUNT, 0.0f, 0.0 })); } // Move left
+void buttonCallback_s(void) { App::camera.updatePos(Vec3f({ 0.0f, 0.0f, -1.0f * MOVE_AMOUNT })); } // Move backwards
+void buttonCallback_d(void) { App::camera.updatePos(Vec3f({ MOVE_AMOUNT, 0.0f, 0.0f })); } // Move right
 
 // Shared functions
 
@@ -86,7 +86,7 @@ namespace Main {
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
 		// App::camera.setPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT));
-		App::chain.move(Eigen::Vector3f(0.0f, 0.8f, 0.0f));
+		App::chain.move(Vec3f({ 0.0f, 0.8f, 0.0f }));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

@@ -24,20 +24,20 @@ namespace App {
 }
 
 void buttonCallback_w(void) { // Move up
-	App::camera.updatePos(Eigen::Vector3f(0.0f, MOVE_AMOUNT, 0.0f));
-	App::camera.updateLookPos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
+	App::camera.updatePos(Vec3f({ 0.0f, MOVE_AMOUNT, 0.0f }));
+	App::camera.updateLookPos(Vec3f({ 0.0f, 0.0f, 1.0f }));
 }
 void buttonCallback_a(void) { // Move left
-	App::camera.updatePos(Eigen::Vector3f(-1.0f * MOVE_AMOUNT, 0.0f, 0.0)); 
-	App::camera.updateLookPos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
+	App::camera.updatePos(Vec3f({ -1.0f * MOVE_AMOUNT, 0.0f, 0.0 }));
+	App::camera.updateLookPos(Vec3f({ 0.0f, 0.0f, 1.0f }));
 }
 void buttonCallback_s(void) { // Move down
-	App::camera.updatePos(Eigen::Vector3f(0.0f, -1.0f * MOVE_AMOUNT, 0.0f));
-	App::camera.updateLookPos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
+	App::camera.updatePos(Vec3f({ 0.0f, -1.0f * MOVE_AMOUNT, 0.0f }));
+	App::camera.updateLookPos(Vec3f({ 0.0f, 0.0f, 1.0f }));
 }
 void buttonCallback_d(void) { // Move right
-	App::camera.updatePos(Eigen::Vector3f(MOVE_AMOUNT, 0.0f, 0.0f)); 
-	App::camera.updateLookPos(Eigen::Vector3f(0.0f, 0.0f, 1.0f));
+	App::camera.updatePos(Vec3f({ MOVE_AMOUNT, 0.0f, 0.0f }));
+	App::camera.updateLookPos(Vec3f({ 0.0f, 0.0f, 1.0f }));
 }
 
 // Shared functions

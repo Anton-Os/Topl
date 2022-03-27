@@ -11,8 +11,8 @@ void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, c
 	case HUMANOID_RightLeg: actor = rightLeg; break;
 	}
 
-	actor->updatePos(pos);
-	actor->updateRot(angles);
+	actor->updatePos(Vec3f({ pos.x(), pos.y(), pos.z() }));
+	actor->updateRot(Vec2f({ angles[0], angles[1] }));
 }
 
 void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){

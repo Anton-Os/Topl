@@ -5,9 +5,9 @@
 
 #define PANE_RADIUS 0.5
 #define PANE_BORDER 0.05f
-#define PANE_BK_COLOR 0xFFFFFFFF // default is white
-#define PANE_BK_WIDTH 256
-#define PANE_BK_HEIGHT 256
+#define PANE_IMAGE_COLOR 0xFFFFFFFF // default is white
+#define PANE_IMAGE_WIDTH 256
+#define PANE_IMAGE_HEIGHT 256
 #define PANE_ROOT_Z 0.000002
 #define PANE_CHILD_Z 0.000001
 
@@ -16,37 +16,37 @@ typedef void (*paneCallback)(void);
 class Geo_Pane {
 public:
 	Geo_Pane(unsigned color){ // Fixed 	Color Constructor
-		_bkColor = color;
+		_paneColor = color;
 #ifdef RASTERON_H
-		_imgInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+		_internalImage = createImgBlank(PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH, _paneColor);
 #endif
 	}
     Geo_Pane(){ // Random Color Constructor
-		_bkColor = genRandColorVal();
+		_paneColor = genRandColorVal();
 #ifdef RASTERON_H
-		_imgInternal = createImgBlank(PANE_BK_HEIGHT, PANE_BK_WIDTH, _bkColor);
+		_internalImage = createImgBlank(PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH, _paneColor);
 #endif
 	}
     ~Geo_Pane(){
 #ifdef RASTERON_H
-        if(_imgInternal != nullptr) deleteImg(_imgInternal);
+        if(_internalImage != nullptr) deleteImg(_internalImage);
 #endif
     }
 
-	void addCallback(paneCallback callback){ _callback = callback; }
-	unsigned getColor() { return _bkColor; }
+	void addCallback(paneCallback call){ call = callback; }
+	unsigned getColor() { return _paneColor; }
 #ifdef RASTERON_H
-	void selectBk(const Rasteron_Image* image) { _imgSelect = image; }
+	void selectImage(const Rasteron_Image* image) { _selectImage = image; }
 	const Rasteron_Image* getBackground() {
-		return (_imgSelect == nullptr)? _imgInternal : _imgSelect; 
+		return (_selectImage == nullptr)? _internalImage : _selectImage; 
 	}
 #endif
+	paneCallback callback = nullptr;
 private:
-	paneCallback _callback = nullptr;
-    unsigned _bkColor = PANE_BK_COLOR;
+    unsigned _paneColor = PANE_IMAGE_COLOR;
 #ifdef RASTERON_H
-    Rasteron_Image* _imgInternal = nullptr; // default internal background
-	const Rasteron_Image* _imgSelect = nullptr; // selected external backgroundd
+    Rasteron_Image* _internalImage = nullptr; // default internal background
+	const Rasteron_Image* _selectImage = nullptr; // selected external backgroundd
 #endif
 };
 
@@ -56,7 +56,7 @@ public:
 		const std::string& prefix,
 		unsigned rows,
 		unsigned columns
-	) : Geo_Tree(prefix, &_dummyGeo, (rows * columns) + 1) {
+	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
 		resize(rows, columns);
 	}
 
@@ -66,7 +66,7 @@ public:
 		unsigned columns,
 		float radius,
 		float border
-	) : Geo_Tree(prefix, &_dummyGeo, (rows * columns) + 1) {
+	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
 		_radius = radius;
 		_border = border;
 		resize(rows, columns);
@@ -78,10 +78,11 @@ public:
 	unsigned getColCount(){ return _columns; }
 
 	void configure(Topl_Scene* scene) override;
+	bool interact(float xPos, float yPos, unsigned color); // returns true if inside pane bounds, can fire callback based on color
 protected:
 	void resize(unsigned rows, unsigned columns); // creates panes and replaces all render objects
 
-    Geo_Pane _rootPane = Geo_Pane(PANE_BK_COLOR); // root
+    Geo_Pane _rootPane = Geo_Pane(PANE_IMAGE_COLOR); // root
 	std::vector<Geo_Pane> _panes; // children
 	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_ROOT_Z);
 	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_CHILD_Z);
@@ -91,8 +92,8 @@ protected:
 	float _radius = PANE_RADIUS;
 	float _border = PANE_BORDER;
 
-	static Geo_FlatSquare _dummy;
-	static Geo_Actor _dummyGeo;
+	static Geo_FlatSquare _decoySquare;
+	static Geo_Actor _decoyActor;
 };
 
 // UnitLayout has only one child pane

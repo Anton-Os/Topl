@@ -14,16 +14,12 @@ class Phys_Motion { // Motion can be used for forces, absolute position updates,
 public:
     Phys_Motion(MOTION_Type t, Vec3f m, double d){ // Motion with Counter-Movement Constructor
 		type = t;
-		startPos = m;
-        endPos = m * -1.0f;
-
+		pos1 = m; pos2 = m * -1.0f;
         endSecs = d;
     }
     Phys_Motion(MOTION_Type t, Vec3f m1, Vec3f m2, double d){ // Start and End Motion Vec
 		type = t;
-		startPos = m1;
-		endPos = m2;
-
+		pos1 = m1; pos2 = m2;
         endSecs = d;
     }
     Vec3f getMotion(double currentSecs){
@@ -34,12 +30,16 @@ public:
         }
 
         seqCount = static_cast<unsigned>(std::floor(getSeqProg(currentSecs)));
-        double seqProgFrac = getSeqProg(currentSecs) - seqCount; // computes what fraction of sequence elapsed (0.0 to 1.0)
+        double seqProg = getSeqProg(currentSecs) - seqCount; // computes what fraction of sequence elapsed (0.0 to 1.0)
+        if(curve != MOTION_NO_CURVE && seqProg != 0.0 && seqProg != 1.0){
+            // double seqMod = abs(seqProg - 0.5f);
+            // seqProg += seqMod;
+        }
 
 		switch (type) {
-		case MOTION_Instant: return (seqProgFrac <= 0.5f)? startPos : endPos;
-		case MOTION_Linear : return getLinear(startPos, endPos, seqProgFrac);
-		case MOTION_Orbit: return VEC_3F_ZERO; // implement pivot motion!
+		case MOTION_Instant: return (seqProg <= 0.5)? pos1 : pos2;
+		case MOTION_Linear : return getLinear(pos1, pos2, seqProg);
+		// case MOTION_Orbit: return VEC_3F_ZERO; // implement pivot motion!
 		}
     }
     void setCurve(double c){ curve = c; }
@@ -47,23 +47,14 @@ public:
 private:
     double getSeqProg(double currentSecs){ return currentSecs / (endSecs - startSecs); } // gets progress in sequence
     Vec3f getLinear(const Vec3f& m1, const Vec3f& m2, double progFrac){ // linear motion computation
-        /* if(curve > 0.0f){
-            if(progFrac < 0.25f && progFrac != 0.0) // progFrac is slowed to reach 0.0
-            else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is slowed to reach 1.0
-            else if(progFrac != 0.5f) // curve is hastened to reach 0.5 (halfway)
-        } else if(curve < 0.0f){
-            if(progFrac < 0.25f && progFrac != 0.0) // progFrac is hastened to reach 0.0
-            else if(progFrac > 0.75f && progFrac != 1.0) // progFrac is hastened to reach 1.0
-            else if(progFrac != 0.5f) // curve is slowed to reach 0.5 (halfway)
-        } */
         return (progFrac <= 0.5f)
 			? Vec3f(m1) + (Vec3f(m2) * (float)(progFrac * 2.0f)) // forward motion
 			: Vec3f(m2) + (Vec3f(m1) * (float)(progFrac * 2.0f)); // reverse motion
     }
 
 	MOTION_Type type;
-    Vec3f startPos = VEC_3F_ZERO; // start motion vector
-    Vec3f endPos = VEC_3F_ZERO; // end motion vector
+    Vec3f pos1 = VEC_3F_ZERO; // start motion vector
+    Vec3f pos2 = VEC_3F_ZERO; // end motion vector
     double curve = MOTION_NO_CURVE; // no curve by default
 
     double startSecs = 0.0f;

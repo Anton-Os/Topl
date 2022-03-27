@@ -43,7 +43,7 @@ void main() {
 	vec2 pixelCoordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // hard values
 	vec2 pixelOffset = vec2(-0.25f, -0.25f);
 
-	// color = vec4(cursorDist(cursorPos, pixelCoordsAdj), 1.0);
+	color = vec4(cursorDist(cursorPos, pixelCoordsAdj), 1.0);
 	// color = vec4(colorQuad(pixelCoordsAdj), 1.0);
-	color = vec4(mandlebrot(screenRes, pixelCoordsAdj + pixelOffset), 1.0);
+	// color = vec4(mandlebrot(screenRes, pixelCoordsAdj + pixelOffset), 1.0);
 }

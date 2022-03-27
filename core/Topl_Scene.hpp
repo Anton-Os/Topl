@@ -32,13 +32,13 @@ typedef const AnchoredItems* const anchorItem_cptr;
 
 
 struct Topl_Light {
-	Topl_Light(Eigen::Vector3f p) { pos = p; } // Simple Constructor
-	Topl_Light(Eigen::Vector3f p, Eigen::Vector3f lc) { // Extended Constructor
+	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor
+	Topl_Light(const Vec3f& p, const Vec3f& v) { // Extended Constructor
 		pos = p;
-		value = lc;
+		value = v;
 	}
-	Eigen::Vector3f pos;
-	Eigen::Vector3f value = Eigen::Vector3f(1.0f, 1.0f, 1.0f); // indicates both color and intensity
+	Vec3f pos;
+	Vec3f value = Vec3f({ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety
 
@@ -50,16 +50,16 @@ public:
 	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
 		_projMatrix = genProjMatrix(projType, bounds);
 	}
-	void setPos(const Eigen::Vector3f& pos){ _pos = pos; }
-	void updatePos(const Eigen::Vector3f& vec){ _pos += vec; }
-	void setLookPos(const Eigen::Vector3f& vec){ _lookPos = vec; }
-	void updateLookPos(const Eigen::Vector3f& vec){ _lookPos = _pos + vec; }
-	vec3f_cptr getPos() const { return &_pos; }
-	vec3f_cptr getLookPos() const { return &_lookPos; }
+	void setPos(const Vec3f& pos){ _pos = pos; }
+	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
+	void setLookPos(const Vec3f& vec){ _lookPos = vec; }
+	void updateLookPos(const Vec3f& vec){ _lookPos = _pos + vec; }
+	vec3f_cptr_t getPos() const { return &_pos; }
+	vec3f_cptr_t getLookPos() const { return &_lookPos; }
 	mat4f_cptr getProjMatrix() const { return &_projMatrix; }
 private:
-	Eigen::Vector3f _pos = Eigen::Vector3f(0.0, 0.0, -1.0);
-	Eigen::Vector3f _lookPos = Eigen::Vector3f(0.0, 0.0, 0.0);
+	Vec3f _pos = Vec3f({ 0.0, 0.0, -1.0 });
+	Vec3f _lookPos = Vec3f({ 0.0, 0.0, 0.0 });
 	Eigen::Matrix4f _projMatrix = Eigen::Matrix4f::Zero();
 };
 

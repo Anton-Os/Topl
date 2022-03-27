@@ -42,7 +42,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 pixelCoordsAdj = float2(input.pos.x / input.screenRes.x, input.pos.y / input.screenRes.y); 
 	float2 pixelOffset = float2(-0.25f, -0.25f);
 
-	// return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f);
+	return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f);
 	// return float4(colorQuad(pixelCoordsAdj), 1.0f);
-	return float4(mandlebrot(input.screenRes, pixelCoordsAdj + pixelOffset), 1.0f);
+	// return float4(mandlebrot(input.screenRes, pixelCoordsAdj + pixelOffset), 1.0f);
 }
