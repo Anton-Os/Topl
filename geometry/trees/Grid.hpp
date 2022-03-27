@@ -11,7 +11,7 @@ struct Geo_Grid_Properties {
 		gridAttrib_pair zA
 	);
 
-	void setNonZeroUnits(); // makes sure that all attribute counts are set to non-zero
+	void clamp(); // ensures units are valid values
 	unsigned getCellCount() const { return xAttr.first * yAttr.first * zAttr.first; }
 
 	gridAttrib_pair xAttr = std::make_pair(1, 0.0f); // x axis attributes
@@ -28,11 +28,11 @@ public:
 	) : Geo_Tree(prefix, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
         properties = *props;
-		origin = Eigen::Vector3f(
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5) + (props->xAttr.second / 2),
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5) + (props->yAttr.second / 2),
+		origin = Vec3f({
+			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5f) + (props->xAttr.second / 2),
+			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5f) + (props->yAttr.second / 2),
 			0.0f
-		);
+		});
     }
 
     Geo_Grid( // Config Constructor
@@ -43,17 +43,17 @@ public:
 	) : Geo_Tree(prefix, geo, props->getCellCount()),
 	Geo_DynamicSet(props->getCellCount()){
         properties = *props;
-		origin = Eigen::Vector3f(
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5) + (props->xAttr.second / 2),
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5) + (props->yAttr.second / 2),
+		origin = Vec3f({
+			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5f) + (props->xAttr.second / 2),
+			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5f) + (props->yAttr.second / 2),
 			0.0f
-		);
+		});
 		configure(scene);
     }
 
 	// void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
 	void configure(Topl_Scene* scene) override;
 private:
-	Eigen::Vector3f origin; // determines starting position for geometry
+	Vec3f origin; // determines starting position for geometry
     Geo_Grid_Properties properties;
 };

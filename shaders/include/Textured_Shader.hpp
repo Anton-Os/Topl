@@ -25,8 +25,8 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
-		assignDataToBytes(matrixBytes, sizeof(Eigen::Matrix4f), bytes);
+		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
+		assignDataToBytes(matrixBytes, sizeof(Mat4x4), bytes);
 		return true;
 	}
 };

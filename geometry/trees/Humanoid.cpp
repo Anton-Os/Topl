@@ -1,6 +1,6 @@
 #include "trees/Humanoid.hpp"
 
-void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, const Eigen::Vector2f& angles){
+void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles){
 	Geo_Actor* actor;
 	switch(target){
 	case HUMANOID_Head: actor = head; break;
@@ -11,11 +11,11 @@ void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Eigen::Vector3f& pos, c
 	case HUMANOID_RightLeg: actor = rightLeg; break;
 	}
 
-	actor->updatePos(Vec3f({ pos.x(), pos.y(), pos.z() }));
-	actor->updateRot(Vec2f({ angles[0], angles[1] }));
+	actor->updatePos(pos);
+	actor->updateRot(angles);
 }
 
-void Geo_Humanoid::orientAll(std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT]){
+void Geo_Humanoid::orientAll(std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT]){
 	orient(HUMANOID_Head, orientations[HUMANOID_Head].first, orientations[HUMANOID_Head].second);
 	orient(HUMANOID_LeftArm, orientations[HUMANOID_LeftArm].first, orientations[HUMANOID_LeftArm].second);
 	orient(HUMANOID_RightArm, orientations[HUMANOID_RightArm].first, orientations[HUMANOID_RightArm].second);

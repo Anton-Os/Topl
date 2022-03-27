@@ -1,6 +1,8 @@
 #ifndef MATHS_H
 
 #include <cmath>
+#include <cstdlib>
+#include <cstdint>
 
 #define TOPL_PI 3.141592653
 #define TOPL_HALF_PI 1.57079633
@@ -48,6 +50,14 @@ struct VectorXF {
     void normalize() {
         float length = len();
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
+    }
+    void randomize() { // randomizes between 0 and 1
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
+            data[e] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    }
+    void randomize(float min, float max) { // randomizes between min and max
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
+            data[e] = min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min)));
     }
     VectorXF inverse() const {
         VectorXF vec = {};

@@ -29,7 +29,7 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
 		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
-		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix()->data());
+		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
 
 		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec2f), bytes);

@@ -1,10 +1,10 @@
 #include "Geo_Tree.hpp"
 
 struct Geo_Chain_Properties {
-	Geo_Chain_Properties() { directionVec = Eigen::Vector3f(0.1f, 0.0f, 0.0f); }
-    Geo_Chain_Properties(Eigen::Vector3f d) { directionVec = d; }
+	Geo_Chain_Properties() { directionVec = Vec3f({ 0.1f, 0.0f, 0.0f }); }
+    Geo_Chain_Properties(Vec3f d) { directionVec = d; }
     
-    Eigen::Vector3f directionVec;
+    Vec3f directionVec;
 };
 
 class Geo_Chain : public Geo_Tree, public Geo_DynamicSet {
@@ -17,11 +17,11 @@ public:
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
 		properties = *props;
-        origin = Eigen::Vector3f(
-            (-1.0 * props->directionVec.x() * count) / 2,
-            (-1.0 * props->directionVec.y() * count) / 2,
-            (-1.0 * props->directionVec.z() * count) / 2
-        );
+        origin = Vec3f({
+            (props->directionVec.data[0] * count) * -0.5f,
+            (props->directionVec.data[1] * count) * -0.5f,
+            (props->directionVec.data[2] * count) * -0.5f
+        });
     }
 
     Geo_Chain( // Config Constructor
@@ -33,16 +33,16 @@ public:
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
 		properties = *props;
-        origin = Eigen::Vector3f(
-            (-1.0 * props->directionVec.x() * count) / 2,
-            (-1.0 * props->directionVec.y() * count) / 2,
-            (-1.0 * props->directionVec.z() * count) / 2
-        );
+        origin = Vec3f({
+			(props->directionVec.data[0] * count) * -0.5f,
+			(props->directionVec.data[1] * count) * -0.5f,
+			(props->directionVec.data[2] * count) * -0.5f
+        });
         configure(scene);
     }
 
     void configure(Topl_Scene* scene) override;
 private:
-    Eigen::Vector3f origin; // determines starting position for geometry
+    Vec3f origin; // determines starting position for geometry
     Geo_Chain_Properties properties;
 };

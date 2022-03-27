@@ -6,15 +6,15 @@ namespace _Grid {
 
 Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair attribs){
     xAttr = attribs; yAttr = attribs; zAttr = attribs;
-    setNonZeroUnits();
+    clamp();
 }
 
 Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair xA, gridAttrib_pair yA, gridAttrib_pair zA){
     xAttr = xA; yAttr = yA; zAttr = zA;
-    setNonZeroUnits();
+    clamp();
 }
 
-void Geo_Grid_Properties::setNonZeroUnits(){
+void Geo_Grid_Properties::clamp(){
     if(xAttr.first == 0) xAttr.first++;
 	if(yAttr.first == 0) yAttr.first++;
 	if(zAttr.first == 0) zAttr.first++;
@@ -24,7 +24,7 @@ void Geo_Grid_Properties::setNonZeroUnits(){
 
 void Geo_Grid::configure(Topl_Scene* scene){
     Geo_Actor* actor = nullptr;
-    Eigen::Vector3f offset = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
 
     const unsigned short width = properties.xAttr.first;
     const float x = properties.xAttr.second;
@@ -36,14 +36,13 @@ void Geo_Grid::configure(Topl_Scene* scene){
     for(unsigned c = 0; c < getActorCount(); c++){
         actor = getNextActor();
 
-		offset = Eigen::Vector3f(
+		offset = Vec3f({
 			((c % width) * x),
 			((c % (height * width)) / width) * y,
 			(c / (height * width)) * z
-		);
+        });
 
-		Eigen::Vector3f updatedPos = origin + offset;
-		actor->updatePos(Vec3f({ updatedPos.x(), updatedPos.y(), updatedPos.z() }));
+		actor->updatePos(origin + offset);
         scene->addGeometry(getPrefix() + _Grid::genCellName(c + 1), actor);
 		scene->addPhysics(getPrefix() + _Grid::genCellName(c + 1), &phys.at(c));
     }

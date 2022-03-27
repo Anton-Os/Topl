@@ -1,8 +1,5 @@
 #ifndef VALUEGEN_H
 
-// #include <ctime>
-#include <cstdlib>
-#include <cstdint>
 #include <vector>
 
 #include "Maths.h" // replace Eigen library!
@@ -24,7 +21,7 @@ void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize,
 enum PROJECTION_Type {
     PROJECTION_Ortho,
     PROJECTION_Perspective,
-    PROJECTION_Stereographic,
+    PROJECTION_Stereo,
     PROJECTION_Gnomonic
 };
 
@@ -38,16 +35,8 @@ struct SpatialBounds3D { // Used in Matrix calculations
     float nearPlane = 0; float farPlane = 1.0f;
 };
 
-Eigen::Matrix4f genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds);
+Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds);
 unsigned genRandColor();
-float genRandFloat();
-float genRandFloat(float min, float max);
-// float clampFloat(float input, float range[2]);
-float getVecLength(const Eigen::Vector2f& vec);
-float getVecLength(const Eigen::Vector3f& vec);
-Eigen::Vector2f genRandVec2();
-Eigen::Vector3f genRandVec3();
-Eigen::Vector4f genRandVec4();
 
 #define VALUEGEN_H
 #endif

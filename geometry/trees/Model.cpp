@@ -35,7 +35,3 @@ void Geo_Model::configure(Topl_Scene* scene){
 		}
 	}
 }
-
-/* void Geo_Model::rotate(const Eigen::Vector2f& angles){
-	// Implement Rotation
-} */

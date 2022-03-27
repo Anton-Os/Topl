@@ -11,9 +11,7 @@ void Geo_Chain::configure(Topl_Scene* scene){
     for(unsigned c = 0; c < getActorCount(); c++){
         actor = getNextActor();
 
-		Eigen::Vector3f updatedPos = origin + (properties.directionVec * c);
-		actor->updatePos(Vec3f({ updatedPos.x(), updatedPos.y(), updatedPos.z() }));
-        // actor->updatePos((properties.directionVec * c) + offset);
+		actor->updatePos(origin + (properties.directionVec * c));
         scene->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), actor);
         scene->addPhysics(getPrefix() + _Chain::genLinkName(c + 1), &phys.at(c));
 

@@ -27,7 +27,7 @@ void Playground_App::init() {
 
 	// Configurations, Geometry, and Building
 
-	squareActor.setPos(Eigen::Vector3f(-0.75f, 0.75f, 0.0f));
+	squareActor.setPos(Vec3f({ -0.75f, 0.75f, 0.0f }));
 
 	// scene_main.addGeometry(&triangleActor);
 	scene_main.addGeometry(&squareActor);
@@ -50,9 +50,9 @@ void Playground_App::loop(double secs, unsigned long frame) {
 }
 
 int main(int argc, char** argv) {
-	{
+	/* {
 		Playground_App app = Playground_App(argv[0], APP_BACKEND); // test creation
-	}
+	} */
 
     Playground_App app = Playground_App(argv[0], APP_BACKEND);
 

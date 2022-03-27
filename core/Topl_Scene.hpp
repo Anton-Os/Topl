@@ -46,7 +46,7 @@ typedef const Topl_Light* const light_cptr; // typedef for safety
 class Topl_Camera {
 public:
 	// Identity projection constructor
-	Topl_Camera() { _projMatrix = Eigen::Matrix4f::Identity(); } // Identity matrix by default
+	Topl_Camera() { _projMatrix = MAT_4x4_IDENTITY; } // Identity matrix by default
 	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
 		_projMatrix = genProjMatrix(projType, bounds);
 	}
@@ -56,11 +56,11 @@ public:
 	void updateLookPos(const Vec3f& vec){ _lookPos = _pos + vec; }
 	vec3f_cptr_t getPos() const { return &_pos; }
 	vec3f_cptr_t getLookPos() const { return &_lookPos; }
-	mat4f_cptr getProjMatrix() const { return &_projMatrix; }
+	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
 	Vec3f _pos = Vec3f({ 0.0, 0.0, -1.0 });
 	Vec3f _lookPos = Vec3f({ 0.0, 0.0, 0.0 });
-	Eigen::Matrix4f _projMatrix = Eigen::Matrix4f::Zero();
+	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
 };
 
 typedef const Topl_Camera* const camera_cptr;

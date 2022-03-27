@@ -29,8 +29,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Vec2i screenRes = Vec2i({ TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 
-		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(&screenRes);
-		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(&cursorPos);
+		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(&screenRes.data[0]);
+		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(&cursorPos.data[0]);
 
 		appendDataToBytes(screenRes_bytes, sizeof(Vec2i), bytes);
 		appendDataToBytes(cursorPos_bytes, sizeof(Vec2f), bytes);

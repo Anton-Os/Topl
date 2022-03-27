@@ -38,7 +38,7 @@ private:
     Rasteron_Image* image = NULL; // underlying data
 };
 
-struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Frames
+struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Animation
 	Topl_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
 		data = allocNewAnim(prefix.c_str(), height, width, frameCount);
 	}
@@ -68,7 +68,7 @@ enum MATERIAL_Property {
     // TODO: Add more properties
 };
 
-struct Topl_Material { // Material of static images, wrapper around Rasteron_Frames
+struct Topl_Material { // Material of static images, wrapper around Rasteron_Animation
     Topl_Material(std::string prefix, unsigned height, unsigned width){
 	 	data = allocNewAnim(prefix.c_str(), height, width, MAX_MATERIAL_PROPERTIES);
 	}

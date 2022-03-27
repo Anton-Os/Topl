@@ -42,39 +42,37 @@ void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 
 // Mathematic Operations
 
-static Eigen::Matrix4f genPerspectiveMatrix(SpatialBounds3D bounds){
-    Eigen::Matrix4f projMatrix;
-    projMatrix << // From OpenGL SuperBible starting page 86
+static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
+    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
         0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (bounds.top + bounds.bottom) / (bounds.top - bounds.bottom), 0.0f,
         0.0f, 0.0f, (bounds.nearPlane + bounds.farPlane) / (bounds.nearPlane - bounds.farPlane), (2.0f * bounds.nearPlane * bounds.farPlane) / (bounds.nearPlane - bounds.farPlane),
-        0.0f, 0.0f, -1.0f, 0.0f;
+        0.0f, 0.0f, -1.0f, 0.0f});
     return projMatrix;
 }
 
-static Eigen::Matrix4f genOrthoMatrix(SpatialBounds3D bounds){
-    Eigen::Matrix4f projMatrix;
-    projMatrix << // From OpenGL SuperBible starting page 86
+static Mat4x4 genOrthoMatrix(SpatialBounds3D bounds){
+    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, 0.0f, (bounds.left + bounds.right) / (bounds.left - bounds.right),
         0.0f, 2.0f / (bounds.top - bounds.bottom), 0.0f, (bounds.bottom + bounds.top) / (bounds.bottom - bounds.top),
         0.0f, 0.0f, 2.0f / (bounds.nearPlane - bounds.farPlane), (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
-        0.0f, 0.0f, 0.0f, 1.0f;
+        0.0f, 0.0f, 0.0f, 1.0f });
     return projMatrix;
 }
 
-static Eigen::Matrix4f genStereographicMatrix(SpatialBounds3D bounds){
-    return Eigen::Matrix4f::Identity();
+static Mat4x4 genStereoMatrix(SpatialBounds3D bounds){
+    return MAT_4x4_IDENTITY;
 }
 
-static Eigen::Matrix4f genGnomonicMatrix(SpatialBounds3D bounds){
-    return Eigen::Matrix4f::Identity();
+static Mat4x4 genGnomonicMatrix(SpatialBounds3D bounds){
+    return MAT_4x4_IDENTITY;
 }
 
-Eigen::Matrix4f genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
+Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
     switch(type){
         case PROJECTION_Perspective: return genPerspectiveMatrix(bounds);
         case PROJECTION_Ortho: return genOrthoMatrix(bounds);
-        case PROJECTION_Stereographic: return genStereographicMatrix(bounds);
+        case PROJECTION_Stereo: return genStereoMatrix(bounds);
         case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
     }
 }
@@ -85,11 +83,3 @@ unsigned genRandColor(){
 	uint8_t blueBit = rand() % 255;
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }
-
-float genRandFloat(){ return genRandFloat(0.0, 1.0); }
-float genRandFloat(float min, float max){ return min + static_cast<float>(rand()) /( static_cast<float>(RAND_MAX/(max - min))); }
-float getVecLength(const Eigen::Vector2f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2)); }
-float getVecLength(const Eigen::Vector3f& vec){ return sqrt(pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2)); }
-Eigen::Vector2f genRandVec2(){ return Eigen::Vector2f(genRandFloat(), genRandFloat()); }
-Eigen::Vector3f genRandVec3(){ return Eigen::Vector3f(genRandFloat(), genRandFloat(), genRandFloat()); }
-Eigen::Vector4f genRandVec4(){ return Eigen::Vector4f(genRandFloat(), genRandFloat(), genRandFloat(), genRandFloat()); }
