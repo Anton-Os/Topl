@@ -1,36 +1,36 @@
 #include "Geo_Flat.hpp"
 
-void Geo_Flat::genPos(Eigen::Vector3f* data){
+void Geo_Flat::genPos(Vec3f* data){
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 
-    Eigen::Vector3f centerVertex = Eigen::Vector3f(0.0f, 0.0f, _depth);
+    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, _depth });
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1; v < _verticesCount; v++)
-        *(data + v) = Eigen::Vector3f(
-			sin(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
-			cos(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
-			_depth
-        );
+        *(data + v) = Vec3f({
+			(float)sin(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
+			(float)cos(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
+			(float)_depth
+		});
 }
 
-void Geo_Flat::genNormals(Eigen::Vector3f* data){
-	Eigen::Vector3f frontFaceNormal = Eigen::Vector3f(0.0f, 0.0f, -1.0f);
+void Geo_Flat::genNormals(Vec3f* data){
+	Vec3f frontFaceNormal = Vec3f({ 0.0f, 0.0f, -1.0f });
 
 	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = frontFaceNormal;
 }
 
-void Geo_Flat::genTexCoords(Eigen::Vector2f* data) {
+void Geo_Flat::genTexCoords(Vec2f* data) {
 	// texture coordinates are based off of rectangular geometries
 
-	*(data + 0) = Eigen::Vector2f(0.5f, 0.5f); // center point will always be shared
+	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
 	for (unsigned t = 1; t < _verticesCount; t++)
 		switch((t - 1) % 4){
-			case 0: *(data + t) = Eigen::Vector2f(1.0f, 0.0f); break; // bottom left
-			case 1: *(data + t) = Eigen::Vector2f(0.0f, 0.0f); break; // top left
-			case 2: *(data + t) = Eigen::Vector2f(0.0f, 1.0f); break; // bottom right
-			case 3: *(data + t) = Eigen::Vector2f(1.0f, 1.0f); break; // top right
+			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
 		}
 }
 

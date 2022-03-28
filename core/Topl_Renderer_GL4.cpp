@@ -218,8 +218,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
-		vertex_cptr actor_vData = actor_renderObj->getVertices();
-		ui_cptr actor_iData = actor_renderObj->getIndices();
+		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
+		ui_cptr_t actor_iData = actor_renderObj->getIndices();
 
 		// render block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {

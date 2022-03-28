@@ -1,7 +1,7 @@
 #include "Geo_Sphere.hpp"
 
-void Geo_SphereUV::genPos(Eigen::Vector3f* data){
-    Eigen::Vector3f topVertex = Eigen::Vector3f(0.0f, _shape3D.radius, 0.0f);
+void Geo_SphereUV::genPos(Vec3f* data){
+    Vec3f topVertex = Vec3f({ 0.0f, _shape3D.radius, 0.0f });
     *(data + 0) = topVertex; // first vertex is the top of the sphere
 
 	unsigned v = 1;
@@ -12,21 +12,21 @@ void Geo_SphereUV::genPos(Eigen::Vector3f* data){
 			double x = std::sin(phi) * std::cos(theta) * _shape3D.radius;
 			double y = std::cos(phi) * _shape3D.radius;
 			double z = std::sin(phi) * std::sin(theta) * _shape3D.radius;
-			*(data + v) = Eigen::Vector3f(x, y, z);
+			*(data + v) = Vec3f({ (float)x, (float)y, (float)z });
 			v++; // increase the vertex count
 		}
 	}
 
-	Eigen::Vector3f botVertex = Eigen::Vector3f(0.0f, -1.0f * _shape3D.radius, 0.0f);
+	Vec3f botVertex = Vec3f({ 0.0f, -1.0f * _shape3D.radius, 0.0f });
     *(data + _verticesCount - 1) = botVertex; // last vertex is the bottom of the sphere
 }
 
-void Geo_SphereUV::genNormals(Eigen::Vector3f* data){
+void Geo_SphereUV::genNormals(Vec3f* data){
 	// TODO: Implement body here
 	return;
 }
 
-void Geo_SphereUV::genTexCoords(Eigen::Vector2f* data) {
+void Geo_SphereUV::genTexCoords(Vec2f* data) {
 	// TODO: Implement body here
 	return;
 }

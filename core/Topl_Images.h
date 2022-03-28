@@ -24,8 +24,8 @@ struct Topl_Image { // wrapper around Rasteron_Image
     }
     void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
         if(image != NULL) deleteImg(image); // delte old image
-        /* Rasteron_Image* fontImage = bakeImgTextInvert(freetypeLib, textObj);
-        image = createImgFlip(fontImage, FLIP_CounterClock); // flip required to render correctly
+        /* Rasteron_Image* fontImage = bakeImgText(freetypeLib, textObj);
+        image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
         deleteImg(fontImage); */
 		image = bakeImgTextInvert(freetypeLib, textObj);
     }
@@ -38,7 +38,7 @@ private:
     Rasteron_Image* image = NULL; // underlying data
 };
 
-struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Animation
+struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Frames
 	Topl_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
 		data = allocNewAnim(prefix.c_str(), height, width, frameCount);
 	}
@@ -68,7 +68,7 @@ enum MATERIAL_Property {
     // TODO: Add more properties
 };
 
-struct Topl_Material { // Material of static images, wrapper around Rasteron_Animation
+struct Topl_Material { // Material of static images, wrapper around Rasteron_Frames
     Topl_Material(std::string prefix, unsigned height, unsigned width){
 	 	data = allocNewAnim(prefix.c_str(), height, width, MAX_MATERIAL_PROPERTIES);
 	}
@@ -92,21 +92,21 @@ struct Topl_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Height
 
     ~Topl_Heightmap(){ deleteHeightmap(heightmap); }
 private:
-    void genPos(Eigen::Vector3f* data) override {
+    void genPos(Vec3f* data) override {
 		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Eigen::Vector3f(0.0f, *(heightmap->data + p), 0.0f);
+			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
 	}
-    void genNormals(Eigen::Vector3f* data) override { 
+    void genNormals(Vec3f* data) override { 
 		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Eigen::Vector3f(0.0f, *(heightmap->data + p), 0.0f);
+			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
 	} 
-    void genTexCoords(Eigen::Vector2f* data) override {
+    void genTexCoords(Vec2f* data) override {
 		float xInc = 1.0f / heightmap->width;
 		float yInc = 1.0f / heightmap->height;
 
 		for (unsigned r = 0; r < heightmap->height; r++)
 			for (unsigned c = 0; c < heightmap->width; c++)
-				*(data + (r * heightmap->width) + c) = Eigen::Vector2f(xInc * c, yInc * r);
+				*(data + (r * heightmap->width) + c) = Vec2f({ xInc * c, yInc * r });
 	}
     void genIndices(unsigned* data) override { return; } // No indices by default
 

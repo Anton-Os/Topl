@@ -20,16 +20,16 @@ namespace App {
 	Topl_Scene scene;
 	// Topl_Camera camera;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(1.0f));
-	Eigen::Vector2f camRotAngles = Eigen::Vector2f(0.0f, 0.0f);
+	Vec2f camRotAngles = Vec2f({ 0.0f, 0.0f });
 
 	// Primitive Geometry Objects
 	Geo_FlatSquare rect1 = Geo_FlatSquare(0.1f);
 	Geo_ExtrudedHex hex1 = Geo_ExtrudedHex(0.1f, 0.1f);
-	Geo_ConicCircle cone1 = Geo_ConicCircle(0.1f, Eigen::Vector3f(0.0f, 0.0f, 0.1f));
+	Geo_ConicCircle cone1 = Geo_ConicCircle(0.1f, Vec3f({ 0.0f, 0.0f, 0.1f }));
 
 	// Complex Geometry Objects
 	Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
-	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Eigen::Vector3f(0.33f, 0.0, 0.0)); // stretches along X axis only
+	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Vec3f({ 0.33f, 0.0, 0.0 })); // stretches along X axis only
 	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 9);
 	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&hex1);
 	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(3, 0.4f));
@@ -49,19 +49,19 @@ static void calcCamera() {
 	App::camera.setLookPos(Vec3f({ App::camRotAngles[0], App::camRotAngles[1], 0.0f }));
 }
 void hoverCallback_top(float x, float y) {
-	if (App::camRotAngles[1] < CAM_MAX_ANGLE) App::camRotAngles[1] += CAM_INC_ANGLE;
+	if (App::camRotAngles[1] < CAM_MAX_ANGLE) App::camRotAngles.data[1] += CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_right(float x, float y) {
-	if (App::camRotAngles[0] < CAM_MAX_ANGLE) App::camRotAngles[0] += CAM_INC_ANGLE;
+	if (App::camRotAngles[0] < CAM_MAX_ANGLE) App::camRotAngles.data[0] += CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_left(float x, float y) { 
-	if (App::camRotAngles[0] > CAM_MIN_ANGLE) App::camRotAngles[0] -= CAM_INC_ANGLE;
+	if (App::camRotAngles[0] > CAM_MIN_ANGLE) App::camRotAngles.data[0] -= CAM_INC_ANGLE;
 	calcCamera();
 }
 void hoverCallback_bot(float x, float y) {
-	if (App::camRotAngles[1] > CAM_MIN_ANGLE) App::camRotAngles[1] -= CAM_INC_ANGLE;
+	if (App::camRotAngles[1] > CAM_MIN_ANGLE) App::camRotAngles.data[1] -= CAM_INC_ANGLE;
 	calcCamera();
 }
 
@@ -85,7 +85,7 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		// App::camera.setPos(Eigen::Vector3f(0.0f, 0.0f, MOVE_AMOUNT));
+		// App::camera.setPos(Vec3f(0.0f, 0.0f, MOVE_AMOUNT));
 		App::chain.move(Vec3f({ 0.0f, 0.8f, 0.0f }));
 	}
 

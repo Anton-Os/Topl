@@ -51,8 +51,8 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		// App::camera.setLookPos(Eigen::Vector3f(0.0, 1.0f, -1.0f));
-		// App::model.rotate(Eigen::Vector2f(0.0f, TOPL_PI));
+		// App::camera.setLookPos(Vec3f({ 0.0, 1.0f, -1.0f }));
+		// App::model.rotate(Vec2f({ 0.0f, TOPL_PI }));
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

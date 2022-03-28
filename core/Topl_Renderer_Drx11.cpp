@@ -74,7 +74,7 @@ namespace Renderer {
 		return true;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr pvData, unsigned vCount) {
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr_t pvData, unsigned vCount) {
 		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, pvData);
 	}
 
@@ -307,8 +307,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		actor_cptr actor = scene->getGeoActor(rID - 1); // IDs begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
-		vertex_cptr actor_vData = actor_renderObj->getVertices();
-		ui_cptr actor_iData = actor_renderObj->getIndices();
+		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
+		ui_cptr_t actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {

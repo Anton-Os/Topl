@@ -24,9 +24,9 @@ public:
 
 	float getRadius() const { return _shape3D.radius; }
 private:
-    void genPos(Eigen::Vector3f* data) override;
-    void genNormals(Eigen::Vector3f* data) override;
-	void genTexCoords(Eigen::Vector2f* data) override;
+    void genPos(Vec3f* data) override;
+    void genNormals(Vec3f* data) override;
+	void genTexCoords(Vec2f* data) override;
     void genIndices(unsigned* data) override;
 
     NGon3D _shape3D;

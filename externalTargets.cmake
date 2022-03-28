@@ -24,16 +24,6 @@ ExternalProject_Add(GLEW
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-ExternalProject_Add(Eigen
-        GIT_REPOSITORY "https://github.com/eigenteam/eigen-git-mirror.git"
-        GIT_TAG "36b95962756c1fce8e29b1f8bc45967f30773c00"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/Eigen
-        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    )
-
 set(SUPPORT_3D_ASSETS ON CACHE BOOL "Include 3d asset loading module" FORCE)
 if(SUPPORT_3D_ASSETS)
 ExternalProject_Add(Assimp # 3D Model loading
@@ -60,6 +50,6 @@ ExternalProject_Add(OpenAL # Audio File Loading
     )
 endif()
 
-find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake) # Replace Eigen with Maths.hpp
+# find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake) # Replace Eigen with Maths.hpp
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)

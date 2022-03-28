@@ -10,7 +10,7 @@ namespace App {
 	Topl_Scene scene;
 	Topl_Camera camera = Topl_Camera(PROJECTION_Ortho, SpatialBounds3D(3.0f));
 
-    Geo_Plane plane = Geo_Plane(Eigen::Vector3f(0.0f, 1.0f, 0.0f), Eigen::Vector3f(1.0f, 0.0, 0.0));
+	Geo_Plane plane = Geo_Plane(Vec3f({ 0.0f, 1.0f, 0.0f }), Vec3f({ 1.0f, 0.0, 0.0 }));
     Geo_Actor planeActor  = Geo_Actor((Geo_RenderObj*)&plane);
 	Geo_FlatCircle circle = Geo_FlatCircle(0.1f);
 	Geo_Actor circleActor = Geo_Actor((Geo_RenderObj*)&circle);

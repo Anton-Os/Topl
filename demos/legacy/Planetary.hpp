@@ -59,7 +59,6 @@ namespace Main {
 		Platform::keyLogger.addCallback('s', buttonCallback_s);
 		Platform::keyLogger.addCallback('d', buttonCallback_d);
 
-		// App::scene.addLight(Topl_Light(Eigen::Vector3f(0.2f, 0.0f, 0.0f)));
 		App::scene.addLight(&App::skyLight);
 		App::scene.addLight(&App::flashLight);
 		App::scene.addLight(&App::lampLight);

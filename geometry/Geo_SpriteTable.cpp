@@ -1,5 +1,7 @@
 #include "Geo_SpriteTable.hpp"
 
+#include <algorithm>
+
 static float getSpriteWidth(const Rasteron_Sprite* sprite) {
 	return sprite->bounds.topRight_point[X_OFFSET] * 2;
 }

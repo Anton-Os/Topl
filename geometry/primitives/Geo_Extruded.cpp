@@ -1,61 +1,61 @@
 #include "Geo_Extruded.hpp"
 
-void Geo_Extruded::genPos(Eigen::Vector3f* data){
+void Geo_Extruded::genPos(Vec3f* data){
 	// Vertices for FRONT FACE
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 
-    Eigen::Vector3f centerVertex = Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL + (_depth / 2));
+    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z_VAL + (_depth / 2)});
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1; v < _verticesCount / 2; v++)
-        *(data + v) = Eigen::Vector3f(
-			sin(_startAngle + (v * incAngle)) * _shape2D.radius, 
-			cos(_startAngle + (v * incAngle)) * _shape2D.radius, 
-			DEFAULT_Z_VAL + (_depth / 2)
-        );
+        *(data + v) = Vec3f({
+			(float)sin(_startAngle + (v * incAngle)) * _shape2D.radius, 
+			(float)cos(_startAngle + (v * incAngle)) * _shape2D.radius, 
+			(float)DEFAULT_Z_VAL + (_depth / 2)
+		});
 
 	// Vertices for BACK FACE
-    centerVertex = Eigen::Vector3f(0.0f, 0.0f, DEFAULT_Z_VAL - (_depth / 2));
+    centerVertex = Vec3f({0.0f, 0.0f, DEFAULT_Z_VAL - (_depth / 2)});
     *(data + (_verticesCount / 2)) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1 + (_verticesCount / 2); v < _verticesCount; v++)
-        *(data + v) = Eigen::Vector3f(
-			sin(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
-			cos(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
-			DEFAULT_Z_VAL - (_depth / 2)
-        );
+        *(data + v) = Vec3f({
+			(float)sin(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
+			(float)cos(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
+			(float)DEFAULT_Z_VAL - (_depth / 2)
+		});
 }
 
-void Geo_Extruded::genNormals(Eigen::Vector3f* data){
-	Eigen::Vector3f frontFaceNormal = Eigen::Vector3f(0.0f, 0.0f, -1.0f);
-	Eigen::Vector3f backFaceNormal = Eigen::Vector3f(0.0f, 0.0f, 1.0f);
+void Geo_Extruded::genNormals(Vec3f* data){
+	const Vec3f frontFaceNormal = Vec3f({ 0.0f, 0.0f, -1.0f });
+	const Vec3f backFaceNormal = Vec3f({ 0.0f, 0.0f, 1.0f });
 
 	for(unsigned v = 1; v < _verticesCount / 2; v++) *(data + v) = frontFaceNormal;
 	for(unsigned v = 1 + (_verticesCount / 2); v < _verticesCount; v++) *(data + v) = backFaceNormal;
 }
 
-void Geo_Extruded::genTexCoords(Eigen::Vector2f* data) {
+void Geo_Extruded::genTexCoords(Vec2f* data) {
 	// texture coordinates are based off of rectangular geometries
 
 	// Texcoords for FRONT FACE
-	*(data + 0) = Eigen::Vector2f(0.5f, 0.5f); // center point will always be shared
+	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
 	for (unsigned t = 1; t < _verticesCount; t++)
 		switch((t - 1) % 4){
-			case 0: *(data + t) = Eigen::Vector2f(1.0f, 0.0f); break; // bottom left
-			case 1: *(data + t) = Eigen::Vector2f(0.0f, 0.0f); break; // top left
-			case 2: *(data + t) = Eigen::Vector2f(0.0f, 1.0f); break; // bottom right
-			case 3: *(data + t) = Eigen::Vector2f(1.0f, 1.0f); break; // top right
+			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
 		}
 
 	// Texcoords for BACK FACE
-	*(data + (_verticesCount / 2)) = Eigen::Vector2f(0.5f, 0.5f); // center point will always be shared
+	*(data + (_verticesCount / 2)) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
 	for(unsigned t = 1 + (_verticesCount / 2); t < _verticesCount; t++)
         switch((t - 1) % 4){
-			case 0: *(data + t) = Eigen::Vector2f(1.0f, 0.0f); break; // bottom left
-			case 1: *(data + t) = Eigen::Vector2f(0.0f, 0.0f); break; // top left
-			case 2: *(data + t) = Eigen::Vector2f(0.0f, 1.0f); break; // bottom right
-			case 3: *(data + t) = Eigen::Vector2f(1.0f, 1.0f); break; // top right
+			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
 		}
 }
 

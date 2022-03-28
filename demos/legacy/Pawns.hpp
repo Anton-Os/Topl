@@ -22,13 +22,13 @@ namespace App {
 	std::string assetsPath = ASSETS_DIR;
 	std::string imagePath = assetsPath + "images/";
 
-	std::pair<Eigen::Vector3f, Eigen::Vector2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
-		std::make_pair(Eigen::Vector3f(0.0f, 0.08f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.0f, -0.05f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_HALF_PI, 0.0)),
-		std::make_pair(Eigen::Vector3f(0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0), Eigen::Vector2f(0.0, 0.0)),
-		std::make_pair(Eigen::Vector3f(-0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0), Eigen::Vector2f(-1.0 * TOPL_PI, 0.0))
+	std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
+		std::make_pair(Vec3f({ 0.0f, 0.08f * VIEW_SPACE, 0.0 }), Vec2f({ -1.0 * TOPL_HALF_PI, 0.0 })),
+		std::make_pair(Vec3f({ 0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0 }), Vec2f({ 0.0, 0.0 })),
+		std::make_pair(Vec3f({ -0.12f * VIEW_SPACE, -0.15f * VIEW_SPACE, 0.0 }), Vec2f({ -1.0 * TOPL_PI, 0.0 })),
+		std::make_pair(Vec3f({ 0.0f, -0.05f * VIEW_SPACE, 0.0 }), Vec2f({ -1.0 * TOPL_HALF_PI, 0.0 })),
+		std::make_pair(Vec3f({ 0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0 }), Vec2f({ 0.0, 0.0 })),
+		std::make_pair(Vec3f({ -0.05f * VIEW_SPACE, -0.2f * VIEW_SPACE, 0.0 }), Vec2f({ -1.0 * TOPL_PI, 0.0 }))
 	};
 
 	std::string demonAssets[HUMANOID_PARTS_COUNT] = { 
@@ -126,8 +126,8 @@ namespace Main {
 		App::ghost.move(App::ghostOffset);
 		App::ghost.orientAll(App::orientations);
 
-		// App::scene.addAnchor(&App::demonAnchor, "demon_body", &App::demonOffset);
-		// App::scene.addAnchor(&App::angelAnchor, "angel_head", &App::angelOffset);
+		App::scene.addAnchor(&App::demonAnchor, "demon_body", &App::demonOffset);
+		App::scene.addAnchor(&App::angelAnchor, "angel_head", &App::angelOffset);
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {

@@ -60,9 +60,6 @@ if(WIN32)
         core/Topl_App.cpp
     )
     target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
-    target_include_directories(Drx11_ENGINE PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    )
     if(Rasteron_FOUND)
         target_link_libraries(Drx11_ENGINE PUBLIC Rasteron)
     endif()
@@ -93,9 +90,6 @@ add_library(GL4_ENGINE
     core/Topl_App.cpp
 )
 target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
-target_include_directories(GL4_ENGINE PUBLIC
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 if(Rasteron_FOUND)
     target_link_libraries(GL4_ENGINE PUBLIC Rasteron)
@@ -111,7 +105,7 @@ set_target_properties(GL4_ENGINE
     CXX_EXTENSIONS ON
 )
 if(NOT WIN32) # decreases Windows build time
-    add_dependencies(GL4_ENGINE GLEW Eigen)
+    add_dependencies(GL4_ENGINE GLEW)
 endif()
 
 

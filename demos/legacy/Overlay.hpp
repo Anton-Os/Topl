@@ -95,7 +95,8 @@ void genImages() {
 		Geo_Pane* pane = App::boxedLayout.getChildPane(p);
 		// Rasteron_Image* frameImg = App::windows.getFrameAt(p);
 
-		addColorPoint(&colorPointTable, genRandColor(), genRandFloat(), genRandFloat());
+		Vec2f randVec; randVec.randomize();
+		addColorPoint(&colorPointTable, genRandColor(), randVec[0], randVec[1]);
 		Topl_Image layoutImage = Topl_Image(createImgProxim(App::windows.getFrameAt(p), &colorPointTable));
 		App::windows.addFrame(layoutImage.getImage());
 		pane->selectImage(App::windows.getFrameAt(p));

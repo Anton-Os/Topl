@@ -1,5 +1,7 @@
 #ifndef GEO_SPRITE_TABLE_H
 
+#include <utility>
+#include <string>
 #include <initializer_list>
 
 #include "Rasteron.h"

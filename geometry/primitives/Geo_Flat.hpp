@@ -26,9 +26,9 @@ public:
     float getRadius() const { return _shape2D.radius; }
     unsigned getSegments() const { return _shape2D.segments; }
 private:
-    void genPos(Eigen::Vector3f* data) override;
-    void genNormals(Eigen::Vector3f* data) override;
-	void genTexCoords(Eigen::Vector2f* data) override;
+    void genPos(Vec3f* data) override;
+    void genNormals(Vec3f* data) override;
+	void genTexCoords(Vec2f* data) override;
     void genIndices(unsigned* data) override;
 
     NGon2D _shape2D;
@@ -61,7 +61,7 @@ struct Geo_FlatCircle : public Geo_Flat {
 #define DEFAULT_PLANE_LENGTH 10000.00 // should stretch as far as possible
 
 struct Geo_Plane : public Geo_FlatSquare {
-	Geo_Plane(Eigen::Vector3f a1, Eigen::Vector3f a2) // Arbitrary plane constructor
+	Geo_Plane(Vec3f a1, Vec3f a2) // Arbitrary plane constructor
 		: Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {
 		axis1 = a1; 
 		axis1.normalize();
@@ -69,8 +69,8 @@ struct Geo_Plane : public Geo_FlatSquare {
 		axis2.normalize();
 	}
 
-	Eigen::Vector3f axis1;
-	Eigen::Vector3f axis2;
+	Vec3f axis1;
+	Vec3f axis2;
 };
 
 #define GEO_FLAT_H

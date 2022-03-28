@@ -1,9 +1,6 @@
 #ifndef GEOMETRY_H
 
-#include <cstdlib>
-
-#include "Maths.h" // replace Eigen library!
-#include <Eigen/Dense>
+#include "Maths.h"
 
 #define POSITION_COUNT 3
 #define NORMALS_COUNT 3
@@ -15,28 +12,19 @@
 #define U_OFFSET 0
 #define V_OFFSET 1
 
-#define DEFAULT_CIRCLE_SEGS 1001
-// #define DEFAULT_Z_VAL 0.1f
+#define DEFAULT_CIRCLE_SEGS 1000
 #define DEFAULT_Z_VAL 0.0f
 
-// Typedefs for const safe types
-typedef const Eigen::Vector3f* const vec3f_cptr;
-typedef const Eigen::Vector2f* const vec2f_cptr;
-typedef const Eigen::Matrix4f* const mat4f_cptr;
-typedef const Eigen::Matrix3f* const mat3f_cptr;
-typedef const Eigen::Matrix2f* const mat2f_cptr;
-typedef const unsigned* const ui_cptr;
-
 struct Geo_Vertex {
-	Geo_Vertex(Eigen::Vector3f pos); // Position data constructor
-	Geo_Vertex(Eigen::Vector3f pos, Eigen::Vector2f texc); // Extended constructor
+	Geo_Vertex(Vec3f pos); // Position data constructor
+	Geo_Vertex(Vec3f pos, Vec2f texc); // Extended constructor
 
 	float position[POSITION_COUNT];
 	float texcoord[TEXCOORD_COUNT];
 	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
-typedef const Geo_Vertex* const vertex_cptr; // Safe const pointer type
+typedef const Geo_Vertex* const vertex_cptr_t; // const pointer type
 
 struct NGon2D {
     float radius;
@@ -72,29 +60,29 @@ public:
     unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get index Count
 
-	vertex_cptr getVertices() {
+	vertex_cptr_t getVertices() {
 		genVertices(); // vertices are generated here since vertex format may be subject to change
 		return _vertices;
 	}
-    ui_cptr getIndices() const { return _indices; }
-	vec3f_cptr getPosData() const { return _posData; }
-	vec3f_cptr getNormalsData() const { return _normalsData; }
-    vec2f_cptr getTexCoordData() const { return _texcoordData; }
+    ui_cptr_t getIndices() const { return _indices; }
+	vec3f_cptr_t getPosData() const { return _posData; }
+	vec3f_cptr_t getNormalsData() const { return _normalsData; }
+    vec2f_cptr_t getTexCoordData() const { return _texcoordData; }
 protected:
 	void fillRenderObj(); // called by derived class to populate vertex attributes
 	void genVertices(); // internally generates data based on vertex format
-    virtual void genPos(Eigen::Vector3f* data) = 0;
-	virtual void genNormals(Eigen::Vector3f* data) = 0;
-    virtual void genTexCoords(Eigen::Vector2f* data) = 0;
+    virtual void genPos(Vec3f* data) = 0;
+	virtual void genNormals(Vec3f* data) = 0;
+    virtual void genTexCoords(Vec2f* data) = 0;
     virtual void genIndices(unsigned* data) = 0;
 
 	double _startAngle = 0.0; // starting angle for vertex generation
 
     unsigned _verticesCount = 0; // vertex count
 	Geo_Vertex* _vertices = nullptr; // formatted vertex data
-    Eigen::Vector3f* _posData = nullptr; // position data
-	Eigen::Vector3f* _normalsData = nullptr; // normals data
-    Eigen::Vector2f* _texcoordData = nullptr; // texture coordinate data
+    Vec3f* _posData = nullptr; // position data
+	Vec3f* _normalsData = nullptr; // normals data
+    Vec2f* _texcoordData = nullptr; // texture coordinate data
 
 	unsigned _indicesCount = 0; // index count
 	unsigned* _indices = nullptr; // index data

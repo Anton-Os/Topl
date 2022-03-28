@@ -2,8 +2,7 @@
 
 #include <vector>
 
-#include "Maths.h" // replace Eigen library!
-#include <Eigen/Dense>
+#include "Maths.h"
 
 // Memory Operations
 

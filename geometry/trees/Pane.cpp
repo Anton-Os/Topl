@@ -50,14 +50,14 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		float xInc = (_radius * 1.5) / _columns;
 		float yInc = (_radius * 1.5) / _rows;
 		float _halfRadius = _radius / 1.5;
-		Eigen::Vector2f origin = Eigen::Vector2f(-1.0f * (_radius - (_radius / _columns)), _radius - (_radius / _rows));
-		origin *= 1.0 / (1.25 + 0.125 - 0.0625 + 0.03125); // scaling required since radius is scaled by 1.5
-		// Eigen::Vector2f origin = Eigen::Vector2f(-1.0f * (_halfRadius - (_halfRadius / _columns)), _halfRadius - (_halfRadius / _rows));
+		Vec2f origin = Vec2f({ -1.0f * (_radius - (_radius / _columns)), _radius - (_radius / _rows) });
+		origin = origin * (1.0 / (1.25 + 0.125 - 0.0625 + 0.03125)); // scaling required since radius is scaled by 1.5
+		// Vec2f origin = Vec2f(-1.0f * (_halfRadius - (_halfRadius / _columns)), _halfRadius - (_halfRadius / _rows));
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
 		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
-		// actor->setRot(Eigen::Vector2f(0.1f, 0.1f)); // for testing
+		// actor->setRot(Vec2f(0.1f, 0.1f)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 #ifdef RASTERON_H
 		scene->addTexture(getPrefix() + _Pane::genPaneName(p), _panes[p - 1].getBackground());

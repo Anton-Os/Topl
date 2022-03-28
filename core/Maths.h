@@ -120,6 +120,8 @@ struct Matrix {
     }
 };
 
+typedef const unsigned* const ui_cptr_t;
+
 typedef VectorXF<2> Vec2f;
 typedef const Vec2f* const vec2f_cptr_t;
 typedef VectorXF<3> Vec3f;
