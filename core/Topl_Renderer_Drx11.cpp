@@ -135,8 +135,8 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	free(_renderCtx_Drx11); // free the render context heap
 }
 
-void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
-	_platformCtx.window = hwnd; // Supplying platform specific stuff
+void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
+	_platformCtx.window = window; // Supplying platform specific stuff
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -260,8 +260,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW hwnd) {
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	// const float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
+	const float clearColor[] = { 0.1f, 0.1f, 0.1f, CLEAR_COLOR_ALPHA };
+	// const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
     _deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }

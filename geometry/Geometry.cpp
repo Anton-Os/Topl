@@ -3,13 +3,13 @@
 // Geo_Vertex Operations
 
 Geo_Vertex::Geo_Vertex(Vec3f pos){
-    position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-	texcoord[U_OFFSET] = 0.0f; texcoord[V_OFFSET] = 0.0f;
+    position[0] = pos[0]; position[1] = pos[1]; position[2] = pos[2];
+	texcoord[0] = 0.0f; texcoord[1] = 0.0f;
 }
 
 Geo_Vertex::Geo_Vertex(Vec3f pos, Vec2f texc){
-    position[X_OFFSET] = pos[X_OFFSET]; position[Y_OFFSET] = pos[Y_OFFSET]; position[Z_OFFSET] = pos[Z_OFFSET];
-	texcoord[U_OFFSET] = texc[U_OFFSET]; texcoord[V_OFFSET] = texc[V_OFFSET];
+    position[0] = pos[0]; position[1] = pos[1]; position[2] = pos[2];
+	texcoord[0] = texc[0]; texcoord[1] = texc[1];
 }
 
 // Geo_RenderObj Operations
@@ -86,9 +86,9 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
 
     unsigned vAttribOffset;
     switch(axis){
-        case AXIS_X: vAttribOffset = X_OFFSET; break;
-        case AXIS_Y: vAttribOffset = Y_OFFSET; break;
-        case AXIS_Z: vAttribOffset = Z_OFFSET; break;
+        case AXIS_X: vAttribOffset = 0; break;
+        case AXIS_Y: vAttribOffset = 1; break;
+        case AXIS_Z: vAttribOffset = 2; break;
     }
 	for (unsigned v = 0; v < _verticesCount; v++) {
 		Vec3f* vertexPos = _posData + v;

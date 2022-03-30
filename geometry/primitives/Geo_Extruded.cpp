@@ -5,25 +5,25 @@ void Geo_Extruded::genPos(Vec3f* data){
 	const double fullAngle = TOPL_PI * 2;
 	const double incAngle = fullAngle / _shape2D.segments;
 
-    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z_VAL + (_depth / 2)});
+    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2)});
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1; v < _verticesCount / 2; v++)
         *(data + v) = Vec3f({
 			(float)sin(_startAngle + (v * incAngle)) * _shape2D.radius, 
 			(float)cos(_startAngle + (v * incAngle)) * _shape2D.radius, 
-			(float)DEFAULT_Z_VAL + (_depth / 2)
+			(float)DEFAULT_Z + (_depth / 2)
 		});
 
 	// Vertices for BACK FACE
-    centerVertex = Vec3f({0.0f, 0.0f, DEFAULT_Z_VAL - (_depth / 2)});
+    centerVertex = Vec3f({0.0f, 0.0f, DEFAULT_Z - (_depth / 2)});
     *(data + (_verticesCount / 2)) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1 + (_verticesCount / 2); v < _verticesCount; v++)
         *(data + v) = Vec3f({
 			(float)sin(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
 			(float)cos(_startAngle + ((v - (_verticesCount / 2)) * incAngle)) * _shape2D.radius,
-			(float)DEFAULT_Z_VAL - (_depth / 2)
+			(float)DEFAULT_Z - (_depth / 2)
 		});
 }
 

@@ -1,27 +1,26 @@
-#include "Topl_Renderer.hpp"
+// OpenGL Specific Inclusions
 
 #define GLEW_STATIC
 #include "GL/glew.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+// Renderer Implementation
+
+#include "Topl_Renderer.hpp"
+
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
 #define RENDER_BLOCK_SUPPORT 1 // render block support only
 #define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
 
-// Buffer Object Allocation Helpers
-
 #define GL4_BUFFER_MAX 1024
-
 struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) { buffer = b; }
 	GLuint buffer; // OpenGL buffer
 };
-
-// Vertex Array Object Allocation Helpers
 
 #define GL4_VERTEX_ARRAY_MAX 1024
 struct VertexArray_GL4 : public RenderTarget {
@@ -30,17 +29,12 @@ struct VertexArray_GL4 : public RenderTarget {
 	GLuint vao;
 };
 
-// Texture Objects
-
 #define GL4_TEXTURE_BINDINGS_MAX 1024
-
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
 	GLuint texture;
 };
-
-// Instance Specific Containers
 
 struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	Topl_Pipeline_GL4() : Topl_Pipeline(){}
@@ -54,7 +48,6 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint gShader; // Geometry Shader
 };
 
-// Use this to replace legacy DrawContext
 struct Topl_RenderContext_GL4 : public Topl_RenderContext {
 	Topl_RenderContext_GL4(const Topl_Scene *const s) : Topl_RenderContext(s){}
 	Topl_RenderContext_GL4(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}

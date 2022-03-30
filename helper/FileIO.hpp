@@ -11,7 +11,7 @@
 #include <cfloat> // For error handling
 #include <cerrno> // For error handling
 
-// ---------------------- Anonymous Functions ---------------------- //
+#define MESSAGE_LOG_FILE "MessageLog.txt" // file name for messages and errors during execution
 
 std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);
@@ -25,3 +25,4 @@ int getIntFromStr(const std::string& source, size_t startOffset); // extracts in
 
 // Create a log file for debugging purposes
 void logToFile(const char* fileName, std::string logMessage);
+// TODO: Include error logging code here

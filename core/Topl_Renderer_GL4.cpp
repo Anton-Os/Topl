@@ -94,9 +94,9 @@ namespace Renderer {
 }
 
 #ifdef _WIN32
-static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
+static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc){
     // Creates an HDC based on the window
-    *(windowDC) = GetDC(*(hwnd));
+    *(windowDC) = GetDC(*(window));
 
     // Pixel format descriptor stuff
     PIXELFORMATDESCRIPTOR pixDescript, *pixDescript_ptr;
@@ -120,11 +120,11 @@ static void init_win(const HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
 
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
 
-static void cleanup_win(HWND* hwnd, HDC* windowDC, HGLRC* hglrc){
+static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc){
   	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(*(hglrc));
 
-	ReleaseDC(*(hwnd), *(windowDC));
+	ReleaseDC(*(window), *(windowDC));
 }
 #elif defined(__linux__)
 static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
@@ -158,8 +158,8 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 }
 
 
-void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
-	_platformCtx.window = hwnd;
+void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
+	_platformCtx.window = window;
 #ifdef _WIN32
     init_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
 #elif defined(__linux__)
@@ -183,8 +183,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW hwnd){
 }
 
 void Topl_Renderer_GL4::clearView(){
-	// glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, CLEAR_COLOR_ALPHA);
+	// glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 

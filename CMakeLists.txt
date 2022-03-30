@@ -3,7 +3,7 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
 # Extrenal Libraries
 include(externalTargets.cmake)
-include(locateVulkan.cmake)
+include(findVulkan.cmake)
 
 # ------------- Sources ------------- #
 
@@ -53,9 +53,10 @@ if(Assimp_FOUND)
     message("Assimp built library zlibd_lib set to ${zlibd_lib}")
 endif()
 
-# -------------- Backends ------------- #
+# -------------- Renderers ------------- #
 
 # Building DirectX Engine
+
 if(WIN32)
     add_library(Drx11_ENGINE
         ${helper_src}
@@ -81,6 +82,35 @@ if(WIN32)
     )
 endif()
 
+# Building Vulkan Engine
+
+if(Vulkan_FOUND)
+    add_library(Vulkan_ENGINE
+        ${helper_src}
+        ${geometry_src}
+        ${core_src}
+
+        core/Topl_Pipeline_Vulkan.cpp
+        core/Topl_Renderer_Vulkan.cpp
+    )
+    target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
+    target_include_directories(Vulkan_ENGINE PUBLIC core helper geometry shaders/include)
+    target_link_libraries(Vulkan_ENGINE PUBLIC ${Vulkan_LIBRARIES})
+    if(Rasteron_FOUND)
+        target_link_libraries(Vulkan_ENGINE PUBLIC Rasteron)
+    endif()
+    if(Assimp_FOUND)
+        # target_link_libraries(Vulkan_ENGINE PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release mode
+        target_link_libraries(Vulkan_ENGINE PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
+    endif()
+    set_target_properties(Vulkan_ENGINE
+        PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS ON
+    )
+endif()
+
 # Building OpenGL Engine
 
 add_library(GL4_ENGINE
@@ -97,7 +127,7 @@ if(Rasteron_FOUND)
     target_link_libraries(GL4_ENGINE PUBLIC Rasteron)
 endif()
 if(Assimp_FOUND)
-    # target_link_libraries(GL4_ENGINE PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib})
+    # target_link_libraries(GL4_ENGINE PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release mode
     target_link_libraries(GL4_ENGINE PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug mode
 endif()
 set_target_properties(GL4_ENGINE
@@ -129,7 +159,7 @@ add_executable(Demo_Playground
 
     demos/Playground.cpp
 )
-target_link_libraries(Demo_Playground GL4_ENGINE Drx11_ENGINE)
+target_link_libraries(Demo_Playground GL4_ENGINE Drx11_ENGINE Vulkan_ENGINE)
 
 # -------------- Custom Targets ------------- #
 # Copying and managing implemented here with custom targets

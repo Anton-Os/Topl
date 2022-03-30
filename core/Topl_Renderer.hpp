@@ -37,21 +37,14 @@ struct Buffer : public RenderTarget {
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
+#define CLEAR_COLOR_ALPHA 0.98f // set to value less than 1.0f to assist in cropping
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define MAX_RENDERER_CONTEXTS 24 // limits number of unique render contexts
 
-enum TEX_Frmt {
-    TEX_1D,
-    TEX_2D,
-    TEX_3D
-};
+enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
 
-enum TEX_Mode {
-	TEX_Wrap,
-	TEX_Mirror,
-	TEX_Clamp
-};
+enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
 struct Texture : public RenderTarget {
 	Texture() : RenderTarget(){}
@@ -197,7 +190,7 @@ protected:
     unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
 private:
-    virtual void init(NATIVE_WINDOW hwnd) = 0;
+    virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void drawMode() = 0;

@@ -6,14 +6,14 @@
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
 
-#define X_OFFSET 0
-#define Y_OFFSET 1
-#define Z_OFFSET 2
-#define U_OFFSET 0
-#define V_OFFSET 1
-
 #define DEFAULT_CIRCLE_SEGS 1000
-#define DEFAULT_Z_VAL 0.0f
+#define DEFAULT_Z 0.0f
+
+enum VERTEX_Attrib {
+	VERTEX_Pos,
+	VERTEX_Normal,
+	VERTEX_Texcoord
+};
 
 struct Geo_Vertex {
 	Geo_Vertex(Vec3f pos); // Position data constructor
@@ -53,8 +53,9 @@ public:
 	Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
     
 	virtual ~Geo_RenderObj(){ cleanup(); }
+	void clone(const Geo_RenderObj* refObj); // copies render object
 	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute
-	void clone(const Geo_RenderObj* refObj); // makes one object the copy of another (forgoes copy constructor)
+	void reorder(enum VERTEX_Attrib attrib, short shift); // shifts data inside vertex attribute
 	// void fuse(const Geo_RenderObj* refObj); // fuses target object with reference object
 
     unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count

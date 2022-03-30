@@ -32,7 +32,7 @@ private:
     void genIndices(unsigned* data) override;
 
     NGon2D _shape2D;
-    float _depth = DEFAULT_Z_VAL;
+    float _depth = DEFAULT_Z;
 };
 
 struct Geo_FlatTriangle : public Geo_Flat {

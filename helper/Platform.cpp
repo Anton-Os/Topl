@@ -8,11 +8,11 @@ float Platform::yCursorPos = BAD_CURSOR_POS;
 
 #ifdef _WIN32
 
-/* static void loadIcon(HWND hwnd, LPCSTR name){ // https://stackoverflow.com/questions/18314659/setting-program-icon-without-resources-using-the-win32-api
+/* static void loadIcon(HWND window, LPCSTR name){ // https://stackoverflow.com/questions/18314659/setting-program-icon-without-resources-using-the-win32-api
 	HANDLE hIcon = LoadImageA(0, name, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
 } */
 
-static void addMenu(HWND hwnd){
+static void addMenu(HWND window){
 	// Invoke CreateMenu() and SetMenu() calls...
 }
 
@@ -24,9 +24,9 @@ static void addMousePress(enum MOUSE_Button button){
 	// Platform::updateTimer(); // updates timer after mouse press handled
 }
 
-LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
-	HDC hDC = GetDC(hwnd);
+	HDC hDC = GetDC(window);
 	RECT rect;
 
 	switch (message) {
@@ -44,22 +44,26 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	case (WM_RBUTTONDOWN): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Down); }
 	case (WM_RBUTTONUP): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Up); }
 	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		return DefWindowProc(window, message, wParam, lParam);
 	}
 	return 0;
 }
 
 void Platform::createWindow(){
+	LPSTR iconResource = MAKEINTRESOURCE(ICON_RESOURCE); // for testing
+	LPSTR menuResource = MAKEINTRESOURCE(MENU_RESOURCE); // for testing
+
 	// loadIcon(_context.window, "../assets/images/Topl-Main.ico");
 	// HICON hIcon = LoadIconA(GetModuleHandle(NULL), "C:/AntonDocs/Codex/Ao-Project/Topl/master/assets/images/Topl-Main.ico"); // route to proper path
 	HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_RESOURCE));
 
     _context.windowClass = { 0 };
+	// _context.windowClass.style = WS_SYSMENU;
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
-	_context.windowClass.hIcon = hIcon;
+	// _context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_RESOURCE));
 	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
-	_context.windowClass.lpszMenuName = MAKEINTRESOURCE(MENU_RESOURCE);
+	// _context.windowClass.lpszMenuName = MAKEINTRESOURCE(MENU_RESOURCE);
 	RegisterClass(&_context.windowClass);
 
 	_context.window = CreateWindow(

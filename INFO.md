@@ -1,6 +1,6 @@
 # INFO
 
-
+[Pixel-Puppets](https://github.com/Anton-Os/Pixel-Puppets.git) and [Voxelator](https://github.com/Anton-Os/Voxelator.git) are my ideas built over Topl, but there are many more functionalities I hope to implement using the engine: animation, modeling, photogrammetry, gaming, and simulation projects are all candidates.
 
 Project Directory Structure:
 

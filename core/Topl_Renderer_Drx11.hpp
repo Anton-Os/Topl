@@ -1,3 +1,14 @@
+// DirectX Specific Inclusions
+
+#include <d3d11_1.h>
+#include <dxgi1_4.h>
+#include <d3dcompiler.h>
+
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
+// Renderer Implementation
+
 #include "Topl_Renderer.hpp"
 
 struct Buffer_Drx11 : public Buffer {
@@ -51,7 +62,6 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* gsBlob = nullptr;
 };
 
-// Use this to replace legacy DrawContext
 struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
 	Topl_RenderContext_Drx11(const Topl_Scene *const s) : Topl_RenderContext(s){}
 	Topl_RenderContext_Drx11(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
@@ -63,8 +73,8 @@ struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
-	Topl_Renderer_Drx11(HWND hwnd) { 
-		init(hwnd);
+	Topl_Renderer_Drx11(HWND window) { 
+		init(window);
 		drawMode(); // sets default draw mode
 
 		_renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
@@ -83,7 +93,7 @@ public:
     Rasteron_Image* frame() override;
 #endif
 private:
-	void init(NATIVE_WINDOW hwnd) override;
+	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(const Topl_Scene* scene) override;

@@ -3,15 +3,15 @@
 #include <algorithm>
 
 static float getSpriteWidth(const Rasteron_Sprite* sprite) {
-	return sprite->bounds.topRight_point[X_OFFSET] * 2;
+	return sprite->bounds.topRight_point[0] * 2;
 }
 static float getSpriteHeight(const Rasteron_Sprite* sprite) {
-	return sprite->bounds.topRight_point[Y_OFFSET] * 2;
+	return sprite->bounds.topRight_point[1] * 2;
 }
 
 static void resize(const Rasteron_Sprite* sprite, Geo_FlatSquare* square){
-    float width = sprite->bounds.topRight_point[X_OFFSET] * 2;
-    float height = sprite->bounds.topRight_point[Y_OFFSET] * 2;
+    float width = sprite->bounds.topRight_point[0] * 2;
+    float height = sprite->bounds.topRight_point[1] * 2;
 
     if (width != height) { // no stretch required for matchin width and height
         float stretchX = width / height; // get ratio between width and height
@@ -28,11 +28,11 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths){
     init(filePaths);
 
     for(unsigned offset = 0; offset < _spriteCount; offset++){
-        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_sprites + offset);
-        *(_squares + offset) = new Geo_FlatSquare((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2);
-        Geo_FlatSquare* currentSquare = *(_squares + offset);
+        const Rasteron_Sprite* sprite = (const Rasteron_Sprite *)*(_sprites + offset);
+        *(_squares + offset) = new Geo_FlatSquare((getSpriteWidth(sprite) + getSpriteHeight(sprite)) / 2);
+        Geo_FlatSquare* square = *(_squares + offset);
         
-        resize(currentSprite, currentSquare);
+        resize(sprite, square);
     }
 }
 
@@ -40,11 +40,11 @@ Geo_SpriteTable::Geo_SpriteTable(std::initializer_list<std::string> filePaths, f
     init(filePaths);
     
     for(unsigned offset = 0; offset < _spriteCount; offset++){
-        const Rasteron_Sprite* currentSprite = (const Rasteron_Sprite *)*(_sprites + offset);
-        *(_squares + offset) = new Geo_FlatSquare(((getSpriteWidth(currentSprite) + getSpriteHeight(currentSprite)) / 2) * scale);
-        Geo_FlatSquare* currentSquare = *(_squares + offset);
+        const Rasteron_Sprite* sprite = (const Rasteron_Sprite *)*(_sprites + offset);
+        *(_squares + offset) = new Geo_FlatSquare(((getSpriteWidth(sprite) + getSpriteHeight(sprite)) / 2) * scale);
+        Geo_FlatSquare* square = *(_squares + offset);
         
-        resize(currentSprite, currentSquare);
+        resize(sprite, square);
     }
 }
 

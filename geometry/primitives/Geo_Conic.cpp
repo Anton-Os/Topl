@@ -5,16 +5,16 @@ void Geo_Conic::genPos(Vec3f* data){
 	const double incAngle = fullAngle / _shape2D.segments;
 	const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically
 
-    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z_VAL });
+    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
     *(data + 0) = centerVertex; // first vertex is the center vertex
-	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z_VAL });
+	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
 	*(data + _verticesCount - 1) = apexVertex;
 
     for(unsigned v = 1; v < _verticesCount; v++)
         *(data + v) = Vec3f({
 			(float)sin(startAngle + (v * incAngle)) * _shape2D.radius, 
 			(float)cos(startAngle + (v * incAngle)) * _shape2D.radius, 
-			(float)DEFAULT_Z_VAL
+			(float)DEFAULT_Z
 		});
 }
 

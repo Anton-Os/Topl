@@ -12,8 +12,8 @@
     // #include <ShellScalingApi.h>
 
     // see assets/others/resource.rc for definitions
-    #define ICON_RESOURCE 1
-    #define MENU_RESOURCE 2
+    #define ICON_RESOURCE 101
+    #define MENU_RESOURCE 200
 
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP
@@ -60,15 +60,6 @@
     };
 
     #define NATIVE_PLATFORM_CONTEXT Linux_Platform_Context
-#endif
-
-#if defined (_WIN32) && defined (_MSC_VER) // DirectX Specific Code
-    #include <d3d11_1.h>
-    #include <dxgi1_4.h>
-    #include <d3dcompiler.h>
-
-    #pragma comment(lib, "d3d11.lib")
-    #pragma comment(lib, "d3dcompiler.lib")
 #endif
 
 #define NATIVE_OS_DEF

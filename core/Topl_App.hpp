@@ -4,13 +4,14 @@
 #ifdef _WIN32
 #include "Topl_Renderer_Drx11.hpp"
 #endif
+#include "Topl_Renderer_Vulkan.hpp"
 
-#define EVENT_HANDLE_TIME 1.0 / 
+#define EVENT_HANDLE_TIME 1.0 / 120
 
 enum APP_Backend {
     APP_OpenGL_4,
-    APP_DirectX_11
-    // Add Vulkan Support
+    APP_DirectX_11,
+    APP_Vulkan
 };
 
 class Topl_Factory { // supplies and generates all interfaces for Topl_App class
@@ -30,11 +31,11 @@ private:
 	// Internally Managed Structures
 	static Topl_Renderer_GL4* GL4_renderer;
 	static Topl_Renderer_Drx11* Drx11_renderer;
+	static Topl_Renderer_Vulkan* Vulkan_renderer;
 
-	static Topl_Pipeline_GL4** GL4_pipelines;
-	static unsigned GL4_pipeIndex;
-	static Topl_Pipeline_Drx11** Drx11_pipelines;
-	static unsigned Drx11_pipeIndex;
+	static Topl_Pipeline_GL4** GL4_pipelines; static unsigned GL4_pipeIndex;
+	static Topl_Pipeline_Drx11** Drx11_pipelines; static unsigned Drx11_pipeIndex;
+	static Topl_Pipeline_Vulkan** Vulkan_pipelines; static unsigned Vulkan_pipeIndex;
 };
 
 #define FRAME_CACHE_COUNT 1024
