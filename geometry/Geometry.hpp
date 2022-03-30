@@ -9,10 +9,12 @@
 #define DEFAULT_CIRCLE_SEGS 1000
 #define DEFAULT_Z 0.0f
 
-enum VERTEX_Attrib {
-	VERTEX_Pos,
-	VERTEX_Normal,
-	VERTEX_Texcoord
+enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
+
+enum VERTEX_Shift {
+	VERTEX_Forward, // shifts data 1 element forward
+	VERTEX_Reverse, // shifts data 1 element in reverse
+	VERTEX_Flip // flips all data internally
 };
 
 struct Geo_Vertex {
@@ -37,11 +39,7 @@ struct NGon3D {
 	unsigned short ySegments;
 };
 
-enum AXIS_Target{
-    AXIS_X,
-    AXIS_Y,
-    AXIS_Z
-};
+enum AXIS_Target{ AXIS_X, AXIS_Y, AXIS_Z };
 
 typedef float (*vTformCallback)(float, double); // callback for transforming vertex attributes given input and modifier arguments
 
@@ -55,7 +53,7 @@ public:
 	virtual ~Geo_RenderObj(){ cleanup(); }
 	void clone(const Geo_RenderObj* refObj); // copies render object
 	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute
-	void reorder(enum VERTEX_Attrib attrib, short shift); // shifts data inside vertex attribute
+	void reorder(enum VERTEX_Attrib attrib, VERTEX_Shift shift); // shifts vertex attribute data
 	// void fuse(const Geo_RenderObj* refObj); // fuses target object with reference object
 
     unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count

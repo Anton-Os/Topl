@@ -1,10 +1,10 @@
 #include "Platform.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "opengl/Topl_Renderer_GL4.hpp"
 #ifdef _WIN32
-#include "Topl_Renderer_Drx11.hpp"
+#include "directx/Topl_Renderer_Drx11.hpp"
 #endif
-#include "Topl_Renderer_Vulkan.hpp"
+#include "vulkan/Topl_Renderer_Vulkan.hpp"
 
 #define EVENT_HANDLE_TIME 1.0 / 120
 

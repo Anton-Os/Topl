@@ -8,8 +8,8 @@ include(findVulkan.cmake)
 # ------------- Sources ------------- #
 
 list(APPEND helper_src
-	helper/FileIO.cpp
-	helper/Input.cpp
+	helper/IO.cpp
+	helper/Controls.cpp
     helper/Timer.cpp
     helper/Platform.cpp
     helper/ValueGen.cpp
@@ -38,6 +38,8 @@ endif()
 list(APPEND core_src
     core/Topl_Scene_Statics.cpp
     core/Topl_Scene_Dynamics.cpp
+
+    core/Topl_Renderer.cpp
     core/Topl_App.cpp
 )
 
@@ -63,8 +65,8 @@ if(WIN32)
     	${geometry_src}
         ${core_src}
 
-        core/Topl_Pipeline_Drx11.cpp
-        core/Topl_Renderer_Drx11.cpp
+        core/directx/Topl_Pipeline_Drx11.cpp
+        core/directx/Topl_Renderer_Drx11.cpp
     )
     target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
     if(Rasteron_FOUND)
@@ -90,8 +92,8 @@ if(Vulkan_FOUND)
         ${geometry_src}
         ${core_src}
 
-        core/Topl_Pipeline_Vulkan.cpp
-        core/Topl_Renderer_Vulkan.cpp
+        core/vulkan/Topl_Pipeline_Vulkan.cpp
+        core/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
     target_include_directories(Vulkan_ENGINE PUBLIC core helper geometry shaders/include)
@@ -118,8 +120,8 @@ add_library(GL4_ENGINE
     ${geometry_src}
     ${core_src}
 
-    core/Topl_Pipeline_GL4.cpp
-    core/Topl_Renderer_GL4.cpp
+    core/opengl/Topl_Pipeline_GL4.cpp
+    core/opengl/Topl_Renderer_GL4.cpp
 )
 target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)

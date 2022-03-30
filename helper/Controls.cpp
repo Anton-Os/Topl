@@ -1,4 +1,4 @@
-#include "Input.hpp"
+#include "Controls.hpp"
 
 #include <cstdio>
 

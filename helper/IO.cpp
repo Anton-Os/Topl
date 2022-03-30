@@ -1,4 +1,4 @@
-#include "FileIO.hpp"
+#include "IO.hpp"
 
 std::string readFile(const char* source, bool isBinaryFile){
     std::ifstream file = (!isBinaryFile)? std::ifstream(source, std::ios::in) : std::ifstream(source, std::ios::in | std::ios::binary);
@@ -25,10 +25,19 @@ std::string getParentDir(const char* str){
     return parentDir;
 }
 
-void logToFile(const char* fileName, std::string logMessage){
-    std::ofstream file(fileName, std::ofstream::out | std::ofstream::app);
-    file << logMessage << "\n\n";
+void logMessage(enum MESSAGE_Type type, std::string message){
+    std::ofstream file(MESSAGE_LOG_FILE, std::ofstream::out | std::ofstream::app);
+    switch(type){
+        case MESSAGE_Comment: file << " * "; break;
+        case MESSAGE_Question: file << " (?) "; break;
+        case MESSAGE_Exclaim: file << " (!) "; break;
+    }
+    file << message << "\n\n";
     file.close();
+}
+
+void logMessage(std::string message){
+    logMessage(message);
 }
 
 void cleanupNumStr(std::string* str){

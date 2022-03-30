@@ -1,3 +1,5 @@
+#ifndef IO_H
+
 #include <ios>
 #include <sstream>
 #include <fstream>
@@ -6,10 +8,6 @@
 #include <cstring>
 #include <cstdio>
 #include <cctype>
-// #include <vector>
-#include <climits> // For error handling
-#include <cfloat> // For error handling
-#include <cerrno> // For error handling
 
 #define MESSAGE_LOG_FILE "MessageLog.txt" // file name for messages and errors during execution
 
@@ -23,6 +21,15 @@ float getFloatFromStr(const std::string& source, size_t startOffset); // extract
 int getIntFromStr(const std::string& source, size_t startOffset); // extracts int from str relative to start offset
 // bool checkFileExtension(const char* source, const char* ext);
 
+enum MESSAGE_Type {
+    MESSAGE_Comment, // for status
+    MESSAGE_Question, // for inquiries
+    MESSAGE_Exclaim, // for errors
+};
+
 // Create a log file for debugging purposes
-void logToFile(const char* fileName, std::string logMessage);
-// TODO: Include error logging code here
+void logMessage(enum MESSAGE_Type type, std::string message);
+void logMessage(std::string message);
+
+#define IO_H
+#endif

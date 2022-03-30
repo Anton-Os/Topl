@@ -1,11 +1,5 @@
 #include "Topl_Scene.hpp"
 
-static void error_notFound(const std::string& objTypeStr, const std::string& name) {
-	printf("Could not find %s object: \n", objTypeStr.c_str());
-	puts(name.c_str());
-	putchar('\n');
-}
-
 // Scene Manager implementation code
 
 unsigned Geo_Actor::_idCount = 0;

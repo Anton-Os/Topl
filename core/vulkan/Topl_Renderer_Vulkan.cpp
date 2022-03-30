@@ -32,10 +32,8 @@ Rasteron_Image* Topl_Renderer_Vulkan::frame() {
 
 void Topl_Renderer_Vulkan::texturize(const Topl_Scene* scene) {
 	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) { // TODO: Generalize this code
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
+
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Implement texturizing operations
 #endif
@@ -45,10 +43,7 @@ void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned i
 	// TODO: find id corresponding to proper render context
 	// Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
 	Topl_RenderContext_Vulkan* activeCtx = *(_renderCtx_Vulkan); // for now gets the first available render context
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	// Implement texture attaching
 }
@@ -61,10 +56,7 @@ void Topl_Renderer_Vulkan::attachMaterial(const Topl_Material* material, unsigne
 
 void Topl_Renderer_Vulkan::update(const Topl_Scene* scene){
 	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	// Implement update operations
 }
@@ -76,18 +68,13 @@ void Topl_Renderer_Vulkan::drawMode(){
 	case DRAW_Triangles: break;
 	case DRAW_Fan: break;
 	case DRAW_Strip: break;
-	default:
-		perror("Draw type not supported yet!");
-		_isSceneDrawn = false; return;
+	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported yet!");
 	}
 }
 
 void Topl_Renderer_Vulkan::render(const Topl_Scene* scene){
 	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	// Implement render operation
 

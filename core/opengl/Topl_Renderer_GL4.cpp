@@ -13,7 +13,7 @@ namespace Renderer {
 			format = GL_UNSIGNED_INT; break;
 		case SHDR_int_vec4: case SHDR_int_vec3: case SHDR_int_vec2: case SHDR_int:
 			format = GL_INT; break;
-		default: perror("GL4 Shader Input Type Not Supported!"); break;
+		default: logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!"); break;
 		}
 		return format;
 	}
@@ -56,7 +56,7 @@ namespace Renderer {
 		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
 		case SHDR_int: offset = sizeof(int); break;
 		default:
-			perror("GL4 Type Shader Input Type Not Supported!");
+			logMessage(MESSAGE_Exclaim, "GL4 Type Shader Input Type Not Supported!");
 			break;
 		}
 		return offset;
@@ -302,10 +302,8 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 
 void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 	Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
+
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Need to clear saved textures entirely for texture update
 	activeCtx->textures.clear();
@@ -327,10 +325,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 	// TODO: find id corresponding to proper render context
 	// Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
 	Topl_RenderContext_GL4* activeCtx = *(_renderCtx_GL4); // for now gets the first available render context
-	if (activeCtx == nullptr) {
-		OutputDebugStringA("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 	
 	GLuint texture = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
@@ -352,10 +347,7 @@ void Topl_Renderer_GL4::attachMaterial(const Topl_Material* material, unsigned i
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
@@ -373,7 +365,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 			for (std::vector<Buffer_GL4>::iterator buff = activeCtx->buffers.begin(); buff < activeCtx->buffers.end(); buff++)
 				if (buff->targetID == rID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
-			if (targetBuff == nullptr) perror("Block buffer could not be located! ");
+			if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
 			else {
 				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
 				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -393,18 +385,13 @@ void Topl_Renderer_GL4::drawMode(){
 	case DRAW_Lines: _drawMode_GL4 = GL_LINES; break;
 	case DRAW_Fan: _drawMode_GL4 = GL_TRIANGLE_FAN; break;
 	case DRAW_Strip: _drawMode_GL4 = GL_TRIANGLE_STRIP; break;
-	default:
-		perror("Draw type not supported yet!");
-		return;
+	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported!");
 	}
 }
 
 void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 	Topl_RenderContext_GL4* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		perror("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	if (activeCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, activeCtx->buffers.front().buffer);

@@ -1,16 +1,5 @@
 #include "Topl_Scene.hpp"
 
-static void error_notFound(const std::string& objTypeStr, const std::string& name) {
-	printf("ERROR! Could not find %s object: \n", objTypeStr.c_str());
-	perror(name.c_str());
-	putchar('\n');
-}
-
-static void error_forcesExcess() {
-	perror("ERROR! Too many forces on one object!");
-	putchar('\n');
-}
-
 // Recomputes connector attributes
 static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, const Vec3f& pos2){
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
@@ -31,21 +20,21 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 			_actorPhys_map.insert({ *actor, physActor });
 			return;
 		}
-
-	error_notFound("geometry", name); // Error
-	return;
+		
+	return logMessage(MESSAGE_Exclaim, "Could not locate geometry actor for object: " + name);
 }
 
 void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 	// Find matching geometry component
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) return error_notFound("physics", name); // Error
+			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) 
+				return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name); 
 
 			Phys_Actor* physActor = _actorPhys_map.find(*actor)->second;
 			vec3f_cptr_t targetPos = (*actor)->getPos();
 
-			if(!physActor->addForce(forceVec)) return error_forcesExcess(); // Error
+			if(!physActor->addForce(forceVec)) return logMessage(MESSAGE_Exclaim, "Forces excess!");
 		}
 }
 
@@ -54,12 +43,12 @@ void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, co
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
-	if (link1 == nullptr) return error_notFound("link geometry", name1); // Error
+	if (link1 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name1);
 
 	const Geo_Actor* link2 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name2 == (*actor)->getName()) link2 = *actor;
-	if (link2 == nullptr) return error_notFound("link geometry", name2);
+	if (link2 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name2);
 
 	if(!connector->getIsPreset()) 
 		connector->preset(link1->getPosition(), link2->getPosition()); // presets link data to defaults
@@ -73,7 +62,7 @@ void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, c
 	const Geo_Actor* targetActor = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) targetActor = *actor;
-	if (targetActor == nullptr) return error_notFound("link geometry", name); // Error
+	if (targetActor == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name);
 
 	if(!connector->getIsPreset()){
 		connector->kVal = PHYS_ROD_K; // TODO: Change to rod type instead of modifying k value

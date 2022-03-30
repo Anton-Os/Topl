@@ -84,97 +84,27 @@ class Topl_Renderer {
 public:
 	virtual ~Topl_Renderer() {};
 
-    void setCamera(const Topl_Camera* camera){ 
-        if(camera != nullptr) _activeCamera = camera;
-        else _activeCamera = &_defaultCamera;
-    }
-    void setPipeline(const Topl_Pipeline* pipeline){
-        _entryShader = pipeline->entryShader;
-        _isPipelineReady = pipeline->isReady;
-    }
-    bool buildScene(const Topl_Scene* scene){
-        if(!_isPipelineReady){
-            perror("Pipeline not set for build call!");
-            _isSceneReady = false;
-            return false; // failure
-        }
-        if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS) {
-            perror("Too many render contexts!");
-            // _renderCtxIndex = 0;
-            _isSceneReady = false;
-            return false;
-        }
-
-        build(scene);
-		_renderCtxIndex++;
-        texturize(scene);
-        return _isSceneReady;
-    }
-    bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
-		_activeCamera = camera; // switch to new camera
-		return (buildScene(scene)) ? true : false;
-    }
-    bool updateScene(const Topl_Scene* scene){
-        if(!_isPipelineReady) perror("Pipeline not set for update call!");
-        if(!_isSceneReady) perror("Scene not built for update call!");
-        if(!_isPipelineReady || !_isSceneReady) return false; // failure
-
-        update(scene);
-        return _isSceneReady;
-    }
-    bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
-        _activeCamera = camera; // switch to new camera
-		return (updateScene(scene)) ? true : false;
-    }
-    void setDrawMode(enum DRAW_Mode mode){
-        _drawMode = mode;
-        drawMode(); // sets the proper draw mode
-    }
+    void setCamera(const Topl_Camera* camera);
+    void setPipeline(const Topl_Pipeline* pipeline);
+    bool buildScene(const Topl_Scene* scene);
+    bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera);
+    bool updateScene(const Topl_Scene* scene);
+    bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera);
+    void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
-    bool renderScene(Topl_Scene* scene){
-		if (!_isPipelineReady) perror("Pipeline not set for draw call!");
-		if (!_isSceneReady) perror("Scene not built for draw call!");
-		if (_renderIDs == 0) perror("No render targets for draw call!");
-		if (!_isPipelineReady || !_isSceneReady || _renderIDs == 0) {
-			_isSceneDrawn = false;
-			return false; // failure
-		}
-
-		render(scene);
-		_frameIDs++; // increment frame counter
-		return _isSceneDrawn; // render call sets variable to true on success
-    }
-    /* bool renderAll(){ // draws all render objects
-        if(!_isPipelineReady) perror("Pipeline not set for draw call!");
-        if(!_isSceneReady) perror("Scene not built for draw call!");
-        if(_renderIDs == 0) perror("No render targets for draw call!");
-        if(!_isPipelineReady || !_isSceneReady || _renderIDs == 0){
-            _isSceneDrawn = false;
-            return false; // failure
-        }
-
-		render(nullptr);
-        _frameIDs++; // increment frame counter
-		return _isSceneDrawn; // render call sets variable to true on success
-    } */
+    bool renderScene(Topl_Scene* scene);
+    // bool renderAll(); // implement this
     virtual void clearView() = 0; // clears view to predefined background color
     virtual void switchFramebuff() = 0; // switches front and back buffers
 	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
-	unsigned getPixelAt(float x, float y) {
-		Rasteron_PixelPoint pixPoint = { x, y };
-
-		Rasteron_Image* image = frame();
-		unsigned offset = getPixCursorOffset(&pixPoint, image);
-		unsigned color = *(image->data + offset);
-		deleteImg(image);
-		return color; // return color computed at offsets
-	}
+	unsigned getPixelAt(float x, float y);
 #endif
 protected:
     // TODO: Add method for fetching render context based on scene
+    // TODO: Add buffer location utilities
 
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific variables
     // const Topl_Pipeline* _pipeline;

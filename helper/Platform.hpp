@@ -2,8 +2,8 @@
 
 #include "native_os_def.h"
 
-#include "FileIO.hpp";
-#include "Input.hpp";
+#include "IO.hpp";
+#include "Controls.hpp";
 
 struct Platform {
     Platform(const char* execPath, const char* winName){

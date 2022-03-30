@@ -19,7 +19,7 @@ namespace Renderer {
 		case SHDR_int_vec2: format = DXGI_FORMAT_R32G32_SINT; break;
 		case SHDR_int: format = DXGI_FORMAT_R32_SINT; break;
 		default:
-			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			logMessage("Drx11 shader input type not supported!");
 			break;
 		}
 
@@ -47,7 +47,7 @@ namespace Renderer {
 		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
 		case SHDR_int: offset = sizeof(int); break;
 		default:
-			OutputDebugStringA("Drx11 Shader Input Type Not Supported!");
+			logMessage("Drx11 shader input type not supported!");
 			break;
 		}
 
@@ -381,10 +381,8 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 
 void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		OutputDebugStringA("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
+		
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Need to clear saved textures entirely for texture update
 	for (unsigned t = 0; t < activeCtx->textures.size(); t++) {
@@ -409,10 +407,7 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned id
 	// TODO: find id corresponding to proper render context
 	// Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
 	Topl_RenderContext_Drx11* activeCtx = *(_renderCtx_Drx11); // for now gets the first available render context
-	if (activeCtx == nullptr) {
-		OutputDebugStringA("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	HRESULT result; // For viewing potential issues
 
@@ -477,10 +472,7 @@ void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		OutputDebugStringA("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
@@ -512,18 +504,13 @@ void Topl_Renderer_Drx11::drawMode(){
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
 	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
 	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
-	default:
-		OutputDebugStringA("Draw type not supported yet!");
-		_isSceneDrawn = false; return;
+	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
 
 void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) {
-		OutputDebugStringA("Render Context could not be found!");
-		return;
-	}
+	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
 
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
 	if (activeCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
@@ -549,10 +536,9 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 			UINT stride = sizeof(Geo_Vertex);
 			UINT offset = 0;
 
-			if(vertexBuff == nullptr || vertexBuff->count == 0){
-				OutputDebugStringA("Vertex buffer has been corrupted!");
-				_isSceneDrawn = false; return;
-			}
+			if(vertexBuff == nullptr || vertexBuff->count == 0)
+				return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+
 			else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 			
 			if(indexBuff != nullptr && indexBuff->count > 0)
