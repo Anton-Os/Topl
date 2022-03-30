@@ -24,7 +24,7 @@ struct Geo_Vertex {
 	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
-typedef const Geo_Vertex* const vertex_cptr_t; // const pointer type
+typedef const Geo_Vertex* const vertex_cptr_t;
 
 struct NGon2D {
     float radius;
@@ -89,6 +89,8 @@ protected:
 private:
 	void cleanup(); // used to erase all internal data (destroy)
 };
+
+typedef const Geo_RenderObj* const renderObj_cptr_t;
 
 #define GEOMETRY_H
 #endif

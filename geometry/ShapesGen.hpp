@@ -13,12 +13,13 @@ float stretchTForm(float input, double factor); // stretches point by factor
 float contortTform(float input, double rest); // equalizes values to rest value
 float distortTForm(float input, double radii); // distorts value based on concentric radii
 
-class Geo_ConstructShape : public Geo_RenderObj{
+/* class Geo_ConstructShape : public Geo_RenderObj{
 public:
-    Geo_ConstructShape(const Geo_RenderObj* obj1, const Geo_RenderObj* obj2)
-    : Geo_RenderObj(
+    Geo_ConstructShape(renderObj_cptr_t obj1, renderObj_cptr_t obj2) : refObj1(obj1), refObj2(obj2)
+    : Geo_RenderObj (
         obj1->getVerticesCount() + obj2->getVerticesCount(),
         obj1->getIndexCount() + obj2->getIndexCount()){
+
         fillRenderObj();
     }
 private:
@@ -26,26 +27,28 @@ private:
     void genNormals(Vec3f* data) override;
     void genTexCoords(Vec2f* data) override;
     void genIndices(unsigned* data) override;
-};
+
+    renderObj_cptr_t refObj1;
+    renderObj_cptr_t refObj2;
+}; */
 
 // Complex Shape Types
 
 class Geo_Iterative { // object for recursive render object generation
 public:
-    Geo_Iterative(const Geo_RenderObj* refObj, unsigned short iterations){
-        _refObj = refObj;
+    Geo_Iterative(renderObj_cptr_t refObj, unsigned short iterations) : _refObj(refObj){
         _iterations = iterations;
     }
-    const Geo_RenderObj* getRenderObj(){ return _refObj; }
+    renderObj_cptr_t getRenderObj(){ return _refObj; }
     unsigned short getIterations(){ return _iterations; }
 protected:
-    const Geo_RenderObj* _refObj = nullptr;
+    renderObj_cptr_t _refObj;
     unsigned short _iterations = 1;
 };
 
 class Geo_DuplexShape : protected Geo_Iterative, public Geo_RenderObj { // shape that generates itself recursively at each vertex
 public:
-    Geo_DuplexShape(const Geo_RenderObj* refObj, unsigned short iterations)
+    Geo_DuplexShape(renderObj_cptr_t refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
     Geo_RenderObj(
         pow(refObj->getVerticesCount(), iterations),
@@ -61,7 +64,7 @@ private:
 
 class Geo_TessShape : protected Geo_Iterative, public Geo_RenderObj { // shape that recursively breaks itself into tesselated parts
 public:
-    Geo_TessShape(const Geo_RenderObj* refObj, unsigned short iterations)
+    Geo_TessShape(renderObj_cptr_t refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
     Geo_RenderObj(
         pow(refObj->getVerticesCount(), iterations),

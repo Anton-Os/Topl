@@ -8,6 +8,14 @@ float Platform::yCursorPos = BAD_CURSOR_POS;
 
 #ifdef _WIN32
 
+/* static void loadIcon(HWND hwnd, LPCSTR name){ // https://stackoverflow.com/questions/18314659/setting-program-icon-without-resources-using-the-win32-api
+	HANDLE hIcon = LoadImageA(0, name, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
+} */
+
+static void addMenu(HWND hwnd){
+	// Invoke CreateMenu() and SetMenu() calls...
+}
+
 static void addMousePress(enum MOUSE_Button button){
 	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(button)
@@ -22,8 +30,8 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {}
-	case (WM_PAINT): {}
+	case(WM_CREATE): {}
+	case(WM_PAINT): {}
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
@@ -42,10 +50,16 @@ LRESULT CALLBACK eventProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 void Platform::createWindow(){
+	// loadIcon(_context.window, "../assets/images/Topl-Main.ico");
+	// HICON hIcon = LoadIconA(GetModuleHandle(NULL), "C:/AntonDocs/Codex/Ao-Project/Topl/master/assets/images/Topl-Main.ico"); // route to proper path
+	HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_RESOURCE));
+
     _context.windowClass = { 0 };
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
+	_context.windowClass.hIcon = hIcon;
 	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
+	_context.windowClass.lpszMenuName = MAKEINTRESOURCE(MENU_RESOURCE);
 	RegisterClass(&_context.windowClass);
 
 	_context.window = CreateWindow(

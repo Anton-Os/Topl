@@ -22,8 +22,7 @@ float stretchTForm(float input, double factor){ return input * factor; }
 float contortTform(float input, double rest){ return input; }
 float distortTForm(float input, double radii){ return input; }
 
-void Geo_ConstructShape::genPos(Vec3f* data){
-    // Implement Body
+/* void Geo_ConstructShape::genPos(Vec3f* data){
     return;
 }
 
@@ -40,7 +39,7 @@ void Geo_ConstructShape::genTexCoords(Vec2f* data) {
 void Geo_ConstructShape::genIndices(unsigned* data){
     // Implement Body
     return;
-}
+} */
 
 // Complex Shape Types
 

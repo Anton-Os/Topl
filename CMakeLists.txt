@@ -5,6 +5,8 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 include(externalTargets.cmake)
 include(locateVulkan.cmake)
 
+# ------------- Sources ------------- #
+
 list(APPEND helper_src
 	helper/FileIO.cpp
 	helper/Input.cpp
@@ -33,6 +35,12 @@ if(SUPPORT_3D_ASSETS)
     )
 endif()
 
+list(APPEND core_src
+    core/Topl_Scene_Statics.cpp
+    core/Topl_Scene_Dynamics.cpp
+    core/Topl_App.cpp
+)
+
 if(Assimp_FOUND)
     message("Assimp built library irrXML_lib set to ${irrXML_lib}")
     message("Assimp built library zlib_lib set to ${zlib_lib}")
@@ -45,19 +53,17 @@ if(Assimp_FOUND)
     message("Assimp built library zlibd_lib set to ${zlibd_lib}")
 endif()
 
+# -------------- Backends ------------- #
+
 # Building DirectX Engine
 if(WIN32)
     add_library(Drx11_ENGINE
         ${helper_src}
     	${geometry_src}
-
-        core/Topl_Scene_Statics.cpp
-        core/Topl_Scene_Dynamics.cpp
+        ${core_src}
 
         core/Topl_Pipeline_Drx11.cpp
         core/Topl_Renderer_Drx11.cpp
-
-        core/Topl_App.cpp
     )
     target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
     if(Rasteron_FOUND)
@@ -75,19 +81,15 @@ if(WIN32)
     )
 endif()
 
-# Building OpenGL eNGINE
+# Building OpenGL Engine
 
 add_library(GL4_ENGINE
     ${helper_src}
     ${geometry_src}
-
-    core/Topl_Scene_Statics.cpp
-    core/Topl_Scene_Dynamics.cpp
+    ${core_src}
 
     core/Topl_Pipeline_GL4.cpp
     core/Topl_Renderer_GL4.cpp
-    
-    core/Topl_App.cpp
 )
 target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
@@ -104,10 +106,8 @@ set_target_properties(GL4_ENGINE
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
 )
-if(NOT WIN32) # decreases Windows build time
-    add_dependencies(GL4_ENGINE GLEW)
-endif()
 
+# ------------- Demos ------------- #
 
 include(legacyDemos.cmake)
 # add_executable(Test_Image demos/test/ImageTest.cpp)
@@ -131,6 +131,7 @@ add_executable(Demo_Playground
 )
 target_link_libraries(Demo_Playground GL4_ENGINE Drx11_ENGINE)
 
+# -------------- Custom Targets ------------- #
 # Copying and managing implemented here with custom targets
 
 file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/hlsl/*.hlsl)
@@ -145,3 +146,8 @@ endif()
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
+
+if(WIN32) # adding resource file to engines
+    target_sources(GL4_ENGINE PRIVATE "${ASSETS_DIR}/others/resource.rc")
+    target_sources(Drx11_ENGINE PRIVATE "${ASSETS_DIR}/others/resource.rc")
+endif()

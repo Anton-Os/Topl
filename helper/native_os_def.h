@@ -11,10 +11,14 @@
     #include <windowsx.h>
     // #include <ShellScalingApi.h>
 
+    // see assets/others/resource.rc for definitions
+    #define ICON_RESOURCE 1
+    #define MENU_RESOURCE 2
+
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP
     #define NATIVE_GL_CONTEXT HGLRC
-
+    
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
         NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!

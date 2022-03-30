@@ -1,4 +1,4 @@
-#include "Topl_Shader.h"
+#include "Topl_Pipeline.h"
 
 #define EFFECT_MODE_DEFAULT 0
 

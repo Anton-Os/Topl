@@ -1,7 +1,5 @@
 #ifndef TOPL_SHADER_H
 
-#include <cstdint>
-#include <cstdlib>
 #include <cstring>
 #include <vector>
 
@@ -48,6 +46,8 @@ struct Shader_Type {
     SHDR_ValueType type;
 };
 
+// Shader Definition
+
 class Topl_Shader {
 public:
     Topl_Shader(){} // Blank Constructor
@@ -92,6 +92,16 @@ public:
 
 typedef const Topl_EntryShader* entry_shader_cptr;
 typedef const Topl_Shader* shader_cptr;
+
+// Pipeline Defintition
+
+struct Topl_Pipeline {
+    Topl_Pipeline(){}
+    Topl_Pipeline(entry_shader_cptr entry){ entryShader = entry; }
+
+    entry_shader_cptr entryShader = nullptr; // entryShader is saved internally
+	bool isReady; // check for compilation and link status
+};
 
 #define TOPL_SHADER_H
 #endif

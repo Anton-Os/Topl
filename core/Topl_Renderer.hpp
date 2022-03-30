@@ -4,7 +4,7 @@
 
 #include "Rasteron.h" // For texturing support, should be conditional
 
-#include "Topl_Shader.h"
+#include "Topl_Pipeline.h"
 #include "Topl_Scene.hpp"
 
 #define SPECIAL_SCENE_RENDER_ID 0
@@ -15,7 +15,7 @@ struct RenderTarget {
 	unsigned targetID;
 };
 
-#define BUFFERS_PER_RENDERTARGET 3 // Each render target has fixed number buffers, see BUFF_Type below
+#define BUFFERS_PER_RENDERTARGET 3 // each render target has fixed number buffers, see BUFF_Type below
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
@@ -70,14 +70,6 @@ enum DRAW_Mode {
 	DRAW_Triangles, // Default
 	DRAW_Fan,
 	DRAW_Strip
-};
-
-struct Topl_Pipeline {
-    Topl_Pipeline(){}
-    Topl_Pipeline(entry_shader_cptr entry){ entryShader = entry; }
-
-    entry_shader_cptr entryShader = nullptr; // entryShader is saved internally
-	bool isReady; // check for compilation and link status
 };
 
 struct Topl_RenderContext {
