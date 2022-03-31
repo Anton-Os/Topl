@@ -29,22 +29,21 @@ layout(location = 1) out vec3 diffuse_out;
 layout(location = 2) out vec3 specular_out;
 layout(location = 3) out vec4 lampShine_out;
 
+vec3 reflect(vec3 light, vec3 target){ // x and y might need to be flipped
+	return light - (2 * dot(light, normalize(target)) * normalize(target)); 
+}
+
+float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
+	vec3 reflectVec = reflect(light, target);
+	return dot(-1.0 * normalize(camera), reflectVec);
+}
+
 float calcDiffuseIntensity(vec3 light, vec3 target){
 	float intensity = dot(normalize(light), normalize(target));
 	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
 	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
 	// return intensity;
 	return intensity * attenuation;
-}
-
-vec3 reflect(vec3 light, vec3 target){ 
-	return light - (2 * dot(light, normalize(target)) * normalize(target)); 
-}
-
-float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
-	vec3 reflectVec = reflect(light, target);
-
-	return dot(-1.0 * normalize(camera), reflectVec);
 }
 
 mat3 calcRotMatrix(vec2 rotCoords){
@@ -97,6 +96,7 @@ void main() {
 	// const float specular_curve = 1.0;
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, cam_pos);
 	specular_out = reflect(flashLight_pos, pos); // for testing
+	// specular_out = sin(reflect(flashLight_pos, pos)); // for testing
 	// specular_out = specular_intensity * flashLight_value;
 
 	lampShine_out = vec4(0.0, 0.0, 0.0, 0.0); // default shine

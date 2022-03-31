@@ -1,4 +1,4 @@
-#include "Topl_Renderer_GL4.hpp"
+#include "opengl/Topl_Renderer_GL4.hpp"
 
 namespace Renderer {
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
@@ -180,6 +180,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
+
+
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -288,15 +290,21 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 Rasteron_Image* Topl_Renderer_GL4::frame(){
 	// TODO: Crop to viewport!
 	// see https://stackoverflow.com/questions/29764925/how-to-get-set-the-width-and-height-of-the-default-framebuffer
-	/* GLint viewportDims[4] = { 0 };
-	glGetIntegerv(GL_VIEWPORT, viewportDims);
-	const unsigned viewportWidth = viewportDims[2];
-	const unsigned viewportHeight = viewportDims[3]; */
+	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx.window);
+	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
 
 	Rasteron_Image* rawImage = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	// Rasteron_Image* rawImage = allocNewImg("framebuff", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
-	Rasteron_Image* image = createImgFlip(rawImage, FLIP_Upside);
+	Rasteron_Image* flipImage = createImgFlip(rawImage, FLIP_Upside);
+	Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
+
+	for (unsigned c = 0; c < viewportHeight; c++)
+		for (unsigned r = 0; r < viewportWidth; r++)
+			*(image->data + (c * viewportHeight) + r) = WHITE_COLOR; // for testing
+
 	deleteImg(rawImage);
+	deleteImg(flipImage);
 	return image;
 }
 

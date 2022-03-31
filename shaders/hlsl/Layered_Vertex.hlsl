@@ -1,6 +1,6 @@
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset;
-	float4 rotation;
+	float3 offset;
+	float2 rotation;
 }
 
 /* cbuffer CONST_SCENE_BLOCK : register(b1) {

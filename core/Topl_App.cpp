@@ -123,6 +123,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 // App Implementation
 
 Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
+	logMessage(" -------------- Topl App -------------- "); // time slowdown occurs here
+	
     srand(time(NULL)); // seed random number generation
 #ifdef RASTERON_H
 	initFreeType(&_freetypeLib);

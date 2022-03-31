@@ -43,11 +43,17 @@ void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 // Mathematic Operations
 
 static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
-    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
+    /* Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
         2.0f / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
         0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (bounds.top + bounds.bottom) / (bounds.top - bounds.bottom), 0.0f,
         0.0f, 0.0f, (bounds.nearPlane + bounds.farPlane) / (bounds.nearPlane - bounds.farPlane), (2.0f * bounds.nearPlane * bounds.farPlane) / (bounds.nearPlane - bounds.farPlane),
-        0.0f, 0.0f, -1.0f, 0.0f});
+        0.0f, 0.0f, -1.0f, 0.0f}); */
+    Mat4x4 projMatrix = Mat4x4({
+        (2.0f * bounds.nearPlane) / (bounds.right - bounds.left), 0.0f, (-1.0f * (bounds.right + bounds.left)) / (bounds.right - bounds.left), 0.0f,
+        0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (-1.0f * (bounds.top + bounds.bottom)) / (bounds.top - bounds.bottom), 0.0f,
+        0.0f, 0.0f, (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane), (-2.0f * bounds.farPlane * bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
+        0.0f, 0.0f, 1.0f, 0.0f
+    });
     return projMatrix;
 }
 

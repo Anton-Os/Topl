@@ -1,6 +1,6 @@
 #include "Planetary.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "opengl/Topl_Renderer_GL4.hpp"
 #include "Flat_Shader.hpp"
 #include "Beams_Shader.hpp"
 

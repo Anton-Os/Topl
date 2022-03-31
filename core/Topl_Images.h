@@ -61,11 +61,15 @@ private:
     Rasteron_Animation* data; // underlying data
 };
 
-#define MAX_MATERIAL_PROPERTIES 24
+#define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
 
 enum MATERIAL_Property {
-    MATERIAL_Base = 0,
-    // TODO: Add more properties
+    MATERIAL_Albedo = 0,
+    MATERIAL_Normals = 1,
+    MATERIAL_Height = 2,
+    MATERIAL_Metal = 3,
+    MATERIAL_Roughness = 4,
+    MATERIAL_Occlusion = 5
 };
 
 struct Topl_Material { // Material of static images, wrapper around Rasteron_Frames

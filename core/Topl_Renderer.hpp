@@ -4,7 +4,7 @@
 
 #include "Rasteron.h" // For texturing support, should be conditional
 
-#include "Topl_Pipeline.h"
+#include "Topl_Shader_Pipeline.h"
 #include "Topl_Scene.hpp"
 
 #define SPECIAL_SCENE_RENDER_ID 0
@@ -41,6 +41,7 @@ struct Buffer : public RenderTarget {
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define MAX_RENDERER_CONTEXTS 24 // limits number of unique render contexts
+#define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 
 enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
 
@@ -101,6 +102,7 @@ public:
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
 	unsigned getPixelAt(float x, float y);
+    // void frameCapture(Topl_Frames* frames);
 #endif
 protected:
     // TODO: Add method for fetching render context based on scene
@@ -128,6 +130,8 @@ private:
 #ifdef RASTERON_H
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
 	virtual void attachMaterial(const Topl_Material* material, unsigned id) = 0;
+
+    Topl_Frames frameCache = Topl_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
 };
 

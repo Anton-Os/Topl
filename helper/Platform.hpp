@@ -16,7 +16,8 @@ struct Platform {
     void handleEvents(bool isCursorUpdate); // handles platform specific events, updates cursor position if arg true
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
-    // static bool getIsMouseHeld(); // checks whether mouse is held
+    static unsigned getViewportWidth(NATIVE_WINDOW window);
+    static unsigned getViewportHeight(NATIVE_WINDOW window);
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
 

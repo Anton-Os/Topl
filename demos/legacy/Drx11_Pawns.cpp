@@ -1,6 +1,6 @@
 #include "Pawns.hpp"
 
-#include "Topl_Renderer_Drx11.hpp"
+#include "directx/Topl_Renderer_Drx11.hpp"
 #include "Textured_Shader.hpp" // shader inclusion
 // #include "Drx11_Textured.hpp" // shader inclusion
 

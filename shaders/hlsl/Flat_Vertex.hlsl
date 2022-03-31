@@ -1,6 +1,7 @@
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset;
-	float4 rotation;
+	uint mode;
+	float3 offset;
+	float2 rotation;
 	float4 color;
 }
 
@@ -68,7 +69,16 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
 	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
-	output.flatColor = checkMatrixValid(projMatrix);
+	if(mode == 0) output.flatColor = color; // default mode
+	else if(mode == 1) { // TODO: replace with custom color
+		switch(vertexID % 3){
+			case 0: output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f); break; // substract blue
+			case 1: output.flatColor = float4(1.0f, 0.0f, 1.0f, 0.8f); break; // substract green
+			case 2: output.flatColor = float4(0.0f, 1.0f, 1.0f, 0.8f); break; // substract red
+		}
+		// output.flatColor = color;
+	}
+	else output.flatColor = float4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
 
 	return output;
 }

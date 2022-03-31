@@ -1,7 +1,6 @@
 cbuffer CONST_BLOCK : register(b0) {
-	float4 offset;
-	float4 rotation;
-	// float4 color;
+	float3 offset;
+	float2 rotation;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -30,8 +29,24 @@ struct VS_OUTPUT {
 	float3 diffuse : COLOR1;
 	float3 specular : COLOR2;
 
-	float4 lampShine : COLOR4; // shine based on distance
+	float4 lampShine : COLOR4; // special light that prduces shine
 };
+
+float sharpen(float intensity, uint curve){
+	const float scale = 5.0f;
+
+	if(intensity <= 0.0) return intensity;
+	else return pow(intensity, curve) * pow(scale, curve);
+}
+
+float calcSpecIntensity(float3 light, float3 target, float3 camera){
+	float lightDP = dot(normalize(light), target); // light dot product
+	float camDP = dot(normalize(camera), target); // camera dot product
+
+	// return dot(camera, reflectVec);
+	// return 0.5 * dot(float3(0.0f, 0.0f, -1.0f), normalize(reflectVec));
+	return sharpen(lightDP, 2);
+}
 
 float calcDiffuseIntensity(float3 light, float3 target){
 	float intensity = dot(normalize(light), normalize(target));
@@ -39,20 +54,6 @@ float calcDiffuseIntensity(float3 light, float3 target){
 	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
 	// return intensity;
 	return intensity * attenuation;
-}
-
-float sharpen(float intensity, uint curve, double scale){
-	if(intensity <= 0.0) return intensity;
-	else return pow(intensity, curve) * pow(scale, curve);
-}
-
-float calcSpecIntensity(float3 light, float3 target, float3 camera){
-	float ldp = dot(normalize(light), target); // light dot product
-	float cdp = dot(normalize(camera), target); // camera dot product
-
-	// return dot(camera, reflectVec);
-	// return 0.5 * dot(float3(0.0f, 0.0f, -1.0f), normalize(reflectVec));
-	return sharpen(ldp, 30, 5.0);
 }
 
 float3x3 calcRotMatrix(float2 rotCoords){

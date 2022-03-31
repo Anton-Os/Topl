@@ -7,6 +7,7 @@
 #include "Layered_Shader.hpp"
 #include "Advance_Shader.hpp"
 
+#include "trees/Grid.hpp"
 #include "trees/Pane.hpp"
 
 struct Playground_App : public Topl_App {
@@ -27,9 +28,10 @@ struct Playground_App : public Topl_App {
 	// Geometries and Drawable Objects
 
 	Geo_FlatSquare square = Geo_FlatSquare(0.25f);
+	Geo_Actor squareActor = Geo_Actor((Geo_RenderObj*)&square);
 	Geo_DuplexShape duplexShape = Geo_DuplexShape((Geo_RenderObj*)&square, 3);
 	Geo_TessShape tessShape = Geo_TessShape((Geo_RenderObj*)&square, 3);
-	Geo_Actor squareActor = Geo_Actor((Geo_RenderObj*)&square);
+	Geo_Grid grid = Geo_Grid("grid", &squareActor, Geo_Grid_Properties(std::make_pair(80, 0.25f)));
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 5);
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 2);
 
@@ -40,7 +42,7 @@ struct Playground_App : public Topl_App {
 	// Shaders and Pipelines
 
 	Topl_Pipeline* flatPipeline;
-	Topl_Pipeline* advancePipeline;
+	// Topl_Pipeline* advancePipeline;
 
 	Flat_VertexShader vertexShader;
 	Flat_FragmentShader fragShader;

@@ -1,6 +1,6 @@
 #include "Assets.hpp"
 
-#include "Topl_Renderer_Drx11.hpp"
+#include "directx/Topl_Renderer_Drx11.hpp"
 #include "Flat_Shader.hpp" // shader inclusion
 
 int main(int argc, char** argv) {
@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 	Topl_Renderer_Drx11 renderer(platform.getParentWindow()); // Renderer initialization
 	Topl_Pipeline_Drx11 pipeline; // Pipeline declaration
 
-	Drx11_Flat_VertexShader vertexShader = Drx11_Flat_VertexShader();
+	Drx11_Flat_VertexShader vertexShader = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE);
 	Drx11_Flat_FragmentShader fragmentShader = Drx11_Flat_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 

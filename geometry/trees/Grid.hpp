@@ -24,13 +24,13 @@ public:
 	Geo_Grid( // Prebake Constructor
         const std::string& prefix,
         const Geo_Actor* geo, 
-        const Geo_Grid_Properties* props
-	) : Geo_Tree(prefix, geo, props->getCellCount()),
-	Geo_DynamicSet(props->getCellCount()){
-        properties = *props;
+        const Geo_Grid_Properties& props
+	) : Geo_Tree(prefix, geo, props.getCellCount()),
+	Geo_DynamicSet(props.getCellCount()){
+        properties = props;
 		origin = Vec3f({
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5f) + (props->xAttr.second / 2),
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5f) + (props->yAttr.second / 2),
+			-1.0f * props.xAttr.first * (props.xAttr.second * 0.5f) + (props.xAttr.second / 2),
+			-1.0f * props.yAttr.first * (props.yAttr.second * 0.5f) + (props.yAttr.second / 2),
 			0.0f
 		});
     }
@@ -39,13 +39,13 @@ public:
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
-        const Geo_Grid_Properties* props
-	) : Geo_Tree(prefix, geo, props->getCellCount()),
-	Geo_DynamicSet(props->getCellCount()){
-        properties = *props;
+        const Geo_Grid_Properties& props
+	) : Geo_Tree(prefix, geo, props.getCellCount()),
+	Geo_DynamicSet(props.getCellCount()){
+        properties = props;
 		origin = Vec3f({
-			-1.0f * props->xAttr.first * (props->xAttr.second * 0.5f) + (props->xAttr.second / 2),
-			-1.0f * props->yAttr.first * (props->yAttr.second * 0.5f) + (props->yAttr.second / 2),
+			-1.0f * props.xAttr.first * (props.xAttr.second * 0.5f) + (props.xAttr.second / 2),
+			-1.0f * props.yAttr.first * (props.yAttr.second * 0.5f) + (props.yAttr.second / 2),
 			0.0f
 		});
 		configure(scene);

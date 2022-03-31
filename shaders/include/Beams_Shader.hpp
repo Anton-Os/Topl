@@ -1,4 +1,7 @@
-#include "Topl_Pipeline.h"
+#include "Topl_Shader_Pipeline.h"
+
+#define BEAMS_MODE_DEFAULT 0
+#define BEAMS_MODE_DEPTH 1
 
 // Vertex Shaders
 
@@ -6,7 +9,7 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	Beams_VertexShader() : Topl_EntryShader(){}
 	Beams_VertexShader(std::string name)
 		: Topl_EntryShader(
-			SHDR_Vertex, name,
+			name,
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
@@ -27,6 +30,8 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		bytes->clear(); // make sure there is no preexisting data
+		
 		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
 		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
 		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
@@ -53,6 +58,8 @@ private:
         appendDataToBytes(value_bytes, sizeof(Vec2f), bytes);
         // appendDataToBytes(intensity_bytes, sizeof(float), bytes);
     }
+protected:
+	unsigned _mode = BEAMS_MODE_DEFAULT;
 };
 
 struct GL4_Beams_VertexShader : public Beams_VertexShader {

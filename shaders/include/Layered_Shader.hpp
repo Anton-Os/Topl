@@ -1,4 +1,4 @@
-#include "Topl_Pipeline.h"
+#include "Topl_Shader_Pipeline.h"
 
 // Vertex Shaders
 
@@ -6,7 +6,7 @@ struct Layered_VertexShader : public Topl_EntryShader {
 	Layered_VertexShader() : Topl_EntryShader(){}
 	Layered_VertexShader(std::string name)
 		: Topl_EntryShader(
-			SHDR_Vertex, name,
+			name,
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 

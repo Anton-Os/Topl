@@ -1,7 +1,8 @@
 #version 440
 
 layout(std140, binding = 0) uniform Block {
-	vec3 offset; // padded to vec4
+	uint mode;
+	vec3 offset;
 	vec2 rotation; // padded to vec4
 	vec4 color;
 };
@@ -57,7 +58,17 @@ void main() {
 	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos;
 	final_pos = vec4(rotCoords, 0.0) + vec4(final_trans, 1.0); // rotation and translation
 
-	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
-	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
-	flatColor_out = color;
+	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
+	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
+
+	if(mode == 0) flatColor_out = color; // default mode
+	else if(mode == 1) // alternate mode
+		if(gl_VertexID % 9 == 0 || gl_VertexID % 9 == 1 || gl_VertexID % 9 == 2 ) 
+			flatColor_out = vec4(color.r, 0.0, 0.0f, color.a); // red
+		else if(gl_VertexID % 9 == 3 || gl_VertexID % 9 == 4 || gl_VertexID % 9 == 5 ) 
+			flatColor_out = vec4(0.0f, color.g, 0.0f, color.a); // green
+		else 
+			flatColor_out = vec4(0.0f, 0.0f, color.b, color.a); // blue
+
+	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
 }

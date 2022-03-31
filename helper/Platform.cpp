@@ -8,14 +8,6 @@ float Platform::yCursorPos = BAD_CURSOR_POS;
 
 #ifdef _WIN32
 
-/* static void loadIcon(HWND window, LPCSTR name){ // https://stackoverflow.com/questions/18314659/setting-program-icon-without-resources-using-the-win32-api
-	HANDLE hIcon = LoadImageA(0, name, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
-} */
-
-static void addMenu(HWND window){
-	// Invoke CreateMenu() and SetMenu() calls...
-}
-
 static void addMousePress(enum MOUSE_Button button){
 	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseLogger.addMousePress(button)
@@ -92,6 +84,18 @@ void Platform::handleEvents(bool isCursorUpdate){
 		DispatchMessage(&_context.eventMsg);
 	}
 	if (_context.eventMsg.message == WM_QUIT) return; // Error code?
+}
+
+unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+	RECT rect;
+	GetClientRect(window, &rect);
+	return rect.right - rect.left;
+}
+
+unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+	RECT rect;
+	GetClientRect(window, &rect);
+	return rect.bottom - rect.top;
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize this function

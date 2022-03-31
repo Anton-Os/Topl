@@ -1,6 +1,6 @@
 #include "Assets.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "opengl/Topl_Renderer_GL4.hpp"
 #include "Flat_Shader.hpp"
 
 // Entry Point
@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 	Topl_Renderer_GL4 renderer(platform.getParentWindow());
 	Topl_Pipeline_GL4 pipeline;
 
-	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader();
+	GL4_Flat_VertexShader vertexShader = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE);
 	GL4_Flat_FragmentShader fragmentShader = GL4_Flat_FragmentShader();
 	renderer.genPipeline(&pipeline, &vertexShader, &fragmentShader);
 

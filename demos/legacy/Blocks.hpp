@@ -29,11 +29,11 @@ namespace App {
 
 	// Complex Geometry Objects
 	Geo_Actor chainGeo = Geo_Actor((const Geo_RenderObj*)&cone1);
-	Geo_Chain_Properties chainActor = Geo_Chain_Properties(Vec3f({ 0.33f, 0.0, 0.0 })); // stretches along X axis only
-	Geo_Chain chain("chain", &scene, &chainGeo, &chainActor, 9);
+	Geo_Chain_Properties chainProps = Geo_Chain_Properties(Vec3f({ 0.33f, 0.0, 0.0 })); // stretches along X axis only
+	Geo_Chain chain("chain", &scene, &chainGeo, chainProps, 9);
 	Geo_Actor gridGeo = Geo_Actor((const Geo_RenderObj*)&hex1);
-	Geo_Grid_Properties gridActor = Geo_Grid_Properties(std::make_pair(3, 0.4f));
-	Geo_Grid grid("grid", &scene, &gridGeo, &gridActor);
+	Geo_Grid_Properties gridProps = Geo_Grid_Properties(std::make_pair(3, 0.4f));
+	Geo_Grid grid("grid", &scene, &gridGeo, gridProps);
 
 	float allRange[2] = { -1.0f, 1.0f }; // encompass entire screen area
 	float posRange[2] = { 0.9f, 1.0f }; // encompass positive-side screen segment

@@ -1,6 +1,6 @@
 #include "Blocks.hpp"
 
-#include "Topl_Renderer_GL4.hpp"
+#include "opengl/Topl_Renderer_GL4.hpp"
 #include "Flat_Shader.hpp"
 
 // Entry Point

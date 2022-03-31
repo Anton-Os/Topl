@@ -1,4 +1,4 @@
-#include "Topl_Pipeline.h"
+#include "Topl_Shader_Pipeline.h"
 
 // Vertex Shaders
 
@@ -6,7 +6,7 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	Textured_VertexShader() : Topl_EntryShader(){}
 	Textured_VertexShader(std::string name)
 		: Topl_EntryShader(
-			SHDR_Vertex, name,
+			name,
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
@@ -14,19 +14,23 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		) {  }
 
 	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		bytes->clear(); // Make sure there is no preexisting data
+		bytes->clear(); // make sure there is no preexisting data
 
 		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
 		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
 	
 		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
+		
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		// make sure there is no preexisting data
+
 		bytes_cptr matrixBytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
 		assignDataToBytes(matrixBytes, sizeof(Mat4x4), bytes);
+
 		return true;
 	}
 };

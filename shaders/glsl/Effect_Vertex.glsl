@@ -7,7 +7,7 @@ layout(std140, binding = 0) uniform Block {
 layout(std140, binding = 1) uniform SceneBlock {
 	ivec2 screenRes;
 	vec2 cursorPos;
-	// uint renderMode; // switches modes to implement different drawing functions
+	// uint mode;
 };
 
 layout(location = 0) in vec3 pos;

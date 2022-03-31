@@ -1,6 +1,7 @@
-#include "Topl_Pipeline.h"
+#include "Topl_Shader_Pipeline.h"
 
 #define EFFECT_MODE_DEFAULT 0
+#define EFFECT_MODE_FRACTAL 1
 
 // Vertex Shaders
 
@@ -8,24 +9,37 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader() : Topl_EntryShader(){}
 	Effect_VertexShader(std::string name)
 		: Topl_EntryShader(
-			SHDR_Vertex, name,
+			name,
 			{ 
 				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
             	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
 			} // Inputs
 		) { }
+	
+	Effect_VertexShader(std::string name, unsigned mode)
+		: Topl_EntryShader(
+			name,
+			{ 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
+			} // Inputs
+		) { _mode = mode; }
 
 	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
-		bytes->clear(); // Make sure there is no preexisting data
+		bytes->clear(); // make sure there is no preexisting data
+		
 		const unsigned renderId = component->getId();
-
 		bytes_cptr renderId_bytes = reinterpret_cast<bytes_cptr>(&renderId);
 
 		appendDataToBytes(renderId_bytes, sizeof(unsigned), bytes);
+
 		return true;
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		bytes->clear(); // make sure there is no preexisting data
+
+		// TODO: check for validity of input
 		Vec2i screenRes = Vec2i({ TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 
@@ -34,24 +48,21 @@ struct Effect_VertexShader : public Topl_EntryShader {
 
 		appendDataToBytes(screenRes_bytes, sizeof(Vec2i), bytes);
 		appendDataToBytes(cursorPos_bytes, sizeof(Vec2f), bytes);
+
 		return true;
 	}
 protected:
-	unsigned renderMode = EFFECT_MODE_DEFAULT;
+	unsigned _mode = EFFECT_MODE_DEFAULT;
 };
 
 struct GL4_Effect_VertexShader : public Effect_VertexShader {
     GL4_Effect_VertexShader() : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){}
-	GL4_Effect_VertexShader(unsigned rm) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){
-		renderMode = rm;
-	}
+	GL4_Effect_VertexShader(unsigned mode) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl", mode){}
 };
 
 struct Drx11_Effect_VertexShader : public Effect_VertexShader {
     Drx11_Effect_VertexShader() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
-	Drx11_Effect_VertexShader(unsigned rm) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){
-		renderMode = rm;
-	}
+	Drx11_Effect_VertexShader(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
 };
 
 // Fragment Shaders

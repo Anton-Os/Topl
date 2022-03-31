@@ -37,7 +37,7 @@ void logMessage(enum MESSAGE_Type type, std::string message){
 }
 
 void logMessage(std::string message){
-    logMessage(message);
+    logMessage(MESSAGE_Comment, message);
 }
 
 void cleanupNumStr(std::string* str){

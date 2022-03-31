@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <cctype>
 
-#define MESSAGE_LOG_FILE "MessageLog.txt" // file name for messages and errors during execution
+#define MESSAGE_LOG_FILE "_MessageLog.txt" // file name for messages and errors during execution
 
 std::string readFile(const char* source, bool isBinaryFile);
 std::string getParentDir(const char* arg);

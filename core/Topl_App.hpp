@@ -16,6 +16,8 @@ enum APP_Backend {
 
 class Topl_Factory { // supplies and generates all interfaces for Topl_App class
 public:
+	// Create a constructor that allocates data
+
 	~Topl_Factory();
 	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
 
@@ -38,17 +40,12 @@ private:
 	static Topl_Pipeline_Vulkan** Vulkan_pipelines; static unsigned Vulkan_pipeIndex;
 };
 
-#define FRAME_CACHE_COUNT 1024
-
 class Topl_App {
 public:
     Topl_App(const char* execPath, const char* name, APP_Backend backend);
 	~Topl_App();
 
 	void run();
-
-	void beginFrameCap(); // starts frame capture
-
 protected:
     virtual void init() = 0;
     virtual void loop(double secs, unsigned long frame) = 0;
@@ -63,7 +60,6 @@ protected:
     Timer_Ticker _ticker;
 #ifdef RASTERON_H
 	FT_Library _freetypeLib; // required for working with fonts
-	Topl_Frames _frameCache = Topl_Frames("frame-cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
 
 	// Paths

@@ -3,9 +3,9 @@ cbuffer CONST_BLOCK : register(b0) {
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	uint2 screenRes;
+	int2 screenRes;
 	float2 cursorPos;
-	uint renderMode; // switches modes to implement different drawing functions
+	// uint mode;
 }
 
 struct VS_INPUT {

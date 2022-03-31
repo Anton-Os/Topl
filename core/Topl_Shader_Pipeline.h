@@ -70,24 +70,37 @@ protected:
 	std::string genPrefix_hlsl() { return "hlsl/"; }
 };
 
-// Primary shader contains virtual functions in order to pass uniforms
+// Entry shader contains inputs and functionality to pass uniform blocks
 class Topl_EntryShader : public Topl_Shader {
 public:
     Topl_EntryShader() : Topl_Shader(){} // Blank Constructor
     Topl_EntryShader( // Named Constructor
-		enum SHDR_Type type, 
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs
-	) : Topl_Shader(type, fileSrc){ 
+	) : Topl_Shader(SHDR_Vertex, fileSrc){ 
         for(std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
             _inputs.push_back(*currentInput); // fills input list with data
     }
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
+
 	virtual bool genGeoBlock(const Geo_Actor *const component, blockBytes_t* bytes) const = 0;
     virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, blockBytes_t* bytes) const = 0;
 
+private:
     std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
+};
+
+struct Topl_ExitShader : public Topl_Shader {
+    Topl_ExitShader() // Blank Constructor
+		: Topl_Shader(), isTexSupport(false), isMatSupport(false) {}
+    Topl_ExitShader(std::string& fileSrc) // Named Constructor
+        : Topl_Shader(SHDR_Fragment, fileSrc), isTexSupport(false), isMatSupport(false){}
+    Topl_ExitShader(std::string& fileSrc, bool tex, bool mat) // Extended Constructor
+        : Topl_Shader(SHDR_Fragment, fileSrc), isTexSupport(tex), isMatSupport(mat){}
+
+    const bool isTexSupport; // enable for texture support
+    const bool isMatSupport; // enable for material support
 };
 
 typedef const Topl_EntryShader* entry_shader_cptr;

@@ -12,15 +12,15 @@ public:
     Geo_Chain( // Prebake Constructor
         const std::string& prefix, 
         const Geo_Actor* geo, 
-        const Geo_Chain_Properties* props,
+        const Geo_Chain_Properties& props,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
-		properties = *props;
+		properties = props;
         origin = Vec3f({
-            (props->directionVec.data[0] * count) * -0.5f,
-            (props->directionVec.data[1] * count) * -0.5f,
-            (props->directionVec.data[2] * count) * -0.5f
+            (props.directionVec.data[0] * count) * -0.5f,
+            (props.directionVec.data[1] * count) * -0.5f,
+            (props.directionVec.data[2] * count) * -0.5f
         });
     }
 
@@ -28,15 +28,15 @@ public:
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
-        const Geo_Chain_Properties* props,
+        const Geo_Chain_Properties& props,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
-		properties = *props;
+		properties = props;
         origin = Vec3f({
-			(props->directionVec.data[0] * count) * -0.5f,
-			(props->directionVec.data[1] * count) * -0.5f,
-			(props->directionVec.data[2] * count) * -0.5f
+			(props.directionVec.data[0] * count) * -0.5f,
+			(props.directionVec.data[1] * count) * -0.5f,
+			(props.directionVec.data[2] * count) * -0.5f
         });
         configure(scene);
     }
