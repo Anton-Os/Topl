@@ -35,7 +35,8 @@ void Geo_SphereUV::genIndices(unsigned* data){
 	// special cases, top and bottom vertices
 	unsigned v = 1;
 	unsigned i = 0;
-	for (i = 0; i < _shape3D.ySegments * 6; i += 6) {
+	// for (i = 0; i < _shape3D.ySegments * 6; i ++) *(data + i) = 0; // dummy data
+	for (i = 0; i < _shape3D.ySegments * 6; i += 6) { // fix code below
 		// Top vertices
 		*(data + i + 0) = 0; // top vertex
 		*(data + i + 1) = v;
@@ -51,8 +52,8 @@ void Geo_SphereUV::genIndices(unsigned* data){
 
 	// sphere volumetric quads
 	v = 1;
-	// for (i = i; i < (_shape3D.xSegments * _shape3D.ySegments) * 6; i += 6) {
-	for(i = i; i < (_shape3D.ySegments * 6) + (_shape3D.xSegments * _shape3D.ySegments) * 6; i += 6) {
+	for(i = i; i < (_shape3D.ySegments * 6) + (_shape3D.xSegments * _shape3D.ySegments) * 6; i++) *(data + i + 0) = 0; // dummy data
+	/* for(i = i; i < (_shape3D.ySegments * 6) + (_shape3D.xSegments * _shape3D.ySegments) * 6; i += 6) {
 		*(data + i + 0) = v;
 		*(data + i + 1) = v + 1;
 		*(data + i + 2) = v + _shape3D.ySegments + 1;
@@ -62,5 +63,5 @@ void Geo_SphereUV::genIndices(unsigned* data){
 		*(data + i + 5) = v + _shape3D.ySegments;
 
 		v++;
-	}
+	} */
 }

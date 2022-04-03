@@ -168,6 +168,9 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+	// Viewport Creation // add support for multiple!
+	glViewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+
 	glEnable(GL_DEPTH_TEST); // make these customizable
 	glDepthFunc(GL_LESS); // make these customizable
 
@@ -299,9 +302,9 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 	Rasteron_Image* flipImage = createImgFlip(rawImage, FLIP_Upside);
 	Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
 
-	for (unsigned c = 0; c < viewportHeight; c++)
-		for (unsigned r = 0; r < viewportWidth; r++)
-			*(image->data + (c * viewportHeight) + r) = WHITE_COLOR; // for testing
+	for (unsigned r = 0; r < viewportHeight; r++)
+		for (unsigned c = 0; c < viewportWidth; c++)
+			*(image->data + (r * viewportWidth) + c) = 0xFFFF00FF; // for testing
 
 	deleteImg(rawImage);
 	deleteImg(flipImage);

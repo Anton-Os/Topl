@@ -1,6 +1,9 @@
 // #define PARENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/Debug/" // Change Debug directory to ${CMAKE_CFG_INTDIR}
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define SHADERS_DIR "${SHADERS_DIR}"
+#ifdef _WIN32
+    #define RESOURCE_FILE_H "${ASSETS_DIR}/res/resource.h"
+#endif
 #if ${Rasteron_FOUND}
     #define RASTERON_ENABLE_PLUGIN
     #define RASTERON_ENABLE_FONT

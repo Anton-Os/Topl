@@ -19,7 +19,7 @@ namespace App {
 	Topl_Light lampLight = Topl_Light(Vec3f({ 0.0f, -1.0 * LIGHT_DISTANCE, 0.0f })); // this light will be moving
 
 	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
-	NGon3D ngon2 = { SMALL_RADIUS, 12, 64 };
+	NGon3D ngon2 = { SMALL_RADIUS, 4, 4 };
 	Geo_SphereUV sphere(ngon);
 	Geo_SphereUV sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
@@ -71,7 +71,7 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
-		renderer->setDrawMode(DRAW_Lines);
+		renderer->setDrawMode(DRAW_Triangles);
 
 		while (1) {
 			App::gameTicker.updateTimer();

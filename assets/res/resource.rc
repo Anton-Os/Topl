@@ -1,0 +1,11 @@
+#include "resource.h"
+
+// IDI_ICON "TOPL.ico"
+
+// IDC_MENU MENU
+// BEGIN
+//    POPUP "&File"
+//    BEGIN
+//        MENUITEM "&Save", IDM_SAVE
+//    END
+// END

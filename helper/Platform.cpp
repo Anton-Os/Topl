@@ -42,20 +42,16 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 }
 
 void Platform::createWindow(){
-	LPSTR iconResource = MAKEINTRESOURCE(ICON_RESOURCE); // for testing
-	LPSTR menuResource = MAKEINTRESOURCE(MENU_RESOURCE); // for testing
-
-	// loadIcon(_context.window, "../assets/images/Topl-Main.ico");
-	// HICON hIcon = LoadIconA(GetModuleHandle(NULL), "C:/AntonDocs/Codex/Ao-Project/Topl/master/assets/images/Topl-Main.ico"); // route to proper path
-	HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_RESOURCE));
+	LPTSTR iconResStr = MAKEINTRESOURCE(IDI_ICON); // for testing
+	LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU); // for testing
 
     _context.windowClass = { 0 };
 	// _context.windowClass.style = WS_SYSMENU;
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
-	// _context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_RESOURCE));
+	_context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
-	// _context.windowClass.lpszMenuName = MAKEINTRESOURCE(MENU_RESOURCE);
+	_context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
 	RegisterClass(&_context.windowClass);
 
 	_context.window = CreateWindow(

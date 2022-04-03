@@ -180,6 +180,9 @@ set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/")
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
 
 if(WIN32) # adding resource file to engines
-    target_sources(GL4_ENGINE PRIVATE "${ASSETS_DIR}/others/resource.rc")
-    target_sources(Drx11_ENGINE PRIVATE "${ASSETS_DIR}/others/resource.rc")
+    foreach(engineTarget IN ITEMS GL4_ENGINE Drx11_ENGINE Vulkan_ENGINE)
+        target_include_directories(${engineTarget} PRIVATE "${ASSETS_DIR}/res")
+        target_sources(${engineTarget} PRIVATE "${ASSETS_DIR}/res/resource.rc")
+        set_target_properties(${engineTarget} PROPERTIES LINK_FLAGS "${ASSETS_DIR}/res/resource.rc")
+    endforeach()
 endif()

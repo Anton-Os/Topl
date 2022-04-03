@@ -15,6 +15,7 @@ public:
     : Geo_RenderObj(
         (refShape.xSegments * refShape.ySegments) + 2 - refShape.ySegments, // Vertex Count
         (refShape.ySegments * 6) + ((refShape.xSegments * refShape.ySegments) * 6) // Index Count
+        // ((refShape.xSegments * refShape.ySegments) * 6) // temporary index count
     ){
     // : Geo_RenderObj(refShape.xSegments * refShape.ySegments + 2, refShape.ySegments * 12) { // only indexes top and bottom
         _shape3D = refShape; // copy to internal data

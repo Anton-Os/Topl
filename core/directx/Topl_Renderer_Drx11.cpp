@@ -203,7 +203,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
 
 
-	// Viewport Creation
+	// Viewport Creation // add support for multiple!
 
     D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));

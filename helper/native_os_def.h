@@ -11,9 +11,7 @@
     #include <windowsx.h>
     // #include <ShellScalingApi.h>
 
-    // see assets/others/resource.rc for definitions
-    #define ICON_RESOURCE 101
-    #define MENU_RESOURCE 200
+    #include "resource.h"
 
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP

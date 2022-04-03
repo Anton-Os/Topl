@@ -67,8 +67,8 @@ void setCaptureImage(Topl_Renderer* renderer) {
 	renderer->texturize(&App::scene);
 }
 
-void setPickerImage() {
-	App::pickerImage.setImage(createImgBlank(255, 255, 0xFFFF00FF));
+void setPickerImage(unsigned color) {
+	App::pickerImage.setColorImage(color);
 	App::scene.addTexture("picker", App::pickerImage.getImage());
 }
 
@@ -171,14 +171,14 @@ namespace Main {
 			renderer->updateScene(&App::scene);
 			renderer->renderScene(&App::scene);
 
-			if (App::pickerImage.getImage() == nullptr)
-				setPickerImage();
-			if (App::captureImage.getImage() == nullptr) 
-				setCaptureImage(renderer);
+			if (App::captureImage.getImage() == nullptr) setCaptureImage(renderer); // set initial value
+			if (App::pickerImage.getImage() == nullptr) setPickerImage(genRandColor()); // set initial value
 
 			if (App::isPressPend) {
 				unsigned pixel = getPressPixel(renderer);
+				// setPickerImage(pixel); // check for selection and random results
 				renderer->texturize(&App::scene);
+				// setCaptureImage(renderer); // check for framebuffer results
 				App::isPressPend = false; // mouse callback has been handled
 			}
 

@@ -29,8 +29,8 @@ layout(location = 1) out vec3 diffuse_out;
 layout(location = 2) out vec3 specular_out;
 layout(location = 3) out vec4 lampShine_out;
 
-vec3 reflect(vec3 light, vec3 target){ // x and y might need to be flipped
-	return light - (2 * dot(light, normalize(target)) * normalize(target)); 
+vec3 reflect(vec3 light, vec3 target){
+	return light - ((2 * dot(light, normalize(target)) * normalize(target))); 
 }
 
 float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
