@@ -15,7 +15,7 @@ struct Playground_App : public Topl_App {
 		: Topl_App(execPath, "Playground", b){}
 
 	void init() override;
-	void loop(double secs, unsigned long frame) override;
+	void loop(unsigned long frame) override;
 
 	// Configurations
 

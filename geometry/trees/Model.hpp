@@ -1,3 +1,6 @@
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+
 #include "Geo_Tree.hpp"
 #include "primitives/Geo_Node.hpp"
 

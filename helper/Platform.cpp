@@ -46,7 +46,6 @@ void Platform::createWindow(){
 	LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU); // for testing
 
     _context.windowClass = { 0 };
-	// _context.windowClass.style = WS_SYSMENU;
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
 	_context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 	_context.windowClass.lpfnWndProc = eventProc;

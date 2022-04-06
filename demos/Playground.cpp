@@ -37,7 +37,7 @@ void Playground_App::init() {
 	_renderer->buildScene(&scene_main);
 }
 
-void Playground_App::loop(double secs, unsigned long frame) {
+void Playground_App::loop(unsigned long frame) {
 	_renderer->updateScene(&scene_main);
 	_renderer->renderScene(&scene_main);
 
@@ -50,9 +50,7 @@ void Playground_App::loop(double secs, unsigned long frame) {
 }
 
 int main(int argc, char** argv) {
-	/* {
-		Playground_App app = Playground_App(argv[0], APP_BACKEND); // test creation
-	} */
+	/* { Playground_App app = Playground_App(argv[0], APP_BACKEND); } // destructor test */
 
     Playground_App app = Playground_App(argv[0], APP_BACKEND);
 

@@ -48,7 +48,7 @@ public:
 	void run();
 protected:
     virtual void init() = 0;
-    virtual void loop(double secs, unsigned long frame) = 0;
+    virtual void loop(unsigned long frame) = 0;
 
 	// Rendering
 	const enum APP_Backend _backend;
@@ -66,5 +66,5 @@ protected:
 	const std::string fontsPath = std::string(ASSETS_DIR) + "fonts/";
 	const std::string imagesPath = std::string(ASSETS_DIR) + "images/";
 	const std::string modelsPath = std::string(ASSETS_DIR) + "models/";
-	const std::string othersPath = std::string(ASSETS_DIR) + "others/";
+	// const std::string othersPath = std::string(ASSETS_DIR) + "others/";
 };

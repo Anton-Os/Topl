@@ -44,7 +44,6 @@ struct Buffer : public RenderTarget {
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 
 enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
-
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
 struct Texture : public RenderTarget {
@@ -80,6 +79,21 @@ struct Topl_RenderContext {
     const Topl_Scene *const scene;
     unsigned long* renderIDs = nullptr; // render ids associated with scene object
 };
+
+/* struct Topl_Viewport { // Begin adding support for multiple viewports!
+    Topl_Viewport(){ // Max Range Constructor
+        xCoords[0] = -1.0f; xCoords[1] = 1.0f;
+        yCoords[0] = -1.0f; yCoords[1] = 1.0f;
+    }
+
+    Topl_Viewport(float x1, float x2, float y1, float y2){ // Max Range Constructor
+        xCoords[0] = x1; xCoords[1] = x2;
+        yCoords[0] = y1; yCoords[1] = y2;
+    }
+
+    float xCoords[2];
+    float yCoords[2];
+}; */
 
 class Topl_Renderer {
 public:

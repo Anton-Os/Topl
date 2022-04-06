@@ -150,7 +150,7 @@ void Topl_App::run(){
         _ticker.updateTimer();
         _renderer->clearView();
 
-        loop(_ticker.getAbsSecs(), _renderer->getFrameCount());
+        loop(_renderer->getFrameCount());
         
         _renderer->switchFramebuff();
         _platform->handleEvents(false); // TODO: handle cursor updates periodically

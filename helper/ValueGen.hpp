@@ -1,6 +1,7 @@
 #ifndef VALUEGEN_H
 
 #include <vector>
+#include <algorithm>
 
 #include "Maths.h"
 

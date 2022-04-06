@@ -1,11 +1,13 @@
 #include "resource.h"
 
-// IDI_ICON "TOPL.ico"
+// IDI_ICON ICON DISCARDABLE "TOPL.ico"
+IDI_ICON ICON "TOPL.ico"
+// IDI_ICON ICON "C:\AntonDocs\Codex\Ao-Project\Topl\master\assets\res\TOPL.ico" // hard-code test
 
-// IDC_MENU MENU
-// BEGIN
-//    POPUP "&File"
-//    BEGIN
-//        MENUITEM "&Save", IDM_SAVE
-//    END
-// END
+IDC_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save", IDM_SAVE
+    END
+END
