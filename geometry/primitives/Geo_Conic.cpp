@@ -1,29 +1,29 @@
 #include "Geo_Conic.hpp"
 
 void Geo_Conic::genPos(Vec3f* data){
-	const double fullAngle = TOPL_PI * 2;
-	const double incAngle = fullAngle / _shape2D.segments;
-	const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically
+	const double angle = (TOPL_PI * 2) / _shape2D.segments;
+	const float radius = _shape2D.radius * RADIAL_UNITS;
+	// const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically
 
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
     *(data + 0) = centerVertex; // first vertex is the center vertex
 	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
 	*(data + _verticesCount - 1) = apexVertex;
 
-    for(unsigned v = 1; v < _verticesCount; v++)
-        *(data + v) = Vec3f({
-			(float)sin(startAngle + (v * incAngle)) * _shape2D.radius, 
-			(float)cos(startAngle + (v * incAngle)) * _shape2D.radius, 
+	for (unsigned v = 1; v < _verticesCount; v++)
+		*(data + v) = Vec3f({
+			(float)sin(_startAngle + (v * angle)) * radius,
+			(float)cos(_startAngle + (v * angle)) * radius,
 			(float)DEFAULT_Z
 		});
 }
 
 void Geo_Conic::genNormals(Vec3f* data){
-	Vec3f frontFaceNormal = Vec3f({ 0.0f, 0.0f, -1.0f });
-	Vec3f backFaceNormal = Vec3f({ 0.0f, 0.0f, 1.0f });
+	Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
+	Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
 
-	*(data + _verticesCount - 1) = backFaceNormal; // back facing normal 
-	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = frontFaceNormal;
+	*(data + _verticesCount - 1) = backNormalVec; // back facing normal 
+	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = frontNormalVec;
 }
 
 void Geo_Conic::genTexCoords(Vec2f* data) {

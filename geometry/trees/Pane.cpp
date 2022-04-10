@@ -5,14 +5,6 @@ Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_RenderObj*)&_decoySquare)
 
 namespace _Pane {
 	std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
-
-	void sendRootPaneThruScene(Topl_Scene* scene, std::string prefix, Geo_Pane* pane, Geo_Actor* paneActor, Geo_RenderObj* rootSquare){
-		paneActor->setRenderObj(rootSquare);
-		scene->addGeometry(prefix + "root", paneActor);
-#ifdef RASTERON_H
-		scene->addTexture(prefix + "root", pane->getBackground());
-#endif
-	}
 }
 
 Geo_Pane* Geo_PaneLayout::getChildPane(unsigned index) {
@@ -47,12 +39,10 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
 
 		// positioning
-		float xInc = (_radius * 1.5) / _columns;
-		float yInc = (_radius * 1.5) / _rows;
-		float _halfRadius = _radius / 1.5;
+		float xInc = _radius / _columns; // float xInc = (_radius * 1.15) / _columns;
+		float yInc = _radius / _rows; // float yInc = (_radius * 1.15) / _rows;
 		Vec2f origin = Vec2f({ -1.0f * (_radius - (_radius / _columns)), _radius - (_radius / _rows) });
-		origin = origin * (1.0 / (1.25 + 0.125 - 0.0625 + 0.03125)); // scaling required since radius is scaled by 1.5
-		// Vec2f origin = Vec2f(-1.0f * (_halfRadius - (_halfRadius / _columns)), _halfRadius - (_halfRadius / _rows));
+		origin = origin * 0.5f; // scale offset to half size
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
@@ -64,8 +54,11 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 #endif
 	}
 
-	// utilizing helper function to send root pane thru scene
-	_Pane::sendRootPaneThruScene(scene, getPrefix(), &_rootPane, rootActor, (Geo_RenderObj*)&_rootSquare);
+	rootActor->setRenderObj((Geo_RenderObj*)&_rootSquare);
+	scene->addGeometry(getPrefix() + "root", rootActor);
+#ifdef RASTERON_H
+	scene->addTexture(getPrefix() + "root", _rootPane.getBackground());
+#endif
 }
 
 bool Geo_PaneLayout::interact(float xPos, float yPos, unsigned color){

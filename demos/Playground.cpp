@@ -1,20 +1,20 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 
 void Playground_App::init() {
 	// Shaders and Pipeline
 
 	Topl_Pipeline pipeline;
 	if (APP_BACKEND == APP_OpenGL_4) {
-		vertexShader = GL4_Flat_VertexShader();
-		fragShader = GL4_Flat_FragmentShader();
+		vertexShader = GL4_Textured_VertexShader();
+		fragShader = GL4_Textured_FragmentShader();
 		tessCtrlShader = GL4_Advance_TessCtrlShader();
 		tessEvalShader = GL4_Advance_TessEvalShader();
 		geomShader = GL4_Advance_GeometryShader();
 	} else {
-		vertexShader = Drx11_Flat_VertexShader();
-		fragShader = Drx11_Flat_FragmentShader();
+		vertexShader = Drx11_Textured_VertexShader();
+		fragShader = Drx11_Textured_FragmentShader();
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();
 		geomShader = Drx11_Advance_GeometryShader();
@@ -25,25 +25,28 @@ void Playground_App::init() {
 
 	// Configurations, Geometry, and Building
 
-	squareActor.setPos(Vec3f({ -0.66f, 0.66f, 0.0f }));
+	// sphereActor.setPos(Vec3f({ -0.5f, 0.5f, 0.0f }));
+	scene_main.addGeometry(&sphereActor);
 
-	// scene_main.addGeometry(&triangleActor);
-	scene_main.addGeometry(&squareActor);
+	// scene_overlay.addGeometry("captureSquare", &captureSquare);
+	rowLayout.move(Vec3f({ 0.5f, 0.5f, 0.0f }));
 	rowLayout.configure(&scene_overlay);
+	boxedLayout.move(Vec3f({ -0.5f, 0.5f, 0.0f }));
 	boxedLayout.configure(&scene_overlay);
 
-	_renderer->buildScene(&scene_main);
+	_renderer->buildScene(&scene_overlay);
 }
 
 void Playground_App::loop(unsigned long frame) {
-	_renderer->updateScene(&scene_main);
-	_renderer->renderScene(&scene_main);
+	_renderer->updateScene(&scene_overlay);
+	_renderer->renderScene(&scene_overlay);
 
 	if (_renderer->getFrameCount() == 2) {
-		unsigned pixel1 = _renderer->getPixelAt(0.95f, 0.95f); // testing
-		unsigned pixel2 = _renderer->getPixelAt(0.95f, -0.95f); // testing
-		unsigned pixel3 = _renderer->getPixelAt(-0.95f, -0.95f); // testing
-		unsigned pixel4 = _renderer->getPixelAt(-0.95f, 0.95f); // testing
+		unsigned pixel1 = _renderer->getPixelAt(0.5f, 0.5f); // upper right test
+		unsigned pixel2 = _renderer->getPixelAt(0.5f, -0.5f); // lower right test
+		unsigned pixel3 = _renderer->getPixelAt(-0.5f, -0.5f); // lower left test
+		unsigned pixel4 = _renderer->getPixelAt(-0.5f, 0.5f); // upper left test
+		unsigned pixel5 = _renderer->getPixelAt(0.0f, 0.0f); // center test
 	}
 }
 

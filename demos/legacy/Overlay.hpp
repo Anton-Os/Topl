@@ -16,7 +16,7 @@ namespace App {
 	std::string font2 = fontsPath + "MajorMonoDisplay-Regular.ttf";
 	std::string font3 = fontsPath + "PoiretOne-Regular.ttf";
 	std::string font4 = fontsPath + "NerkoOne-Regular.ttf";
-	std::string text = "i";
+	std::string text = "hello";
 
 	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.25f);
 	Geo_Actor captureSquareGeo = Geo_Actor((Geo_RenderObj*)&captureSquare); // used for capturing framebuffer

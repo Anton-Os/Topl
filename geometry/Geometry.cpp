@@ -100,10 +100,7 @@ void Geo_RenderObj::fillRenderObj(){
     genPos(_posData);
     genNormals(_normalsData);
     genTexCoords(_texcoordData);
-
-	// Generate Vertices Immediately
-	// genVertices();
-
+	// genVertices(); // generate Vertices Immediately
 	if (_indicesCount != 0) genIndices(_indices);
 }
 

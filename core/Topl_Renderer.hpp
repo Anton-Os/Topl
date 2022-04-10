@@ -37,7 +37,9 @@ struct Buffer : public RenderTarget {
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
-#define CLEAR_COLOR_ALPHA 0.98f // set to value less than 1.0f to assist in cropping
+#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
+#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
+#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define MAX_RENDERER_CONTEXTS 24 // limits number of unique render contexts

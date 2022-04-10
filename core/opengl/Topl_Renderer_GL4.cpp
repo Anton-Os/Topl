@@ -188,7 +188,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 }
 
 void Topl_Renderer_GL4::clearView(){
-	glClearColor(0.1f, 0.1f, 0.1f, CLEAR_COLOR_ALPHA);
+	glClearColor(CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA);
 	// glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
@@ -300,15 +300,11 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 	// Rasteron_Image* rawImage = allocNewImg("framebuff", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	Rasteron_Image* flipImage = createImgFlip(rawImage, FLIP_Upside);
-	Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
-
-	for (unsigned r = 0; r < viewportHeight; r++)
-		for (unsigned c = 0; c < viewportWidth; c++)
-			*(image->data + (r * viewportWidth) + c) = 0xFFFF00FF; // for testing
+	// Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
 
 	deleteImg(rawImage);
-	deleteImg(flipImage);
-	return image;
+	// deleteImg(flipImage);
+	return flipImage;
 }
 
 void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {

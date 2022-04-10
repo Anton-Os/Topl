@@ -260,7 +260,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 }
 
 void Topl_Renderer_Drx11::clearView(){
-	const float clearColor[] = { 0.1f, 0.1f, 0.1f, CLEAR_COLOR_ALPHA };
+	const float clearColor[] = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
 	// const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
     _deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);

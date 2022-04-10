@@ -1,24 +1,24 @@
 #include "Geo_Flat.hpp"
 
 void Geo_Flat::genPos(Vec3f* data){
-	const double fullAngle = TOPL_PI * 2;
-	const double incAngle = fullAngle / _shape2D.segments;
+	const double angle = (TOPL_PI * 2) / _shape2D.segments;
+	const float radius = _shape2D.radius * RADIAL_UNITS;
 
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, _depth });
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
-    for(unsigned v = 1; v < _verticesCount; v++)
-        *(data + v) = Vec3f({
-			(float)sin(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
-			(float)cos(_startAngle + ((v - 1) * incAngle)) * _shape2D.radius, 
+	for (unsigned v = 1; v < _verticesCount; v++)
+		*(data + v) = Vec3f({
+			(float)sin(_startAngle + ((v - 1) * angle)) * radius,
+			(float)cos(_startAngle + ((v - 1) * angle)) * radius,
 			(float)_depth
 		});
 }
 
 void Geo_Flat::genNormals(Vec3f* data){
-	Vec3f frontFaceNormal = Vec3f({ 0.0f, 0.0f, -1.0f });
+	Vec3f normalVec = Vec3f({ 0.0f, 0.0f, -1.0f }); // pointing the same direction
 
-	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = frontFaceNormal;
+	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = normalVec;
 }
 
 void Geo_Flat::genTexCoords(Vec2f* data) {
@@ -28,9 +28,9 @@ void Geo_Flat::genTexCoords(Vec2f* data) {
 	for (unsigned t = 1; t < _verticesCount; t++)
 		switch((t - 1) % 4){
 			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
+			case 1: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
 			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
+			case 3: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
 		}
 }
 

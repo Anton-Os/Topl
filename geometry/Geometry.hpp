@@ -6,7 +6,8 @@
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
 
-#define DEFAULT_CIRCLE_SEGS 1000
+#define RADIAL_UNITS 0.7071f // converts specified coordinates to screen units
+#define DEFAULT_CIRCLE_SEGS 1000 // default segments for a circular object
 #define DEFAULT_Z 0.0f
 
 enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
