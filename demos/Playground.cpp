@@ -9,14 +9,12 @@ void Playground_App::init() {
 	if (APP_BACKEND == APP_OpenGL_4) {
 		vertexShader = GL4_Flat_VertexShader();
 		fragShader = GL4_Flat_FragmentShader();
-		
 		tessCtrlShader = GL4_Advance_TessCtrlShader();
 		tessEvalShader = GL4_Advance_TessEvalShader();
 		geomShader = GL4_Advance_GeometryShader();
 	} else {
 		vertexShader = Drx11_Flat_VertexShader();
 		fragShader = Drx11_Flat_FragmentShader();
-
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();
 		geomShader = Drx11_Advance_GeometryShader();
@@ -27,7 +25,7 @@ void Playground_App::init() {
 
 	// Configurations, Geometry, and Building
 
-	squareActor.setPos(Vec3f({ -0.75f, 0.75f, 0.0f }));
+	squareActor.setPos(Vec3f({ -0.66f, 0.66f, 0.0f }));
 
 	// scene_main.addGeometry(&triangleActor);
 	scene_main.addGeometry(&squareActor);

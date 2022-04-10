@@ -27,7 +27,7 @@ struct Playground_App : public Topl_App {
 
 	// Geometries and Drawable Objects
 
-	Geo_FlatSquare square = Geo_FlatSquare(0.25f);
+	Geo_FlatSquare square = Geo_FlatSquare(0.33f);
 	Geo_Actor squareActor = Geo_Actor((Geo_RenderObj*)&square);
 	Geo_DuplexShape duplexShape = Geo_DuplexShape((Geo_RenderObj*)&square, 3);
 	Geo_TessShape tessShape = Geo_TessShape((Geo_RenderObj*)&square, 3);

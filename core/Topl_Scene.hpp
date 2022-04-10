@@ -71,7 +71,8 @@ typedef const Topl_Camera* const camera_cptr;
 
 class Topl_Scene {
 public:
-	Topl_Scene() { _ticker.reset(); }
+	Topl_Scene() { _ticker.reset(); } // Empty Constructor
+	Topl_Scene(const std::string& filePath); // File Load Constructor
 	~Topl_Scene() {}
 
 	// Statics Section
@@ -102,6 +103,8 @@ public:
 	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
 	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
 private:
+	void loadFromFile(const std::string& filePath); // loads scene data from .tp file
+
 	Topl_Camera _camera;
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
