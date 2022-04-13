@@ -48,7 +48,7 @@ static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
         0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (bounds.top + bounds.bottom) / (bounds.top - bounds.bottom), 0.0f,
         0.0f, 0.0f, (bounds.nearPlane + bounds.farPlane) / (bounds.nearPlane - bounds.farPlane), (2.0f * bounds.nearPlane * bounds.farPlane) / (bounds.nearPlane - bounds.farPlane),
         0.0f, 0.0f, -1.0f, 0.0f}); */
-    Mat4x4 projMatrix = Mat4x4({
+    Mat4x4 projMatrix = Mat4x4({ // From Real-Time rendering 
         (2.0f * bounds.nearPlane) / (bounds.right - bounds.left), 0.0f, (-1.0f * (bounds.right + bounds.left)) / (bounds.right - bounds.left), 0.0f,
         0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (-1.0f * (bounds.top + bounds.bottom)) / (bounds.top - bounds.bottom), 0.0f,
         0.0f, 0.0f, (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane), (-2.0f * bounds.farPlane * bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),

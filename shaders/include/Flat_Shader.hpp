@@ -1,7 +1,8 @@
 #include "Topl_Shader_Pipeline.h"
 
-#define FLAT_MODE_DEFAULT 0
-#define FLAT_MODE_ALTERNATE 1
+#define FLAT_MODE_WHITE 0 // for semi-transparent white
+#define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors
+#define FLAT_MODE_MATRIX 2 // for projection matrix
 
 // Vertex Shaders
 
@@ -58,10 +59,10 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	}
 protected:
 	Vec4f genFlatColor() const { // generates color based on mode
-		return Vec4f({ 1.0f, 1.0f, 1.0f, 0.8f }); // simplified model
+		return Vec4f({ 1.0f, 1.0f, 1.0f, 0.8f }); // semi-transparent white
 	}
 
-	unsigned _mode = FLAT_MODE_DEFAULT;
+	unsigned _mode = FLAT_MODE_WHITE;
 };
 
 struct GL4_Flat_VertexShader : public Flat_VertexShader {

@@ -14,8 +14,8 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
 // layout(location = 0) flat out uint actorID_out;
-layout(location = 0) flat out ivec2 screenRes_out;
-layout(location = 1) flat out vec2 cursorPos_out;
+layout(location = 0) out ivec2 screenRes_out;
+layout(location = 1) out vec2 cursorPos_out;
 layout(location = 2) flat out uint actorID_out;
 
 void main() {

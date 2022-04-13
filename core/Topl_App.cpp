@@ -145,6 +145,7 @@ Topl_App::~Topl_App() {
 
 void Topl_App::run(){
     init();
+    // _ticker.addPeriodicEvent(20, _platform->handleEvents(true)); // make cursor updates periodic
 
     while (1) { 
         _ticker.updateTimer();
@@ -153,6 +154,6 @@ void Topl_App::run(){
         loop(_renderer->getFrameCount());
         
         _renderer->switchFramebuff();
-        _platform->handleEvents(false); // TODO: handle cursor updates periodically
+        _platform->handleEvents(false);
     }
 }

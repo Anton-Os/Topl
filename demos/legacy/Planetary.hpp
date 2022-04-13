@@ -7,8 +7,8 @@
 
 #define MOVE_AMOUNT 0.5f
 #define LIGHT_DISTANCE 2.0f
-#define SMALL_RADIUS 0.1f
-#define LARGE_RADIUS 0.2f
+#define SMALL_RADIUS 0.25f
+#define LARGE_RADIUS 0.35f
 
 namespace App {
 	Topl_Scene scene;
@@ -20,8 +20,8 @@ namespace App {
 
 	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
 	NGon3D ngon2 = { SMALL_RADIUS, 4, 4 };
-	Geo_SphereUV sphere(ngon);
-	Geo_SphereUV sphere2(ngon2);
+	Geo_Sphere sphere(ngon);
+	Geo_Sphere sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
 	Geo_Actor sphereGeo2((const Geo_RenderObj*)&sphere2);
 

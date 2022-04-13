@@ -3,6 +3,7 @@
 #include "Topl_App.hpp"
 
 #include "Flat_Shader.hpp"
+#include "Beams_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Layered_Shader.hpp"
 #include "Advance_Shader.hpp"
@@ -20,11 +21,16 @@ struct Playground_App : public Topl_App {
 
 	// Configurations
 
-	Topl_Camera camera_main, camera_alt;
+	static Topl_Camera camera1;
+	static Topl_Camera camera2;
+	static Phys_Motion inOutMotion;
 	Topl_Scene scene_main, scene_overlay, scene_details;
 
+private:
+	void postFrame();
+
 	// Geometries and Drawable Objects
-	Geo_SphereUV sphere = Geo_SphereUV({ 0.5f, 6, 6 });
+	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 6, 6 });
 	Geo_Actor sphereActor = Geo_Actor((Geo_RenderObj*)&sphere);
 
 	// Geo_Grid grid = Geo_Grid("grid", &squareActor, Geo_Grid_Properties(std::make_pair(80, 0.25f)));
@@ -40,11 +46,14 @@ struct Playground_App : public Topl_App {
 
 	// Shaders and Pipelines
 
-	Topl_Pipeline* flatPipeline;
+	Topl_Pipeline* colorPipeline;
+	Topl_Pipeline* texPipeline;
 	// Topl_Pipeline* advancePipeline;
 
-	Textured_VertexShader vertexShader;
-	Textured_FragmentShader fragShader;
+	Textured_VertexShader vertexShader1;
+	Textured_FragmentShader fragShader1;
+	Flat_VertexShader vertexShader2;
+	Flat_FragmentShader fragShader2;
 	Advance_TessCtrlShader tessCtrlShader;
 	Advance_TessEvalShader tessEvalShader;
 	Advance_GeometryShader geomShader;

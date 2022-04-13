@@ -7,14 +7,15 @@
 
 // Memory Operations
 
-typedef std::vector<uint8_t> blockBytes_t; // format used for passing data to shaders
-typedef const uint8_t* bytes_cptr;
+typedef std::vector<uint8_t> blockBytes_t; // container used to pass data to shaders
+typedef const uint8_t* bytes_cptr; // intermediate type for all shader data
 
-#define PADDING_WIDTH 16 // padding should be aligned by 4 byte boundaries
+#define NO_PADDING 0
+#define PADDING_WIDTH 16 // padding aligned by 4 byte boundaries
 
-void assignDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes);
-void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, blockBytes_t* targetBytes); // default padding
-void appendDataToBytes(bytes_cptr data_ptr, size_t dataSize, size_t paddingSize, blockBytes_t* targetBytes); // custom padding
+void assignDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // overwrites all data inside bytes
+void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // computed padding appended
+void appendDataToBytes(bytes_cptr data, size_t dataSize, size_t paddingSize, blockBytes_t* bytes); // manual padding
 
 // Mathematic Operations
 

@@ -104,9 +104,9 @@ public:
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
-    bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera);
+    // bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera);
     bool updateScene(const Topl_Scene* scene);
-    bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera);
+    // bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera);
     void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool renderScene(Topl_Scene* scene);
@@ -131,7 +131,7 @@ protected:
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     unsigned short _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
-    const Topl_Camera* _activeCamera = &_defaultCamera; // updated by user
+    const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isSceneReady = false; // switch to true when elements of the scene are built
     bool _isSceneDrawn = false; // true after draw call, false after framebuffer swap

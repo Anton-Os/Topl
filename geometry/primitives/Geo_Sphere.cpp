@@ -1,9 +1,11 @@
 #include "Geo_Sphere.hpp"
 
-void Geo_SphereUV::genPos(Vec3f* data){
+// Sphere Implementation
+
+void Geo_Sphere::genPos(Vec3f* data){
 	const float radius = _shape3D.radius * RADIAL_UNITS;
 
-    Vec3f topVertex = Vec3f({ 0.0f, _shape3D.radius, 0.0f });
+    Vec3f topVertex = Vec3f({ 0.0f, radius, 0.0f });
     *(data + 0) = topVertex; // first vertex is the top of the sphere
 
 	unsigned v = 1;
@@ -23,47 +25,63 @@ void Geo_SphereUV::genPos(Vec3f* data){
     *(data + _verticesCount - 1) = botVertex; // last vertex is the bottom of the sphere
 }
 
-void Geo_SphereUV::genNormals(Vec3f* data){
-	// TODO: Implement body here
+void Geo_Sphere::genNormals(Vec3f* data){
 	return;
 }
 
-void Geo_SphereUV::genTexCoords(Vec2f* data) {
-	// TODO: Implement body here
+void Geo_Sphere::genTexCoords(Vec2f* data) {
 	return;
 }
 
-void Geo_SphereUV::genIndices(unsigned* data){
+void Geo_Sphere::genIndices(unsigned* data){
 	// special cases, top and bottom vertices
-	unsigned v = 1;
-	unsigned i = 0;
-	// for (i = 0; i < _shape3D.ySegments * 6; i ++) *(data + i) = 0; // dummy data
+	unsigned v = 1; unsigned i = 0;
 	for (i = 0; i < _shape3D.ySegments * 6; i += 6) { // fix code below
 		// Top vertices
 		*(data + i + 0) = 0; // top vertex
 		*(data + i + 1) = v;
 		*(data + i + 2) = (v % _shape3D.ySegments) + 1;
+		// *(data + i + 2) = v + 1;
 
 		// Bottom Vertices
 		*(data + i + 3) = _verticesCount - 1; // bottom vertex
 		*(data + i + 4) = _verticesCount - (v + 1);
-		*(data + i + 5) = _verticesCount - (v + 2);
+		*(data + i + 5) = _verticesCount - ((v % _shape3D.ySegments) + 2);
 
 		v++;
 	}
 
 	// sphere volumetric quads
 	v = 1;
-	for(i = i; i < (_shape3D.ySegments * 6) + (_shape3D.xSegments * _shape3D.ySegments) * 6; i++) *(data + i + 0) = 0; // dummy data
+	for(i = i; i < _indicesCount ; i++) *(data + i) = 0; // dummy data
 	/* for(i = i; i < (_shape3D.ySegments * 6) + (_shape3D.xSegments * _shape3D.ySegments) * 6; i += 6) {
+	// for(i = i; i < _indicesCount; i += 6){
 		*(data + i + 0) = v;
-		*(data + i + 1) = v + 1;
-		*(data + i + 2) = v + _shape3D.ySegments + 1;
+		*(data + i + 1) = (v % _shape3D.ySegments) + 1;
+		*(data + i + 2) = (v % _shape3D.ySegments) + _shape3D.ySegments + 1;
 
 		*(data + i + 3) = v;
-		*(data + i + 4) = v + _shape3D.ySegments + 1;
-		*(data + i + 5) = v + _shape3D.ySegments;
+		*(data + i + 4) = (v % _shape3D.ySegments) + _shape3D.ySegments + 1;
+		*(data + i + 5) = (v % _shape3D.ySegments) + _shape3D.ySegments;
 
 		v++;
 	} */
+}
+
+// IcoSphere Implmentation
+
+void Geo_IcoSphere::genPos(Vec3f* data){
+	return;
+}
+
+void Geo_IcoSphere::genNormals(Vec3f* data){
+	return;
+}
+
+void Geo_IcoSphere::genTexCoords(Vec2f* data) {
+	return;
+}
+
+void Geo_IcoSphere::genIndices(unsigned* data){
+	return;
 }

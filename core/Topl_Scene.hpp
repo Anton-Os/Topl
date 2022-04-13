@@ -47,8 +47,14 @@ typedef const Topl_Light* const light_cptr; // typedef for safety
 class Topl_Camera {
 public:
 	// Identity projection constructor
-	Topl_Camera() { _projMatrix = MAT_4x4_IDENTITY; } // Identity matrix by default
-	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){
+	Topl_Camera() { _projMatrix = MAT_4x4_IDENTITY; } // Identity matrix
+	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
+		_projMatrix = genProjMatrix(projType, SpatialBounds3D());
+	}
+	Topl_Camera(enum PROJECTION_Type projType, float scaleFactor){ // Sized Bounds
+		_projMatrix = genProjMatrix(projType, SpatialBounds3D(scaleFactor));
+	}
+	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){ // Custom Bounds
 		_projMatrix = genProjMatrix(projType, bounds);
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
@@ -100,12 +106,14 @@ public:
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
-	void remConnector(const std::string& targetName); // Breaks all connectors associated with named geometry
-	void resolvePhysics(); // Iterates through all appropriate members in _idToPhysProp_map
+	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
+	void resolvePhysics(); // iterates through all physics objects and applies forces 
+
+	void saveToFile(const std::string& fileName); // saves scene data to .tp file
 private:
 	void loadFromFile(const std::string& filePath); // loads scene data from .tp file
 
-	Topl_Camera _camera;
+	// Topl_Camera _camera;
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture

@@ -29,10 +29,10 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     return _isSceneReady;
 }
 
-bool Topl_Renderer::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
+/* bool Topl_Renderer::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
     _activeCamera = camera; // switch to new camera
     return (buildScene(scene)) ? true : false;
-}
+} */
 
 bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
@@ -43,10 +43,10 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     return _isSceneReady;
 }
 
-bool Topl_Renderer::updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
+/* bool Topl_Renderer::updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
     _activeCamera = camera; // switch to new camera
     return (updateScene(scene)) ? true : false;
-}
+} */
 
 void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
     _drawMode = mode;

@@ -1,6 +1,6 @@
 #include "Topl_Shader_Pipeline.h"
 
-#define BEAMS_MODE_DEFAULT 0
+#define BEAMS_MODE_LIGHT 0
 #define BEAMS_MODE_DEPTH 1
 
 // Vertex Shaders
@@ -59,7 +59,7 @@ private:
         // appendDataToBytes(intensity_bytes, sizeof(float), bytes);
     }
 protected:
-	unsigned _mode = BEAMS_MODE_DEFAULT;
+	unsigned _mode = BEAMS_MODE_LIGHT;
 };
 
 struct GL4_Beams_VertexShader : public Beams_VertexShader {
