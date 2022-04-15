@@ -4,6 +4,9 @@ project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 # Extrenal Libraries
 include("cmake/externalTargets.cmake")
 include("cmake/findVulkan.cmake")
+if(UNIX)
+    include(FindX11)
+endif()
 
 # ------------- Sources ------------- #
 
@@ -26,16 +29,15 @@ list(APPEND helper_src
 )
 
 list(APPEND geometry_src
+    geometry/Geometry.cpp
+    geometry/ShapesGen.cpp
+
     geometry/primitives/Geo_Flat.cpp
     geometry/primitives/Geo_Conic.cpp
     geometry/primitives/Geo_Extruded.cpp
-    geometry/primitives/Geo_Node.cpp
     geometry/primitives/Geo_Sphere.cpp
 
     geometry/Geo_Tree.cpp
-
-    geometry/Geometry.cpp
-    geometry/ShapesGen.cpp
 )
 if(Assimp_FOUND)
     list(APPEND geometry_src
@@ -44,7 +46,7 @@ if(Assimp_FOUND)
     )
 endif()
 if(Rasteron_FOUND)
-    list(APPEND geometry_src geometry/Geo_SpriteTable)
+    list(APPEND geometry_src geometry/Geo_SpriteTable.cpp)
 endif()
 
 list(APPEND core_src
@@ -70,8 +72,12 @@ add_library(Topl_CORELIB
 target_include_directories(Topl_CORELIB PUBLIC core helper geometry)
 set_target_properties(Topl_CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
-target_include_directories(Topl_CORELIB PUBLIC "${RESOURCE_DIR}") # resource file header
-target_sources(Topl_CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
+if(WIN32)
+    target_include_directories(Topl_CORELIB PUBLIC "${RESOURCE_DIR}") # resource file header
+    target_sources(Topl_CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
+elseif(UNIX)
+    target_link_libraries(Topl_CORELIB PUBLIC ${X11_LIBRARIES})
+endif()
 
 add_library(Topl_GEOLIB ${geometry_src})
 target_include_directories(Topl_GEOLIB PUBLIC core helper geometry)
@@ -120,8 +126,16 @@ target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/includ
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 # set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
+add_dependencies(GL4_ENGINE GLEW)
+
 # add all engine targets to a list
-list(APPEND engine_targets GL4_ENGINE Drx11_ENGINE Vulkan_ENGINE)
+list(APPEND engine_targets GL4_ENGINE) # OpenGL available on all systems
+if(WIN32)
+    list(APPEND engine_targets Drx11_ENGINE)
+endif()
+if(Vulkan_FOUND)
+    list(APPEND engine_targets Vulkan_ENGINE)
+endif()
 
 foreach(target IN ITEMS ${engine_targets})
     target_link_libraries(${target} PUBLIC Topl_CORELIB Topl_GEOLIB) # linking Topl libraries

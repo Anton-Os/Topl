@@ -9,7 +9,7 @@ void Geo_Extruded::genPos(Vec3f* data){
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2)});
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
-    for(unsigned v = 1; v < _verticesCount / 2; v++)
+    for(unsigned v = 1; v < _vertexCount / 2; v++)
         *(data + v) = Vec3f({
 			(float)sin(_startAngle + (v * angle)) * radius, 
 			(float)cos(_startAngle + (v * angle)) * radius, 
@@ -18,12 +18,12 @@ void Geo_Extruded::genPos(Vec3f* data){
 
 	// Vertices for BACK FACE
     centerVertex = Vec3f({0.0f, 0.0f, DEFAULT_Z - (_depth / 2)});
-    *(data + (_verticesCount / 2)) = centerVertex; // first vertex is the center vertex
+    *(data + (_vertexCount / 2)) = centerVertex; // first vertex is the center vertex
 
-    for(unsigned v = 1 + (_verticesCount / 2); v < _verticesCount; v++)
+    for(unsigned v = 1 + (_vertexCount / 2); v < _vertexCount; v++)
         *(data + v) = Vec3f({
-			(float)sin(_startAngle + ((v - (_verticesCount / 2)) * angle)) * radius,
-			(float)cos(_startAngle + ((v - (_verticesCount / 2)) * angle)) * radius,
+			(float)sin(_startAngle + ((v - (_vertexCount / 2)) * angle)) * radius,
+			(float)cos(_startAngle + ((v - (_vertexCount / 2)) * angle)) * radius,
 			(float)DEFAULT_Z - (_depth / 2)
 		});
 }
@@ -32,16 +32,14 @@ void Geo_Extruded::genNormals(Vec3f* data){
 	const Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
 	const Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
 
-	for(unsigned v = 1; v < _verticesCount / 2; v++) *(data + v) = frontNormalVec;
-	for(unsigned v = 1 + (_verticesCount / 2); v < _verticesCount; v++) *(data + v) = backNormalVec;
+	for(unsigned v = 1; v < _vertexCount / 2; v++) *(data + v) = frontNormalVec;
+	for(unsigned v = 1 + (_vertexCount / 2); v < _vertexCount; v++) *(data + v) = backNormalVec;
 }
 
 void Geo_Extruded::genTexCoords(Vec2f* data) {
-	// texture coordinates are based off of rectangular geometries
-
 	// Texcoords for FRONT FACE
 	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
-	for (unsigned t = 1; t < _verticesCount; t++)
+	for (unsigned t = 1; t < _vertexCount; t++)
 		switch ((t - 1) % 4) {
 			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
 			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
@@ -50,8 +48,8 @@ void Geo_Extruded::genTexCoords(Vec2f* data) {
 		}
 
 	// Texcoords for BACK FACE
-	*(data + (_verticesCount / 2)) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
-	for(unsigned t = 1 + (_verticesCount / 2); t < _verticesCount; t++)
+	*(data + (_vertexCount / 2)) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
+	for(unsigned t = 1 + (_vertexCount / 2); t < _vertexCount; t++)
 		switch ((t - 1) % 4) {
 			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
 			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
@@ -79,10 +77,10 @@ void Geo_Extruded::genIndices(unsigned* data){
 	*(data + i + 2) = 1; // connect back to first point of FRONT FACE
 
 	// Indexing BACK FACE
-	v = _verticesCount / 2 + 1; // target the first edge vertex of the back face
+	v = _vertexCount / 2 + 1; // target the first edge vertex of the back face
 	// for (i = _indicesCount / 2; i < _indicesCount - 3; i += 3) { // iterate to all but last trig!!!
 	for (i = _indicesCount / 4; i < (_indicesCount / 2) - 3; i += 3) {
-		*(data + i + 0) = _verticesCount / 2; // origin point
+		*(data + i + 0) = _vertexCount / 2; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
 
@@ -90,30 +88,30 @@ void Geo_Extruded::genIndices(unsigned* data){
 	}
 
 	// special case, last trig
-	*(data + i + 0) = _verticesCount / 2; // center point of BACK FACE
+	*(data + i + 0) = _vertexCount / 2; // center point of BACK FACE
 	*(data + i + 1) = v;
-	*(data + i + 2) = _verticesCount / 2 + 1; // connect back to first point of BACK FACE
+	*(data + i + 2) = _vertexCount / 2 + 1; // connect back to first point of BACK FACE
 
 	// Indexing SIDE FACES
 	
 	v = 1; // starting from index 1 which is a corner point
 	for (i = _indicesCount / 2; i < _indicesCount - 6; i += 6) {
 		*(data + i + 0) = v;
-		*(data + i + 2) = v + (_verticesCount / 2) + 1;
+		*(data + i + 2) = v + (_vertexCount / 2) + 1;
 		*(data + i + 1) = v + 1;
 
-		*(data + i + 3) = v + (_verticesCount / 2);
+		*(data + i + 3) = v + (_vertexCount / 2);
 		*(data + i + 4) = v;
-		*(data + i + 5) = v + (_verticesCount / 2) + 1;
+		*(data + i + 5) = v + (_vertexCount / 2) + 1;
 
 		v++; // increment current vertex
 	}
 
 	*(data + i + 0) = 1;
-	*(data + i + 1) = (_verticesCount / 2) + 1;
-	*(data + i + 2) = (_verticesCount / 2) - 1;
+	*(data + i + 1) = (_vertexCount / 2) + 1;
+	*(data + i + 2) = (_vertexCount / 2) - 1;
 
-	*(data + i + 3) = _verticesCount - 1;
-	*(data + i + 4) = (_verticesCount / 2) - 1;
-	*(data + i + 5) = (_verticesCount / 2) + 1;
+	*(data + i + 3) = _vertexCount - 1;
+	*(data + i + 4) = (_vertexCount / 2) - 1;
+	*(data + i + 5) = (_vertexCount / 2) + 1;
 }

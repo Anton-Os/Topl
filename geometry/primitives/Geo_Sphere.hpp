@@ -6,11 +6,10 @@ class Geo_Sphere : public Geo_RenderObj {
 public:
     Geo_Sphere(NGon3D refShape)
     : Geo_RenderObj(
-        (refShape.xSegments * refShape.ySegments) + 2 - refShape.ySegments, // Vertex Count
-        (refShape.ySegments * 6) + ((refShape.xSegments * refShape.ySegments) * 6) // Index Count
-        // ((refShape.xSegments * refShape.ySegments) * 6) // temporary index count
+        (refShape.xSegments * refShape.ySegments) + 2 // slices and stacks + top and bottom vertices
+        // (refShape.ySegments * 6) + ((refShape.xSegments * refShape.ySegments) * 6) // Index Count
     ){
-        _shape3D = refShape; // copy to internal data
+        _shape3D = refShape;
         fillRenderObj();
     }
 
@@ -26,7 +25,7 @@ private:
 
 class Geo_IcoSphere : public Geo_RenderObj {
     Geo_IcoSphere(NGon3D refShape)
-    : Geo_RenderObj( 1, 1 ){
+    : Geo_RenderObj( 1, 1 ){ // include correct vertex and index count
         _shape3D = refShape;
         fillRenderObj();
     }

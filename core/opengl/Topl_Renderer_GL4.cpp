@@ -163,7 +163,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 #ifdef _WIN32
     init_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
 #elif defined(__linux__)
-	init_linux(_platformCtx.GL_ctx, _platformCtx.display, _platformCtx.window_ptr);
+	init_linux(_platformCtx.GL_ctx, _platformCtx.display, &_platformCtx.window);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -198,7 +198,7 @@ void Topl_Renderer_GL4::switchFramebuff(){
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&_platformCtx.windowDevice_Ctx);
 #elif defined(__linux__)
-	swapBuffers_linux(_platformCtx.display, _platformCtx.window_ptr);
+	swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif
 	_isSceneDrawn = false; // awaiting another draw call
 }
@@ -247,10 +247,10 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			_bufferIndex++; // increments to next available slot
 		}
 
-		activeCtx->buffers.push_back(Buffer_GL4(rID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVerticesCount()));
+		activeCtx->buffers.push_back(Buffer_GL4(rID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVertexCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, activeCtx->buffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVerticesCount() * sizeof(Geo_Vertex), actor_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVertexCount() * sizeof(Geo_Vertex), actor_vData, GL_STATIC_DRAW);
 
 		activeCtx->VAOs.push_back(VertexArray_GL4(rID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot

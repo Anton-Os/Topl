@@ -12,19 +12,13 @@
 
 enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
 
-enum VERTEX_Shift {
-	VERTEX_Forward, // shifts data 1 element forward
-	VERTEX_Reverse, // shifts data 1 element in reverse
-	VERTEX_Flip // flips all data internally
-};
-
 struct Geo_Vertex {
 	Geo_Vertex(Vec3f pos); // Position data constructor
 	Geo_Vertex(Vec3f pos, Vec2f texc); // Extended constructor
 
 	float position[POSITION_COUNT];
+	// float normals[NORMALS_COUNT]; // include if needed
 	float texcoord[TEXCOORD_COUNT];
-	// float normals[NORMALS_COUNT]; // might need to implement
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;
@@ -54,20 +48,20 @@ public:
 	virtual ~Geo_RenderObj(){ cleanup(); }
 	void clone(const Geo_RenderObj* refObj); // copies render object
 	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute
-	void reorder(enum VERTEX_Attrib attrib, VERTEX_Shift shift); // shifts vertex attribute data
+	// void reorder(enum VERTEX_Attrib attrib, VERTEX_Shift shift); // shifts vertex attribute data
 	// void fuse(const Geo_RenderObj* refObj); // fuses target object with reference object
 
-    unsigned getVerticesCount() const { return _verticesCount; } // get vertex Count
+    unsigned getVertexCount() const { return _vertexCount; } // get vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get index Count
 
 	vertex_cptr_t getVertices() {
 		genVertices(); // vertices are generated here since vertex format may be subject to change
 		return _vertices;
 	}
-    ui_cptr_t getIndices() const { return _indices; }
-	vec3f_cptr_t getPosData() const { return _posData; }
-	vec3f_cptr_t getNormalsData() const { return _normalsData; }
-    vec2f_cptr_t getTexCoordData() const { return _texcoordData; }
+	vec3f_cptr_t getPos() const { return _pos; }
+	vec3f_cptr_t getNormals() const { return _normals; }
+    vec2f_cptr_t getTexCoords() const { return _texcoords; }
+	ui_cptr_t getIndices() const { return _indices; }
 protected:
 	void fillRenderObj(); // called by derived class to populate vertex attributes
 	void genVertices(); // internally generates data based on vertex format
@@ -78,11 +72,11 @@ protected:
 
 	double _startAngle = 0.0; // starting angle for vertex generation
 
-    unsigned _verticesCount = 0; // vertex count
+    unsigned _vertexCount = 0; // vertex count
 	Geo_Vertex* _vertices = nullptr; // formatted vertex data
-    Vec3f* _posData = nullptr; // position data
-	Vec3f* _normalsData = nullptr; // normals data
-    Vec2f* _texcoordData = nullptr; // texture coordinate data
+    Vec3f* _pos = nullptr; // position data
+	Vec3f* _normals = nullptr; // normals data
+    Vec2f* _texcoords = nullptr; // texture coordinate data
 
 	unsigned _indicesCount = 0; // index count
 	unsigned* _indices = nullptr; // index data

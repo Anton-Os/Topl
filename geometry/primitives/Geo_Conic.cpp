@@ -8,9 +8,9 @@ void Geo_Conic::genPos(Vec3f* data){
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
     *(data + 0) = centerVertex; // first vertex is the center vertex
 	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
-	*(data + _verticesCount - 1) = apexVertex;
+	*(data + _vertexCount - 1) = apexVertex;
 
-	for (unsigned v = 1; v < _verticesCount; v++)
+	for (unsigned v = 1; v < _vertexCount; v++)
 		*(data + v) = Vec3f({
 			(float)sin(_startAngle + (v * angle)) * radius,
 			(float)cos(_startAngle + (v * angle)) * radius,
@@ -22,22 +22,20 @@ void Geo_Conic::genNormals(Vec3f* data){
 	Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
 	Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
 
-	*(data + _verticesCount - 1) = backNormalVec; // back facing normal 
-	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = frontNormalVec;
+	*(data + _vertexCount - 1) = backNormalVec; // back facing normal 
+	for(unsigned v = 1; v < _vertexCount; v++) *(data + v) = frontNormalVec;
 }
 
 void Geo_Conic::genTexCoords(Vec2f* data) {
-	// texture coordinates are based off of rectangular geometries
-
 	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
-	for (unsigned t = 1; t < _verticesCount; t++)
+	for (unsigned t = 1; t < _vertexCount; t++)
 		switch((t - 1) % 4){
 			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
 			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
 			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
 			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
 		}
-	*(data + _verticesCount - 1) = Vec2f({ 0.5f, 0.5f }); // apex point will always be shared
+	*(data + _vertexCount - 1) = Vec2f({ 0.5f, 0.5f }); // apex point will always be shared
 }
 
 void Geo_Conic::genIndices(unsigned* data){
@@ -60,7 +58,7 @@ void Geo_Conic::genIndices(unsigned* data){
 	// Indexing APEX connection
 	currentVertex = 1; // currentVertex needs to reset!
 	for(i = _indicesCount / 2; i < _indicesCount - 3; i += 3){ // iterate to the end minus 1 trig
-		*(data + i + 0) = _verticesCount - 1; // apex point
+		*(data + i + 0) = _vertexCount - 1; // apex point
 		*(data + i + 1) = currentVertex + 1; // connect to next vertex
 		*(data + i + 1) = currentVertex; // target vertex
 		currentVertex++;

@@ -17,7 +17,7 @@ float distortTForm(float input, double radii); // distorts value based on concen
 public:
     Geo_ConstructShape(renderObj_cptr_t obj1, renderObj_cptr_t obj2) : refObj1(obj1), refObj2(obj2)
     : Geo_RenderObj (
-        obj1->getVerticesCount() + obj2->getVerticesCount(),
+        obj1->getVertexCount() + obj2->getVertexCount(),
         obj1->getIndexCount() + obj2->getIndexCount()){
 
         fillRenderObj();
@@ -51,7 +51,7 @@ public:
     Geo_DuplexShape(renderObj_cptr_t refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
     Geo_RenderObj(
-        pow(refObj->getVerticesCount(), iterations),
+        pow(refObj->getVertexCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
         fillRenderObj();
     }
@@ -67,7 +67,7 @@ public:
     Geo_TessShape(renderObj_cptr_t refObj, unsigned short iterations)
     : Geo_Iterative(refObj, iterations),
     Geo_RenderObj(
-        pow(refObj->getVerticesCount(), iterations),
+        pow(refObj->getVertexCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
         fillRenderObj();
     }

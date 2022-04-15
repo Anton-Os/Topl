@@ -30,7 +30,7 @@ private:
 	void postFrame();
 
 	// Geometries and Drawable Objects
-	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 6, 6 });
+	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 200, 200 });
 	Geo_Actor sphereActor = Geo_Actor((Geo_RenderObj*)&sphere);
 
 	// Geo_Grid grid = Geo_Grid("grid", &squareActor, Geo_Grid_Properties(std::make_pair(80, 0.25f)));

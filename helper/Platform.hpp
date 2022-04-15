@@ -14,6 +14,7 @@ struct Platform {
 
     void createWindow();
     void handleEvents(bool isCursorUpdate); // handles platform specific events, updates cursor position if arg true
+    // void handleCursorEvents(); // separate function may be required
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
     static unsigned getViewportWidth(NATIVE_WINDOW window);

@@ -116,31 +116,40 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 #elif defined(__linux__)
 
-void Platform::createWindow(const char* windowName){
+void Platform::createWindow(){
     _context.display = XOpenDisplay(NULL);
 
-	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	XVisualInfo* visualInfo = glXChooseVisual(_context.display, 0, visualInfoAttribs);
+	/* GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	XVisualInfo* visualInfo = glXChooseVisual(_context.display, 0, visualInfoAttribs); */
+	int screenNum = DefaultScreen(_context.display);
+	int depth = DefaultDepth(_context.display, screenNum);
+	Visual* visual = DefaultVisual(_context.display, screenNum);
 
 	XSetWindowAttributes windowAttribs;
-	windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visualInfo->visual, AllocNone);
-	windowAttribs.event_mask = ExposureMask | KeyPressMask;
+	windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visual, AllocNone);
+	windowAttribs.border_pixel = 0;
+	windowAttribs.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
+                        PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+                        ExposureMask | FocusChangeMask | VisibilityChangeMask |
+                        EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
     _context.window = XCreateWindow(
 		_context.display, DefaultRootWindow(_context.display),
         0, 0,
         TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
-        0, visualInfo->depth,ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | KeyPressMask
-        InputOutput, visualInfo->visual,
-        CWColormap | CWEventMask,
+        0, depth,
+        InputOutput,
+		visual,
+        CWBorderPixel | CWColormap | CWEventMask,
         &windowAttribs
 	);
 
-	XSelectInput(_context.display, _context.window, );
+	// XSelectInput(_context.display, _context.window, ExposureMask);
 	XMapWindow(_context.display, _context.window);
+	XFlush(_context.display);
 }
 
-void Platform::handleEvents(){
+void Platform::handleEvents(bool isCursorUpdate){
     int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
 	XEvent currentEvent;
 
@@ -155,9 +164,23 @@ void Platform::handleEvents(){
 	}
 }
 
-bool Platform::getCursorCoords(float* xPos, float* yPos) {
-	// TODO: Implement cursor tracking here!
-	return true;
+bool Platform::getCursorCoords(float* xPos, float* yPos) const {
+	Window root;
+	Window window = DefaultRootWindow(_context.display);
+	int xRoot, yRoot, xChild, yChild;
+    unsigned int mask;
+
+	XQueryPointer(
+		_context.display, window, &root, &window,
+		&xRoot, &yRoot, &xChild, &yChild,
+		&mask
+	);
+
+	// translate to corrected screen coordinates
+	// *xPos = xChild / TOPL_WIN_WIDTH
+	// *yPos = yChild / TOPL_WIN_HEIGHT
+
+	return true; // check if cursor is in client area
 }
 
 #endif

@@ -36,6 +36,7 @@
 
     #undef Success // Eigen fix
 
+    // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
     // OpenGL Support
     #include<GL/gl.h>
     #include<GL/glx.h>
@@ -52,7 +53,7 @@
         Display* display;
         // XVisualInfo* visualInfo;
         NATIVE_WINDOW window;
-		NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN]
+		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN]
         NATIVE_GL_CONTEXT GL_ctx;
         Cursor_Pos cursorPos;
     };

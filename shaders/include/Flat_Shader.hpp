@@ -54,7 +54,13 @@ struct Flat_VertexShader : public Topl_EntryShader {
 
 		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
+		if(_mode != FLAT_MODE_MATRIX) appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
+		else { // create test matrix to check result in shader
+			Mat4x4 testMatrix = Mat4x4({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f });
+			matrix_bytes = reinterpret_cast<bytes_cptr>(&testMatrix.data[0][0]);
+			appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
+		}
+
 		return true;
 	}
 protected:

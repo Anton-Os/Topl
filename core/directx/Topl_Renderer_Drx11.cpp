@@ -328,9 +328,9 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if (!_isSceneReady) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isSceneReady = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVerticesCount());
+		_isSceneReady = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
 
-		activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVerticesCount()));
+		activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
 		if (!_isSceneReady) return;
 
 		if (!_isSceneReady) return;

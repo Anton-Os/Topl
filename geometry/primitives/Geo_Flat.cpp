@@ -7,7 +7,7 @@ void Geo_Flat::genPos(Vec3f* data){
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, _depth });
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
-	for (unsigned v = 1; v < _verticesCount; v++)
+	for (unsigned v = 1; v < _vertexCount; v++)
 		*(data + v) = Vec3f({
 			(float)sin(_startAngle + ((v - 1) * angle)) * radius,
 			(float)cos(_startAngle + ((v - 1) * angle)) * radius,
@@ -18,14 +18,13 @@ void Geo_Flat::genPos(Vec3f* data){
 void Geo_Flat::genNormals(Vec3f* data){
 	Vec3f normalVec = Vec3f({ 0.0f, 0.0f, -1.0f }); // pointing the same direction
 
-	for(unsigned v = 1; v < _verticesCount; v++) *(data + v) = normalVec;
+	for(unsigned v = 1; v < _vertexCount; v++)
+		*(data + v) = normalVec; // same normal for each vertex
 }
 
 void Geo_Flat::genTexCoords(Vec2f* data) {
-	// texture coordinates are based off of rectangular geometries
-
 	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
-	for (unsigned t = 1; t < _verticesCount; t++)
+	for (unsigned t = 1; t < _vertexCount; t++)
 		switch((t - 1) % 4){
 			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
 			case 1: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right

@@ -1,7 +1,7 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 1.0f })
 
@@ -60,7 +60,7 @@ void Playground_App::init() {
 	// _renderer->buildScene(&scene_overlay);
 	// _renderer->buildScene(&scene_details);
 
-	// _renderer->setDrawMode(DRAW_Points);
+	_renderer->setDrawMode(DRAW_Points);
 }
 
 void Playground_App::loop(unsigned long frame) {
