@@ -268,7 +268,7 @@ void Topl_Renderer_Drx11::clearView(){
 
 void Topl_Renderer_Drx11::switchFramebuff(){ 
 	_swapChain->Present(0, 0); 
-	_isSceneDrawn = false; // awaiting another draw call
+	_isDrawn = false; // awaiting another draw call
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
@@ -298,7 +298,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_isSceneReady = Renderer::createBlockBuff(&_device, &activeCtx->sceneBlockBuff, &blockBytes);
+		_isBuilt = Renderer::createBlockBuff(&_device, &activeCtx->sceneBlockBuff, &blockBytes);
 		activeCtx->buffers.push_back(Buffer_Drx11(activeCtx->sceneBlockBuff));
 	}
 
@@ -313,31 +313,31 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		// component block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			_isSceneReady = Renderer::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
+			_isBuilt = Renderer::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
 		}
-		if (!_isSceneReady) return; // Error
+		if (!_isBuilt) return; // Error
 
 		// index creation
 		ID3D11Buffer* indexBuff = nullptr;
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
-			_isSceneReady = Renderer::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
+			_isBuilt = Renderer::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
 			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
 		}
 		else activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
-		if (!_isSceneReady) return; // Error
+		if (!_isBuilt) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isSceneReady = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
+		_isBuilt = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
 
 		activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
-		if (!_isSceneReady) return;
+		if (!_isBuilt) return;
 
-		if (!_isSceneReady) return;
+		if (!_isBuilt) return;
 		_renderIDs = rID; // Gives us the greatest buffer ID number
 	}
 
-	_isSceneReady = true;
+	_isBuilt = true;
 }
 
 #ifdef RASTERON_H
@@ -491,8 +491,8 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
 					break;
 				}
 
-			if(renderBlockBuff != nullptr) _isSceneReady = Renderer::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
-			if (!_isSceneReady) return; // Error
+			if(renderBlockBuff != nullptr) _isBuilt = Renderer::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
+			if (!_isBuilt) return; // Error
 		}
 	}
 }
@@ -522,7 +522,7 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 	Buffer_Drx11** buffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
 
 	// Rendering Loop!
-	if (_isPipelineReady && _isSceneReady)
+	if (_isPipelineReady && _isBuilt)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
 			Renderer::discoverBuffers(buffs, &activeCtx->buffers, id);
 
@@ -562,5 +562,5 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 		}
 
 	free(buffs);
-	_isSceneDrawn = true;
+	_isDrawn = true;
 }

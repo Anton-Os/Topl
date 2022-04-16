@@ -15,12 +15,12 @@ void Topl_Renderer_Vulkan::clearView(){
 
 void Topl_Renderer_Vulkan::switchFramebuff(){ 
 	// Implement framebuffer switching operation
-	_isSceneDrawn = false;
+	_isDrawn = false;
 }
 
 void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
 	// Implement building operation
-	_isSceneReady = true;
+	_isBuilt = true;
 }
 
 #ifdef RASTERON_H
@@ -78,5 +78,5 @@ void Topl_Renderer_Vulkan::render(const Topl_Scene* scene){
 
 	// Implement render operation
 
-	_isSceneDrawn = true;
+	_isDrawn = true;
 }

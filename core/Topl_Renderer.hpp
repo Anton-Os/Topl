@@ -132,9 +132,9 @@ protected:
     unsigned short _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
+    bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
-    bool _isSceneReady = false; // switch to true when elements of the scene are built
-    bool _isSceneDrawn = false; // true after draw call, false after framebuffer swap
+    bool _isDrawn = false; // true after draw call, false after swap
     unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
     unsigned long _frameIDs = 0; // increments with each frame drawn
 private:

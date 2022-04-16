@@ -194,13 +194,13 @@ void Topl_Renderer_GL4::clearView(){
 }
 
 void Topl_Renderer_GL4::switchFramebuff(){
-	if(_isSceneDrawn)
+	if(_isDrawn)
 #ifdef _WIN32 // Swap buffers in windows
 	swapBuffers_win(&_platformCtx.windowDevice_Ctx);
 #elif defined(__linux__)
 	swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif
-	_isSceneDrawn = false; // awaiting another draw call
+	_isDrawn = false; // awaiting another draw call
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
@@ -285,7 +285,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
 	}
 
-	_isSceneReady = true;
+	_isBuilt = true;
 }
 
 #ifdef RASTERON_H
@@ -443,5 +443,5 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 	}
 	free(buffers);
 
-	_isSceneDrawn = true;
+	_isDrawn = true;
 }

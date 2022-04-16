@@ -23,7 +23,8 @@ enum PROJECTION_Type {
     PROJECTION_Ortho,
     PROJECTION_Perspective,
     PROJECTION_Stereo,
-    PROJECTION_Gnomonic
+    PROJECTION_Gnomonic,
+    PROJECTION_Test // for shader and computation tests
 };
 
 struct SpatialBounds3D { // Used in Matrix calculations

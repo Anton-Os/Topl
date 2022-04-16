@@ -47,7 +47,7 @@ void cleanupNumStr(std::string* str){
         [](char a,char b){ return isspace(a) && isspace(b);});  */
 }
 
-unsigned getValsCountFromStr(const std::string& source){ return getValsCountFromStr(source, 1); }
+/* unsigned getValsCountFromStr(const std::string& source){ return getValsCountFromStr(source, 1); }
 
 unsigned getValsCountFromStr(const std::string& source, unsigned short div){
     unsigned valsCount = 0;
@@ -62,7 +62,7 @@ unsigned getValsCountFromStr(const std::string& source, unsigned short div){
 	else continue;
 
     return valsCount / div;
-}
+} */
 
 float getFloatFromStr(const std::string& source, size_t startOffset){
     if(!isdigit(source.at(startOffset)) && source.at(startOffset) != '-'){ // minus symbol is permitted 

@@ -1,8 +1,10 @@
 #include "Topl_Shader_Pipeline.h"
 
-#define FLAT_MODE_WHITE 0 // for semi-transparent white
+#define FLAT_MODE_SOLID 0 // for semi-transparent white
 #define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors
-#define FLAT_MODE_MATRIX 2 // for projection matrix
+#define FLAT_MODE_MATRIX 2 // for testing projection matrix
+
+#define FLAT_COLOR_INC 0.002f // value for generating color id
 
 // Vertex Shaders
 
@@ -33,7 +35,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
 		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
 		
-		Vec4f color = genFlatColor();
+		Vec4f color = genFlatColor(actor);
 		bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(&color);
 		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
 	
@@ -54,21 +56,27 @@ struct Flat_VertexShader : public Topl_EntryShader {
 
 		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec3f), bytes);
-		if(_mode != FLAT_MODE_MATRIX) appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
-		else { // create test matrix to check result in shader
-			Mat4x4 testMatrix = Mat4x4({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f });
-			matrix_bytes = reinterpret_cast<bytes_cptr>(&testMatrix.data[0][0]);
-			appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
-		}
+		appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
 
 		return true;
 	}
 protected:
-	Vec4f genFlatColor() const { // generates color based on mode
-		return Vec4f({ 1.0f, 1.0f, 1.0f, 0.8f }); // semi-transparent white
+	Vec4f genFlatColor(const Geo_Actor* const actor) const {
+		float colorInc = (float)((actor->getId() / 6) * FLAT_COLOR_INC);
+		switch(actor->getId() % 7){
+			case 0: return Vec4f({ 1.0f, colorInc, 1.0f, _alphaVal }); // magenta to white
+			case 1: return Vec4f({ 0.0f, 1.0f - colorInc, 0.0f, _alphaVal }); // green to black
+			case 2: return Vec4f({ colorInc, 1.0f, 1.0f, _alphaVal }); // cyan to white
+			case 3: return Vec4f({ 1.0f - colorInc, 0.0f, 0.0f, _alphaVal }); // red to black
+			case 4: return Vec4f({ 1.0f, 1.0f, colorInc, _alphaVal }); // yellow to white
+			case 5: return Vec4f({ 0.0f, 0.0f, 1.0f - colorInc, _alphaVal }); // blue to black
+			case 6: return Vec4f({ colorInc, colorInc, colorInc, _alphaVal }); // greyscale
+			default: return Vec4f({ 1.0f, 1.0f, 1.0f, _alphaVal }); // semi-transparent white
+		}
 	}
 
-	unsigned _mode = FLAT_MODE_WHITE;
+	unsigned _mode = FLAT_MODE_SOLID;
+	float _alphaVal = 0.75f;
 };
 
 struct GL4_Flat_VertexShader : public Flat_VertexShader {

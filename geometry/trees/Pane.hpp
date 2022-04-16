@@ -54,20 +54,29 @@ class Geo_PaneLayout : public Geo_Tree {
 public:
 	Geo_PaneLayout(
 		const std::string& prefix,
-		unsigned rows,
-		unsigned columns
+		unsigned rows, unsigned columns
 	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
 		resize(rows, columns);
 	}
 
-	Geo_PaneLayout(
+	Geo_PaneLayout( // Matching radii
 		const std::string& prefix,
-		unsigned rows,
-		unsigned columns,
+		unsigned rows, unsigned columns,
 		float radius,
 		float border
 	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
-		_radius = radius;
+		_xRadius = radius; _yRadius = radius;
+		_border = border;
+		resize(rows, columns);
+	}
+
+	Geo_PaneLayout( // Separate radii
+		const std::string& prefix,
+		unsigned rows, unsigned columns,
+		float xRadius, float yRadius,
+		float border
+	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
+		_xRadius = xRadius; _yRadius = yRadius;
 		_border = border;
 		resize(rows, columns);
 	}
@@ -78,7 +87,7 @@ public:
 	unsigned getColCount(){ return _columns; }
 
 	void configure(Topl_Scene* scene) override;
-	bool interact(float xPos, float yPos, unsigned color); // returns true if inside pane bounds, can fire callback based on color
+	bool interact(float xPos, float yPos, unsigned color); // returns true within pane bounds, callback based on color
 protected:
 	void resize(unsigned rows, unsigned columns); // creates panes and replaces all render objects
 
@@ -87,9 +96,9 @@ protected:
 	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_ROOT_Z);
 	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_CHILD_Z);
     
-	unsigned _rows; 
-    unsigned _columns;
-	float _radius = PANE_RADIUS;
+	unsigned _rows, _columns; 
+	float _xRadius = PANE_RADIUS; // length along X axis
+	float _yRadius = PANE_RADIUS; // length along Y axis
 	float _border = PANE_BORDER;
 
 	static Geo_FlatSquare _decoySquare;
@@ -104,11 +113,18 @@ public:
 	) : Geo_PaneLayout(prefix, 1, 1) 
 	{  }
 
-	Geo_UnitLayout(
+	Geo_UnitLayout( // Matching radii
 		const std::string& prefix,
 		float radius,
 		float border
 	) : Geo_PaneLayout(prefix, 1, 1, radius, border) 
+	{  }
+
+	Geo_UnitLayout( // Separate radii
+		const std::string& prefix,
+		float xRadius, float yRadius,
+		float border
+	) : Geo_PaneLayout(prefix, 1, 1, xRadius, yRadius, border) 
 	{  }
 };
 
@@ -121,12 +137,46 @@ public:
 	) : Geo_PaneLayout(prefix, rows, 1) 
 	{  }
 
-	Geo_RowLayout(
+	Geo_RowLayout( // Matching radii
 		const std::string& prefix,
 		unsigned rows,
 		float radius,
 		float border
 	) : Geo_PaneLayout(prefix, rows, 1, radius, border) 
+	{  }
+
+	Geo_RowLayout( // Separate radii
+		const std::string& prefix,
+		unsigned rows,
+		float xRadius, float yRadius,
+		float border
+	) : Geo_PaneLayout(prefix, rows, 1, xRadius, yRadius, border)
+	{  }
+};
+
+// ColLayout has only columns
+class Geo_ColLayout : public Geo_PaneLayout {
+public:
+	Geo_ColLayout(
+		const std::string& prefix,
+		unsigned columns
+	) : Geo_PaneLayout(prefix, 1, columns) 
+	{  }
+
+	Geo_ColLayout( // Matching radii
+		const std::string& prefix,
+		unsigned columns,
+		float radius,
+		float border
+	) : Geo_PaneLayout(prefix, 1, columns, radius, border) 
+	{  }
+
+	Geo_ColLayout( // Separate radii
+		const std::string& prefix,
+		unsigned columns,
+		float xRadius, float yRadius,
+		float border
+	) : Geo_PaneLayout(prefix, 1, columns, xRadius, yRadius, border)
 	{  }
 };
 
@@ -139,11 +189,19 @@ public:
 	) : Geo_PaneLayout(prefix, count, count) 
 	{  }
 
-	Geo_BoxedLayout(
+	Geo_BoxedLayout( // Matching radii
 		const std::string& prefix,
 		unsigned count,
 		float radius,
 		float border
 	) : Geo_PaneLayout(prefix, count, count, radius, border) 
+	{  }
+
+	Geo_BoxedLayout( // Separate radii
+		const std::string& prefix,
+		unsigned count,
+		float xRadius, float yRadius,
+		float border
+	) : Geo_PaneLayout(prefix, count, count, xRadius, yRadius, border) 
 	{  }
 };

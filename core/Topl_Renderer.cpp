@@ -13,20 +13,20 @@ void Topl_Renderer::setPipeline(const Topl_Pipeline* pipeline){
 bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     if(!_isPipelineReady){
         logMessage(MESSAGE_Exclaim, "Pipeline not set for build call!");
-        _isSceneReady = false;
+        _isBuilt = false;
         return false; // failure
     }
     if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS) {
         logMessage(MESSAGE_Exclaim, "Too many render contexts!");
         // _renderCtxIndex = 0;
-        _isSceneReady = false;
+        _isBuilt = false;
         return false;
     }
 
     build(scene);
     _renderCtxIndex++;
     texturize(scene);
-    return _isSceneReady;
+    return _isBuilt;
 }
 
 /* bool Topl_Renderer::buildScene(const Topl_Scene* scene, const Topl_Camera* camera){
@@ -36,11 +36,11 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 
 bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
-    if(!_isSceneReady) logMessage(MESSAGE_Exclaim, "Scene not built for update call!");
-    if(!_isPipelineReady || !_isSceneReady) return false; // failure
+    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for update call!");
+    if(!_isPipelineReady || !_isBuilt) return false; // failure
 
     update(scene);
-    return _isSceneReady;
+    return _isBuilt;
 }
 
 /* bool Topl_Renderer::updateScene(const Topl_Scene* scene, const Topl_Camera* camera){
@@ -55,30 +55,30 @@ void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
 
 bool Topl_Renderer::renderScene(Topl_Scene* scene){
     if (!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
-    if (!_isSceneReady) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
+    if (!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
     if (_renderIDs == 0) logMessage(MESSAGE_Exclaim, "No render targets for draw call!");
-    if (!_isPipelineReady || !_isSceneReady || _renderIDs == 0) {
-        _isSceneDrawn = false;
+    if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
+        _isDrawn = false;
         return false; // failure
     }
 
     render(scene);
     _frameIDs++; // increment frame counter
-    return _isSceneDrawn; // render call sets variable to true on success
+    return _isDrawn; // render call sets variable to true on success
 }
 
 /* bool renderAll(){ // draws all render objects
     if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
-    if(!_isSceneReady) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
+    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
     if(_renderIDs == 0) logMessage(MESSAGE_Exclaim, "No render targets for draw call!");
-    if(!_isPipelineReady || !_isSceneReady || _renderIDs == 0){
-        _isSceneDrawn = false;
+    if(!_isPipelineReady || !_isBuilt || _renderIDs == 0){
+        _isDrawn = false;
         return false; // failure
     }
 
     render(nullptr);
     _frameIDs++; // increment frame counter
-    return _isSceneDrawn; // render call sets variable to true on success
+    return _isDrawn; // render call sets variable to true on success
 } */
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {

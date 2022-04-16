@@ -126,7 +126,9 @@ target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/includ
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 # set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
-add_dependencies(GL4_ENGINE GLEW)
+if(UNIX)
+    add_dependencies(GL4_ENGINE GLEW)
+endif()
 
 # add all engine targets to a list
 list(APPEND engine_targets GL4_ENGINE) # OpenGL available on all systems

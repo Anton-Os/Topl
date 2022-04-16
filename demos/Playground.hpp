@@ -21,8 +21,7 @@ struct Playground_App : public Topl_App {
 
 	// Configurations
 
-	static Topl_Camera camera1;
-	static Topl_Camera camera2;
+	static Topl_Camera camera1, camera2, camera3;
 	static Phys_Motion inOutMotion;
 	Topl_Scene scene_main, scene_overlay, scene_details;
 

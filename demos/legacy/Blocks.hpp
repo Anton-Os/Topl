@@ -90,11 +90,13 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer) {
+		renderer->setCamera(&App::camera);
+		
 		while (1) {
 			// App::scene.resolvePhysics();
 
 			renderer->clearView();
-			renderer->updateScene(&App::scene, &App::camera);
+			renderer->updateScene(&App::scene);
 			renderer->renderScene(&App::scene);
 			renderer->switchFramebuff();
 

@@ -1,12 +1,13 @@
 #include "Playground.hpp"
 
-// #define APP_BACKEND APP_OpenGL_4
-#define APP_BACKEND APP_DirectX_11
+#define APP_BACKEND APP_OpenGL_4
+// #define APP_BACKEND APP_DirectX_11
 
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 1.0f })
 
-Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho);
+Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, 3.0f);
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective);
+Topl_Camera Playground_App::camera3 = Topl_Camera(PROJECTION_Test);
 Phys_Motion Playground_App::inOutMotion = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 0.0f, 1.0f }), 4.0);
 
 void inOutEvent(double absSecs) {
@@ -24,7 +25,7 @@ void Playground_App::init() {
 	if (APP_BACKEND == APP_OpenGL_4) {
 		vertexShader1 = GL4_Textured_VertexShader();
 		fragShader1 = GL4_Textured_FragmentShader();
-		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE);
+		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_SOLID);
 		fragShader2 = GL4_Flat_FragmentShader();
 		tessCtrlShader = GL4_Advance_TessCtrlShader();
 		tessEvalShader = GL4_Advance_TessEvalShader();
@@ -32,7 +33,7 @@ void Playground_App::init() {
 	} else {
 		vertexShader1 = Drx11_Textured_VertexShader();
 		fragShader1 = Drx11_Textured_FragmentShader();
-		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE);
+		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_MATRIX);
 		fragShader2 = Drx11_Flat_FragmentShader();
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();

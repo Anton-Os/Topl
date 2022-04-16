@@ -80,6 +80,7 @@ Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
         case PROJECTION_Ortho: return genOrthoMatrix(bounds);
         case PROJECTION_Stereo: return genStereoMatrix(bounds);
         case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
+        case PROJECTION_Test: return MAT_4x4_TEST;
     }
 }
 

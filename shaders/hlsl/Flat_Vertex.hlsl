@@ -20,6 +20,17 @@ struct VS_OUTPUT {
 	float4 flatColor : COLOR0;
 };
 
+float4 matrixTest(float4x4 inputMatrix){
+	float4 testColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	if(inputMatrix[0][0] == 1.0f) testColor.r = 1.0f; // color.r;
+	if(inputMatrix[1][1] == 6.0f) testColor.g = 1.0f; // color.g;
+	if(inputMatrix[2][2] == 11.0f) testColor.b = 1.0f; // color.b;
+	if(inputMatrix[3][3] == 16.0f) testColor.a = 0.75f; // color.a
+
+	return testColor;
+}
+
 float3x3 calcRotMatrix(float2 rotCoords){
 	float3x3 zRotMatrix = {
 		cos(rotation.x), sin(rotation.x), 0,
@@ -53,10 +64,6 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 	return camMatrix;
 }
 
-float4 checkMatrixValid(float4x4 input){
-	return float4(input[0][0], input[1][1], input[2][2], input[3][3]);
-}
-
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
@@ -67,17 +74,22 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	final_pos = float4(rotCoords, 0.0) + final_trans; // rotation and translation
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
-	// output.pos = mul(final_pos, cameraMatrix); // no projection
-	output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
+	output.pos = mul(final_pos, cameraMatrix); // no projection
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
 	
-	if(mode == 0) output.flatColor = color; // default mode
-	else if(mode == 1) { // TODO: replace with custom color
+	if(mode == 0) output.flatColor = color; // solid mode
+	else if(mode == 1) { // alternate mode
 		switch(vertexID % 3){
 			case 0: output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f); break; // substract blue
 			case 1: output.flatColor = float4(1.0f, 0.0f, 1.0f, 0.8f); break; // substract green
 			case 2: output.flatColor = float4(0.0f, 1.0f, 1.0f, 0.8f); break; // substract red
 		}
-		// output.flatColor = color;
+	}
+	else if(mode == 2){ // matrix mode
+		output.flatColor = matrixTest(transpose(projMatrix));
+
+		if(color.x == 0.0f && color.y == 0.0f && color.z == 0.0f && color.a == 0.0f)
+			output.flatColor = float4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 	else output.flatColor = float4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
 
