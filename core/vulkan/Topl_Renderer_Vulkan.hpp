@@ -24,9 +24,9 @@ struct Topl_RenderContext_Vulkan : public Topl_RenderContext {
 
 class Topl_Renderer_Vulkan : public Topl_Renderer {
 public:
-	Topl_Renderer_Vulkan(NATIVE_WINDOW window){ 
+	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(){ 
 		init(window);
-		drawMode(); // sets default draw mode
+		drawMode(); // set default draw mode
 
 		_renderCtx_Vulkan = (Topl_RenderContext_Vulkan**)malloc(sizeof(Topl_RenderContext_Vulkan*) * MAX_RENDERER_CONTEXTS);
 	}
@@ -45,6 +45,7 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
+	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(const Topl_Scene* scene) override;

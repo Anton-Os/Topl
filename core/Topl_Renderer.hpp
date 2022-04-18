@@ -82,24 +82,29 @@ struct Topl_RenderContext {
     unsigned long* renderIDs = nullptr; // render ids associated with scene object
 };
 
-/* struct Topl_Viewport { // Begin adding support for multiple viewports!
-    Topl_Viewport(){ // Max Range Constructor
-        xCoords[0] = -1.0f; xCoords[1] = 1.0f;
-        yCoords[0] = -1.0f; yCoords[1] = 1.0f;
+#define MAX_VIEWPORTS 12
+
+struct Topl_Viewport {
+    Topl_Viewport(){} // Full-Screen Constructor
+
+    Topl_Viewport(unsigned x, unsigned y, unsigned w, unsigned h){
+        xOffset = x; yOffset = y;
+        width = w; height = h;
     }
 
-    Topl_Viewport(float x1, float x2, float y1, float y2){ // Max Range Constructor
-        xCoords[0] = x1; xCoords[1] = x2;
-        yCoords[0] = y1; yCoords[1] = y2;
-    }
-
-    float xCoords[2];
-    float yCoords[2];
-}; */
+    unsigned xOffset = 0; 
+    unsigned yOffset = 0;
+    unsigned width = TOPL_WIN_WIDTH;
+	unsigned height = TOPL_WIN_HEIGHT;
+};
 
 class Topl_Renderer {
 public:
-	virtual ~Topl_Renderer() {};
+    Topl_Renderer();
+    Topl_Renderer(std::initializer_list<Topl_Viewport> viewports);
+	virtual ~Topl_Renderer(){
+        if(_viewports != nullptr) free(_viewports);
+    };
 
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
@@ -132,6 +137,8 @@ protected:
     unsigned short _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
+    Topl_Viewport* _viewports = nullptr;
+    unsigned short _viewportCount = 0;
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isDrawn = false; // true after draw call, false after swap

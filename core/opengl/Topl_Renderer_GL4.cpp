@@ -1,6 +1,36 @@
 #include "opengl/Topl_Renderer_GL4.hpp"
 
 namespace Renderer {
+	// Shader Functions
+
+	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
+		unsigned offset = 0;
+
+		switch (type) {
+		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
+		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
+		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
+		case SHDR_float: offset = sizeof(float); break;
+		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
+		case SHDR_double: offset = sizeof(double); break;
+		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
+		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
+		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
+		case SHDR_uint: offset = sizeof(unsigned); break;
+		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
+		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
+		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
+		case SHDR_int: offset = sizeof(int); break;
+		default:
+			logMessage("Shader input type not supported!");
+			break;
+		}
+		return offset;
+	}
+
+
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
 		GLenum format;
 
@@ -34,33 +64,7 @@ namespace Renderer {
 		return size;
 	}
 
-	// Shared Renderer Code!
-	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
-		unsigned offset = 0;
-
-		switch(type) {
-		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
-		case SHDR_float: offset = sizeof(float); break;
-		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
-		case SHDR_double: offset = sizeof(double); break;
-		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint: offset = sizeof(unsigned); break;
-		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
-		case SHDR_int: offset = sizeof(int); break;
-		default:
-			logMessage(MESSAGE_Exclaim, "GL4 Type Shader Input Type Not Supported!");
-			break;
-		}
-		return offset;
-	}
+	// Buffer functions
 
 	static Buffer_GL4* findBuff(Buffer_GL4** buffers, enum BUFF_Type type) {
 		return *(buffers + type); // type arguments indicates the offset
@@ -71,6 +75,8 @@ namespace Renderer {
 			if (buff->targetID == id)
 				*(buffers + buff->type) = &(*buff); // type arguments indicates the offset
 	}
+
+	// Additional Funtions
 
 	static void setTextureProperties(GLenum type, TEX_Mode m) {
 		switch (m) {
@@ -168,9 +174,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	// Viewport Creation // add support for multiple!
-	glViewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
-
 	glEnable(GL_DEPTH_TEST); // make these customizable
 	glDepthFunc(GL_LESS); // make these customizable
 
@@ -184,7 +187,13 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
 
-
+	if(_viewportCount <= 1) // singular viewport
+		glViewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+	else // multiple viewports
+		for (unsigned short v = 0; v < _viewportCount; v++) {
+			Topl_Viewport* viewport = _viewports + v;
+			glViewportIndexedf(v, viewport->xOffset, viewport->yOffset, viewport->width, viewport->height);
+		}
 }
 
 void Topl_Renderer_GL4::clearView(){

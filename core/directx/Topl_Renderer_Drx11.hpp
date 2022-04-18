@@ -73,7 +73,7 @@ struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
-	Topl_Renderer_Drx11(HWND window) { 
+	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(){ 
 		init(window);
 		drawMode(); // sets default draw mode
 
@@ -94,6 +94,7 @@ public:
 #endif
 private:
 	void init(NATIVE_WINDOW window) override;
+	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(const Topl_Scene* scene) override;

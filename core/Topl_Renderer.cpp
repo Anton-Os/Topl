@@ -1,5 +1,20 @@
 #include "Topl_Renderer.hpp"
 
+Topl_Renderer::Topl_Renderer(){
+    _viewports = (Topl_Viewport*)malloc(sizeof(Topl_Viewport));
+
+    *_viewports = Topl_Viewport(); // full screen viewport
+    _viewportCount = 1;
+}
+
+Topl_Renderer::Topl_Renderer(std::initializer_list<Topl_Viewport> viewports){
+        _viewports = (Topl_Viewport*)malloc(viewports.size() * sizeof(Topl_Viewport));
+
+        for(unsigned short v = 0; v < viewports.size(); v++)
+            *(_viewports + v) = *(viewports.begin() + v); // copy data member
+        _viewportCount = viewports.size();
+}
+
 void Topl_Renderer::setCamera(const Topl_Camera* camera){ 
     if(camera != nullptr) _activeCamera = camera;
     else _activeCamera = &_defaultCamera;

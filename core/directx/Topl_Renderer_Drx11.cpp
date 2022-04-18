@@ -1,6 +1,36 @@
 #include "directx/Topl_Renderer_Drx11.hpp"
 
 namespace Renderer {
+	// Shader Functions
+
+	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
+		unsigned offset = 0;
+
+		switch (type) {
+		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
+		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
+		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
+		case SHDR_float: offset = sizeof(float); break;
+		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
+		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
+		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
+		case SHDR_double: offset = sizeof(double); break;
+		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
+		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
+		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
+		case SHDR_uint: offset = sizeof(unsigned); break;
+		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
+		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
+		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
+		case SHDR_int: offset = sizeof(int); break;
+		default:
+			logMessage("Shader input type not supported!");
+			break;
+		}
+
+		return offset;
+	}
+
 	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
 		DXGI_FORMAT format;
 
@@ -26,32 +56,16 @@ namespace Renderer {
 		return format;
 	}
 
-	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type){
-		unsigned offset = 0;
+	// Buffer Functions
 
-		switch(type) {
-		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
-		case SHDR_float: offset = sizeof(float); break;
-		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
-		case SHDR_double: offset = sizeof(double); break;
-		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint: offset = sizeof(unsigned); break;
-		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
-		case SHDR_int: offset = sizeof(int); break;
-		default:
-			logMessage("Drx11 shader input type not supported!");
-			break;
-		}
+	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) {
+		return *(buffs + type); // type arguments indicates the offset
+	}
 
-		return offset;
+	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) {
+		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
+			if (buff->targetID == id)
+				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
 	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuAccessFlags, const void* data){
@@ -86,6 +100,22 @@ namespace Renderer {
 		return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
 	}
 
+	// Additional Functions
+
+	static D3D11_VIEWPORT createViewport(const Topl_Viewport *const vp) {
+		D3D11_VIEWPORT viewport;
+		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+		viewport.TopLeftX = vp->xOffset;
+		viewport.TopLeftY = vp->yOffset;
+		viewport.Height = vp->height;
+		viewport.Width = vp->width;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+
+		return viewport;
+	}
+
 	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset){
 		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
 		inputElementDesc.SemanticName = input->semantic.c_str();
@@ -97,16 +127,6 @@ namespace Renderer {
 		inputElementDesc.InstanceDataStepRate = 0;
 
 		return inputElementDesc;
-	}
-
-	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) {
-		return *(buffs + type); // type arguments indicates the offset
-	}
-
-	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) {
-		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
-			if (buff->targetID == id)
-				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
 	static enum D3D11_TEXTURE_ADDRESS_MODE getTexMode(enum TEX_Mode mode){
@@ -202,21 +222,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
 
-
-	// Viewport Creation // add support for multiple!
-
-    D3D11_VIEWPORT viewport;
-	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Height = TOPL_WIN_HEIGHT;
-    viewport.Width = TOPL_WIN_WIDTH;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	_deviceCtx->RSSetViewports(1, &viewport);
-
 	// Blend State Creation
 
 	D3D11_BLEND_DESC blendStateDesc;
@@ -257,6 +262,20 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
+
+	// Viewport Creation // add support for multiple!
+
+	if (_viewportCount <= 1) { // singular viewport
+		Topl_Viewport vp = Topl_Viewport(); // full-screen viewport
+		D3D11_VIEWPORT viewport = Renderer::createViewport(&vp);
+
+		_deviceCtx->RSSetViewports(1, &viewport);
+	}
+	else { // multiple viewports
+		D3D11_VIEWPORT viewports[MAX_VIEWPORTS];
+
+		_deviceCtx->RSSetViewports(_viewportCount, &viewports[0]);
+	}
 }
 
 void Topl_Renderer_Drx11::clearView(){

@@ -10,27 +10,15 @@ SpatialBounds3D::SpatialBounds3D(float scaleFactor){
 }
 
 SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, float f){
-    float left = l;
-    float right = r;
-    float bottom = b;
-    float top = t;
-    float nearPlane = n;
-    float farPlane = f;
+    left = l; 
+    right = r;
+    bottom = b; 
+    top = t;
+    nearPlane = n; 
+    farPlane = f;
 }
 
 // Memory Operations
-
-void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
-    size_t paddingSize = PADDING_WIDTH - (dataSize % PADDING_WIDTH); // manually computed padding value
-    appendDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
-}
-
-void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes){
-    for(unsigned d = 0; d < dataSize + paddingSize; d++)
-        (d < dataSize && data_ptr + d != nullptr)
-            ? targetBytes->push_back(*(data_ptr + d)) // value is copied into targetBytes
-            : targetBytes->push_back(0); // otherwise zero padding is applied
-}
 
 void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
     targetBytes->clear();
@@ -40,25 +28,32 @@ void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
         if(data_ptr + d != nullptr) targetBytes->at(d) = *(data_ptr + d);
 }
 
+void alignDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes) {
+	for (unsigned d = 0; d < dataSize + paddingSize; d++)
+		(d < dataSize && data_ptr + d != nullptr)
+		? targetBytes->push_back(*(data_ptr + d)) // value is copied into targetBytes
+		: targetBytes->push_back(0); // otherwise zero padding is applied
+}
+
+void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
+    size_t paddingSize = PADDING_WIDTH - (dataSize % PADDING_WIDTH); // manually computed padding value
+    alignDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
+}
+
 // Mathematic Operations
 
 static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
-    /* Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
-        2.0f / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
+    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
+        (2.0f * bounds.nearPlane) / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
         0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (bounds.top + bounds.bottom) / (bounds.top - bounds.bottom), 0.0f,
         0.0f, 0.0f, (bounds.nearPlane + bounds.farPlane) / (bounds.nearPlane - bounds.farPlane), (2.0f * bounds.nearPlane * bounds.farPlane) / (bounds.nearPlane - bounds.farPlane),
-        0.0f, 0.0f, -1.0f, 0.0f}); */
-    Mat4x4 projMatrix = Mat4x4({ // From Real-Time rendering 
-        (2.0f * bounds.nearPlane) / (bounds.right - bounds.left), 0.0f, (-1.0f * (bounds.right + bounds.left)) / (bounds.right - bounds.left), 0.0f,
-        0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (-1.0f * (bounds.top + bounds.bottom)) / (bounds.top - bounds.bottom), 0.0f,
-        0.0f, 0.0f, (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane), (-2.0f * bounds.farPlane * bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
-        0.0f, 0.0f, 1.0f, 0.0f
+        0.0f, 0.0f, -1.0f, 0.0f
     });
     return projMatrix;
 }
 
 static Mat4x4 genOrthoMatrix(SpatialBounds3D bounds){
-    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 86
+    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
         2.0f / (bounds.right - bounds.left), 0.0f, 0.0f, (bounds.left + bounds.right) / (bounds.left - bounds.right),
         0.0f, 2.0f / (bounds.top - bounds.bottom), 0.0f, (bounds.bottom + bounds.top) / (bounds.bottom - bounds.top),
         0.0f, 0.0f, 2.0f / (bounds.nearPlane - bounds.farPlane), (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
@@ -80,7 +75,7 @@ Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
         case PROJECTION_Ortho: return genOrthoMatrix(bounds);
         case PROJECTION_Stereo: return genStereoMatrix(bounds);
         case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
-        case PROJECTION_Test: return MAT_4x4_TEST;
+        // case PROJECTION_Test: return MAT_4x4_TEST;
     }
 }
 

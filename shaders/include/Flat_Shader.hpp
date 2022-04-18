@@ -2,7 +2,6 @@
 
 #define FLAT_MODE_SOLID 0 // for semi-transparent white
 #define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors
-#define FLAT_MODE_MATRIX 2 // for testing projection matrix
 
 #define FLAT_COLOR_INC 0.002f // value for generating color id
 
@@ -40,9 +39,9 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
 	
 		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
+		alignDataToBytes(color_bytes, sizeof(Vec4f), NO_PADDING, bytes);
 		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
-		appendDataToBytes(color_bytes, sizeof(Vec4f), bytes);
 		
 		return true;
 	}

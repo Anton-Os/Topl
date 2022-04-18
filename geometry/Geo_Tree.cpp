@@ -3,8 +3,8 @@
 Geo_Tree::Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs){
     _prefix = prefix;
     _actorData = (Geo_Actor**)malloc(renderObjs.size() * sizeof(Geo_Actor*));
-    for(std::initializer_list<Geo_RenderObj*>::iterator currentRenderObj = renderObjs.begin(); currentRenderObj < renderObjs.end(); currentRenderObj++){
-        *(_actorData + _actorCount) = new Geo_Actor(*(currentRenderObj));
+    for(std::initializer_list<Geo_RenderObj*>::iterator renderObj = renderObjs.begin(); renderObj < renderObjs.end(); renderObj++){
+        *(_actorData + _actorCount) = new Geo_Actor(*(renderObj));
         _actorCount++;
     }
 }

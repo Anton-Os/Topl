@@ -3,11 +3,11 @@
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
 
-#define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 1.0f })
+#define VIEW_SPACE 3.0f
+#define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
-Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, 3.0f);
-Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective);
-Topl_Camera Playground_App::camera3 = Topl_Camera(PROJECTION_Test);
+Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, 1.5f);
+Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.5f);
 Phys_Motion Playground_App::inOutMotion = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 0.0f, 1.0f }), 4.0);
 
 void inOutEvent(double absSecs) {
@@ -33,7 +33,7 @@ void Playground_App::init() {
 	} else {
 		vertexShader1 = Drx11_Textured_VertexShader();
 		fragShader1 = Drx11_Textured_FragmentShader();
-		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_MATRIX);
+		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_SOLID);
 		fragShader2 = Drx11_Flat_FragmentShader();
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();
@@ -56,7 +56,7 @@ void Playground_App::init() {
 	boxedLayout.configure(&scene_overlay);
 
 	_renderer->setCamera(&camera1); // ortho projection
-	// _renderer->setCamera(&camera2); // perspective projection
+	_renderer->setCamera(&camera2); // perspective projection
 	_renderer->buildScene(&scene_main);
 	// _renderer->buildScene(&scene_overlay);
 	// _renderer->buildScene(&scene_details);

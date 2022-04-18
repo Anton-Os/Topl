@@ -101,7 +101,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
-	// output.pos = mul(mul(projMatrix, cameraMatrix), final_pos);
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
 
 	// Light Source Shadings
 	const float ambient_intensity = 0.1f; // ambient light intensity

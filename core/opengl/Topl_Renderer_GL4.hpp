@@ -59,7 +59,7 @@ struct Topl_RenderContext_GL4 : public Topl_RenderContext {
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
-	Topl_Renderer_GL4(NATIVE_WINDOW window){ 
+	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(){ 
 		init(window);
 		drawMode(); // sets default draw mode
 
@@ -80,6 +80,7 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
+	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(const Topl_Scene* scene) override;

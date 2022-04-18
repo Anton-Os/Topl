@@ -65,8 +65,8 @@ public:
 	vec3f_cptr_t getLookPos() const { return &_lookPos; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
-	Vec3f _pos = Vec3f({ 0.0, 0.0, -1.0 });
-	Vec3f _lookPos = Vec3f({ 0.0, 0.0, 0.0 });
+	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f });
+	Vec3f _lookPos = Vec3f({ 0.0f, 0.0f, 1.0f });
 	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
 };
 

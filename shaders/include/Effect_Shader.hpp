@@ -44,9 +44,11 @@ struct Effect_VertexShader : public Topl_EntryShader {
 
 		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(&screenRes.data[0]);
 		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(&cursorPos.data[0]);
-
-		appendDataToBytes(screenRes_bytes, 8, NO_PADDING, bytes);
-		appendDataToBytes(cursorPos_bytes, 8, NO_PADDING, bytes);
+		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
+	
+		alignDataToBytes(screenRes_bytes, sizeof(screenRes), NO_PADDING, bytes);
+		alignDataToBytes(cursorPos_bytes, sizeof(cursorPos), NO_PADDING, bytes);
+		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
 
 		return true;
 	}

@@ -1,4 +1,3 @@
-
 #include "Platform.hpp"
 
 #include "Topl_Scene.hpp"

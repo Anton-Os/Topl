@@ -175,13 +175,21 @@ endif()
 # -------------- Custom Targets ------------- #
 # Copying and managing implemented here with custom targets
 
-file(GLOB drx11_Shaders ${SHADERS_DIR}/hlsl/*.hlsl)
 file(GLOB gl4_Shaders ${SHADERS_DIR}/glsl/*.glsl)
-add_custom_target(ShaderEdit SOURCES ${drx11_Shaders} ${gl4_Shaders})
+file(GLOB drx11_Shaders ${SHADERS_DIR}/hlsl/*.hlsl)
+add_custom_target(ShaderEdit SOURCES ${gl4_Shaders} ${drx11_Shaders})
 
 add_dependencies(ShaderEdit GL4_ENGINE)
 if(WIN32)
   add_dependencies(ShaderEdit Drx11_ENGINE)
+endif()
+if(Vulkan_FOUND)
+    find_file(glslc_exec "glslc" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
+    # if(NOT ${glslc_exec} EQUAL "glslc_exec-NOTFOUND")
+        # foreach(shader IN ITEMS ${gl4_Shaders})
+            # Compile shaders to spirv and store in binary directory
+        #endforeach()
+    #endif()
 endif()
 
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")

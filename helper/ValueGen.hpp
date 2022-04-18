@@ -13,9 +13,9 @@ typedef const uint8_t* bytes_cptr; // intermediate type for all shader data
 #define NO_PADDING 0
 #define PADDING_WIDTH 16 // padding aligned by 4 byte boundaries
 
-void assignDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // overwrites all data inside bytes
-void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // computed padding appended
-void appendDataToBytes(bytes_cptr data, size_t dataSize, size_t paddingSize, blockBytes_t* bytes); // manual padding
+void assignDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // overwrites all data
+void alignDataToBytes(bytes_cptr data, size_t dataSize, size_t paddingSize, blockBytes_t* bytes); // aligns data, manual padding
+void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // appends data, computed 16-bit padding
 
 // Mathematic Operations
 
@@ -24,7 +24,7 @@ enum PROJECTION_Type {
     PROJECTION_Perspective,
     PROJECTION_Stereo,
     PROJECTION_Gnomonic,
-    PROJECTION_Test // for shader and computation tests
+    // PROJECTION_Test // for shader and computation tests
 };
 
 struct SpatialBounds3D { // Used in Matrix calculations
@@ -34,7 +34,7 @@ struct SpatialBounds3D { // Used in Matrix calculations
     
     float left = -1.0f; float right = 1.0f;
     float bottom = -1.0f; float top = 1.0f;
-    float nearPlane = 0; float farPlane = 1.0f;
+    float nearPlane = -1.0f; float farPlane = 1.0f;
 };
 
 Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds);
