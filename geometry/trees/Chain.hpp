@@ -1,8 +1,8 @@
 #include "Geo_Tree.hpp"
 
-struct Geo_Chain_Properties {
-	Geo_Chain_Properties() { directionVec = Vec3f({ 0.1f, 0.0f, 0.0f }); }
-    Geo_Chain_Properties(Vec3f d) { directionVec = d; }
+struct Geo_Chain_Params {
+	Geo_Chain_Params() { directionVec = Vec3f({ 0.1f, 0.0f, 0.0f }); }
+    Geo_Chain_Params(Vec3f d) { directionVec = d; }
     
     Vec3f directionVec;
 };
@@ -12,7 +12,7 @@ public:
     Geo_Chain( // Prebake Constructor
         const std::string& prefix, 
         const Geo_Actor* geo, 
-        const Geo_Chain_Properties& props,
+        const Geo_Chain_Params& props,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
@@ -28,7 +28,7 @@ public:
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
-        const Geo_Chain_Properties& props,
+        const Geo_Chain_Params& props,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
@@ -44,5 +44,5 @@ public:
     void configure(Topl_Scene* scene) override;
 private:
     Vec3f origin; // determines starting position for geometry
-    Geo_Chain_Properties properties;
+    Geo_Chain_Params properties;
 };

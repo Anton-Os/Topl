@@ -1,13 +1,12 @@
 #include "Topl_Renderer_Vulkan.hpp"
 
 namespace Renderer {
-	// include buffer creation and more
+	// include buffer creation and more functions
 }
 
 
 void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	_platformCtx.window = window;
-	_renderCtx_Vulkan = (Topl_RenderContext_Vulkan**)malloc(sizeof(Topl_RenderContext_Vulkan*) * MAX_RENDERER_CONTEXTS);
 	drawMode(); // set default draw mode
 }
 
@@ -33,20 +32,12 @@ Rasteron_Image* Topl_Renderer_Vulkan::frame() {
 }
 
 void Topl_Renderer_Vulkan::texturize(const Topl_Scene* scene) {
-	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Implement texturizing operations
 #endif
 }
 
 void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned id){
-	// TODO: find id corresponding to proper render context
-	// Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	Topl_RenderContext_Vulkan* activeCtx = *(_renderCtx_Vulkan); // for now gets the first available render context
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	// Implement texture attaching
 }
 
@@ -57,9 +48,6 @@ void Topl_Renderer_Vulkan::attachMaterial(const Topl_Material* material, unsigne
 #endif
 
 void Topl_Renderer_Vulkan::update(const Topl_Scene* scene){
-	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	// Implement update operations
 }
 
@@ -75,10 +63,6 @@ void Topl_Renderer_Vulkan::drawMode(){
 }
 
 void Topl_Renderer_Vulkan::render(const Topl_Scene* scene){
-	Topl_RenderContext_Vulkan* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	// Implement render operation
-
 	_isDrawn = true;
 }

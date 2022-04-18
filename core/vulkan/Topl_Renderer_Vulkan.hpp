@@ -55,14 +55,6 @@ private:
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;
-	Topl_RenderContext_Vulkan** _renderCtx_Vulkan; // stores multiple render contexts with unique scenes and ids
-
-	Topl_RenderContext_Vulkan* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
-		for (unsigned r = 0; r < _renderCtxIndex; r++)
-			if ((*(_renderCtx_Vulkan + r))->scene == scene) 
-				return *(_renderCtx_Vulkan + r);
-		return nullptr; // error
-	}
-
+	
 	// enum _drawMode_Vulkan; // Vulkan specific draw mode
 };

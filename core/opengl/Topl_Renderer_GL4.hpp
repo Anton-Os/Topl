@@ -90,20 +90,15 @@ private:
 #endif
 
 	Topl_Pipeline_GL4* _pipeline;
-	Topl_RenderContext_GL4** _renderCtx_GL4; // stores multiple render contexts with unique scenes and ids
-
-	Topl_RenderContext_GL4* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
-		for (unsigned r = 0; r < _renderCtxIndex; r++)
-			if ((*(_renderCtx_GL4 + r))->scene == scene) 
-				return *(_renderCtx_GL4 + r);
-		return nullptr; // error
-	}
 
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
-	GLuint _bufferSlots[GL4_BUFFER_MAX];
+	GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot
-	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX];
+	std::vector<Buffer_GL4> _buffers; // active buffers
+	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX]; // stores all vertex arrays
 	unsigned _vertexArrayIndex = 0; // increments to indicate next available vertex array slot
-	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX];
+	std::vector<VertexArray_GL4> _vertexArrays; // active vertex arrays
+	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX]; // stores all textures
 	unsigned _textureIndex = 0; // increments to indicate next available texture slot
+	std::vector<Texture_GL4> _textures; // active textures
 };

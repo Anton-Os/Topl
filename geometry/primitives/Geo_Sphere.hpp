@@ -6,8 +6,8 @@ class Geo_Sphere : public Geo_RenderObj {
 public:
     Geo_Sphere(NGon3D refShape)
     : Geo_RenderObj(
-        (refShape.xSegments * refShape.ySegments) + 2 // slices and stacks + top and bottom vertices
-        // (refShape.ySegments * 6) + ((refShape.xSegments * refShape.ySegments) * 6) // Index Count
+        ((refShape.xSegments + 1) * (refShape.ySegments + 1)), // slices and stacks
+        ((refShape.xSegments + 1) * (refShape.ySegments + 1)) * 6 // Index Count
     ){
         _shape3D = refShape;
         fillRenderObj();

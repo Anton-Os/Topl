@@ -2,13 +2,20 @@
 
 class Geo_Extruded : public Geo_RenderObj {
 public:
-    // All Shape Constructor
-    Geo_Extruded(NGon2D refShape, float depth) 
+    Geo_Extruded(NGon2D refShape) // Generic Constructor
     : Geo_RenderObj
-        ((refShape.segments + 1) * 2, // Vertex count is number of segments +1 for the center point but DOUBLED for the back face as well
-        // refShape.segments * 12 ){ // each segment has a front trig, a back trig, and two side trigs for a total of 12 indices
-        refShape.segments * 12 ){ // for testing! replace this!
-        _shape2D = refShape; // copy to internal data
+        ((refShape.segments + 1) * 2, // center point on front and back + segments
+        refShape.segments * 12 ){ // triangle for front and back and 2 for sides
+        _shape2D = refShape;
+        _depth = _shape2D.radius;
+        fillRenderObj();
+    }
+
+    Geo_Extruded(NGon2D refShape, float depth) // Depth Constructor
+    : Geo_RenderObj
+        ((refShape.segments + 1) * 2, // center point on front and back + segments
+        refShape.segments * 12 ){ // triangle for front and back and 2 for sides
+        _shape2D = refShape;
         _depth = depth;
         fillRenderObj();
     }
@@ -26,19 +33,22 @@ private:
 };
 
 struct Geo_ExtrudedTriangle : public Geo_Extruded { 
+    Geo_ExtrudedTriangle(float radius) : Geo_Extruded({ radius, 3 }){}
     Geo_ExtrudedTriangle(float radius, float depth) : Geo_Extruded({ radius, 3 }, depth){}
 };
 
-class Geo_ExtrudedSquare : public Geo_Extruded { // i.e. Box
-public:
+struct Geo_ExtrudedSquare : public Geo_Extruded { // Box
+    Geo_ExtrudedSquare(float radius) : Geo_Extruded({ radius, 4 }){}
     Geo_ExtrudedSquare(float radius, float depth) : Geo_Extruded({ radius, 4 }, depth){}
 };
 
 struct Geo_ExtrudedHex : public Geo_Extruded {
+    Geo_ExtrudedHex(float radius) : Geo_Extruded({ radius, 6 }){}
     Geo_ExtrudedHex(float radius, float depth) : Geo_Extruded({ radius, 6 }, depth){}
 };
 
-struct Geo_ExtrudedCircle : public Geo_Extruded { // i.e. Cylinder
+struct Geo_ExtrudedCircle : public Geo_Extruded { // Cylinder
+    Geo_ExtrudedCircle(float radius) : Geo_Extruded({ radius, DEFAULT_CIRCLE_SEGS }){}
     Geo_ExtrudedCircle(float radius, float depth) : Geo_Extruded({ radius, DEFAULT_CIRCLE_SEGS }, depth){}
 };
 

@@ -132,15 +132,10 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_dsView->Release();
 	_blendState->Release();
 	_rasterizerState->Release();
-
-	for (unsigned r = 0; r < _renderCtxIndex; r++)
-		delete(*(_renderCtx_Drx11 + r)); // delete individual render contexts
-	free(_renderCtx_Drx11); // free the render context heap
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	_platformCtx.window = window;
-	_renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -277,9 +272,6 @@ void Topl_Renderer_Drx11::switchFramebuff(){
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	*(_renderCtx_Drx11 + _renderCtxIndex) = new Topl_RenderContext_Drx11(scene); // creation of new render context
-	Topl_RenderContext_Drx11* activeCtx = *(_renderCtx_Drx11 + _renderCtxIndex);
-
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 	// generating an input layout based on Vertex Shader Inputs
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
@@ -298,13 +290,12 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	);
 
 	_deviceCtx->IASetInputLayout(_vertexDataLayout);
-
 	free(layout_ptr); // deallocating layout_ptr and all associated data
 
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_isBuilt = Renderer::createBlockBuff(&_device, &activeCtx->sceneBlockBuff, &blockBytes);
-		activeCtx->buffers.push_back(Buffer_Drx11(activeCtx->sceneBlockBuff));
+		_isBuilt = Renderer::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
+		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
@@ -319,7 +310,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isBuilt = Renderer::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
-			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
+			_buffers.push_back(Buffer_Drx11(rID, BUFF_Render_Block, renderBlockBuff));
 		}
 		if (!_isBuilt) return; // Error
 
@@ -327,15 +318,15 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		ID3D11Buffer* indexBuff = nullptr;
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
 			_isBuilt = Renderer::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
-			activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
+			_buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
 		}
-		else activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
+		else _buffers.push_back(Buffer_Drx11(rID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isBuilt) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isBuilt = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
 
-		activeCtx->buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_Drx11(rID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
 		if (!_isBuilt) return;
 
 		if (!_isBuilt) return;
@@ -385,17 +376,14 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 }
 
 void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
-	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-		
 #ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Need to clear saved textures entirely for texture update
-	for (unsigned t = 0; t < activeCtx->textures.size(); t++) {
-		activeCtx->textures.at(t).texture->Release();
-		activeCtx->textures.at(t).sampler->Release();
-		activeCtx->textures.at(t).resView->Release();
+	for (unsigned t = 0; t < _textures.size(); t++) {
+		_textures.at(t).texture->Release();
+		_textures.at(t).sampler->Release();
+		_textures.at(t).resView->Release();
 	}
-	activeCtx->textures.clear();
+	_textures.clear();
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
@@ -409,11 +397,6 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 }
 
 void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned id){
-	// TODO: find id corresponding to proper render context
-	// Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	Topl_RenderContext_Drx11* activeCtx = *(_renderCtx_Drx11); // for now gets the first available render context
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	HRESULT result; // For viewing potential issues
 
 	D3D11_SAMPLER_DESC sd;
@@ -466,7 +449,7 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned id
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	activeCtx->textures.push_back(Texture_Drx11(id, TEX_2D, _texMode, texture, sampler, resView));
+	_textures.push_back(Texture_Drx11(id, TEX_2D, _texMode, texture, sampler, resView));
 }
 
 void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned id) {
@@ -476,21 +459,18 @@ void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned
 #endif
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene){
-	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && activeCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
-		Renderer::createBlockBuff(&_device, &activeCtx->buffers.front().buffer, &blockBytes); // Update code should work
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+		Renderer::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		unsigned rID = g + 1;
 		actor_cptr actor = scene->getGeoActor(rID - 1); // ids begin at 1, conversion is required
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			for (std::vector<Buffer_Drx11>::iterator buff = activeCtx->buffers.begin(); buff < activeCtx->buffers.end(); buff++)
+			for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 				if (buff->targetID == rID && buff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*buff);
 					break;
@@ -514,12 +494,9 @@ void Topl_Renderer_Drx11::drawMode(){
 }
 
 void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
-	Topl_RenderContext_Drx11* activeCtx = getRenderContext(scene);
-	if (activeCtx == nullptr) return logMessage(MESSAGE_Exclaim, "Render Context could not be found!");
-
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
-	if (activeCtx->buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_Drx11* sceneBlockBuff = &activeCtx->buffers.front();
+	if (_buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		if(sceneBlockBuff != nullptr)
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
@@ -529,7 +506,7 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 	// Rendering Loop!
 	if (_isPipelineReady && _isBuilt)
 		for (unsigned id = _renderIDs; id >= 1; id--) {
-			Renderer::discoverBuffers(buffs, &activeCtx->buffers, id);
+			Renderer::discoverBuffers(buffs, &_buffers, id);
 
 			Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
 			Buffer_Drx11* indexBuff = Renderer::findBuff(buffs, BUFF_Index_UI);
@@ -549,11 +526,11 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene){
 			if(indexBuff != nullptr && indexBuff->count > 0)
 				_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			for (unsigned t = 0; t < activeCtx->textures.size(); t++) {
-				if (activeCtx->textures.at(t).targetID > id) break; // Geometry actor is passed in sequence 
-				else if (activeCtx->textures.at(t).targetID == id) {
-					ID3D11SamplerState* baseSampler = activeCtx->textures.at(t).sampler;
-					ID3D11ShaderResourceView* resView = activeCtx->textures.at(t).resView;
+			for (unsigned t = 0; t < _textures.size(); t++) {
+				if (_textures.at(t).targetID > id) break; // Geometry actor is passed in sequence 
+				else if (_textures.at(t).targetID == id) {
+					ID3D11SamplerState* baseSampler = _textures.at(t).sampler;
+					ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 
 					_deviceCtx->PSSetShaderResources(0, 1, &resView);
 					_deviceCtx->PSSetSamplers(0, 1, &baseSampler);

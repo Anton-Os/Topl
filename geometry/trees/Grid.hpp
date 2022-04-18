@@ -2,10 +2,10 @@
 
 typedef std::pair<unsigned short, float> gridAttrib_pair;
 
-struct Geo_Grid_Properties {
-	Geo_Grid_Properties() {}
-	Geo_Grid_Properties(gridAttrib_pair attribs); // Uniform sides constructor
-	Geo_Grid_Properties( // Variable sides constructor
+struct Geo_Grid_Params {
+	Geo_Grid_Params() {}
+	Geo_Grid_Params(gridAttrib_pair attribs); // Uniform sides constructor
+	Geo_Grid_Params( // Variable sides constructor
 		gridAttrib_pair xA,
 		gridAttrib_pair yA,
 		gridAttrib_pair zA
@@ -24,7 +24,7 @@ public:
 	Geo_Grid( // Prebake Constructor
         const std::string& prefix,
         const Geo_Actor* geo, 
-        const Geo_Grid_Properties& props
+        const Geo_Grid_Params& props
 	) : Geo_Tree(prefix, geo, props.getCellCount()),
 	Geo_DynamicSet(props.getCellCount()){
         properties = props;
@@ -39,7 +39,7 @@ public:
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
-        const Geo_Grid_Properties& props
+        const Geo_Grid_Params& props
 	) : Geo_Tree(prefix, geo, props.getCellCount()),
 	Geo_DynamicSet(props.getCellCount()){
         properties = props;
@@ -51,9 +51,8 @@ public:
 		configure(scene);
     }
 
-	// void blockNode(Geo_Grid_CellIndex cellIndex){ blocks.push_back(cellIndex); } // blocks a node from being displayed
 	void configure(Topl_Scene* scene) override;
 private:
 	Vec3f origin; // determines starting position for geometry
-    Geo_Grid_Properties properties;
+    Geo_Grid_Params properties;
 };

@@ -8,6 +8,17 @@
 #include "Topl_Scene.hpp"
 
 #define SPECIAL_SCENE_RENDER_ID 0
+#define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
+#define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
+#define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
+#define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
+
+#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
+#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
+#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
+#define MAX_PIPELINES 24 // limits number of unique pipelines
+#define MAX_SHADERS 24 * 5  // limits number of unique shaders
+#define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 
 struct RenderTarget {
 	RenderTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
@@ -32,19 +43,6 @@ struct Buffer : public RenderTarget {
     unsigned count = 1; // no. of primitives
 };
 
-#define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
-#define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
-#define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
-#define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
-
-#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
-#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
-#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
-#define MAX_PIPELINES 24 // limits number of unique pipelines
-#define MAX_SHADERS 24 * 5  // limits number of unique shaders
-#define MAX_RENDERER_CONTEXTS 24 // limits number of unique render contexts
-#define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
-
 enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
@@ -67,12 +65,18 @@ enum DRAW_Mode {
 	DRAW_Strip
 };
 
-struct Topl_RenderContext {
-    Topl_RenderContext(const Topl_Scene *const s) : scene(s) { // Rigid Scene Constructor
+#define MAX_RENDERER_CONTEXTS 24 // max number of unique render contexts
+
+struct Topl_RenderContext { // stores a collection fo ids used to look for render targets
+    Topl_RenderContext() : scene(nullptr){} // Empty Constructor
+    Topl_RenderContext(const Topl_Scene *const s) : scene(s) { // Rigid Constructor
         renderIDs = (unsigned long*)malloc(scene->getActorCount());
     }
-    Topl_RenderContext(const Topl_Scene *const s, unsigned idCount) : scene(s) { // Dynamic Scene Constructor
+    Topl_RenderContext(const Topl_Scene *const s, unsigned idCount) : scene(s) { // Expanded Constructor
         renderIDs = (unsigned long*)malloc(idCount);
+    }
+    Topl_RenderContext(const Topl_RenderContext& renderContext) : scene(renderContext.scene) {
+        // copy renderIDs here!
     }
     ~Topl_RenderContext(){
         if(renderIDs != nullptr) free(renderIDs);
@@ -82,11 +86,10 @@ struct Topl_RenderContext {
     unsigned long* renderIDs = nullptr; // render ids associated with scene object
 };
 
-#define MAX_VIEWPORTS 12
+#define MAX_VIEWPORTS 12 // max number of separate viewports
 
 struct Topl_Viewport {
     Topl_Viewport(){} // Full-Screen Constructor
-
     Topl_Viewport(unsigned x, unsigned y, unsigned w, unsigned h){
         xOffset = x; yOffset = y;
         width = w; height = h;
@@ -126,15 +129,11 @@ public:
     // void frameCapture(Topl_Frames* frames);
 #endif
 protected:
-    // TODO: Add method for fetching render context based on scene
-    // TODO: Add buffer location utilities
-
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific variables
-    // const Topl_Pipeline* _pipeline;
+    Topl_RenderContext* _activeRenderCtx; // active render context
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
-    unsigned short _renderCtxIndex = 0; // tracks the render context in use
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
     Topl_Viewport* _viewports = nullptr;
@@ -156,6 +155,9 @@ private:
 
     Topl_Frames frameCache = Topl_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
+
+    Topl_RenderContext _renderContexts[MAX_RENDERER_CONTEXTS]; // stores all render contexts
+    unsigned short _renderCtxIndex = 0; // tracks the render context in use
 };
 
 #define TOPL_RENDERER_H

@@ -62,15 +62,6 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* gsBlob = nullptr;
 };
 
-struct Topl_RenderContext_Drx11 : public Topl_RenderContext {
-	Topl_RenderContext_Drx11(const Topl_Scene *const s) : Topl_RenderContext(s){}
-	Topl_RenderContext_Drx11(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
-
-	ID3D11Buffer* sceneBlockBuff = nullptr; // Drx11 buffer target for scene block data
-	std::vector<Buffer_Drx11> buffers;
-	std::vector<Texture_Drx11> textures;
-};
-
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
 	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(){ 
@@ -105,14 +96,6 @@ private:
 
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	Topl_Pipeline_Drx11* _pipeline = nullptr;
-	Topl_RenderContext_Drx11** _renderCtx_Drx11; // stores multiple render contexts with unique scenes and ids
-
-	Topl_RenderContext_Drx11* getRenderContext(const Topl_Scene* scene) { // finds render context matching input
-		for (unsigned r = 0; r < _renderCtxIndex; r++)
-			if ((*(_renderCtx_Drx11 + r))->scene == scene) 
-				return *(_renderCtx_Drx11 + r);
-		return nullptr; // error
-	}
 
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;
@@ -123,4 +106,8 @@ private:
 	ID3D11ShaderResourceView* _resourceView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;
+
+	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
+	std::vector<Buffer_Drx11> _buffers;
+	std::vector<Texture_Drx11> _textures;
 };

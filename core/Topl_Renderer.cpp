@@ -38,6 +38,7 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
         return false;
     }
 
+    // TODO: Generate new Render Context
     build(scene);
     _renderCtxIndex++;
     texturize(scene);
@@ -49,6 +50,7 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for update call!");
     if(!_isPipelineReady || !_isBuilt) return false; // failure
 
+    // TODO: Set active Render Context
     update(scene);
     return _isBuilt;
 }
@@ -67,6 +69,7 @@ bool Topl_Renderer::renderScene(Topl_Scene* scene){
         return false; // failure
     }
 
+    // TODO: Set active Render Context
     render(scene);
     _frameIDs++; // increment frame counter
     return _isDrawn; // render call sets variable to true on success
@@ -95,3 +98,21 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     deleteImg(image);
     return color; // return color computed at offsets
 }
+
+/* Topl_RenderContext* Topl_Renderer::genRenderContext(){
+    if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS - 1){
+        logMessage(MESSAGE_Exclaim, "Max render contexts exceeded!");
+        return &_renderContexts[MAX_RENDERER_CONTEXTS - 1]; // fetch last available render context
+    }
+    
+    _renderCtxIndex++; // move to next available render context
+    return &_renderContexts[_renderCtxIndex - 1];
+}
+
+Topl_RenderContext* Topl_Renderer::getRenderContext(const Topl_Scene *const scene){
+    // search for existing context
+    for(unsigned r = 0; r < _renderCtxIndex; r++)
+        if(_renderContexts[r].scene == scene) return &_renderContexts[r];
+
+    return nullptr; // no render context found
+} */

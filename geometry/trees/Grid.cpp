@@ -4,17 +4,17 @@ namespace _Grid {
     std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
 }
 
-Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair attribs){
+Geo_Grid_Params::Geo_Grid_Params(gridAttrib_pair attribs){
     xAttr = attribs; yAttr = attribs; zAttr = attribs;
     clamp();
 }
 
-Geo_Grid_Properties::Geo_Grid_Properties(gridAttrib_pair xA, gridAttrib_pair yA, gridAttrib_pair zA){
+Geo_Grid_Params::Geo_Grid_Params(gridAttrib_pair xA, gridAttrib_pair yA, gridAttrib_pair zA){
     xAttr = xA; yAttr = yA; zAttr = zA;
     clamp();
 }
 
-void Geo_Grid_Properties::clamp(){
+void Geo_Grid_Params::clamp(){
     if(xAttr.first == 0) xAttr.first++;
 	if(yAttr.first == 0) yAttr.first++;
 	if(zAttr.first == 0) zAttr.first++;

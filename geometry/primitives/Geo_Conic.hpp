@@ -2,12 +2,20 @@
 
 class Geo_Conic : public Geo_RenderObj {
 public:
-    // All Shape Constructor
-    Geo_Conic(NGon2D refShape, Vec3f apex) 
+    Geo_Conic(NGon2D refShape) // Generic Constructor
     : Geo_RenderObj
-    (refShape.segments + 2, // Vertex count is number of segments +1 for the center point and +1 for the apex point
-     refShape.segments * 6){ // Each segment requires 1 triangle for base and 1 triangle to connect to apex (6 vertices total)
-        _shape2D = refShape; // copy to internal data
+    (refShape.segments + 2, // segments +1 for apex and +1 for center
+     refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
+        _shape2D = refShape;
+        _apex = Vec3f({ 0.0f, 0.0f, -1.0f * refShape.radius });
+        fillRenderObj();
+    }
+
+    Geo_Conic(NGon2D refShape, Vec3f apex) // Apex Constructor
+    : Geo_RenderObj
+    (refShape.segments + 2,  // segments +1 for apex and +1 for center
+     refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
+        _shape2D = refShape;
         _apex = apex;
         fillRenderObj();
     }
@@ -24,18 +32,22 @@ private:
 };
 
 struct Geo_ConicTriangle : public Geo_Conic { 
+    Geo_ConicTriangle(float radius) : Geo_Conic({ radius, 3 }){}
     Geo_ConicTriangle(float radius, Vec3f apex) : Geo_Conic({ radius, 3 }, apex){}
 };
 
-struct Geo_ConicSquare : public Geo_Conic { // i.e. Pyra_id
+struct Geo_ConicSquare : public Geo_Conic { // Pyramid
+Geo_ConicSquare(float radius) : Geo_Conic({ radius, 4 }){}
     Geo_ConicSquare(float radius, Vec3f apex) : Geo_Conic({ radius, 4 }, apex){}
 };
 
 struct Geo_ConicHex : public Geo_Conic {
+    Geo_ConicHex(float radius) : Geo_Conic({ radius, 6 }){}
     Geo_ConicHex(float radius, Vec3f apex) : Geo_Conic({ radius, 6 }, apex){}
 };
 
-struct Geo_ConicCircle : public Geo_Conic { // i.e. Cone
+struct Geo_ConicCircle : public Geo_Conic { // Cone
+    Geo_ConicCircle(float radius) : Geo_Conic({ radius, DEFAULT_CIRCLE_SEGS }){}
     Geo_ConicCircle(float radius, Vec3f apex) : Geo_Conic({ radius, DEFAULT_CIRCLE_SEGS }, apex){}
 };
 

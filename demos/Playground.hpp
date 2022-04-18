@@ -8,6 +8,7 @@
 #include "Layered_Shader.hpp"
 #include "Advance_Shader.hpp"
 
+#include "Primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Sphere.hpp"
 #include "trees/Grid.hpp"
 #include "trees/Pane.hpp"
@@ -31,10 +32,10 @@ private:
 	// Geometries and Drawable Objects
 	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 200, 200 });
 	Geo_Actor sphereActor = Geo_Actor((Geo_RenderObj*)&sphere);
-
-	// Geo_Grid grid = Geo_Grid("grid", &squareActor, Geo_Grid_Properties(std::make_pair(80, 0.25f)));
-	Geo_FlatSquare captureSquare = Geo_FlatSquare(0.5f);
-	Geo_Actor captureActor = Geo_Actor((Geo_RenderObj*)&captureSquare);
+	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.1f);
+	Geo_Actor coneActor = Geo_Actor((Geo_RenderObj*)&cone1);
+	Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
+	Geo_Grid grid = Geo_Grid("grid", &coneActor, gridParams);
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 5);
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 2);
 

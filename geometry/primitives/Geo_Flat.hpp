@@ -4,21 +4,19 @@
 
 class Geo_Flat : public Geo_RenderObj {
 public:
-    // Generic Constructor
-    Geo_Flat(NGon2D refShape) 
+    Geo_Flat(NGon2D refShape) // Generic Constructor
     : Geo_RenderObj
-    (refShape.segments + 1, // vertex count is number of segments +1 for the center point
-     refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
-        _shape2D = refShape; // copy to internal data
+        (refShape.segments + 1, // vertex count is number of segments +1 for the center point
+        refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
+        _shape2D = refShape;
         fillRenderObj();
     }
 
-    // Z Value Constructor
-    Geo_Flat(NGon2D refShape, float z) 
+    Geo_Flat(NGon2D refShape, float z) // Z Value Constructor
     : Geo_RenderObj
     (refShape.segments + 1, // vertex count is number of segments +1 for the center point
      refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
-        _shape2D = refShape; // copy to internal data
+        _shape2D = refShape;
         _depth = z;
         fillRenderObj();
     }

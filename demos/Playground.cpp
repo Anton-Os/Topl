@@ -1,7 +1,7 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 1.0f
@@ -48,6 +48,7 @@ void Playground_App::init() {
 	// Configurations, Geometry, and Scene Creation
 
 	// sphereActor.setPos(Vec3f({ -0.5f, 0.5f, 0.0f }));
+	
 	scene_main.addGeometry(&sphereActor);
 
 	// scene_overlay.addGeometry("captureSquare", &captureSquare);
@@ -76,6 +77,7 @@ void Playground_App::loop(unsigned long frame) {
 }
 
 void Playground_App::postFrame() {
+	// checking pixel colors
 	unsigned pixel1 = _renderer->getPixelAt(0.5f, 0.5f); // upper right test
 	unsigned pixel2 = _renderer->getPixelAt(0.5f, -0.5f); // lower right test
 	unsigned pixel3 = _renderer->getPixelAt(-0.5f, -0.5f); // lower left test
