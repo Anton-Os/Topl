@@ -1,21 +1,19 @@
+// #include "Utility.hlsl"
+
 cbuffer CONST_BLOCK : register(b0) {
 	float3 offset;
 	float2 rotation;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
+	uint mode;
 	float4 cam_pos;
 	float4 look_pos;
 	// float4x4 projMatrix;
 
-	float3 skyLight_pos;
-	float3 skyLight_value;
-
-	float3 flashLight_pos;
-	float3 flashLight_value;
-
-	float3 lampLight_pos;
-	float3 lampLight_value;
+	float3 skyLight_pos; float3 skyLight_value;
+	float3 flashLight_pos; float3 flashLight_value;
+	float3 lampLight_pos; float3 lampLight_value;
 }
 
 struct VS_INPUT {
@@ -24,12 +22,12 @@ struct VS_INPUT {
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
+	float3 lampLight_pos : POSITION;
 
+	// uint mode: MODE;
 	float3 ambient : COLOR0;
 	float3 diffuse : COLOR1;
 	float3 specular : COLOR2;
-
-	float4 lampShine : COLOR4; // special light that prduces shine
 };
 
 float sharpen(float intensity, uint curve){
@@ -55,6 +53,7 @@ float calcDiffuseIntensity(float3 light, float3 target){
 	// return intensity;
 	return intensity * attenuation;
 }
+
 
 float3x3 calcRotMatrix(float2 rotCoords){
 	float3x3 zRotMatrix = {
@@ -92,16 +91,16 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
+	// Value Shadings
 	float3 vertex_pos = float3(input.pos.x, input.pos.y, input.pos.z);
-	float4 final_pos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
-	float4 final_trans = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
-
-	float3 rotCoords = mul(calcRotMatrix(float2(rotation.x, rotation.y)), vertex_pos);
-	final_pos = float4(rotCoords, 0.0) + final_trans; // rotation and translation
+	float4 transCoords = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
+	float3 rotCoords = mul(calcRotMatrix(float2(rotation.x, rotation.y)), vertex_pos);	
+	float4 final_pos = float4(rotCoords, 0.0) + transCoords; // rotation and translation
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
 	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
+	output.lampLight_pos = lampLight_pos;
 
 	// Light Source Shadings
 	const float ambient_intensity = 0.1f; // ambient light intensity
@@ -110,10 +109,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, vertex_pos);
 	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, vertex_pos, cam_pos);
-	output.specular = specular_intensity * flashLight_value; // only flash light affects specular 
-
-	// output.lampShine = float4(lampLight_value, 1.0); // default shine
-	output.lampShine = float4(lampLight_value, dot(input.pos, lampLight_pos)); // calculated shine
+	output.specular = specular_intensity * flashLight_value; // only flash light affects specular
 
 	return output;
 }

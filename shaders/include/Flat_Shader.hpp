@@ -36,9 +36,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		
 		Vec4f color = genFlatColor(actor);
 		bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(&color);
-		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
 	
-		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
 		alignDataToBytes(color_bytes, sizeof(Vec4f), NO_PADDING, bytes);
 		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
@@ -49,10 +47,12 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
 
+		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
 		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
 		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
 		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
 
+		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
 		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec3f), bytes);
 		appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
@@ -63,10 +63,10 @@ protected:
 	Vec4f genFlatColor(const Geo_Actor* const actor) const {
 		float colorInc = (float)((actor->getId() / 6) * FLAT_COLOR_INC);
 		switch(actor->getId() % 7){
-			case 0: return Vec4f({ 1.0f, colorInc, 1.0f, _alphaVal }); // magenta to white
-			case 1: return Vec4f({ 0.0f, 1.0f - colorInc, 0.0f, _alphaVal }); // green to black
-			case 2: return Vec4f({ colorInc, 1.0f, 1.0f, _alphaVal }); // cyan to white
-			case 3: return Vec4f({ 1.0f - colorInc, 0.0f, 0.0f, _alphaVal }); // red to black
+			case 0: return Vec4f({ colorInc, 1.0f, 1.0f, _alphaVal }); // cyan to white
+			case 1: return Vec4f({ 1.0f - colorInc, 0.0f, 0.0f, _alphaVal }); // red to black
+			case 2: return Vec4f({ 1.0f, colorInc, 1.0f, _alphaVal }); // magenta to white
+			case 3: return Vec4f({ 0.0f, 1.0f - colorInc, 0.0f, _alphaVal }); // green to black
 			case 4: return Vec4f({ 1.0f, 1.0f, colorInc, _alphaVal }); // yellow to white
 			case 5: return Vec4f({ 0.0f, 0.0f, 1.0f - colorInc, _alphaVal }); // blue to black
 			case 6: return Vec4f({ colorInc, colorInc, colorInc, _alphaVal }); // greyscale

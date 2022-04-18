@@ -3,7 +3,7 @@ struct PS_INPUT {
 	uint2 screenRes : RESOLUTION;
 	float2 cursorPos : CURSOR;
 	uint mode : MODE;
-	uint actorID : ACTOR;
+	uint id : ACTOR;
 };
 
 /* float3 quadTest(float2 pixelCoord){

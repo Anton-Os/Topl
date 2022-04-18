@@ -7,27 +7,25 @@ layout(std140, binding = 0) uniform Block {
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
+	uint mode;
 	vec3 look_pos;
 	vec3 cam_pos;
 	// mat4 projMatrix;
 
-	vec3 skyLight_pos;
-	vec3 skyLight_value;
-
-	vec3 flashLight_pos;
-	vec3 flashLight_value;
-
-	vec3 lampLight_pos;
-	vec3 lampLight_value;
+	vec3 skyLight_pos; vec3 skyLight_value;
+	vec3 flashLight_pos; vec3 flashLight_value;
+	vec3 lampLight_pos; vec3 lampLight_value;
 };
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out vec3 ambient_out;
-layout(location = 1) out vec3 diffuse_out;
-layout(location = 2) out vec3 specular_out;
-layout(location = 3) out vec4 lampShine_out;
+layout(location = 0) flat out uint mode_out;
+layout(location = 1) out vec3 pos_out;
+layout(location = 2) out vec3 ambient_out;
+layout(location = 3) out vec3 diffuse_out;
+layout(location = 4) out vec3 specular_out;
+// layout(location = 3) out vec4 lampShine_out;
 
 vec3 reflect(vec3 light, vec3 target){
 	return light - ((2 * dot(light, normalize(target)) * normalize(target))); 
@@ -44,6 +42,11 @@ float calcDiffuseIntensity(vec3 light, vec3 target){
 	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
 	// return intensity;
 	return intensity * attenuation;
+}
+
+float calcAmbientIntensity(vec3 light){
+	const float attenuation = 0.1;
+	return ((light.r * attenuation) + (light.g * attenuation) + (light.b * attenuation)) / 3;
 }
 
 mat3 calcRotMatrix(vec2 rotCoords){
@@ -80,15 +83,17 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 }
 
 void main() {
-	vec4 final_pos = vec4(0.0, 0.0, 0.0, 0.0);
-	vec3 final_trans = pos + offset;
-
-	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos;
-	final_pos = vec4(rotCoords, 0.0) + vec4(final_trans, 1.0); // rotation and translation
+	// Value Shadings
+	vec3 transCoords = pos + offset; // translated coordinates
+	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos; // rotated coordinates
+	vec4 final_pos = vec4(rotCoords, 0.0) + vec4(transCoords, 1.0);
 	
+	mode_out = mode;
+	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
 
-	const float ambient_intensity = 0.1f; // ambient light intensity
+	// Light Source Shadings
+	const float ambient_intensity = 0.1f; // calcAmbientIntensity(sky_light); // ambient light intensity
 	ambient_out = ambient_intensity * skyLight_value; // only sky light affects ambient property
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, pos);
 	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, pos);
@@ -98,6 +103,4 @@ void main() {
 	specular_out = reflect(flashLight_pos, pos); // for testing
 	// specular_out = sin(reflect(flashLight_pos, pos)); // for testing
 	// specular_out = specular_intensity * flashLight_value;
-
-	lampShine_out = vec4(0.0, 0.0, 0.0, 0.0); // default shine
 }

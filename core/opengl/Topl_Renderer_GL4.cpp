@@ -4,64 +4,48 @@ namespace Renderer {
 	// Shader Functions
 
 	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
-		unsigned offset = 0;
-
 		switch (type) {
-		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
-		case SHDR_float: offset = sizeof(float); break;
-		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
-		case SHDR_double: offset = sizeof(double); break;
-		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint: offset = sizeof(unsigned); break;
-		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
-		case SHDR_int: offset = sizeof(int); break;
+		case SHDR_float_vec4: return sizeof(float) * 4;
+		case SHDR_float_vec3: return sizeof(float) * 3; 
+		case SHDR_float_vec2: return sizeof(float) * 2; 
+		case SHDR_float: return sizeof(float); 
+		case SHDR_uint_vec4: return sizeof(unsigned) * 4; 
+		case SHDR_uint_vec3: return sizeof(unsigned) * 3;  
+		case SHDR_uint_vec2: return sizeof(unsigned) * 2; 
+		case SHDR_uint: return sizeof(unsigned); 
 		default:
 			logMessage("Shader input type not supported!");
 			break;
 		}
-		return offset;
+		return 0;
 	}
 
 
 	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
-		GLenum format;
-
 		switch(type) {
-		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float:
-			format = GL_FLOAT; break;
-		case SHDR_double_vec4: case SHDR_double_vec3: case SHDR_double_vec2: case SHDR_double:
-			format = GL_DOUBLE; break;
-		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint:
-			format = GL_UNSIGNED_INT; break;
-		case SHDR_int_vec4: case SHDR_int_vec3: case SHDR_int_vec2: case SHDR_int:
-			format = GL_INT; break;
+		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float: 
+			return GL_FLOAT;
+		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint: 
+			return GL_UNSIGNED_INT;
 		default: logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!"); break;
 		}
-		return format;
+
+		return 0; // error occured
 	}
 
 	static GLint getSizeFromShaderVal(enum SHDR_ValueType type){
-		GLint size = 0;
-
 		switch(type){
 		case SHDR_float_vec4: case SHDR_double_vec4: case SHDR_uint_vec4: case SHDR_int_vec4:
-			size = 4; break;
+			return 4;
 		case SHDR_float_vec3: case SHDR_double_vec3: case SHDR_uint_vec3: case SHDR_int_vec3:
-			size = 3; break;
+			return 3;
 		case SHDR_float_vec2: case SHDR_double_vec2: case SHDR_uint_vec2: case SHDR_int_vec2:
-			size = 2; break;
+			return 2; break;
 		case SHDR_float: case SHDR_double: case SHDR_uint: case SHDR_int:
-			size = 1; break;
+			return 1; break;
 		}
-		return size;
+
+		return 0; // error
 	}
 
 	// Buffer functions
@@ -166,6 +150,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	_platformCtx.window = window;
+	_renderCtx_GL4 = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
+	drawMode(); // sets default draw mode
+
 #ifdef _WIN32
     init_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
 #elif defined(__linux__)
@@ -306,7 +293,6 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
 
 	Rasteron_Image* rawImage = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	// Rasteron_Image* rawImage = allocNewImg("framebuff", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	Rasteron_Image* flipImage = createImgFlip(rawImage, FLIP_Upside);
 	// Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);

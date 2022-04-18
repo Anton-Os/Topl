@@ -1,11 +1,11 @@
 cbuffer CONST_BLOCK : register(b0) {
-	uint mode;
 	float4 color;
 	float3 offset;
 	float2 rotation;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
+	uint mode;
 	float4 cam_pos;
 	float4 look_pos;
 	float4x4 projMatrix;
@@ -56,11 +56,9 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
-	float4 final_pos = float4(0.0, 0.0, 0.0, 0.0); // Empty vector
-	float4 final_trans = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
-
+	float4 transCoords = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
 	float3 rotCoords = mul(calcRotMatrix(float2(rotation.x, rotation.y)), float3(input.pos.x, input.pos.y, input.pos.z));
-	final_pos = float4(rotCoords, 0.0) + final_trans; // rotation and translation
+	float4 final_pos = float4(rotCoords, 0.0) + transCoords; // rotation and translation
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	// output.pos = mul(final_pos, cameraMatrix); // no projection

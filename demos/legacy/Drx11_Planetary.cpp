@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	renderer.genPipeline(&pipeline, &vertexBeams, &fragBeams);
 
 	renderer.setCamera(&App::camera);
-	renderer.buildScene(&App::scene, &App::camera);
+	renderer.buildScene(&App::scene);
 
 	Main::gameLoop(&platform, &renderer);
 

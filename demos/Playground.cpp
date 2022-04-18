@@ -2,12 +2,13 @@
 
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
+// #defint APP_BACKEND App_Vulkan
 
-#define VIEW_SPACE 3.0f
+#define VIEW_SPACE 1.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
-Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, 1.5f);
-Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.5f);
+Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
+Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, VIEW_SPACE);
 Phys_Motion Playground_App::inOutMotion = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 0.0f, 1.0f }), 4.0);
 
 void inOutEvent(double absSecs) {
@@ -33,7 +34,7 @@ void Playground_App::init() {
 	} else {
 		vertexShader1 = Drx11_Textured_VertexShader();
 		fragShader1 = Drx11_Textured_FragmentShader();
-		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_SOLID);
+		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE);
 		fragShader2 = Drx11_Flat_FragmentShader();
 		tessCtrlShader = Drx11_Advance_TessCtrlShader();
 		tessEvalShader = Drx11_Advance_TessEvalShader();

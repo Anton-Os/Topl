@@ -59,11 +59,11 @@ struct Topl_RenderContext_GL4 : public Topl_RenderContext {
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
-	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(){ 
+	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer() { 
 		init(window);
-		drawMode(); // sets default draw mode
-
-		_renderCtx_GL4 = (Topl_RenderContext_GL4**)malloc(sizeof(Topl_RenderContext_GL4*) * MAX_RENDERER_CONTEXTS);
+	}
+	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(viewports) { 
+		init(window);
 	}
 	~Topl_Renderer_GL4();
 

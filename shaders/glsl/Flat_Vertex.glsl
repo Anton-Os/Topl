@@ -1,13 +1,13 @@
 #version 440
 
 layout(std140, binding = 0) uniform Block {
-	uint mode;
 	vec4 color;
 	vec3 offset;
 	vec2 rotation;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
+	uint mode;
 	vec3 look_pos;
 	vec3 cam_pos;
 	mat4 projMatrix;
@@ -52,20 +52,18 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 }
 
 void main() {
-	vec4 final_pos = vec4(0.0, 0.0, 0.0, 0.0);
-	vec3 final_trans = pos + offset;
-
+	vec3 transCoords = pos + offset;
 	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos;
-	final_pos = vec4(rotCoords, 0.0) + vec4(final_trans, 1.0); // rotation and translation
+	vec4 final_pos = vec4(rotCoords, 0.0) + vec4(transCoords, 1.0); // rotation and translation
 
 	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
 	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 
 	if(mode == 0) flatColor_out = color; // solid mode
 	else if(mode == 1) // alternate mode
-		if(gl_VertexID % 3 == 0) flatColor_out = vec4(color.r, 0.0, 0.0f, color.a); // red
-		else if(gl_VertexID % 3 == 1) flatColor_out = vec4(0.0f, color.g, 0.0f, color.a); // green
-		else flatColor_out = vec4(0.0f, 0.0f, color.b, color.a); // blue
+		if(gl_VertexID % 3 == 0) flatColor_out = vec4(1.0f, 0.0, 0.0f, color.a); // red
+		else if(gl_VertexID % 3 == 1) flatColor_out = vec4(0.0f, 1.0f, 0.0f, color.a); // green
+		else flatColor_out = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
 	// else if(mode == 2)
 	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode issue
 }

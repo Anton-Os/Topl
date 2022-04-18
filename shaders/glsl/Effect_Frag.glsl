@@ -3,7 +3,7 @@
 layout(location = 0) flat in ivec2 screenRes;
 layout(location = 1) flat in vec2 cursorPos;
 layout(location = 2) flat in uint mode;
-layout(location = 3) flat in uint actorID;
+layout(location = 3) flat in uint id;
 
 out vec4 color;
 

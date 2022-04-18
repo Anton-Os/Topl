@@ -75,9 +75,9 @@ class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
 	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(){ 
 		init(window);
-		drawMode(); // sets default draw mode
-
-		_renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
+	}
+	Topl_Renderer_Drx11(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(viewports){
+		init(window);
 	}
 	~Topl_Renderer_Drx11();
 

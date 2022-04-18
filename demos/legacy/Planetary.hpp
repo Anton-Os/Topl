@@ -16,10 +16,10 @@ namespace App {
 	Timer_Ticker gameTicker;
 	Topl_Light skyLight = Topl_Light(Vec3f({ 0.0f, LIGHT_DISTANCE, 0.0f }));
 	Topl_Light flashLight = Topl_Light(Vec3f({ 0.0f, 0.0f, -1.0f * LIGHT_DISTANCE }), Vec3f({ 1.0f, 0.0, 0.0 }));
-	Topl_Light lampLight = Topl_Light(Vec3f({ 0.0f, -1.0 * LIGHT_DISTANCE, 0.0f })); // this light will be moving
+	Topl_Light lampLight = Topl_Light(Vec3f({ LIGHT_DISTANCE, 0.0f, LIGHT_DISTANCE })); // this light will be moving
 
 	NGon3D ngon = { LARGE_RADIUS, 1024, 1024 };
-	NGon3D ngon2 = { SMALL_RADIUS, 4, 4 };
+	NGon3D ngon2 = { SMALL_RADIUS, 100, 16 };
 	Geo_Sphere sphere(ngon);
 	Geo_Sphere sphere2(ngon2);
 	Geo_Actor sphereGeo((const Geo_RenderObj*)&sphere);
@@ -71,7 +71,7 @@ namespace Main {
 	}
 
 	void gameLoop(Platform* platform, Topl_Renderer* renderer){
-		renderer->setDrawMode(DRAW_Triangles);
+		renderer->setDrawMode(DRAW_Points);
 
 		while (1) {
 			App::gameTicker.updateTimer();

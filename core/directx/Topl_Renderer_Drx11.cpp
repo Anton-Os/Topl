@@ -4,55 +4,38 @@ namespace Renderer {
 	// Shader Functions
 
 	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
-		unsigned offset = 0;
-
 		switch (type) {
-		case SHDR_float_vec4: offset = sizeof(float) * 4; break;
-		case SHDR_float_vec3: offset = sizeof(float) * 3; break;
-		case SHDR_float_vec2: offset = sizeof(float) * 2; break;
-		case SHDR_float: offset = sizeof(float); break;
-		case SHDR_double_vec4: offset = sizeof(double) * 4; break;
-		case SHDR_double_vec3: offset = sizeof(double) * 3; break;
-		case SHDR_double_vec2: offset = sizeof(double) * 2; break;
-		case SHDR_double: offset = sizeof(double); break;
-		case SHDR_uint_vec4: offset = sizeof(unsigned) * 4; break;
-		case SHDR_uint_vec3: offset = sizeof(unsigned) * 3;  break;
-		case SHDR_uint_vec2: offset = sizeof(unsigned) * 2; break;
-		case SHDR_uint: offset = sizeof(unsigned); break;
-		case SHDR_int_vec4: offset = sizeof(int) * 4; break;
-		case SHDR_int_vec3: offset = sizeof(int) * 3; break;
-		case SHDR_int_vec2: offset = sizeof(int) * 2; break;
-		case SHDR_int: offset = sizeof(int); break;
+		case SHDR_float_vec4: return sizeof(float) * 4;
+		case SHDR_float_vec3: return sizeof(float) * 3;
+		case SHDR_float_vec2: return sizeof(float) * 2;
+		case SHDR_float: return sizeof(float);
+		case SHDR_uint_vec4: return sizeof(unsigned) * 4;
+		case SHDR_uint_vec3: return sizeof(unsigned) * 3;
+		case SHDR_uint_vec2: return sizeof(unsigned) * 2;
+		case SHDR_uint: return sizeof(unsigned);
 		default:
 			logMessage("Shader input type not supported!");
 			break;
 		}
-
-		return offset;
+		return 0;
 	}
 
 	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type){
-		DXGI_FORMAT format;
-
 		switch(type) {
-		case SHDR_float_vec4: format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
-		case SHDR_float_vec3: format = DXGI_FORMAT_R32G32B32_FLOAT; break;
-		case SHDR_float_vec2: format = DXGI_FORMAT_R32G32_FLOAT; break;
-		case SHDR_float: format = DXGI_FORMAT_R32_FLOAT; break;
-		// DOUBLE SUPPORT PLACEHOLDER
-		case SHDR_uint_vec4: format = DXGI_FORMAT_R32G32B32A32_UINT; break;
-		case SHDR_uint_vec3: format = DXGI_FORMAT_R32G32B32_UINT; break;
-		case SHDR_uint_vec2: format = DXGI_FORMAT_R32G32_UINT; break;
-		case SHDR_uint: format = DXGI_FORMAT_R32_UINT; break;
-		case SHDR_int_vec4: format = DXGI_FORMAT_R32G32B32A32_SINT; break;
-		case SHDR_int_vec3: format = DXGI_FORMAT_R32G32B32_SINT; break;
-		case SHDR_int_vec2: format = DXGI_FORMAT_R32G32_SINT; break;
-		case SHDR_int: format = DXGI_FORMAT_R32_SINT; break;
+		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case SHDR_float_vec3: return DXGI_FORMAT_R32G32B32_FLOAT;
+		case SHDR_float_vec2: return DXGI_FORMAT_R32G32_FLOAT;
+		case SHDR_float: return DXGI_FORMAT_R32_FLOAT;
+		case SHDR_uint_vec4: return DXGI_FORMAT_R32G32B32A32_UINT;
+		case SHDR_uint_vec3: return DXGI_FORMAT_R32G32B32_UINT;
+		case SHDR_uint_vec2: return DXGI_FORMAT_R32G32_UINT;
+		case SHDR_uint: return DXGI_FORMAT_R32_UINT;
 		default:
 			logMessage("Drx11 shader input type not supported!");
 			break;
 		}
-
+		
+		DXGI_FORMAT format;
 		return format;
 	}
 
@@ -156,7 +139,8 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
-	_platformCtx.window = window; // Supplying platform specific stuff
+	_platformCtx.window = window;
+	_renderCtx_Drx11 = (Topl_RenderContext_Drx11**)malloc(sizeof(Topl_RenderContext_Drx11*) * MAX_RENDERER_CONTEXTS);
 
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
@@ -276,6 +260,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 		_deviceCtx->RSSetViewports(_viewportCount, &viewports[0]);
 	}
+
+	drawMode(); // sets default draw mode
 }
 
 void Topl_Renderer_Drx11::clearView(){
