@@ -14,20 +14,12 @@ struct Topl_Pipeline_Vulkan : public Topl_Pipeline {
 	Topl_Pipeline_Vulkan() : Topl_Pipeline(){}
 };
 
-struct Topl_RenderContext_Vulkan : public Topl_RenderContext {
-	Topl_RenderContext_Vulkan(const Topl_Scene *const s) : Topl_RenderContext(s){}
-	Topl_RenderContext_Vulkan(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
-
-	std::vector<Buffer_Vulkan> buffers;
-	std::vector<Texture_Vulkan> textures;
-};
-
 class Topl_Renderer_Vulkan : public Topl_Renderer {
 public:
-	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(){ 
+	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(window){ 
 		init(window); 
 	}
-	Topl_Renderer_Vulkan(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(viewports) { 
+	Topl_Renderer_Vulkan(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) { 
 		init(window);
 	}
 	~Topl_Renderer_Vulkan(){}
@@ -55,6 +47,6 @@ private:
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;
-	
+
 	// enum _drawMode_Vulkan; // Vulkan specific draw mode
 };

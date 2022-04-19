@@ -64,10 +64,10 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
-	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(){ 
+	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(window){ 
 		init(window);
 	}
-	Topl_Renderer_Drx11(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(viewports){
+	Topl_Renderer_Drx11(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports){
 		init(window);
 	}
 	~Topl_Renderer_Drx11();

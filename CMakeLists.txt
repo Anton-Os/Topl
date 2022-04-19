@@ -51,6 +51,7 @@ endif()
 
 list(APPEND core_src
     core/Topl_Renderer.cpp
+    # core/Topl_Factory.cpp
 
     core/Topl_Scene_Statics.cpp
     core/Topl_Scene_Dynamics.cpp
@@ -157,13 +158,22 @@ add_executable(App_Playground
     geometry/trees/Model.cpp
     geometry/trees/Pane.cpp
 
+    core/Topl_Factory.cpp
     core/Topl_App.cpp
     demos/Playground.cpp
 )
 target_link_libraries(App_Playground PRIVATE ${engine_targets})
 
+add_executable(App_Splitscreen
+    core/Topl_Factory.cpp
+    core/Topl_App.cpp
+    demos/Splitscreen.cpp
+)
+target_link_libraries(App_Splitscreen PRIVATE ${engine_targets})
+
+
 # add all demo targets to a list
-list(APPEND demo_targets App_Playground)
+list(APPEND demo_targets App_Playground App_Splitscreen)
 
 if(WIN32) # adding resource file to demos
    foreach(target IN ITEMS ${demo_targets})

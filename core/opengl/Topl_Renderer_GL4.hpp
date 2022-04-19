@@ -48,21 +48,12 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint gShader; // Geometry Shader
 };
 
-struct Topl_RenderContext_GL4 : public Topl_RenderContext {
-	Topl_RenderContext_GL4(const Topl_Scene *const s) : Topl_RenderContext(s){}
-	Topl_RenderContext_GL4(const Topl_Scene *const s, unsigned idCount) : Topl_RenderContext(s, idCount){}
-
-	std::vector<Buffer_GL4> buffers;
-	std::vector<VertexArray_GL4> VAOs; // vertex array objects
-	std::vector<Texture_GL4> textures;
-};
-
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
-	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer() { 
+	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
 		init(window);
 	}
-	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(viewports) { 
+	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) { 
 		init(window);
 	}
 	~Topl_Renderer_GL4();

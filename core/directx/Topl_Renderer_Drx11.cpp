@@ -135,8 +135,6 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
-	_platformCtx.window = window;
-
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 
@@ -255,8 +253,6 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 		_deviceCtx->RSSetViewports(_viewportCount, &viewports[0]);
 	}
-
-	drawMode(); // sets default draw mode
 }
 
 void Topl_Renderer_Drx11::clearView(){

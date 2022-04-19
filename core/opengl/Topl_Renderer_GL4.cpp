@@ -137,9 +137,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
 #ifdef _WIN32
-	cleanup_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
+	cleanup_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
 #elif defined(__linux__)
-	cleanup_linux(_platformCtx.display, _platformCtx.GL_ctx);
+	cleanup_linux(_platformCtx.display, _platformCtx.oglCtx);
 #endif
 }
 
@@ -148,9 +148,9 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	_platformCtx.window = window;
 
 #ifdef _WIN32
-    init_win(&_platformCtx.window, &_platformCtx.windowDevice_Ctx, &_platformCtx.GL_ctx);
+    init_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
 #elif defined(__linux__)
-	init_linux(_platformCtx.GL_ctx, _platformCtx.display, &_platformCtx.window);
+	init_linux(_platformCtx.oglCtx, _platformCtx.display, &_platformCtx.window);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -175,8 +175,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 			Topl_Viewport* viewport = _viewports + v;
 			glViewportIndexedf(v, viewport->xOffset, viewport->yOffset, viewport->width, viewport->height);
 		}
-
-	drawMode(); // sets default draw mode
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -188,7 +186,7 @@ void Topl_Renderer_GL4::clearView(){
 void Topl_Renderer_GL4::switchFramebuff(){
 	if(_isDrawn)
 #ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&_platformCtx.windowDevice_Ctx);
+	swapBuffers_win(&_platformCtx.deviceCtx);
 #elif defined(__linux__)
 	swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif

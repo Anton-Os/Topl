@@ -6,8 +6,7 @@ namespace Renderer {
 
 
 void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
-	_platformCtx.window = window;
-	drawMode(); // set default draw mode
+	// Implement initialization
 }
 
 void Topl_Renderer_Vulkan::clearView(){

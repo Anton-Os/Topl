@@ -1,5 +1,3 @@
-// Modern Demo Implemented over Topl_App class
-
 #include "Topl_App.hpp"
 
 #include "Flat_Shader.hpp"
@@ -14,8 +12,8 @@
 #include "trees/Pane.hpp"
 
 struct Playground_App : public Topl_App {
-    Playground_App(const char* execPath, APP_Backend b) 
-		: Topl_App(execPath, "Playground", b){}
+    Playground_App(const char* execPath, APP_Backend backend) 
+		: Topl_App(execPath, "Playground", backend){}
 
 	void init() override;
 	void loop(unsigned long frame) override;
@@ -25,6 +23,7 @@ struct Playground_App : public Topl_App {
 	static Topl_Camera camera1, camera2, camera3;
 	static Phys_Motion inOutMotion;
 	Topl_Scene scene_main, scene_overlay, scene_details;
+	Phys_Connector anchor1, anchor2, anchor3, anchor4;
 
 private:
 	void postFrame();

@@ -21,8 +21,8 @@
         WNDCLASS windowClass;
         NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
 		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN];
-        NATIVE_GL_CONTEXT GL_ctx;
-        HDC windowDevice_Ctx;
+        NATIVE_GL_CONTEXT oglCtx;
+        HDC deviceCtx;
         POINT cursorPos;
         MSG eventMsg;
     };
@@ -54,7 +54,7 @@
         // XVisualInfo* visualInfo;
         NATIVE_WINDOW window;
 		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN]
-        NATIVE_GL_CONTEXT GL_ctx;
+        NATIVE_GL_CONTEXT oglCtx;
         Cursor_Pos cursorPos;
     };
 
