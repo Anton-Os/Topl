@@ -203,3 +203,22 @@ if(Vulkan_FOUND)
 endif()
 
 configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
+
+# Install Procedures
+
+install(TARGETS Topl_CORELIB Topl_GEOLIB ${engine_targets}
+    EXPORT Topl
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
+)
+
+file(GLOB_RECURSE interfaceHeaders 
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
+)
+
+# install(FILES ${interfaceHeaders} DESTINATION include/Topl)
+# install(EXPORT Topl DESTINATION lib/Topl FILE ToplConfig.cmake)
