@@ -37,14 +37,14 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
     _activeRenderCtx = getRenderContext(scene);
+	_activeRenderCtx->targetCount = scene->getActorCount();
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++)
+		_activeRenderCtx->targetIDs[g] = _renderIDs + g; // assign render target ids to current context */
+
     build(scene);
-    /* if(_activeRenderCtx->targetCount == 0){
-        logMessage(MESSAGE_Exclaim, "No render targets for active render context!");
-        _isBuilt = false;
-        return false;
-    } */
     texturize(scene);
-    drawMode(); // sets default draw mode
+
+	_renderIDs += _activeRenderCtx->targetCount; // increment total render targets with current context
     return _isBuilt;
 }
 

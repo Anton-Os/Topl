@@ -88,7 +88,7 @@ struct Topl_Material { // Material of static images, wrapper around Rasteron_Fra
 	void addLayer(const Rasteron_Image *const refImg, MATERIAL_Property property){
         addFrameData(data, refImg, property);
     }
-	Rasteron_Image* getLayer(MATERIAL_Property property){ return getFrame(data, property); }
+	Rasteron_Image* getLayer(MATERIAL_Property property) const { return getFrame(data, property); }
 
 private:
 	Rasteron_Animation* data; // underlying data

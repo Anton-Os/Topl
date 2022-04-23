@@ -1,7 +1,7 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 1.0f

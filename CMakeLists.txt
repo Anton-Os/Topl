@@ -146,7 +146,7 @@ endforeach()
 
 # ------------- Demos ------------- #
 
-include("cmake/legacyDemos.cmake")
+# include("cmake/legacyDemos.cmake")
 include("cmake/runTests.cmake")
 
 # Modern Demos and Tests

@@ -66,11 +66,11 @@ enum DRAW_Mode {
 };
 
 #define MAX_RENDERER_CONTEXTS 24 // max number of unique render contexts
-#define MAX_RENDER_IDS 8000 // max number of ids for each context
+#define MAX_RENDER_IDS 24000 // max number of ids for each context
 
 struct Topl_RenderContext { // stores a collection fo ids used to look for render targets
     Topl_RenderContext() : scene(nullptr){} // Empty Constructor
-    Topl_RenderContext(const Topl_Scene *const s) : scene(s) {} // Rigid Constructor
+    Topl_RenderContext(const Topl_Scene *const s) : scene(s) {} // Scene Constructor
     Topl_RenderContext(const Topl_RenderContext& renderContext) : scene(renderContext.scene) {
         targetCount = renderContext.targetCount;
         for(unsigned r = 0; r < targetCount; r++)
@@ -136,7 +136,7 @@ protected:
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isDrawn = false; // true after draw call, false after swap
-    unsigned long _renderIDs = 0; // indicator for number of drawable graphics objects
+    unsigned long _renderIDs = 0; // number of total render targets from render contexts
     unsigned long _frameIDs = 0; // increments with each frame drawn
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
