@@ -46,10 +46,10 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
-		Platform::keyLogger.addCallback('w', buttonCallback_w);
-		Platform::keyLogger.addCallback('a', buttonCallback_a);
-		Platform::keyLogger.addCallback('s', buttonCallback_s);
-		Platform::keyLogger.addCallback('d', buttonCallback_d);
+		Platform::keyControl.addCallback('w', buttonCallback_w);
+		Platform::keyControl.addCallback('a', buttonCallback_a);
+		Platform::keyControl.addCallback('s', buttonCallback_s);
+		Platform::keyControl.addCallback('d', buttonCallback_d);
 
 		// App::camera.setLookPos(Vec3f({ 0.0, 1.0f, -1.0f }));
 		// App::model.rotate(Vec2f({ 0.0f, TOPL_PI }));

@@ -76,14 +76,14 @@ namespace Main {
 	void init(Platform* platform) {
 		platform->createWindow();
 
-		Platform::mouseLogger.addHoverCallback(&App::topRange, hoverCallback_top);
-		Platform::mouseLogger.addHoverCallback(&App::rightRange, hoverCallback_right);
-		Platform::mouseLogger.addHoverCallback(&App::leftRange, hoverCallback_left);
-		Platform::mouseLogger.addHoverCallback(&App::botRange, hoverCallback_bot);
-		Platform::keyLogger.addCallback('w', buttonCallback_w);
-		Platform::keyLogger.addCallback('a', buttonCallback_a);
-		Platform::keyLogger.addCallback('s', buttonCallback_s);
-		Platform::keyLogger.addCallback('d', buttonCallback_d);
+		Platform::mouseControl.addHoverCallback(&App::topRange, hoverCallback_top);
+		Platform::mouseControl.addHoverCallback(&App::rightRange, hoverCallback_right);
+		Platform::mouseControl.addHoverCallback(&App::leftRange, hoverCallback_left);
+		Platform::mouseControl.addHoverCallback(&App::botRange, hoverCallback_bot);
+		Platform::keyControl.addCallback('w', buttonCallback_w);
+		Platform::keyControl.addCallback('a', buttonCallback_a);
+		Platform::keyControl.addCallback('s', buttonCallback_s);
+		Platform::keyControl.addCallback('d', buttonCallback_d);
 
 		// App::camera.setPos(Vec3f(0.0f, 0.0f, MOVE_AMOUNT));
 		App::chain.move(Vec3f({ 0.0f, 0.8f, 0.0f }));

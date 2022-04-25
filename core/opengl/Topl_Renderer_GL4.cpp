@@ -209,8 +209,9 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		unsigned renderID = g + 1;
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
+		unsigned renderID = g + 1; // _activeRenderCtx->targetIDs[g]
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
@@ -303,7 +304,8 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 	_textureIndex = 0;
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
 
@@ -352,7 +354,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {

@@ -39,10 +39,10 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
 
 		// positioning
-		float xInc = _xRadius / _columns;
-		float yInc = _yRadius / _rows;
-		Vec2f origin = Vec2f({ -1.0f * (_yRadius - (_yRadius / _columns)), _xRadius - (_xRadius / _rows) });
-		origin = origin * 0.5f; // scale offset to half size
+		float xInc = _xRadius / _columns; xInc *= 3;
+		float yInc = _yRadius / _rows; yInc *= 3;
+		Vec2f origin = Vec2f({ -1.0f * (_xRadius - (_xRadius / _columns)), _yRadius - (_yRadius / _rows) });
+		origin = origin * 1.5f; // scale offset
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 

@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
-Input_KeyLogger Platform::keyLogger = Input_KeyLogger(); // explicit definition of KeyLogger class
-Input_MouseLogger Platform::mouseLogger = Input_MouseLogger(); // explicit definition of MouseLogger class
+Input_KeyControl Platform::keyControl = Input_KeyControl(); // explicit definition of KeyControl class
+Input_MouseControl Platform::mouseControl = Input_MouseControl(); // explicit definition of MouseControl class
 
 float Platform::xCursorPos = BAD_CURSOR_POS;
 float Platform::yCursorPos = BAD_CURSOR_POS;
@@ -10,10 +10,8 @@ float Platform::yCursorPos = BAD_CURSOR_POS;
 
 static void addMousePress(enum MOUSE_Button button){
 	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
-		? Platform::mouseLogger.addMousePress(button)
-		: Platform::mouseLogger.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
-
-	// Platform::updateTimer(); // updates timer after mouse press handled
+		? Platform::mouseControl.addMousePress(button)
+		: Platform::mouseControl.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
 }
 
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -28,7 +26,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
 	case (WM_CHAR): { 
-		Platform::keyLogger.addKeyPress((char)wParam);
+		Platform::keyControl.addKeyPress((char)wParam);
 		// Platform::updateTimer(); // updates timer after key press handled
 	}
 	case (WM_LBUTTONDOWN): { if(wParam & MK_LBUTTON) addMousePress(MOUSE_LeftBtn_Down); }
@@ -71,7 +69,7 @@ void Platform::handleEvents(bool isCursorUpdate){
 	else {	
 		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
 		if(!isCursorBound) resetCursor();
-		else Platform::mouseLogger.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
+		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
 	}
 
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
@@ -157,7 +155,7 @@ void Platform::handleEvents(bool isCursorUpdate){
 		XNextEvent(_context.display, &currentEvent);
 
 		switch(currentEvent.type){
-		// case (KeyPress): { Platform::keyLogger.addKeyPress((char)currentEvent.xkey.keycode); } // keycode needs to be converted!
+		// case (KeyPress): { Platform::keyControl.addKeyPress((char)currentEvent.xkey.keycode); } // keycode needs to be converted!
 		case (ButtonPress): {  }
 		case (MotionNotify): {  }
 		}

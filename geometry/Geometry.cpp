@@ -72,6 +72,14 @@ void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
     }
 }
 
+void Geo_RenderObj::fuse(const Geo_RenderObj* refObj){
+    // TODO: backup current data here
+    
+    // cleanup(); // make sure to completely erase old object first
+    _vertexCount += refObj->getVertexCount();
+    _indicesCount += refObj->getIndexCount();
+}
+
 void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis){
     if(_vertexCount == 0 || _pos == nullptr) return; // no processing can occur
 

@@ -22,8 +22,8 @@ struct Platform {
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
 
-    static Input_KeyLogger keyLogger;
-    static Input_MouseLogger mouseLogger;
+    static Input_KeyControl keyControl;
+    static Input_MouseControl mouseControl;
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){

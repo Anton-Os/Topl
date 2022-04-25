@@ -296,7 +296,8 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 	}
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // IDs begin at 1, conversion is required
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
@@ -379,7 +380,8 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 	}
 	_textures.clear();
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
 
@@ -504,7 +506,8 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
 		Renderer::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
 		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
 

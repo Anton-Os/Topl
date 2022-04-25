@@ -28,7 +28,9 @@ public:
 private:
     std::string _filePath; // nodes are read from file
 
-    std::vector<Geo_Node*> _targetNodes; // contains only nodes with valid meshes
+    std::vector<Geo_Node*> _targetNodes; // contains only drawable nodes with mesh data
     unsigned _nodeCount = 0;
     Geo_Node** _nodes = nullptr; // dynamically allocated and managed
+
+    // TODO: include animation data
 };

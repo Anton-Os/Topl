@@ -4,7 +4,7 @@
 
 #include "Timer.hpp";
 
-struct Input_Logger {
+struct Input_Control {
     double getLastEvent(){ return _lastEvent; }
     double getEventCount(){ return _eventCount; }
 protected:
@@ -21,9 +21,9 @@ protected:
 
 typedef void (*keyCallback)(void); // Triggers action on a particular keypress
 
-class Input_KeyLogger : public Input_Logger {
+class Input_KeyControl : public Input_Control {
 public:
-	Input_KeyLogger() : Input_Logger(){}
+	Input_KeyControl() : Input_Control(){}
 	void addKeyPress(char keyCode);
 	void addCallback(char keyCode, keyCallback callback);
 private:
@@ -72,9 +72,9 @@ typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of
 typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
 typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region
 
-class Input_MouseLogger : public Input_Logger {
+class Input_MouseControl : public Input_Control {
 public:
-    Input_MouseLogger() : Input_Logger(){}
+    Input_MouseControl() : Input_Control(){}
     void addCallback(enum MOUSE_Button mb, pressCallback callback);
     void addMousePress(enum MOUSE_Button mb); // mouse press
     void addMousePress(enum MOUSE_Button mb, float x, float y); // positioned mouse press

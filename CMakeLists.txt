@@ -66,31 +66,31 @@ endif()
 
 # -------------- Renderers and Libraries ------------- #
 
-add_library(Topl_CORELIB
+add_library(CORELIB # Core Library
     ${helper_src}
     ${core_src}
 )
-target_include_directories(Topl_CORELIB PUBLIC core helper geometry)
-set_target_properties(Topl_CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+target_include_directories(CORELIB PUBLIC core helper geometry)
+set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
 if(WIN32)
-    target_include_directories(Topl_CORELIB PUBLIC "${RESOURCE_DIR}") # resource file header
-    target_sources(Topl_CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
+    target_include_directories(CORELIB PUBLIC "${RESOURCE_DIR}") # resource file header
+    target_sources(CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
 elseif(UNIX)
-    target_link_libraries(Topl_CORELIB PUBLIC ${X11_LIBRARIES})
+    target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})
 endif()
 
-add_library(Topl_GEOLIB ${geometry_src})
-target_include_directories(Topl_GEOLIB PUBLIC core helper geometry)
+add_library(GEOLIB ${geometry_src}) # Geometry Library
+target_include_directories(GEOLIB PUBLIC core helper geometry)
 
 if(Assimp_FOUND) # linking targets to Assimp
-   # target_link_libraries(Topl_GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
-   target_link_libraries(Topl_GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+   # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
+   target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
 endif()
 
 if(Rasteron_FOUND) # linking targets to Rasteron
-    target_link_libraries(Topl_CORELIB PUBLIC Rasteron)
-    target_link_libraries(Topl_GEOLIB PUBLIC Rasteron)
+    target_link_libraries(CORELIB PUBLIC Rasteron)
+    target_link_libraries(GEOLIB PUBLIC Rasteron)
 endif()
 
 # Building DirectX Engine
@@ -141,7 +141,7 @@ if(Vulkan_FOUND)
 endif()
 
 foreach(target IN ITEMS ${engine_targets})
-    target_link_libraries(${target} PUBLIC Topl_CORELIB Topl_GEOLIB) # linking Topl libraries
+    target_link_libraries(${target} PUBLIC CORELIB GEOLIB) # linking Topl libraries
 endforeach()
 
 # ------------- Demos ------------- #
@@ -206,7 +206,7 @@ configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR
 
 # Install Procedures
 
-install(TARGETS Topl_CORELIB Topl_GEOLIB ${engine_targets}
+install(TARGETS CORELIB GEOLIB ${engine_targets}
     EXPORT Topl
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib

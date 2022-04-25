@@ -46,10 +46,10 @@ public:
 	Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
     
 	virtual ~Geo_RenderObj(){ cleanup(); }
-	void clone(const Geo_RenderObj* refObj); // copies render object
+	void clone(const Geo_RenderObj* refObj); // copies from reference object
+	void fuse(const Geo_RenderObj* refObj); // fuses with reference object
 	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modifies position attirbute
 	// void reorder(enum VERTEX_Attrib attrib, VERTEX_Shift shift); // shifts vertex attribute data
-	// void fuse(const Geo_RenderObj* refObj); // fuses target object with reference object
 
     unsigned getVertexCount() const { return _vertexCount; } // get vertex Count
     unsigned getIndexCount() const { return _indicesCount; } // get index Count
@@ -64,7 +64,7 @@ public:
 	ui_cptr_t getIndices() const { return _indices; }
 protected:
 	void fillRenderObj(); // called by derived class to populate vertex attributes
-	void genVertices(); // internally generates data based on vertex format
+	void genVertices(); // generates data based on vertex format
     virtual void genPos(Vec3f* data) = 0;
 	virtual void genNormals(Vec3f* data) = 0;
     virtual void genTexCoords(Vec2f* data) = 0;

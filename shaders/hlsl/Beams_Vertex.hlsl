@@ -24,10 +24,11 @@ struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	float3 lampLight_pos : POSITION;
 
-	// uint mode: MODE;
 	float3 ambient : COLOR0;
 	float3 diffuse : COLOR1;
 	float3 specular : COLOR2;
+
+	uint mode : MODE;
 };
 
 float sharpen(float intensity, uint curve){
@@ -110,6 +111,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
 	const float specular_intensity = calcSpecIntensity(flashLight_pos, vertex_pos, cam_pos);
 	output.specular = specular_intensity * flashLight_value; // only flash light affects specular
+
+	output.mode = mode;
 
 	return output;
 }

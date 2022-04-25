@@ -146,10 +146,10 @@ namespace Main {
 		srand(time(NULL)); // seed random number generator
 		platform->createWindow();
 
-		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, downCallback);
-		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, downCallback);
-		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, upCallback);
-		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, upCallback);
+		Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, downCallback);
+		Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, downCallback);
+		Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, upCallback);
+		Platform::mouseControl.addCallback(MOUSE_RightBtn_Up, upCallback);
 
 		App::unitLayout.move(Vec3f({ 0.0f, 0.75f, 0.0f }));
 		App::rowLayout.move(Vec3f({ 0.75f, 0.0f, 0.0f }));

@@ -33,10 +33,10 @@ namespace Main {
     void init(Platform* platform) {
 		platform->createWindow();
 
-		Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Down, mouseCallback_l);
-		Platform::mouseLogger.addCallback(MOUSE_RightBtn_Down, mouseCallback_r);
-		// Platform::mouseLogger.addCallback(MOUSE_LeftBtn_Up, mouseCallback_l2);
-		// Platform::mouseLogger.addCallback(MOUSE_RightBtn_Up, mouseCallback_r2);
+		Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, mouseCallback_l);
+		Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, mouseCallback_r);
+		// Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, mouseCallback_l2);
+		// Platform::mouseControl.addCallback(MOUSE_RightBtn_Up, mouseCallback_r2);
 
 		App::scene.addGeometry("plane", &App::planeActor);
 	}

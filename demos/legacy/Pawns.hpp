@@ -6,7 +6,6 @@
 #include "Geo_Tree.hpp"
 #include "trees/Humanoid.hpp"
 
-
 #define SHIFT_AMOUNT 0.2
 #define ROTATE_AMOUNT 0.3
 
@@ -111,11 +110,11 @@ namespace Main {
 
 		App::gameTicker.addPeriodicEvent(1000, actionCallback);
 
-		Platform::keyLogger.addCallback('w', buttonCallback_w);
-		Platform::keyLogger.addCallback('a', buttonCallback_a);
-		Platform::keyLogger.addCallback('s', buttonCallback_s);
-		Platform::keyLogger.addCallback('d', buttonCallback_d);
-		Platform::keyLogger.addCallback('r', buttonCallback_r);
+		Platform::keyControl.addCallback('w', buttonCallback_w);
+		Platform::keyControl.addCallback('a', buttonCallback_a);
+		Platform::keyControl.addCallback('s', buttonCallback_s);
+		Platform::keyControl.addCallback('d', buttonCallback_d);
+		Platform::keyControl.addCallback('r', buttonCallback_r);
 
 		// Initial Positions
 		App::demon.move(App::demonOffset);

@@ -4,6 +4,7 @@
 #include "Geo_Tree.hpp"
 
 #define PANE_RADIUS 0.5
+// #define PANE_BORDER 0.0f
 #define PANE_BORDER 0.05f
 #define PANE_IMAGE_COLOR 0xFFFFFFFF // default is white
 #define PANE_IMAGE_WIDTH 256

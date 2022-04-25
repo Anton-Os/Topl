@@ -10,6 +10,7 @@
 #include "primitives/Geo_Sphere.hpp"
 #include "trees/Grid.hpp"
 #include "trees/Pane.hpp"
+#include "trees/Humanoid.hpp"
 
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
@@ -22,7 +23,7 @@ struct Playground_App : public Topl_App {
 
 	static Topl_Camera camera1, camera2, camera3;
 	static Phys_Motion inOutMotion;
-	Topl_Scene scene_main, scene_overlay, scene_details;
+	Topl_Scene scene_main, scene_pawns, scene_overlay, scene_details;
 	Phys_Connector anchor1, anchor2, anchor3, anchor4;
 
 private:
@@ -30,13 +31,16 @@ private:
 
 	// Geometries and Drawable Objects
 	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 200, 200 });
+	// Geo_Sphere sphere = Geo_Sphere({ 0.5f, 12, 6 });
 	Geo_Actor sphereActor = Geo_Actor((Geo_RenderObj*)&sphere);
 	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.1f);
 	Geo_Actor coneActor = Geo_Actor((Geo_RenderObj*)&cone1);
 	Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
 	Geo_Grid grid = Geo_Grid("grid", &coneActor, gridParams);
-	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 5);
-	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 2);
+	// Geo_Humanoid2D demon, angel, ghost;
+	// Geo_Humanoid3D avatar;
+	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
+	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3);
 
 	Rasteron_FormatText textObj = { "", "", WHITE_COLOR, BLACK_COLOR};
 	Topl_Image heightmapImage = Topl_Image(imagesPath + "FlowerIllusion.png");
@@ -45,14 +49,15 @@ private:
 
 	// Shaders and Pipelines
 
-	Topl_Pipeline* colorPipeline;
-	Topl_Pipeline* texPipeline;
+	Topl_Pipeline *colorPipeline, *texPipeline, *litPipeline;
 	// Topl_Pipeline* advancePipeline;
 
 	Textured_VertexShader vertexShader1;
 	Textured_FragmentShader fragShader1;
 	Flat_VertexShader vertexShader2;
 	Flat_FragmentShader fragShader2;
+	Beams_VertexShader vertexShader3;
+	Beams_FragmentShader fragShader3;
 	Advance_TessCtrlShader tessCtrlShader;
 	Advance_TessEvalShader tessEvalShader;
 	Advance_GeometryShader geomShader;

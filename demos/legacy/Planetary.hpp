@@ -54,10 +54,10 @@ namespace Main {
 	void init(Platform* platform){
 		platform->createWindow();
 
-		Platform::keyLogger.addCallback('w', buttonCallback_w);
-		Platform::keyLogger.addCallback('a', buttonCallback_a);
-		Platform::keyLogger.addCallback('s', buttonCallback_s);
-		Platform::keyLogger.addCallback('d', buttonCallback_d);
+		Platform::keyControl.addCallback('w', buttonCallback_w);
+		Platform::keyControl.addCallback('a', buttonCallback_a);
+		Platform::keyControl.addCallback('s', buttonCallback_s);
+		Platform::keyControl.addCallback('d', buttonCallback_d);
 
 		App::scene.addLight(&App::skyLight);
 		App::scene.addLight(&App::flashLight);
