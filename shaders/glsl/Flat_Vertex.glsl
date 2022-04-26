@@ -61,9 +61,10 @@ void main() {
 
 	if(mode == 0) flatColor_out = color; // solid mode
 	else if(mode == 1) // alternate mode
-		if(gl_VertexID % 3 == 0) flatColor_out = vec4(1.0f, 0.0, 0.0f, color.a); // red
-		else if(gl_VertexID % 3 == 1) flatColor_out = vec4(0.0f, 1.0f, 0.0f, color.a); // green
-		else flatColor_out = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
+		if(gl_VertexID % 4 == 0) flatColor_out = vec4(1.0f, 0.0, 0.0f, color.a); // red
+		else if(gl_VertexID % 4 == 1) flatColor_out = vec4(0.0f, 1.0f, 0.0f, color.a); // green
+		else if(gl_VertexID % 4 == 2) flatColor_out = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
+		else flatColor_out = vec4(0.0f, 0.0f, 0.0f, color.a); // black
 	// else if(mode == 2)
 	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode issue
 }

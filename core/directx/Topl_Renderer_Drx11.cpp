@@ -47,7 +47,7 @@ namespace Renderer {
 
 	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) {
 		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
-			if (buff->targetID == id)
+			if (buff->renderID == id)
 				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
@@ -299,7 +299,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // IDs begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(g);
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -383,7 +383,7 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(g);
 
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
@@ -503,17 +503,17 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		Renderer::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(g);
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-				if (buff->targetID == renderID && buff->type == BUFF_Render_Block) {
+				if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
 					renderBlockBuff = &(*buff);
 					break;
 				}
@@ -537,7 +537,7 @@ void Topl_Renderer_Drx11::drawMode() {
 
 void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
-	if (_buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		if (sceneBlockBuff != nullptr)
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
@@ -569,8 +569,8 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 				_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			for (unsigned t = 0; t < _textures.size(); t++) {
-				if (_textures.at(t).targetID > renderID) break; // Geometry actor is passed in sequence 
-				else if (_textures.at(t).targetID == renderID) {
+				if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
+				else if (_textures.at(t).renderID == renderID) {
 					ID3D11SamplerState* sampler = _textures.at(t).sampler;
 					ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 

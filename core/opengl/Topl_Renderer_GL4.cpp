@@ -56,7 +56,7 @@ namespace Renderer {
 
 	static void discoverBuffers(Buffer_GL4** buffers, std::vector<Buffer_GL4>* targetBuffs, unsigned id) {
 		for (std::vector<Buffer_GL4>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
-			if (buff->targetID == id)
+			if (buff->renderID == id)
 				*(buffers + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
@@ -211,8 +211,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1; // _activeRenderCtx->targetIDs[g]
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
+		unsigned renderID = g + 1; // _activeRenderCtx->renderIDs[g]
+		actor_cptr actor = scene->getGeoActor(g);
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -307,7 +307,7 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(g);
 
 		// TODO: Add support for multiple textures
 		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
@@ -348,7 +348,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().targetID == SPECIAL_SCENE_RENDER_ID) {
+	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -357,10 +357,10 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
 	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
 		unsigned renderID = g + 1;
-		actor_cptr actor = scene->getGeoActor(renderID - 1); // ids begin at 1, conversion is required
+		actor_cptr actor = scene->getGeoActor(g);
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-				if (buff->targetID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
+				if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
 			if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
 			else {
@@ -387,7 +387,7 @@ void Topl_Renderer_GL4::drawMode(){
 }
 
 void Topl_Renderer_GL4::render(const Topl_Scene* scene){
-	if (_buffers.front().targetID == SPECIAL_SCENE_RENDER_ID)
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 
 	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
@@ -395,7 +395,7 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 	// Rendering Loop!
 	for (unsigned id = 1; id <= _renderIDs; id++) {
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _vertexArrays.begin(); currentVAO < _vertexArrays.end(); currentVAO++)
-			if (currentVAO->targetID == id) glBindVertexArray(currentVAO->vao);
+			if (currentVAO->renderID == id) glBindVertexArray(currentVAO->vao);
 			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
@@ -412,8 +412,8 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).targetID > id) break; // Geometry actor is passed in sequence 
-			else if (_textures.at(t).targetID == id) {
+			if (_textures.at(t).renderID > id) break; // Geometry actor is passed in sequence 
+			else if (_textures.at(t).renderID == id) {
 				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
 				break;
 			}

@@ -1,6 +1,6 @@
 #include "Topl_App.hpp"
 
-#include "Flat_Shader.hpp"
+#include "Effect_Shader.hpp"
 
 struct Splitscreen_App : public Topl_App {
     Splitscreen_App(const char* execPath, APP_Backend backend, std::initializer_list<Topl_Viewport> viewports) 
@@ -15,6 +15,6 @@ private:
 
 	Topl_Pipeline* pipeline;
 
-	Flat_VertexShader vertShader;
-	Flat_FragmentShader fragShader;
+	Effect_VertexShader vertexShader1, vertexShader2, vertexShader3, vertexShader4;
+	Effect_FragmentShader fragShader;
 };

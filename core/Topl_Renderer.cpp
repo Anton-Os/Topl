@@ -1,5 +1,27 @@
 #include "Topl_Renderer.hpp"
 
+// Render Context
+
+Topl_RenderContext::Topl_RenderContext(const Topl_Scene *const sceneRef) : scene(sceneRef){
+    targetCount = sceneRef->getActorCount();
+    renderIDs = (unsigned*)malloc(targetCount * sizeof(unsigned));
+
+    for(unsigned a = 0; a < targetCount; a++)
+        *(renderIDs + a) = sceneRef->getGeoActor(a)->getId(); // gets actor ids for each element
+}
+
+void Topl_RenderContext::clone(const Topl_RenderContext& renderContext){
+		scene = renderContext.scene;
+		targetCount = renderContext.targetCount;
+		if (renderIDs != nullptr) free(renderIDs); // deletes preexisting data
+        renderIDs = (unsigned*)malloc(targetCount * sizeof(unsigned));
+
+        for(unsigned r = 0; r < targetCount; r++)
+            *(renderIDs + r) = *(renderContext.renderIDs + r); // copies each element
+}
+
+// Renderer
+
 Topl_Renderer::Topl_Renderer(NATIVE_WINDOW window){
     _viewports = (Topl_Viewport*)malloc(sizeof(Topl_Viewport));
 
@@ -37,10 +59,6 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
     _activeRenderCtx = getRenderContext(scene);
-	_activeRenderCtx->targetCount = scene->getActorCount();
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++)
-		_activeRenderCtx->targetIDs[g] = _renderIDs + g; // assign render target ids to current context */
-
     build(scene);
     texturize(scene);
 
@@ -114,5 +132,7 @@ Topl_RenderContext* Topl_Renderer::getRenderContext(const Topl_Scene*const scene
         if(_renderContexts[r].scene == scene) return &_renderContexts[r];
     
     _renderCtxIndex++; // move to next available render context
-    return &_renderContexts[_renderCtxIndex - 1];
+	Topl_RenderContext* activeRenderCtx = &_renderContexts[_renderCtxIndex - 1];
+	activeRenderCtx->clone(Topl_RenderContext(scene));
+	return activeRenderCtx;
 }

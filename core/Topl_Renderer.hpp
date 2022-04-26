@@ -21,9 +21,9 @@
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 
 struct RenderTarget {
-	RenderTarget() { targetID = SPECIAL_SCENE_RENDER_ID; }
-	RenderTarget(unsigned id) { targetID = id; }
-	unsigned targetID;
+	RenderTarget() { renderID = SPECIAL_SCENE_RENDER_ID; }
+	RenderTarget(unsigned id) { renderID = id; }
+	unsigned renderID;
 };
 
 #define BUFFERS_PER_RENDERTARGET 3 // each render target has fixed number buffers, see BUFF_Type below
@@ -70,15 +70,14 @@ enum DRAW_Mode {
 
 struct Topl_RenderContext { // stores a collection fo ids used to look for render targets
     Topl_RenderContext() : scene(nullptr){} // Empty Constructor
-    Topl_RenderContext(const Topl_Scene *const s) : scene(s) {} // Scene Constructor
-    Topl_RenderContext(const Topl_RenderContext& renderContext) : scene(renderContext.scene) {
-        targetCount = renderContext.targetCount;
-        for(unsigned r = 0; r < targetCount; r++)
-            targetIDs[r] = renderContext.targetIDs[r]; // copy each element
-    }
-    const Topl_Scene *const scene;
-    unsigned targetIDs[MAX_RENDER_IDS]; // max render targets
+    Topl_RenderContext(const Topl_Scene *const sceneRef); // Scene Constructor
+    ~Topl_RenderContext(){ if(renderIDs != nullptr) free(renderIDs); }
+
+    void clone(const Topl_RenderContext& renderContext); // becomes copy of another
+
+    const Topl_Scene* scene;
     unsigned targetCount = 0; // increments as render targets added
+    unsigned* renderIDs = nullptr;
 };
 
 #define MAX_VIEWPORTS 12 // max number of separate viewports
@@ -107,9 +106,7 @@ public:
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
-    // bool buildScene(const Topl_Scene* scene, const Topl_Camera* camera);
     bool updateScene(const Topl_Scene* scene);
-    // bool updateScene(const Topl_Scene* scene, const Topl_Camera* camera);
     void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool renderScene(Topl_Scene* scene);

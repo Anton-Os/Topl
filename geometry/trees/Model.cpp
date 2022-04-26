@@ -29,7 +29,7 @@ void Geo_Model::configure(Topl_Scene* scene){
 
 	for (unsigned n = 0; n < _nodeCount; n++) {
 		Geo_Node* currentNode = *(_nodes + n);
-		if (currentNode->getMeshCount() > 0) {
+		if (currentNode->getMesh()->getMeshCount() > 0) {
 			_targetNodes.push_back(currentNode);
 			scene->addGeometry(getPrefix() + currentNode->getName(), currentNode);
 		}

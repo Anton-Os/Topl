@@ -33,27 +33,25 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
 	Geo_Actor* actor = nullptr; // keeps track of child actor being processed 
 
-	// sending child panes thru scene
+	// child panes
 	for (unsigned p = 1; p < getActorCount(); p++) {
 		actor = getNextActor();
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
 
-		// positioning
-		float xInc = _xRadius / _columns; xInc *= 3;
-		float yInc = _yRadius / _rows; yInc *= 3;
+		float xInc = (_xRadius / _columns) * 2;
+		float yInc = (_yRadius / _rows) * 2;
 		Vec2f origin = Vec2f({ -1.0f * (_xRadius - (_xRadius / _columns)), _yRadius - (_yRadius / _rows) });
-		origin = origin * 1.5f; // scale offset
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
 		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
-		// actor->setRot(Vec2f(0.1f, 0.1f)); // for testing
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 #ifdef RASTERON_H
 		scene->addTexture(getPrefix() + _Pane::genPaneName(p), _panes[p - 1].getBackground());
 #endif
 	}
 
+	// root pane
 	rootActor->setRenderObj((Geo_RenderObj*)&_rootSquare);
 	scene->addGeometry(getPrefix() + "root", rootActor);
 #ifdef RASTERON_H

@@ -22,11 +22,11 @@ struct Playground_App : public Topl_App {
 	// Configurations
 
 	static Topl_Camera camera1, camera2, camera3;
-	static Phys_Motion inOutMotion;
 	Topl_Scene scene_main, scene_pawns, scene_overlay, scene_details;
 	Phys_Connector anchor1, anchor2, anchor3, anchor4;
 
 private:
+	void genShaders();
 	void postFrame();
 
 	// Geometries and Drawable Objects
@@ -58,6 +58,8 @@ private:
 	Flat_FragmentShader fragShader2;
 	Beams_VertexShader vertexShader3;
 	Beams_FragmentShader fragShader3;
+	Layered_VertexShader vertexShader4;
+	Layered_FragmentShader fragShader4;
 	Advance_TessCtrlShader tessCtrlShader;
 	Advance_TessEvalShader tessEvalShader;
 	Advance_GeometryShader geomShader;

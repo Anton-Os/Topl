@@ -30,7 +30,7 @@ private:
 
     std::vector<Geo_Node*> _targetNodes; // contains only drawable nodes with mesh data
     unsigned _nodeCount = 0;
-    Geo_Node** _nodes = nullptr; // dynamically allocated and managed
+    Geo_Node** _nodes = nullptr; // total nodes
 
     // TODO: include animation data
 };

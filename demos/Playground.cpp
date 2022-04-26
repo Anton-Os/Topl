@@ -1,7 +1,7 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
@@ -9,43 +9,13 @@
 
 Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.0 + (1.0 / VIEW_SPACE));
-Phys_Motion Playground_App::inOutMotion = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 0.0f, 1.0f }), 4.0);
 
 void press(float x, float y) { puts("Mouse Press"); }
 void release(float x, float y) { puts("Mounse Release"); }
 
-void inOutEvent(double absSecs) {
-	Vec3f motionVec = Playground_App::inOutMotion.getMotion(absSecs);
-	Playground_App::camera1.setPos(motionVec);
-	// Playground_App::camera1.setLookPos(motionVec + CAMERA_LOOK);
-	Playground_App::camera2.setPos(motionVec);
-	// Playground_App::camera2.setLookPos(motionVec + CAMERA_LOOK);
-}
-
 void Playground_App::init() {
 	// Shaders and Pipeline
-
-	if (APP_BACKEND == APP_OpenGL_4) {
-		vertexShader1 = GL4_Textured_VertexShader();
-		fragShader1 = GL4_Textured_FragmentShader();
-		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE);
-		fragShader2 = GL4_Flat_FragmentShader();
-		vertexShader3 = GL4_Beams_VertexShader(BEAMS_MODE_DEPTH);
-		fragShader3 = GL4_Beams_FragmentShader();
-		tessCtrlShader = GL4_Advance_TessCtrlShader();
-		tessEvalShader = GL4_Advance_TessEvalShader();
-		geomShader = GL4_Advance_GeometryShader();
-	} else {
-		vertexShader1 = Drx11_Textured_VertexShader();
-		fragShader1 = Drx11_Textured_FragmentShader();
-		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE);
-		fragShader2 = Drx11_Flat_FragmentShader();
-		vertexShader3 = Drx11_Beams_VertexShader(BEAMS_MODE_DEPTH);
-		fragShader3 = Drx11_Beams_FragmentShader();
-		tessCtrlShader = Drx11_Advance_TessCtrlShader();
-		tessEvalShader = Drx11_Advance_TessEvalShader();
-		geomShader = Drx11_Advance_GeometryShader();
-	}
+	genShaders();
 
 	// pipeline order creation should be independent!
 	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
@@ -72,8 +42,8 @@ void Playground_App::init() {
 
 	_renderer->setCamera(&camera1); // ortho projection
 	// _renderer->setCamera(&camera2); // perspective projection
-	_renderer->buildScene(&scene_main);
-	// _renderer->buildScene(&scene_overlay);
+	// _renderer->buildScene(&scene_main);
+	_renderer->buildScene(&scene_overlay);
 	// _renderer->buildScene(&scene_details);
 
 	_renderer->setDrawMode(DRAW_Triangles);
@@ -81,13 +51,42 @@ void Playground_App::init() {
 
 void Playground_App::loop(unsigned long frame) {
 	_renderer->setPipeline(colorPipeline);
-	_renderer->updateScene(&scene_main);
-	_renderer->renderScene(&scene_main);
+	// _renderer->updateScene(&scene_main);
+	// _renderer->renderScene(&scene_main);
 	// switch pipelines
 	// _renderer->setPipeline(texPipeline);
-	// _renderer->renderScene(&scene_overlay);
+	_renderer->renderScene(&scene_overlay);
 
 	if (frame % 30 == 0) postFrame();
+}
+
+void Playground_App::genShaders() {
+	if (APP_BACKEND == APP_OpenGL_4) {
+		vertexShader1 = GL4_Textured_VertexShader();
+		fragShader1 = GL4_Textured_FragmentShader();
+		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE);
+		fragShader2 = GL4_Flat_FragmentShader();
+		vertexShader3 = GL4_Beams_VertexShader(BEAMS_MODE_DEPTH);
+		fragShader3 = GL4_Beams_FragmentShader();
+		vertexShader4 = GL4_Layered_VertexShader();
+		fragShader4 = GL4_Layered_FragmentShader();
+		tessCtrlShader = GL4_Advance_TessCtrlShader();
+		tessEvalShader = GL4_Advance_TessEvalShader();
+		geomShader = GL4_Advance_GeometryShader();
+	}
+	else if(APP_BACKEND == APP_DirectX_11) {
+		vertexShader1 = Drx11_Textured_VertexShader();
+		fragShader1 = Drx11_Textured_FragmentShader();
+		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE);
+		fragShader2 = Drx11_Flat_FragmentShader();
+		vertexShader3 = Drx11_Beams_VertexShader(BEAMS_MODE_DEPTH);
+		fragShader3 = Drx11_Beams_FragmentShader();
+		vertexShader4 = Drx11_Layered_VertexShader();
+		fragShader4 = Drx11_Layered_FragmentShader();
+		tessCtrlShader = Drx11_Advance_TessCtrlShader();
+		tessEvalShader = Drx11_Advance_TessEvalShader();
+		geomShader = Drx11_Advance_GeometryShader();
+	}
 }
 
 void Playground_App::postFrame() {

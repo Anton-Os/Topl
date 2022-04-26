@@ -155,7 +155,6 @@ add_executable(App_Playground
     geometry/trees/Chain.cpp
     geometry/trees/Grid.cpp
     geometry/trees/Humanoid.cpp
-    geometry/trees/Model.cpp
     geometry/trees/Pane.cpp
 
     core/Topl_Factory.cpp
@@ -170,6 +169,13 @@ add_executable(App_Splitscreen
     demos/Splitscreen.cpp
 )
 target_link_libraries(App_Splitscreen PRIVATE ${engine_targets})
+
+add_executable(App_Animotion
+    core/Topl_Factory.cpp
+    core/Topl_App.cpp
+    demos/Animotion.cpp
+)
+target_link_libraries(App_Animotion PRIVATE ${engine_targets})
 
 
 # add all demo targets to a list

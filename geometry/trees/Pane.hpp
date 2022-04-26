@@ -9,8 +9,8 @@
 #define PANE_IMAGE_COLOR 0xFFFFFFFF // default is white
 #define PANE_IMAGE_WIDTH 256
 #define PANE_IMAGE_HEIGHT 256
-#define PANE_ROOT_Z 0.000002
-#define PANE_CHILD_Z 0.000001
+#define PANE_ROOT_Z -0.000002
+#define PANE_CHILD_Z -0.000001
 
 typedef void (*paneCallback)(void);
 

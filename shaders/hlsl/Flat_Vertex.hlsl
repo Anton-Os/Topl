@@ -66,10 +66,11 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	
 	if(mode == 0) output.flatColor = color; // solid mode
 	else if(mode == 1) { // alternate mode
-		switch(vertexID % 3){
+		switch(vertexID % 4){
 			case 0: output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f); break; // substract blue
 			case 1: output.flatColor = float4(1.0f, 0.0f, 1.0f, 0.8f); break; // substract green
 			case 2: output.flatColor = float4(0.0f, 1.0f, 1.0f, 0.8f); break; // substract red
+			case 3: output.flatColor = float4(1.0f, 1.0f, 1.0f, 0.8f); break; // white
 		}
 	}
 	// else if(mode == 2)
