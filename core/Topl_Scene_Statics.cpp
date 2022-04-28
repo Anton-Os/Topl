@@ -2,8 +2,6 @@
 
 // Scene Manager implementation code
 
-unsigned Geo_Actor::_idCount = 0;
-
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
 	if(index >= _geoActors.size()) return nullptr; // Error
 	else return _geoActors.at(index); 

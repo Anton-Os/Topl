@@ -61,8 +61,9 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	}
 protected:
 	Vec4f genFlatColor(const Geo_Actor* const actor) const {
-		float colorInc = (float)((actor->getId() / 6) * FLAT_COLOR_INC);
-		switch(actor->getId() % 7){
+		const unsigned id = 0; // actor->getId();
+		float colorInc = (float)((id / 6) * FLAT_COLOR_INC);
+		switch(id % 7){
 			case 0: return Vec4f({ colorInc, 1.0f, 1.0f, _alphaVal }); // cyan to white
 			case 1: return Vec4f({ 1.0f - colorInc, 0.0f, 0.0f, _alphaVal }); // red to black
 			case 2: return Vec4f({ 1.0f, colorInc, 1.0f, _alphaVal }); // magenta to white

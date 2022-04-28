@@ -1,25 +1,5 @@
 #include "Topl_Renderer.hpp"
 
-// Render Context
-
-Topl_RenderContext::Topl_RenderContext(const Topl_Scene *const sceneRef) : scene(sceneRef){
-    targetCount = sceneRef->getActorCount();
-    renderIDs = (unsigned*)malloc(targetCount * sizeof(unsigned));
-
-    for(unsigned a = 0; a < targetCount; a++)
-        *(renderIDs + a) = sceneRef->getGeoActor(a)->getId(); // gets actor ids for each element
-}
-
-void Topl_RenderContext::clone(const Topl_RenderContext& renderContext){
-		scene = renderContext.scene;
-		targetCount = renderContext.targetCount;
-		if (renderIDs != nullptr) free(renderIDs); // deletes preexisting data
-        renderIDs = (unsigned*)malloc(targetCount * sizeof(unsigned));
-
-        for(unsigned r = 0; r < targetCount; r++)
-            *(renderIDs + r) = *(renderContext.renderIDs + r); // copies each element
-}
-
 // Renderer
 
 Topl_Renderer::Topl_Renderer(NATIVE_WINDOW window){
@@ -58,11 +38,8 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
         return false; // failure
     }
 
-    _activeRenderCtx = getRenderContext(scene);
     build(scene);
     texturize(scene);
-
-	_renderIDs += _activeRenderCtx->targetCount; // increment total render targets with current context
     return _isBuilt;
 }
 
@@ -71,8 +48,6 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for update call!");
     if(!_isPipelineReady || !_isBuilt) return false; // failure
 
-    _activeRenderCtx = getRenderContext(scene);
-    // if(_activeRenderCtx->targetCount == 0) { _isBuilt = false; } else
     update(scene);
     return _isBuilt;
 }
@@ -91,8 +66,6 @@ bool Topl_Renderer::renderScene(Topl_Scene* scene){
         return false; // failure
     }
 
-    _activeRenderCtx = getRenderContext(scene);
-    // if(_activeRenderCtx->targetCount == 0) { _isBuilt = false; } else
     render(scene);
     _frameIDs++; // increment frame counter
     return _isDrawn; // render call sets variable to true on success
@@ -120,19 +93,4 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     unsigned color = *(image->data + offset);
     deleteImg(image);
     return color; // return color computed at offsets
-}
-
-Topl_RenderContext* Topl_Renderer::getRenderContext(const Topl_Scene*const scene){
-    if(_renderCtxIndex >= MAX_RENDERER_CONTEXTS - 1){
-        logMessage(MESSAGE_Exclaim, "Max render contexts exceeded!");
-        return &_renderContexts[MAX_RENDERER_CONTEXTS - 1]; // fetch last available render context
-    }
-
-     for(unsigned r = 0; r < _renderCtxIndex; r++)
-        if(_renderContexts[r].scene == scene) return &_renderContexts[r];
-    
-    _renderCtxIndex++; // move to next available render context
-	Topl_RenderContext* activeRenderCtx = &_renderContexts[_renderCtxIndex - 1];
-	activeRenderCtx->clone(Topl_RenderContext(scene));
-	return activeRenderCtx;
 }

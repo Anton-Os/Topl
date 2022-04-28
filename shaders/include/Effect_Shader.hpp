@@ -25,15 +25,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) { _mode = mode; }
 
-	virtual bool genGeoBlock(const Geo_Actor* const component, blockBytes_t* bytes) const override {
-		bytes->clear(); // make sure there is no preexisting data
-		
-		const unsigned renderId = component->getId();
-		bytes_cptr renderId_bytes = reinterpret_cast<bytes_cptr>(&renderId);
-
-		appendDataToBytes(renderId_bytes, sizeof(unsigned), bytes);
-
-		return true;
+	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+		return true; // make this false
 	}
 
 	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {

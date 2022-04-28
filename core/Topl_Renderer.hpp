@@ -65,21 +65,6 @@ enum DRAW_Mode {
 	DRAW_Strip
 };
 
-#define MAX_RENDERER_CONTEXTS 24 // max number of unique render contexts
-#define MAX_RENDER_IDS 24000 // max number of ids for each context
-
-struct Topl_RenderContext { // stores a collection fo ids used to look for render targets
-    Topl_RenderContext() : scene(nullptr){} // Empty Constructor
-    Topl_RenderContext(const Topl_Scene *const sceneRef); // Scene Constructor
-    ~Topl_RenderContext(){ if(renderIDs != nullptr) free(renderIDs); }
-
-    void clone(const Topl_RenderContext& renderContext); // becomes copy of another
-
-    const Topl_Scene* scene;
-    unsigned targetCount = 0; // increments as render targets added
-    unsigned* renderIDs = nullptr;
-};
-
 #define MAX_VIEWPORTS 12 // max number of separate viewports
 
 struct Topl_Viewport {
@@ -122,7 +107,6 @@ public:
 #endif
 protected:
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific context
-    Topl_RenderContext* _activeRenderCtx; // active render context
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
@@ -133,7 +117,8 @@ protected:
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isDrawn = false; // true after draw call, false after swap
-    unsigned long _renderIDs = 0; // number of total render targets from render contexts
+    unsigned long _renderIDs = 0; // id for each render target
+    std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
@@ -147,10 +132,6 @@ private:
 
     Topl_Frames frameCache = Topl_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
-    Topl_RenderContext* getRenderContext(const Topl_Scene*const scene);
-
-    Topl_RenderContext _renderContexts[MAX_RENDERER_CONTEXTS]; // stores all render contexts
-    unsigned short _renderCtxIndex = 0; // tracks the render context in use
 };
 
 #define TOPL_RENDERER_H

@@ -209,10 +209,11 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1; // _activeRenderCtx->renderIDs[g]
+	 for (unsigned g = 0; g < scene->getActorCount(); g++) {
+		_renderIDs++;
+		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -304,14 +305,15 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 	_textureIndex = 0;
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1;
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
 
-		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
-		if (baseTex != nullptr) attachTexture(baseTex, renderID);
+		const Rasteron_Image* texture = scene->getTexture(actor->getName());
+		if (texture != nullptr) attachTexture(texture, renderID);
+
+		// const Topl_Material* material = scene->getMaterial(actor->getName());
+		// if (material != nullptr) attachMaterial(texture, renderID);
 	}
 #endif
 }
@@ -354,10 +356,10 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 	}
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1;
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
+
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 				if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
@@ -387,19 +389,22 @@ void Topl_Renderer_GL4::drawMode(){
 }
 
 void Topl_Renderer_GL4::render(const Topl_Scene* scene){
+	// getting instance of scene block buffer and passing to shader, if it exists
 	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 
 	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
-	for (unsigned id = 1; id <= _renderIDs; id++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+		unsigned renderID = g + 1;
+
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _vertexArrays.begin(); currentVAO < _vertexArrays.end(); currentVAO++)
-			if (currentVAO->renderID == id) glBindVertexArray(currentVAO->vao);
+			if (currentVAO->renderID == renderID) glBindVertexArray(currentVAO->vao);
 			else continue; // if it continues all the way through error has occured
 
 		// Buffer discovery and binding step
-		Renderer::discoverBuffers(buffers, &_buffers, id);
+		Renderer::discoverBuffers(buffers, &_buffers, renderID);
 
 		Buffer_GL4* renderBlockBuff = Renderer::findBuff(buffers, BUFF_Render_Block);
 		if (renderBlockBuff != nullptr)
@@ -412,8 +417,8 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).renderID > id) break; // Geometry actor is passed in sequence 
-			else if (_textures.at(t).renderID == id) {
+			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
+			else if (_textures.at(t).renderID == renderID) {
 				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
 				break;
 			}

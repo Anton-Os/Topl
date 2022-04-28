@@ -1,4 +1,3 @@
-// More Complex types
 #ifndef TOPL_SCENE_H
 
 #include <map>
@@ -9,11 +8,10 @@
 #include "Timer.hpp"
 #include "Physics.h"
 
-#include "Geo_Actor.hpp"
-
 #ifdef RASTERON_H
 #include "Topl_Images.h"
 #endif
+#include "Geo_Actor.hpp"
 
 typedef const Geo_Actor* const actor_cptr;
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;

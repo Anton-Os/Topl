@@ -296,10 +296,11 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 	}
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1;
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+		_renderIDs++;
+		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -380,14 +381,15 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 	}
 	_textures.clear();
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1;
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
 
-		// TODO: Add support for multiple textures
-		const Rasteron_Image* baseTex = scene->getTexture(actor->getName());
-		if (baseTex != nullptr) attachTexture(baseTex, renderID);
+		const Rasteron_Image* texture = scene->getTexture(actor->getName());
+		if (texture != nullptr) attachTexture(texture, renderID);
+
+		// const Topl_Material* material = scene->getMaterial(actor->getName());
+		// if (material != nullptr) attachMaterial(texture, renderID);
 	}
 #endif
 }
@@ -506,10 +508,9 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		Renderer::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
-	// for (unsigned g = 0; g < scene->getActorCount(); g++) {
-	for (unsigned g = 0; g < _activeRenderCtx->targetCount; g++) {
-		unsigned renderID = g + 1;
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = g + 1;
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
@@ -536,7 +537,7 @@ void Topl_Renderer_Drx11::drawMode() {
 }
 
 void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
-	// getting instance of scene block buffer at the very front of the buffer vector, if it exists
+	// getting instance of scene block buffer and passing to shader, if it exists
 	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		if (sceneBlockBuff != nullptr)
@@ -547,7 +548,10 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 
 	// Rendering Loop!
 	if (_isPipelineReady && _isBuilt)
-		for (unsigned renderID = _renderIDs; renderID >= 1; renderID--) {
+		for (unsigned g = 0; g < scene->getActorCount(); g++) { // Implement this!
+			unsigned renderID = scene->getActorCount() - g;
+
+			// Buffer discovery and binding step
 			Renderer::discoverBuffers(buffs, &_buffers, renderID);
 
 			Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
