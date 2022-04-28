@@ -105,6 +105,7 @@ public:
 	unsigned getPixelAt(float x, float y);
     // void frameCapture(Topl_Frames* frames);
 #endif
+    unsigned long getRenderID(const Geo_Actor* actor);
 protected:
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific context
     entry_shader_cptr _entryShader;

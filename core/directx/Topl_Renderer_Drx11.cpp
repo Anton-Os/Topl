@@ -270,7 +270,7 @@ void Topl_Renderer_Drx11::switchFramebuff() {
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	blockBytes_t blockBytes; // container for constant and uniform buffer updates
+	blockBytes_t blockBytes;
 	// generating an input layout based on Vertex Shader Inputs
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 	unsigned inputElementOffset = 0;
@@ -510,7 +510,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
@@ -549,7 +549,8 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 	// Rendering Loop!
 	if (_isPipelineReady && _isBuilt)
 		for (unsigned g = 0; g < scene->getActorCount(); g++) { // Implement this!
-			unsigned renderID = scene->getActorCount() - g;
+			actor_cptr actor = scene->getGeoActor(scene->getActorCount() - g - 1);
+			unsigned renderID = getRenderID(actor);
 
 			// Buffer discovery and binding step
 			Renderer::discoverBuffers(buffs, &_buffers, renderID);

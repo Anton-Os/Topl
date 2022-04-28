@@ -94,3 +94,10 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     deleteImg(image);
     return color; // return color computed at offsets
 }
+
+unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
+    // for(std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)
+	for (std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)
+	    if(actor == m->second) return m->first;
+    return 0; // No render target found!
+}

@@ -213,7 +213,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		_renderIDs++;
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -307,7 +307,7 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
@@ -358,7 +358,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
@@ -397,7 +397,8 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 
 	// Rendering Loop!
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		unsigned renderID = g + 1;
+		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = getRenderID(actor);
 
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _vertexArrays.begin(); currentVAO < _vertexArrays.end(); currentVAO++)
 			if (currentVAO->renderID == renderID) glBindVertexArray(currentVAO->vao);
