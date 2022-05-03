@@ -1,35 +1,48 @@
 #include "Topl_Factory.hpp"
 
 Topl_Renderer_GL4* Topl_Factory::GL4_renderer = nullptr; 
-Topl_Renderer_Drx11* Topl_Factory::Drx11_renderer = nullptr;
-Topl_Renderer_Vulkan* Topl_Factory::Vulkan_renderer = nullptr;
-
 Topl_Pipeline_GL4** Topl_Factory::GL4_pipelines = nullptr; 
 unsigned Topl_Factory::GL4_pipeIndex = 0;
+
+#ifdef _WIN32
+Topl_Renderer_Drx11* Topl_Factory::Drx11_renderer = nullptr;
 Topl_Pipeline_Drx11** Topl_Factory::Drx11_pipelines = nullptr;
 unsigned Topl_Factory::Drx11_pipeIndex = 0;
+#endif
+
+#ifdef VULKAN_H
+Topl_Renderer_Vulkan* Topl_Factory::Vulkan_renderer = nullptr;
 Topl_Pipeline_Vulkan** Topl_Factory::Vulkan_pipelines = nullptr;
 unsigned Topl_Factory::Vulkan_pipeIndex = 0;
+#endif
 
 Topl_Factory::~Topl_Factory(){
     // Renderer Cleanup
 	if(GL4_renderer != nullptr) delete(GL4_renderer);
+#ifdef _WIN32
     if(Drx11_renderer != nullptr) delete(Drx11_renderer);
+#endif
+#ifdef VULKAN_H
 	if(Vulkan_renderer != nullptr) delete(Vulkan_renderer);
+#endif
 
 	// Pipeline Cleanup
     if(GL4_pipelines != nullptr){
         for(unsigned p = 0; p < GL4_pipeIndex; p++) delete(*(GL4_pipelines + p));
         free(GL4_pipelines);
     }
+#ifdef _WIN32
     if(Drx11_pipelines != nullptr){
         for(unsigned p = 0; p < Drx11_pipeIndex; p++) delete(*(Drx11_pipelines + p));
         free(Drx11_pipelines);
     }
+#endif
+#ifdef VULKAN_H
 	if (Vulkan_pipelines != nullptr) {
 		for (unsigned p = 0; p < Vulkan_pipeIndex; p++) delete(*(Vulkan_pipelines + p));
 		free(Vulkan_pipelines);
 	}
+#endif
 }
 
 Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform){
@@ -37,12 +50,17 @@ Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform
     case APP_OpenGL_4:
         if(GL4_renderer == nullptr) GL4_renderer = new Topl_Renderer_GL4(platform->getParentWindow());
         return (Topl_Renderer*)GL4_renderer;
-    case APP_DirectX_11:
+#ifdef _WIN32
+	case APP_DirectX_11:
         if(Drx11_renderer == nullptr) Drx11_renderer = new Topl_Renderer_Drx11(platform->getParentWindow());
         return (Topl_Renderer*)Drx11_renderer;
+#endif
+#ifdef VULKAN_H
 	case APP_Vulkan:
 		if (Vulkan_renderer == nullptr) Vulkan_renderer = new Topl_Renderer_Vulkan(platform->getParentWindow());
 		return (Topl_Renderer*)Vulkan_renderer;
+#endif
+	default: return nullptr; // Error
     }
 }
 
@@ -51,19 +69,28 @@ Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform
     case APP_OpenGL_4:
         if(GL4_renderer == nullptr) GL4_renderer = new Topl_Renderer_GL4(platform->getParentWindow(), viewports);
         return (Topl_Renderer*)GL4_renderer;
+#ifdef _WIN32
     case APP_DirectX_11:
         if(Drx11_renderer == nullptr) Drx11_renderer = new Topl_Renderer_Drx11(platform->getParentWindow(), viewports);
         return (Topl_Renderer*)Drx11_renderer;
+#endif
+#ifdef VULKAN_H
 	case APP_Vulkan:
 		if (Vulkan_renderer == nullptr) Vulkan_renderer = new Topl_Renderer_Vulkan(platform->getParentWindow(), viewports);
 		return (Topl_Renderer*)Vulkan_renderer;
+#endif
+	default: return nullptr; // Error
     }
 }
 
 Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
     if(GL4_pipelines == nullptr) GL4_pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
-    if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+#ifdef _WIN32
+	if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+#endif
+#ifdef VULKAN_H
 	if(Vulkan_pipelines == nullptr) Vulkan_pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
+#endif
 
     switch(backend){
     case APP_OpenGL_4:
@@ -75,6 +102,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
             GL4_pipeIndex++;
             return pipeline;
         }
+#ifdef _WIN32
     case APP_DirectX_11:
         if(Drx11_renderer == nullptr) return nullptr; // error
         else {
@@ -84,6 +112,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
             Drx11_pipeIndex++;
             return pipeline;
         }
+#endif
+#ifdef VULKAN_H
 	case APP_Vulkan:
 		if(Vulkan_renderer == nullptr) return nullptr; // error
 		else {
@@ -93,13 +123,19 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 			Vulkan_pipeIndex++;
 			return pipeline;
 		}
+#endif
+	default: return nullptr; // Error
     }
 }
 
 Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
     if(GL4_pipelines == nullptr) GL4_pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
-    if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+#ifdef _WIN32
+	if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+#endif
+#ifdef VULKAN_H
 	if(Vulkan_pipelines == nullptr) Vulkan_pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
+#endif
 
 	switch (backend) {
 	case APP_OpenGL_4:
@@ -111,6 +147,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 			GL4_pipeIndex++;
 			return pipeline;
 		}
+#ifdef _WIN32
 	case APP_DirectX_11:
 		if (Drx11_renderer == nullptr) return nullptr; // error
 		else {
@@ -120,6 +157,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 			Drx11_pipeIndex++;
 			return pipeline;
 		}
+#endif
+#ifdef VULKAN_H
 	case APP_Vulkan:
 		if (Vulkan_renderer == nullptr) return nullptr; // error
 		else {
@@ -129,5 +168,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 			Vulkan_pipeIndex++;
 			return pipeline;
 		}
+#endif
+	default: return nullptr; // Error
     }
 }

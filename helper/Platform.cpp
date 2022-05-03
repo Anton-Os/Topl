@@ -142,22 +142,45 @@ void Platform::createWindow(){
         &windowAttribs
 	);
 
+	Atom nameAtom = XInternAtom(_context.display, "_NET_WM_NAME", False);
+	Atom iconAtom = XInternAtom(_context.display, "_NET_WM_ICON_NAME", False);
+
+	XChangeProperty( // changing window title
+		_context.display, _context.window,
+		nameAtom, XInternAtom(_context.display, "UTF8_STRING", False),
+		8, PropModeReplace,
+		(const unsigned char*)_winName, strlen(_winName)
+	);
+
+	// XChangeProperty( /* changing window icon */ );
+
 	// XSelectInput(_context.display, _context.window, ExposureMask);
 	XMapWindow(_context.display, _context.window);
 	XFlush(_context.display);
 }
 
 void Platform::handleEvents(bool isCursorUpdate){
+	if(!isCursorUpdate) resetCursor();
+	else {	
+		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
+		if(!isCursorBound) resetCursor();
+		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
+	}
+
     int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
-	XEvent currentEvent;
+	XEvent event;
 
 	while(eventsPending-- > 0){ // Deplete number of events
-		XNextEvent(_context.display, &currentEvent);
+		XNextEvent(_context.display, &event);
 
-		switch(currentEvent.type){
-		// case (KeyPress): { Platform::keyControl.addKeyPress((char)currentEvent.xkey.keycode); } // keycode needs to be converted!
-		case (ButtonPress): {  }
-		case (MotionNotify): {  }
+		switch(event.type){
+		case (KeyPress): {
+			// const char key = translateKey(event.xkey.keycode); // see GLFW x11_window.c line 1258
+			Platform::keyControl.addKeyPress((char)event.xkey.keycode); // keycode needs to be converted!
+			printf("Key press: %c \n", (char)event.xkey.keycode);
+		}
+		case (ButtonPress): { printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos); }
+		case (MotionNotify): { }
 		}
 	}
 }
@@ -174,11 +197,10 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
 		&mask
 	);
 
-	// translate to corrected screen coordinates
-	// *xPos = xChild / TOPL_WIN_WIDTH
-	// *yPos = yChild / TOPL_WIN_HEIGHT
+	*xPos = xChild; // x needs to be translated!
+	*yPos = yChild; // y needs to be translated!
 
-	return true; // check if cursor is in client area
+	return true; // check if cursor is in client area!
 }
 
 #endif
