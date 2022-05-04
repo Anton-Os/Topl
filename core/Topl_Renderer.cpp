@@ -32,8 +32,9 @@ void Topl_Renderer::setPipeline(const Topl_Pipeline* pipeline){
 }
 
 bool Topl_Renderer::buildScene(const Topl_Scene* scene){
-    if(!_isPipelineReady){
-        logMessage(MESSAGE_Exclaim, "Pipeline not set for build call!");
+	if(scene->getActorCount() == 0) logMessage(MESSAGE_Exclaim, "No geometry for build call!");
+    if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for build call!");
+	if(scene->getActorCount() == 0 || !_isPipelineReady){
         _isBuilt = false;
         return false; // failure
     }

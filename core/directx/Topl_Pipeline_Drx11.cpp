@@ -27,7 +27,8 @@ namespace Renderer {
 
 void Topl_Renderer_Drx11::setPipeline(Topl_Pipeline_Drx11* pipeline) {
 	_pipeline = pipeline;
-	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
+	_entryShader = pipeline->entryShader;
+	_isPipelineReady = pipeline->isReady;
 
 	if (_isPipelineReady) {
 		if (pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(pipeline->vertexShader, 0, 0);

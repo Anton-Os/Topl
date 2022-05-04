@@ -41,11 +41,11 @@ namespace Renderer {
 
 	// Buffer Functions
 
-	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) {
+	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) { // REPLACE THIS!
 		return *(buffs + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) {
+	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) { // REPLACE THIS!
 		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
 			if (buff->renderID == id)
 				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
@@ -300,7 +300,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_renderIDs++;
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
@@ -383,7 +383,7 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = g + 1;
+		unsigned renderID = getRenderID(actor);
 
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
@@ -537,6 +537,8 @@ void Topl_Renderer_Drx11::drawMode() {
 }
 
 void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
+	Buffer_Drx11** buffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
+	
 	// getting instance of scene block buffer and passing to shader, if it exists
 	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
@@ -544,52 +546,64 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 
-	Buffer_Drx11** buffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
-
 	// Rendering Loop!
-	if (_isPipelineReady && _isBuilt)
-		for (unsigned g = 0; g < scene->getActorCount(); g++) { // Implement this!
-			actor_cptr actor = scene->getGeoActor(scene->getActorCount() - g - 1);
-			unsigned renderID = getRenderID(actor);
-
-			// Buffer discovery and binding step
-			Renderer::discoverBuffers(buffs, &_buffers, renderID);
-
-			Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
-			Buffer_Drx11* indexBuff = Renderer::findBuff(buffs, BUFF_Index_UI);
-			Buffer_Drx11* renderBlockBuff = Renderer::findBuff(buffs, BUFF_Render_Block);
-
-			if (renderBlockBuff != nullptr)
-				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-
-			UINT stride = sizeof(Geo_Vertex);
-			UINT offset = 0;
-
-			if (vertexBuff == nullptr || vertexBuff->count == 0)
-				return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-
-			else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
-
-			if (indexBuff != nullptr && indexBuff->count > 0)
-				_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
-
-			for (unsigned t = 0; t < _textures.size(); t++) {
-				if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
-				else if (_textures.at(t).renderID == renderID) {
-					ID3D11SamplerState* sampler = _textures.at(t).sampler;
-					ID3D11ShaderResourceView* resView = _textures.at(t).resView;
-
-					_deviceCtx->PSSetShaderResources(0, 1, &resView);
-					_deviceCtx->PSSetSamplers(0, 1, &sampler);
-					break;
-				}
-			}
-
-			// Draw Call!
-			if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-			else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Implement this!
+		actor_cptr actor = scene->getGeoActor(scene->getActorCount() - g - 1);
+		unsigned renderID = getRenderID(actor);
+		if (renderID == 0) {
+			_isDrawn = false;
+			return logMessage(MESSAGE_Exclaim, "renderID not found!");
 		}
+
+		// Buffer discovery and binding step
+		Renderer::discoverBuffers(buffs, &_buffers, renderID);
+
+		Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
+		Buffer_Drx11* indexBuff = Renderer::findBuff(buffs, BUFF_Index_UI);
+		Buffer_Drx11* renderBlockBuff = Renderer::findBuff(buffs, BUFF_Render_Block);
+
+		if (renderBlockBuff != nullptr)
+			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+
+		UINT stride = sizeof(Geo_Vertex);
+		UINT offset = 0;
+
+		if (vertexBuff == nullptr || vertexBuff->count == 0)
+			return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+
+		else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+
+		if (indexBuff != nullptr && indexBuff->count > 0)
+			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		for (unsigned t = 0; t < _textures.size(); t++) {
+			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
+			else if (_textures.at(t).renderID == renderID) {
+				ID3D11SamplerState* sampler = _textures.at(t).sampler;
+				ID3D11ShaderResourceView* resView = _textures.at(t).resView;
+
+				_deviceCtx->PSSetShaderResources(0, 1, &resView);
+				_deviceCtx->PSSetSamplers(0, 1, &sampler);
+				break;
+			}
+		}
+
+		// Draw Call!
+		if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+		else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+	}
 
 	free(buffs);
 	_isDrawn = true;
 }
+
+/* void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
+	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
+		if (sceneBlockBuff != nullptr)
+			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+	}
+	else {
+		// Handle draw call
+	}
+} */

@@ -1,6 +1,10 @@
 // #define PARENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/Debug/" // Change Debug directory to ${CMAKE_CFG_INTDIR}
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define SHADERS_DIR "${SHADERS_DIR}"
+
+#if ${Vulkan_FOUND}
+    #define VULKAN_H
+#endif
 #if ${Rasteron_FOUND}
     #define RASTERON_ENABLE_PLUGIN
     #define RASTERON_ENABLE_FONT

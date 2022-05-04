@@ -8,7 +8,7 @@ class Geo_Actor {
 public:
 	Geo_Actor(){}
 	Geo_Actor(const Geo_RenderObj* renderObj) { _renderObj = renderObj; }
-	~Geo_Actor() { }
+	~Geo_Actor(){ }
 
 	void setName(const std::string& name) { _name = name; }
 	void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }

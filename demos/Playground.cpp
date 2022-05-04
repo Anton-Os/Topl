@@ -20,7 +20,7 @@ void Playground_App::init() {
 	// pipeline order creation should be independent!
 	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
 	litPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader3, &fragShader3);
-	colorPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
+	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
 	// advancePipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader, &tessCtrlShader, &tessEvalShader, &geomShader);
 
 	// Configurations, Geometry, and Events
@@ -31,8 +31,10 @@ void Playground_App::init() {
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, release);
 
 	// grid.configure(&scene_main);
-	scene_main.addGeometry(&sphereActor);
+	scene_main.addGeometry("Sphere", &sphereActor);
 	sphereActor.updateRot(Vec2f({ 0.0f, 1.0f }));
+	scene_details.addGeometry("Cone", &coneActor);
+	//coneActor.updatePos(Vec3f({ 0.5f, -0.5f, 0.0f }));
 
 	// scene_overlay.addGeometry("captureSquare", &captureSquare);
 	rowLayout.move(Vec3f({ 0.5f, 0.5f, 0.0f }));
@@ -42,20 +44,19 @@ void Playground_App::init() {
 
 	_renderer->setCamera(&camera1); // ortho projection
 	// _renderer->setCamera(&camera2); // perspective projection
-	// _renderer->buildScene(&scene_main);
+	_renderer->buildScene(&scene_main);
 	_renderer->buildScene(&scene_overlay);
-	// _renderer->buildScene(&scene_details);
+	_renderer->buildScene(&scene_details);
 
 	_renderer->setDrawMode(DRAW_Triangles);
 }
 
 void Playground_App::loop(unsigned long frame) {
-	_renderer->setPipeline(colorPipeline);
-	// _renderer->updateScene(&scene_main);
-	// _renderer->renderScene(&scene_main);
-	// switch pipelines
-	// _renderer->setPipeline(texPipeline);
+	_renderer->setPipeline(colPipeline);
 	_renderer->renderScene(&scene_overlay);
+	_renderer->renderScene(&scene_main);
+	_renderer->renderScene(&scene_details);
+	// _renderer->renderAll();
 
 	if (frame % 30 == 0) postFrame();
 }

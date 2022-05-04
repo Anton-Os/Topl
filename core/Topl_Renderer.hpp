@@ -89,7 +89,7 @@ public:
     };
 
     void setCamera(const Topl_Camera* camera);
-    void setPipeline(const Topl_Pipeline* pipeline);
+    void setPipeline(const Topl_Pipeline* pipeline); // replace this!!!
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
     void setDrawMode(enum DRAW_Mode mode);
@@ -126,7 +126,8 @@ private:
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void drawMode() = 0;
-	virtual void render(const Topl_Scene* scene) = 0;
+	virtual void render(const Topl_Scene* scene) = 0; // replace this!
+	// virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 #ifdef RASTERON_H
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
 	virtual void attachMaterial(const Topl_Material* material, unsigned id) = 0;

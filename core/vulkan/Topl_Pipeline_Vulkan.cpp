@@ -6,7 +6,8 @@ namespace Renderer {
 
 void Topl_Renderer_Vulkan::setPipeline(Topl_Pipeline_Vulkan* pipeline){
 	_pipeline = pipeline;
-	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
+	_entryShader = pipeline->entryShader;
+	_isPipelineReady = pipeline->isReady;
 }
 
 void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){

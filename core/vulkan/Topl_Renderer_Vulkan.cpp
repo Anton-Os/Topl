@@ -65,3 +65,9 @@ void Topl_Renderer_Vulkan::render(const Topl_Scene* scene){
 	// Implement render operation
 	_isDrawn = true;
 }
+
+/* void Topl_Renderer_Vulkan::renderTarget(unsigned long renderID){
+	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) { }
+	else {}
+}
+*/

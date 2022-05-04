@@ -1,6 +1,7 @@
 // Vulkan Specific Inclusions
 
-// #include "vulkan/vulkan.h"
+#include <vulkan/vk_platform.h>
+#include <vulkan/vulkan.h>
 
 // Renderer Implementation
 
@@ -41,6 +42,7 @@ private:
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	void render(const Topl_Scene* scene) override;
+	// void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;
 	void attachMaterial(const Topl_Material* material, unsigned id) override;

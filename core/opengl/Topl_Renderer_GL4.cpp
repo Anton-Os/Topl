@@ -50,11 +50,11 @@ namespace Renderer {
 
 	// Buffer functions
 
-	static Buffer_GL4* findBuff(Buffer_GL4** buffers, enum BUFF_Type type) {
+	static Buffer_GL4* findBuff(Buffer_GL4** buffers, enum BUFF_Type type) { // REPLACE THIS!
 		return *(buffers + type); // type arguments indicates the offset
 	}
 
-	static void discoverBuffers(Buffer_GL4** buffers, std::vector<Buffer_GL4>* targetBuffs, unsigned id) {
+	static void discoverBuffers(Buffer_GL4** buffers, std::vector<Buffer_GL4>* targetBuffs, unsigned id) { // REPLACE THIS!
 		for (std::vector<Buffer_GL4>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
 			if (buff->renderID == id)
 				*(buffers + buff->type) = &(*buff); // type arguments indicates the offset
@@ -389,16 +389,20 @@ void Topl_Renderer_GL4::drawMode(){
 }
 
 void Topl_Renderer_GL4::render(const Topl_Scene* scene){
+	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
+	
 	// getting instance of scene block buffer and passing to shader, if it exists
 	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-
-	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
 
 	// Rendering Loop!
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
+		if (renderID == 0) {
+			_isDrawn = false;
+			return logMessage(MESSAGE_Exclaim, "renderID not found!");
+		}
 
 		for (std::vector<VertexArray_GL4>::iterator currentVAO = _vertexArrays.begin(); currentVAO < _vertexArrays.end(); currentVAO++)
 			if (currentVAO->renderID == renderID) glBindVertexArray(currentVAO->vao);
@@ -425,7 +429,7 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 			}
 		}
 
-		// Drawing Call!
+		// Draw Call!
 		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 		else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
 
@@ -434,7 +438,15 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	free(buffers);
 
+	free(buffers);
 	_isDrawn = true;
 }
+
+/* void Topl_Renderer_GL4::_renderTarget(unsigned long renderID) {
+	if (renderID == SPECIAL_SCENE_RENDER_ID _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
+		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
+	else {
+		// Handle draw call
+	}
+} */

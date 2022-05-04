@@ -49,7 +49,7 @@ private:
 
 	// Shaders and Pipelines
 
-	Topl_Pipeline *colorPipeline, *texPipeline, *litPipeline;
+	Topl_Pipeline *colPipeline, *texPipeline, *litPipeline;
 	// Topl_Pipeline* advancePipeline;
 
 	Textured_VertexShader vertexShader1;
