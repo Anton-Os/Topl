@@ -41,8 +41,8 @@ private:
 	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
-	void render(const Topl_Scene* scene) override;
-	// void renderTarget(unsigned long renderID) override;
+	// void render(const Topl_Scene* scene) override;
+	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;
 	void attachMaterial(const Topl_Material* material, unsigned id) override;

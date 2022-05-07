@@ -65,26 +65,27 @@ bool Topl_Renderer::renderScene(Topl_Scene* scene){
     if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
         _isDrawn = false;
         return false; // failure
-    }
+    } else _isDrawn = true;
 
-    render(scene);
+    // render(scene); // replace this!!!
+    renderTarget(SPECIAL_SCENE_RENDER_ID); // pass scene data as target
+    if(scene != nullptr) // scene render
+        for(unsigned g = 0; g < scene->getActorCount(); g++)
+            (getRenderID(scene->getGeoActor(g)) != 0)
+                ? renderTarget(getRenderID(scene->getGeoActor(g)))
+                : logMessage(MESSAGE_Exclaim, "renderID not found!");
+    else // all render
+        for(unsigned r = 0; r < _renderIDs; r++)
+            renderTarget(r);
+
     _frameIDs++; // increment frame counter
     return _isDrawn; // render call sets variable to true on success
 }
 
-/* bool renderAll(){ // draws all render objects
-    if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
-    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
-    if(_renderIDs == 0) logMessage(MESSAGE_Exclaim, "No render targets for draw call!");
-    if(!_isPipelineReady || !_isBuilt || _renderIDs == 0){
-        _isDrawn = false;
-        return false; // failure
-    }
-
-    render(nullptr);
-    _frameIDs++; // increment frame counter
+bool Topl_Renderer::renderAll(){ // draws all render objects
+    renderScene(nullptr);
     return _isDrawn; // render call sets variable to true on success
-} */
+}
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     Rasteron_PixelPoint pixPoint = { x, y };

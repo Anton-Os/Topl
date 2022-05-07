@@ -3,61 +3,16 @@
 namespace Renderer {
 	// Shader Functions
 
-	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
-		switch (type) {
-		case SHDR_float_vec4: return sizeof(float) * 4;
-		case SHDR_float_vec3: return sizeof(float) * 3; 
-		case SHDR_float_vec2: return sizeof(float) * 2; 
-		case SHDR_float: return sizeof(float); 
-		case SHDR_uint_vec4: return sizeof(unsigned) * 4; 
-		case SHDR_uint_vec3: return sizeof(unsigned) * 3;  
-		case SHDR_uint_vec2: return sizeof(unsigned) * 2; 
-		case SHDR_uint: return sizeof(unsigned); 
-		default:
-			logMessage("Shader input type not supported!");
-			break;
-		}
-		return 0;
-	}
-
-
-	static GLenum getFormatFromShaderVal(enum SHDR_ValueType type){
+	static GLenum getShaderFormat(enum SHDR_ValueType type){
 		switch(type) {
 		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float: 
 			return GL_FLOAT;
 		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint: 
 			return GL_UNSIGNED_INT;
-		default: logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!"); break;
+		default:
+		 	logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!");
+			return 0; // error
 		}
-
-		return 0; // error occured
-	}
-
-	static GLint getSizeFromShaderVal(enum SHDR_ValueType type){
-		switch(type){
-		case SHDR_float_vec4: case SHDR_double_vec4: case SHDR_uint_vec4: case SHDR_int_vec4:
-			return 4;
-		case SHDR_float_vec3: case SHDR_double_vec3: case SHDR_uint_vec3: case SHDR_int_vec3:
-			return 3;
-		case SHDR_float_vec2: case SHDR_double_vec2: case SHDR_uint_vec2: case SHDR_int_vec2:
-			return 2; break;
-		case SHDR_float: case SHDR_double: case SHDR_uint: case SHDR_int:
-			return 1; break;
-		}
-
-		return 0; // error
-	}
-
-	// Buffer functions
-
-	static Buffer_GL4* findBuff(Buffer_GL4** buffers, enum BUFF_Type type) { // REPLACE THIS!
-		return *(buffers + type); // type arguments indicates the offset
-	}
-
-	static void discoverBuffers(Buffer_GL4** buffers, std::vector<Buffer_GL4>* targetBuffs, unsigned id) { // REPLACE THIS!
-		for (std::vector<Buffer_GL4>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
-			if (buff->renderID == id)
-				*(buffers + buff->type) = &(*buff); // type arguments indicates the offset
 	}
 
 	// Additional Funtions
@@ -247,8 +202,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 		_vertexArrays.push_back(VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot
-		VertexArray_GL4* currentVAO_ptr = &_vertexArrays.back(); // Check to see if all parameters are valid
-		glBindVertexArray(currentVAO_ptr->vao);
+		VertexArray_GL4* VAO_ptr = &_vertexArrays.back(); // Check to see if all parameters are valid
+		glBindVertexArray(VAO_ptr->vao);
 
 		GLsizei inputElementOffset = 0;
 		for(unsigned i = 0; i < _entryShader->getInputCount(); i++){
@@ -257,14 +212,14 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(
 				i,
-				Renderer::getSizeFromShaderVal(shaderType->type),
-				Renderer::getFormatFromShaderVal(shaderType->type),
+				(GLint)Topl_Pipeline::getSize(shaderType->type),
+				Renderer::getShaderFormat(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
 				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
 			);
 
-			inputElementOffset += Renderer::getOffsetFromShaderVal(shaderType->type);
+			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
 		}
 	}
 
@@ -388,11 +343,8 @@ void Topl_Renderer_GL4::drawMode(){
 	}
 }
 
-void Topl_Renderer_GL4::render(const Topl_Scene* scene){
-	Buffer_GL4** buffers = (Buffer_GL4**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_GL4*));
-	
-	// getting instance of scene block buffer and passing to shader, if it exists
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
+/* void Topl_Renderer_GL4::render(const Topl_Scene* scene){
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) // passing scene block buffer to shader
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 
 	// Rendering Loop!
@@ -404,19 +356,15 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 			return logMessage(MESSAGE_Exclaim, "renderID not found!");
 		}
 
-		for (std::vector<VertexArray_GL4>::iterator currentVAO = _vertexArrays.begin(); currentVAO < _vertexArrays.end(); currentVAO++)
-			if (currentVAO->renderID == renderID) glBindVertexArray(currentVAO->vao);
+		for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
+			if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
 			else continue; // if it continues all the way through error has occured
 
-		// Buffer discovery and binding step
-		Renderer::discoverBuffers(buffers, &_buffers, renderID);
-
-		Buffer_GL4* renderBlockBuff = Renderer::findBuff(buffers, BUFF_Render_Block);
+		Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+		Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+		Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
 		if (renderBlockBuff != nullptr)
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
-
-		Buffer_GL4* vertexBuff = Renderer::findBuff(buffers, BUFF_Vertex_Type);
-		Buffer_GL4* indexBuff = Renderer::findBuff(buffers, BUFF_Index_UI);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
@@ -439,14 +387,47 @@ void Topl_Renderer_GL4::render(const Topl_Scene* scene){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	free(buffers);
 	_isDrawn = true;
-}
+} */
 
-/* void Topl_Renderer_GL4::_renderTarget(unsigned long renderID) {
-	if (renderID == SPECIAL_SCENE_RENDER_ID _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
+void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
+	if (renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 	else {
-		// Handle draw call
+		for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
+			if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
+
+		Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+		Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+		Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+		if (renderBlockBuff != nullptr)
+			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
+		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+
+		for (unsigned t = 0; t < _textures.size(); t++) {
+			if (_textures.at(t).renderID > renderID) break; // geometry actor is passed in sequence 
+			else if (_textures.at(t).renderID == renderID) {
+				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
+				break;
+			}
+		}
+
+		// Draw Call!
+		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+		else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
+
+		// Unbinding
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-} */
+}
+
+Buffer_GL4* Topl_Renderer_GL4::findBuffer(BUFF_Type type, unsigned long renderID){
+	for (std::vector<Buffer_GL4>::iterator buffer = _buffers.begin(); buffer < _buffers.end(); buffer++)
+		if (buffer->type == type && buffer->renderID == renderID)
+			return &(*buffer);
+	return nullptr; // error
+}

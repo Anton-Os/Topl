@@ -20,13 +20,13 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_columns = columns;
 
 	// Modifying Root Pane RenderObj
-	_rootSquare.modify(::stretchTForm, (_yRadius * 2) + _border, AXIS_Y);
-	_rootSquare.modify(::stretchTForm, (_xRadius * 2) + _border, AXIS_X);
+	_rootSquare.modify(::stretchTForm, (_height * 2) + _border, AXIS_Y);
+	_rootSquare.modify(::stretchTForm, (_width * 2) + _border, AXIS_X);
 
 	// Modifying Child Panes RenderObj
 	_panes.resize(getActorCount() - 1);
-	_childSquare.modify(::stretchTForm, ((_yRadius * 2) / _rows) - _border, AXIS_Y);
-	_childSquare.modify(::stretchTForm, ((_xRadius * 2) / _columns) - _border, AXIS_X);
+	_childSquare.modify(::stretchTForm, ((_height * 2) / _rows) - _border, AXIS_Y);
+	_childSquare.modify(::stretchTForm, ((_width * 2) / _columns) - _border, AXIS_X);
 }
 
 void Geo_PaneLayout::configure(Topl_Scene* scene) {
@@ -38,9 +38,9 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		actor = getNextActor();
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
 
-		float xInc = (_xRadius / _columns) * 2;
-		float yInc = (_yRadius / _rows) * 2;
-		Vec2f origin = Vec2f({ -1.0f * (_xRadius - (_xRadius / _columns)), _yRadius - (_yRadius / _rows) });
+		float xInc = (_width / _columns) * 2;
+		float yInc = (_height / _rows) * 2;
+		Vec2f origin = Vec2f({ -1.0f * (_width - (_width / _columns)), _height - (_height / _rows) });
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
@@ -60,8 +60,8 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 }
 
 bool Geo_PaneLayout::interact(float xPos, float yPos, unsigned color){
-	if(xPos > getOrigin()[0] + _xRadius || xPos < getOrigin()[0] - _xRadius) return false; // lies out of x bounds
-	if(yPos > getOrigin()[1] + _yRadius || yPos < getOrigin()[1] - _yRadius) return false; // lies out of y bounds
+	if(xPos > getOrigin()[0] + _width || xPos < getOrigin()[0] - _width) return false; // lies out of x bounds
+	if(yPos > getOrigin()[1] + _height || yPos < getOrigin()[1] - _height) return false; // lies out of y bounds
 	
 	for(std::vector<Geo_Pane>::iterator pane = _panes.begin(); pane != _panes.end(); pane++)
 		if(pane->getColor() == color && pane->callback != nullptr)

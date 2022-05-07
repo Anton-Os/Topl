@@ -23,7 +23,7 @@ public:
 #endif
 	}
     Geo_Pane(){ // Random Color Constructor
-		_paneColor = genRandColorVal();
+		_paneColor = genRandColor();
 #ifdef RASTERON_H
 		_internalImage = createImgBlank(PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH, _paneColor);
 #endif
@@ -66,7 +66,7 @@ public:
 		float radius,
 		float border
 	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
-		_xRadius = radius; _yRadius = radius;
+		_width = radius; _height = radius;
 		_border = border;
 		resize(rows, columns);
 	}
@@ -74,10 +74,10 @@ public:
 	Geo_PaneLayout( // Separate radii
 		const std::string& prefix,
 		unsigned rows, unsigned columns,
-		float xRadius, float yRadius,
+		float width, float height,
 		float border
 	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
-		_xRadius = xRadius; _yRadius = yRadius;
+		_width = width; _height = height;
 		_border = border;
 		resize(rows, columns);
 	}
@@ -98,8 +98,8 @@ protected:
 	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_CHILD_Z);
     
 	unsigned _rows, _columns; 
-	float _xRadius = PANE_RADIUS; // length along X axis
-	float _yRadius = PANE_RADIUS; // length along Y axis
+	float _width = PANE_RADIUS; 
+	float _height = PANE_RADIUS;
 	float _border = PANE_BORDER;
 
 	static Geo_FlatSquare _decoySquare;
@@ -123,9 +123,9 @@ public:
 
 	Geo_UnitLayout( // Separate radii
 		const std::string& prefix,
-		float xRadius, float yRadius,
+		float width, float height,
 		float border
-	) : Geo_PaneLayout(prefix, 1, 1, xRadius, yRadius, border) 
+	) : Geo_PaneLayout(prefix, 1, 1, width, height, border) 
 	{  }
 };
 
@@ -149,9 +149,9 @@ public:
 	Geo_RowLayout( // Separate radii
 		const std::string& prefix,
 		unsigned rows,
-		float xRadius, float yRadius,
+		float width, float height,
 		float border
-	) : Geo_PaneLayout(prefix, rows, 1, xRadius, yRadius, border)
+	) : Geo_PaneLayout(prefix, rows, 1, width, height, border)
 	{  }
 };
 
@@ -175,9 +175,9 @@ public:
 	Geo_ColLayout( // Separate radii
 		const std::string& prefix,
 		unsigned columns,
-		float xRadius, float yRadius,
+		float width, float height,
 		float border
-	) : Geo_PaneLayout(prefix, 1, columns, xRadius, yRadius, border)
+	) : Geo_PaneLayout(prefix, 1, columns, width, height, border)
 	{  }
 };
 
@@ -201,8 +201,8 @@ public:
 	Geo_BoxedLayout( // Separate radii
 		const std::string& prefix,
 		unsigned count,
-		float xRadius, float yRadius,
+		float width, float height,
 		float border
-	) : Geo_PaneLayout(prefix, count, count, xRadius, yRadius, border) 
+	) : Geo_PaneLayout(prefix, count, count, width, height, border) 
 	{  }
 };

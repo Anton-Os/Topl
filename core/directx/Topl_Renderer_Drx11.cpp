@@ -3,24 +3,7 @@
 namespace Renderer {
 	// Shader Functions
 
-	static unsigned getOffsetFromShaderVal(enum SHDR_ValueType type) { // move to Renderer.cpp!
-		switch (type) {
-		case SHDR_float_vec4: return sizeof(float) * 4;
-		case SHDR_float_vec3: return sizeof(float) * 3;
-		case SHDR_float_vec2: return sizeof(float) * 2;
-		case SHDR_float: return sizeof(float);
-		case SHDR_uint_vec4: return sizeof(unsigned) * 4;
-		case SHDR_uint_vec3: return sizeof(unsigned) * 3;
-		case SHDR_uint_vec2: return sizeof(unsigned) * 2;
-		case SHDR_uint: return sizeof(unsigned);
-		default:
-			logMessage("Shader input type not supported!");
-			break;
-		}
-		return 0;
-	}
-
-	static DXGI_FORMAT getFormatFromShaderVal(enum SHDR_ValueType type) {
+	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
 		switch (type) {
 		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case SHDR_float_vec3: return DXGI_FORMAT_R32G32B32_FLOAT;
@@ -40,16 +23,6 @@ namespace Renderer {
 	}
 
 	// Buffer Functions
-
-	static Buffer_Drx11* findBuff(Buffer_Drx11** buffs, enum BUFF_Type type) { // REPLACE THIS!
-		return *(buffs + type); // type arguments indicates the offset
-	}
-
-	static void discoverBuffers(Buffer_Drx11** buffs, std::vector<Buffer_Drx11>* targetBuffs, unsigned id) { // REPLACE THIS!
-		for (std::vector<Buffer_Drx11>::iterator buff = targetBuffs->begin(); buff < targetBuffs->end(); buff++)
-			if (buff->renderID == id)
-				*(buffs + buff->type) = &(*buff); // type arguments indicates the offset
-	}
 
 	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuAccessFlags, const void* data) {
 		D3D11_BUFFER_DESC buffDesc;
@@ -103,7 +76,7 @@ namespace Renderer {
 		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
 		inputElementDesc.SemanticName = input->semantic.c_str();
 		inputElementDesc.SemanticIndex = 0;
-		inputElementDesc.Format = Renderer::getFormatFromShaderVal(input->type);
+		inputElementDesc.Format = Renderer::getShaderFormat(input->type);
 		inputElementDesc.InputSlot = 0;
 		inputElementDesc.AlignedByteOffset = offset;
 		inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -240,7 +213,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
 
-	// Viewport Creation // add support for multiple!
+	// Viewport Creation
 
 	if (_viewports == nullptr) {
 		_isBuilt = false;
@@ -276,7 +249,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	unsigned inputElementOffset = 0;
 	for (unsigned i = 0; i < _entryShader->getInputCount(); i++) {
 		*(layout_ptr + i) = Renderer::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += Renderer::getOffsetFromShaderVal(_entryShader->getInputAtIndex(i)->type);
+		inputElementOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(i)->type);
 	}
 	UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
 
@@ -536,11 +509,8 @@ void Topl_Renderer_Drx11::drawMode() {
 	}
 }
 
-void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
-	Buffer_Drx11** buffs = (Buffer_Drx11**)malloc(BUFFERS_PER_RENDERTARGET * sizeof(Buffer_Drx11*));
-	
-	// getting instance of scene block buffer and passing to shader, if it exists
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+/* void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) { // passing scene block buffer to shader
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		if (sceneBlockBuff != nullptr)
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
@@ -555,12 +525,9 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 			return logMessage(MESSAGE_Exclaim, "renderID not found!");
 		}
 
-		// Buffer discovery and binding step
-		Renderer::discoverBuffers(buffs, &_buffers, renderID);
-
-		Buffer_Drx11* vertexBuff = Renderer::findBuff(buffs, BUFF_Vertex_Type);
-		Buffer_Drx11* indexBuff = Renderer::findBuff(buffs, BUFF_Index_UI);
-		Buffer_Drx11* renderBlockBuff = Renderer::findBuff(buffs, BUFF_Render_Block);
+		Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+		Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+		Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
 
 		if (renderBlockBuff != nullptr)
 			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
@@ -570,7 +537,6 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 
 		if (vertexBuff == nullptr || vertexBuff->count == 0)
 			return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-
 		else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
 
 		if (indexBuff != nullptr && indexBuff->count > 0)
@@ -593,17 +559,54 @@ void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
 		else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 	}
 
-	free(buffs);
 	_isDrawn = true;
-}
+} */
 
-/* void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
+ void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
 	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
 		if (sceneBlockBuff != nullptr)
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 	}
 	else {
-		// Handle draw call
+		Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+		Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+		Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+
+		if (renderBlockBuff != nullptr)
+			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+
+		UINT stride = sizeof(Geo_Vertex);
+		UINT offset = 0;
+
+		if (vertexBuff == nullptr || vertexBuff->count == 0)
+			return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+		else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+
+		if (indexBuff != nullptr && indexBuff->count > 0)
+			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		for (unsigned t = 0; t < _textures.size(); t++) {
+			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
+			else if (_textures.at(t).renderID == renderID) {
+				ID3D11SamplerState* sampler = _textures.at(t).sampler;
+				ID3D11ShaderResourceView* resView = _textures.at(t).resView;
+
+				_deviceCtx->PSSetShaderResources(0, 1, &resView);
+				_deviceCtx->PSSetSamplers(0, 1, &sampler);
+				break;
+			}
+		}
+
+		// Draw Call!
+		if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+		else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 	}
-} */
+} 
+
+Buffer_Drx11* Topl_Renderer_Drx11::findBuffer(BUFF_Type type, unsigned long renderID){
+	for (std::vector<Buffer_Drx11>::iterator buffer = _buffers.begin(); buffer < _buffers.end(); buffer++)
+		if (buffer->type == type && buffer->renderID == renderID)
+			return &(*buffer);
+	return nullptr; // error
+}

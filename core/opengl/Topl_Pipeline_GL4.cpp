@@ -32,8 +32,7 @@ namespace Renderer {
 
 void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 	_pipeline = pipeline;
-	_entryShader = pipeline->entryShader;
-	_isPipelineReady = pipeline->isReady;
+	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
 	
 	if(_isPipelineReady) glUseProgram(pipeline->shaderProg);
 }

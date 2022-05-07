@@ -95,7 +95,7 @@ public:
     void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool renderScene(Topl_Scene* scene);
-    // bool renderAll(); // implement this
+    bool renderAll();
     virtual void clearView() = 0; // clears view to predefined background color
     virtual void switchFramebuff() = 0; // switches front and back buffers
 	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
@@ -126,8 +126,8 @@ private:
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void drawMode() = 0;
-	virtual void render(const Topl_Scene* scene) = 0; // replace this!
-	// virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
+	// virtual void render(const Topl_Scene* scene) = 0;
+	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 #ifdef RASTERON_H
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
 	virtual void attachMaterial(const Topl_Material* material, unsigned id) = 0;

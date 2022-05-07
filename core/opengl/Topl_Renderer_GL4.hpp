@@ -63,7 +63,8 @@ public:
 	void build(const Topl_Scene* scene) override;
 	void texturize(const Topl_Scene* scene) override;
 
-	void setPipeline(Topl_Pipeline_GL4* pipeline);
+	void setPipeline(Topl_Pipeline_GL4* pipeline); // replace this!
+	// void switchPipeline(const Topl_Pipeline* pipeline) override;
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H
@@ -74,12 +75,13 @@ private:
 	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
-	void render(const Topl_Scene* scene) override;
-	// void renderTarget(unsigned long renderID) override;
+	// void render(const Topl_Scene* scene) override;
+	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;
 	void attachMaterial(const Topl_Material* material, unsigned id) override;
 #endif
+	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);
 
 	Topl_Pipeline_GL4* _pipeline;
 

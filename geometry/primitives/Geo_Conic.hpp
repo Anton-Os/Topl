@@ -7,7 +7,7 @@ public:
     (refShape.segments + 2, // segments +1 for apex and +1 for center
      refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
         _shape2D = refShape;
-        _apex = Vec3f({ 0.0f, 0.0f, -1.0f * refShape.radius });
+        _apex = Vec3f({ 0.0f, 0.0f, -1.0f * refShape.radius }); // default apex
         fillRenderObj();
     }
 
@@ -16,7 +16,7 @@ public:
     (refShape.segments + 2,  // segments +1 for apex and +1 for center
      refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
         _shape2D = refShape;
-        _apex = apex;
+        _apex = apex; // manual apex
         fillRenderObj();
     }
 
