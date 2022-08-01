@@ -29,8 +29,8 @@ private:
 	std::string _name = DEFAULT_ACTOR_NAME;
 
 	// Data Types
-	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
-	Vec2f _rotation = Vec2f({ 0.0f, 0.0f});
+	Vec3f _position = Vec3f((Vec3f){ 0.0f, 0.0f, 0.0f });
+	Vec2f _rotation = Vec2f((Vec2f){ 0.0f, 0.0f});
 	const Geo_RenderObj* _renderObj = nullptr;
 };
 

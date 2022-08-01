@@ -6,22 +6,22 @@ void Geo_Extruded::genPos(Vec3f* data){
 	
 	// Vertices for FRONT FACE
 
-    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2)});
+    Vec3f centerVertex = Vec3f((Vec3f){ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2)});
     *(data + 0) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1; v < _vertexCount / 2; v++)
-        *(data + v) = Vec3f({
+        *(data + v) = Vec3f((Vec3f){
 			(float)sin(_startAngle + (v * angle)) * radius, 
 			(float)cos(_startAngle + (v * angle)) * radius, 
 			(float)DEFAULT_Z + (_depth / 2)
 		});
 
 	// Vertices for BACK FACE
-    centerVertex = Vec3f({0.0f, 0.0f, DEFAULT_Z - (_depth / 2)});
+    centerVertex = Vec3f((Vec3f){0.0f, 0.0f, DEFAULT_Z - (_depth / 2)});
     *(data + (_vertexCount / 2)) = centerVertex; // first vertex is the center vertex
 
     for(unsigned v = 1 + (_vertexCount / 2); v < _vertexCount; v++)
-        *(data + v) = Vec3f({
+        *(data + v) = Vec3f((Vec3f){
 			(float)sin(_startAngle + ((v - (_vertexCount / 2)) * angle)) * radius,
 			(float)cos(_startAngle + ((v - (_vertexCount / 2)) * angle)) * radius,
 			(float)DEFAULT_Z - (_depth / 2)
@@ -29,8 +29,8 @@ void Geo_Extruded::genPos(Vec3f* data){
 }
 
 void Geo_Extruded::genNormals(Vec3f* data){
-	const Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
-	const Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
+	const Vec3f frontNormalVec = Vec3f((Vec3f){ 0.0f, 0.0f, -1.0f });
+	const Vec3f backNormalVec = Vec3f((Vec3f){ 0.0f, 0.0f, 1.0f });
 
 	for(unsigned v = 1; v < _vertexCount / 2; v++) *(data + v) = frontNormalVec;
 	for(unsigned v = 1 + (_vertexCount / 2); v < _vertexCount; v++) *(data + v) = backNormalVec;
@@ -38,23 +38,23 @@ void Geo_Extruded::genNormals(Vec3f* data){
 
 void Geo_Extruded::genTexCoords(Vec2f* data) {
 	// Texcoords for FRONT FACE
-	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
+	*(data + 0) = Vec2f((Vec2f){ 0.5f, 0.5f }); // center point will always be shared
 	for (unsigned t = 1; t < _vertexCount; t++)
 		switch ((t - 1) % 4) {
-			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
-			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
+			case 0: *(data + t) = Vec2f((Vec2f){ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f((Vec2f){ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f((Vec2f){ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f((Vec2f){ 1.0f, 1.0f }); break; // top right
 		}
 
 	// Texcoords for BACK FACE
-	*(data + (_vertexCount / 2)) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
+	*(data + (_vertexCount / 2)) = Vec2f((Vec2f){ 0.5f, 0.5f }); // center point will always be shared
 	for(unsigned t = 1 + (_vertexCount / 2); t < _vertexCount; t++)
 		switch ((t - 1) % 4) {
-			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
-			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
+			case 0: *(data + t) = Vec2f((Vec2f){ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f((Vec2f){ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f((Vec2f){ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f((Vec2f){ 1.0f, 1.0f }); break; // top right
 		}
 }
 

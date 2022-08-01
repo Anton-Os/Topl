@@ -5,7 +5,7 @@
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
-#define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
+#define CAMERA_LOOK Vec3f((Vec3f){ 0.0f, 0.0f, 2.0f })
 
 Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.0 + (1.0 / VIEW_SPACE));
@@ -32,16 +32,16 @@ void Playground_App::init() {
 
 	// grid.configure(&scene_main);
 	scene_main.addGeometry("Sphere", &sphereActor);
-	sphereActor.updateRot(Vec2f({ 0.0f, 1.0f }));
+	sphereActor.updateRot(Vec2f((Vec2f){ 0.0f, 1.0f }));
 	scene_details.addGeometry("Cone1", &coneActor1);
-	coneActor1.updatePos(Vec3f({ 0.5f, -0.75f, 0.0f }));
+	coneActor1.updatePos(Vec3f((Vec3f){ 0.5f, -0.75f, 0.0f }));
 	scene_details.addGeometry("Cone2", &coneActor2);
-	coneActor2.updatePos(Vec3f({ -0.5f, 0.75f, 0.0f }));
+	coneActor2.updatePos(Vec3f((Vec3f){ -0.5f, 0.75f, 0.0f }));
 
 	// scene_overlay.addGeometry("captureSquare", &captureSquare);
-	rowLayout.move(Vec3f({ 0.5f, 0.5f, 0.0f }));
+	rowLayout.move(Vec3f((Vec3f){ 0.5f, 0.5f, 0.0f }));
 	rowLayout.configure(&scene_overlay);
-	boxedLayout.move(Vec3f({ -0.5f, -0.5f, 0.0f }));
+	boxedLayout.move(Vec3f((Vec3f){ -0.5f, -0.5f, 0.0f }));
 	boxedLayout.configure(&scene_overlay);
 
 	_renderer->setCamera(&camera1); // ortho projection

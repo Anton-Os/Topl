@@ -7,7 +7,7 @@ public:
     (refShape.segments + 2, // segments +1 for apex and +1 for center
      refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
         _shape2D = refShape;
-        _apex = Vec3f({ 0.0f, 0.0f, -1.0f * refShape.radius }); // default apex
+        _apex = Vec3f((Vec3f){ 0.0f, 0.0f, -1.0f * refShape.radius }); // default apex
         fillRenderObj();
     }
 
@@ -32,22 +32,22 @@ private:
 };
 
 struct Geo_ConicTriangle : public Geo_Conic { 
-    Geo_ConicTriangle(float radius) : Geo_Conic({ radius, 3 }){}
-    Geo_ConicTriangle(float radius, Vec3f apex) : Geo_Conic({ radius, 3 }, apex){}
+    Geo_ConicTriangle(float radius) : Geo_Conic((NGon2D){ radius, 3 }){}
+    Geo_ConicTriangle(float radius, Vec3f apex) : Geo_Conic((NGon2D){ radius, 3 }, apex){}
 };
 
 struct Geo_ConicSquare : public Geo_Conic { // Pyramid
-Geo_ConicSquare(float radius) : Geo_Conic({ radius, 4 }){}
-    Geo_ConicSquare(float radius, Vec3f apex) : Geo_Conic({ radius, 4 }, apex){}
+Geo_ConicSquare(float radius) : Geo_Conic((NGon2D){ radius, 4 }){}
+    Geo_ConicSquare(float radius, Vec3f apex) : Geo_Conic((NGon2D){ radius, 4 }, apex){}
 };
 
 struct Geo_ConicHex : public Geo_Conic {
-    Geo_ConicHex(float radius) : Geo_Conic({ radius, 6 }){}
-    Geo_ConicHex(float radius, Vec3f apex) : Geo_Conic({ radius, 6 }, apex){}
+    Geo_ConicHex(float radius) : Geo_Conic((NGon2D){ radius, 6 }){}
+    Geo_ConicHex(float radius, Vec3f apex) : Geo_Conic((NGon2D){ radius, 6 }, apex){}
 };
 
 struct Geo_ConicCircle : public Geo_Conic { // Cone
-    Geo_ConicCircle(float radius) : Geo_Conic({ radius, DEFAULT_CIRCLE_SEGS }){}
-    Geo_ConicCircle(float radius, Vec3f apex) : Geo_Conic({ radius, DEFAULT_CIRCLE_SEGS }, apex){}
+    Geo_ConicCircle(float radius) : Geo_Conic((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }){}
+    Geo_ConicCircle(float radius, Vec3f apex) : Geo_Conic((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }, apex){}
 };
 

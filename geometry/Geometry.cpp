@@ -1,9 +1,9 @@
 #include "Geometry.hpp"
 
-static void genTexCoords_center(unsigned vertexCount, Vec2f* data){
+/* static void genTexCoords_center(unsigned vertexCount, Vec2f* data){
     for (unsigned t = 0; t < vertexCount; t++)
-        *(data + t) = Vec2f({ 0.5f, 0.5f}); // take the center value of texture
-}
+        *(data + t) = Vec2f((Vec2f){ 0.5f, 0.5f}); // take the center value of texture
+} */
 
 // Geo_Vertex Operations
 

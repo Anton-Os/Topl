@@ -34,24 +34,24 @@ private:
 };
 
 struct Geo_FlatTriangle : public Geo_Flat {
-    Geo_FlatTriangle(float radius) : Geo_Flat({ radius, 3 }){}
-    Geo_FlatTriangle(float radius, float z) : Geo_Flat({ radius, 3 }, z){}
+    Geo_FlatTriangle(float radius) : Geo_Flat((NGon2D){ radius, 3 }){}
+    Geo_FlatTriangle(float radius, float z) : Geo_Flat((NGon2D){ radius, 3 }, z){}
 };
 
 class Geo_FlatSquare : public Geo_Flat {
 public:
-    Geo_FlatSquare(float radius) : Geo_Flat({ radius, 4 }){}
-    Geo_FlatSquare(float radius, float z) : Geo_Flat({ radius, 4 }, z){}
+    Geo_FlatSquare(float radius) : Geo_Flat((NGon2D){ radius, 4 }){}
+    Geo_FlatSquare(float radius, float z) : Geo_Flat((NGon2D){ radius, 4 }, z){}
 };
 
 struct Geo_FlatHex : public Geo_Flat {
-    Geo_FlatHex(float radius) : Geo_Flat({ radius, 6 }){}
-    Geo_FlatHex(float radius, float z) : Geo_Flat({ radius, 6 }, z){}
+    Geo_FlatHex(float radius) : Geo_Flat((NGon2D){ radius, 6 }){}
+    Geo_FlatHex(float radius, float z) : Geo_Flat((NGon2D){ radius, 6 }, z){}
 };
 
 struct Geo_FlatCircle : public Geo_Flat {
-    Geo_FlatCircle(float radius) : Geo_Flat({ radius, DEFAULT_CIRCLE_SEGS }){}
-    Geo_FlatCircle(float radius, float z) : Geo_Flat({ radius, DEFAULT_CIRCLE_SEGS }, z){}
+    Geo_FlatCircle(float radius) : Geo_Flat((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }){}
+    Geo_FlatCircle(float radius, float z) : Geo_Flat((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }, z){}
 };
 
 // Extended Types

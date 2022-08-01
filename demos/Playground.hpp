@@ -33,7 +33,7 @@ private:
 	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 200, 200 });
 	// Geo_Sphere sphere = Geo_Sphere({ 0.5f, 12, 6 });
 	Geo_Actor sphereActor = Geo_Actor((Geo_RenderObj*)&sphere);
-	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.1f); Geo_ConicHex cone2 = Geo_ConicHex(0.1f, Vec3f({ 0.1f, 0.5f, -0.2f }));
+	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.1f); Geo_ConicHex cone2 = Geo_ConicHex(0.1f, Vec3f((Vec3f){ 0.1f, 0.5f, -0.2f }));
 	Geo_Actor coneActor1 = Geo_Actor((Geo_RenderObj*)&cone1); Geo_Actor coneActor2 = Geo_Actor((Geo_RenderObj*)&cone2);
 	Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
 	Geo_Grid grid = Geo_Grid("grid", &coneActor1, gridParams);

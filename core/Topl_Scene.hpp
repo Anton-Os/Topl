@@ -37,7 +37,7 @@ struct Topl_Light {
 		value = v;
 	}
 	Vec3f pos;
-	Vec3f value = Vec3f({ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
+	Vec3f value = Vec3f((Vec3f){ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety
 
@@ -63,8 +63,8 @@ public:
 	vec3f_cptr_t getLookPos() const { return &_lookPos; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
-	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f });
-	Vec3f _lookPos = Vec3f({ 0.0f, 0.0f, 1.0f });
+	Vec3f _pos = Vec3f((Vec3f){ 0.0f, 0.0f, -1.0f });
+	Vec3f _lookPos = Vec3f((Vec3f){ 0.0f, 0.0f, 1.0f });
 	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
 };
 

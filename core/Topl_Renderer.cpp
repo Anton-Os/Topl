@@ -87,6 +87,8 @@ bool Topl_Renderer::renderAll(){ // draws all render objects
     return _isDrawn; // render call sets variable to true on success
 }
 
+#ifdef RASTERON_H
+
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     Rasteron_PixelPoint pixPoint = { x, y };
 
@@ -96,6 +98,8 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     deleteImg(image);
     return color; // return color computed at offsets
 }
+
+#endif
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
     // for(std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)

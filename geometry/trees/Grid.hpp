@@ -28,7 +28,7 @@ public:
 	) : Geo_Tree(prefix, geo, props.getCellCount()),
 	Geo_DynamicSet(props.getCellCount()){
         properties = props;
-		origin = Vec3f({
+		origin = Vec3f((Vec3f){
 			-1.0f * props.xAttr.first * (props.xAttr.second * 0.5f) + (props.xAttr.second / 2),
 			-1.0f * props.yAttr.first * (props.yAttr.second * 0.5f) + (props.yAttr.second / 2),
 			0.0f
@@ -43,7 +43,7 @@ public:
 	) : Geo_Tree(prefix, geo, props.getCellCount()),
 	Geo_DynamicSet(props.getCellCount()){
         properties = props;
-		origin = Vec3f({
+		origin = Vec3f((Vec3f){
 			-1.0f * props.xAttr.first * (props.xAttr.second * 0.5f) + (props.xAttr.second / 2),
 			-1.0f * props.yAttr.first * (props.yAttr.second * 0.5f) + (props.yAttr.second / 2),
 			0.0f

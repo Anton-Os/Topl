@@ -18,9 +18,9 @@ private:
 	Topl_Scene scene;
 	Topl_Camera camera;
 
-	Phys_Motion motion1 = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 1.0f, 0.0f }), MOTION_TIME);
-	Phys_Motion motion2 = Phys_Motion(MOTION_Linear, Vec3f({ -1.0f, 0.0f, 1.0f }), MOTION_TIME);
-	Phys_Motion motion3 = Phys_Motion(MOTION_Linear, Vec3f({ 0.5f, -5.0f, 1.0f }), Vec3f({ -1.0f, 10.0f, -1.0f }), MOTION_TIME);
+	Phys_Motion motion1 = Phys_Motion(MOTION_Linear, Vec3f((Vec3f){ 0.0f, 1.0f, 0.0f }), MOTION_TIME);
+	Phys_Motion motion2 = Phys_Motion(MOTION_Linear, Vec3f((Vec3f){ -1.0f, 0.0f, 1.0f }), MOTION_TIME);
+	Phys_Motion motion3 = Phys_Motion(MOTION_Linear, Vec3f((Vec3f){ 0.5f, -5.0f, 1.0f }), Vec3f((Vec3f){ -1.0f, 10.0f, -1.0f }), MOTION_TIME);
 
 	// Geometries and Drawable Objects
 

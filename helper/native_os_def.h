@@ -59,6 +59,18 @@
     };
 
     #define NATIVE_PLATFORM_CONTEXT Linux_Platform_Context
+#else // No Support
+    typedef struct Dummy { };
+
+    #define NATIVE_WINDOW Dummy
+    #define NATIVE_GL_CONTEXT Dummy
+
+    struct Dummy_Platform_Context { // placeholder value
+        NATIVE_WINDOW window;
+        NATIVE_GL_CONTEXT oglCtx;
+    };
+
+    #define NATIVE_PLATFORM_CONTEXT Dummy_Platform_Context
 #endif
 
 #define NATIVE_OS_DEF

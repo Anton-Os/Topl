@@ -24,7 +24,7 @@ void Geo_Grid_Params::clamp(){
 
 void Geo_Grid::configure(Topl_Scene* scene){
     Geo_Actor* actor = nullptr;
-    Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
+    Vec3f offset = Vec3f((Vec3f){ 0.0f, 0.0f, 0.0f });
 
     const unsigned short width = properties.xAttr.first;
     const float x = properties.xAttr.second;
@@ -36,7 +36,7 @@ void Geo_Grid::configure(Topl_Scene* scene){
     for(unsigned c = 0; c < getActorCount(); c++){
         actor = getNextActor();
 
-		offset = Vec3f({
+		offset = Vec3f((Vec3f){
 			((c % width) * x),
 			((c % (height * width)) / width) * y,
 			(c / (height * width)) * z

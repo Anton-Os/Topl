@@ -5,13 +5,13 @@ void Geo_Conic::genPos(Vec3f* data){
 	const float radius = _shape2D.radius * RADIAL_UNITS;
 	// const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically
 
-    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
+    Vec3f centerVertex = Vec3f((Vec3f){ 0.0f, 0.0f, DEFAULT_Z });
     *(data + 0) = centerVertex; // first vertex is the center vertex
-	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
+	Vec3f apexVertex = _apex + Vec3f((Vec3f){ 0.0f, 0.0f, DEFAULT_Z });
 	*(data + _vertexCount - 1) = apexVertex;
 
 	for (unsigned v = 1; v < _vertexCount; v++)
-		*(data + v) = Vec3f({
+		*(data + v) = Vec3f((Vec3f){
 			(float)sin(_startAngle + (v * angle)) * radius,
 			(float)cos(_startAngle + (v * angle)) * radius,
 			(float)DEFAULT_Z
@@ -19,23 +19,23 @@ void Geo_Conic::genPos(Vec3f* data){
 }
 
 void Geo_Conic::genNormals(Vec3f* data){
-	Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
-	Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
+	Vec3f frontNormalVec = Vec3f((Vec3f){ 0.0f, 0.0f, -1.0f });
+	Vec3f backNormalVec = Vec3f((Vec3f){ 0.0f, 0.0f, 1.0f });
 
 	*(data + _vertexCount - 1) = backNormalVec; // back facing normal 
 	for(unsigned v = 1; v < _vertexCount; v++) *(data + v) = frontNormalVec;
 }
 
 void Geo_Conic::genTexCoords(Vec2f* data) {
-	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
+	*(data + 0) = Vec2f((Vec2f){ 0.5f, 0.5f }); // center point will always be shared
 	for (unsigned t = 1; t < _vertexCount; t++)
 		switch((t - 1) % 4){
-			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
-			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
+			case 0: *(data + t) = Vec2f((Vec2f){ 1.0f, 0.0f }); break; // bottom left
+			case 1: *(data + t) = Vec2f((Vec2f){ 0.0f, 0.0f }); break; // top left
+			case 2: *(data + t) = Vec2f((Vec2f){ 0.0f, 1.0f }); break; // bottom right
+			case 3: *(data + t) = Vec2f((Vec2f){ 1.0f, 1.0f }); break; // top right
 		}
-	*(data + _vertexCount - 1) = Vec2f({ 0.5f, 0.5f }); // apex point will always be shared
+	*(data + _vertexCount - 1) = Vec2f((Vec2f){ 0.5f, 0.5f }); // apex point will always be shared
 }
 
 void Geo_Conic::genIndices(unsigned* data){

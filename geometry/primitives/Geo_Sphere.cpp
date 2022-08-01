@@ -16,7 +16,7 @@ void Geo_Sphere::genPos(Vec3f* data){
 			float x = xy * cosf(sliceAngle);
 			float y = xy * sinf(sliceAngle);
 
-			*(data + v) = Vec3f({ x, y, z }); // assignment
+			*(data + v) = Vec3f((Vec3f){ x, y, z }); // assignment
 			v++; // increment to next vertex
 		}
 	}
@@ -34,7 +34,7 @@ void Geo_Sphere::genNormals(Vec3f* data){
 			float x = xy * cosf(sliceAngle);
 			float y = xy * sinf(sliceAngle);
 
-			Vec3f normal = Vec3f({ x, y, z });
+			Vec3f normal = Vec3f((Vec3f){ x, y, z });
 			normal.normalize();
 			*(data + n) = normal; // assignment
 			n++; // increment to next vertex
@@ -47,7 +47,7 @@ void Geo_Sphere::genTexCoords(Vec2f* data) {
 
 	for(unsigned stack = 0; stack <= _shape3D.xSegments; stack++){
     	for (unsigned slice = 0; slice <= _shape3D.ySegments; slice++) {
-			Vec2f texcoord = Vec2f({
+			Vec2f texcoord = Vec2f((Vec2f){
 				(float)(slice / _shape3D.ySegments), 
 				(float)(stack / _shape3D.xSegments)
 			});

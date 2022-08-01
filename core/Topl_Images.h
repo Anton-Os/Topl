@@ -108,11 +108,11 @@ struct Topl_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Height
 private:
     void genPos(Vec3f* data) override {
 		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
+			*(data + p) = Vec3f((Vec3f){ 0.0f, (float)*(heightmap->data + p), 0.0f });
 	}
     void genNormals(Vec3f* data) override { 
 		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
+			*(data + p) = Vec3f((Vec3f){ 0.0f, (float)*(heightmap->data + p), 0.0f });
 	} 
     void genTexCoords(Vec2f* data) override {
 		float xInc = 1.0f / heightmap->width;
@@ -120,7 +120,7 @@ private:
 
 		for (unsigned r = 0; r < heightmap->height; r++)
 			for (unsigned c = 0; c < heightmap->width; c++)
-				*(data + (r * heightmap->width) + c) = Vec2f({ xInc * c, yInc * r });
+				*(data + (r * heightmap->width) + c) = Vec2f((Vec2f){ xInc * c, yInc * r });
 	}
     void genIndices(unsigned* data) override { return; } // No indices by default
 

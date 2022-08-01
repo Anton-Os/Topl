@@ -143,12 +143,12 @@ typedef const Mat3x3* const mat3x3_cptr_t;
 typedef Matrix<4, 4> Mat4x4;
 typedef const Mat4x4* const mat4x4_cptr_t;
 
-#define VEC_2F_ZERO Vec2f({ 0.0f, 0.0f })
-#define VEC_3F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f })
-#define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
+#define VEC_2F_ZERO Vec2f((Vec2f){ 0.0f, 0.0f })
+#define VEC_3F_ZERO Vec3f((Vec3f){ 0.0f, 0.0f, 0.0f })
+#define VEC_4F_ZERO Vec3f((Vec3f){ 0.0f, 0.0f, 0.0f, 0.0f })
 
-#define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
-#define MAT_4x4_TEST Mat4x4({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f })
+#define MAT_4x4_IDENTITY Mat4x4((Mat4x4){ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
+#define MAT_4x4_TEST Mat4x4((Mat4x4){ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f })
 
 #define MATHS_H
 #endif

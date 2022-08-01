@@ -33,22 +33,22 @@ private:
 };
 
 struct Geo_ExtrudedTriangle : public Geo_Extruded { 
-    Geo_ExtrudedTriangle(float radius) : Geo_Extruded({ radius, 3 }){}
-    Geo_ExtrudedTriangle(float radius, float depth) : Geo_Extruded({ radius, 3 }, depth){}
+    Geo_ExtrudedTriangle(float radius) : Geo_Extruded((NGon2D){ radius, 3 }){}
+    Geo_ExtrudedTriangle(float radius, float depth) : Geo_Extruded((NGon2D){ radius, 3 }, depth){}
 };
 
 struct Geo_ExtrudedSquare : public Geo_Extruded { // Box
-    Geo_ExtrudedSquare(float radius) : Geo_Extruded({ radius, 4 }){}
-    Geo_ExtrudedSquare(float radius, float depth) : Geo_Extruded({ radius, 4 }, depth){}
+    Geo_ExtrudedSquare(float radius) : Geo_Extruded((NGon2D){ radius, 4 }){}
+    Geo_ExtrudedSquare(float radius, float depth) : Geo_Extruded((NGon2D){ radius, 4 }, depth){}
 };
 
 struct Geo_ExtrudedHex : public Geo_Extruded {
-    Geo_ExtrudedHex(float radius) : Geo_Extruded({ radius, 6 }){}
-    Geo_ExtrudedHex(float radius, float depth) : Geo_Extruded({ radius, 6 }, depth){}
+    Geo_ExtrudedHex(float radius) : Geo_Extruded((NGon2D){ radius, 6 }){}
+    Geo_ExtrudedHex(float radius, float depth) : Geo_Extruded((NGon2D){ radius, 6 }, depth){}
 };
 
 struct Geo_ExtrudedCircle : public Geo_Extruded { // Cylinder
-    Geo_ExtrudedCircle(float radius) : Geo_Extruded({ radius, DEFAULT_CIRCLE_SEGS }){}
-    Geo_ExtrudedCircle(float radius, float depth) : Geo_Extruded({ radius, DEFAULT_CIRCLE_SEGS }, depth){}
+    Geo_ExtrudedCircle(float radius) : Geo_Extruded((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }){}
+    Geo_ExtrudedCircle(float radius, float depth) : Geo_Extruded((NGon2D){ radius, DEFAULT_CIRCLE_SEGS }, depth){}
 };
 

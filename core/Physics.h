@@ -67,7 +67,7 @@ private:
 #define PHYS_ROD_K 10000.0 // K value for rod connector
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 // #define CONNECTOR_ANGLE_THRESH Vec3f(0.00005f, 0.00005f, 0.00005f)
-#define CONNECTOR_ANGLE_PRESET Vec3f({ 0.0f, 1.0f, 0.0 });
+#define CONNECTOR_ANGLE_PRESET Vec3f((Vec3f){ 0.0f, 1.0f, 0.0 });
 #define CONNECTOR_ANGLE_SCALE 20.0f
 #define BAD_CONNECTOR_LEN -1.0f // indicates that parameters need to be adjusted
 

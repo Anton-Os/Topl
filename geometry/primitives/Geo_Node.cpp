@@ -37,7 +37,7 @@ void Geo_Mesh::genPos(Vec3f* data){
 			for(unsigned v = 0; v < _vertexCount; v++){
 				aiVector3D* vertex = (*mesh)->mVertices + v;
 				// *(data + v) = Vec3f(vertex->x, vertex->y, vertex->z);
-				*(data + v) = Vec3f({ vertex->x, vertex->y, vertex->z }) * MESH_SCALE;
+				*(data + v) = Vec3f((Vec3f){ vertex->x, vertex->y, vertex->z }) * MESH_SCALE;
 			}
 }
 
@@ -46,7 +46,7 @@ void Geo_Mesh::genNormals(Vec3f* data) {
 		if((*mesh)->HasNormals())
 			for(unsigned n = 0; n < _vertexCount; n++){
 				aiVector3D* normal = (*mesh)->mNormals + n;
-				*(data + n) = Vec3f({ normal->x, normal->y, normal->z });
+				*(data + n) = Vec3f((Vec3f){ normal->x, normal->y, normal->z });
 			}
 }
 
@@ -55,7 +55,7 @@ void Geo_Mesh::genTexCoords(Vec2f* data) {
 		if((*mesh)->HasTextureCoords(0))
 			for(unsigned t = 0; t < _vertexCount; t++){
 				aiVector3D* texcoord = *((*mesh)->mTextureCoords) + t;
-				*(data + t) = Vec2f({ texcoord->x, texcoord->y });
+				*(data + t) = Vec2f((Vec2f){ texcoord->x, texcoord->y });
 			}
 }
 

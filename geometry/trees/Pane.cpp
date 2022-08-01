@@ -40,11 +40,11 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 
 		float xInc = (_width / _columns) * 2;
 		float yInc = (_height / _rows) * 2;
-		Vec2f origin = Vec2f({ -1.0f * (_width - (_width / _columns)), _height - (_height / _rows) });
+		Vec2f origin = Vec2f((Vec2f){ -1.0f * (_width - (_width / _columns)), _height - (_height / _rows) });
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 
-		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
+		actor->updatePos(Vec3f((Vec3f){ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
 		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
 #ifdef RASTERON_H
 		scene->addTexture(getPrefix() + _Pane::genPaneName(p), _panes[p - 1].getBackground());

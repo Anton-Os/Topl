@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
+set (CMAKE_CXX_STANDARD 11) # should apply to everything
 # Extrenal Libraries
 include("cmake/externalTargets.cmake")
 include("cmake/findVulkan.cmake")

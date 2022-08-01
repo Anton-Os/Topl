@@ -1,7 +1,7 @@
 #include "Geo_Tree.hpp"
 
 struct Geo_Chain_Params {
-	Geo_Chain_Params() { directionVec = Vec3f({ 0.1f, 0.0f, 0.0f }); }
+	Geo_Chain_Params() { directionVec = Vec3f((Vec3f){ 0.1f, 0.0f, 0.0f }); }
     Geo_Chain_Params(Vec3f d) { directionVec = d; }
     
     Vec3f directionVec;
@@ -17,7 +17,7 @@ public:
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
 		properties = props;
-        origin = Vec3f({
+        origin = Vec3f((Vec3f){
             (props.directionVec.data[0] * count) * -0.5f,
             (props.directionVec.data[1] * count) * -0.5f,
             (props.directionVec.data[2] * count) * -0.5f
@@ -33,7 +33,7 @@ public:
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
 		properties = props;
-        origin = Vec3f({
+        origin = Vec3f((Vec3f){
 			(props.directionVec.data[0] * count) * -0.5f,
 			(props.directionVec.data[1] * count) * -0.5f,
 			(props.directionVec.data[2] * count) * -0.5f
