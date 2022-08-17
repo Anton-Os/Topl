@@ -203,4 +203,12 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
 	return true; // check if cursor is in client area!
 }
 
+#else // No Support
+
+void Platform::createWindow(){ }
+
+void Platform::handleEvents(bool isCursorUpdate){ }
+
+bool Platform::getCursorCoords(float* xPos, float* yPos) const {}
+
 #endif

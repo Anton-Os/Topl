@@ -9,14 +9,14 @@ void Splitscreen_App::init() {
 
 	Topl_Pipeline pipeline;
 	if (APP_BACKEND == APP_OpenGL_4) {
-		vertShader = GL4_Flat_VertexShader(FLAT_MODE_SOLID);
-		fragShader = GL4_Flat_FragmentShader();
+		vertexShader1 = GL4_Effect_VertexShader();
+		fragShader = GL4_Effect_FragmentShader();
 	} else {
-		vertShader = Drx11_Flat_VertexShader(FLAT_MODE_SOLID);
-		fragShader = Drx11_Flat_FragmentShader();
+		vertexShader1 = Drx11_Effect_VertexShader();
+		fragShader = Drx11_Effect_FragmentShader();
 	}
 
-	// pipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertShader, &fragShader);
+	// pipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader);
 }
 
 void Splitscreen_App::loop(unsigned long frame) {

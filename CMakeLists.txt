@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
+set (CMAKE_CXX_STANDARD 11) # should apply to everything
 # Extrenal Libraries
 include("cmake/externalTargets.cmake")
 include("cmake/findVulkan.cmake")
@@ -179,7 +180,7 @@ target_link_libraries(App_Animotion PRIVATE ${engine_targets})
 
 
 # add all demo targets to a list
-list(APPEND demo_targets App_Playground App_Splitscreen)
+list(APPEND demo_targets App_Playground App_Splitscreen App_Animotion)
 
 if(WIN32) # adding resource file to demos
    foreach(target IN ITEMS ${demo_targets})

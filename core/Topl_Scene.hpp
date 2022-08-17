@@ -76,7 +76,10 @@ typedef const Topl_Camera* const camera_cptr;
 class Topl_Scene {
 public:
 	Topl_Scene() { _ticker.reset(); } // Empty Constructor
-	Topl_Scene(const std::string& filePath); // File Load Constructor
+	Topl_Scene(const std::string& filePath) { // File Load Constructor
+		_ticker.reset();
+		// TODO: Add loading logic here
+	}
 	~Topl_Scene() {}
 
 	// Statics Section
