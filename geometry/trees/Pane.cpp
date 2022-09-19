@@ -25,8 +25,8 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 
 	// Modifying Child Panes RenderObj
 	_panes.resize(getActorCount() - 1);
-	_childSquare.modify(::stretchTForm, ((_height * 2) / _rows) - _border, AXIS_Y);
-	_childSquare.modify(::stretchTForm, ((_width * 2) / _columns) - _border, AXIS_X);
+	_childSquare.modify(::stretchTForm, ((_height * 2) / _rows) -_border, AXIS_Y);
+	_childSquare.modify(::stretchTForm, ((_width * 2) / _columns) -_border, AXIS_X);
 }
 
 void Geo_PaneLayout::configure(Topl_Scene* scene) {
@@ -38,9 +38,9 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		actor = getNextActor();
 		actor->setRenderObj((Geo_RenderObj*)&_childSquare);
 
-		float xInc = (_width / _columns) * 2;
-		float yInc = (_height / _rows) * 2;
-		Vec2f origin = Vec2f({ -1.0f * (_width - (_width / _columns)), _height - (_height / _rows) });
+		float xInc = (_width / _columns);
+		float yInc = (_height / _rows);
+		Vec2f origin = Vec2f({(-0.5f * _width) + (xInc / 2.0f), (_height * 0.5f) - (yInc / 2.0f) });
 		unsigned short xOffset = (p - 1) % _columns;
 		unsigned short yOffset = (p - 1) / _columns;
 

@@ -88,10 +88,10 @@ bool Topl_Renderer::renderAll(){ // draws all render objects
 }
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
-    Rasteron_PixelPoint pixPoint = { x, y };
+    PixelPoint pixPoint = { x, y };
 
     Rasteron_Image* image = frame();
-    unsigned offset = getPixCursorOffset(&pixPoint, image);
+    unsigned offset = getPixCursorOffset(pixPoint, image);
     unsigned color = *(image->data + offset);
     deleteImg(image);
     return color; // return color computed at offsets

@@ -35,7 +35,6 @@ namespace Renderer {
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
-
 }
 
 #ifdef _WIN32
@@ -245,7 +244,7 @@ Rasteron_Image* Topl_Renderer_GL4::frame(){
 
 	Rasteron_Image* rawImage = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
 	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
-	Rasteron_Image* flipImage = createImgFlip(rawImage, FLIP_Upside);
+	Rasteron_Image* flipImage = createFlipImg(rawImage, FLIP_Upside);
 	// Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
 
 	deleteImg(rawImage);

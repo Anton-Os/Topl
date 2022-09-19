@@ -1,64 +1,58 @@
 #include "Topl_Factory.hpp"
 
-Topl_Renderer_GL4* Topl_Factory::GL4_renderer = nullptr; 
-Topl_Pipeline_GL4** Topl_Factory::GL4_pipelines = nullptr; 
-unsigned Topl_Factory::GL4_pipeIndex = 0;
-
+GL4_Engine_Config Topl_Factory::GL4_engine_cfg = GL4_Engine_Config();
 #ifdef _WIN32
-Topl_Renderer_Drx11* Topl_Factory::Drx11_renderer = nullptr;
-Topl_Pipeline_Drx11** Topl_Factory::Drx11_pipelines = nullptr;
-unsigned Topl_Factory::Drx11_pipeIndex = 0;
+Drx11_Engine_Config Topl_Factory::Drx11_engine_cfg = Drx11_Engine_Config();
 #endif
-
 #ifdef VULKAN_H
-Topl_Renderer_Vulkan* Topl_Factory::Vulkan_renderer = nullptr;
-Topl_Pipeline_Vulkan** Topl_Factory::Vulkan_pipelines = nullptr;
-unsigned Topl_Factory::Vulkan_pipeIndex = 0;
+Vulkan_Engine_Config Topl_Factory::Vulkan_engine_cfg = Vulkan_Engine_Config();
 #endif
 
 Topl_Factory::~Topl_Factory(){
     // Renderer Cleanup
-	if(GL4_renderer != nullptr) delete(GL4_renderer);
+	if(GL4_engine_cfg.renderer != nullptr) delete(GL4_engine_cfg.renderer);
 #ifdef _WIN32
-    if(Drx11_renderer != nullptr) delete(Drx11_renderer);
+    if(Drx11_engine_cfg.renderer != nullptr) delete(Drx11_engine_cfg.renderer);
 #endif
 #ifdef VULKAN_H
-	if(Vulkan_renderer != nullptr) delete(Vulkan_renderer);
+	if(Vulkan_engine_cfg.renderer != nullptr) delete(Vulkan_engine_cfg.renderer);
 #endif
 
 	// Pipeline Cleanup
-    if(GL4_pipelines != nullptr){
-        for(unsigned p = 0; p < GL4_pipeIndex; p++) delete(*(GL4_pipelines + p));
-        free(GL4_pipelines);
+    if(GL4_engine_cfg.pipelines != nullptr){
+        for(unsigned p = 0; p < GL4_engine_cfg.pipeIndex; p++) delete(*(GL4_engine_cfg.pipelines + p));
+        free(GL4_engine_cfg.pipelines);
     }
 #ifdef _WIN32
-    if(Drx11_pipelines != nullptr){
-        for(unsigned p = 0; p < Drx11_pipeIndex; p++) delete(*(Drx11_pipelines + p));
-        free(Drx11_pipelines);
+    if(Drx11_engine_cfg.pipelines != nullptr){
+        for(unsigned p = 0; p < Drx11_engine_cfg.pipeIndex; p++) delete(*(Drx11_engine_cfg.pipelines + p));
+        free(Drx11_engine_cfg.pipelines);
     }
 #endif
 #ifdef VULKAN_H
-	if (Vulkan_pipelines != nullptr) {
-		for (unsigned p = 0; p < Vulkan_pipeIndex; p++) delete(*(Vulkan_pipelines + p));
-		free(Vulkan_pipelines);
+	if (Vulkan_engine_cfg.pipelines != nullptr) {
+		for (unsigned p = 0; p < Vulkan_engine_cfg.pipeIndex; p++) delete(*(Vulkan_engine_cfg.pipelines + p));
+		free(Vulkan_engine_cfg.pipelines);
 	}
 #endif
 }
 
+// Factory Renderer
+
 Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform){
     switch(backend){
     case APP_OpenGL_4:
-        if(GL4_renderer == nullptr) GL4_renderer = new Topl_Renderer_GL4(platform->getParentWindow());
-        return (Topl_Renderer*)GL4_renderer;
+        if(GL4_engine_cfg.renderer == nullptr) GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getParentWindow());
+        return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
 	case APP_DirectX_11:
-        if(Drx11_renderer == nullptr) Drx11_renderer = new Topl_Renderer_Drx11(platform->getParentWindow());
-        return (Topl_Renderer*)Drx11_renderer;
+        if(Drx11_engine_cfg.renderer == nullptr) Drx11_engine_cfg.renderer = new Topl_Renderer_Drx11(platform->getParentWindow());
+        return (Topl_Renderer*)Drx11_engine_cfg.renderer;
 #endif
 #ifdef VULKAN_H
 	case APP_Vulkan:
-		if (Vulkan_renderer == nullptr) Vulkan_renderer = new Topl_Renderer_Vulkan(platform->getParentWindow());
-		return (Topl_Renderer*)Vulkan_renderer;
+		if (Vulkan_engine_cfg.renderer == nullptr) Vulkan_engine_cfg.renderer = new Topl_Renderer_Vulkan(platform->getParentWindow());
+		return (Topl_Renderer*)Vulkan_engine_cfg.renderer;
 #endif
 	default: return nullptr; // Error
     }
@@ -67,61 +61,67 @@ Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform
 Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform, std::initializer_list<Topl_Viewport> viewports){
     switch(backend){
     case APP_OpenGL_4:
-        if(GL4_renderer == nullptr) GL4_renderer = new Topl_Renderer_GL4(platform->getParentWindow(), viewports);
-        return (Topl_Renderer*)GL4_renderer;
+        if(GL4_engine_cfg.renderer == nullptr) GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getParentWindow(), viewports);
+        return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
     case APP_DirectX_11:
-        if(Drx11_renderer == nullptr) Drx11_renderer = new Topl_Renderer_Drx11(platform->getParentWindow(), viewports);
-        return (Topl_Renderer*)Drx11_renderer;
+        if(Drx11_engine_cfg.renderer == nullptr) Drx11_engine_cfg.renderer = new Topl_Renderer_Drx11(platform->getParentWindow(), viewports);
+        return (Topl_Renderer*)Drx11_engine_cfg.renderer;
 #endif
 #ifdef VULKAN_H
 	case APP_Vulkan:
-		if (Vulkan_renderer == nullptr) Vulkan_renderer = new Topl_Renderer_Vulkan(platform->getParentWindow(), viewports);
-		return (Topl_Renderer*)Vulkan_renderer;
+		if (Vulkan_engine_cfg.renderer == nullptr) Vulkan_engine_cfg.renderer = new Topl_Renderer_Vulkan(platform->getParentWindow(), viewports);
+		return (Topl_Renderer*)Vulkan_engine_cfg.renderer;
 #endif
 	default: return nullptr; // Error
     }
 }
 
-Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
-    if(GL4_pipelines == nullptr) GL4_pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
+// Factory Pipeline
+
+void Topl_Factory::configPipelines() {
+	if (GL4_engine_cfg.pipelines == nullptr) GL4_engine_cfg.pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
 #ifdef _WIN32
-	if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+	if (Drx11_engine_cfg.pipelines == nullptr) Drx11_engine_cfg.pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
 #endif
 #ifdef VULKAN_H
-	if(Vulkan_pipelines == nullptr) Vulkan_pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
+	if (Vulkan_engine_cfg.pipelines == nullptr) Vulkan_engine_cfg.pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
 #endif
+}
+
+Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+	configPipelines();
 
     switch(backend){
     case APP_OpenGL_4:
-        if(GL4_renderer == nullptr) return nullptr; // error
+        if(GL4_engine_cfg.renderer == nullptr) return nullptr; // error
         else {
-            Topl_Pipeline_GL4* pipeline = *(GL4_pipelines + GL4_pipeIndex);
-            pipeline = new Topl_Pipeline_GL4();
-            GL4_renderer->genPipeline(pipeline, vertexShader, pixelShader);
-            GL4_pipeIndex++;
-            return pipeline;
+            Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
+            *pipeline = new Topl_Pipeline_GL4();
+            GL4_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
+            GL4_engine_cfg.pipeIndex++;
+            return *pipeline;
         }
 #ifdef _WIN32
     case APP_DirectX_11:
-        if(Drx11_renderer == nullptr) return nullptr; // error
+        if(Drx11_engine_cfg.renderer == nullptr) return nullptr; // error
         else {
-            Topl_Pipeline_Drx11* pipeline = *(Drx11_pipelines + Drx11_pipeIndex);
-            pipeline = new Topl_Pipeline_Drx11();
-            Drx11_renderer->genPipeline(pipeline, vertexShader, pixelShader);
-            Drx11_pipeIndex++;
-            return pipeline;
+            Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
+            *pipeline = new Topl_Pipeline_Drx11();
+            Drx11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
+            Drx11_engine_cfg.pipeIndex++;
+            return *pipeline;
         }
 #endif
 #ifdef VULKAN_H
 	case APP_Vulkan:
-		if(Vulkan_renderer == nullptr) return nullptr; // error
+		if(Vulkan_engine_cfg.renderer == nullptr) return nullptr; // error
 		else {
-			Topl_Pipeline_Vulkan* pipeline = *(Vulkan_pipelines + Vulkan_pipeIndex);
-			pipeline = new Topl_Pipeline_Vulkan();
-			Vulkan_renderer->genPipeline(pipeline, vertexShader, pixelShader);
-			Vulkan_pipeIndex++;
-			return pipeline;
+			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_Vulkan();
+			Vulkan_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
+			Vulkan_engine_cfg.pipeIndex++;
+			return *pipeline;
 		}
 #endif
 	default: return nullptr; // Error
@@ -129,46 +129,51 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 }
 
 Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-    if(GL4_pipelines == nullptr) GL4_pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
-#ifdef _WIN32
-	if(Drx11_pipelines == nullptr) Drx11_pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
-#endif
-#ifdef VULKAN_H
-	if(Vulkan_pipelines == nullptr) Vulkan_pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
-#endif
+	configPipelines();
 
 	switch (backend) {
 	case APP_OpenGL_4:
-		if (GL4_renderer == nullptr) return nullptr; // error
+		if (GL4_engine_cfg.renderer == nullptr) return nullptr; // error
 		else {
-			Topl_Pipeline_GL4* pipeline = *(GL4_pipelines + GL4_pipeIndex);
-			pipeline = new Topl_Pipeline_GL4();
-			GL4_renderer->genPipeline(pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
-			GL4_pipeIndex++;
-			return pipeline;
+			Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_GL4();
+			GL4_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+			GL4_engine_cfg.pipeIndex++;
+			return *pipeline;
 		}
 #ifdef _WIN32
 	case APP_DirectX_11:
-		if (Drx11_renderer == nullptr) return nullptr; // error
+		if (Drx11_engine_cfg.renderer == nullptr) return nullptr; // error
 		else {
-			Topl_Pipeline_Drx11* pipeline = *(Drx11_pipelines + Drx11_pipeIndex);
-			pipeline = new Topl_Pipeline_Drx11();
-			Drx11_renderer->genPipeline(pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
-			Drx11_pipeIndex++;
-			return pipeline;
+			Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_Drx11();
+			Drx11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+			Drx11_engine_cfg.pipeIndex++;
+			return *pipeline;
 		}
 #endif
 #ifdef VULKAN_H
 	case APP_Vulkan:
-		if (Vulkan_renderer == nullptr) return nullptr; // error
+		if (Vulkan_engine_cfg.renderer == nullptr) return nullptr; // error
 		else {
-			Topl_Pipeline_Vulkan* pipeline = *(Vulkan_pipelines + Vulkan_pipeIndex);
-			pipeline = new Topl_Pipeline_Vulkan();
-			Vulkan_renderer->genPipeline(pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
-			Vulkan_pipeIndex++;
-			return pipeline;
+			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_Vulkan();
+			Vulkan_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+			Vulkan_engine_cfg.pipeIndex++;
+			return *pipeline;
 		}
 #endif
 	default: return nullptr; // Error
     }
+}
+
+
+void Topl_Factory::switchPipeline(APP_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline) {
+	if (backend == APP_OpenGL_4)
+		((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
+	else if (backend == APP_DirectX_11)
+		((Topl_Renderer_Drx11*)renderer)->setPipeline((Topl_Pipeline_Drx11*)pipeline);
+	else if (backend == APP_Vulkan)
+		((Topl_Renderer_Vulkan*)renderer)->setPipeline((Topl_Pipeline_Vulkan*)pipeline);
+	else return; // Error
 }

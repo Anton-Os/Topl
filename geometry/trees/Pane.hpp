@@ -4,13 +4,12 @@
 #include "Geo_Tree.hpp"
 
 #define PANE_RADIUS 0.5
-// #define PANE_BORDER 0.0f
 #define PANE_BORDER 0.05f
-#define PANE_IMAGE_COLOR 0xFFFFFFFF // default is white
+#define PANE_IMAGE_COLOR 0xAAFFFFFF // semi-transpertent default color
 #define PANE_IMAGE_WIDTH 256
 #define PANE_IMAGE_HEIGHT 256
-#define PANE_ROOT_Z -0.000002
-#define PANE_CHILD_Z -0.000001
+#define PANE_ROOT_Z 0.000002
+#define PANE_CHILD_Z 0.000001
 
 typedef void (*paneCallback)(void);
 
@@ -19,35 +18,36 @@ public:
 	Geo_Pane(unsigned color){ // Fixed 	Color Constructor
 		_paneColor = color;
 #ifdef RASTERON_H
-		_internalImage = createImgBlank(PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH, _paneColor);
+		_presetImage = createSolidImg({PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH }, _paneColor);
 #endif
 	}
     Geo_Pane(){ // Random Color Constructor
 		_paneColor = genRandColor();
 #ifdef RASTERON_H
-		_internalImage = createImgBlank(PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH, _paneColor);
+		_presetImage = createSolidImg({ PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH }, _paneColor);
 #endif
 	}
     ~Geo_Pane(){
 #ifdef RASTERON_H
-        if(_internalImage != nullptr) deleteImg(_internalImage);
+        if(_presetImage != nullptr) deleteImg(_presetImage);
+		if (_selectImage != nullptr) deleteImg(_selectImage);
 #endif
     }
 
 	void addCallback(paneCallback call){ call = callback; }
 	unsigned getColor() { return _paneColor; }
 #ifdef RASTERON_H
-	void selectImage(const Rasteron_Image* image) { _selectImage = image; }
+	void selectImage(Rasteron_Image* image) { _selectImage = image; }
 	const Rasteron_Image* getBackground() {
-		return (_selectImage == nullptr)? _internalImage : _selectImage; 
+		return (_selectImage == nullptr)? _presetImage : _selectImage; 
 	}
 #endif
 	paneCallback callback = nullptr;
 private:
     unsigned _paneColor = PANE_IMAGE_COLOR;
 #ifdef RASTERON_H
-    Rasteron_Image* _internalImage = nullptr; // default internal background
-	const Rasteron_Image* _selectImage = nullptr; // selected external backgroundd
+    Rasteron_Image* _presetImage = nullptr; // internal
+	Rasteron_Image* _selectImage = nullptr; // external
 #endif
 };
 

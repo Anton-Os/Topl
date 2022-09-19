@@ -225,7 +225,8 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	}
 	else { // multiple viewports
 		D3D11_VIEWPORT viewports[MAX_VIEWPORTS];
-		for (unsigned v = 0; v < _viewportCount; v++) viewports[v] = Renderer::createViewport(_viewports + v);
+		// for (unsigned v = 0; v < _viewportCount; v++) viewports[v] = Renderer::createViewport(_viewports + v);
+		for (unsigned v = 0; v < _viewportCount; v++) viewports[_viewportCount - v - 1] = Renderer::createViewport(_viewports + v); // reverse order
 		_deviceCtx->RSSetViewports(_viewportCount, &viewports[0]);
 	}
 }

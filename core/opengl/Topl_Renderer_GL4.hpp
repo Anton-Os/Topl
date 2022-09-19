@@ -63,8 +63,7 @@ public:
 	void build(const Topl_Scene* scene) override;
 	void texturize(const Topl_Scene* scene) override;
 
-	void setPipeline(Topl_Pipeline_GL4* pipeline); // replace this!
-	// void switchPipeline(const Topl_Pipeline* pipeline) override;
+	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H

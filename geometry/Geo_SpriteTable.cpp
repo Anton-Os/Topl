@@ -71,7 +71,7 @@ void Geo_SpriteTable::init(std::initializer_list<std::string> filePaths){
 		std::string newFileName = *currentFileName;
 		std::replace(newFileName.begin(), newFileName.end(), '/', '\\'); // filepath fix
 
-        *(_images + offset) = createImgRef(newFileName.c_str());
+        *(_images + offset) = createRefImg(newFileName.c_str());
         *(_sprites + offset) = createSprite(*(_images + offset));
         
         offset++;

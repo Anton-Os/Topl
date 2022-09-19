@@ -1,7 +1,7 @@
 #include "IO.hpp"
 
-std::string readFile(const char* source, bool isBinaryFile){
-    std::ifstream file = (!isBinaryFile)? std::ifstream(source, std::ios::in) : std::ifstream(source, std::ios::in | std::ios::binary);
+std::string readFile(const char* source){
+    std::ifstream file = std::ifstream(source, std::ios::in);
 	if(!file.is_open()) return std::string(); // error occured, empty string returned
 
     // file.ignore(std::numeric_limits<std::streamsize>::max());
@@ -13,6 +13,21 @@ std::string readFile(const char* source, bool isBinaryFile){
     file.close();
 
     return strStream.str();
+}
+
+std::string readFileBinary(const char* source) {
+	std::ifstream file = std::ifstream(source, std::ios::in | std::ios::binary);
+	if (!file.is_open()) return std::string(); // error occured, empty string returned
+
+	// file.ignore(std::numeric_limits<std::streamsize>::max());
+	file.clear();
+	file.seekg(0, std::ios_base::beg);
+
+	std::stringstream strStream;
+	strStream << file.rdbuf();
+	file.close();
+
+	return strStream.str();
 }
 
 std::string getParentDir(const char* str){

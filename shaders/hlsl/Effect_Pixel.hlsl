@@ -33,8 +33,8 @@ float3 mandlebrot(uint2 screenRes, float2 pixelCoord){
 		iter++;
 	}
 
-	// Black and White
-	if(iter < max_iters) return float3(1.0f, 1.0f, 1.0f); // white pixel
+	// Custom Colors
+	if(iter < max_iters) return float3(1.0f / iter, 2.5f / iter, 1.0f / iter);
 	else return float3(0.0f, 0.0f, 0.0f); // black pixel
 }
 

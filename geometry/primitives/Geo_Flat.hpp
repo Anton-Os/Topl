@@ -56,10 +56,16 @@ struct Geo_FlatCircle : public Geo_Flat {
 
 // Extended Types
 
-#define DEFAULT_PLANE_LENGTH 10000.00 // should stretch as far as possible
+#define DEFAULT_PLANE_LENGTH 10000.00 // stretches very far
 
 struct Geo_Plane : public Geo_FlatSquare {
-	Geo_Plane(Vec3f a1, Vec3f a2) // Arbitrary plane constructor
+	Geo_Plane() 
+    : Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {  // Generic Constructor
+        axis1 = Vec3f({ 1.0f, 0.0f, 0.0f });
+        axis2 = Vec3f({ 0.0f, 1.0f, 0.0f });
+    }
+    
+    Geo_Plane(Vec3f a1, Vec3f a2) // Arbitrary plane constructor
 		: Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {
 		axis1 = a1; 
 		axis1.normalize();

@@ -17,11 +17,11 @@ struct Topl_Image { // wrapper around Rasteron_Image
 
     void setColorImage(unsigned color){
         if(image != NULL) deleteImg(image); // delte old image
-        image = createImgBlank(256, 256, color);
+		image = createSolidImg({ 256, 256 }, color);
     }
     void setFileImage(const std::string& filePath){
         if(image != NULL) deleteImg(image); // delte old image
-        image = createImgRef(filePath.c_str());
+        image = createRefImg(filePath.c_str());
     }
     void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
         if(image != NULL) deleteImg(image); // delte old image
@@ -44,7 +44,7 @@ struct Topl_Frames { // Frames of dynamic images, wrapper around Rasteron_Frames
     Topl_Frames(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
 	Topl_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
-		data = allocNewAnim(prefix.c_str(), height, width, frameCount);
+		data = allocNewAnim(prefix.c_str(), { height, width }, frameCount);
 	}
 	~Topl_Frames(){ deleteAnim(data); }
 	
@@ -81,7 +81,7 @@ struct Topl_Material { // Material of static images, wrapper around Rasteron_Fra
     Topl_Material(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
     Topl_Material(std::string prefix, unsigned height, unsigned width){
-	 	data = allocNewAnim(prefix.c_str(), height, width, MAX_MATERIAL_PROPERTIES);
+		data = allocNewAnim(prefix.c_str(), { height, width }, MAX_MATERIAL_PROPERTIES);
 	}
 	~Topl_Material(){ deleteAnim(data); }
 	

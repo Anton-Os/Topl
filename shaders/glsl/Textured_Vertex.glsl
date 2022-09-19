@@ -5,7 +5,7 @@ layout(std140, binding = 0) uniform Block {
 	vec2 rotation;
 };
 
-layout(std140, binding = 0) uniform SceneBlock {
+layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	vec3 cam_pos;
 	mat4 projMatrix;

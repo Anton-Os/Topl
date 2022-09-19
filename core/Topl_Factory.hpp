@@ -6,13 +6,40 @@
 #include "vulkan/Topl_Renderer_Vulkan.hpp"
 #endif
 
+// Backends List
+
 enum APP_Backend {
-    APP_OpenGL_4,
-    APP_DirectX_11,
-    APP_Vulkan
+	APP_OpenGL_4,
+	APP_DirectX_11,
+	APP_Vulkan
 };
 
-class Topl_Factory { // factory that generates backend-specific data
+// Engine Configuration
+
+struct Engine_Config { unsigned pipeIndex; };
+
+struct GL4_Engine_Config : public Engine_Config {
+	Topl_Renderer_GL4* renderer;
+	Topl_Pipeline_GL4** pipelines;
+};
+
+#ifdef _WIN32
+struct Drx11_Engine_Config : public Engine_Config {
+	Topl_Renderer_Drx11* renderer;
+	Topl_Pipeline_Drx11** pipelines;
+};
+#endif
+
+#ifdef VULKAN_H
+struct Vulkan_Engine_Config : public Engine_Config {
+	Topl_Renderer_Vulkan* renderer;
+	Topl_Pipeline_Vulkan** pipelines;
+};
+#endif
+
+// Factory Object
+
+class Topl_Factory {
 public:
 	~Topl_Factory();
 	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
@@ -26,23 +53,18 @@ public:
 		shader_cptr tessEvalSource,
 		shader_cptr geomSource
 	);
+
+	static void switchPipeline(APP_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
 private:
-	// static void allocPipelines();
-	// static bool isCheckBackend; // makes sure backends are checked for use
+	static void configPipelines(); // config helper function
 
-	static Topl_Renderer_GL4* GL4_renderer;
-	static Topl_Pipeline_GL4** GL4_pipelines; 
-	static unsigned GL4_pipeIndex; // tracks pipeline in use
+	// Engine Instances
 
+	static GL4_Engine_Config GL4_engine_cfg;
 #ifdef _WIN32
-	static Topl_Renderer_Drx11* Drx11_renderer;
-	static Topl_Pipeline_Drx11** Drx11_pipelines; 
-	static unsigned Drx11_pipeIndex; // tracks pipeline in use
+	static Drx11_Engine_Config Drx11_engine_cfg;
 #endif
-
 #ifdef VULKAN_H
-	static Topl_Renderer_Vulkan* Vulkan_renderer;
-	static Topl_Pipeline_Vulkan** Vulkan_pipelines; 
-	static unsigned Vulkan_pipeIndex; // tracks pipeline in use
+	static Vulkan_Engine_Config Vulkan_engine_cfg;
 #endif
 };

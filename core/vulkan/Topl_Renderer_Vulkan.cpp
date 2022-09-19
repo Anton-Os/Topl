@@ -26,7 +26,7 @@ void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
 #ifdef RASTERON_H
 
 Rasteron_Image* Topl_Renderer_Vulkan::frame() {
-	Rasteron_Image* image = createImgBlank(TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, 0xFF191919); // 
+	Rasteron_Image* image = createSolidImg({ TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH }, CLEAR_COLOR_HEX);
 	return image;
 }
 

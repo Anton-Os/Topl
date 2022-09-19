@@ -26,8 +26,10 @@ struct Playground_App : public Topl_App {
 	Phys_Connector anchor1, anchor2, anchor3, anchor4;
 
 private:
-	void genShaders();
+	void preFrame();
 	void postFrame();
+
+	void genShaderPipeline();
 
 	// Geometries and Drawable Objects
 	Geo_Sphere sphere = Geo_Sphere({ 0.5f, 200, 200 });
@@ -42,9 +44,9 @@ private:
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3);
 
-	Rasteron_FormatText textObj = { "", "", WHITE_COLOR, BLACK_COLOR};
-	Topl_Image heightmapImage = Topl_Image(imagesPath + "FlowerIllusion.png");
-	Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
+	Rasteron_FormatText textObj = { "option", "", WHITE_COLOR, BLACK_COLOR};
+	// Topl_Image heightmapImage = Topl_Image(imagesPath + "FlowerIllusion.png");
+	// Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
 	Topl_Material material = Topl_Material("material1", 1024, 1024);
 
 	// Shaders and Pipelines
