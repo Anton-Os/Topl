@@ -44,6 +44,6 @@ void Geo_Grid::configure(Topl_Scene* scene){
 
 		actor->updatePos(origin + offset);
         scene->addGeometry(getPrefix() + _Grid::genCellName(c + 1), actor);
-		scene->addPhysics(getPrefix() + _Grid::genCellName(c + 1), &phys.at(c));
+		scene->addPhysics(getPrefix() + _Grid::genCellName(c + 1), &physActors.at(c));
     }
 }

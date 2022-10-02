@@ -151,26 +151,30 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	// Depth Stencil View Creation
 
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	/* D3D11_TEXTURE2D_DESC depthTexDesc;
 
-	depthStencilDesc.Height = TOPL_WIN_HEIGHT;
-	depthStencilDesc.Width = TOPL_WIN_WIDTH;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	// depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
+	depthTexDesc.Height = TOPL_WIN_HEIGHT;
+	depthTexDesc.Width = TOPL_WIN_WIDTH;
+	depthTexDesc.MipLevels = 1;
+	depthTexDesc.ArraySize = 1;
+	depthTexDesc.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+	depthTexDesc.SampleDesc.Count = 1;
+	depthTexDesc.SampleDesc.Quality = 0;
+	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	// depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	depthTexDesc.CPUAccessFlags = 0;
+	depthTexDesc.MiscFlags = 0;
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDesc;
+	depthStencilDesc.Format = depthTexDesc.Format;
+	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 
 	ID3D11Texture2D* depthStencilTex;
-	_device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilTex);
-	_device->CreateDepthStencilView(depthStencilTex, NULL, &_dsView);
+	_device->CreateTexture2D(&depthTexDesc, NULL, &depthStencilTex);
+	_device->CreateDepthStencilView(depthStencilTex, &depthStencilDesc, &_dsView);
 
-	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
+	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView); */
 
 	// Blend State Creation
 
@@ -215,32 +219,27 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	// Viewport Creation
 
-	if (_viewports == nullptr) {
-		_isBuilt = false;
-		return; // Error // Viewports Dont Exist
-	}
-	if (_viewportCount <= 1) { // singular viewport
-		D3D11_VIEWPORT viewport = Renderer::createViewport(_viewports); // use first viewport
+	if (_viewports != nullptr) { // uses first available viewport
+		D3D11_VIEWPORT viewport = Renderer::createViewport(_viewports);
 		_deviceCtx->RSSetViewports(1, &viewport);
 	}
-	else { // multiple viewports
-		D3D11_VIEWPORT viewports[MAX_VIEWPORTS];
-		// for (unsigned v = 0; v < _viewportCount; v++) viewports[v] = Renderer::createViewport(_viewports + v);
-		for (unsigned v = 0; v < _viewportCount; v++) viewports[_viewportCount - v - 1] = Renderer::createViewport(_viewports + v); // reverse order
-		_deviceCtx->RSSetViewports(_viewportCount, &viewports[0]);
+	else {
+		_isBuilt = false;
+		return; // Error
 	}
 }
 
 void Topl_Renderer_Drx11::clearView() {
 	const float clearColor[] = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
-	// const float clearColor[] = { 0.0f, 1.0f, 1.0f, 1.0f }; // cyan
 	_deviceCtx->ClearRenderTargetView(_rtView, clearColor);
-	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+	// _deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
 
 void Topl_Renderer_Drx11::switchFramebuff() {
-	_swapChain->Present(0, 0);
-	_isDrawn = false; // awaiting another draw call
+	if (_isDrawn) {
+		_swapChain->Present(0, 0);
+		_isDrawn = false; // await future draw call
+	}
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
@@ -346,15 +345,6 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 }
 
 void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
-#ifdef RASTERON_H // Rasteron dependency required for updating textures
-	// Need to clear saved textures entirely for texture update
-	for (unsigned t = 0; t < _textures.size(); t++) {
-		// _textures.at(t).texture->Release();
-		_textures.at(t).sampler->Release();
-		_textures.at(t).resView->Release();
-	}
-	_textures.clear();
-
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
@@ -362,13 +352,12 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
 
-		// const Topl_Material* material = scene->getMaterial(actor->getName());
-		// if (material != nullptr) attachMaterial(texture, renderID);
+		const Topl_Material* material = scene->getMaterial(actor->getName());
+		if (material != nullptr) attachMaterial(material, renderID);
 	}
-#endif
 }
 
-void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned actorID) {
+void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned renderID) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -419,10 +408,17 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned ac
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	_textures.push_back(Texture_Drx11(actorID, TEX_2D, _texMode, sampler, resView));
+	for(std::vector<Texture_Drx11>::iterator t = _textures.begin(); t != _textures.end(); t++)
+		if ((*t).renderID == renderID) { // Texture Substitution
+			(*t).resView->Release(); // erase old texture
+			(*t).sampler->Release(); // erase old sampler
+			*t = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
+			return;
+		}
+	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition
 }
 
-void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned actorID) {
+void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned renderID) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -470,10 +466,11 @@ void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned
 	// _deviceCtx->UpdateSubresource(texture, 0, 0, material->getData, texData.SysMemPitch, 0); // Update Data Here!!!
 	_deviceCtx->GenerateMips(resView);
 
-	_textures.push_back(Texture_Drx11(actorID, TEX_3D, _texMode, sampler, resView));
+	// TODO: Implement Texture Substitution
+	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // Texture Addition
 }
-
 #endif
+
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
@@ -509,59 +506,6 @@ void Topl_Renderer_Drx11::drawMode() {
 	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
-
-/* void Topl_Renderer_Drx11::render(const Topl_Scene* scene) {
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) { // passing scene block buffer to shader
-		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
-		if (sceneBlockBuff != nullptr)
-			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
-	}
-
-	// Rendering Loop!
-	for (unsigned g = 0; g < scene->getActorCount(); g++) { // Implement this!
-		actor_cptr actor = scene->getGeoActor(scene->getActorCount() - g - 1);
-		unsigned renderID = getRenderID(actor);
-		if (renderID == 0) {
-			_isDrawn = false;
-			return logMessage(MESSAGE_Exclaim, "renderID not found!");
-		}
-
-		Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-		Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-		Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
-
-		if (renderBlockBuff != nullptr)
-			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-
-		UINT stride = sizeof(Geo_Vertex);
-		UINT offset = 0;
-
-		if (vertexBuff == nullptr || vertexBuff->count == 0)
-			return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-		else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
-
-		if (indexBuff != nullptr && indexBuff->count > 0)
-			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
-			else if (_textures.at(t).renderID == renderID) {
-				ID3D11SamplerState* sampler = _textures.at(t).sampler;
-				ID3D11ShaderResourceView* resView = _textures.at(t).resView;
-
-				_deviceCtx->PSSetShaderResources(0, 1, &resView);
-				_deviceCtx->PSSetSamplers(0, 1, &sampler);
-				break;
-			}
-		}
-
-		// Draw Call!
-		if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-		else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
-	}
-
-	_isDrawn = true;
-} */
 
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
 	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {

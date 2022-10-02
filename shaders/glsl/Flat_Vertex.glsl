@@ -8,8 +8,8 @@ layout(std140, binding = 0) uniform Block {
 
 layout(std140, binding = 1) uniform SceneBlock {
 	uint mode;
-	vec3 look_pos;
 	vec3 cam_pos;
+	vec3 look_pos;
 	mat4 projMatrix;
 };
 
@@ -56,8 +56,8 @@ void main() {
 	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos;
 	vec4 final_pos = vec4(rotCoords, 0.0) + vec4(transCoords, 1.0); // rotation and translation
 
-	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
-	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
+	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos); // no projection
+	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 
 	if(mode == 0) flatColor_out = color; // solid mode
 	else if(mode == 1) // alternate mode
@@ -66,5 +66,5 @@ void main() {
 		else if(gl_VertexID % 4 == 2) flatColor_out = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
 		else flatColor_out = vec4(0.0f, 0.0f, 0.0f, color.a); // black
 	// else if(mode == 2)
-	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode issue
+	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
 }

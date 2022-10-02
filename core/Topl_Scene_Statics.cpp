@@ -48,4 +48,17 @@ const Rasteron_Image* Topl_Scene::getTexture(const std::string& name) const {
 	return nullptr; // Error
 }
 
+void Topl_Scene::addMaterial(const std::string& name, const Topl_Material* material) {
+	if (material->getLayer(MATERIAL_Albedo) == nullptr) return; // Error
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if (name == (*actor)->getName())
+			_actorMaterial_map.insert({ *actor, material });
+}
+
+const Topl_Material* Topl_Scene::getMaterial(const std::string& name) const {
+	for (std::map<Geo_Actor*, const Topl_Material*>::const_iterator m = _actorMaterial_map.cbegin(); m != _actorMaterial_map.cend(); m++)
+		if (name == m->first->getName()) return m->second;
+	return nullptr; // Error
+}
+
 #endif

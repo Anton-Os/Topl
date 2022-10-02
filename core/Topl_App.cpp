@@ -4,9 +4,7 @@ Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) 
 	logMessage(" -------------- Topl App -------------- ");
 	
     srand(time(NULL)); // seed random number generation
-#ifdef RASTERON_H
-	initFreeType(&_freetypeLib);
-#endif
+
     _platform = new Platform(execPath, name);
     _platform->createWindow();
 
@@ -17,9 +15,7 @@ Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend, 
 	logMessage(" -------------- Topl App -------------- ");
 	
     srand(time(NULL)); // seed random number generation
-#ifdef RASTERON_H
-	initFreeType(&_freetypeLib);
-#endif
+
     _platform = new Platform(execPath, name);
     _platform->createWindow();
 
@@ -29,7 +25,7 @@ Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend, 
 Topl_App::~Topl_App() {
     delete(_platform);
 #ifdef RASTERON_H
-	cleanupFreeType(&_freetypeLib);
+	cleanupFreeType();
 #endif
 }
 

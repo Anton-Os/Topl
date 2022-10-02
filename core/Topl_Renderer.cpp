@@ -67,16 +67,27 @@ bool Topl_Renderer::renderScene(Topl_Scene* scene){
         return false; // failure
     } else _isDrawn = true;
 
-    // render(scene); // replace this!!!
     renderTarget(SPECIAL_SCENE_RENDER_ID); // pass scene data as target
-    if(scene != nullptr) // scene render
-        for(unsigned g = 0; g < scene->getActorCount(); g++)
-            (getRenderID(scene->getGeoActor(g)) != 0)
-                ? renderTarget(getRenderID(scene->getGeoActor(g)))
-                : logMessage(MESSAGE_Exclaim, "renderID not found!");
-    else // all render
-        for(unsigned r = 0; r < _renderIDs; r++)
-            renderTarget(r);
+    if(scene != nullptr){ // Scene Objects Render
+		if(_isDrawInOrder == REGULAR_DRAW_ORDER)
+			for(unsigned g = 0; g < scene->getActorCount(); g++)
+				(getRenderID(scene->getGeoActor(g)) != 0)
+					? renderTarget(getRenderID(scene->getGeoActor(g)))
+					: logMessage(MESSAGE_Exclaim, "renderID not found!");
+		else if(_isDrawInOrder == INVERSE_DRAW_ORDER)
+			for(unsigned g = scene->getActorCount(); g > 0; g--)
+				(getRenderID(scene->getGeoActor(g - 1)) != 0)
+					? renderTarget(getRenderID(scene->getGeoActor(g - 1)))
+					: logMessage(MESSAGE_Exclaim, "renderID not found!");
+	}
+	else { // All Objects Render
+		if (_isDrawInOrder == REGULAR_DRAW_ORDER)
+			for (unsigned r = 0; r < _renderIDs; r++) 
+				renderTarget(r);
+		else if (_isDrawInOrder == INVERSE_DRAW_ORDER)
+			for (unsigned r = _renderIDs; r > 0; r--)
+				renderTarget(r - 1);
+	}
 
     _frameIDs++; // increment frame counter
     return _isDrawn; // render call sets variable to true on success

@@ -51,9 +51,11 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
+		_isDrawInOrder = REGULAR_DRAW_ORDER;
 		init(window);
 	}
-	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) { 
+	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) {
+		_isDrawInOrder = REGULAR_DRAW_ORDER;
 		init(window);
 	}
 	~Topl_Renderer_GL4();

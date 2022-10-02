@@ -13,7 +13,7 @@ void Geo_Chain::configure(Topl_Scene* scene){
 
 		actor->updatePos(origin + (properties.directionVec * c));
         scene->addGeometry(getPrefix() + _Chain::genLinkName(c + 1), actor);
-        scene->addPhysics(getPrefix() + _Chain::genLinkName(c + 1), &phys.at(c));
+        scene->addPhysics(getPrefix() + _Chain::genLinkName(c + 1), &physActors.at(c));
 
         if(prevActor != nullptr){ // first link is ignored because it has no previous geo to link to
             links.push_back(Phys_Connector());

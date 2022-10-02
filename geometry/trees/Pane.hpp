@@ -8,8 +8,8 @@
 #define PANE_IMAGE_COLOR 0xAAFFFFFF // semi-transpertent default color
 #define PANE_IMAGE_WIDTH 256
 #define PANE_IMAGE_HEIGHT 256
-#define PANE_ROOT_Z 0.000002
-#define PANE_CHILD_Z 0.000001
+#define PANE_ROOT_Z 0.000002f
+#define PANE_CHILD_Z 0.000001f
 
 typedef void (*paneCallback)(void);
 

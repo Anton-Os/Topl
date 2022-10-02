@@ -24,13 +24,10 @@ protected:
 
 	// Utility
     Timer_Ticker _ticker;
-#ifdef RASTERON_H
-	FT_Library _freetypeLib; // required for working with fonts
-#endif
 
 	// Paths
 	const std::string fontsPath = std::string(ASSETS_DIR) + "fonts/";
 	const std::string imagesPath = std::string(ASSETS_DIR) + "images/";
 	const std::string modelsPath = std::string(ASSETS_DIR) + "models/";
-	// const std::string othersPath = std::string(ASSETS_DIR) + "others/";
+	const std::string resourcePath = std::string(ASSETS_DIR) + "res/";
 };

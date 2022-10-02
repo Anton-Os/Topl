@@ -7,8 +7,8 @@ struct Topl_Image { // wrapper around Rasteron_Image
 #ifdef RASTERON_H // required library for loading images
     Topl_Image(unsigned color){ setColorImage(color); } // Solid Constructor
     Topl_Image(const std::string& filePath){ setFileImage(filePath); } // File Constructor
-    Topl_Image(FT_Library* freetypeLib, Rasteron_FormatText textObj){ 
-        setTextImage(freetypeLib, &textObj); // Text Constructor
+    Topl_Image(Rasteron_Text textObj){ 
+        setTextImage( &textObj); // Text Constructor
     }
     Topl_Image(Rasteron_Image* refImage){ setImage(refImage); } // Custom Constructor
     ~Topl_Image(){
@@ -23,12 +23,9 @@ struct Topl_Image { // wrapper around Rasteron_Image
         if(image != NULL) deleteImg(image); // delte old image
         image = createRefImg(filePath.c_str());
     }
-    void setTextImage(FT_Library* freetypeLib, Rasteron_FormatText* textObj){
+    void setTextImage(Rasteron_Text* textObj){
         if(image != NULL) deleteImg(image); // delte old image
-        /* Rasteron_Image* fontImage = bakeText(freetypeLib, textObj);
-        image = createImgFlip(fontImage, FLIP_Upside); // flip required to fix rendering
-        deleteImg(fontImage); */
-		image = bakeTextInv(freetypeLib, textObj);
+		image = bakeTextI(textObj);
     }
     void setImage(Rasteron_Image* refImage){
         if(image != NULL) deleteImg(image); // delte old image

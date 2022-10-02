@@ -66,6 +66,8 @@ enum DRAW_Mode {
 };
 
 #define MAX_VIEWPORTS 12 // max number of separate viewports
+#define REGULAR_DRAW_ORDER true
+#define INVERSE_DRAW_ORDER false
 
 struct Topl_Viewport {
     Topl_Viewport(){} // Full-Screen Constructor
@@ -89,7 +91,7 @@ public:
     };
 
     void setCamera(const Topl_Camera* camera);
-    void setPipeline(const Topl_Pipeline* pipeline); // replace this!!!
+    void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
     void setDrawMode(enum DRAW_Mode mode);
@@ -118,6 +120,7 @@ protected:
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isDrawn = false; // true after draw call, false after swap
+	bool _isDrawInOrder = REGULAR_DRAW_ORDER; // defines order of render targets during draw call
     unsigned long _renderIDs = 0; // id for each render target
     std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn

@@ -99,7 +99,7 @@ public:
 	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
 	unsigned getMaterialCount() const { return _actorMaterial_map.size(); }
-	const Rasteron_Image* getTexture(const std::string& name, MATERIAL_Property property) const;
+	const Topl_Material* getMaterial(const std::string& name) const;
 #endif
 
 	// Dynamics Section

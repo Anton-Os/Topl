@@ -61,8 +61,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4 final_pos = float4(rotCoords, 0.0) + transCoords; // rotation and translation
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
-	// output.pos = mul(final_pos, cameraMatrix); // no projection
-	output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
+	output.pos = mul(final_pos, cameraMatrix); // no projection
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
 	
 	if(mode == 0) output.flatColor = color; // solid mode
 	else if(mode == 1) { // alternate mode

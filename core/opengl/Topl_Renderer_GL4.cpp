@@ -122,17 +122,12 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
 
-	if (_viewports == nullptr) {
+	if (_viewports != nullptr)
+		glViewport(_viewports->xOffset, _viewports->yOffset, _viewports->width, _viewports->height); // uses first available viewport
+	else {
 		_isBuilt = false;
-		return; // Error // Viewports Dont Exist
+		return; // Error
 	}
-	if(_viewportCount <= 1) // singular viewport
-		glViewport(_viewports->xOffset, _viewports->yOffset, _viewports->width, _viewports->height);
-	else // multiple viewports
-		for (unsigned short v = 0; v < _viewportCount; v++) {
-			Topl_Viewport* viewport = _viewports + v;
-			glViewportIndexedf(v, viewport->xOffset, viewport->yOffset, viewport->width, viewport->height);
-		}
 }
 
 void Topl_Renderer_GL4::clearView(){
@@ -142,13 +137,14 @@ void Topl_Renderer_GL4::clearView(){
 }
 
 void Topl_Renderer_GL4::switchFramebuff(){
-	if(_isDrawn)
+	if (_isDrawn) {
 #ifdef _WIN32 // Swap buffers in windows
-	swapBuffers_win(&_platformCtx.deviceCtx);
+		swapBuffers_win(&_platformCtx.deviceCtx);
 #elif defined(__linux__)
-	swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
+		swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif
-	_isDrawn = false; // awaiting another draw call
+		_isDrawn = false; // await future draw call
+	}
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
@@ -236,29 +232,21 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 
 #ifdef RASTERON_H
 
-Rasteron_Image* Topl_Renderer_GL4::frame(){
-	// TODO: Crop to viewport!
-	// see https://stackoverflow.com/questions/29764925/how-to-get-set-the-width-and-height-of-the-default-framebuffer
+Rasteron_Image* Topl_Renderer_GL4::frame() {
 	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx.window);
 	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
 
-	Rasteron_Image* rawImage = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
-	glReadPixels(0, 0, rawImage->width, rawImage->height, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
-	Rasteron_Image* flipImage = createFlipImg(rawImage, FLIP_Upside);
-	// Rasteron_Image* image = allocNewImg("framebuff-crop", viewportHeight, viewportWidth);
+	Rasteron_Image* frameImage = allocNewImg("frame", viewportWidth, viewportHeight);
+	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, frameImage->data);
 
-	deleteImg(rawImage);
-	// deleteImg(flipImage);
+	Rasteron_Image* flipImage = createFlipImg(frameImage, FLIP_Upside);
+	switchRB(flipImage->data, viewportHeight * viewportWidth);
+
+	deleteImg(frameImage);
 	return flipImage;
 }
 
 void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
-#ifdef RASTERON_H // Rasteron dependency required for updating textures
-	// Need to clear saved textures entirely for texture update
-	_textures.clear();
-	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
-	_textureIndex = 0;
-
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
@@ -266,36 +254,47 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
 
-		// const Topl_Material* material = scene->getMaterial(actor->getName());
-		// if (material != nullptr) attachMaterial(texture, renderID);
+		const Topl_Material* material = scene->getMaterial(actor->getName());
+		if (material != nullptr) attachMaterial(material, renderID);
 	}
-#endif
 }
 
 void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id){
-	GLuint texture = _textureSlots[_textureIndex];
+	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	for (std::vector<Texture_GL4>::iterator t = _textures.begin(); t != _textures.end(); t++) {
+		if ((*t).renderID == id) {
+			textureTarget = (*t).texture;
+			_textureIndex--; // decrement since texture binding is located
+		}
+	}
+
+	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
 	Renderer::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rawImage->height, rawImage->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, texture));
+	if(_textureSlots[_textureIndex - 1] == textureTarget)
+		_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, textureTarget)); // Texture Addition
+	// else TODO: Implement Texture Substitution
 }
 
 void Topl_Renderer_GL4::attachMaterial(const Topl_Material* material, unsigned id) {
-	GLuint texture = _textureSlots[_textureIndex];
+	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
+	// TODO: Find Texture Target
 
-	glBindTexture(GL_TEXTURE_3D, texture);
+	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
 	Renderer::setTextureProperties(GL_TEXTURE_3D, _texMode); // setting texture mode properties
 	// glTexImage3D(); // Generate Data Here!!!
 	glGenerateMipmap(GL_TEXTURE_3D);
 
-	_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, texture));
+	if (_textureSlots[_textureIndex - 1] == textureTarget)
+		_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, textureTarget));
+	// else TODO: Implement Texture Substitution
 }
 
 #endif
@@ -341,53 +340,6 @@ void Topl_Renderer_GL4::drawMode(){
 	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported!");
 	}
 }
-
-/* void Topl_Renderer_GL4::render(const Topl_Scene* scene){
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) // passing scene block buffer to shader
-		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-
-	// Rendering Loop!
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
-		if (renderID == 0) {
-			_isDrawn = false;
-			return logMessage(MESSAGE_Exclaim, "renderID not found!");
-		}
-
-		for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
-			if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
-			else continue; // if it continues all the way through error has occured
-
-		Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-		Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-		Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
-		if (renderBlockBuff != nullptr)
-			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
-
-		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
-			else if (_textures.at(t).renderID == renderID) {
-				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
-				break;
-			}
-		}
-
-		// Draw Call!
-		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
-		else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
-
-		// Unbinding
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
-	_isDrawn = true;
-} */
 
 void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 	if (renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)

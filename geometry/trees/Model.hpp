@@ -24,13 +24,17 @@ public:
 
     ~Geo_Model();
 
+	void move(Vec3f vec) { // replace Geo_Tree move()
+		for (std::vector<Geo_Node*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
+			(*n)->updatePos({ vec });
+	}
     void configure(Topl_Scene* scene) override;
 private:
     std::string _filePath; // nodes are read from file
 
-    std::vector<Geo_Node*> _targetNodes; // contains only drawable nodes with mesh data
-    unsigned _nodeCount = 0;
-    Geo_Node** _nodes = nullptr; // total nodes
+    std::vector<Geo_Node*> _geoNodes; // geometry nodes only
+    unsigned _nodeCount = 0; // all nodes count
+    Geo_Node** _nodes = nullptr; // all nodes data
 
     // TODO: include animation data
 };

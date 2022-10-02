@@ -16,14 +16,18 @@ typedef std::pair<Vec3f, Vec2f> orientation_pair;
 #define NO_ORIENTATION std::make_pair(Vec3f(0.0f, 0.0f, 0.0f), Vec2f(0.0f, 0.0f));
 
 
+struct Geo_DynamicSet { // Container for using physics Objects
+	Geo_DynamicSet(unsigned setCount) { physActors.resize(setCount); }
+
+	std::vector<Phys_Actor> physActors; // physics actors
+	std::vector<Phys_Connector> links; // links
+};
+
 class Geo_Tree {
 public:
-    // No items constructor
-    Geo_Tree(const std::string& prefix){}
-    // Fixed items constructor
-    Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs);
-    // Duplicate items constructor
-    Geo_Tree(const std::string& prefix, const Geo_Actor* actor, unsigned count);
+    Geo_Tree(const std::string& prefix){} // Empty items constructor
+    Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs); // Fixed items constructor
+    Geo_Tree(const std::string& prefix, const Geo_Actor* actor, unsigned count); // Duplicate items constructor
 
 	~Geo_Tree();
 
@@ -46,13 +50,6 @@ private:
 	unsigned _actorCount = 0;
     unsigned _actorOffset = 0;
 	Geo_Actor** _actorData = nullptr; // actor data is stored here and retrieved sequentially by derived class
-};
-
-struct Geo_DynamicSet { // A container that holds objects used in physics
-    Geo_DynamicSet(unsigned setCount){ phys.resize(setCount); }
-
-    std::vector<Phys_Actor> phys; // container for physics actors
-    std::vector<Phys_Connector> links; // contatiner for links
 };
 
 #define GEO_TREE_H

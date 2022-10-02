@@ -20,6 +20,7 @@ void Animotion_App::init() {
 	// Geometries and Scene Elements
 
 	model.configure(&scene);
+	model.move({ 0.0f, -0.5f, 0.0f });
 
 	_renderer->buildScene(&scene);
 	_renderer->setDrawMode(DRAW_Triangles);
