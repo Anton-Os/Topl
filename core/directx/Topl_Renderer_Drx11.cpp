@@ -1,6 +1,6 @@
 #include "directx/Topl_Renderer_Drx11.hpp"
 
-namespace Renderer {
+namespace Drx11 {
 	// Shader Functions
 
 	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
@@ -76,7 +76,7 @@ namespace Renderer {
 		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
 		inputElementDesc.SemanticName = input->semantic.c_str();
 		inputElementDesc.SemanticIndex = 0;
-		inputElementDesc.Format = Renderer::getShaderFormat(input->type);
+		inputElementDesc.Format = Drx11::getShaderFormat(input->type);
 		inputElementDesc.InputSlot = 0;
 		inputElementDesc.AlignedByteOffset = offset;
 		inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -108,6 +108,8 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 }
 
 void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
+	// Swap Chain Creation
+	
 	DXGI_MODE_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 
@@ -151,7 +153,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	// Depth Stencil View Creation
 
-	/* D3D11_TEXTURE2D_DESC depthTexDesc;
+	D3D11_TEXTURE2D_DESC depthTexDesc;
 
 	depthTexDesc.Height = TOPL_WIN_HEIGHT;
 	depthTexDesc.Width = TOPL_WIN_WIDTH;
@@ -166,15 +168,38 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	depthTexDesc.CPUAccessFlags = 0;
 	depthTexDesc.MiscFlags = 0;
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDesc;
-	depthStencilDesc.Format = depthTexDesc.Format;
-	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	ID3D11Texture2D* depthTex = NULL;
+	_device->CreateTexture2D(&depthTexDesc, NULL, &depthTex);
 
-	ID3D11Texture2D* depthStencilTex;
-	_device->CreateTexture2D(&depthTexDesc, NULL, &depthStencilTex);
-	_device->CreateDepthStencilView(depthStencilTex, &depthStencilDesc, &_dsView);
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 
-	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView); */
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	ID3D11DepthStencilState* depthStencilState;
+	_device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+	_deviceCtx->OMSetDepthStencilState(depthStencilState, 1);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc;
+	dsViewDesc.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsViewDesc.Texture2D.MipSlice = 0;
+
+	_device->CreateDepthStencilView(depthTex, &dsViewDesc, &_dsView);
+	_deviceCtx->OMSetRenderTargets(1, &_rtView, _dsView);
 
 	// Blend State Creation
 
@@ -217,22 +242,21 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState); */
 
-	// Viewport Creation
-
-	if (_viewports != nullptr) { // uses first available viewport
-		D3D11_VIEWPORT viewport = Renderer::createViewport(_viewports);
-		_deviceCtx->RSSetViewports(1, &viewport);
-	}
-	else {
-		_isBuilt = false;
-		return; // Error
-	}
+	setViewport(&_defaultViewport); // Viewport Creation
 }
 
 void Topl_Renderer_Drx11::clearView() {
 	const float clearColor[] = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
 	_deviceCtx->ClearRenderTargetView(_rtView, clearColor);
-	// _deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+}
+
+void Topl_Renderer_Drx11::setViewport(const Topl_Viewport* viewport) {
+	if (viewport != nullptr) {
+		D3D11_VIEWPORT vp = Drx11::createViewport(viewport);
+		_deviceCtx->RSSetViewports(1, &vp);
+	}
+	else _isBuilt = false; // Error
 }
 
 void Topl_Renderer_Drx11::switchFramebuff() {
@@ -248,7 +272,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 	unsigned inputElementOffset = 0;
 	for (unsigned i = 0; i < _entryShader->getInputCount(); i++) {
-		*(layout_ptr + i) = Renderer::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
+		*(layout_ptr + i) = Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
 		inputElementOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(i)->type);
 	}
 	UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
@@ -265,7 +289,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	// scene uniform block buffer generation
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_isBuilt = Renderer::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
+		_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
 		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 	}
 
@@ -282,7 +306,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		// component block buffer generation
 		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
-			_isBuilt = Renderer::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
+			_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
 		}
 		if (!_isBuilt) return; // Error
@@ -290,14 +314,14 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		// index creation
 		ID3D11Buffer* indexBuff = nullptr;
 		if (actor_iData != nullptr) { // Checks if index data exists for render object
-			_isBuilt = Renderer::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
+			_isBuilt = Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
 		}
 		else _buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isBuilt) return; // Error
 
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isBuilt = Renderer::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
+		_isBuilt = Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
 		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
 		if (!_isBuilt) return; // Error
 	}
@@ -363,9 +387,9 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = Renderer::getTexMode(_texMode);
-	samplerDesc.AddressV = Renderer::getTexMode(_texMode);
-	samplerDesc.AddressW = Renderer::getTexMode(_texMode);
+	samplerDesc.AddressU = Drx11::getTexMode(_texMode);
+	samplerDesc.AddressV = Drx11::getTexMode(_texMode);
+	samplerDesc.AddressW = Drx11::getTexMode(_texMode);
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -424,9 +448,9 @@ void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = Renderer::getTexMode(_texMode);
-	samplerDesc.AddressV = Renderer::getTexMode(_texMode);
-	samplerDesc.AddressW = Renderer::getTexMode(_texMode);
+	samplerDesc.AddressU = Drx11::getTexMode(_texMode);
+	samplerDesc.AddressV = Drx11::getTexMode(_texMode);
+	samplerDesc.AddressW = Drx11::getTexMode(_texMode);
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -477,7 +501,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
 	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
-		Renderer::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
+		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
@@ -490,7 +514,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 					break;
 				}
 
-			if (renderBlockBuff != nullptr) _isBuilt = Renderer::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
+			if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
 			if (!_isBuilt) return; // Error
 		}
 	}

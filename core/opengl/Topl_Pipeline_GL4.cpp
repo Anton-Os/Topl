@@ -1,6 +1,6 @@
 #include "opengl/Topl_Renderer_GL4.hpp"
 
-namespace Renderer {
+namespace GL4 {
 	static GLuint compileShader(std::string shaderText, GLenum shaderType) {
 		GLint result;
 
@@ -62,18 +62,18 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
-	pipeline->vShader = Renderer::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
+	pipeline->vShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vShader == 0) {
-		Renderer::errorShaderCompile("Vertex", pipeline->vShader);
+		GL4::errorShaderCompile("Vertex", pipeline->vShader);
 		pipeline->isReady = false;
 	}
 
 	// Fragment Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->fShader = Renderer::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+	pipeline->fShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->fShader == 0) {
-		Renderer::errorShaderCompile("Fragment", pipeline->fShader);
+		GL4::errorShaderCompile("Fragment", pipeline->fShader);
 		pipeline->isReady = false;
 	}
 
@@ -87,7 +87,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
 	if (result == GL_FALSE){
-		Renderer::errorProgramLink(pipeline->shaderProg);
+		GL4::errorProgramLink(pipeline->shaderProg);
 		pipeline->isReady = false;
 	}
 	else { // detach after successful link
@@ -104,9 +104,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
-	pipeline->vShader = Renderer::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
+	pipeline->vShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vShader == 0) {
-		Renderer::errorShaderCompile("Vertex", pipeline->vShader);
+		GL4::errorShaderCompile("Vertex", pipeline->vShader);
 		pipeline->isReady = false;
 	}
 
@@ -114,9 +114,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	if(tessCtrlShader != nullptr){ // optional stage
 		std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath());
-		pipeline->tcShader = Renderer::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
+		pipeline->tcShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
 		if (pipeline->tcShader == 0) {
-			Renderer::errorShaderCompile("Tess. Control", pipeline->tcShader);
+			GL4::errorShaderCompile("Tess. Control", pipeline->tcShader);
 			pipeline->isReady = false;
 		}
 	}
@@ -125,9 +125,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	if(tessEvalShader != nullptr){ // optional stage
 		std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath());
-		pipeline->teShader = Renderer::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
+		pipeline->teShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
 		if (pipeline->teShader == 0) {
-			Renderer::errorShaderCompile("Tess. Eval", pipeline->teShader);
+			GL4::errorShaderCompile("Tess. Eval", pipeline->teShader);
 			pipeline->isReady = false;
 		}
 	}
@@ -136,9 +136,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	if(geomShader != nullptr){ // optional stage
 		std::string geomShaderSrc = readFile(geomShader->getFilePath());
-		pipeline->gShader = Renderer::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
+		pipeline->gShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
 		if (pipeline->gShader == 0) {
-			Renderer::errorShaderCompile("Geometry", pipeline->gShader);
+			GL4::errorShaderCompile("Geometry", pipeline->gShader);
 			pipeline->isReady = false;
 		}
 	}
@@ -147,9 +147,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Fragment Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->fShader = Renderer::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+	pipeline->fShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->fShader == 0) {
-		Renderer::errorShaderCompile("Fragment", pipeline->fShader);
+		GL4::errorShaderCompile("Fragment", pipeline->fShader);
 		pipeline->isReady = false;
 	}
 
@@ -166,7 +166,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
 	if (result == GL_FALSE){
-		Renderer::errorProgramLink(pipeline->shaderProg);
+		GL4::errorProgramLink(pipeline->shaderProg);
 		pipeline->isReady = false;
 	}
 	else { // detach after successful link

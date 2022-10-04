@@ -11,6 +11,8 @@
 #define MICROSEC_SEC_CONVERT 1000000.0
 #define MICROSEC_MILLI_CONVERT 1000.0
 
+// Periodic Event
+
 typedef void (*periodicCallback)(void);
 
 class Timer_PeriodicEvent {
@@ -31,6 +33,8 @@ private:
 	double _secsElapsed = 0.0;
 };
 
+// Recurring Event
+
 typedef void (*recurringCallback)(double);
 
 class Timer_RecurringEvent {
@@ -46,6 +50,8 @@ private:
 	recurringCallback callbackTrigger;
 	double _secsElapsed = 0.0;
 };
+
+// Timer
 
 class Timer_Ticker { // Get number of milliss between two invocations of getSecsPassed()
 public:

@@ -13,6 +13,10 @@ void Topl_Renderer_Vulkan::clearView(){
 	// Implement clearing operation
 }
 
+void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
+	// Implement viewport setting
+}
+
 void Topl_Renderer_Vulkan::switchFramebuff(){ 
 	// Implement framebuffer switching operation
 	_isDrawn = false;

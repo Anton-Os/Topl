@@ -1,7 +1,7 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
@@ -78,11 +78,17 @@ void Playground_App::createScene_Overlay() {
 	_renderer->buildScene(&scene_overlay);
 }
 
+unsigned callback_gradient(double x, double y) { return blend(BLACK_COLOR, WHITE_COLOR, y); } // black and white
+
 void Playground_App::createScene_Details() {
 	coneActor1.updatePos(Vec3f({ 0.7f, -0.7f, 0.0f }));
 	scene_details.addGeometry("Cone1", &coneActor1);
 	coneActor2.updatePos(Vec3f({ -0.7f, 0.7f, 0.0f }));
 	scene_details.addGeometry("Cone2", &coneActor2);
+
+	Rasteron_Image* image = createMappedImg({ 1024, 1024 }, callback_gradient);
+	scene_details.addTexture("Cone1", image);
+	scene_details.addTexture("Cone2", image);
 
 	// Build Scene
 	_renderer->buildScene(&scene_details);

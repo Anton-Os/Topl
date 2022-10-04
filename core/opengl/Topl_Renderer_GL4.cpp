@@ -1,6 +1,6 @@
 #include "opengl/Topl_Renderer_GL4.hpp"
 
-namespace Renderer {
+namespace GL4 {
 	// Shader Functions
 
 	static GLenum getShaderFormat(enum SHDR_ValueType type){
@@ -122,18 +122,18 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
 
-	if (_viewports != nullptr)
-		glViewport(_viewports->xOffset, _viewports->yOffset, _viewports->width, _viewports->height); // uses first available viewport
-	else {
-		_isBuilt = false;
-		return; // Error
-	}
+	setViewport(&_defaultViewport);
 }
 
 void Topl_Renderer_GL4::clearView(){
 	glClearColor(CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA);
 	// glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
+	if (viewport != nullptr) glViewport(viewport->xOffset, viewport->yOffset, viewport->width, viewport->height);
+	else _isBuilt = false; // Error
 }
 
 void Topl_Renderer_GL4::switchFramebuff(){
@@ -208,7 +208,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			glVertexAttribPointer(
 				i,
 				(GLint)Topl_Pipeline::getSize(shaderType->type),
-				Renderer::getShaderFormat(shaderType->type),
+				GL4::getShaderFormat(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
 				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
@@ -272,7 +272,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
-	Renderer::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
+	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rawImage->height, rawImage->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -288,7 +288,7 @@ void Topl_Renderer_GL4::attachMaterial(const Topl_Material* material, unsigned i
 
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	Renderer::setTextureProperties(GL_TEXTURE_3D, _texMode); // setting texture mode properties
+	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode); // setting texture mode properties
 	// glTexImage3D(); // Generate Data Here!!!
 	glGenerateMipmap(GL_TEXTURE_3D);
 

@@ -13,7 +13,8 @@
 #endif
 #include "Geo_Actor.hpp"
 
-typedef const Geo_Actor* const actor_cptr;
+// Connectors
+
 typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
 typedef std::pair<const Geo_Actor*, const Vec3f*> anchor_pair;
 
@@ -29,6 +30,7 @@ struct AnchoredItems { // Wrapper around connector with 1 actor being anchored
 };
 typedef const AnchoredItems* const anchorItem_cptr;
 
+// Light
 
 struct Topl_Light {
 	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor
@@ -41,6 +43,7 @@ struct Topl_Light {
 };
 typedef const Topl_Light* const light_cptr; // typedef for safety
 
+// Camera
 
 class Topl_Camera {
 public:
@@ -70,8 +73,7 @@ private:
 
 typedef const Topl_Camera* const camera_cptr;
 
-// Scene Manager is essentially the singleton game object, everything passes through here to be renedered to the screen
-// --------------------------------------------------------------------------------------------------------------------
+// Scene
 
 class Topl_Scene {
 public:

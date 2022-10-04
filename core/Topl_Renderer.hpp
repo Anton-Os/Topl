@@ -2,29 +2,20 @@
 
 #include "native_os_def.h"
 
-// #include "Rasteron.h" // For texturing support, should be conditional
-
 #include "Topl_Shader_Pipeline.h"
 #include "Topl_Scene.hpp"
 
-#define SPECIAL_SCENE_RENDER_ID 0
-#define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
-#define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
-#define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
-#define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
+// RenderTarget
 
-#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
-#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
-#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
-#define MAX_PIPELINES 24 // limits number of unique pipelines
-#define MAX_SHADERS 24 * 5  // limits number of unique shaders
-#define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
+#define SPECIAL_SCENE_RENDER_ID 0
 
 struct RenderTarget {
 	RenderTarget() { renderID = SPECIAL_SCENE_RENDER_ID; }
 	RenderTarget(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
+
+// Buffer
 
 #define BUFFERS_PER_RENDERTARGET 3 // each render target has fixed number buffers, see BUFF_Type below
 
@@ -43,6 +34,8 @@ struct Buffer : public RenderTarget {
     unsigned count = 1; // no. of primitives
 };
 
+// Texture
+
 enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
@@ -57,17 +50,7 @@ struct Texture : public RenderTarget {
 	enum TEX_Mode mode;
 };
 
-enum DRAW_Mode {
-	DRAW_Points,
-	DRAW_Lines,
-	DRAW_Triangles, // Default
-	DRAW_Fan,
-	DRAW_Strip
-};
-
-#define MAX_VIEWPORTS 12 // max number of separate viewports
-#define REGULAR_DRAW_ORDER true
-#define INVERSE_DRAW_ORDER false
+// Viewport
 
 struct Topl_Viewport {
     Topl_Viewport(){} // Full-Screen Constructor
@@ -82,13 +65,34 @@ struct Topl_Viewport {
 	unsigned height = TOPL_WIN_HEIGHT;
 };
 
+// Renderer
+
+enum DRAW_Mode {
+	DRAW_Points,
+	DRAW_Lines,
+	DRAW_Triangles, // Default
+	DRAW_Fan,
+	DRAW_Strip
+};
+
+#define REGULAR_DRAW_ORDER true
+#define INVERSE_DRAW_ORDER false
+
+#define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
+#define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
+#define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
+#define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
+
+#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
+#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
+#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
+#define MAX_PIPELINES 24 // limits number of unique pipelines
+#define MAX_SHADERS 24 * 5  // limits number of unique shaders
+#define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
+
 class Topl_Renderer {
 public:
-    Topl_Renderer(NATIVE_WINDOW window);
-    Topl_Renderer(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports);
-	virtual ~Topl_Renderer(){
-        if(_viewports != nullptr) free(_viewports);
-    };
+	Topl_Renderer(NATIVE_WINDOW window) { _platformCtx.window = window; }
 
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
@@ -99,6 +103,7 @@ public:
     bool renderScene(Topl_Scene* scene);
     bool renderAll();
     virtual void clearView() = 0; // clears view to predefined background color
+	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
     virtual void switchFramebuff() = 0; // switches front and back buffers
 	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
@@ -115,8 +120,8 @@ protected:
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
-    Topl_Viewport* _viewports = nullptr;
-    unsigned short _viewportCount = 0;
+    Topl_Viewport _defaultViewport = Topl_Viewport();
+    // unsigned short _viewportCount = 0;
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
     bool _isDrawn = false; // true after draw call, false after swap

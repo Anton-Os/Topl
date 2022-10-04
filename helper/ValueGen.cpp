@@ -18,7 +18,7 @@ SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, fl
     farPlane = f;
 }
 
-// Memory Operations
+// Data Operations
 
 void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
     targetBytes->clear();

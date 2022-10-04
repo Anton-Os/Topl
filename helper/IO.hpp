@@ -11,7 +11,7 @@
 #include <cfloat>
 #include <climits>
 
-#define MESSAGE_LOG_FILE "_MessageLog.txt" // file name for messages and errors during execution
+// Files
 
 std::string readFile(const char* source);
 std::string readFileBinary(const char* source);
@@ -20,6 +20,9 @@ std::string getParentDir(const char* arg);
 float getFloatFromStr(const std::string& source, size_t startOffset); // extracts float from str relative to start offset
 int getIntFromStr(const std::string& source, size_t startOffset); // extracts int from str relative to start offset
 
+// Logging
+
+#define MESSAGE_LOG_FILE "_MessageLog.txt" // file name for messages and errors during execution
 
 enum MESSAGE_Type {
     MESSAGE_Comment, // for status

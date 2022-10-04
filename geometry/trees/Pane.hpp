@@ -8,8 +8,7 @@
 #define PANE_IMAGE_COLOR 0xAAFFFFFF // semi-transpertent default color
 #define PANE_IMAGE_WIDTH 256
 #define PANE_IMAGE_HEIGHT 256
-#define PANE_ROOT_Z 0.000002f
-#define PANE_CHILD_Z 0.000001f
+#define PANE_Z 0.0f
 
 typedef void (*paneCallback)(void);
 
@@ -94,8 +93,8 @@ protected:
 
     Geo_Pane _rootPane = Geo_Pane(PANE_IMAGE_COLOR); // root
 	std::vector<Geo_Pane> _panes; // children
-	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_ROOT_Z);
-	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_CHILD_Z);
+	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_Z);
+	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_Z);
     
 	unsigned _rows, _columns; 
 	float _width = PANE_RADIUS; 

@@ -37,13 +37,12 @@ struct Vulkan_Engine_Config : public Engine_Config {
 };
 #endif
 
-// Factory Object
+// Factory
 
 class Topl_Factory {
 public:
 	~Topl_Factory();
 	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
-    static Topl_Renderer* genRenderer(APP_Backend backend, Platform* plaform, std::initializer_list<Topl_Viewport> viewports);
 
 	static Topl_Pipeline* genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	static Topl_Pipeline* genPipeline(APP_Backend backend,

@@ -34,5 +34,7 @@ private:
 	const Geo_RenderObj* _renderObj = nullptr;
 };
 
+typedef const Geo_Actor* const actor_cptr;
+
 #define GEO_ACTOR_H
 #endif

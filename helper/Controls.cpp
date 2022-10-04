@@ -1,7 +1,5 @@
 #include "Controls.hpp"
 
-#include <cstdio>
-
 // Keyboard Interaction
 
 void Input_KeyControl::addKeyPress(char keyCode) {

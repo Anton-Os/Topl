@@ -8,7 +8,6 @@
 class Topl_App {
 public:
     Topl_App(const char* execPath, const char* name, APP_Backend backend);
-	Topl_App(const char* execPath, const char* name, APP_Backend backend, std::initializer_list<Topl_Viewport> viewports);
 	~Topl_App();
 
 	void run();

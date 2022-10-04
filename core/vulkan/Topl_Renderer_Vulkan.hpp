@@ -20,12 +20,10 @@ public:
 	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(window){ 
 		init(window); 
 	}
-	Topl_Renderer_Vulkan(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) { 
-		init(window);
-	}
 	~Topl_Renderer_Vulkan(){}
 
 	void clearView() override;
+	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
 	void texturize(const Topl_Scene* scene) override;

@@ -1,8 +1,9 @@
-#include <vector>
 #include <map>
 #include <cctype>
 
 #include "Timer.hpp";
+
+// Control
 
 struct Input_Control {
     double getLastEvent(){ return _lastEvent; }
@@ -19,6 +20,8 @@ protected:
     double _lastEvent = BAD_EVENT_TIME; // timestamp tracking most recent event in milliseconds
 };
 
+// Keys
+
 typedef void (*keyCallback)(void); // Triggers action on a particular keypress
 
 class Input_KeyControl : public Input_Control {
@@ -29,6 +32,8 @@ public:
 private:
 	std::map<char, keyCallback> _keyCallback_map;
 };
+
+// Mouse
 
 #define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
 #define MAX_CURSOR_POS 1.0f
@@ -44,7 +49,6 @@ enum MOUSE_Button {
     MOUSE_Scroll_Down */
 };
 
-// TracerStep is used to track press events
 struct Input_TracerStep {
     MOUSE_Button button;
     float xPos;

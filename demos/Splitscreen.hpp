@@ -5,8 +5,8 @@
 #include "primitives/Geo_Flat.hpp"
 
 struct Splitscreen_App : public Topl_App {
-    Splitscreen_App(const char* execPath, APP_Backend backend, std::initializer_list<Topl_Viewport> viewports) 
-		: Topl_App(execPath, "Splitscreen", backend, viewports){}
+    Splitscreen_App(const char* execPath, APP_Backend backend) 
+		: Topl_App(execPath, "Splitscreen", backend){}
 
 	void init() override;
 	void loop(unsigned long frame) override;
@@ -14,6 +14,10 @@ private:
 	// Configurations
 
 	Topl_Scene scene;
+	Topl_Viewport viewports[2] = {
+		Topl_Viewport(0, TOPL_WIN_HEIGHT / 2, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // bottom-half pane
+		Topl_Viewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // top-half pane
+	};
 
 	// Geometries and Drawable Objects
 

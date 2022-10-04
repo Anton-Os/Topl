@@ -31,12 +31,7 @@ void Splitscreen_App::loop(unsigned long frame) {
 }
 
 int main(int argc, char** argv) {
-	Topl_Viewport viewports[] = {
-		Topl_Viewport(0, TOPL_WIN_HEIGHT / 2, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // bottom-half pane
-		Topl_Viewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // top-half pane
-	};
-
-	Splitscreen_App app = Splitscreen_App(argv[0], APP_BACKEND, { viewports[0], viewports[1] });
+	Splitscreen_App app = Splitscreen_App(argv[0], APP_BACKEND);
 
 	app.run();
     return 0;

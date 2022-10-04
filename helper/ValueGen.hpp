@@ -5,7 +5,7 @@
 
 #include "Maths.h"
 
-// Memory Operations
+// Data Operations
 
 typedef std::vector<uint8_t> blockBytes_t; // container used to pass data to shaders
 typedef const uint8_t* bytes_cptr; // intermediate type for all shader data

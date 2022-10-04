@@ -1,13 +1,11 @@
-// OpenGL Specific Inclusions
-
 #define GLEW_STATIC
 #include "GL/glew.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-// Renderer Implementation
-
 #include "Topl_Renderer.hpp"
+
+// Buffer
 
 #define GL4_BUFFER_OFFSET(i) ((void*)(i))
 
@@ -22,6 +20,8 @@ struct Buffer_GL4 : public Buffer {
 	GLuint buffer; // OpenGL buffer
 };
 
+// Vertex Array Object
+
 #define GL4_VERTEX_ARRAY_MAX 1024
 struct VertexArray_GL4 : public RenderTarget {
 	VertexArray_GL4() : RenderTarget() {}
@@ -29,12 +29,16 @@ struct VertexArray_GL4 : public RenderTarget {
 	GLuint vao;
 };
 
+// Texture
+
 #define GL4_TEXTURE_BINDINGS_MAX 1024
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
 	GLuint texture;
 };
+
+// Pipeline
 
 struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	Topl_Pipeline_GL4() : Topl_Pipeline(){}
@@ -48,19 +52,18 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint gShader; // Geometry Shader
 };
 
+// Renderer
+
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
 		_isDrawInOrder = REGULAR_DRAW_ORDER;
 		init(window);
 	}
-	Topl_Renderer_GL4(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports) {
-		_isDrawInOrder = REGULAR_DRAW_ORDER;
-		init(window);
-	}
 	~Topl_Renderer_GL4();
 
 	void clearView() override;
+	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
 	void texturize(const Topl_Scene* scene) override;

@@ -1,5 +1,3 @@
-// DirectX Specific Inclusions
-
 #include <d3d11_1.h>
 #include <dxgi1_4.h>
 #include <d3dcompiler.h>
@@ -7,9 +5,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-// Renderer Implementation
-
 #include "Topl_Renderer.hpp"
+
+// Buffer
 
 struct Buffer_Drx11 : public Buffer {
 	// Buffer_Drx11() : Buffer() {}
@@ -19,6 +17,8 @@ struct Buffer_Drx11 : public Buffer {
 
 	ID3D11Buffer* buffer; // DirectX specific
 };
+
+// Texture
 
 struct Texture_Drx11 : public Texture {
 	Texture_Drx11() : Texture() {}
@@ -33,6 +33,8 @@ struct Texture_Drx11 : public Texture {
 	ID3D11SamplerState* sampler = nullptr;
 	ID3D11ShaderResourceView* resView = nullptr;
 };
+
+// Pipeline
 
 struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	Topl_Pipeline_Drx11() : Topl_Pipeline(){}
@@ -62,19 +64,18 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 	ID3DBlob* gsBlob = nullptr;
 };
 
+// Remderer
+
 class Topl_Renderer_Drx11 : public Topl_Renderer {
 public:
 	Topl_Renderer_Drx11(HWND window) : Topl_Renderer(window){
 		_isDrawInOrder = INVERSE_DRAW_ORDER;
 		init(window);
 	}
-	Topl_Renderer_Drx11(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) : Topl_Renderer(window, viewports){
-		_isDrawInOrder = INVERSE_DRAW_ORDER;
-		init(window);
-	}
 	~Topl_Renderer_Drx11();
 
 	void clearView() override;
+	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
 	void texturize(const Topl_Scene* scene) override;
