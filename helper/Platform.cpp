@@ -3,13 +3,13 @@
 Input_KeyControl Platform::keyControl = Input_KeyControl(); // explicit definition of KeyControl class
 Input_MouseControl Platform::mouseControl = Input_MouseControl(); // explicit definition of MouseControl class
 
-float Platform::xCursorPos = BAD_CURSOR_POS;
-float Platform::yCursorPos = BAD_CURSOR_POS;
+float Platform::xCursorPos = INVALID_CURSOR_POS;
+float Platform::yCursorPos = INVALID_CURSOR_POS;
 
 #ifdef _WIN32
 
 static void addMousePress(enum MOUSE_Button button){
-	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
+	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
 		? Platform::mouseControl.addMousePress(button)
 		: Platform::mouseControl.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
 }
@@ -29,10 +29,10 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 		Platform::keyControl.addKeyPress((char)wParam);
 		// Platform::updateTimer(); // updates timer after key press handled
 	}
-	case (WM_LBUTTONDOWN): { if(wParam & MK_LBUTTON) addMousePress(MOUSE_LeftBtn_Down); }
-	case (WM_LBUTTONUP): { if(wParam & MK_LBUTTON) addMousePress(MOUSE_LeftBtn_Up); }
-	case (WM_RBUTTONDOWN): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Down); }
-	case (WM_RBUTTONUP): { if(wParam & MK_RBUTTON) addMousePress(MOUSE_RightBtn_Up); }
+	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
+	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
+	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }
+	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addMousePress(MOUSE_RightBtn_Up); }
 	default:
 		return DefWindowProc(window, message, wParam, lParam);
 	}
@@ -65,8 +65,7 @@ void Platform::createWindow(){
 }
 
 void Platform::handleEvents(bool isCursorUpdate){
-	if(!isCursorUpdate) resetCursor();
-	else {	
+	if(isCursorUpdate == ENABLE_CURSOR_UPDATE) {	
 		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
 		if(!isCursorBound) resetCursor();
 		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
@@ -160,8 +159,7 @@ void Platform::createWindow(){
 }
 
 void Platform::handleEvents(bool isCursorUpdate){
-	if(!isCursorUpdate) resetCursor();
-	else {	
+	if (isCursorUpdate == ENABLE_CURSOR_UPDATE) {
 		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
 		if(!isCursorBound) resetCursor();
 		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks

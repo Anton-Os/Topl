@@ -53,15 +53,11 @@ struct Topl_Pipeline_Drx11 : public Topl_Pipeline {
 
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11GeometryShader* geomShader = nullptr;
 	ID3D11HullShader* hullShader = nullptr;
 	ID3D11DomainShader* domainShader = nullptr;
-	ID3D11GeometryShader* geomShader = nullptr;
 	
-	ID3DBlob* vsBlob = nullptr;
-	ID3DBlob* psBlob = nullptr;
-	ID3DBlob* hsBlob = nullptr;
-	ID3DBlob* dsBlob = nullptr;
-	ID3DBlob* gsBlob = nullptr;
+	ID3DBlob *vsBlob, *psBlob, *hsBlob, *dsBlob, *gsBlob = nullptr;
 };
 
 // Remderer
@@ -83,7 +79,7 @@ public:
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	// void switchPipeline(const Topl_Pipeline* pipeline) override;
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
 #endif

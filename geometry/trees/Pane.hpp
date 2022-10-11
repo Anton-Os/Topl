@@ -3,6 +3,8 @@
 
 #include "Geo_Tree.hpp"
 
+// Pane
+
 #define PANE_RADIUS 0.5
 #define PANE_BORDER 0.05f
 #define PANE_IMAGE_COLOR 0xAAFFFFFF // semi-transpertent default color
@@ -49,6 +51,8 @@ private:
 	Rasteron_Image* _selectImage = nullptr; // external
 #endif
 };
+
+// Pane Layouts
 
 class Geo_PaneLayout : public Geo_Tree {
 public:
@@ -105,8 +109,7 @@ protected:
 	static Geo_Actor _decoyActor;
 };
 
-// UnitLayout has only one child pane
-class Geo_UnitLayout : public Geo_PaneLayout {
+class Geo_UnitLayout : public Geo_PaneLayout { // UnitLayout with only one child
 public:
 	Geo_UnitLayout(
 		const std::string& prefix
@@ -128,8 +131,7 @@ public:
 	{  }
 };
 
-// RowLayout has only rows
-class Geo_RowLayout : public Geo_PaneLayout {
+class Geo_RowLayout : public Geo_PaneLayout { // RowLayout with only rows
 public:
 	Geo_RowLayout(
 		const std::string& prefix,
@@ -154,8 +156,7 @@ public:
 	{  }
 };
 
-// ColLayout has only columns
-class Geo_ColLayout : public Geo_PaneLayout {
+class Geo_ColLayout : public Geo_PaneLayout { // ColLayout with only columns
 public:
 	Geo_ColLayout(
 		const std::string& prefix,
@@ -180,8 +181,7 @@ public:
 	{  }
 };
 
-// BoxedLayout has matching row and column count
-class Geo_BoxedLayout : public Geo_PaneLayout {
+class Geo_BoxedLayout : public Geo_PaneLayout { // BoxedLayout with matching row and column count
 public:
 	Geo_BoxedLayout(
 		const std::string& prefix,

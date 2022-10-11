@@ -26,8 +26,8 @@ private:
 
 	// Shaders and Pipelines
 
-	Topl_Pipeline* pipeline;
+	Topl_Pipeline *pipeline1, *pipeline2;
 
-	Effect_VertexShader vertexShader1, vertexShader2, vertexShader3, vertexShader4;
+	Effect_VertexShader vertexShader1, vertexShader2;
 	Effect_FragmentShader fragShader;
 };

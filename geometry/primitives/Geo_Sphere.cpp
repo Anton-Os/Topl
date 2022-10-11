@@ -8,11 +8,11 @@ void Geo_Sphere::genPos(Vec3f* data){
 	unsigned v = 0; // target vertex
 
 	for(unsigned stack = 0; stack <= _shape3D.xSegments; stack++){
-		float stackAngle = (TOPL_PI / 2) - (stack * (TOPL_PI / _shape3D.xSegments));
+		float stackAngle = (MATH_PI / 2) - (stack * (MATH_PI / _shape3D.xSegments));
 		float xy = radius * cosf(stackAngle);
 		float z = radius * sinf(stackAngle);
     	for (unsigned slice = 0; slice <= _shape3D.ySegments; slice++) {
-			float sliceAngle = slice * ((2 * TOPL_PI) / _shape3D.ySegments);
+			float sliceAngle = slice * ((2 * MATH_PI) / _shape3D.ySegments);
 			float x = xy * cosf(sliceAngle);
 			float y = xy * sinf(sliceAngle);
 
@@ -26,11 +26,11 @@ void Geo_Sphere::genNormals(Vec3f* data){
 	unsigned n = 0; // target vertex
 
 	for(unsigned stack = 0; stack <= _shape3D.xSegments; stack++){
-		float stackAngle = (TOPL_PI / 2) - (stack * (TOPL_PI / _shape3D.xSegments));
+		float stackAngle = (MATH_PI / 2) - (stack * (MATH_PI / _shape3D.xSegments));
 		float xy = cosf(stackAngle);
 		float z = sinf(stackAngle);
     	for (unsigned slice = 0; slice <= _shape3D.ySegments; slice++) {
-			float sliceAngle = slice * ((2 * TOPL_PI) / _shape3D.ySegments);
+			float sliceAngle = slice * ((2 * MATH_PI) / _shape3D.ySegments);
 			float x = xy * cosf(sliceAngle);
 			float y = xy * sinf(sliceAngle);
 

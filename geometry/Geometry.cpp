@@ -21,7 +21,7 @@ Geo_Vertex::Geo_Vertex(Vec3f pos, Vec2f texc){
 
 Geo_RenderObj::Geo_RenderObj(unsigned v){ // Vertex only constructor
     _vertexCount = v;
-    if(_vertexCount % 2 == 0) _startAngle = TOPL_PI / (_vertexCount - 1); // offset angle for each even side length
+    if(_vertexCount % 2 == 0) _startAngle = MATH_PI / (_vertexCount - 1); // offset angle for each even side length
 
     if(_vertexCount != 0){
         _pos = (Vec3f*)malloc(_vertexCount * sizeof(Vec3f));
@@ -33,7 +33,7 @@ Geo_RenderObj::Geo_RenderObj(unsigned v){ // Vertex only constructor
 Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
     _vertexCount = v;
     _indicesCount = i;
-    if((_vertexCount - 1) % 2 == 0) _startAngle = TOPL_PI / (_vertexCount - 1); // offset angle for each even side length
+    if((_vertexCount - 1) % 2 == 0) _startAngle = MATH_PI / (_vertexCount - 1); // offset angle for each even side length
 
     if(_vertexCount != 0){
         _pos = (Vec3f*)malloc(_vertexCount * sizeof(Vec3f));

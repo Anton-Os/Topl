@@ -21,7 +21,12 @@ struct Topl_Image { // wrapper around Rasteron_Image
     }
     void setFileImage(const std::string& filePath){
         if(image != NULL) deleteImg(image); // delte old image
-        image = createRefImg(filePath.c_str());
+		char newFilePath[1024];
+		strcpy(&newFilePath[0], filePath.c_str());
+#ifdef _WIN32
+		replaceFwdSlash(&newFilePath[0]);
+#endif
+        image = createRefImg(&newFilePath[0]);
     }
     void setTextImage(Rasteron_Text* textObj){
         if(image != NULL) deleteImg(image); // delte old image

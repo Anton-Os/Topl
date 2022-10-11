@@ -1,7 +1,7 @@
 #include "Geo_Extruded.hpp"
 
 void Geo_Extruded::genPos(Vec3f* data){
-	const double angle = (TOPL_PI * 2) / _shape2D.segments;
+	const double angle = (MATH_PI * 2) / _shape2D.segments;
 	const float radius = _shape2D.radius * RADIAL_UNITS;
 	
 	// Vertices for FRONT FACE

@@ -39,15 +39,14 @@ list(APPEND geometry_src
     geometry/primitives/Geo_Sphere.cpp
 
     geometry/Geo_Tree.cpp
+	geometry/trees/Geo_Sequence.cpp
+    geometry/trees/Geo_Grid.cpp
 )
 if(Assimp_FOUND)
     list(APPEND geometry_src
         geometry/trees/Model.cpp
         geometry/primitives/Geo_Node.cpp
     )
-endif()
-if(Rasteron_FOUND)
-    list(APPEND geometry_src geometry/Geo_SpriteTable.cpp)
 endif()
 
 list(APPEND core_src
@@ -153,8 +152,6 @@ include("cmake/runTests.cmake")
 # Modern Demos and Tests
 
 add_executable(App_Playground
-    geometry/trees/Chain.cpp
-    geometry/trees/Grid.cpp
     geometry/trees/Humanoid.cpp
     geometry/trees/Pane.cpp
 

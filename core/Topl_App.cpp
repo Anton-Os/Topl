@@ -1,5 +1,10 @@
 #include "Topl_App.hpp"
 
+const std::string Topl_App::fontsPath = std::string(ASSETS_DIR) + "fonts/";
+const std::string Topl_App::imagesPath = std::string(ASSETS_DIR) + "images/";
+const std::string Topl_App::modelsPath = std::string(ASSETS_DIR) + "models/";
+const std::string Topl_App::resourcePath = std::string(ASSETS_DIR) + "res/";
+
 Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
 	logMessage(" -------------- Topl App -------------- ");
 	
@@ -20,15 +25,16 @@ Topl_App::~Topl_App() {
 
 void Topl_App::run(){
     init();
-    // _ticker.addPeriodicEvent(20, _platform->handleEvents(true)); // make cursor updates periodic
 
     while (1) { 
         _ticker.updateTimer();
         _renderer->clearView();
 
-        loop(_renderer->getFrameCount());
+		if(_renderer->getFrameCount() % 5 == 0) _platform->handleEvents(DISABLE_CURSOR_UPDATE);
+		else _platform->handleEvents(ENABLE_CURSOR_UPDATE); // handle cursor updates every 5th frame
+
+        loop(_renderer->getFrameCount()); // performs draws and updating
         
-        _renderer->switchFramebuff();
-        _platform->handleEvents(false);
+        _renderer->switchFramebuff(); // switch front and back buffers for display
     }
 }

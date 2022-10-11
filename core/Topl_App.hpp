@@ -11,6 +11,12 @@ public:
 	~Topl_App();
 
 	void run();
+
+	// Paths
+	const static std::string fontsPath;
+	const static std::string imagesPath;
+	const static std::string modelsPath;
+	const static std::string resourcePath;
 protected:
     virtual void init() = 0;
     virtual void loop(unsigned long frame) = 0;
@@ -22,11 +28,5 @@ protected:
 	const Topl_Pipeline* _activePipeline = nullptr;
 
 	// Utility
-    Timer_Ticker _ticker;
-
-	// Paths
-	const std::string fontsPath = std::string(ASSETS_DIR) + "fonts/";
-	const std::string imagesPath = std::string(ASSETS_DIR) + "images/";
-	const std::string modelsPath = std::string(ASSETS_DIR) + "models/";
-	const std::string resourcePath = std::string(ASSETS_DIR) + "res/";
+	Timer_Ticker _ticker;
 };

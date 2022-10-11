@@ -17,7 +17,7 @@ void assignDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); /
 void alignDataToBytes(bytes_cptr data, size_t dataSize, size_t paddingSize, blockBytes_t* bytes); // aligns data, manual padding
 void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); // appends data, computed 16-bit padding
 
-// Mathematic Operations
+// Transformation Operations
 
 enum PROJECTION_Type {
     PROJECTION_Ortho,

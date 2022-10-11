@@ -6,9 +6,7 @@
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
 
-#define RADIAL_UNITS 0.7071f // converts specified coordinates to screen units
-#define DEFAULT_CIRCLE_SEGS 1000 // default segments for a circular object
-#define DEFAULT_Z 0.0f
+// Vertices
 
 enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
 
@@ -23,6 +21,12 @@ struct Geo_Vertex {
 
 typedef const Geo_Vertex* const vertex_cptr_t;
 
+// Shape Description
+
+#define RADIAL_UNITS 0.7071f // converts specified coordinates to screen units
+#define DEFAULT_CIRCLE_SEGS 1000 // default segments for a circular object
+#define DEFAULT_Z 0.0f
+
 struct NGon2D {
     float radius;
     unsigned short segments;
@@ -33,6 +37,8 @@ struct NGon3D {
 	unsigned short xSegments;
 	unsigned short ySegments;
 };
+
+// Render Object
 
 enum AXIS_Target{ AXIS_X, AXIS_Y, AXIS_Z };
 

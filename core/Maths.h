@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <cstdint>
 
-#define TOPL_PI 3.141592653
-#define TOPL_HALF_PI 1.57079633
+#define MATH_PI 3.141592653
+#define MATH_HALF_PI 1.57079633
 
 template <unsigned short n>
 struct VectorXF { 

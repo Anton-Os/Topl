@@ -29,12 +29,12 @@ public:
 			(*n)->updatePos({ vec });
 	}
     void configure(Topl_Scene* scene) override;
+protected:
+	std::vector<Geo_Node*> _geoNodes; // geometry nodes only
+	// TODO: include animation data
 private:
     std::string _filePath; // nodes are read from file
 
-    std::vector<Geo_Node*> _geoNodes; // geometry nodes only
     unsigned _nodeCount = 0; // all nodes count
     Geo_Node** _nodes = nullptr; // all nodes data
-
-    // TODO: include animation data
 };

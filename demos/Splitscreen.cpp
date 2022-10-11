@@ -1,21 +1,24 @@
 #include "Splitscreen.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 void Splitscreen_App::init() {
 	// Shaders and Pipeline
 
 	if (APP_BACKEND == APP_OpenGL_4) {
-		vertexShader1 = GL4_Effect_VertexShader(EFFECT_MODE_FRACTAL);
+		vertexShader1 = GL4_Effect_VertexShader(EFFECT_MODE_CURSOR);
+		vertexShader2 = GL4_Effect_VertexShader(EFFECT_MODE_FRACTAL);
 		fragShader = GL4_Effect_FragmentShader();
 	} else {
-		vertexShader1 = Drx11_Effect_VertexShader(EFFECT_MODE_FRACTAL);
+		vertexShader1 = Drx11_Effect_VertexShader(EFFECT_MODE_CURSOR);
+		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_FRACTAL);
 		fragShader = Drx11_Effect_FragmentShader();
 	}
 
-	Topl_Pipeline* pipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader);
+	pipeline1 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader);
+	pipeline2 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader);
 
 	// Geometries and Scene Elements
 
@@ -27,6 +30,13 @@ void Splitscreen_App::init() {
 
 void Splitscreen_App::loop(unsigned long frame) {
 	_renderer->updateScene(&scene);
+
+	_renderer->setPipeline(pipeline2);
+	_renderer->setViewport(&viewports[0]);
+	_renderer->renderScene(&scene);
+
+	_renderer->setPipeline(pipeline1);
+	_renderer->setViewport(&viewports[1]);
 	_renderer->renderScene(&scene);
 }
 

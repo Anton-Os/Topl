@@ -22,7 +22,7 @@ void Input_MouseControl::addCallback(enum MOUSE_Button mb, pressCallback callbac
 
 void Input_MouseControl::addMousePress(enum MOUSE_Button mb){
 	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
-		if(mb == c->first) c->second(BAD_CURSOR_POS, BAD_CURSOR_POS); // makes callback go off where keys match
+		if(mb == c->first) c->second(INVALID_CURSOR_POS, INVALID_CURSOR_POS); // makes callback go off where keys match
 
 	stampEvent();
 }

@@ -3,17 +3,46 @@
 #include "Flat_Shader.hpp"
 #include "Beams_Shader.hpp"
 #include "Textured_Shader.hpp"
-#include "Layered_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #include "Primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Sphere.hpp"
-#include "trees/Grid.hpp"
+#include "trees/Geo_Sequence.hpp"
+#include "trees/Geo_Grid.hpp"
 #include "trees/Pane.hpp"
 #include "trees/Humanoid.hpp"
 
 #define PLAYGROUND_SPHERES_COUNT 6
-#define PLAYGROUND_TEXTOBJ_COUNT 9
+#define PLAYGROUND_PANE_COUNT 9
+
+#define HUMANOID_SCALE 0.25f
+
+std::string ghostAssets[HUMANOID_PARTS_COUNT] = {
+	Topl_App::imagesPath + "Ghost-Head.png",
+	Topl_App::imagesPath + "Ghost-LeftArm.png",
+	Topl_App::imagesPath + "Ghost-RightArm.png",
+	Topl_App::imagesPath + "Ghost-Torso.png",
+	Topl_App::imagesPath + "Ghost-LeftLeg.png",
+	Topl_App::imagesPath + "Ghost-RightLeg.png"
+};
+
+std::string angelAssets[HUMANOID_PARTS_COUNT] = {
+	Topl_App::imagesPath + "Angel-Head.png",
+	Topl_App::imagesPath + "Angel-LeftWing.png",
+	Topl_App::imagesPath + "Angel-RightWing.png",
+	Topl_App::imagesPath + "Angel-Torso.png",
+	Topl_App::imagesPath + "Angel-LeftLeg.png",
+	Topl_App::imagesPath + "Angel-RightLeg.png"
+};
+
+std::string demonAssets[HUMANOID_PARTS_COUNT] = {
+	Topl_App::imagesPath + "Demon-Head.png",
+	Topl_App::imagesPath + "Demon-LeftWing.png",
+	Topl_App::imagesPath + "Demon-RightWing.png",
+	Topl_App::imagesPath + "Demon-Torso.png",
+	Topl_App::imagesPath + "Demon-LeftLeg.png",
+	Topl_App::imagesPath + "Demon-RightLeg.png"
+};
 
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
@@ -40,8 +69,11 @@ private:
 	// Main Scene Elements
 	Geo_FlatSquare square = Geo_FlatSquare(1.0f);
 	Geo_Actor platformActor = Geo_Actor((Geo_RenderObj*)&square);
-	Geo_Sphere sphere = Geo_Sphere({ 0.2f, 200, 200 });
+	Geo_Sphere sphere = Geo_Sphere({ 0.025f, 200, 200 });
 	Geo_Actor sphereActors[PLAYGROUND_SPHERES_COUNT];
+	Geo_Humanoid2D ghost = Geo_Humanoid2D("ghost", ghostAssets);
+	Geo_Humanoid2D angel = Geo_Humanoid2D("angel", angelAssets);
+	Geo_Humanoid2D demon = Geo_Humanoid2D("demon", demonAssets);
 	// Geo_Humanoid2D demon, angel, ghost;
 	// Geo_Humanoid3D avatar;
 
@@ -62,11 +94,12 @@ private:
 	Rasteron_Image* frameImage = nullptr;
 	std::string fontStr = std::string(fontsPath + "MajorMonoDisplay-Regular.ttf");
 	// Rasteron_Text textObj = { fontStr.c_str(), "option", WHITE_COLOR, BLACK_COLOR};
-	Rasteron_Text boxedTextObjs[PLAYGROUND_TEXTOBJ_COUNT];
-	Topl_Image boxedPaneImages[PLAYGROUND_TEXTOBJ_COUNT];
+	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
+	Topl_Image boxedPaneImages[PLAYGROUND_PANE_COUNT];
 	Topl_Material material = Topl_Material("material1", 1024, 1024);
-	// Topl_Image heightmapImage = Topl_Image(imagesPath + "FlowerIllusion.png");
-	// Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
+	Topl_Image heightmapImage = Topl_Image(imagesPath + "BigGrid.png");
+	Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
+	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap);
 
 	// Shaders and Pipelines
 
@@ -76,7 +109,6 @@ private:
 	Textured_VertexShader vertexShader1; Textured_FragmentShader fragShader1;
 	Flat_VertexShader vertexShader2; Flat_FragmentShader fragShader2;
 	Beams_VertexShader vertexShader3; Beams_FragmentShader fragShader3;
-	Layered_VertexShader vertexShader4; Layered_FragmentShader fragShader4;
 	Advance_TessCtrlShader tessCtrlShader; Advance_TessEvalShader tessEvalShader;
 	Advance_GeometryShader geomShader;
 };

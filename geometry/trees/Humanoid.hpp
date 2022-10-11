@@ -1,6 +1,11 @@
+#include "ShapesGen.hpp"
+
 #include "Geo_Tree.hpp"
-#include "Geo_SpriteTable.hpp"
-// #include "Model.hpp"
+#include "Model.hpp"
+
+#include "primitives/Geo_Flat.hpp"
+
+// Base Humanoid
 
 #define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
 
@@ -31,57 +36,74 @@ protected:
 	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
 };
 
-class Geo_Humanoid2D : public Geo_Humanoid, protected Geo_SpriteTable, public Geo_Tree { // Consists of sprites
+// 2D Sprite Humanoid
+
+class Geo_Humanoid2D : public Geo_Humanoid, public Geo_Tree { // Consists of sprites
 public:
 	Geo_Humanoid2D( // Prebake Constructor
 		const std::string& prefix,
-		std::string assets[HUMANOID_PARTS_COUNT], // image paths
-		float scaleFactor 
+		std::string assetPaths[HUMANOID_PARTS_COUNT] // image paths
+		// float scaleFactor 
 	)
 	: Geo_Humanoid(),
-	Geo_SpriteTable({
-		assets[HUMANOID_Head], assets[HUMANOID_LeftArm], assets[HUMANOID_RightArm],
-		assets[HUMANOID_Body], assets[HUMANOID_LeftLeg], assets[HUMANOID_RightLeg]
-		}, scaleFactor
-	),
 	Geo_Tree(prefix, {
-		(Geo_RenderObj*)getSquare(HUMANOID_Head), (Geo_RenderObj*)getSquare(HUMANOID_LeftArm),
-		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),(Geo_RenderObj*)getSquare(HUMANOID_Body),
-		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg), (Geo_RenderObj*)getSquare(HUMANOID_RightLeg),
-	}) {}
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
+		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Body],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
+		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
+	}) {
+		for (unsigned a = 0; a < HUMANOID_PARTS_COUNT; a++) _assetPaths[a] = assetPaths[a]; // copy over assets
+	}
 
 	Geo_Humanoid2D( // Config Constructor
 		const std::string& prefix,
 		Topl_Scene* scene,
-		std::string assets[HUMANOID_PARTS_COUNT], // image paths
-		float scaleFactor 
+		std::string assetPaths[HUMANOID_PARTS_COUNT] // image paths
+		// float scaleFactor 
 	)
 	: Geo_Humanoid(),
-	Geo_SpriteTable({
-		assets[HUMANOID_Head], assets[HUMANOID_LeftArm], assets[HUMANOID_RightArm],
-		assets[HUMANOID_Body],assets[HUMANOID_LeftLeg], assets[HUMANOID_RightLeg]
-		}, scaleFactor
-	),
 	Geo_Tree(prefix, {
-		(Geo_RenderObj*)getSquare(HUMANOID_Head), (Geo_RenderObj*)getSquare(HUMANOID_LeftArm), 
-		(Geo_RenderObj*)getSquare(HUMANOID_RightArm),(Geo_RenderObj*)getSquare(HUMANOID_Body),
-		(Geo_RenderObj*)getSquare(HUMANOID_LeftLeg), (Geo_RenderObj*)getSquare(HUMANOID_RightLeg),
-	}) { configure(scene); }
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
+		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm], 
+		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Body],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
+		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
+	}) {
+		for (unsigned a = 0; a < HUMANOID_PARTS_COUNT; a++) _assetPaths[a] = assetPaths[a]; // copy over assets
+		configure(scene); 
+	}
+
+	~Geo_Humanoid2D();
 
 	void configure(Topl_Scene* scene) override;
+
+	std::string _assetPaths[HUMANOID_PARTS_COUNT];
+	Rasteron_Sprite* _sprites[HUMANOID_PARTS_COUNT];
+	Geo_FlatSquare* _renderObjs[HUMANOID_PARTS_COUNT];
 };
 
-/* class Geo_Humanoid3D : public Geo_Humanoid, public Geo_Model {
+// 3D Model Humanoid
+
+class Geo_Humanoid3D : public Geo_Humanoid, public Geo_Model {
 public:
-	Geo_Model(
+	Geo_Humanoid3D(
+		const std::string& prefix,
+		const std::string& filePath
+	) : Geo_Humanoid(),
+	Geo_Model(prefix, filePath) {}
+
+	Geo_Humanoid3D(
 		const std::string& prefix,
         const std::string& filePath,
         Topl_Scene* scene
     )
 	: Geo_Humanoid(),
-	: Geo_Model(prefix, filePath, scene){
-		// configure(scene);
+	Geo_Model(prefix, filePath, scene){
+		configure(scene);
 	}
 
-	// void configure(Topl_Scene* scene) override;
-}; */
+	void configure(Topl_Scene* scene) override;
+};

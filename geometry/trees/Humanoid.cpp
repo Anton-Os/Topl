@@ -1,5 +1,30 @@
 #include "trees/Humanoid.hpp"
 
+static float getSpriteWidth(const Rasteron_Sprite* sprite) {
+	return sprite->bounds.topRight_point[0] * 2;
+}
+
+static float getSpriteHeight(const Rasteron_Sprite* sprite) {
+	return sprite->bounds.topRight_point[1] * 2;
+}
+
+static void resizeToSprite(const Rasteron_Sprite* sprite, Geo_FlatSquare* square) {
+	float width = sprite->bounds.topRight_point[0] * 2;
+	float height = sprite->bounds.topRight_point[1] * 2;
+
+	if (width != height) { // no stretch for matching width and height
+		float stretchX = height / width;
+		stretchX += (stretchX < 1.0f) ? (1.0f - stretchX) / 2 : -1 * ((stretchX - 1.0f) / 2); // half the stretch amount
+		square->modify(stretchTForm, stretchX, AXIS_X);
+
+		float stretchY = width / height;
+		stretchY += (stretchY < 1.0f) ? (1.0f - stretchY) / 2 : -1 * ((stretchY - 1.0f) / 2); // half the stretch amount
+		square->modify(stretchTForm, stretchY, AXIS_Y);
+	}
+}
+
+// Humanoid operations
+
 void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles){
 	Geo_Actor* actor;
 	switch(target){
@@ -40,40 +65,66 @@ void Geo_Humanoid::presetLinks(){
 	leftLeg_rightLeg_link.preset(leftLeg->getPosition(), rightLeg->getPosition());
 }
 
-void Geo_Humanoid2D::configure(Topl_Scene* scene) { // Trying with displacements for now
-	Rasteron_Sprite* sprite; // Container for all the sprites we are getting
-	
+// Humanoid 2D operations
+
+Geo_Humanoid2D::~Geo_Humanoid2D() {
+	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) {
+		deleteSprite(_sprites[p]);
+		delete(_renderObjs[p]);
+	}
+}
+
+void Geo_Humanoid2D::configure(Topl_Scene* scene) {
+	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) {
+		_sprites[p] = createSprite(createRefImg(_assetPaths[p].c_str()));
+		_renderObjs[p] = new Geo_FlatSquare((getSpriteWidth(_sprites[p]) + getSpriteHeight(_sprites[p])) / 2);
+		resizeToSprite(_sprites[p], _renderObjs[p]);
+	}
+
 	head = getNextActor();
-	sprite = getSprite(HUMANOID_Head);
+	head->setRenderObj(_renderObjs[HUMANOID_Head]);
 	scene->addGeometry(getPrefix() + "head", head);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "head", sprite->image);
+	if (_sprites[HUMANOID_Head] != nullptr) scene->addTexture(getPrefix() + "head", _sprites[HUMANOID_Head]->image);
 
 	leftArm = getNextActor();
-	sprite = getSprite(HUMANOID_LeftArm);
+	leftArm->setRenderObj(_renderObjs[HUMANOID_LeftArm]);
 	scene->addGeometry(getPrefix() + "leftArm", leftArm);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "leftArm", sprite->image);
+	if (_sprites[HUMANOID_LeftArm] != nullptr) scene->addTexture(getPrefix() + "leftArm", _sprites[HUMANOID_LeftArm]->image);
 
 	rightArm = getNextActor();
-	sprite = getSprite(HUMANOID_RightArm);
+	rightArm->setRenderObj(_renderObjs[HUMANOID_RightArm]);
 	scene->addGeometry(getPrefix() + "rightArm", rightArm);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "rightArm", sprite->image);
+	if (_sprites[HUMANOID_RightArm] != nullptr) scene->addTexture(getPrefix() + "rightArm", _sprites[HUMANOID_RightArm]->image);
 
 	body = getNextActor();
-	sprite = getSprite(HUMANOID_Body);
+	body->setRenderObj(_renderObjs[HUMANOID_Body]);
 	scene->addGeometry(getPrefix() + "body", body);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "body", sprite->image);
+	if (_sprites[HUMANOID_Body] != nullptr) scene->addTexture(getPrefix() + "body", _sprites[HUMANOID_Body]->image);
 
 	leftLeg = getNextActor();
-	sprite = getSprite(HUMANOID_LeftLeg);
+	leftLeg->setRenderObj(_renderObjs[HUMANOID_LeftLeg]);
 	scene->addGeometry(getPrefix() + "leftLeg", leftLeg);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "leftLeg", sprite->image);
+	if (_sprites[HUMANOID_LeftLeg] != nullptr) scene->addTexture(getPrefix() + "leftLeg", _sprites[HUMANOID_LeftLeg]->image);
 
 	rightLeg = getNextActor();
-	sprite = getSprite(HUMANOID_RightLeg);
+	rightLeg->setRenderObj(_renderObjs[HUMANOID_RightLeg]);
 	scene->addGeometry(getPrefix() + "rightLeg", rightLeg);
-	if (sprite != nullptr) scene->addTexture(getPrefix() + "rightLeg", sprite->image);
+	if (_sprites[HUMANOID_RightLeg] != nullptr) scene->addTexture(getPrefix() + "rightLeg", _sprites[HUMANOID_RightLeg]->image);
 
-	// All physics relevant functionality goes here
+	// Orientations update
+
+	std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
+		std::make_pair(Vec3f({ 0.0f, 0.3f, 0.0 }), Vec2f({ 0.0, 0.0f })), // Head
+		std::make_pair(Vec3f({ -0.35f, 0.1f, 0.0 }), Vec2f({ 0.0, 0.0 })), // Left Arm
+		std::make_pair(Vec3f({ 0.35f, 0.1f, 0.0 }), Vec2f({ 0.0, 0.0 })), // Right Arm
+		std::make_pair(Vec3f({ 0.0f, 0.0f, 0.0 }), Vec2f({ 0.0, 0.0 })), // Body
+		std::make_pair(Vec3f({ -0.15f, -0.35f, 0.0 }), Vec2f({ -MATH_HALF_PI, 0.0 })), // Left Leg
+		std::make_pair(Vec3f({ 0.15f, -0.35f, 0.0 }), Vec2f({ MATH_HALF_PI, 0.0 })) // Right Leg
+	};
+
+	orientAll(orientations);
+
+	// All physics functionality
 
 	scene->addPhysics(getPrefix() + "head", &head_phys);
 	scene->addPhysics(getPrefix() + "body", &body_phys);
@@ -95,4 +146,28 @@ void Geo_Humanoid2D::configure(Topl_Scene* scene) { // Trying with displacements
 	scene->addLink(&leftArm_leftLeg_link, getPrefix() + "leftArm", getPrefix() + "leftLeg");
 	scene->addLink(&rightArm_rightLeg_link, getPrefix() + "rightArm", getPrefix() + "rightLeg");
 	scene->addLink(&leftLeg_rightLeg_link, getPrefix() + "leftLeg", getPrefix() + "rightLeg"); 
+}
+
+// Humanoid 3D operations
+
+void Geo_Humanoid3D::configure(Topl_Scene* scene) {
+	// Assignment through node name matching
+	for (std::vector<Geo_Node*>::iterator node = _geoNodes.begin(); node != _geoNodes.end(); node++) {
+		std::string nodeName = (*node)->getName();
+
+		if (nodeName.find("Head") != std::string::npos || nodeName.find("head") != std::string::npos)
+			head = *node;
+		else if (nodeName.find("Body") != std::string::npos || nodeName.find("body") != std::string::npos)
+			body = *node;
+		else if (nodeName.find("Arm") != std::string::npos || nodeName.find("arm") != std::string::npos) {
+			// TODO: Improve left and right part logic
+			if (nodeName.find("left") != std::string::npos) leftArm = *node;
+			else if (nodeName.find("right") != std::string::npos) rightArm = *node;
+		}
+		else if (nodeName.find("Leg") != std::string::npos || nodeName.find("leg") != std::string::npos) {
+			// TODO: Improve left and right part logic
+			if (nodeName.find("left") != std::string::npos) leftLeg = *node;
+			else if (nodeName.find("right") != std::string::npos) rightLeg = *node;
+		}
+	}
 }

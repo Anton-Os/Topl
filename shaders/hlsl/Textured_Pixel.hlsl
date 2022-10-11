@@ -1,6 +1,9 @@
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
 
+// SamplerState areaSampler : register(s2);
+// Texture3D areaTex : register(t2);
+
 SamplerState customSampler {
 	Filter = MIN_MAG_MIP_LINEAR;
 	AddressU = Wrap;

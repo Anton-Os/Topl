@@ -159,7 +159,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	 for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
@@ -240,10 +240,12 @@ Rasteron_Image* Topl_Renderer_GL4::frame() {
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, frameImage->data);
 
 	Rasteron_Image* flipImage = createFlipImg(frameImage, FLIP_Upside);
-	switchRB(flipImage->data, viewportHeight * viewportWidth);
+	Rasteron_Image* mirrorImage = createMirrorImg(flipImage);
+	switchRB(mirrorImage->data, viewportHeight * viewportWidth);
 
+	deleteImg(flipImage);
 	deleteImg(frameImage);
-	return flipImage;
+	return mirrorImage;
 }
 
 void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {

@@ -45,11 +45,11 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 
 	GLuint shaderProg; // Linked Shader Program
 
-	GLuint vShader; // Vertex Shader
-	GLuint fShader; // Fragment Shader
-	GLuint tcShader; // Tesselation Control Shader
-	GLuint teShader; // Tesselation Evaluation Shader
-	GLuint gShader; // Geometry Shader
+	GLuint vertexShader;
+	GLuint fragmentShader;
+	GLuint geomShader;
+	GLuint tessCtrlShader;
+	GLuint tessEvalShader;
 };
 
 // Renderer
@@ -70,7 +70,7 @@ public:
 
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr geomShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 #ifdef RASTERON_H
 	Rasteron_Image* frame() override;
 #endif

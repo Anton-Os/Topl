@@ -1,6 +1,7 @@
 #version 440
 
 uniform sampler2D baseTex;
+// uniform sampler3D areaTex;
 
 layout(location = 0) in vec2 texcoord;
 

@@ -17,7 +17,7 @@ out vec4 color;
 vec3 cursorDist(vec2 cursorPos, vec2 pixelCoord){
 	float red = 1.0f - (distance(cursorPos, pixelCoord) * 5); // receding color from center
 	float green = (distance(cursorPos, pixelCoord) < 0.03) ? 1.0 : 0.0; // small acute bullseye center
-	float blue = (distance(cursorPos, pixelCoord) - 0.1) / 5; // increasing color from center
+	float blue = (distance(cursorPos, pixelCoord) - 0.1) / 3; // increasing color from center
 	return vec3(red, green, blue);
 }
 

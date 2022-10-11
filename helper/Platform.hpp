@@ -5,6 +5,9 @@
 #include "IO.hpp";
 #include "Controls.hpp";
 
+#define DISABLE_CURSOR_UPDATE 0
+#define ENABLE_CURSOR_UPDATE 1
+
 struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;
@@ -27,8 +30,8 @@ struct Platform {
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){
-        xCursorPos = BAD_CURSOR_POS;
-		yCursorPos = BAD_CURSOR_POS;
+        xCursorPos = INVALID_CURSOR_POS;
+		yCursorPos = INVALID_CURSOR_POS;
     }
     
     NATIVE_PLATFORM_CONTEXT _context;

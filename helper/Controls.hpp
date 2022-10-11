@@ -35,9 +35,9 @@ private:
 
 // Mouse
 
-#define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
-#define MAX_CURSOR_POS 1.0f
-#define MIN_CURSOR_POS -1.0f
+#define INVALID_CURSOR_POS -10.0f // indicates that cursor is off the screen
+#define MAX_CURSOR_BOUND 1.0f
+#define MIN_CURSOR_BOUND -1.0f
 
 enum MOUSE_Button {
     MOUSE_LeftBtn_Down,
@@ -64,7 +64,7 @@ struct Input_CursorRange {
         yMin = (yRange[0] < yRange[1])? yRange[0] : yRange[1]; yMax = (yRange[0] > yRange[1])? yRange[0] : yRange[1]; // setting min and max y values
     }
     static float clamp(float val){
-        if(val > MAX_CURSOR_POS) val = MAX_CURSOR_POS; else if(val < MIN_CURSOR_POS) val = MIN_CURSOR_POS;
+        if(val > MAX_CURSOR_BOUND) val = MAX_CURSOR_BOUND; else if(val < MIN_CURSOR_BOUND) val = MIN_CURSOR_BOUND;
 		return val;
     }
     float xMin; float xMax;

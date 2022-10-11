@@ -363,8 +363,9 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 		srcOffset += pitch; // resource.RowPitch;
 		dstOffset += image->width;
 	}
-
 	_deviceCtx->Unmap(framebuffTex, 0);
+
+	switchRB(image->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // edits
 	return image;
 }
 
