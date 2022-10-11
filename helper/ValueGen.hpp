@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "Maths.h"
+#include "maths.h"
 
 // Data Operations
 

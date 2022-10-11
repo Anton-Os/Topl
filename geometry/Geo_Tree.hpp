@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Geometry.hpp"
-// #include "Timer.hpp"
 
 #include "Topl_Scene.hpp"
 

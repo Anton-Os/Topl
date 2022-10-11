@@ -1,10 +1,14 @@
+// Values
+
 struct PS_INPUT {
+	uint actorID : ACTOR;
 	float4 pos : SV_POSITION;
 	uint2 screenRes : RESOLUTION;
 	float2 cursorPos : CURSOR;
 	uint mode : MODE;
-	uint id : ACTOR;
 };
+
+// Functions
 
 /* float3 quadTest(float2 pixelCoord){
 	if(pixelCoord.x > 0.5 & pixelCoord.y > 0.0) return float3(1.0f, 0.0f, 0.0f);
@@ -33,23 +37,23 @@ float3 mandlebrot(uint2 screenRes, float2 pixelCoord){
 		iter++;
 	}
 
-	// Custom Colors
-	if(iter < max_iters) return float3(1.0f / iter, 2.5f / iter, 1.0f / iter);
+	if(iter < max_iters) return float3(1.0f / iter, 2.5f / iter, 1.0f / iter); // custom colors
 	else return float3(0.0f, 0.0f, 0.0f); // black pixel
 }
-
 
 float3 mandlebulb(uint2 screenRes, float2 pixelCoord){
 	return float3(0.0f, 0.0f, 1.0f); // placeholder
 }
 
+// Main
+
 float4 main(PS_INPUT input) : SV_TARGET{
-	// Include effects here
+	// effects go here
 	float2 pixelCoordsAdj = float2(input.pos.x / input.screenRes.x, input.pos.y / input.screenRes.y); 
 	float2 pixelOffset = float2(-0.25f, -0.25f);
 
-	if(input.mode == 0) return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f); // cursor mode
-	else if (input.mode == 1) return float4(mandlebrot(input.screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
-	else return float4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported
-	// return float4(quadTest(pixelCoordsAdj), 1.0f);
+	if(input.mode == 1) 
+		return float4(mandlebrot(input.screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
+	else 
+		return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f); // cursor mode // default
 }

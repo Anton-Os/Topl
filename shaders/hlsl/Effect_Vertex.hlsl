@@ -1,5 +1,7 @@
+// Values
+
 cbuffer CONST_BLOCK : register(b0) {
-	uint id;
+	uint actorID;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -14,12 +16,14 @@ struct VS_INPUT {
 };
 
 struct VS_OUTPUT {
+	uint actorID : ACTOR;
 	float4 pos : SV_POSITION;
 	uint2 screenRes : RESOLUTION;
 	float2 cursorPos : CURSOR;
 	uint mode: MODE;
-	uint id : ACTOR;
 };
+
+// Main
 
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
@@ -31,7 +35,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	output.screenRes = screenRes;
 	output.cursorPos = cursorPosAdj; // adjusted coordinates
 	output.mode = mode;
-	output.id = id;
+	output.actorID = actorID;
 
 	return output;
 }

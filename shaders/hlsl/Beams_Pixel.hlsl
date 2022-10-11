@@ -1,3 +1,5 @@
+// Values
+
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 lampLight_pos: POSITION; // make sure lamp light position is correct
@@ -9,10 +11,10 @@ struct PS_INPUT {
 	uint mode : MODE;
 };
 
+// Main
+
 float4 main(PS_INPUT input) : SV_TARGET{
-	if(input.mode == 0) // light mode
-		return float4(input.ambient + input.diffuse, 1.0f);
-	else if(input.mode == 1){ // alternate mode
+	if(input.mode == 1){ // alternate mode
 		float3 light_color = input.specular;
 		return float4(light_color, 1.0f);
 	} else if(input.mode == 2){ // depth mode
@@ -20,5 +22,5 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 		// return float4(pos, 1.0f);
-	} else return float4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported
+	} else return float4(input.ambient + input.diffuse, 1.0f); // light mode // default
 }

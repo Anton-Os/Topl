@@ -1,12 +1,12 @@
 #ifndef GEOMETRY_H
 
-#include "Maths.h"
+#include "maths.h"
+
+// Vertices
 
 #define POSITION_COUNT 3
 #define NORMALS_COUNT 3
 #define TEXCOORD_COUNT 2
-
-// Vertices
 
 enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
 

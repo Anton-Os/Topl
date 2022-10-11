@@ -3,10 +3,10 @@
 #include <map>
 
 #include "support_def.h"
+#include "physics.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
-#include "Physics.h"
 
 #ifdef RASTERON_H
 #include "Topl_Images.h"

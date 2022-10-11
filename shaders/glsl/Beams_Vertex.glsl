@@ -1,9 +1,11 @@
 #version 440
 
+// Values
+
 layout(std140, binding = 0) uniform Block {
-	vec3 offset; // padded to vec4
-	vec2 rotation; // padded to vec4
-	// vec4 color;
+	// uint actorID
+	vec3 offset;
+	vec2 rotation;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
@@ -26,6 +28,8 @@ layout(location = 2) out vec3 ambient_out;
 layout(location = 3) out vec3 diffuse_out;
 layout(location = 4) out vec3 specular_out;
 // layout(location = 3) out vec4 lampShine_out;
+
+// Functions
 
 vec3 reflect(vec3 light, vec3 target){
 	return light - ((2 * dot(light, normalize(target)) * normalize(target))); 
@@ -81,6 +85,8 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 
 	return camMatrix;
 }
+
+// Main
 
 void main() {
 	// Value Shadings

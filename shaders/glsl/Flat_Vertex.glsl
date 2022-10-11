@@ -1,6 +1,9 @@
 #version 440
 
+// Values
+
 layout(std140, binding = 0) uniform Block {
+	// uint actorID
 	vec4 color;
 	vec3 offset;
 	vec2 rotation;
@@ -17,6 +20,8 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
 layout(location = 0) out vec4 flatColor_out;
+
+// Functions
 
 mat3 calcRotMatrix(vec2 rotCoords){
 	mat3 zRotMatrix = mat3(
@@ -49,7 +54,9 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 	);
 
 	return camMatrix;
-}
+} 
+
+// Main
 
 void main() {
 	vec3 transCoords = pos + offset;
@@ -59,12 +66,11 @@ void main() {
 	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos); // no projection
 	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 
-	if(mode == 0) flatColor_out = color; // solid mode
-	else if(mode == 1) // alternate mode
+	if(mode == 1) // alternate mode
 		if(gl_VertexID % 4 == 0) flatColor_out = vec4(1.0f, 0.0, 0.0f, color.a); // red
 		else if(gl_VertexID % 4 == 1) flatColor_out = vec4(0.0f, 1.0f, 0.0f, color.a); // green
 		else if(gl_VertexID % 4 == 2) flatColor_out = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
 		else flatColor_out = vec4(0.0f, 0.0f, 0.0f, color.a); // black
 	// else if(mode == 2)
-	else flatColor_out = vec4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
+	else flatColor_out = color; // solid mode // default
 }

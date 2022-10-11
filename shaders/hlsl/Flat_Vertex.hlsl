@@ -1,4 +1,7 @@
+// Values
+
 cbuffer CONST_BLOCK : register(b0) {
+	// uint actorID;
 	float4 color;
 	float3 offset;
 	float2 rotation;
@@ -19,6 +22,8 @@ struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	float4 flatColor : COLOR0;
 };
+
+// Functions
 
 float3x3 calcRotMatrix(float2 rotCoords){
 	float3x3 zRotMatrix = {
@@ -53,6 +58,8 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 	return camMatrix;
 }
 
+// Main
+
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
@@ -62,10 +69,9 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
-	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos); // projection
 	
-	if(mode == 0) output.flatColor = color; // solid mode
-	else if(mode == 1) { // alternate mode
+	if(mode == 1) { // alternate mode
 		switch(vertexID % 4){
 			case 0: output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f); break; // substract blue
 			case 1: output.flatColor = float4(1.0f, 0.0f, 1.0f, 0.8f); break; // substract green
@@ -73,8 +79,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 			case 3: output.flatColor = float4(1.0f, 1.0f, 1.0f, 0.8f); break; // white
 		}
 	}
-	// else if(mode == 2)
-	else output.flatColor = float4(1.0f, 0.0f, 0.0f, 1.0f); // mode not supported!
+	else output.flatColor = output.flatColor = color; // solid mode // default
 
 	return output;
 }

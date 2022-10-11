@@ -1,6 +1,7 @@
-// #include "Utility.hlsl"
+// Values
 
 cbuffer CONST_BLOCK : register(b0) {
+	// uint actorID;
 	float3 offset;
 	float2 rotation;
 }
@@ -31,6 +32,8 @@ struct VS_OUTPUT {
 	uint mode : MODE;
 };
 
+// Functions
+
 float sharpen(float intensity, uint curve){
 	const float scale = 5.0f;
 
@@ -54,7 +57,6 @@ float calcDiffuseIntensity(float3 light, float3 target){
 	// return intensity;
 	return intensity * attenuation;
 }
-
 
 float3x3 calcRotMatrix(float2 rotCoords){
 	float3x3 zRotMatrix = {
@@ -89,6 +91,8 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 	return camMatrix;
 }
 
+// Main
+
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
@@ -100,7 +104,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
 	output.pos = mul(final_pos, cameraMatrix); // no projection
-	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos);
+	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos); // projection
 	output.lampLight_pos = lampLight_pos;
 
 	// Light Source Shadings
