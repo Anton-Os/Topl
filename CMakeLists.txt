@@ -41,6 +41,8 @@ list(APPEND geometry_src
     geometry/Geo_Tree.cpp
 	geometry/trees/Geo_Sequence.cpp
     geometry/trees/Geo_Grid.cpp
+    geometry/trees/Pane.cpp
+    geometry/trees/Humanoid.cpp
 )
 if(Assimp_FOUND)
     list(APPEND geometry_src
@@ -50,8 +52,9 @@ if(Assimp_FOUND)
 endif()
 
 list(APPEND core_src
-    core/Topl_Renderer.cpp
+    # core/Topl_App.cpp
     # core/Topl_Factory.cpp
+    core/Topl_Renderer.cpp
 
     core/Topl_Scene_Statics.cpp
     core/Topl_Scene_Dynamics.cpp
@@ -70,18 +73,27 @@ add_library(CORELIB # Core Library
     ${helper_src}
     ${core_src}
 )
-target_include_directories(CORELIB PUBLIC core helper geometry)
+target_include_directories(CORELIB PRIVATE core helper geometry)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+target_include_directories(CORELIB
+    INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
 
 if(WIN32)
-    target_include_directories(CORELIB PUBLIC "${RESOURCE_DIR}") # resource file header
+    target_include_directories(CORELIB PRIVATE "${RESOURCE_DIR}") # resource file header
     target_sources(CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
 elseif(UNIX)
     target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})
 endif()
 
 add_library(GEOLIB ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PUBLIC core helper geometry)
+target_include_directories(GEOLIB PRIVATE core helper geometry)
+target_include_directories(GEOLIB INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
 
 if(Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
@@ -100,7 +112,11 @@ if(WIN32)
         core/directx/Topl_Pipeline_Drx11.cpp
         core/directx/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PUBLIC core helper geometry shaders/include)
+    target_include_directories(Drx11_ENGINE PRIVATE core helper geometry)
+    target_include_directories(Drx11_ENGINE INTERFACE
+        $<BUILD_INTERFACE:${interfaceHeaders}>
+        $<INSTALL_INTERFACE:include/Topl>
+    )
     set_target_properties(Drx11_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 endif()
 
@@ -112,7 +128,11 @@ if(Vulkan_FOUND)
         core/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(Vulkan_ENGINE PUBLIC core helper geometry shaders/include)
+    target_include_directories(Vulkan_ENGINE PRIVATE core helper geometry)
+    target_include_directories(Vulkan_ENGINE INTERFACE
+        $<BUILD_INTERFACE:${interfaceHeaders}>
+        $<INSTALL_INTERFACE:include/Topl>
+    )
     target_link_libraries(Vulkan_ENGINE PUBLIC ${Vulkan_LIBRARIES})
     # set_target_properties(Vulkan_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 endif()
@@ -123,7 +143,11 @@ add_library(GL4_ENGINE
     core/opengl/Topl_Pipeline_GL4.cpp
     core/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PUBLIC core helper geometry shaders/include)
+target_include_directories(GL4_ENGINE PRIVATE core helper geometry)
+target_include_directories(Drx11_ENGINE INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 # set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
@@ -141,6 +165,9 @@ if(Vulkan_FOUND)
 endif()
 
 foreach(target IN ITEMS ${engine_targets})
+    if(WIN32)
+        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
+    endif()
     target_link_libraries(${target} PUBLIC CORELIB GEOLIB) # linking Topl libraries
 endforeach()
 
@@ -152,46 +179,43 @@ include("cmake/runTests.cmake")
 # Modern Demos and Tests
 
 add_executable(App_Playground
-    geometry/trees/Humanoid.cpp
-    geometry/trees/Pane.cpp
+    core/Topl_App.cpp # move to CORELIB
+    core/Topl_Factory.cpp # move to CORELIB
 
-    core/Topl_Factory.cpp
-    core/Topl_App.cpp
     demos/Playground.cpp
 )
-target_link_libraries(App_Playground PRIVATE ${engine_targets})
 
 add_executable(App_Splitscreen
-    core/Topl_Factory.cpp
-    core/Topl_App.cpp
+    core/Topl_App.cpp # move to CORELIB
+    core/Topl_Factory.cpp # move to CORELIB
+
     demos/Splitscreen.cpp
 )
-target_link_libraries(App_Splitscreen PRIVATE ${engine_targets})
-
 add_executable(App_Animotion
-    core/Topl_Factory.cpp
-    core/Topl_App.cpp
+    core/Topl_App.cpp # move to CORELIB
+    core/Topl_Factory.cpp # move to CORELIB
+
     demos/Animotion.cpp
 )
-target_link_libraries(App_Animotion PRIVATE ${engine_targets})
-
 
 # add all demo targets to a list
 list(APPEND demo_targets App_Playground App_Splitscreen App_Animotion)
 
-if(WIN32) # adding resource file to demos
-   foreach(target IN ITEMS ${demo_targets})
-       target_include_directories(${target} PUBLIC "${RESOURCE_DIR}")
-       target_sources(${target} PRIVATE "${RESOURCE_FILE}")
-   endforeach()
-endif()
+foreach(target IN ITEMS ${demo_targets})
+    target_include_directories(${target} PRIVATE core helper geometry shaders)
+    target_link_libraries(${target} PRIVATE ${engine_targets} CORELIB)
+    if(WIN32) # adding resource file to demos
+        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
+        target_sources(${target} PRIVATE "${RESOURCE_FILE}")
+    endif()
+endforeach()
 
 # -------------- Custom Targets ------------- #
 # Copying and managing implemented here with custom targets
 
-file(GLOB gl4_Shaders ${SHADERS_DIR}/glsl/*.glsl)
-file(GLOB drx11_Shaders ${SHADERS_DIR}/hlsl/*.hlsl)
-add_custom_target(ShaderEdit SOURCES ${gl4_Shaders} ${drx11_Shaders})
+file(GLOB gl4_shaders ${SHADERS_DIR}/glsl/*.glsl)
+file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
+add_custom_target(ShaderEdit SOURCES ${gl4_shaders} ${drx11_shaders})
 
 add_dependencies(ShaderEdit GL4_ENGINE)
 if(WIN32)
@@ -200,7 +224,7 @@ endif()
 if(Vulkan_FOUND)
     find_file(glslc_exec "glslc" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
     # if(NOT ${glslc_exec} EQUAL "glslc_exec-NOTFOUND")
-        # foreach(shader IN ITEMS ${gl4_Shaders})
+        # foreach(shader IN ITEMS ${gl4_shaders})
             # Compile shaders to spirv and store in binary directory
         #endforeach()
     #endif()
@@ -222,7 +246,8 @@ file(GLOB_RECURSE interfaceHeaders
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
 )
 
-# install(FILES ${interfaceHeaders} DESTINATION include/Topl)
-# install(EXPORT Topl DESTINATION lib/Topl FILE ToplConfig.cmake)
+install(FILES ${interfaceHeaders} DESTINATION include/Topl)
+install(EXPORT Topl DESTINATION lib/Topl FILE ToplConfig.cmake)

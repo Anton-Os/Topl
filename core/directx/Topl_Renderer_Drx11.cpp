@@ -224,23 +224,14 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	// Rasterizer State creation
 
-	/* D3D11_RASTERIZER_DESC rasterizerStateDesc;
+	D3D11_RASTERIZER_DESC rasterizerStateDesc;
 	ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerStateDesc.CullMode = D3D11_CULL_FRONT;
-	rasterizerStateDesc.FrontCounterClockwise = true;
-	rasterizerStateDesc.DepthBias = false;
-	rasterizerStateDesc.DepthBiasClamp = 0;
-	rasterizerStateDesc.SlopeScaledDepthBias = 0;
-	rasterizerStateDesc.DepthClipEnable = true;
-	rasterizerStateDesc.ScissorEnable = true;
-	rasterizerStateDesc.MultisampleEnable = true;
-	rasterizerStateDesc.AntialiasedLineEnable = false;
-	// rasterizerStateDesc.ForcedSampleCount = 0;
+	rasterizerStateDesc.CullMode = D3D11_CULL_NONE; // disable culling
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
-	_deviceCtx->RSSetState(_rasterizerState); */
+	_deviceCtx->RSSetState(_rasterizerState);
 
 	setViewport(&_defaultViewport); // Viewport Creation
 }

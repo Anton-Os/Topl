@@ -61,18 +61,8 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	}
 protected:
 	Vec4f genFlatColor(const Geo_Actor* const actor) const {
-		const unsigned id = 0; // actor->getId();
-		float colorInc = (float)((id / 6) * FLAT_COLOR_INC);
-		switch(id % 7){
-			case 0: return Vec4f({ colorInc, 1.0f, 1.0f, _alphaVal }); // cyan to white
-			case 1: return Vec4f({ 1.0f - colorInc, 0.0f, 0.0f, _alphaVal }); // red to black
-			case 2: return Vec4f({ 1.0f, colorInc, 1.0f, _alphaVal }); // magenta to white
-			case 3: return Vec4f({ 0.0f, 1.0f - colorInc, 0.0f, _alphaVal }); // green to black
-			case 4: return Vec4f({ 1.0f, 1.0f, colorInc, _alphaVal }); // yellow to white
-			case 5: return Vec4f({ 0.0f, 0.0f, 1.0f - colorInc, _alphaVal }); // blue to black
-			case 6: return Vec4f({ colorInc, colorInc, colorInc, _alphaVal }); // greyscale
-			default: return Vec4f({ 1.0f, 1.0f, 1.0f, _alphaVal }); // semi-transparent white
-		}
+		// TODO: Get corresponding id from actor
+		return Vec4f({ 1.0f, 1.0f, 1.0f, _alphaVal }); // default value
 	}
 
 	unsigned _mode = FLAT_MODE_SOLID;

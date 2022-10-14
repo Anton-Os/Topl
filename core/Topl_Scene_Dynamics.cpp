@@ -1,6 +1,6 @@
 #include "Topl_Scene.hpp"
 
-// Recomputes connector attributes
+// recomputes connector attributes
 static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, const Vec3f& pos2){
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
 	connector->length = linkDiff.len();
@@ -11,7 +11,7 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 	connector->angleVecn2.normalize();
 }
 
-// Scene Builder implementation code
+// Scene Dynamics
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	// Find matching geometry component

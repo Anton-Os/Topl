@@ -58,7 +58,7 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos) {
 
 void main() {
 	vec3 rotCoords = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, pos.z, 1.0f);
+	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
 
 	gl_Position = final_pos + (vec4(offset, 0.0f) * projMatrix);
 	texcoord_out = texcoord;

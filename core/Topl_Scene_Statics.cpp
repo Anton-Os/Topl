@@ -1,6 +1,6 @@
 #include "Topl_Scene.hpp"
 
-// Scene Manager implementation code
+// Scene Statics
 
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
 	if(index >= _geoActors.size()) return nullptr; // Error

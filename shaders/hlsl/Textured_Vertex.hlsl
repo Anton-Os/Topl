@@ -63,7 +63,7 @@ VS_OUTPUT main(VS_INPUT input) {
 	VS_OUTPUT output;
 
 	float3 rotCoords = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(rotCoords.x, rotCoords.y, input.pos.z, 1.0);
+	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
 	output.pos += mul(projMatrix, offset);
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);

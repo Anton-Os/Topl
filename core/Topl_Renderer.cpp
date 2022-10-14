@@ -81,7 +81,7 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
     Rasteron_Image* image = frame();
-    unsigned offset = getPixCursorOffset(pixPoint, image);
+    unsigned offset = getPixOffset(pixPoint, image);
     unsigned color = *(image->data + offset);
     deleteImg(image);
     return color; // return color computed at offsets

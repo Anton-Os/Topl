@@ -15,8 +15,6 @@
 #define PLAYGROUND_SPHERES_COUNT 6
 #define PLAYGROUND_PANE_COUNT 9
 
-#define HUMANOID_SCALE 0.25f
-
 std::string ghostAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::imagesPath + "Ghost-Head.png",
 	Topl_App::imagesPath + "Ghost-LeftArm.png",
@@ -74,8 +72,8 @@ private:
 	Geo_Humanoid2D ghost = Geo_Humanoid2D("ghost", ghostAssets);
 	Geo_Humanoid2D angel = Geo_Humanoid2D("angel", angelAssets);
 	Geo_Humanoid2D demon = Geo_Humanoid2D("demon", demonAssets);
-	// Geo_Humanoid2D demon, angel, ghost;
 	// Geo_Humanoid3D avatar;
+	Phys_Connector ghostAnchor;
 
 	// Overlay Scene Elements
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
@@ -83,7 +81,7 @@ private:
 
 	// Detail Scene Elements
 	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.2f); 
-	Geo_ConicHex cone2 = Geo_ConicHex(0.2f, Vec3f({ 0.1f, 0.5f, -0.2f }));
+	Geo_ConicHex cone2 = Geo_ConicHex(0.2f, Vec3f({ 0.1f, 0.1f, 0.3f }));
 	Geo_Actor coneActor1 = Geo_Actor((Geo_RenderObj*)&cone1);
 	Geo_Actor coneActor2 = Geo_Actor((Geo_RenderObj*)&cone2);
 	// Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
@@ -104,7 +102,7 @@ private:
 	// Shaders and Pipelines
 
 	Topl_Pipeline *colPipeline, *texPipeline, *litPipeline;
-	Topl_Pipeline* advancePipeline;
+	Topl_Pipeline* advPipeline; // advanced pipeline
 
 	Textured_VertexShader vertexShader1; Textured_FragmentShader fragShader1;
 	Flat_VertexShader vertexShader2; Flat_FragmentShader fragShader2;

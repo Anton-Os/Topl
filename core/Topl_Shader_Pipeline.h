@@ -7,13 +7,15 @@
 #include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
+
 #include "Topl_Scene.hpp"
+
+// Values and Types
 
 enum SHDR_Type {
     SHDR_Vertex,
     SHDR_Fragment,
-    SHDR_Compute, // Compute shader, implement later
-    SHDR_Geom, // Geometry shader, implement later
+    SHDR_Geom,
     SHDR_TessCtrl,
     SHDR_TessEval
 };
@@ -46,12 +48,12 @@ struct Shader_Type {
     SHDR_ValueType type;
 };
 
-// Shader Definition
+// Shader
 
 class Topl_Shader {
 public:
     Topl_Shader(){} // Blank Constructor
-    Topl_Shader( // Named Constructor
+    Topl_Shader( // Filename Constructor
 		enum SHDR_Type type, 
 		std::string fileSrc
     ){    
@@ -60,6 +62,16 @@ public:
 		_shaderFileSrc = SHADERS_DIR + fileSrc;
 		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
     }
+	/* Topl_Shader( // Renderer Instance Contructor
+		enum SHDR_Type type,
+		std::string fileSrc,
+		const Topl_Renderer *const renderer
+	) {
+		_shaderType = type;
+		_shaderFileSrc = fileSrc;
+		_shaderFileSrc = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+	} */
     enum SHDR_Type getType() const { return _shaderType; }
     const char* getFilePath() const { return _shaderFileSrc.c_str(); }
 protected:
@@ -74,7 +86,7 @@ protected:
 class Topl_EntryShader : public Topl_Shader {
 public:
     Topl_EntryShader() : Topl_Shader(){} // Blank Constructor
-    Topl_EntryShader( // Named Constructor
+    Topl_EntryShader( // Filename Constructor
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs
 	) : Topl_Shader(SHDR_Vertex, fileSrc){ 
@@ -91,7 +103,7 @@ private:
     std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };
 
-struct Topl_ExitShader : public Topl_Shader {
+/* struct Topl_ExitShader : public Topl_Shader {
     Topl_ExitShader() // Blank Constructor
 		: Topl_Shader(), isTexSupport(false), isMatSupport(false) {}
     Topl_ExitShader(std::string& fileSrc) // Named Constructor
@@ -101,12 +113,12 @@ struct Topl_ExitShader : public Topl_Shader {
 
     const bool isTexSupport; // enable for texture support
     const bool isMatSupport; // enable for material support
-};
+}; */
 
 typedef const Topl_EntryShader* entry_shader_cptr;
 typedef const Topl_Shader* shader_cptr;
 
-// Pipeline Defintition
+// Pipeline
 
 struct Topl_Pipeline {
     Topl_Pipeline(){}

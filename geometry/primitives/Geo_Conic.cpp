@@ -3,14 +3,12 @@
 void Geo_Conic::genPos(Vec3f* data){
 	const double angle = (MATH_PI * 2) / _shape2D.segments;
 	const float radius = _shape2D.radius * RADIAL_UNITS;
-	// const double startAngle = fullAngle / 4; // start at 90 degrees, pointing vertically
 
     Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
     *(data + 0) = centerVertex; // first vertex is the center vertex
-	Vec3f apexVertex = _apex + Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
-	*(data + _vertexCount - 1) = apexVertex;
+	*(data + _vertexCount - 1) = _apex; // last vertex is the apex vertex
 
-	for (unsigned v = 1; v < _vertexCount; v++)
+	for (unsigned v = 1; v < _vertexCount - 1; v++)
 		*(data + v) = Vec3f({
 			(float)sin(_startAngle + (v * angle)) * radius,
 			(float)cos(_startAngle + (v * angle)) * radius,
@@ -22,8 +20,8 @@ void Geo_Conic::genNormals(Vec3f* data){
 	Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
 	Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
 
-	*(data + _vertexCount - 1) = backNormalVec; // back facing normal 
-	for(unsigned v = 1; v < _vertexCount; v++) *(data + v) = frontNormalVec;
+	for(unsigned v = 0; v < _vertexCount - 1; v++) *(data + v) = frontNormalVec; // front facing normal for base
+	*(data + _vertexCount - 1) = backNormalVec; // back facing normal for apex
 }
 
 void Geo_Conic::genTexCoords(Vec2f* data) {
@@ -40,7 +38,8 @@ void Geo_Conic::genTexCoords(Vec2f* data) {
 
 void Geo_Conic::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
-	// Indexing FRONT FACE
+
+	// Indexing BASE
 	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
 
 	for (i = 0; i < _indicesCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
@@ -50,22 +49,22 @@ void Geo_Conic::genIndices(unsigned* data){
 		currentVertex++;
 	}
 
-	// special case, connect to first vertex
+	// special case
 	*(data + i + 0) = 0; // center point
 	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point in sequence
 
-	// Indexing APEX connection
+	// Indexing APEX
 	currentVertex = 1; // currentVertex needs to reset!
 	for(i = _indicesCount / 2; i < _indicesCount - 3; i += 3){ // iterate to the end minus 1 trig
 		*(data + i + 0) = _vertexCount - 1; // apex point
 		*(data + i + 1) = currentVertex + 1; // connect to next vertex
-		*(data + i + 1) = currentVertex; // target vertex
+		*(data + i + 2) = currentVertex; // target vertex
 		currentVertex++;
 	}
 
-	// special case, connect to first vertex
-	*(data + i + 0) = _indicesCount - 1; // apex point
+	// special case
+	*(data + i + 0) = _vertexCount - 1; // apex point
 	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point in sequence
 }

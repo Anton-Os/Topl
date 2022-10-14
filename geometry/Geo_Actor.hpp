@@ -1,6 +1,10 @@
 #ifndef GEO_ACTOR_H
 
+#include "physics.h"
+
 #include "Geometry.hpp"
+
+// Actor
 
 #define DEFAULT_ACTOR_NAME "actor"
 
@@ -26,6 +30,7 @@ public:
 	vec2f_cptr_t getRot() const { return &_rotation; }
 	Vec2f getRotation() const { return _rotation; }
 private:
+	// unsigned renderID;
 	std::string _name = DEFAULT_ACTOR_NAME;
 
 	// Data Types
@@ -35,6 +40,23 @@ private:
 };
 
 typedef const Geo_Actor* const actor_cptr;
+
+// Links and Anchors
+
+typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
+typedef std::pair<const Geo_Actor*, const Vec3f*> anchor_pair;
+
+struct LinkedItems { // Wrapper around connector with 2 actors being linked
+	Phys_Connector* connector;
+	link_pair linkedItems;
+};
+typedef const LinkedItems* const linkedItems_cptr;
+
+struct AnchoredItems { // Wrapper around connector with 1 actor being anchored
+	Phys_Connector* connector;
+	anchor_pair anchoredItems;
+};
+typedef const AnchoredItems* const anchorItem_cptr;
 
 #define GEO_ACTOR_H
 #endif

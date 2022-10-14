@@ -60,10 +60,10 @@ void Geo_Extruded::genTexCoords(Vec2f* data) {
 
 void Geo_Extruded::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
+
 	// Indexing FRONT FACE
-	unsigned v = 1; // starting from index 1, which is the rightmost point
-	// for (i = 0; i < (_indicesCount / 2) - 3; i += 3) { // iterate to all but last trig!!!
-	for (i = 0; i < (_indicesCount / 4) - 3; i += 3) { // iterate to all but last trig!!!
+	unsigned v = 1;
+	for (i = 0; i < (_indicesCount / 4) - 3; i += 3) {
 		*(data + i + 0) = 0; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
@@ -71,14 +71,13 @@ void Geo_Extruded::genIndices(unsigned* data){
 		v++;
 	}
 
-	// special case, last trig
+	// special case
 	*(data + i + 0) = 0;
 	*(data + i + 1) = v;
-	*(data + i + 2) = 1; // connect back to first point of FRONT FACE
+	*(data + i + 2) = 1;
 
 	// Indexing BACK FACE
-	v = _vertexCount / 2 + 1; // target the first edge vertex of the back face
-	// for (i = _indicesCount / 2; i < _indicesCount - 3; i += 3) { // iterate to all but last trig!!!
+	v = _vertexCount / 2 + 1;
 	for (i = _indicesCount / 4; i < (_indicesCount / 2) - 3; i += 3) {
 		*(data + i + 0) = _vertexCount / 2; // origin point
 		*(data + i + 1) = v; // take the start vertex
@@ -87,14 +86,13 @@ void Geo_Extruded::genIndices(unsigned* data){
 		v++;
 	}
 
-	// special case, last trig
+	// special case
 	*(data + i + 0) = _vertexCount / 2; // center point of BACK FACE
 	*(data + i + 1) = v;
 	*(data + i + 2) = _vertexCount / 2 + 1; // connect back to first point of BACK FACE
 
 	// Indexing SIDE FACES
-	
-	v = 1; // starting from index 1 which is a corner point
+	v = 1;
 	for (i = _indicesCount / 2; i < _indicesCount - 6; i += 6) {
 		*(data + i + 0) = v;
 		*(data + i + 2) = v + (_vertexCount / 2) + 1;
@@ -107,10 +105,12 @@ void Geo_Extruded::genIndices(unsigned* data){
 		v++; // increment current vertex
 	}
 
+	// special case
 	*(data + i + 0) = 1;
 	*(data + i + 1) = (_vertexCount / 2) + 1;
 	*(data + i + 2) = (_vertexCount / 2) - 1;
 
+	// special case
 	*(data + i + 3) = _vertexCount - 1;
 	*(data + i + 4) = (_vertexCount / 2) - 1;
 	*(data + i + 5) = (_vertexCount / 2) + 1;

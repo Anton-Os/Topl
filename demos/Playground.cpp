@@ -13,8 +13,20 @@
 Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.0 + (1.0 / VIEW_SPACE));
 
-void press(float x, float y) { puts("Mouse Press"); }
-void release(float x, float y) { puts("Mouse Release"); }
+static unsigned hoverColor = ZERO_COLOR;
+static Vec3f displaceVec = { 0.0f, 0.0f, 0.0f };
+static Vec3f pawnVec = { 0.0f , 0.0f, 0.0f };
+
+void callback_press(float x, float y) {
+	if (hoverColor == (CLEAR_COLOR_HEX & 0x00FFFFFF)) puts("\nBackground pressed!");
+	else puts("\nObject pressed!");
+}
+void callback_release(float x, float y) { 
+	printf("Displacement is %6.4lf, %6.4lf ", x, y);
+	displaceVec = { x, y, 0.0f }; 
+}
+
+void callback_pane(unsigned short num) { printf("pane %d callback_pressed!", num); }
 
 void Playground_App::genShaderPipeline() {
 	if (APP_BACKEND == APP_OpenGL_4) {
@@ -45,10 +57,11 @@ void Playground_App::createScene_Main() {
 	// demon.configure(&scene_main);
 	// angel.configure(&scene_main);
 
+	// scene_main.addAnchor(&ghostAnchor, "ghost_body", &ghost.getOrigin());
 	demon.move({ -0.5f, 0.0f, 0.0f });
 	angel.move({ 0.5f, 0.0f, 0.0f });
 
-	scene_main.addGeometry(&heightmapActor); // TODO: Get this to work!
+	// scene_main.addGeometry(&heightmapActor); // TODO: Get this to work!
 
 	// Build Scene
 	_renderer->buildScene(&scene_main);
@@ -90,11 +103,8 @@ void Playground_App::createScene_Details() {
 	scene_details.addTexture("Cone2", image);
 
 	std::fill_n(sphereActors, PLAYGROUND_SPHERES_COUNT, ((Geo_RenderObj*)&sphere));
-	for (unsigned short s = 0; s < PLAYGROUND_SPHERES_COUNT; s++) {
+	for (unsigned short s = 0; s < PLAYGROUND_SPHERES_COUNT; s++)
 		sphereActors[s].setPos({ (s * 0.2f) - 0.5f, (s % 2) * 0.05f, s * 0.15f });
-		// scene_details.addTexture("sphere" + std::to_string(s), createSolidImg({ 1024, 1024 }, genRandColor()));
-		// scene_details.addGeometry("sphere" + std::to_string(s), &sphereActors[s]);
-	}
 
 	// Build Scene
 	_renderer->buildScene(&scene_details);
@@ -105,14 +115,15 @@ void Playground_App::init() {
 
 	// Events and Callbacks
 
-	Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, press);
-	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, press);
-	Platform::mouseControl.addCallback(MOUSE_RightBtn_Up, release);
-	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, release);
+	Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, callback_press);
+	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, callback_press);
+	Platform::mouseControl.addCallback(MOUSE_RightBtn_Up, callback_release);
+	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, callback_release);
 
 	// Geometries and Scene Elements
 
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
+	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
 
 	createScene_Overlay();
 	createScene_Main();
@@ -132,6 +143,7 @@ void Playground_App::loop(unsigned long frame) {
 	_renderer->updateScene(&scene_overlay);
 
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
+	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
 	_renderer->renderScene(&scene_main);
 	_renderer->renderScene(&scene_details);
 	_renderer->renderScene(&scene_overlay);
@@ -140,26 +152,29 @@ void Playground_App::loop(unsigned long frame) {
 }
 
 void Playground_App::preFrame() {
-	coneActor1.updateRot({ 0.003f, 0.0f });
-	coneActor2.updateRot({ -0.003f, 0.0f });
-
-	for (unsigned short s = 0; s < PLAYGROUND_SPHERES_COUNT; s++) {
-		// sphereActors[s].setPos({ (s * 0.2f) - 0.5f, (s % 2) * 0.05f, s * 0.15f });
-
-		if (rand() % 2 == 0) // random x update
-			if (rand() % 2 == 0) sphereActors[s].updatePos({ 0.001f * (rand() % 5), 0.0f, 0.0f });
-			else sphereActors[s].updatePos({ -0.001f * (rand() % 5), 0.0f, 0.0f });
-
-		if (rand() % 2 == 0) // random y update
-			if (rand() % 2 == 0) sphereActors[s].updatePos({ 0.0f, 0.001f * (rand() % 5), 0.0f });
-			else sphereActors[s].updatePos({ 0.0f, -0.001f * (rand() % 5), 0.0f });
-	}
+	coneActor1.updateRot({ 0.01f, -0.01f });
+	coneActor2.updateRot({ -0.01f, 0.01f });
+	
+	pawnVec = ghost.getOrigin();
+	scene_main.addForce("ghost_body", (displaceVec - pawnVec) * 20);
+	scene_main.addForce("ghost_head", (displaceVec - pawnVec) * 10);
+	scene_main.addForce("ghost_leftArm", displaceVec - pawnVec);
+	scene_main.addForce("ghost_rightArm", displaceVec - pawnVec);
+	scene_main.addForce("ghost_leftLeg", displaceVec - pawnVec);
+	scene_main.addForce("ghost_rightLeg", displaceVec - pawnVec);
+	scene_main.resolvePhysics();
 }
 
 void Playground_App::postFrame() {
-	// Draws Output to File
 	frameImage = _renderer->frame();
-	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage->height, frameImage->width, frameImage->data);
+	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage->height, frameImage->width, frameImage->data); // draw to output file
+
+	// TODO: Check if successful!
+	PixelPoint pixelPoint = { Platform::getCursorX(), Platform::getCursorY() };
+	if (pixelPoint.xFrac != INVALID_CURSOR_POS && pixelPoint.yFrac != INVALID_CURSOR_POS)
+		hoverColor = getPixColor_cursor(pixelPoint, frameImage);
+		// hoverColor = *(frameImage->data + getPixCursorOffset(pixelPoint, frameImage)); // computes color of cursor hover location
+
 	deleteImg(frameImage);
 }
 

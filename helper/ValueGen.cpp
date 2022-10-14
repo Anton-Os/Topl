@@ -1,24 +1,42 @@
 #include "ValueGen.hpp"
 
-SpatialBounds3D::SpatialBounds3D(float scaleFactor){
-    left *= scaleFactor;
-    right *= scaleFactor;
-    bottom *= scaleFactor;
-    top *= scaleFactor;
-    nearPlane *= scaleFactor;
-    farPlane *= scaleFactor;
-}
 
-SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, float f){
-    left = l; 
-    right = r;
-    bottom = b; 
-    top = t;
-    nearPlane = n; 
-    farPlane = f;
+// Numeric Operations
+
+unsigned genColorID(unsigned renderID) {
+	unsigned short colorInc = renderID / COLOR_ID_TYPES;
+
+	switch (renderID % COLOR_ID_TYPES) {
+	case 0: return 0xFFFFFFFF - ((colorInc << 16) + (colorInc << 8) + colorInc);
+	case 1: return 0xFFFFFFFF - ((colorInc << 8) + colorInc);
+	case 2: return 0xFFFFFFFF - ((colorInc << 16) + colorInc);
+	case 3: return 0xFFFFFFFF - ((colorInc << 16) + (colorInc << 8));
+	case 4: return 0xFFFFFFFF - colorInc;
+	case 5: return 0xFFFFFFFF - (colorInc << 8);
+	case 6: return 0xFFFFFFFF - (colorInc << 16);
+	}
 }
 
 // Data Operations
+
+SpatialBounds3D::SpatialBounds3D(float scaleFactor) {
+	left *= scaleFactor;
+	right *= scaleFactor;
+	bottom *= scaleFactor;
+	top *= scaleFactor;
+	nearPlane *= scaleFactor;
+	farPlane *= scaleFactor;
+}
+
+SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, float f) {
+	left = l;
+	right = r;
+	bottom = b;
+	top = t;
+	nearPlane = n;
+	farPlane = f;
+}
+
 
 void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
     targetBytes->clear();
@@ -40,7 +58,7 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
     alignDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
 }
 
-// Mathematic Operations
+// Transformation Operations
 
 static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
     Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88

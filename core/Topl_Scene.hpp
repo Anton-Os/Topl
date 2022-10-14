@@ -3,7 +3,6 @@
 #include <map>
 
 #include "support_def.h"
-#include "physics.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
@@ -12,23 +11,6 @@
 #include "Topl_Images.h"
 #endif
 #include "Geo_Actor.hpp"
-
-// Connectors
-
-typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
-typedef std::pair<const Geo_Actor*, const Vec3f*> anchor_pair;
-
-struct LinkedItems { // Wrapper around connector with 2 actors being linked
-	Phys_Connector* connector;
-	link_pair linkedItems;
-};
-typedef const LinkedItems* const linkedItems_cptr;
-
-struct AnchoredItems { // Wrapper around connector with 1 actor being anchored
-	Phys_Connector* connector;
-	anchor_pair anchoredItems;
-};
-typedef const AnchoredItems* const anchorItem_cptr;
 
 // Light
 

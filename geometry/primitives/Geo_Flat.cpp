@@ -35,7 +35,8 @@ void Geo_Flat::genTexCoords(Vec2f* data) {
 
 void Geo_Flat::genIndices(unsigned* data){
 	unsigned i; // increments as more indices are added
-	// Indexing FRONT FACE
+
+	// Indexing
 	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
 	for (i = 0; i < _indicesCount - 3; i += 3) { // iterate to all but last trig!!!
 		*(data + i + 0) = 0; // origin point
@@ -45,7 +46,7 @@ void Geo_Flat::genIndices(unsigned* data){
 		currentVertex++;
 	}
 
-	// special case, connect to first vertex
+	// special case
 	*(data + i + 0) = 0;
 	*(data + i + 1) = currentVertex;
 	*(data + i + 2) = 1; // connect back to first point
