@@ -1,14 +1,14 @@
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
-	// uint actorID
+	// uint renderID;
 	float3 offset;
 	float2 rotation;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	float4 look_pos;
 	float4 cam_pos;
+	float4 look_pos;
 	float4x4 projMatrix;
 }
 
@@ -65,6 +65,7 @@ VS_OUTPUT main(VS_INPUT input) {
 	float3 rotCoords = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
 	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
+	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
 	output.pos += mul(projMatrix, offset);
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 

@@ -1,4 +1,4 @@
-// #include "Topl_Image.hpp"
+// #include "image_type.hpp"
 
 #include "primitives/Geo_Sphere.hpp"
 #include "ShapesGen.hpp"

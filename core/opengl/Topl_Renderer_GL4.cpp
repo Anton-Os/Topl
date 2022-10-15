@@ -256,7 +256,7 @@ void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
 
-		const Topl_Material* material = scene->getMaterial(actor->getName());
+		const Img_Material* material = scene->getMaterial(actor->getName());
 		if (material != nullptr) attachMaterial(material, renderID);
 	}
 }
@@ -283,7 +283,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 	// else TODO: Implement Texture Substitution
 }
 
-void Topl_Renderer_GL4::attachMaterial(const Topl_Material* material, unsigned id) {
+void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 	// TODO: Find Texture Target

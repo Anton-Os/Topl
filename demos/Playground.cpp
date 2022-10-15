@@ -1,21 +1,22 @@
 #include "Playground.hpp"
 
-// #define APP_BACKEND APP_OpenGL_4
-#define APP_BACKEND APP_DirectX_11
+#define APP_BACKEND APP_OpenGL_4
+// #define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
-#define PRE_FRAME_FRAC 2
+#define PRE_FRAME_FRAC 3
 #define POST_FRAME_FRAC 30
 
-Topl_Camera Playground_App::camera1 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
-Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Perspective, 1.0 + (1.0 / VIEW_SPACE));
+Topl_Camera Playground_App::camera1 = Topl_Camera();
+Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
+Topl_Camera Playground_App::camera3 = Topl_Camera(PROJECTION_Perspective, 1.0 + (1.0 / VIEW_SPACE));
 
 static unsigned hoverColor = ZERO_COLOR;
 static Vec3f displaceVec = { 0.0f, 0.0f, 0.0f };
-static Vec3f pawnVec = { 0.0f , 0.0f, 0.0f };
+static Vec3f pawnVec = { 0.0f, 0.0f, 0.0f };
 
 void callback_press(float x, float y) {
 	if (hoverColor == (CLEAR_COLOR_HEX & 0x00FFFFFF)) puts("\nBackground pressed!");
@@ -30,26 +31,29 @@ void callback_pane(unsigned short num) { printf("pane %d callback_pressed!", num
 
 void Playground_App::genShaderPipeline() {
 	if (APP_BACKEND == APP_OpenGL_4) {
+		vertexShader0 = GL4_Idle_VertexShader(); fragShader0 = GL4_Idle_FragmentShader();
 		vertexShader1 = GL4_Textured_VertexShader(); fragShader1 = GL4_Textured_FragmentShader();
 		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = GL4_Flat_FragmentShader();
 		vertexShader3 = GL4_Beams_VertexShader(BEAMS_MODE_DEPTH); fragShader3 = GL4_Beams_FragmentShader();
 		// tessCtrlShader = GL4_Advance_TessCtrlShader(); 
 		// tessEvalShader = GL4_Advance_TessEvalShader();
-		// geomShader = GL4_Advance_GeometryShader();
+		geomShader = GL4_Advance_GeometryShader();
 	}
 	else if (APP_BACKEND == APP_DirectX_11) {
+		vertexShader0 = Drx11_Idle_VertexShader(); fragShader0 = Drx11_Idle_FragmentShader();
 		vertexShader1 = Drx11_Textured_VertexShader(); fragShader1 = Drx11_Textured_FragmentShader();
 		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = Drx11_Flat_FragmentShader();
 		vertexShader3 = Drx11_Beams_VertexShader(BEAMS_MODE_DEPTH); fragShader3 = Drx11_Beams_FragmentShader();
 		// tessCtrlShader = Drx11_Advance_TessCtrlShader(); 
 		// tessEvalShader = Drx11_Advance_TessEvalShader();
-		// geomShader = Drx11_Advance_GeometryShader();
+		geomShader = Drx11_Advance_GeometryShader();
 	}
 
 	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
 	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
 	litPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader3, &fragShader3);
-	// advancePipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1, &tessCtrlShader, &tessEvalShader, &geomShader);
+	advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2, &geomShader, nullptr, nullptr);
+	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, &geomShader, &tessCtrlShader, &tessEvalShader);
 }
 
 void Playground_App::createScene_Main() {
@@ -57,7 +61,6 @@ void Playground_App::createScene_Main() {
 	// demon.configure(&scene_main);
 	// angel.configure(&scene_main);
 
-	// scene_main.addAnchor(&ghostAnchor, "ghost_body", &ghost.getOrigin());
 	demon.move({ -0.5f, 0.0f, 0.0f });
 	angel.move({ 0.5f, 0.0f, 0.0f });
 
@@ -80,7 +83,6 @@ void Playground_App::createScene_Overlay() {
 		if (p < PLAYGROUND_PANE_COUNT) {
 			std::string text = std::to_string(p + 1); // count should begin at 1
 			boxedTextObjs[p] = { fontStr.c_str(), text.c_str(), WHITE_COLOR, 0xFF333333 };
-			// Topl_Image image = Topl_Image(&_freetypeLib, textObjects[p]);
 			Rasteron_Image* image = bakeTextI(&boxedTextObjs[p]);
 			boxedLayout.getChildPane(p)->selectImage(image);
 		}
@@ -122,15 +124,16 @@ void Playground_App::init() {
 
 	// Geometries and Scene Elements
 
-	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
-	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
+	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline); // TODO: remove this line DirectX testing!
 
 	createScene_Overlay();
 	createScene_Main();
 	createScene_Details();
 
-	// _renderer->setCamera(&camera1); // ortho projection
-	// _renderer->setCamera(&camera2); // perspective projection
+	// camera1.setPos({ 0.3f, 0.4f, 0.0f });
+	_renderer->setCamera(&camera1); // no projection
+	// _renderer->setCamera(&camera2); // ortho projection
+	// _renderer->setCamera(&camera3); // perspective projection
 
 	_renderer->setDrawMode(DRAW_Triangles);
 }
@@ -144,6 +147,7 @@ void Playground_App::loop(unsigned long frame) {
 
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
 	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
+	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, litPipeline);
 	_renderer->renderScene(&scene_main);
 	_renderer->renderScene(&scene_details);
 	_renderer->renderScene(&scene_overlay);
@@ -166,15 +170,10 @@ void Playground_App::preFrame() {
 }
 
 void Playground_App::postFrame() {
+	hoverColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+
 	frameImage = _renderer->frame();
 	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage->height, frameImage->width, frameImage->data); // draw to output file
-
-	// TODO: Check if successful!
-	PixelPoint pixelPoint = { Platform::getCursorX(), Platform::getCursorY() };
-	if (pixelPoint.xFrac != INVALID_CURSOR_POS && pixelPoint.yFrac != INVALID_CURSOR_POS)
-		hoverColor = getPixColor_cursor(pixelPoint, frameImage);
-		// hoverColor = *(frameImage->data + getPixCursorOffset(pixelPoint, frameImage)); // computes color of cursor hover location
-
 	deleteImg(frameImage);
 }
 

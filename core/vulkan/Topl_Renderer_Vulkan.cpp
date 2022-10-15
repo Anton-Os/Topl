@@ -1,10 +1,5 @@
 #include "Topl_Renderer_Vulkan.hpp"
 
-namespace Renderer {
-	// include buffer creation and more functions
-}
-
-
 void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	// Implement initialization
 }
@@ -35,16 +30,14 @@ Rasteron_Image* Topl_Renderer_Vulkan::frame() {
 }
 
 void Topl_Renderer_Vulkan::texturize(const Topl_Scene* scene) {
-#ifdef RASTERON_H // Rasteron dependency required for updating textures
 	// Implement texturizing operations
-#endif
 }
 
 void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned id){
 	// Implement texture attaching
 }
 
-void Topl_Renderer_Vulkan::attachMaterial(const Topl_Material* material, unsigned id) {
+void Topl_Renderer_Vulkan::attachMaterial(const Img_Material* material, unsigned id) {
 	// Implement Body
 }
 

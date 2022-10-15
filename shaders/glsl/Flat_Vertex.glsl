@@ -3,7 +3,7 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
-	// uint actorID
+	// uint renderID;
 	vec4 color;
 	vec3 offset;
 	vec2 rotation;
@@ -59,11 +59,10 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 // Main
 
 void main() {
-	vec3 transCoords = pos + offset;
-	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos;
-	vec4 final_pos = vec4(rotCoords, 0.0) + vec4(transCoords, 1.0); // rotation and translation
+	vec3 rotCoords = calcRotMatrix(rotation) * pos;
+	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
 
-	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos); // no projection
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	// gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 
 	if(mode == 1) // alternate mode

@@ -1,7 +1,7 @@
 // Values
 
 struct PS_INPUT {
-	uint actorID : ACTOR;
+	uint renderID : ACTOR;
 	float4 pos : SV_POSITION;
 	uint2 screenRes : RESOLUTION;
 	float2 cursorPos : CURSOR;

@@ -42,7 +42,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob));
+	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
 	hr = _device->CreateVertexShader(
 		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
 		NULL, &pipeline->vertexShader
@@ -50,7 +50,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// pixel shader compilation and creation code
-	if(!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob));
+	if(!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
 	hr = _device->CreatePixelShader(
 		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
 		NULL, &pipeline->pixelShader
@@ -66,43 +66,49 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob));
+	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
 	hr = _device->CreateVertexShader(
 		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
 		NULL, &pipeline->vertexShader
 	);
 	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
-	// hull shader compilation and creation code
-	if(!Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline->hsBlob));
-	hr = _device->CreateHullShader(
-		pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(),
-		NULL, &pipeline->hullShader);
-	if (FAILED(hr)) { pipeline->isReady = false; return; }
-
-	// domain shader compilation and creation code
-	if(!Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline->dsBlob));
-	hr = _device->CreateDomainShader(
-		pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(),
-		NULL, &pipeline->domainShader
-	);
-	if (FAILED(hr)) { pipeline->isReady = false; return; }
-
-	// geometry shader compilation and creation code
-	if(!Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline->gsBlob));
-	hr = _device->CreateGeometryShader(
-		pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(),
-		NULL, &pipeline->geomShader
-	);
-	if (FAILED(hr)) { pipeline->isReady = false; return; }
-
 	// pixel shader compilation and creation code
-	if(!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob));
+	if (!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
 	hr = _device->CreatePixelShader(
 		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
 		NULL, &pipeline->pixelShader
 	);
 	if (FAILED(hr)) { pipeline->isReady = false; return; }
+
+	// geometry shader compilation and creation code
+	if (geomShader != nullptr) { // optional stage
+		if (!Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline->gsBlob)) return;
+		hr = _device->CreateGeometryShader(
+			pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(),
+			NULL, &pipeline->geomShader
+		);
+		if (FAILED(hr)) { pipeline->isReady = false; return; }
+	}
+
+	// hull shader compilation and creation code
+	if (tessCtrlShader != nullptr) { // optional stage
+		if (!Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline->hsBlob)) return;
+		hr = _device->CreateHullShader(
+			pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(),
+			NULL, &pipeline->hullShader);
+		if (FAILED(hr)) { pipeline->isReady = false; return; }
+	}
+
+	// domain shader compilation and creation code
+	if (tessEvalShader != nullptr) { // optional stage
+		if (!Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline->dsBlob)) return;
+		hr = _device->CreateDomainShader(
+			pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(),
+			NULL, &pipeline->domainShader
+		);
+		if (FAILED(hr)) { pipeline->isReady = false; return; }
+	}
 
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;

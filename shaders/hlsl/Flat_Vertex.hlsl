@@ -1,7 +1,7 @@
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
-	// uint actorID;
+	// uint renderID;
 	float4 color;
 	float3 offset;
 	float2 rotation;
@@ -63,14 +63,13 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
-	float4 transCoords = float4(input.pos.x + offset.x, input.pos.y + offset.y, input.pos.z + offset.z, 1.0);
-	float3 rotCoords = mul(calcRotMatrix(float2(rotation.x, rotation.y)), float3(input.pos.x, input.pos.y, input.pos.z));
-	float4 final_pos = float4(rotCoords, 0.0) + transCoords; // rotation and translation
+	float3 rotCoords = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
+	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
-	output.pos = mul(final_pos, cameraMatrix); // no projection
-	// output.pos = mul(mul(transpose(projMatrix), cameraMatrix), final_pos); // projection
-	
+	output.pos += mul(projMatrix, offset); // TODO: include camera matrix with projection
+
+
 	if(mode == 1) { // alternate mode
 		switch(vertexID % 4){
 			case 0: output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f); break; // substract blue

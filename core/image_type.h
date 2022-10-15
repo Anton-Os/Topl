@@ -1,3 +1,5 @@
+#include <string>
+
 #include "support_def.h"
 
 #include "Geometry.hpp"
@@ -72,7 +74,7 @@ private:
 #endif
 };
 
-// Layers of images implementing Rasteron_Animation
+// Material layers of images implementing Rasteron_Animation
 
 #define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
 

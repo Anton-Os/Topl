@@ -368,7 +368,7 @@ void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
 
-		const Topl_Material* material = scene->getMaterial(actor->getName());
+		const Img_Material* material = scene->getMaterial(actor->getName());
 		if (material != nullptr) attachMaterial(material, renderID);
 	}
 }
@@ -434,7 +434,7 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition
 }
 
-void Topl_Renderer_Drx11::attachMaterial(const Topl_Material* material, unsigned renderID) {
+void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned renderID) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc;

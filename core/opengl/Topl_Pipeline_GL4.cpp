@@ -14,7 +14,7 @@ namespace GL4 {
 
 		glCompileShader(shader);
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-		if (result == GL_FALSE) return 0;
+		if (result == GL_FALSE) return shader; // return 0;
 
 		return shader;
 	}
@@ -110,6 +110,26 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 		pipeline->isReady = false;
 	}
 
+	// Fragment Shader
+
+	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
+	pipeline->fragmentShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+	if (pipeline->fragmentShader == 0) {
+		GL4::errorShaderCompile("Fragment", pipeline->fragmentShader);
+		pipeline->isReady = false;
+	}
+
+	// Geometry Shader
+
+	if (geomShader != nullptr) { // optional stage
+		std::string geomShaderSrc = readFile(geomShader->getFilePath());
+		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
+		if (pipeline->geomShader == 0) {
+			GL4::errorShaderCompile("Geometry", pipeline->geomShader);
+			pipeline->isReady = false;
+		}
+	}
+
 	// Tess. Control Shader
 
 	if(tessCtrlShader != nullptr){ // optional stage
@@ -130,27 +150,6 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 			GL4::errorShaderCompile("Tess. Eval", pipeline->tessEvalShader);
 			pipeline->isReady = false;
 		}
-	}
-
-	// Geometry Shader
-
-	if(geomShader != nullptr){ // optional stage
-		std::string geomShaderSrc = readFile(geomShader->getFilePath());
-		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
-		if (pipeline->geomShader == 0) {
-			GL4::errorShaderCompile("Geometry", pipeline->geomShader);
-			pipeline->isReady = false;
-		}
-	}
-
-
-	// Fragment Shader
-
-	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->fragmentShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->fragmentShader == 0) {
-		GL4::errorShaderCompile("Fragment", pipeline->fragmentShader);
-		pipeline->isReady = false;
 	}
 
 	// Shader Program Creation and Linking

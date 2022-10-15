@@ -43,7 +43,7 @@ private:
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachMaterial(const Topl_Material* material, unsigned id) override;
+	void attachMaterial(const Img_Material* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;

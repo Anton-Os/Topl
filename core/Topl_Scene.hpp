@@ -2,14 +2,12 @@
 
 #include <map>
 
+#include "image_type.h"
 #include "support_def.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
 
-#ifdef RASTERON_H
-#include "Topl_Images.h"
-#endif
 #include "Geo_Actor.hpp"
 
 // Light
@@ -72,7 +70,7 @@ public:
 	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
-	void addMaterial(const std::string& name, const Topl_Material* material);
+	void addMaterial(const std::string& name, const Img_Material* material);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
@@ -83,7 +81,7 @@ public:
 	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
 	unsigned getMaterialCount() const { return _actorMaterial_map.size(); }
-	const Topl_Material* getMaterial(const std::string& name) const;
+	const Img_Material* getMaterial(const std::string& name) const;
 #endif
 
 	// Dynamics Section
@@ -102,8 +100,8 @@ private:
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture
-	// std::map<Geo_Actor*, const Topl_Image*> __actorTex_map; // associates geometry actor to a single texture
-	std::map<Geo_Actor*, const Topl_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
+	// std::map<Geo_Actor*, const Img_Base*> __actorTex_map; // associates geometry actor to a single texture
+	std::map<Geo_Actor*, const Img_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
 #endif
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure

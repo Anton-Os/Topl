@@ -29,14 +29,14 @@ namespace App {
 
 	bool isPressPend;
 #ifdef RASTERON_H
-	Topl_Image pickerImage, captureImage, synthesisImage;
-	Topl_Image textImage1, textImage2, textImage3, textImage4;
+	Img_Base pickerImage, captureImage, synthesisImage;
+	Img_Base textImage1, textImage2, textImage3, textImage4;
 
 	FT_Library freetypeLib;
 	Rasteron_FormatText textObj = { "", text.c_str(), WHITE_COLOR, BLACK_COLOR };
 
-	Topl_Frames windows = Topl_Frames("windows", 256, 256, 9); // used for boxedLayout
-	Topl_Frames texting = Topl_Frames("texting", 256, 256, 9); // used for unitLayout
+	Img_Frames windows = Img_Frames("windows", 256, 256, 9); // used for boxedLayout
+	Img_Frames texting = Img_Frames("texting", 256, 256, 9); // used for unitLayout
 #endif
 }
 
@@ -74,16 +74,16 @@ void setPickerImage(unsigned color) {
 
 void genImages() {
 	initFreeType(&App::freetypeLib);
-	/* Topl_Image seedBaseImage = Topl_Image(0xFF111111);
-	Topl_Image seededImage = createImgSeedRaw(seedBaseImage.getImage(), SEED_COLOR, 0.03);
+	/* Img_Base seedBaseImage = Img_Base(0xFF111111);
+	Img_Base seededImage = createImgSeedRaw(seedBaseImage.getImage(), SEED_COLOR, 0.03);
 	App::synthesisImage.setImage(createCellPatImg8(seededImage.getImage(), synthesisCallback)); */
 	Rasteron_Image blankSlate = { "slate", 256, 256, NULL };
 	Rasteron_GradientNoise noise1 = { 3, 3, BLACK_COLOR, RED_CHANNEL };
-	Topl_Image noiseImage1 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise1));
+	Img_Base noiseImage1 = Img_Base(createGradientNoiseImg(&blankSlate, &noise1));
 	Rasteron_GradientNoise noise2 = { 60, 6, BLACK_COLOR, GREEN_CHANNEL };
-	Topl_Image noiseImage2 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise2));
+	Img_Base noiseImage2 = Img_Base(createGradientNoiseImg(&blankSlate, &noise2));
 	Rasteron_GradientNoise noise3 = { 33, 31, BLACK_COLOR, BLUE_CHANNEL };
-	Topl_Image noiseImage3 = Topl_Image(createGradientNoiseImg(&blankSlate, &noise3));
+	Img_Base noiseImage3 = Img_Base(createGradientNoiseImg(&blankSlate, &noise3));
 	App::synthesisImage.setImage(createImgFuse(noiseImage3.getImage(), noiseImage2.getImage()));
 	// App::synthesisImage.setImage(createImgFuse(App::synthesisImage.getImage(), noiseImage1.getImage()));
 	App::unitLayout.getChildPane(0)->selectImage(App::synthesisImage.getImage());
@@ -97,7 +97,7 @@ void genImages() {
 
 		Vec2f randVec; randVec.randomize();
 		addColorPoint(&colorPointTable, genRandColor(), randVec[0], randVec[1]);
-		Topl_Image layoutImage = Topl_Image(createImgProxim(App::windows.getFrameAt(p), &colorPointTable));
+		Img_Base layoutImage = Img_Base(createImgProxim(App::windows.getFrameAt(p), &colorPointTable));
 		App::windows.addFrame(layoutImage.getImage());
 		pane->selectImage(App::windows.getFrameAt(p));
 	}

@@ -3,14 +3,14 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
-	// uint actorID
+	// uint renderID
 	vec3 offset;
 	vec2 rotation;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
-	vec3 look_pos;
 	vec3 cam_pos;
+	vec3 look_pos;
 	mat4 projMatrix;
 };
 
@@ -60,6 +60,7 @@ void main() {
 	vec3 rotCoords = calcRotMatrix(rotation) * pos;
 	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
 
-	gl_Position = final_pos + (vec4(offset, 0.0f) * projMatrix);
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 	texcoord_out = texcoord;
 }

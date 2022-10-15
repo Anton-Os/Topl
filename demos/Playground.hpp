@@ -1,5 +1,6 @@
 #include "Topl_App.hpp"
 
+#include "Idle_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Flat_Shader.hpp"
 #include "Beams_Shader.hpp"
@@ -52,8 +53,7 @@ struct Playground_App : public Topl_App {
 	// Configurations
 
 	static Topl_Camera camera1, camera2, camera3;
-	Topl_Scene scene_main, scene_pawns, scene_overlay, scene_details;
-	Phys_Connector anchor1, anchor2, anchor3, anchor4;
+	Topl_Scene scene_main, scene_overlay, scene_details;
 
 private:
 	void preFrame();
@@ -73,7 +73,6 @@ private:
 	Geo_Humanoid2D angel = Geo_Humanoid2D("angel", angelAssets);
 	Geo_Humanoid2D demon = Geo_Humanoid2D("demon", demonAssets);
 	// Geo_Humanoid3D avatar;
-	Phys_Connector ghostAnchor;
 
 	// Overlay Scene Elements
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
@@ -93,10 +92,10 @@ private:
 	std::string fontStr = std::string(fontsPath + "MajorMonoDisplay-Regular.ttf");
 	// Rasteron_Text textObj = { fontStr.c_str(), "option", WHITE_COLOR, BLACK_COLOR};
 	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
-	Topl_Image boxedPaneImages[PLAYGROUND_PANE_COUNT];
-	Topl_Material material = Topl_Material("material1", 1024, 1024);
-	Topl_Image heightmapImage = Topl_Image(imagesPath + "BigGrid.png");
-	Topl_Heightmap heightmap = Topl_Heightmap(heightmapImage.getImage());
+	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
+	Img_Material material = Img_Material("material1", 1024, 1024);
+	Img_Base heightmapImage = Img_Base(imagesPath + "BigGrid.png");
+	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
 	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap);
 
 	// Shaders and Pipelines
@@ -104,6 +103,7 @@ private:
 	Topl_Pipeline *colPipeline, *texPipeline, *litPipeline;
 	Topl_Pipeline* advPipeline; // advanced pipeline
 
+	Idle_VertexShader vertexShader0; Idle_FragmentShader fragShader0;
 	Textured_VertexShader vertexShader1; Textured_FragmentShader fragShader1;
 	Flat_VertexShader vertexShader2; Flat_FragmentShader fragShader2;
 	Beams_VertexShader vertexShader3; Beams_FragmentShader fragShader3;

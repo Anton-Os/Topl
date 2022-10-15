@@ -3,7 +3,7 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
-	// uint actorID
+	// uint renderID
 	vec3 offset;
 	vec2 rotation;
 };
@@ -89,16 +89,17 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 // Main
 
 void main() {
-	// Value Shadings
-	vec3 transCoords = pos + offset; // translated coordinates
-	vec3 rotCoords = calcRotMatrix(vec2(rotation.x, rotation.y)) * pos; // rotated coordinates
-	vec4 final_pos = vec4(rotCoords, 0.0) + vec4(transCoords, 1.0);
+	vec3 rotCoords = calcRotMatrix(rotation) * pos;
+	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
+
+	gl_Position = final_pos + vec4(offset, 0.0f); // * projMatrix;
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 	
 	mode_out = mode;
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
-	gl_Position = final_pos * calcCameraMatrix(cam_pos, look_pos);
 
 	// Light Source Shadings
+
 	const float ambient_intensity = 0.1f; // calcAmbientIntensity(sky_light); // ambient light intensity
 	ambient_out = ambient_intensity * skyLight_value; // only sky light affects ambient property
 	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, pos);

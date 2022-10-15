@@ -111,7 +111,7 @@ public:
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
 	unsigned getPixelAt(float x, float y);
-    // void frameCapture(Topl_Frames* frames);
+    // void frameCapture(Img_Frames* frames);
 #endif
     unsigned long getRenderID(const Geo_Actor* actor);
 protected:
@@ -139,9 +139,9 @@ private:
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 #ifdef RASTERON_H
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
-	virtual void attachMaterial(const Topl_Material* material, unsigned id) = 0;
+	virtual void attachMaterial(const Img_Material* material, unsigned id) = 0;
 
-    Topl_Frames frameCache = Topl_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
+    Img_Frames frameCache = Img_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
 #endif
 };
 
