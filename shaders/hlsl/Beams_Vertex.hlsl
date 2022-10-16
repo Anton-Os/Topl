@@ -22,7 +22,7 @@ struct VS_INPUT {
 };
 
 struct VS_OUTPUT {
-	uint mode : MODE;
+	// uint mode : MODE;
 	float4 pos : SV_POSITION;
 	float3 pos1 : POSITION;
 
@@ -100,11 +100,10 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
 	output.pos += float4(offset, 0.0f); // output.pos += mul(projMatrix, offset);
+	output.pos1 = float3(output.pos.x, output.pos.y, output.pos.z);
 
 	// Light Source Shadings
-
-	output.mode = mode;
-	output.pos1 = float3(output.pos.x, output.pos.y, output.pos.z);
+	
 
 	const float ambient_intensity = 0.1f; // ambient light intensity
 	output.ambient = ambient_intensity * skyLight_value; // only sky light affects ambient property

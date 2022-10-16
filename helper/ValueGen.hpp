@@ -10,6 +10,7 @@
 #define COLOR_ID_TYPES 7
 
 unsigned genColorID(unsigned renderID);
+unsigned genRandColor();
 
 // Data Operations
 
@@ -44,7 +45,6 @@ struct SpatialBounds3D { // Used in Matrix calculations
 };
 
 Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds);
-unsigned genRandColor();
 
 #define VALUEGEN_H
 #endif

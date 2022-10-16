@@ -149,15 +149,15 @@ void Topl_Renderer_GL4::switchFramebuff(){
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
+
 	// scene uniform block buffer generation
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
-		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
+	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
+	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
+	_bufferIndex++; // increments to next available slot
+	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+	unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -170,14 +170,13 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		ui_cptr_t actor_iData = actor_renderObj->getIndices();
 
 		// render block buffer generation
-		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
-			_bufferIndex++; // increments to next available slot
-			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		}
+		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
+		_bufferIndex++; // increments to next available slot
+		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// index creation
 		if (actor_iData != nullptr) {
@@ -305,7 +304,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
@@ -315,16 +315,15 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-				if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
+		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
+			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
-			if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
-			else {
-				glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-				unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-				glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
-			}
+		if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
+		else {
+			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
+			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		}
 	}
 

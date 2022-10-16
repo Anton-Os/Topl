@@ -279,10 +279,9 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	free(layout_ptr); // deallocating layout_ptr and all associated data
 
 	// scene uniform block buffer generation
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes)) {
-		_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
-		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
-	}
+	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
+	_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
+	_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -295,11 +294,10 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		ui_cptr_t actor_iData = actor_renderObj->getIndices();
 
 		// component block buffer generation
-		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			ID3D11Buffer* renderBlockBuff = nullptr;
-			_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
-			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
-		}
+		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		ID3D11Buffer* renderBlockBuff = nullptr;
+		_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
+		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
 		if (!_isBuilt) return; // Error
 
 		// index creation
@@ -492,23 +490,24 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
-	if (_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes) && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
-		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes); // Update code should work
+	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
+		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes);
+	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		if (_entryShader->genGeoBlock(actor, &blockBytes)) {
-			for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-				if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
-					renderBlockBuff = &(*buff);
-					break;
-				}
+		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
+			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
+				renderBlockBuff = &(*buff);
+				break;
+			}
 
-			if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
-			if (!_isBuilt) return; // Error
-		}
+		if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
+		if (!_isBuilt) return; // Error
 	}
 }
 
@@ -526,16 +525,20 @@ void Topl_Renderer_Drx11::drawMode() {
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
 	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
 		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
-		if (sceneBlockBuff != nullptr)
+		if (sceneBlockBuff != nullptr) {
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+		}
 	}
 	else {
 		Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
 		Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
 		Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
 
-		if (renderBlockBuff != nullptr)
+		if (renderBlockBuff != nullptr) {
 			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+		}
 
 		UINT stride = sizeof(Geo_Vertex);
 		UINT offset = 0;

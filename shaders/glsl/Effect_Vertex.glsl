@@ -15,20 +15,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-// layout(location = 0) flat out uint renderID_out;
-layout(location = 0) out ivec2 screenRes_out;
-layout(location = 1) out vec2 cursorPos_out;
-layout(location = 2) out uint mode_out;
-layout(location = 3) flat out uint renderID_out;
-
 // Main
 
 void main() {
-	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f;
-	
-    screenRes_out = screenRes;
-	cursorPos_out = cursorPosAdj; // adjusted coordinates
-	mode_out = mode;
-	renderID_out = renderID;
 	gl_Position = vec4(pos, 1.0);
 }

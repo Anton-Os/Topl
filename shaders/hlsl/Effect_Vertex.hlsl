@@ -15,27 +15,14 @@ struct VS_INPUT {
 	float2 texcoord : TEXCOORD;
 };
 
-struct VS_OUTPUT {
-	uint renderID : ACTOR;
-	float4 pos : SV_POSITION;
-	uint2 screenRes : RESOLUTION;
-	float2 cursorPos : CURSOR;
-	uint mode: MODE;
-};
+struct VS_OUTPUT { float4 pos : SV_POSITION; };
 
 // Main
 
 VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	VS_OUTPUT output;
 
-	float4 final_pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0);
-	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f;
-
-	output.pos = final_pos;
-	output.screenRes = screenRes;
-	output.cursorPos = cursorPosAdj; // adjusted coordinates
-	output.mode = mode;
-	output.renderID = renderID;
+	output.pos = float4(input.pos.x, input.pos.y, input.pos.z, 1.0);
 
 	return output;
 }

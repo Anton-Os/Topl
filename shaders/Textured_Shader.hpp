@@ -4,39 +4,21 @@
 
 struct Textured_VertexShader : public Topl_EntryShader {
 	Textured_VertexShader() : Topl_EntryShader(){}
-	Textured_VertexShader(std::string name)
-		: Topl_EntryShader(
-			name,
-			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
-			} // Inputs
-		) {  }
+	Textured_VertexShader(std::string name) : Topl_EntryShader(name) {  }
 
-	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
 		bytes->clear(); // make sure there is no preexisting data
 
-		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
-		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
-	
-		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
-		
-		return true;
+		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec2f), bytes);
 	}
 
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
 
-		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
-		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
-		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
-
-		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
-
-		return true;
+		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getLookPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 };
 

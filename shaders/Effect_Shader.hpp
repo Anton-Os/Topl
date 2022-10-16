@@ -7,43 +7,23 @@
 
 struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader() : Topl_EntryShader(){}
-	Effect_VertexShader(std::string name)
-		: Topl_EntryShader(
-			name,
-			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
-			} // Inputs
-		) { }
-	
-	Effect_VertexShader(std::string name, unsigned mode)
-		: Topl_EntryShader(
-			name,
-			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-            	Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
-			} // Inputs
-		) { _mode = mode; }
+	Effect_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		return true; // make this false
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
+		bytes->clear(); // make sure there is no preexisting data
+		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
 	}
 
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
 
 		Vec2i screenRes = Vec2i({ TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
-
-		bytes_cptr screenRes_bytes = reinterpret_cast<bytes_cptr>(&screenRes.data[0]);
-		bytes_cptr cursorPos_bytes = reinterpret_cast<bytes_cptr>(&cursorPos.data[0]);
-		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
 	
-		alignDataToBytes(screenRes_bytes, sizeof(screenRes), NO_PADDING, bytes);
-		alignDataToBytes(cursorPos_bytes, sizeof(cursorPos), NO_PADDING, bytes);
-		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
-
-		return true;
+		alignDataToBytes((uint8*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
+		alignDataToBytes((uint8*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
 	}
 protected:
 	unsigned _mode = EFFECT_MODE_CURSOR;

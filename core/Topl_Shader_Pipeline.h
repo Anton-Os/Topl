@@ -62,16 +62,6 @@ public:
 		_shaderFileSrc = SHADERS_DIR + fileSrc;
 		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
     }
-	/* Topl_Shader( // Renderer Instance Contructor
-		enum SHDR_Type type,
-		std::string fileSrc,
-		const Topl_Renderer *const renderer
-	) {
-		_shaderType = type;
-		_shaderFileSrc = fileSrc;
-		_shaderFileSrc = SHADERS_DIR + fileSrc;
-		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
-	} */
     enum SHDR_Type getType() const { return _shaderType; }
     const char* getFilePath() const { return _shaderFileSrc.c_str(); }
 protected:
@@ -86,7 +76,14 @@ protected:
 class Topl_EntryShader : public Topl_Shader {
 public:
     Topl_EntryShader() : Topl_Shader(){} // Blank Constructor
-    Topl_EntryShader( // Filename Constructor
+	
+	Topl_EntryShader(std::string fileSrc) // Filename Constructor
+	: Topl_Shader(SHDR_Vertex, fileSrc) {
+		_inputs.push_back(Shader_Type("pos", "POSITION", SHDR_float_vec3)); // default pos input
+		_inputs.push_back(Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2)); // default texcoord input
+	}
+
+    Topl_EntryShader( // Inputs Constructor
 		std::string fileSrc, 
 		std::initializer_list<Shader_Type> inputs
 	) : Topl_Shader(SHDR_Vertex, fileSrc){ 
@@ -96,24 +93,12 @@ public:
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual bool genGeoBlock(const Geo_Actor *const component, blockBytes_t* bytes) const = 0;
-    virtual bool genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, blockBytes_t* bytes) const = 0;
+	virtual void genRenderBlock(const Geo_Actor *const component, unsigned renderID, blockBytes_t* bytes) const = 0;
+    virtual void genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, blockBytes_t* bytes) const = 0;
 
 private:
     std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };
-
-/* struct Topl_ExitShader : public Topl_Shader {
-    Topl_ExitShader() // Blank Constructor
-		: Topl_Shader(), isTexSupport(false), isMatSupport(false) {}
-    Topl_ExitShader(std::string& fileSrc) // Named Constructor
-        : Topl_Shader(SHDR_Fragment, fileSrc), isTexSupport(false), isMatSupport(false){}
-    Topl_ExitShader(std::string& fileSrc, bool tex, bool mat) // Extended Constructor
-        : Topl_Shader(SHDR_Fragment, fileSrc), isTexSupport(tex), isMatSupport(mat){}
-
-    const bool isTexSupport; // enable for texture support
-    const bool isMatSupport; // enable for material support
-}; */
 
 typedef const Topl_EntryShader* entry_shader_cptr;
 typedef const Topl_Shader* shader_cptr;

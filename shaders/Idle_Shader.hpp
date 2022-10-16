@@ -5,24 +5,23 @@
 struct Idle_VertexShader : public Topl_EntryShader {
 	Idle_VertexShader() : Topl_EntryShader(){}
 	Idle_VertexShader(std::string name)
-		: Topl_EntryShader(
+		: Topl_EntryShader( // Idle Shader can be used for testing new inputs
 			name,
 			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
+				Shader_Type("pos", "POSITION", SHDR_float_vec3),
+				// Shader_Type("normal", "NORMAL", SHDR_float_vec3),
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
 			} // Inputs
 		) {  }
 
-	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
 		bytes->clear(); // make sure there is no preexisting data
-		appendDataToBytes(0, sizeof(unsigned), bytes); // renderID
-		return true;
+		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
 	}
 
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
-		appendDataToBytes(0, sizeof(unsigned), bytes); // mode
-		return true;
+		// appendDataToBytes(0, sizeof(unsigned), bytes); // mode
 	}
 };
 

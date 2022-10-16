@@ -1,8 +1,19 @@
 #version 440
 
+layout(std140, binding = 1) uniform SceneBlock{
+	uint mode;
+	vec3 look_pos;
+	vec3 cam_pos;
+	// mat4 projMatrix;
+
+	vec3 skyLight_pos; vec3 skyLight_value;
+	vec3 flashLight_pos; vec3 flashLight_value;
+	vec3 lampLight_pos; vec3 lampLight_value;
+};
+
 // Values
 
-layout(location = 0) flat in uint mode;
+// layout(location = 0) flat in uint mode;
 layout(location = 1) in vec3 pos;
 layout(location = 2) in vec3 ambient;
 layout(location = 3) in vec3 diffuse;

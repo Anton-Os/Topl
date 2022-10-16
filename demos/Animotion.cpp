@@ -1,7 +1,7 @@
 #include "Animotion.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 void Animotion_App::init() {
@@ -20,7 +20,7 @@ void Animotion_App::init() {
 	// Geometries and Scene Elements
 
 	model.configure(&scene);
-	model.move({ 0.0f, -0.5f, 0.0f });
+	// model.move({ 0.0f, -0.5f, 0.0f });
 
 	_renderer->buildScene(&scene);
 	_renderer->setDrawMode(DRAW_Triangles);

@@ -1,21 +1,20 @@
 // Values
 
+cbuffer CONST_BLOCK : register(b0) {
+	uint renderID;
+}
+
+cbuffer CONST_SCENE_BLOCK : register(b1) {
+	int2 screenRes;
+	float2 cursorPos;
+	uint mode;
+}
+
 struct PS_INPUT {
-	uint renderID : ACTOR;
 	float4 pos : SV_POSITION;
-	uint2 screenRes : RESOLUTION;
-	float2 cursorPos : CURSOR;
-	uint mode : MODE;
 };
 
 // Functions
-
-/* float3 quadTest(float2 pixelCoord){
-	if(pixelCoord.x > 0.5 & pixelCoord.y > 0.0) return float3(1.0f, 0.0f, 0.0f);
-	else if(pixelCoord.x < 0.5 & pixelCoord.y > 0.0) return float3(0.0f, 1.0f, 0.0f);
-	else if(pixelCoord.x < 0.5 & pixelCoord.y < 0.0) return float3(0.0f, 0.0f, 1.0f);
-	else return float3(0.0f, 0.0f, 0.0f);
-} */
 
 float3 cursorDist(float2 cursorPos, float2 pixelCoord){
 	float red = 1.0f - (distance(cursorPos, pixelCoord) * 5); // receding color from center
@@ -49,11 +48,12 @@ float3 mandlebulb(uint2 screenRes, float2 pixelCoord){
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	// effects go here
-	float2 pixelCoordsAdj = float2(input.pos.x / input.screenRes.x, input.pos.y / input.screenRes.y); 
+	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f;
+	float2 pixelCoordsAdj = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); 
 	float2 pixelOffset = float2(-0.25f, -0.25f);
 
-	if(input.mode == 1) 
-		return float4(mandlebrot(input.screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
+	if (mode == 1)
+		return float4(mandlebrot(screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
 	else 
-		return float4(cursorDist(input.cursorPos, pixelCoordsAdj), 1.0f); // cursor mode // default
+		return float4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
 }

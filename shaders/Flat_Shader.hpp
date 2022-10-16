@@ -8,61 +8,32 @@
 // Vertex Shaders
 
 struct Flat_VertexShader : public Topl_EntryShader {
-	Flat_VertexShader() : Topl_EntryShader(){} // Blank Constructor
+	Flat_VertexShader() : Topl_EntryShader(){}
+	Flat_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Flat_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	Flat_VertexShader(std::string name)
-		: Topl_EntryShader(
-			name,
-			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
-			} // Inputs
-		) { }
-
-	Flat_VertexShader(std::string name, unsigned mode)
-		: Topl_EntryShader(
-			name,
-			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3), 
-				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
-			} // Inputs
-		) { _mode = mode; }
-
-	virtual bool genGeoBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
 		bytes->clear(); // make sure there is no preexisting data
 
-		bytes_cptr offset_bytes = reinterpret_cast<bytes_cptr>(actor->getPos());
-		bytes_cptr rotation_bytes = reinterpret_cast<bytes_cptr>(actor->getRot());
-		
-		Vec4f color = genFlatColor(actor);
-		bytes_cptr color_bytes = reinterpret_cast<bytes_cptr>(&color);
+		Vec4f color = genFlatColor(renderID);
 	
-		alignDataToBytes(color_bytes, sizeof(Vec4f), NO_PADDING, bytes);
-		appendDataToBytes(offset_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(rotation_bytes, sizeof(Vec2f), bytes);
-		
-		return true;
+		alignDataToBytes((uint8*)&color, sizeof(Vec4f), NO_PADDING, bytes);
+		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec2f), bytes);
 	}
 
-	virtual bool genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
 
-		bytes_cptr mode_bytes = reinterpret_cast<bytes_cptr>(&_mode);
-		bytes_cptr cameraPos_bytes = reinterpret_cast<bytes_cptr>(camera->getPos());
-		bytes_cptr cameraLookPos_bytes = reinterpret_cast<bytes_cptr>(camera->getLookPos());
-		bytes_cptr matrix_bytes = reinterpret_cast<bytes_cptr>(camera->getProjMatrix());
-
-		appendDataToBytes(mode_bytes, sizeof(unsigned), bytes);
-		appendDataToBytes(cameraPos_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(cameraLookPos_bytes, sizeof(Vec3f), bytes);
-		appendDataToBytes(matrix_bytes, sizeof(Mat4x4), bytes);
-
-		return true;
+		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
+		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getLookPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 protected:
-	Vec4f genFlatColor(const Geo_Actor* const actor) const {
-		// TODO: Get corresponding id from actor
-		return Vec4f({ 1.0f, 1.0f, 1.0f, _alphaVal }); // default value
+	Vec4f genFlatColor(unsigned renderID) const {
+		unsigned colorID = genColorID(renderID);
+		return Vec4f({ (colorID & 0xFF) / 255.0f, (colorID & 0xFF00) / 255.0f, (colorID & 0xFF00) / 255.0f, _alphaVal }); // default value
 	}
 
 	unsigned _mode = FLAT_MODE_SOLID;

@@ -22,7 +22,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) flat out uint mode_out;
+// layout(location = 0) flat out uint mode_out;
 layout(location = 1) out vec3 pos_out;
 layout(location = 2) out vec3 ambient_out;
 layout(location = 3) out vec3 diffuse_out;
@@ -95,7 +95,7 @@ void main() {
 	gl_Position = final_pos + vec4(offset, 0.0f); // * projMatrix;
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
 	
-	mode_out = mode;
+	// mode_out = mode;
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 
 	// Light Source Shadings

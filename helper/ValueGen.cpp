@@ -17,6 +17,13 @@ unsigned genColorID(unsigned renderID) {
 	}
 }
 
+unsigned genRandColor() {
+	uint8_t redBit = rand() % 255;
+	uint8_t greenBit = rand() % 255;
+	uint8_t blueBit = rand() % 255;
+	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
+}
+
 // Data Operations
 
 SpatialBounds3D::SpatialBounds3D(float scaleFactor) {
@@ -95,11 +102,4 @@ Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
         case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
         // case PROJECTION_Test: return MAT_4x4_TEST;
     }
-}
-
-unsigned genRandColor(){
-    uint8_t redBit = rand() % 255;
-	uint8_t greenBit = rand() % 255;
-	uint8_t blueBit = rand() % 255;
-	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }

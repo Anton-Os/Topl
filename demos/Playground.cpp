@@ -1,13 +1,13 @@
 #include "Playground.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
-#define PRE_FRAME_FRAC 3
+#define PRE_FRAME_FRAC 1
 #define POST_FRAME_FRAC 30
 
 Topl_Camera Playground_App::camera1 = Topl_Camera();
@@ -35,8 +35,8 @@ void Playground_App::genShaderPipeline() {
 		vertexShader1 = GL4_Textured_VertexShader(); fragShader1 = GL4_Textured_FragmentShader();
 		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = GL4_Flat_FragmentShader();
 		vertexShader3 = GL4_Beams_VertexShader(BEAMS_MODE_DEPTH); fragShader3 = GL4_Beams_FragmentShader();
-		// tessCtrlShader = GL4_Advance_TessCtrlShader(); 
-		// tessEvalShader = GL4_Advance_TessEvalShader();
+		tessCtrlShader = GL4_Advance_TessCtrlShader(); 
+		tessEvalShader = GL4_Advance_TessEvalShader();
 		geomShader = GL4_Advance_GeometryShader();
 	}
 	else if (APP_BACKEND == APP_DirectX_11) {
@@ -44,16 +44,16 @@ void Playground_App::genShaderPipeline() {
 		vertexShader1 = Drx11_Textured_VertexShader(); fragShader1 = Drx11_Textured_FragmentShader();
 		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = Drx11_Flat_FragmentShader();
 		vertexShader3 = Drx11_Beams_VertexShader(BEAMS_MODE_DEPTH); fragShader3 = Drx11_Beams_FragmentShader();
-		// tessCtrlShader = Drx11_Advance_TessCtrlShader(); 
-		// tessEvalShader = Drx11_Advance_TessEvalShader();
+		tessCtrlShader = Drx11_Advance_TessCtrlShader(); 
+		tessEvalShader = Drx11_Advance_TessEvalShader();
 		geomShader = Drx11_Advance_GeometryShader();
 	}
 
-	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
-	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
 	litPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader3, &fragShader3);
-	advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2, &geomShader, nullptr, nullptr);
-	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, &geomShader, &tessCtrlShader, &tessEvalShader);
+	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
+	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
+	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, &geomShader, nullptr, nullptr); // geometry support
+	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, nullptr, &tessCtrlShader, &tessEvalShader); // tesselation support
 }
 
 void Playground_App::createScene_Main() {
@@ -124,8 +124,6 @@ void Playground_App::init() {
 
 	// Geometries and Scene Elements
 
-	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline); // TODO: remove this line DirectX testing!
-
 	createScene_Overlay();
 	createScene_Main();
 	createScene_Details();
@@ -160,8 +158,8 @@ void Playground_App::preFrame() {
 	coneActor2.updateRot({ -0.01f, 0.01f });
 	
 	pawnVec = ghost.getOrigin();
-	scene_main.addForce("ghost_body", (displaceVec - pawnVec) * 20);
-	scene_main.addForce("ghost_head", (displaceVec - pawnVec) * 10);
+	scene_main.addForce("ghost_body", displaceVec - pawnVec);
+	scene_main.addForce("ghost_head", displaceVec - pawnVec);
 	scene_main.addForce("ghost_leftArm", displaceVec - pawnVec);
 	scene_main.addForce("ghost_rightArm", displaceVec - pawnVec);
 	scene_main.addForce("ghost_leftLeg", displaceVec - pawnVec);

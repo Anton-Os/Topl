@@ -2,6 +2,14 @@
 
 // Values
 
+layout(std140, binding = 0) uniform Block{
+	uint renderID;
+};
+
+layout(std140, binding = 0) uniform SceneBlock{
+	uint mode;
+};
+
 out vec4 color;
 
 // Main
