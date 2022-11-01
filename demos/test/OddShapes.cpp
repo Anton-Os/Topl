@@ -1,5 +1,3 @@
-// #include "image_type.hpp"
-
 #include "primitives/Geo_Sphere.hpp"
 #include "ShapesGen.hpp"
 

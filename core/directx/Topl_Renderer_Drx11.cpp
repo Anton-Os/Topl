@@ -258,8 +258,7 @@ void Topl_Renderer_Drx11::switchFramebuff() {
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
-	blockBytes_t blockBytes;
-	// generating an input layout based on Vertex Shader Inputs
+	// setting vertex input layout
 	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 	unsigned inputElementOffset = 0;
 	for (unsigned i = 0; i < _entryShader->getInputCount(); i++) {
@@ -278,7 +277,9 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	_deviceCtx->IASetInputLayout(_vertexDataLayout);
 	free(layout_ptr); // deallocating layout_ptr and all associated data
 
-	// scene uniform block buffer generation
+	blockBytes_t blockBytes;
+
+	// scene block buffer generation
 	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
 	_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
 	_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
@@ -293,22 +294,23 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
 		ui_cptr_t actor_iData = actor_renderObj->getIndices();
 
-		// component block buffer generation
+		// render block buffer generation
 		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
 		ID3D11Buffer* renderBlockBuff = nullptr;
 		_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
 		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
 		if (!_isBuilt) return; // Error
 
-		// index creation
+		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
-		if (actor_iData != nullptr) { // Checks if index data exists for render object
+		if (actor_iData != nullptr) { // checks if index data exists for render object
 			_isBuilt = Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
 		}
 		else _buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isBuilt) return; // Error
 
+		// vertices generation
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isBuilt = Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
 		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
@@ -423,9 +425,9 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	_deviceCtx->GenerateMips(resView);
 
 	for(std::vector<Texture_Drx11>::iterator t = _textures.begin(); t != _textures.end(); t++)
-		if ((*t).renderID == renderID) { // Texture Substitution
-			(*t).resView->Release(); // erase old texture
-			(*t).sampler->Release(); // erase old sampler
+		if (t->renderID == renderID) { // Texture Substitution
+			t->resView->Release(); // erase old texture
+			t->sampler->Release(); // erase old sampler
 			*t = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
 			return;
 		}

@@ -5,6 +5,14 @@
 
 #include "support_def.h"
 
+// OpenGL Specific Inclusions
+
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include <GL/gl.h>
+
+// System Definitions
+
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
@@ -19,8 +27,7 @@
     
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
-        NATIVE_WINDOW window; // Window is initialized outside // TODO: Fix this!
-		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN];
+        NATIVE_WINDOW window;
         NATIVE_GL_CONTEXT oglCtx;
         HDC deviceCtx;
         POINT cursorPos;
@@ -34,12 +41,7 @@
     #include<X11/X.h>
     #include<X11/Xlib.h>
 
-    #undef Success // Eigen fix
-
-    // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
-    // OpenGL Support
-    #include<GL/gl.h>
-    #include<GL/glx.h>
+    #include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
 
     #define NATIVE_WINDOW Window
     #define NATIVE_GL_CONTEXT GLXContext
@@ -53,7 +55,6 @@
         Display* display;
         // XVisualInfo* visualInfo;
         NATIVE_WINDOW window;
-		// NATIVE_WINDOW childWindows[TOPL_WIN_MAX_CHILDREN]
         NATIVE_GL_CONTEXT oglCtx;
         Cursor_Pos cursorPos;
     };

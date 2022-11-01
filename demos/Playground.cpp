@@ -1,14 +1,14 @@
 #include "Playground.hpp"
 
-// #define APP_BACKEND APP_OpenGL_4
-#define APP_BACKEND APP_DirectX_11
-// #defint APP_BACKEND App_Vulkan
+#define APP_BACKEND APP_OpenGL_4
+// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND App_Vulkan
 
 #define VIEW_SPACE 2.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
-#define PRE_FRAME_FRAC 1
-#define POST_FRAME_FRAC 30
+#define PRE_FRAME_FRAC 5
+#define POST_FRAME_FRAC 20
 
 Topl_Camera Playground_App::camera1 = Topl_Camera();
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
@@ -49,9 +49,9 @@ void Playground_App::genShaderPipeline() {
 		geomShader = Drx11_Advance_GeometryShader();
 	}
 
-	litPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader3, &fragShader3);
-	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
 	texPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader1);
+	colPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader2);
+	litPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader3, &fragShader3);
 	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, &geomShader, nullptr, nullptr); // geometry support
 	// advPipeline = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader0, &fragShader0, nullptr, &tessCtrlShader, &tessEvalShader); // tesselation support
 }
@@ -63,8 +63,6 @@ void Playground_App::createScene_Main() {
 
 	demon.move({ -0.5f, 0.0f, 0.0f });
 	angel.move({ 0.5f, 0.0f, 0.0f });
-
-	// scene_main.addGeometry(&heightmapActor); // TODO: Get this to work!
 
 	// Build Scene
 	_renderer->buildScene(&scene_main);
@@ -123,9 +121,9 @@ void Playground_App::init() {
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Up, callback_release);
 
 	// Geometries and Scene Elements
-
-	createScene_Overlay();
+	
 	createScene_Main();
+	createScene_Overlay();
 	createScene_Details();
 
 	// camera1.setPos({ 0.3f, 0.4f, 0.0f });
@@ -139,16 +137,20 @@ void Playground_App::init() {
 void Playground_App::loop(unsigned long frame) {
 	if (frame % PRE_FRAME_FRAC == 0) preFrame();
 
-	_renderer->updateScene(&scene_main);
-	_renderer->updateScene(&scene_details);
-	_renderer->updateScene(&scene_overlay);
-
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
 	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
 	// Topl_Factory::switchPipeline(APP_BACKEND, _renderer, litPipeline);
+
+	// _renderer->texturize(&scene_main);
+	_renderer->updateScene(&scene_main);
 	_renderer->renderScene(&scene_main);
-	_renderer->renderScene(&scene_details);
+
+	_renderer->updateScene(&scene_overlay);
 	_renderer->renderScene(&scene_overlay);
+
+	_renderer->updateScene(&scene_details);
+	_renderer->renderScene(&scene_details);
+
 
 	if (frame % POST_FRAME_FRAC == 0) postFrame();
 }
@@ -176,8 +178,6 @@ void Playground_App::postFrame() {
 }
 
 int main(int argc, char** argv) {
-	/* { Playground_App app = Playground_App(argv[0], APP_BACKEND); } // destructor test */
-
     Playground_App app = Playground_App(argv[0], APP_BACKEND);
 
 	app.run();

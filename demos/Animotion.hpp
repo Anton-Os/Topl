@@ -24,7 +24,7 @@ private:
 
 	// Geometries and Drawable Objects
 
-	Geo_Model model = Geo_Model("SpinTop", modelsPath + "SpinTop.obj"); // model object
+	Geo_Model model = Geo_Model("SpinTop", Topl_App::getModelsPath() + "SpinTop.obj"); // model object
 
 	// Shaders and Pipelines
 

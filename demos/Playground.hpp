@@ -17,30 +17,30 @@
 #define PLAYGROUND_PANE_COUNT 9
 
 std::string ghostAssets[HUMANOID_PARTS_COUNT] = {
-	Topl_App::imagesPath + "Ghost-Head.png",
-	Topl_App::imagesPath + "Ghost-LeftArm.png",
-	Topl_App::imagesPath + "Ghost-RightArm.png",
-	Topl_App::imagesPath + "Ghost-Torso.png",
-	Topl_App::imagesPath + "Ghost-LeftLeg.png",
-	Topl_App::imagesPath + "Ghost-RightLeg.png"
+	Topl_App::getImagesPath() + "Ghost-Head.png",
+	Topl_App::getImagesPath() + "Ghost-LeftArm.png",
+	Topl_App::getImagesPath() + "Ghost-RightArm.png",
+	Topl_App::getImagesPath() + "Ghost-Torso.png",
+	Topl_App::getImagesPath() + "Ghost-LeftLeg.png",
+	Topl_App::getImagesPath() + "Ghost-RightLeg.png"
 };
 
 std::string angelAssets[HUMANOID_PARTS_COUNT] = {
-	Topl_App::imagesPath + "Angel-Head.png",
-	Topl_App::imagesPath + "Angel-LeftWing.png",
-	Topl_App::imagesPath + "Angel-RightWing.png",
-	Topl_App::imagesPath + "Angel-Torso.png",
-	Topl_App::imagesPath + "Angel-LeftLeg.png",
-	Topl_App::imagesPath + "Angel-RightLeg.png"
+	Topl_App::getImagesPath() + "Angel-Head.png",
+	Topl_App::getImagesPath() + "Angel-LeftWing.png",
+	Topl_App::getImagesPath() + "Angel-RightWing.png",
+	Topl_App::getImagesPath() + "Angel-Torso.png",
+	Topl_App::getImagesPath() + "Angel-LeftLeg.png",
+	Topl_App::getImagesPath() + "Angel-RightLeg.png"
 };
 
 std::string demonAssets[HUMANOID_PARTS_COUNT] = {
-	Topl_App::imagesPath + "Demon-Head.png",
-	Topl_App::imagesPath + "Demon-LeftWing.png",
-	Topl_App::imagesPath + "Demon-RightWing.png",
-	Topl_App::imagesPath + "Demon-Torso.png",
-	Topl_App::imagesPath + "Demon-LeftLeg.png",
-	Topl_App::imagesPath + "Demon-RightLeg.png"
+	Topl_App::getImagesPath() + "Demon-Head.png",
+	Topl_App::getImagesPath() + "Demon-LeftWing.png",
+	Topl_App::getImagesPath() + "Demon-RightWing.png",
+	Topl_App::getImagesPath() + "Demon-Torso.png",
+	Topl_App::getImagesPath() + "Demon-LeftLeg.png",
+	Topl_App::getImagesPath() + "Demon-RightLeg.png"
 };
 
 struct Playground_App : public Topl_App {
@@ -89,12 +89,12 @@ private:
 	// Textures, Materials, Heightmaps
 
 	Rasteron_Image* frameImage = nullptr;
-	std::string fontStr = std::string(fontsPath + "MajorMonoDisplay-Regular.ttf");
+	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
 	// Rasteron_Text textObj = { fontStr.c_str(), "option", WHITE_COLOR, BLACK_COLOR};
 	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
 	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
 	Img_Material material = Img_Material("material1", 1024, 1024);
-	Img_Base heightmapImage = Img_Base(imagesPath + "BigGrid.png");
+	Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
 	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
 	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap);
 

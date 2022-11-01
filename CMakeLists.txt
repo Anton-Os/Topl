@@ -52,8 +52,8 @@ if(Assimp_FOUND)
 endif()
 
 list(APPEND core_src
-    # core/Topl_App.cpp
-    # core/Topl_Factory.cpp
+    core/Topl_App.cpp
+    core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
 
     core/Topl_Scene_Statics.cpp
@@ -168,7 +168,9 @@ foreach(target IN ITEMS ${engine_targets})
     if(WIN32)
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
     endif()
-    target_link_libraries(${target} PUBLIC CORELIB GEOLIB) # linking Topl libraries
+    # target_link_libraries(${target} PUBLIC GEOLIB CORELIB) # linking Topl libraries
+	target_link_libraries(${target} PUBLIC GEOLIB)
+	target_link_libraries(CORELIB PUBLIC ${target})
 endforeach()
 
 # ------------- Demos ------------- #
@@ -178,32 +180,16 @@ include("cmake/runTests.cmake")
 
 # Modern Demos and Tests
 
-add_executable(App_Playground
-    core/Topl_App.cpp # move to CORELIB
-    core/Topl_Factory.cpp # move to CORELIB
-
-    demos/Playground.cpp
-)
-
-add_executable(App_Splitscreen
-    core/Topl_App.cpp # move to CORELIB
-    core/Topl_Factory.cpp # move to CORELIB
-
-    demos/Splitscreen.cpp
-)
-add_executable(App_Animotion
-    core/Topl_App.cpp # move to CORELIB
-    core/Topl_Factory.cpp # move to CORELIB
-
-    demos/Animotion.cpp
-)
+add_executable(Demo_Playground demos/Playground.cpp)
+add_executable(Demo_Splitscreen demos/Splitscreen.cpp)
+add_executable(Demo_Animotion demos/Animotion.cpp)
 
 # add all demo targets to a list
-list(APPEND demo_targets App_Playground App_Splitscreen App_Animotion)
+list(APPEND demo_targets Demo_Playground Demo_Splitscreen Demo_Animotion)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core helper geometry shaders)
-    target_link_libraries(${target} PRIVATE ${engine_targets} CORELIB)
+    target_link_libraries(${target} PRIVATE CORELIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")

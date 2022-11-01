@@ -40,35 +40,35 @@ namespace GL4 {
 #ifdef _WIN32
 static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc){
     // Creates an HDC based on the window
-    *(windowDC) = GetDC(*(window));
+    *windowDC = GetDC(*window);
 
-    // Pixel format descriptor stuff
-    PIXELFORMATDESCRIPTOR pixDescript, *pixDescript_ptr;
-	pixDescript_ptr = &pixDescript;
+    // Pixel Format for Windows GL Context
+    PIXELFORMATDESCRIPTOR pixFrmtDesc, *pixFrmtDesc_ptr;
+	pixFrmtDesc_ptr = &pixFrmtDesc;
 	int pixFrmt;
 
-	pixDescript.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pixDescript.nVersion = 1;
-	pixDescript.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pixDescript.dwLayerMask = PFD_MAIN_PLANE;
-	pixDescript.iPixelType = PFD_TYPE_RGBA;
-	pixDescript.cColorBits = 24;
+	pixFrmtDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+	pixFrmtDesc.nVersion = 1;
+	pixFrmtDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pixFrmtDesc.dwLayerMask = PFD_MAIN_PLANE;
+	pixFrmtDesc.iPixelType = PFD_TYPE_RGBA;
+	pixFrmtDesc.cColorBits = 24;
 
-	pixFrmt = ChoosePixelFormat(*(windowDC), pixDescript_ptr);
-	BOOL pixFrmtChk = SetPixelFormat(*(windowDC), pixFrmt, pixDescript_ptr);
+	pixFrmt = ChoosePixelFormat(*windowDC, pixFrmtDesc_ptr);
+	BOOL pixFrmtChk = SetPixelFormat(*windowDC, pixFrmt, pixFrmtDesc_ptr);
 
     // wgl initialization functions
-    *(hglrc) = wglCreateContext(*(windowDC));
-    wglMakeCurrent(*(windowDC), *(hglrc));
+    *hglrc = wglCreateContext(*windowDC);
+    wglMakeCurrent(*windowDC, *hglrc);
 }
 
-static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*(windowDC)); }
+static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
 
 static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc){
   	wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(*(hglrc));
+	wglDeleteContext(*hglrc);
 
-	ReleaseDC(*(window), *(windowDC));
+	ReleaseDC(*window, *windowDC);
 }
 #elif defined(__linux__)
 static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
@@ -150,7 +150,7 @@ void Topl_Renderer_GL4::switchFramebuff(){
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 	blockBytes_t blockBytes; // container for constant and uniform buffer updates
 
-	// scene uniform block buffer generation
+	// scene block buffer generation
 	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
 	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
 	_bufferIndex++; // increments to next available slot
@@ -178,7 +178,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		// index creation
+		// indices generation
 		if (actor_iData != nullptr) {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], actor_renderObj->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
@@ -189,11 +189,13 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			_bufferIndex++; // increments to next available slot
 		}
 
+		// vertices generation
 		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVertexCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
 		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVertexCount() * sizeof(Geo_Vertex), actor_vData, GL_STATIC_DRAW);
 
+		// setting vertex input layout
 		_vertexArrays.push_back(VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot
 		VertexArray_GL4* VAO_ptr = &_vertexArrays.back(); // Check to see if all parameters are valid

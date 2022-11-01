@@ -36,7 +36,6 @@ public:
 #endif
 private:
   	void init(NATIVE_WINDOW window) override;
-	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
 	// void render(const Topl_Scene* scene) override;

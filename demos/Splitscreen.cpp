@@ -1,7 +1,7 @@
 #include "Splitscreen.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
 
 void Splitscreen_App::init() {
@@ -29,13 +29,13 @@ void Splitscreen_App::init() {
 }
 
 void Splitscreen_App::loop(unsigned long frame) {
-	_renderer->updateScene(&scene);
-
 	_renderer->setPipeline(pipeline2);
+	_renderer->updateScene(&scene);
 	_renderer->setViewport(&viewports[0]);
 	_renderer->renderScene(&scene);
-
+	
 	_renderer->setPipeline(pipeline1);
+	_renderer->updateScene(&scene);
 	_renderer->setViewport(&viewports[1]);
 	_renderer->renderScene(&scene);
 }
