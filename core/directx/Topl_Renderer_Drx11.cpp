@@ -258,30 +258,33 @@ void Topl_Renderer_Drx11::switchFramebuff() {
 }
 
 void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
+	static unsigned buildCount = FIRST_BUILD_CALL;
+	blockBytes_t shaderBlockData;
+
 	// setting vertex input layout
-	D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
-	unsigned inputElementOffset = 0;
-	for (unsigned i = 0; i < _entryShader->getInputCount(); i++) {
-		*(layout_ptr + i) = Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(i), inputElementOffset);
-		inputElementOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(i)->type);
+	if (buildCount == FIRST_BUILD_CALL) { // must be invoked only once!
+		D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
+		unsigned inputElementOffset = 0;
+		for (unsigned inputNum = 0; inputNum < _entryShader->getInputCount(); inputNum++) {
+			*(layout_ptr + inputNum) = Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(inputNum), inputElementOffset);
+			inputElementOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(inputNum)->type);
+		}
+		UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
+
+		_device->CreateInputLayout(
+			layout_ptr, layoutElemCount,
+			// _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
+			_pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
+			&_vertexDataLayout
+		);
+
+		_deviceCtx->IASetInputLayout(_vertexDataLayout);
+		free(layout_ptr); // deallocating layout_ptr and all associated data
 	}
-	UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
-
-	_device->CreateInputLayout(
-		layout_ptr, layoutElemCount,
-		// _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
-		_pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
-		&_vertexDataLayout
-	);
-
-	_deviceCtx->IASetInputLayout(_vertexDataLayout);
-	free(layout_ptr); // deallocating layout_ptr and all associated data
-
-	blockBytes_t blockBytes;
 
 	// scene block buffer generation
-	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
-	_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &blockBytes);
+	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
+	_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
 	_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
@@ -289,34 +292,32 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
-
-		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
-		ui_cptr_t actor_iData = actor_renderObj->getIndices();
+		Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		// render block buffer generation
-		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		ID3D11Buffer* renderBlockBuff = nullptr;
-		_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &blockBytes);
+		_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
 		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
 		if (!_isBuilt) return; // Error
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
-		if (actor_iData != nullptr) { // checks if index data exists for render object
-			_isBuilt = Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)actor_iData, actor_renderObj->getIndexCount());
-			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, actor_renderObj->getIndexCount()));
+		if (renderObj->getIndices() != nullptr) { // checks if index data exists for render object
+			_isBuilt = Drx11::createIndexBuff(&_device, &indexBuff, (DWORD*)renderObj->getIndices(), renderObj->getIndexCount());
+			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, renderObj->getIndexCount()));
 		}
 		else _buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, 0));
 		if (!_isBuilt) return; // Error
 
 		// vertices generation
 		ID3D11Buffer* vertexBuff = nullptr;
-		_isBuilt = Drx11::createVertexBuff(&_device, &vertexBuff, actor_vData, actor_renderObj->getVertexCount());
-		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Vertex_Type, vertexBuff, actor_renderObj->getVertexCount()));
+		_isBuilt = Drx11::createVertexBuff(&_device, &vertexBuff, renderObj->getVertices(), renderObj->getVertexCount());
+		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Vertex_Type, vertexBuff, renderObj->getVertexCount()));
 		if (!_isBuilt) return; // Error
 	}
 
+	buildCount++;
 	_isBuilt = true;
 }
 
@@ -351,7 +352,7 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	for (unsigned r = 0; r < image->height - 1; r++) {
 		for (unsigned c = 0; c < image->width; c++)
 			*(image->data + dstOffset + c) = *(sourceData + srcOffset + c);
-		srcOffset += pitch; // resource.RowPitch;
+		srcOffset += pitch;
 		dstOffset += image->width;
 	}
 	_deviceCtx->Unmap(framebuffTex, 0);
@@ -424,11 +425,11 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	for(std::vector<Texture_Drx11>::iterator t = _textures.begin(); t != _textures.end(); t++)
-		if (t->renderID == renderID) { // Texture Substitution
-			t->resView->Release(); // erase old texture
-			t->sampler->Release(); // erase old sampler
-			*t = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
+	for(std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
+		if (tex->renderID == renderID) { // Texture Substitution
+			tex->resView->Release(); // erase old texture
+			tex->sampler->Release(); // erase old sampler
+			*tex = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
 			return;
 		}
 	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition

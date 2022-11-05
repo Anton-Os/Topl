@@ -31,7 +31,7 @@ void Input_MouseControl::addMousePress(enum MOUSE_Button mb, float x, float y){
 	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
 		if(mb == c->first) c->second(x, y); // makes callback go off where keys match
 	
-	_tracerSteps.push_back({ mb, x, y}); // record the movement
+	_tracerSteps.push_back({ mb, std::make_pair(x, y)}); // record the movement
 	stampEvent();
 }
 

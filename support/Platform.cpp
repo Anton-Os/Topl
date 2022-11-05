@@ -39,16 +39,16 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-void Platform::createWindow(){
-	LPTSTR iconResStr = MAKEINTRESOURCE(IDI_ICON); // for testing
-	LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU); // for testing
+void Platform::createWindow(unsigned width, unsigned height){
+	LPTSTR iconResStr = MAKEINTRESOURCE(IDI_ICON);
+	// LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU);
 
     _context.windowClass = { 0 };
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
 	_context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
-	_context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
+	// _context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
 	RegisterClass(&_context.windowClass);
 
 	_context.window = CreateWindow(
@@ -56,7 +56,7 @@ void Platform::createWindow(){
 		_winName,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
+		width, height, // TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
 
@@ -113,7 +113,7 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 #elif defined(__linux__)
 
-void Platform::createWindow(){
+void Platform::createWindow(unsigned width, unsigned height){
     _context.display = XOpenDisplay(NULL);
 
 	/* GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -133,7 +133,7 @@ void Platform::createWindow(){
     _context.window = XCreateWindow(
 		_context.display, DefaultRootWindow(_context.display),
         0, 0,
-        TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
+        width, height, // TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
         0, depth,
         InputOutput,
 		visual,

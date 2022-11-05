@@ -16,8 +16,8 @@ protected:
     }
 
     Timer_Ticker _ticker; // internal timer
-    unsigned _eventCount = 0;
-    double _lastEvent = BAD_EVENT_TIME; // timestamp tracking most recent event in milliseconds
+    double _lastEvent = BAD_EVENT_TIME; // timestamp for most recent event
+	unsigned _eventCount = 0;
 };
 
 // Keys
@@ -51,8 +51,15 @@ enum MOUSE_Button {
 
 struct Input_TracerStep {
     MOUSE_Button button;
-    float xPos;
-    float yPos;
+	std::pair<float, float> step;
+};
+
+#define MAX_PATH_STEPS 4096
+
+struct Input_TracerPath {
+	MOUSE_Button button;
+	std::pair<float, float> steps[MAX_PATH_STEPS];
+	unsigned stepsCount;
 };
 
 struct Input_CursorRange {
@@ -67,8 +74,8 @@ struct Input_CursorRange {
         if(val > MAX_CURSOR_BOUND) val = MAX_CURSOR_BOUND; else if(val < MIN_CURSOR_BOUND) val = MIN_CURSOR_BOUND;
 		return val;
     }
-    float xMin; float xMax;
-    float yMin; float yMax;
+    float xMin; float xMax; // horizontal range
+    float yMin; float yMax; // vertical range
 };
 
 typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of tracer steps inside of a path
@@ -85,8 +92,8 @@ public:
     void addHoverCallback(const Input_CursorRange* range, hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
 
-    std::vector<Input_TracerStep> _tracerSteps; // records presses traced
-    std::vector<tracerPath_t> _tracerPaths; // records paths
+    std::vector<Input_TracerStep> _tracerSteps;
+	std::vector<Input_TracerPath> _tracerPaths;
 private:
 	std::map<MOUSE_Button, pressCallback> _mouseCallback_map;
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;

@@ -77,8 +77,11 @@ Geo_Humanoid2D::~Geo_Humanoid2D() {
 void Geo_Humanoid2D::configure(Topl_Scene* scene) {
 	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) {
 		_sprites[p] = createSprite(createRefImg(_assetPaths[p].c_str()));
-		_renderObjs[p] = new Geo_FlatSquare((getSpriteWidth(_sprites[p]) + getSpriteHeight(_sprites[p])) / 2);
-		resizeToSprite(_sprites[p], _renderObjs[p]);
+		if (_sprites[p] != nullptr) {
+			_renderObjs[p] = new Geo_FlatSquare((getSpriteWidth(_sprites[p]) + getSpriteHeight(_sprites[p])) / 2);
+			resizeToSprite(_sprites[p], _renderObjs[p]);
+		}
+		else _renderObjs[p] = new Geo_FlatSquare(0.5f); // default geometry
 	}
 
 	head = getNextActor();
@@ -111,7 +114,7 @@ void Geo_Humanoid2D::configure(Topl_Scene* scene) {
 	scene->addGeometry(getPrefix() + "rightLeg", rightLeg);
 	if (_sprites[HUMANOID_RightLeg] != nullptr) scene->addTexture(getPrefix() + "rightLeg", _sprites[HUMANOID_RightLeg]->image);
 
-	// Orientations update
+	// Default orientations
 
 	std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
 		std::make_pair(Vec3f({ 0.0f, 0.3f, 0.0 }), Vec2f({ 0.0, 0.0f })), // Head
@@ -150,6 +153,8 @@ void Geo_Humanoid2D::configure(Topl_Scene* scene) {
 
 // Humanoid 3D operations
 
+#ifdef TOPL_ENABLE_MODEL
+
 void Geo_Humanoid3D::configure(Topl_Scene* scene) {
 	// Assignment through node name matching
 	for (std::vector<Geo_Node*>::iterator node = _geoNodes.begin(); node != _geoNodes.end(); node++) {
@@ -171,3 +176,5 @@ void Geo_Humanoid3D::configure(Topl_Scene* scene) {
 		}
 	}
 }
+
+#endif

@@ -2,7 +2,7 @@
 
 // #define APP_BACKEND APP_OpenGL_4
 #define APP_BACKEND APP_DirectX_11
-// #defint APP_BACKEND App_Vulkan
+// #define APP_BACKEND App_Vulkan
 
 void Splitscreen_App::init() {
 	// Shaders and Pipeline

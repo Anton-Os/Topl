@@ -1,5 +1,8 @@
 #include "Topl_App.hpp"
 
+#include "Idle_Shader.hpp"
+#include "Advance_Shader.hpp"
+
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
 // #defint APP_BACKEND App_Vulkan
@@ -10,6 +13,9 @@ struct Diagnostic_App : public Topl_App {
 
 	void init() override { /* empty */ };
 	void loop(unsigned long frame) override { /* empty */ };
+
+	Idle_VertexShader vertexShader;
+	Idle_FragmentShader fragShader;
 };
 
 int main(int argc, char** argv) {

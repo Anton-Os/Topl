@@ -1,7 +1,9 @@
 #include "ShapesGen.hpp"
 
 #include "Geo_Tree.hpp"
-#include "Model.hpp"
+#ifdef TOPL_ENABLE_MODEL
+	#include "Model.hpp"
+#endif
 
 #include "primitives/Geo_Flat.hpp"
 
@@ -87,6 +89,8 @@ public:
 
 // 3D Model Humanoid
 
+#ifdef TOPL_ENABLE_MODEL
+
 class Geo_Humanoid3D : public Geo_Humanoid, public Geo_Model {
 public:
 	Geo_Humanoid3D(
@@ -107,3 +111,5 @@ public:
 
 	void configure(Topl_Scene* scene) override;
 };
+
+#endif

@@ -20,12 +20,12 @@ if(WIN32)
     # set(RESOURCE_ICON "${RESOURCE_DIR}/TOPL.ico" CACHE FILEPATH "Icon (.ico) file")
 endif()
 
-list(APPEND helper_src
-	helper/IO.cpp
-	helper/Controls.cpp
-    helper/Timer.cpp
-    helper/Platform.cpp
-    helper/ValueGen.cpp
+list(APPEND support_src
+	support/IO.cpp
+	support/Controls.cpp
+    support/Timer.cpp
+    support/Platform.cpp
+    support/ValueGen.cpp
     # core/File3D.cpp
 )
 
@@ -61,19 +61,21 @@ list(APPEND core_src
 )
 
 if(Assimp_FOUND)
+	set(irrXML_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXML.lib") # locating release lib
     set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib") # locating debug lib
+	set(zlib_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstatic.lib") # locating release lib
     set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib") # locating debug lib
     message("Assimp libraries irrXML_lib set to ${irrXML_lib}, irrXMLd_lib set to ${irrXMLd_lib}")
     message("Assimp libraries zlib_lib set to ${zlib_lib}, zlibd_lib set to ${zlibd_lib}")
 endif()
 
-# -------------- Renderers and Libraries ------------- #
+# -------------- Core and Geometry Libraries ------------- #
 
 add_library(CORELIB # Core Library
-    ${helper_src}
+    ${support_src}
     ${core_src}
 )
-target_include_directories(CORELIB PRIVATE core helper geometry)
+target_include_directories(CORELIB PRIVATE core support geometry)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
     INTERFACE
@@ -89,7 +91,7 @@ elseif(UNIX)
 endif()
 
 add_library(GEOLIB ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core helper geometry)
+target_include_directories(GEOLIB PRIVATE core support geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -105,6 +107,8 @@ if(Rasteron_FOUND) # linking targets to Rasteron
     target_link_libraries(GEOLIB PUBLIC Rasteron)
 endif()
 
+# -------------- Building Engines ------------- #
+
 # Building DirectX Engine
 
 if(WIN32)
@@ -112,7 +116,7 @@ if(WIN32)
         core/directx/Topl_Pipeline_Drx11.cpp
         core/directx/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PRIVATE core helper geometry)
+    target_include_directories(Drx11_ENGINE PRIVATE core support geometry)
     target_include_directories(Drx11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -128,7 +132,7 @@ if(Vulkan_FOUND)
         core/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(Vulkan_ENGINE PRIVATE core helper geometry)
+    target_include_directories(Vulkan_ENGINE PRIVATE core support geometry)
     target_include_directories(Vulkan_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -143,7 +147,7 @@ add_library(GL4_ENGINE
     core/opengl/Topl_Pipeline_GL4.cpp
     core/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PRIVATE core helper geometry)
+target_include_directories(GL4_ENGINE PRIVATE core support geometry)
 target_include_directories(Drx11_ENGINE INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -155,13 +159,12 @@ if(UNIX)
     add_dependencies(GL4_ENGINE GLEW)
 endif()
 
-# add all engine targets to a list
-list(APPEND engine_targets GL4_ENGINE) # OpenGL available on all systems
+list(APPEND engine_targets GL4_ENGINE) # OpenGL available cross-platform
 if(WIN32)
-    list(APPEND engine_targets Drx11_ENGINE)
+    list(APPEND engine_targets Drx11_ENGINE) # DirectX available on windows
 endif()
 if(Vulkan_FOUND)
-    list(APPEND engine_targets Vulkan_ENGINE)
+    list(APPEND engine_targets Vulkan_ENGINE) # Vulkan available with library
 endif()
 
 foreach(target IN ITEMS ${engine_targets})
@@ -173,22 +176,19 @@ foreach(target IN ITEMS ${engine_targets})
 	target_link_libraries(CORELIB PUBLIC ${target})
 endforeach()
 
-# ------------- Demos ------------- #
+# ------------- Demos and Tests ------------- #
 
 # include("cmake/legacyDemos.cmake")
 include("cmake/runTests.cmake")
-
-# Modern Demos and Tests
 
 add_executable(Demo_Playground demos/Playground.cpp)
 add_executable(Demo_Splitscreen demos/Splitscreen.cpp)
 add_executable(Demo_Animotion demos/Animotion.cpp)
 
-# add all demo targets to a list
-list(APPEND demo_targets Demo_Playground Demo_Splitscreen Demo_Animotion)
+list(APPEND demo_targets Demo_Playground Demo_Splitscreen Demo_Animotion) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core helper geometry shaders)
+    target_include_directories(${target} PRIVATE core support geometry shaders)
     target_link_libraries(${target} PRIVATE CORELIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
@@ -216,7 +216,7 @@ if(Vulkan_FOUND)
     #endif()
 endif()
 
-configure_file("${CMAKE_SOURCE_DIR}/helper/support_def.h.in" "${CMAKE_SOURCE_DIR}/helper/support_def.h")
+configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
 
 # Install Procedures
 
@@ -230,7 +230,7 @@ install(TARGETS CORELIB GEOLIB ${engine_targets}
 
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
 )

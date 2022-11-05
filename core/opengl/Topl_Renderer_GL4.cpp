@@ -15,6 +15,29 @@ namespace GL4 {
 		}
 	}
 
+	static void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader) {
+		glBindVertexArray(VAO->vao);
+
+		GLsizei inputElementOffset = 0;
+		for (unsigned inputNum = 0; inputNum < entryShader->getInputCount(); inputNum++) {
+			const Shader_Type* shaderType = entryShader->getInputAtIndex(inputNum);
+
+			glEnableVertexAttribArray(inputNum);
+			glVertexAttribPointer(
+				inputNum,
+				(GLint)Topl_Pipeline::getSize(shaderType->type),
+				getShaderFormat(shaderType->type),
+				GL_FALSE,
+				sizeof(Geo_Vertex),
+				(inputElementOffset != 0) ? (void*)(inputElementOffset) : NULL
+			);
+
+			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
+		}
+
+		glBindVertexArray(0);
+	}
+
 	// Additional Funtions
 
 	static void setTextureProperties(GLenum type, TEX_Mode m) {
@@ -72,10 +95,10 @@ static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc){
 }
 #elif defined(__linux__)
 static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
-	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None }; // Copy from Platform.cpp createWindow()
-	XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs); // Copy from Platform.cpp createWindow()
+	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs);
 
-	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE); // Object might be moved inside _Native_Platfor_Context
+	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
 	glXMakeCurrent(display, *window, graphicsContext);
 }
 
@@ -87,6 +110,7 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDest
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	glDeleteBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
+	// glDeleteVertexArrays(1, &_VAO);
 	glDeleteVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
 	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
@@ -116,6 +140,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
+	// glGenVertexArrays(1, &_VAO);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
 	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
@@ -148,15 +173,15 @@ void Topl_Renderer_GL4::switchFramebuff(){
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene){
-	blockBytes_t blockBytes; // container for constant and uniform buffer updates
+	blockBytes_t shaderBlockData;
 
 	// scene block buffer generation
-	_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
+	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
 	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
 	_bufferIndex++; // increments to next available slot
 	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-	unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-	glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
@@ -164,59 +189,38 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		Geo_RenderObj* actor_renderObj = (Geo_RenderObj*)actor->getRenderObj();
-
-		vertex_cptr_t actor_vData = actor_renderObj->getVertices();
-		ui_cptr_t actor_iData = actor_renderObj->getIndices();
+		Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		// render block buffer generation
-		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
-		if (actor_iData != nullptr) {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], actor_renderObj->getIndexCount()));
+		if (renderObj->getIndices() != nullptr) {
+			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], renderObj->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, actor_renderObj->getIndexCount() * sizeof(unsigned), actor_iData, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderObj->getIndexCount() * sizeof(unsigned), renderObj->getIndices(), GL_STATIC_DRAW);
 		} else {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
 			_bufferIndex++; // increments to next available slot
 		}
 
 		// vertices generation
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], actor_renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], renderObj->getVertexCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
-		glBufferData(GL_ARRAY_BUFFER, actor_renderObj->getVertexCount() * sizeof(Geo_Vertex), actor_vData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, renderObj->getVertexCount() * sizeof(Geo_Vertex), renderObj->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
 		_vertexArrays.push_back(VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]));
 		_vertexArrayIndex++; // increment to next available slot
-		VertexArray_GL4* VAO_ptr = &_vertexArrays.back(); // Check to see if all parameters are valid
-		glBindVertexArray(VAO_ptr->vao);
-
-		GLsizei inputElementOffset = 0;
-		for(unsigned i = 0; i < _entryShader->getInputCount(); i++){
-			const Shader_Type* shaderType = _entryShader->getInputAtIndex(i);
-
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(
-				i,
-				(GLint)Topl_Pipeline::getSize(shaderType->type),
-				GL4::getShaderFormat(shaderType->type),
-				GL_FALSE,
-				sizeof(Geo_Vertex),
-				(inputElementOffset != 0) ? GL4_BUFFER_OFFSET(inputElementOffset) : NULL
-			);
-
-			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
-		}
+		GL4::genVertexArrayLayout(&_vertexArrays.back(), _entryShader);
 	}
 
 	GLint blockCount; 
@@ -281,7 +285,6 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 
 	if(_textureSlots[_textureIndex - 1] == textureTarget)
 		_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, textureTarget)); // Texture Addition
-	// else TODO: Implement Texture Substitution
 }
 
 void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id) {

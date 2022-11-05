@@ -90,6 +90,7 @@ enum DRAW_Mode {
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
+#define FIRST_BUILD_CALL 0
 
 class Topl_Renderer {
 public:

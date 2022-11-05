@@ -2,7 +2,9 @@
 
 #include "Topl_Factory.hpp"
 
-#define EVENT_HANDLE_TIME 1.0 / 120
+#define LOOP_RESET -0.0001
+#define LOOP_INTERVAL 0.0
+// #define LOOP_INTERVAL 1.0 / 60.0
 
 class Topl_App {
 public:

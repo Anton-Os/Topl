@@ -41,18 +41,14 @@ float3x3 calcRotMatrix(float2 rotCoords){
 	return mul(zRotMatrix, yRotMatrix);
 }
 
-float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
-	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
-
-	float3 zAxis = normalize(lPos - cPos);
-	float3 xAxis = normalize(cross(defaultUpVec, zAxis));
-	float3 yAxis = cross(zAxis, xAxis);
+float4x4 calcCamMatrix(float3 cPos, float2 lPos){ // camera postion and relative look position
+	// float3x3 camMatrix = mul(calcRotMatrix(lPos), { cPos.x, cPos.x, cPos.x, cPos.y, cPos.y, cPos.y, -cPos.z, -cPos.z, -cPos.z });
 
 	float4x4 camMatrix = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0,
-		xAxis.y, yAxis.y, zAxis.y, 0.0,
-		xAxis.z, yAxis.z, zAxis.z, 0.0,
-		-1.0 * dot(xAxis, cPos), -1.0 * dot(yAxis, cPos), -1.0 * dot(zAxis, cPos), 1.0
+		cPos.x, cPos.x, cPos.x, 0.0,
+		cPos.y, cPos.y, cPos.y, 0.0,
+		-cPos.z, -cPos.z, -cPos.z, 0.0,
+		0.0, 0.0, 0.0, 1.0
 	};
 
 	return camMatrix;
@@ -66,9 +62,9 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float3 rotCoords = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
 	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
-	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos);
-	output.pos += mul(projMatrix, offset); // TODO: include camera matrix with projection
-
+	float4x4 cameraMatrix = calcCamMatrix(cam_pos, float2(look_pos.x, look_pos.y));
+	output.pos = mul(projMatrix, output.pos + float4(offset, 0.0));
+	// output.pos = mul(projMatrix, mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
 	if(mode == 1) { // alternate mode
 		switch(vertexID % 4){

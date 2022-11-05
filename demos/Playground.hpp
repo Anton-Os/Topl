@@ -1,10 +1,8 @@
 #include "Topl_App.hpp"
 
-#include "Idle_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Flat_Shader.hpp"
 #include "Beams_Shader.hpp"
-#include "Advance_Shader.hpp"
 
 #include "Primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Sphere.hpp"
@@ -15,6 +13,8 @@
 
 #define PLAYGROUND_SPHERES_COUNT 6
 #define PLAYGROUND_PANE_COUNT 9
+
+std::string noAssets[HUMANOID_PARTS_COUNT]{ "", "", "", "", "", "" };
 
 std::string ghostAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Ghost-Head.png",
@@ -43,6 +43,8 @@ std::string demonAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Demon-RightLeg.png"
 };
 
+Geo_Humanoid2D character = Geo_Humanoid2D("character", ghostAssets);
+
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
 		: Topl_App(execPath, "Playground", backend){}
@@ -59,7 +61,7 @@ private:
 	void preFrame();
 	void postFrame();
 
-	void genShaderPipeline();
+	void createPipeline();
 	void createScene_Main();
 	void createScene_Overlay();
 	void createScene_Details();
@@ -69,10 +71,6 @@ private:
 	Geo_Actor platformActor = Geo_Actor((Geo_RenderObj*)&square);
 	Geo_Sphere sphere = Geo_Sphere({ 0.025f, 200, 200 });
 	Geo_Actor sphereActors[PLAYGROUND_SPHERES_COUNT];
-	Geo_Humanoid2D ghost = Geo_Humanoid2D("ghost", ghostAssets);
-	Geo_Humanoid2D angel = Geo_Humanoid2D("angel", angelAssets);
-	Geo_Humanoid2D demon = Geo_Humanoid2D("demon", demonAssets);
-	// Geo_Humanoid3D avatar;
 
 	// Overlay Scene Elements
 	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
@@ -89,24 +87,19 @@ private:
 	// Textures, Materials, Heightmaps
 
 	Rasteron_Image* frameImage = nullptr;
-	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
-	// Rasteron_Text textObj = { fontStr.c_str(), "option", WHITE_COLOR, BLACK_COLOR};
-	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
 	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
-	Img_Material material = Img_Material("material1", 1024, 1024);
-	Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
+	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
+	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
+	Img_Material material = Img_Material("material1", 4096, 4096);
+	/* Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
 	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
-	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap);
+	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap); */
 
 	// Shaders and Pipelines
 
 	Topl_Pipeline *colPipeline, *texPipeline, *litPipeline;
-	Topl_Pipeline* advPipeline; // advanced pipeline
 
-	Idle_VertexShader vertexShader0; Idle_FragmentShader fragShader0;
 	Textured_VertexShader vertexShader1; Textured_FragmentShader fragShader1;
 	Flat_VertexShader vertexShader2; Flat_FragmentShader fragShader2;
 	Beams_VertexShader vertexShader3; Beams_FragmentShader fragShader3;
-	Advance_TessCtrlShader tessCtrlShader; Advance_TessEvalShader tessEvalShader;
-	Advance_GeometryShader geomShader;
 };

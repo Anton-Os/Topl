@@ -2,12 +2,7 @@
 
 // Buffer
 
-#define GL4_BUFFER_OFFSET(i) ((void*)(i))
-
-#define RENDER_BLOCK_SUPPORT 1 // render block support only
-#define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
-
-#define GL4_BUFFER_MAX 1024
+#define GL4_BUFFER_MAX 4096
 struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
@@ -17,16 +12,17 @@ struct Buffer_GL4 : public Buffer {
 
 // Vertex Array Object
 
-#define GL4_VERTEX_ARRAY_MAX 1024
+#define GL4_VERTEX_ARRAY_MAX 4096
 struct VertexArray_GL4 : public RenderTarget {
 	VertexArray_GL4() : RenderTarget() {}
 	VertexArray_GL4(unsigned id, GLuint v) : RenderTarget(id){ vao = v; }
+
 	GLuint vao;
 };
 
 // Texture
 
-#define GL4_TEXTURE_BINDINGS_MAX 1024
+#define GL4_TEXTURE_BINDINGS_MAX 4096
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
@@ -48,6 +44,9 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 };
 
 // Renderer
+
+#define RENDER_BLOCK_SUPPORT 1 // render block support only
+#define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
@@ -84,6 +83,7 @@ private:
 
 	Topl_Pipeline_GL4* _pipeline;
 
+	GLuint _VAO;
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot

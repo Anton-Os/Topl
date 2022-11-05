@@ -11,3 +11,6 @@
     
     #include "Rasteron.h" // includes Rasteron main modules
 #endif
+#if 1
+	#define TOPL_ENABLE_MODEL
+#endif

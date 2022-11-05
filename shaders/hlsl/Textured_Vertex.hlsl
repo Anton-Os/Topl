@@ -66,7 +66,7 @@ VS_OUTPUT main(VS_INPUT input) {
 	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
-	output.pos += mul(projMatrix, offset);
+	output.pos = mul(projMatrix, output.pos + float4(offset, 0.0));
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 
 	return output;
