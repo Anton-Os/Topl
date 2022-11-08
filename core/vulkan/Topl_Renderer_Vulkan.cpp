@@ -29,10 +29,6 @@ Rasteron_Image* Topl_Renderer_Vulkan::frame() {
 	return image;
 }
 
-void Topl_Renderer_Vulkan::texturize(const Topl_Scene* scene) {
-	// Implement texturizing operations
-}
-
 void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned id){
 	// Implement texture attaching
 }

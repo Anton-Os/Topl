@@ -20,15 +20,14 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	RECT rect;
 
 	switch (message) {
-	case(WM_CREATE): {}
+	case(WM_CREATE): {
+		// Create Function Here
+	}
 	case(WM_PAINT): {}
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
-	case (WM_CHAR): { 
-		Platform::keyControl.addKeyPress((char)wParam);
-		// Platform::updateTimer(); // updates timer after key press handled
-	}
+	case (WM_CHAR): { Platform::keyControl.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }
@@ -181,6 +180,14 @@ void Platform::handleEvents(bool isCursorUpdate){
 		case (MotionNotify): { }
 		}
 	}
+}
+
+unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+	return TOPL_WIN_HEIGHT; // TODO: get height here
+}
+
+unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+	return TOPL_WIN_WIDTH; // TODO: get height here
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const {

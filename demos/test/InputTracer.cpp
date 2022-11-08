@@ -2,10 +2,10 @@
 
 int main(int argc, char** argv){
     Platform platform = Platform(argv[0], "InputTracer");
-    platform.createWindow();
+    platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 
     while (1) {
-        platform.handleEvents(true);
+       platform.handleEvents(true);
     }
 
     return 0;

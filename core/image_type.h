@@ -20,11 +20,11 @@ struct Img_Base {
     }
 
     void setColorImage(unsigned color){
-        if(image != NULL) deleteImg(image); // delte old image
+        if(image != NULL) deleteImg(image); // delete old image
 		image = createSolidImg({ 256, 256 }, color);
     }
     void setFileImage(const std::string& filePath){
-        if(image != NULL) deleteImg(image); // delte old image
+        if(image != NULL) deleteImg(image); // delete old image
 		char newFilePath[1024];
 		strcpy(&newFilePath[0], filePath.c_str());
 #ifdef _WIN32
@@ -33,12 +33,12 @@ struct Img_Base {
         image = createRefImg(&newFilePath[0]);
     }
     void setTextImage(Rasteron_Text* textObj){
-        if(image != NULL) deleteImg(image); // delte old image
+        if(image != NULL) deleteImg(image); // delete old image
 		image = bakeTextI(textObj);
     }
     void setImage(Rasteron_Image* refImage){
-        if(image != NULL) deleteImg(image); // delte old image
-        image = refImage;
+        if(image != NULL) deleteImg(image); // delete old image
+        image = createCopyImg(refImage);
     }
     Rasteron_Image* getImage(){ return image; }
 private:
@@ -56,12 +56,12 @@ struct Img_Frames {
 	}
 	~Img_Frames(){ deleteAnim(data); }
 	
-	void addFrame(const Rasteron_Image *const refImg){
+	void addNewFrame(const Rasteron_Image *const refImg){
         if(frameIndex == data->frameCount){
 		    frameIndex = 0; 
             replay++;
         }
-        addFrameData(data, refImg, frameIndex);
+        addFrame(data, refImg, frameIndex);
         frameIndex++;
     }
 	Rasteron_Image* getFrameAt(unsigned index) const { return getFrame(data, index); }
@@ -95,8 +95,8 @@ struct Img_Material {
 	}
 	~Img_Material(){ deleteAnim(data); }
 	
-	void addLayer(const Rasteron_Image *const refImg, MATERIAL_Property property){
-        addFrameData(data, refImg, property);
+	void addNewLayer(const Rasteron_Image *const refImg, MATERIAL_Property property){
+        addFrame(data, refImg, property);
     }
 	Rasteron_Image* getLayer(MATERIAL_Property property) const { return getFrame(data, property); }
 

@@ -2,15 +2,25 @@
 
 #include <map>
 
+#include "physics.h"
+#include "physics_motion.h"
+
 #include "image_type.h"
 #include "support_def.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
+#include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
 
 // Light
+
+enum LIGHT_Type { 
+	LIGHT_Sky, // uniform direction
+	LIGHT_Flash, // pointing relative respect to camera
+	LIGHT_Lamp // hovers in scene
+};
 
 struct Topl_Light {
 	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor

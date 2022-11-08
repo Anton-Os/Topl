@@ -6,7 +6,7 @@
     #define VULKAN_H
 #endif
 #if 1
-    #define RASTERON_ENABLE_PLUGIN
+    #define RASTERON_ENABLE_ANIM
     #define RASTERON_ENABLE_FONT
     
     #include "Rasteron.h" // includes Rasteron main modules

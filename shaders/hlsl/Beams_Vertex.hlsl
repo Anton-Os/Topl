@@ -22,7 +22,6 @@ struct VS_INPUT {
 };
 
 struct VS_OUTPUT {
-	// uint mode : MODE;
 	float4 pos : SV_POSITION;
 	float3 pos1 : POSITION;
 
@@ -40,7 +39,7 @@ float sharpen(float intensity, uint curve){
 	else return pow(intensity, curve) * pow(scale, curve);
 }
 
-float calcSpecIntensity(float3 light, float3 target, float3 camera){
+float calcSpec(float3 light, float3 target, float3 camera){
 	float lightDP = dot(normalize(light), target); // light dot product
 	float camDP = dot(normalize(camera), target); // camera dot product
 
@@ -49,7 +48,7 @@ float calcSpecIntensity(float3 light, float3 target, float3 camera){
 	return sharpen(lightDP, 2);
 }
 
-float calcDiffuseIntensity(float3 light, float3 target){
+float calcDiffuse(float3 light, float3 target){
 	float intensity = dot(normalize(light), normalize(target));
 	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
 	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
@@ -102,16 +101,15 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.pos += float4(offset, 0.0f); // output.pos += mul(projMatrix, offset);
 	output.pos1 = float3(output.pos.x, output.pos.y, output.pos.z);
 
-	// Light Source Shadings
-	
-
-	const float ambient_intensity = 0.1f; // ambient light intensity
-	output.ambient = ambient_intensity * skyLight_value; // only sky light affects ambient property
-	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, float3(input.pos.x, input.pos.y, input.pos.z));
-	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, float3(input.pos.x, input.pos.y, input.pos.z));
-	output.diffuse = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
-	const float specular_intensity = calcSpecIntensity(flashLight_pos, float3(input.pos.x, input.pos.y, input.pos.z), cam_pos);
-	output.specular = specular_intensity * flashLight_value; // only flash light affects specular
+	// ambient shading
+	const float ambient_intensity = 0.25f; // ambient light intensity
+	output.ambient = ambient_intensity * skyLight_value;
+	// diffuse shading
+	const float skyLight_diffuse = calcDiffuse(skyLight_pos, float3(input.pos.x, input.pos.y, input.pos.z));
+	output.diffuse = (skyLight_diffuse * skyLight_value); // + (flashLight_diffuse * flashLight_value);
+	// specular shading
+	const float specular_intensity = calcSpec(skyLight_pos, float3(input.pos.x, input.pos.y, input.pos.z), cam_pos);
+	output.specular = specular_intensity * skyLight_value;
 
 	return output;
 }

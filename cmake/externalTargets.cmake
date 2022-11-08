@@ -24,8 +24,8 @@ ExternalProject_Add(GLEW
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-set(SUPPORT_3D_ASSETS ON CACHE BOOL "Include 3d asset loading module" FORCE)
-if(SUPPORT_3D_ASSETS)
+set(SUPPORT_3D_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
+if(SUPPORT_3D_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
         GIT_REPOSITORY "https://github.com/assimp/assimp.git"
         GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
@@ -50,6 +50,9 @@ ExternalProject_Add(OpenAL # Audio File Loading
     )
 endif()
 
-# find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake) # Replace Eigen with Maths.hpp
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
+
 find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
+if(NOT SUPPORT_3D_MODELS)
+    set(Assimp_FOUND 0) # override variable to not found
+endif()

@@ -26,7 +26,7 @@ public:
 	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
-	void texturize(const Topl_Scene* scene) override;
+	// void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_Vulkan* pipeline);
 	void genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);

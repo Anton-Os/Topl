@@ -42,16 +42,17 @@ float3x3 calcRotMatrix(float2 rotCoords){
 }
 
 float4x4 calcCamMatrix(float3 cPos, float2 lPos){ // camera postion and relative look position
-	// float3x3 camMatrix = mul(calcRotMatrix(lPos), { cPos.x, cPos.x, cPos.x, cPos.y, cPos.y, cPos.y, -cPos.z, -cPos.z, -cPos.z });
+	float3x3 rm = calcRotMatrix(lPos);
+	float4x4 rotMatrix = { rm[0][0], rm[0][1], rm[0][2], 0, rm[1][0], rm[1][1], rm[1][2], 0, rm[2][0], rm[2][1], rm[2][2], 0, 0, 0, 0, 1 };
 
 	float4x4 camMatrix = {
-		cPos.x, cPos.x, cPos.x, 0.0,
-		cPos.y, cPos.y, cPos.y, 0.0,
-		-cPos.z, -cPos.z, -cPos.z, 0.0,
+		1.0, 0.0, 0.0, cPos.x,
+		0.0, 1.0, 0.0, cPos.y,
+		0.0, 0.0, 1.0, cPos.z,
 		0.0, 0.0, 0.0, 1.0
 	};
 
-	return camMatrix;
+	return mul(camMatrix, rotMatrix);
 }
 
 // Main
@@ -63,8 +64,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, float2(look_pos.x, look_pos.y));
-	output.pos = mul(projMatrix, output.pos + float4(offset, 0.0));
-	// output.pos = mul(projMatrix, mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	// output.pos = mul(projMatrix, output.pos + float4(offset, 0.0));
+	output.pos = mul(projMatrix, mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
 	if(mode == 1) { // alternate mode
 		switch(vertexID % 4){

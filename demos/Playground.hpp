@@ -43,7 +43,15 @@ std::string demonAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Demon-RightLeg.png"
 };
 
-Geo_Humanoid2D character = Geo_Humanoid2D("character", ghostAssets);
+unsigned checkerMap_callback(double xFrac, double yFrac) {
+	if (xFrac < 0.05 || xFrac > 0.95 || yFrac < 0.05 || yFrac > 0.95) return 0xFF4D4942; // border color
+	else if (xFrac > 0.5) return (yFrac > 0.5) ? 0xFFed9679 : 0xFFffa1b1; // right checker pattern
+	else return (yFrac > 0.5)? 0xFFffa1b1 : 0xFFed9679; // left checker pattern
+}
+
+Rasteron_Image* checkerImg = createMappedImg({ 256, 256 }, checkerMap_callback);
+Img_Base characterImages[HUMANOID_PARTS_COUNT] = { Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg) };
+Geo_Humanoid2D character = Geo_Humanoid2D("character", noAssets);
 
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
@@ -55,6 +63,7 @@ struct Playground_App : public Topl_App {
 	// Configurations
 
 	static Topl_Camera camera1, camera2, camera3;
+	static Topl_Light skyLight, flashLight, lampLight;
 	Topl_Scene scene_main, scene_overlay, scene_details;
 
 private:

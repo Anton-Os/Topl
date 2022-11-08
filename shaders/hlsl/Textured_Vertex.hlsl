@@ -7,6 +7,7 @@ cbuffer CONST_BLOCK : register(b0) {
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
+	double time;
 	float4 cam_pos;
 	float4 look_pos;
 	float4x4 projMatrix;

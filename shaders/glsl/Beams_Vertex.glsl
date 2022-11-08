@@ -22,12 +22,10 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-// layout(location = 0) flat out uint mode_out;
 layout(location = 1) out vec3 pos_out;
 layout(location = 2) out vec3 ambient_out;
 layout(location = 3) out vec3 diffuse_out;
 layout(location = 4) out vec3 specular_out;
-// layout(location = 3) out vec4 lampShine_out;
 
 // Functions
 
@@ -35,12 +33,12 @@ vec3 reflect(vec3 light, vec3 target){
 	return light - ((2 * dot(light, normalize(target)) * normalize(target))); 
 }
 
-float calcSpecIntensity(vec3 light, vec3 target, vec3 camera){
+float calcSpec(vec3 light, vec3 target, vec3 camera){
 	vec3 reflectVec = reflect(light, target);
 	return dot(-1.0 * normalize(camera), reflectVec);
 }
 
-float calcDiffuseIntensity(vec3 light, vec3 target){
+float calcDiffuse(vec3 light, vec3 target){
 	float intensity = dot(normalize(light), normalize(target));
 	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
 	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
@@ -48,7 +46,7 @@ float calcDiffuseIntensity(vec3 light, vec3 target){
 	return intensity * attenuation;
 }
 
-float calcAmbientIntensity(vec3 light){
+float calcAmbient(vec3 light){
 	const float attenuation = 0.1;
 	return ((light.r * attenuation) + (light.g * attenuation) + (light.b * attenuation)) / 3;
 }
@@ -94,20 +92,15 @@ void main() {
 
 	gl_Position = final_pos + vec4(offset, 0.0f); // * projMatrix;
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
-	
-	// mode_out = mode;
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 
-	// Light Source Shadings
-
-	const float ambient_intensity = 0.1f; // calcAmbientIntensity(sky_light); // ambient light intensity
-	ambient_out = ambient_intensity * skyLight_value; // only sky light affects ambient property
-	const float skyLight_intensity = calcDiffuseIntensity(skyLight_pos, pos);
-	const float flashLight_intensity = calcDiffuseIntensity(flashLight_pos, pos);
-	diffuse_out = (skyLight_intensity * skyLight_value) + (flashLight_intensity * flashLight_value);
-	// const float specular_curve = 1.0;
-	const float specular_intensity = calcSpecIntensity(flashLight_pos, pos, cam_pos);
-	specular_out = reflect(flashLight_pos, pos); // for testing
-	// specular_out = sin(reflect(flashLight_pos, pos)); // for testing
-	// specular_out = specular_intensity * flashLight_value;
+	// ambient shading
+	const float ambient_intensity = 0.25f;
+	ambient_out = ambient_intensity * skyLight_value;
+	// diffuse shading
+	const float skyLight_intensity = calcDiffuse(skyLight_pos, pos);
+	diffuse_out = (skyLight_intensity * skyLight_value); // + (flashLight_intensity * flashLight_value);
+	// specular shading
+	const float specular_intensity = calcSpec(skyLight_pos, pos, cam_pos);
+	specular_out = reflect(skyLight_pos, pos); // for testing
 }

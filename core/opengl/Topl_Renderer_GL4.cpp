@@ -3,14 +3,14 @@
 namespace GL4 {
 	// Shader Functions
 
-	static GLenum getShaderFormat(enum SHDR_ValueType type){
-		switch(type) {
-		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float: 
+	static GLenum getShaderFormat(enum SHDR_ValueType type) {
+		switch (type) {
+		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float:
 			return GL_FLOAT;
-		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint: 
+		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint:
 			return GL_UNSIGNED_INT;
 		default:
-		 	logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!");
+			logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!");
 			return 0; // error
 		}
 	}
@@ -61,12 +61,35 @@ namespace GL4 {
 }
 
 #ifdef _WIN32
-static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc){
-    // Creates an HDC based on the window
-    *windowDC = GetDC(*window);
+static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc) {
+	wglMakeCurrent(NULL, NULL);
+	wglDeleteContext(*hglrc);
 
-    // Pixel Format for Windows GL Context
-    PIXELFORMATDESCRIPTOR pixFrmtDesc, *pixFrmtDesc_ptr;
+	ReleaseDC(*window, *windowDC);
+}
+#elif defined(__linux__)
+static void cleanup_linux(Display* display, GLXContext graphicsContext) { glXDestroyContext(display, graphicsContext); }
+#endif
+
+Topl_Renderer_GL4::~Topl_Renderer_GL4() {
+	glDeleteBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
+	glDeleteVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
+	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+
+#ifdef _WIN32
+	cleanup_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
+#elif defined(__linux__)
+	cleanup_linux(_platformCtx.display, _platformCtx.oglCtx);
+#endif
+}
+
+#ifdef _WIN32
+static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc) {
+	// Creates an HDC based on the window
+	*windowDC = GetDC(*window);
+
+	// Pixel Format for Windows GL Context
+	PIXELFORMATDESCRIPTOR pixFrmtDesc, * pixFrmtDesc_ptr;
 	pixFrmtDesc_ptr = &pixFrmtDesc;
 	int pixFrmt;
 
@@ -80,21 +103,15 @@ static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc){
 	pixFrmt = ChoosePixelFormat(*windowDC, pixFrmtDesc_ptr);
 	BOOL pixFrmtChk = SetPixelFormat(*windowDC, pixFrmt, pixFrmtDesc_ptr);
 
-    // wgl initialization functions
-    *hglrc = wglCreateContext(*windowDC);
-    wglMakeCurrent(*windowDC, *hglrc);
+	// wgl initialization functions
+	*hglrc = wglCreateContext(*windowDC);
+	wglMakeCurrent(*windowDC, *hglrc);
 }
 
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
 
-static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc){
-  	wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(*hglrc);
-
-	ReleaseDC(*window, *windowDC);
-}
 #elif defined(__linux__)
-static void init_linux(GLXContext graphicsContext, Display* display, Window* window){
+static void init_linux(GLXContext graphicsContext, Display* display, Window* window) {
 	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 	XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs);
 
@@ -102,31 +119,14 @@ static void init_linux(GLXContext graphicsContext, Display* display, Window* win
 	glXMakeCurrent(display, *window, graphicsContext);
 }
 
-static void swapBuffers_linux(Display* display, Window* window){ glXSwapBuffers(display, *window); }
-
-static void cleanup_linux(Display* display, GLXContext graphicsContext){ glXDestroyContext(display, graphicsContext);}
+static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
 #endif
 
-
-Topl_Renderer_GL4::~Topl_Renderer_GL4() {
-	glDeleteBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
-	// glDeleteVertexArrays(1, &_VAO);
-	glDeleteVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
-	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
-
-#ifdef _WIN32
-	cleanup_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
-#elif defined(__linux__)
-	cleanup_linux(_platformCtx.display, _platformCtx.oglCtx);
-#endif
-}
-
-
-void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
+void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 	_platformCtx.window = window;
 
 #ifdef _WIN32
-    init_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
+	init_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
 #elif defined(__linux__)
 	init_linux(_platformCtx.oglCtx, _platformCtx.display, &_platformCtx.window);
 #endif
@@ -140,7 +140,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
-	// glGenVertexArrays(1, &_VAO);
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
 	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
@@ -150,7 +149,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window){
 	setViewport(&_defaultViewport);
 }
 
-void Topl_Renderer_GL4::clearView(){
+void Topl_Renderer_GL4::clearView() {
 	glClearColor(CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA);
 	// glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -161,7 +160,7 @@ void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 	else _isBuilt = false; // Error
 }
 
-void Topl_Renderer_GL4::switchFramebuff(){
+void Topl_Renderer_GL4::switchFramebuff() {
 	if (_isDrawn) {
 #ifdef _WIN32 // Swap buffers in windows
 		swapBuffers_win(&_platformCtx.deviceCtx);
@@ -172,12 +171,12 @@ void Topl_Renderer_GL4::switchFramebuff(){
 	}
 }
 
-void Topl_Renderer_GL4::build(const Topl_Scene* scene){
+void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
 	// scene block buffer generation
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex])); 
+	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
 	_bufferIndex++; // increments to next available slot
 	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
 	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
@@ -206,7 +205,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderObj->getIndexCount() * sizeof(unsigned), renderObj->getIndices(), GL_STATIC_DRAW);
-		} else {
+		}
+		else {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
 			_bufferIndex++; // increments to next available slot
 		}
@@ -223,7 +223,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene){
 		GL4::genVertexArrayLayout(&_vertexArrays.back(), _entryShader);
 	}
 
-	GLint blockCount; 
+	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
 	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
@@ -243,69 +243,69 @@ Rasteron_Image* Topl_Renderer_GL4::frame() {
 
 	Rasteron_Image* frameImage = allocNewImg("frame", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, frameImage->data);
-
 	Rasteron_Image* flipImage = createFlipImg(frameImage, FLIP_Upside);
 	Rasteron_Image* mirrorImage = createMirrorImg(flipImage);
-	switchRB(mirrorImage->data, viewportHeight * viewportWidth);
+	switchRB(mirrorImage->data, viewportHeight * viewportWidth); // edits
 
 	deleteImg(flipImage);
 	deleteImg(frameImage);
 	return mirrorImage;
 }
 
-void Topl_Renderer_GL4::texturize(const Topl_Scene* scene) {
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
-
-		const Rasteron_Image* texture = scene->getTexture(actor->getName());
-		if (texture != nullptr) attachTexture(texture, renderID);
-
-		const Img_Material* material = scene->getMaterial(actor->getName());
-		if (material != nullptr) attachMaterial(material, renderID);
-	}
-}
-
-void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id){
+void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
-	for (std::vector<Texture_GL4>::iterator t = _textures.begin(); t != _textures.end(); t++) {
-		if ((*t).renderID == id) {
-			textureTarget = (*t).texture;
+	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
+		if (tex->renderID == id) {
+			textureTarget = tex->texture;
 			_textureIndex--; // decrement since texture binding is located
 		}
 	}
 
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
-	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); // setting texture mode properties
+	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rawImage->height, rawImage->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	if(_textureSlots[_textureIndex - 1] == textureTarget)
+	if (_textureSlots[_textureIndex - 1] == textureTarget)
 		_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, textureTarget)); // Texture Addition
 }
 
 void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
-	// TODO: Find Texture Target
+
+	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
+		if (tex->renderID == id) {
+			textureTarget = tex->texture;
+			_textureIndex--; // decrement since texture binding is located
+		}
+	}
 
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode); // setting texture mode properties
-	// glTexImage3D(); // Generate Data Here!!!
+	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
+	glTexImage3D(
+		GL_TEXTURE_3D, 
+		0, GL_RGBA, 
+		material->getLayer(MATERIAL_Albedo)->height, 
+		material->getLayer(MATERIAL_Albedo)->width, 
+		MAX_MATERIAL_PROPERTIES, 
+		0, GL_RGBA, 
+		GL_UNSIGNED_BYTE,
+		material->getLayer(MATERIAL_Albedo)->data  // TODO: Pass Full Material Data
+	);
 	glGenerateMipmap(GL_TEXTURE_3D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
 		_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, textureTarget));
-	// else TODO: Implement Texture Substitution
 }
 
 #endif
 
-void Topl_Renderer_GL4::update(const Topl_Scene* scene){
+void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
@@ -336,8 +336,8 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene){
 	return;
 }
 
-void Topl_Renderer_GL4::drawMode(){
-	switch(_drawMode){
+void Topl_Renderer_GL4::drawMode() {
+	switch (_drawMode) {
 	case DRAW_Triangles: _drawMode_GL4 = GL_TRIANGLES; break;
 	case DRAW_Points: _drawMode_GL4 = GL_POINTS; break;
 	case DRAW_Lines: _drawMode_GL4 = GL_LINES; break;
@@ -361,15 +361,13 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-		if(indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+		if (indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
-		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).renderID > renderID) break; // geometry actor is passed in sequence 
-			else if (_textures.at(t).renderID == renderID) {
+		for (unsigned t = 0; t < _textures.size(); t++) 
+			if (_textures.at(t).renderID == renderID) {
 				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
 				break;
 			}
-		}
 
 		// Draw Call!
 		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
@@ -382,7 +380,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 	}
 }
 
-Buffer_GL4* Topl_Renderer_GL4::findBuffer(BUFF_Type type, unsigned long renderID){
+Buffer_GL4* Topl_Renderer_GL4::findBuffer(BUFF_Type type, unsigned long renderID) {
 	for (std::vector<Buffer_GL4>::iterator buffer = _buffers.begin(); buffer < _buffers.end(); buffer++)
 		if (buffer->type == type && buffer->renderID == renderID)
 			return &(*buffer);

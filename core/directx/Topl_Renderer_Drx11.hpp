@@ -10,12 +10,11 @@
 // Buffer
 
 struct Buffer_Drx11 : public Buffer {
-	// Buffer_Drx11() : Buffer() {}
 	Buffer_Drx11(ID3D11Buffer* b) : Buffer(){ buffer = b; }
 	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) { buffer = b; }
 	Buffer_Drx11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Buffer(id, t, c) { buffer = b; }
 
-	ID3D11Buffer* buffer; // DirectX specific
+	ID3D11Buffer* buffer; // DirectX buffer
 };
 
 // Texture
@@ -24,12 +23,10 @@ struct Texture_Drx11 : public Texture {
 	Texture_Drx11() : Texture() {}
 	Texture_Drx11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
 		: Texture(id, f, m) {
-			// texture = t;
 			sampler = s;
 			resView = r;
 		}
 
-	// ID3D11Texture2D* texture = nullptr;
 	ID3D11SamplerState* sampler = nullptr;
 	ID3D11ShaderResourceView* resView = nullptr;
 };
@@ -74,12 +71,10 @@ public:
 	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
-	void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
-	// void switchPipeline(const Topl_Pipeline* pipeline) override;
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
+	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader);
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
 #endif
@@ -102,10 +97,9 @@ private:
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;
 	ID3D11DeviceContext* _deviceCtx;
-	ID3D11InputLayout* _vertexDataLayout;
+	ID3D11InputLayout* _vertexDataLayout = nullptr;
 	ID3D11RenderTargetView* _rtView;
 	ID3D11DepthStencilView* _dsView;
-	ID3D11ShaderResourceView* _resourceView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;
 

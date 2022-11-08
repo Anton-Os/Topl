@@ -85,12 +85,28 @@ namespace Drx11 {
 		return inputElementDesc;
 	}
 
-	static enum D3D11_TEXTURE_ADDRESS_MODE getTexMode(enum TEX_Mode mode) {
+	static D3D11_SAMPLER_DESC genSamplerDesc(enum TEX_Mode mode) {
+		D3D11_TEXTURE_ADDRESS_MODE texMode;
+
 		switch (mode) {
-		case(TEX_Wrap): return D3D11_TEXTURE_ADDRESS_WRAP;
-		case(TEX_Mirror): return D3D11_TEXTURE_ADDRESS_MIRROR;
-		case(TEX_Clamp): return D3D11_TEXTURE_ADDRESS_CLAMP;
+		case(TEX_Wrap): texMode = D3D11_TEXTURE_ADDRESS_WRAP; break;
+		case(TEX_Mirror): texMode = D3D11_TEXTURE_ADDRESS_MIRROR; break;
+		case(TEX_Clamp): texMode = D3D11_TEXTURE_ADDRESS_CLAMP; break;
 		}
+
+		D3D11_SAMPLER_DESC samplerDesc;
+		ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = texMode;
+		samplerDesc.AddressV = texMode;
+		samplerDesc.AddressW = texMode;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		return samplerDesc;
 	}
 }
 
@@ -99,10 +115,9 @@ Topl_Renderer_Drx11::~Topl_Renderer_Drx11() {
 	_device->Release();
 	_deviceCtx->Release();
 
-	_vertexDataLayout->Release();
-	_resourceView->Release();
+	if(_vertexDataLayout != nullptr) _vertexDataLayout->Release();
 	_rtView->Release();
-	_dsView->Release();
+	if(_dsView != nullptr) _dsView->Release();
 	_blendState->Release();
 	_rasterizerState->Release();
 }
@@ -361,34 +376,10 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	return image;
 }
 
-void Topl_Renderer_Drx11::texturize(const Topl_Scene* scene) {
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
-
-		const Rasteron_Image* texture = scene->getTexture(actor->getName());
-		if (texture != nullptr) attachTexture(texture, renderID);
-
-		const Img_Material* material = scene->getMaterial(actor->getName());
-		if (material != nullptr) attachMaterial(material, renderID);
-	}
-}
-
 void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned renderID) {
 	HRESULT result;
 
-	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = Drx11::getTexMode(_texMode);
-	samplerDesc.AddressV = Drx11::getTexMode(_texMode);
-	samplerDesc.AddressW = Drx11::getTexMode(_texMode);
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
+	D3D11_SAMPLER_DESC samplerDesc = Drx11::genSamplerDesc(_texMode);
 	ID3D11SamplerState* sampler;
 	result = _device->CreateSamplerState(&samplerDesc, &sampler);
 
@@ -438,18 +429,7 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned renderID) {
 	HRESULT result;
 
-	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = Drx11::getTexMode(_texMode);
-	samplerDesc.AddressV = Drx11::getTexMode(_texMode);
-	samplerDesc.AddressW = Drx11::getTexMode(_texMode);
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
+	D3D11_SAMPLER_DESC samplerDesc = Drx11::genSamplerDesc(_texMode);
 	ID3D11SamplerState* sampler;
 	result = _device->CreateSamplerState(&samplerDesc, &sampler);
 
@@ -457,6 +437,7 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 	ZeroMemory(&texDesc, sizeof(texDesc));
 	texDesc.Width = material->getLayer(MATERIAL_Albedo)->height;
 	texDesc.Height = material->getLayer(MATERIAL_Albedo)->width;
+	texDesc.Depth = MAX_MATERIAL_PROPERTIES;
 	texDesc.MipLevels = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -465,7 +446,7 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	D3D11_SUBRESOURCE_DATA texData;
-	texData.pSysMem = 0; // Generate Data Here!!!
+	texData.pSysMem = material->getLayer(MATERIAL_Albedo)->data; // TODO: Pass Full Material Data
 	texData.SysMemPitch = sizeof(uint32_t) * material->getLayer(MATERIAL_Albedo)->height;
 	texData.SysMemSlicePitch = 0;
 
@@ -480,10 +461,16 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 
 	ID3D11ShaderResourceView* resView;
 	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
-	// _deviceCtx->UpdateSubresource(texture, 0, 0, material->getData, texData.SysMemPitch, 0); // Update Data Here!!!
+	_deviceCtx->UpdateSubresource(texture, 0, 0, material->getLayer(MATERIAL_Albedo)->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
-	// TODO: Implement Texture Substitution
+	for (std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
+		if (tex->renderID == renderID) { // Texture Substitution
+			tex->resView->Release(); // erase old texture
+			tex->sampler->Release(); // erase old sampler
+			*tex = Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView);
+			return;
+		}
 	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // Texture Addition
 }
 #endif
@@ -553,9 +540,8 @@ void Topl_Renderer_Drx11::drawMode() {
 		if (indexBuff != nullptr && indexBuff->count > 0)
 			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-		for (unsigned t = 0; t < _textures.size(); t++) {
-			if (_textures.at(t).renderID > renderID) break; // Geometry actor is passed in sequence 
-			else if (_textures.at(t).renderID == renderID) {
+		for (unsigned t = 0; t < _textures.size(); t++)
+			if (_textures.at(t).renderID == renderID) {
 				ID3D11SamplerState* sampler = _textures.at(t).sampler;
 				ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 
@@ -563,7 +549,6 @@ void Topl_Renderer_Drx11::drawMode() {
 				_deviceCtx->PSSetSamplers(0, 1, &sampler);
 				break;
 			}
-		}
 
 		// Draw Call!
 		if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw

@@ -5,7 +5,7 @@ set (CMAKE_CXX_STANDARD 11) # should apply to everything
 # Extrenal Libraries
 include("cmake/externalTargets.cmake")
 include("cmake/findVulkan.cmake")
-if(UNIX)
+if(UNIX AND NOT APPLE) # Unix Specific
     include(FindX11)
 endif()
 
@@ -21,11 +21,12 @@ if(WIN32)
 endif()
 
 list(APPEND support_src
+	support/numeric/ValueGen.cpp
+
 	support/IO.cpp
 	support/Controls.cpp
     support/Timer.cpp
     support/Platform.cpp
-    support/ValueGen.cpp
     # core/File3D.cpp
 )
 
@@ -60,22 +61,13 @@ list(APPEND core_src
     core/Topl_Scene_Dynamics.cpp
 )
 
-if(Assimp_FOUND)
-	set(irrXML_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXML.lib") # locating release lib
-    set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib") # locating debug lib
-	set(zlib_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstatic.lib") # locating release lib
-    set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib") # locating debug lib
-    message("Assimp libraries irrXML_lib set to ${irrXML_lib}, irrXMLd_lib set to ${irrXMLd_lib}")
-    message("Assimp libraries zlib_lib set to ${zlib_lib}, zlibd_lib set to ${zlibd_lib}")
-endif()
-
 # -------------- Core and Geometry Libraries ------------- #
 
 add_library(CORELIB # Core Library
     ${support_src}
     ${core_src}
 )
-target_include_directories(CORELIB PRIVATE core support geometry)
+target_include_directories(CORELIB PRIVATE core support support/numeric geometry)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
     INTERFACE
@@ -86,12 +78,12 @@ target_include_directories(CORELIB
 if(WIN32)
     target_include_directories(CORELIB PRIVATE "${RESOURCE_DIR}") # resource file header
     target_sources(CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
-elseif(UNIX)
+elseif(UNIX AND NOT APPLE) # Unix Specific
     target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})
 endif()
 
 add_library(GEOLIB ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core support geometry)
+target_include_directories(GEOLIB PRIVATE core support support/numeric geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -100,6 +92,23 @@ target_include_directories(GEOLIB INTERFACE
 if(Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
    target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+   if(WIN32)
+        set(irrXML_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXML.lib") # locating release lib
+        set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib") # locating debug lib
+        set(zlib_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstatic.lib") # locating release lib
+        set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib") # locating debug lib
+        # message("Assimp libraries zlib set to ${zlib_lib}, irrXML set to ${irrXML_lib}")
+        message("Assimp libraries zlib set to ${zlibd_lib}, irrXML set to ${irrXMLd_lib}")
+    
+        # target_link_libraries(GEOLIB PUBLIC ${irrXML_lib} ${zlib_lib}) # for release build
+        target_link_libraries(GEOLIB PUBLIC ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+    elseif(UNIX AND NOT APPLE) # Unix Specific
+        find_package(ZLIB)
+        find_library(irrXML_lib NAMES "irrXML" "IrrXML" PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+        message("Assimp libraries zlib set to ${ZLIB_LIBRARIES}, irrXML set to ${irrXML_lib}")
+
+        target_link_libraries(GEOLIB PUBLIC ${ZLIB_LIBRARIES} ${irrXML_lib})
+    endif()
 endif()
 
 if(Rasteron_FOUND) # linking targets to Rasteron
@@ -116,7 +125,7 @@ if(WIN32)
         core/directx/Topl_Pipeline_Drx11.cpp
         core/directx/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PRIVATE core support geometry)
+    target_include_directories(Drx11_ENGINE PRIVATE core support support/numeric geometry)
     target_include_directories(Drx11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -132,7 +141,7 @@ if(Vulkan_FOUND)
         core/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(Vulkan_ENGINE PRIVATE core support geometry)
+    target_include_directories(Vulkan_ENGINE PRIVATE core support support/numeric geometry)
     target_include_directories(Vulkan_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -147,16 +156,24 @@ add_library(GL4_ENGINE
     core/opengl/Topl_Pipeline_GL4.cpp
     core/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PRIVATE core support geometry)
-target_include_directories(Drx11_ENGINE INTERFACE
+target_include_directories(GL4_ENGINE PRIVATE core support support/numeric geometry)
+target_include_directories(GL4_ENGINE INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
 )
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
 # set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
-if(UNIX)
+if(UNIX AND NOT APPLE) # Unix Specific
     add_dependencies(GL4_ENGINE GLEW)
+
+    set(OpenGL_GL_PREFERENCE GLVND)
+    find_package(OpenGL REQUIRED)
+    if(OpenGL_FOUND)
+        message("OpenGL libraries found: ${OPENGL_opengl_LIBRARY} and ${OPENGL_glx_LIBRARY}")
+        target_link_libraries(GL4_ENGINE PUBLIC ${OPENGL_opengl_LIBRARY})
+        target_link_libraries(GL4_ENGINE PUBLIC ${OPENGL_glx_LIBRARY})
+    endif()
 endif()
 
 list(APPEND engine_targets GL4_ENGINE) # OpenGL available cross-platform
@@ -171,8 +188,8 @@ foreach(target IN ITEMS ${engine_targets})
     if(WIN32)
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
     endif()
-    # target_link_libraries(${target} PUBLIC GEOLIB CORELIB) # linking Topl libraries
-	target_link_libraries(${target} PUBLIC GEOLIB)
+    target_link_libraries(${target} PUBLIC GEOLIB CORELIB) # link both corelib and geolib
+	# target_link_libraries(${target} PUBLIC GEOLIB) # link only geolib
 	target_link_libraries(CORELIB PUBLIC ${target})
 endforeach()
 
@@ -188,7 +205,7 @@ add_executable(Demo_Animotion demos/Animotion.cpp)
 list(APPEND demo_targets Demo_Playground Demo_Splitscreen Demo_Animotion) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support geometry shaders)
+    target_include_directories(${target} PRIVATE core support support/numeric geometry shaders)
     target_link_libraries(${target} PRIVATE CORELIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
@@ -231,6 +248,7 @@ install(TARGETS CORELIB GEOLIB ${engine_targets}
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
+	${CMAKE_CURRENT_SOURCE_DIR}/support/numeric*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
 )

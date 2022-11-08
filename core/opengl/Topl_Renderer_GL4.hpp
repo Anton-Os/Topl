@@ -60,7 +60,6 @@ public:
 	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
-	void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
@@ -83,7 +82,6 @@ private:
 
 	Topl_Pipeline_GL4* _pipeline;
 
-	GLuint _VAO;
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot

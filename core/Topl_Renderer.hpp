@@ -102,12 +102,12 @@ public:
     bool updateScene(const Topl_Scene* scene);
     void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
-    bool renderScene(Topl_Scene* scene);
-    bool renderAll();
+    bool renderScene(const Topl_Scene* scene);
+    // bool renderAll();
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
     virtual void switchFramebuff() = 0; // switches front and back buffers
-	virtual void texturize(const Topl_Scene* scene) = 0; // loads all textures
+	void texturize(const Topl_Scene* scene); // loads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
     virtual Rasteron_Image* frame() = 0;
@@ -121,7 +121,7 @@ protected:
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
-    const Topl_Camera* _activeCamera = &_defaultCamera; // supplied by user
+    const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by user
     Topl_Viewport _defaultViewport = Topl_Viewport();
     // unsigned short _viewportCount = 0;
     bool _isBuilt = false; // switch to true when elements of the scene are built

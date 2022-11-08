@@ -26,19 +26,30 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		appendDataToBytes((uint8*)camera->getLookPos(), sizeof(Vec2f), bytes);
 		// appendDataToBytes((uint8*)camera->getProjMatrix(), camera->getProjMatrix()->size() * sizeof(float), bytes);
 
-		const unsigned lightCount = scene->getLightCount();
-        if(lightCount > 0) appendLight(scene, 0, bytes); // 1st light source (sky light)
-        if(lightCount > 1) appendLight(scene, 1, bytes); // 2nd light source (flash light)
-        if(lightCount > 2) appendLight(scene, 2, bytes); // 3rd light source (lamp light)
+		appendLight(&skyLight, bytes);
+		appendLight(&flashLight, bytes);
+		appendLight(&lampLight, bytes);
 	}
 
+	void setLight(LIGHT_Type type, const Topl_Light& light) {
+		switch (type) {
+		case LIGHT_Sky: skyLight = light; break;
+		case LIGHT_Flash: flashLight = light; break;
+		case LIGHT_Lamp: lampLight = light; break;
+		default: break; // not supported
+		}
+	}
 private:
-    static void appendLight(const Topl_Scene *const scene, unsigned i, blockBytes_t* bytes){
-        appendDataToBytes((uint8*)&scene->getLight(i)->pos, sizeof(Vec3f), bytes);
-        appendDataToBytes((uint8*)&scene->getLight(i)->value, sizeof(Vec2f), bytes);
-    }
+	static void appendLight(const Topl_Light* light, blockBytes_t* bytes) {
+		appendDataToBytes((uint8*)&light->pos, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)&light->value, sizeof(Vec3f), bytes);
+	}
 protected:
-	unsigned _mode = BEAMS_MODE_LIGHT;
+	unsigned _mode = BEAMS_MODE_ALTERNATE;
+
+	Topl_Light skyLight = Topl_Light({ 0.0, -1.0f, 0.0 });
+	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, 1.0 });
+	Topl_Light lampLight = Topl_Light({ -1.0, 0.0f, 0.0 });
 };
 
 struct GL4_Beams_VertexShader : public Beams_VertexShader {

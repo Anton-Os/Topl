@@ -62,7 +62,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	setPipeline(pipeline);
 }
 
-void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
@@ -92,8 +92,8 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	}
 
 	// hull shader compilation and creation code
-	if (tessCtrlShader != nullptr) { // optional stage
-		if (!Drx11::compileShader(tessCtrlShader->getFilePath(), "hs_5_0", &pipeline->hsBlob)) return;
+	if (hullShader != nullptr) { // optional stage
+		if (!Drx11::compileShader(hullShader->getFilePath(), "hs_5_0", &pipeline->hsBlob)) return;
 		hr = _device->CreateHullShader(
 			pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(),
 			NULL, &pipeline->hullShader);
@@ -101,8 +101,8 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	}
 
 	// domain shader compilation and creation code
-	if (tessEvalShader != nullptr) { // optional stage
-		if (!Drx11::compileShader(tessEvalShader->getFilePath(), "ds_5_0", &pipeline->dsBlob)) return;
+	if (domainShader != nullptr) { // optional stage
+		if (!Drx11::compileShader(domainShader->getFilePath(), "ds_5_0", &pipeline->dsBlob)) return;
 		hr = _device->CreateDomainShader(
 			pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(),
 			NULL, &pipeline->domainShader

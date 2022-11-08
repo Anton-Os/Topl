@@ -1,6 +1,6 @@
 #ifndef GEO_ACTOR_H
 
-#include "physics.h"
+#include "physics_connector.h"
 
 #include "Geometry.hpp"
 

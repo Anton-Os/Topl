@@ -1,5 +1,5 @@
 #include "Timer.hpp"
-#include "Physics.h"
+#include "physics.h"
 
 int main(void){
     Timer_Ticker ticker = Timer_Ticker();

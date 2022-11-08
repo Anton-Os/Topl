@@ -37,7 +37,7 @@ void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
     drawMode(); // sets the proper draw mode
 }
 
-bool Topl_Renderer::renderScene(Topl_Scene* scene){
+bool Topl_Renderer::renderScene(const Topl_Scene* scene){
     if (!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
     if (!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
     if (_renderIDs == 0) logMessage(MESSAGE_Exclaim, "No render targets for draw call!");
@@ -46,35 +46,49 @@ bool Topl_Renderer::renderScene(Topl_Scene* scene){
         return false; // failure
     } else _isDrawn = true;
 
-    renderTarget(SPECIAL_SCENE_RENDER_ID); // pass scene data as target
-    if(scene != nullptr){ // Scene Objects Render
-		if(_isDrawInOrder == REGULAR_DRAW_ORDER)
-			for(unsigned g = 0; g < scene->getActorCount(); g++)
+    renderTarget(SPECIAL_SCENE_RENDER_ID); // first target as scene block data
+	// Scene Objects Render
+	if(scene != nullptr){
+		if (_isDrawInOrder == REGULAR_DRAW_ORDER) { // draw in regular order
+			for (unsigned g = 0; g < scene->getActorCount(); g++)
 				(getRenderID(scene->getGeoActor(g)) != 0)
-					? renderTarget(getRenderID(scene->getGeoActor(g)))
-					: logMessage(MESSAGE_Exclaim, "renderID not found!");
-		else if(_isDrawInOrder == INVERSE_DRAW_ORDER)
-			for(unsigned g = scene->getActorCount(); g > 0; g--)
+				? renderTarget(getRenderID(scene->getGeoActor(g)))
+				: logMessage(MESSAGE_Exclaim, "renderID not found!");
+		}
+		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) { // draw in reverse order
+			for (unsigned g = scene->getActorCount(); g > 0; g--)
 				(getRenderID(scene->getGeoActor(g - 1)) != 0)
 					? renderTarget(getRenderID(scene->getGeoActor(g - 1)))
 					: logMessage(MESSAGE_Exclaim, "renderID not found!");
+		}
 	}
-	else { // All Objects Render
-		if (_isDrawInOrder == REGULAR_DRAW_ORDER)
-			for (unsigned r = 0; r < _renderIDs; r++) 
+	// All Objects Render
+	else {
+		if (_isDrawInOrder == REGULAR_DRAW_ORDER) { // draw in regular order
+			for (unsigned r = 0; r < _renderIDs; r++)
 				renderTarget(r);
-		else if (_isDrawInOrder == INVERSE_DRAW_ORDER)
+		}
+		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) { // draw in reverse order
 			for (unsigned r = _renderIDs; r > 0; r--)
 				renderTarget(r - 1);
+		}
 	}
 
     _frameIDs++; // increment frame counter
     return _isDrawn; // render call sets variable to true on success
 }
 
-bool Topl_Renderer::renderAll(){ // draws all render objects
-    renderScene(nullptr);
-    return _isDrawn; // render call sets variable to true on success
+void Topl_Renderer::texturize(const Topl_Scene* scene) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+		actor_cptr actor = scene->getGeoActor(g);
+		unsigned renderID = getRenderID(actor);
+
+		const Rasteron_Image* texture = scene->getTexture(actor->getName());
+		if (texture != nullptr) attachTexture(texture, renderID);
+
+		const Img_Material* material = scene->getMaterial(actor->getName());
+		if (material != nullptr) attachMaterial(material, renderID);
+	}
 }
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {

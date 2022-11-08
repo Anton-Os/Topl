@@ -25,21 +25,24 @@ layout(location = 0) out vec4 flatColor_out;
 
 mat3 calcRotMatrix(vec2 rotCoords){
 	mat3 zRotMatrix = mat3(
-		cos(rotCoords.x), -1.0f * sin(rotCoords.x), 0,
+		cos(rotCoords.x), -sin(rotCoords.x), 0,
 		sin(rotCoords.x), cos(rotCoords.x), 0,
 		0, 0, 1
 	);
 
-	mat3 yRotMatrix = mat3(
-		cos(rotCoords.y), 0, -1.0f * sin(rotCoords.y),
-		0, 1, 0,
-		sin(rotCoords.y), 0, cos(rotCoords.y)
+	mat3 xRotMatrix = mat3(
+		1, 0, 0,
+		0, cos(rotCoords.y), sin(rotCoords.y),
+		0, -sin(rotCoords.y), cos(rotCoords.y)
 	);
 
-	return zRotMatrix * yRotMatrix;
+	return zRotMatrix * xRotMatrix;
 }
 
 mat4 calcCamMatrix(vec3 cPos, vec2 lPos){  // camera postion and relative look position
+	mat3 rm = calcRotMatrix(lPos);
+	mat4 rotMatrix = mat4(rm[0][0], rm[0][1], rm[0][2], 0, rm[1][0], rm[1][1], rm[1][2], 0, rm[2][0], rm[2][1], rm[2][2], 0, 0, 0, 0, 1);
+	
 	mat4 camMatrix = mat4(
 		1.0, 0.0, 0.0, cPos.x,
 		0.0, 1.0, 0.0, cPos.y,
@@ -47,7 +50,7 @@ mat4 calcCamMatrix(vec3 cPos, vec2 lPos){  // camera postion and relative look p
 		0.0, 0.0, 0.0, 1.0
 	);
 
-	return camMatrix;
+	return camMatrix * rotMatrix;
 } 
 
 // Main
@@ -57,9 +60,9 @@ void main() {
 	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
 
 	// mat4 cameraMatrix = calcCamMatrix(cam_pos, vec2(look_pos.x, look_pos.y));
-	mat4 cameraMatrix = calcCamMatrix(vec3(0.1, 0.3, -1.0), vec2(0.0, 0.0)); // camera test
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * cameraMatrix * projMatrix;
+	mat4 cameraMatrix = calcCamMatrix(vec3(0.0, 0.0, -1.0), vec2(0, 0)); // camera test
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * cameraMatrix * projMatrix;
 
 	if(mode == 1) // alternate mode
 		if(gl_VertexID % 4 == 0) flatColor_out = vec4(1.0f, 0.0, 0.0f, color.a); // red

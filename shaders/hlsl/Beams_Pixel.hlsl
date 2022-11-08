@@ -12,7 +12,6 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 }
 
 struct PS_INPUT {
-	// uint mode : MODE;
 	float4 pos : SV_POSITION;
 	float3 pos1 : POSITION;
 
@@ -25,11 +24,13 @@ struct PS_INPUT {
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(mode == 1){ // alternate mode
-		float3 light_color = input.specular;
+		float3 light_color = input.ambient; // ambient test
+		// float3 light_color = input.diffuse; // diffuse test
+		// float3 light_color = input.specular; // specular test
 		return float4(light_color, 1.0f);
 	} else if(mode == 2){ // depth mode
 		float depth = sqrt(pow(input.pos1.x, 2) + pow(input.pos1.y, 2) + pow(input.pos1.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 		// return float4(pos, 1.0f);
-	} else return float4(input.ambient + input.diffuse, 1.0f); // light mode // default
+	} else return float4(input.ambient + input.diffuse + input.specular, 1.0f); // light mode // default
 }
