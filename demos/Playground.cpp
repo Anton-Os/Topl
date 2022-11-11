@@ -37,19 +37,19 @@ static void callback_pane(unsigned short num) { printf("pane %d callback_pressed
 static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
 	static unsigned swapCount = 0;
 	if (swapCount % 100 == 33) { // ghost swap
-		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p].setFileImage(ghostAssets[p]);
-		// renderer->texturize(scene);
+		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			characterImages[p] = &ghostImages[p];
+		renderer->texturize(scene); */
 	}
 	else if (swapCount % 100 == 66) { // angel swap
-		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p].setFileImage(angelAssets[p]);
-		// renderer->texturize(scene);
+		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			characterImages[p] = &angelImages[p];
+		renderer->texturize(scene); */
 	}
 	else if (swapCount % 100 == 99) { // demon swap
-		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p].setFileImage(demonAssets[p]);
-		// renderer->texturize(scene);
+		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			characterImages[p] = &devilImages[p];
+		renderer->texturize(scene); */
 	}
 	swapCount++;
 
@@ -73,13 +73,15 @@ void Playground_App::createPipeline() {
 }
 
 void Playground_App::createScene_Main() {
+	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) {
+		ghostImages[p].setFileImage(ghostAssets[p]);
+		angelImages[p].setFileImage(angelAssets[p]);
+		devilImages[p].setFileImage(devilAssets[p]);
+	}
+
 	character.configure(&scene_main);
-	scene_main.addTexture("character_head", characterImages[HUMANOID_Head].getImage());
-	scene_main.addTexture("character_leftArm", characterImages[HUMANOID_LeftArm].getImage());
-	scene_main.addTexture("character_rightArm", characterImages[HUMANOID_RightArm].getImage());
-	scene_main.addTexture("character_body", characterImages[HUMANOID_Body].getImage());
-	scene_main.addTexture("character_leftLeg", characterImages[HUMANOID_LeftLeg].getImage());
-	scene_main.addTexture("character_rightLeg", characterImages[HUMANOID_RightLeg].getImage());
+	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+		scene_main.addTexture(character.getPrefix() + bodyPartsStr[p], ghostImages[p].getImage());
 
 	/* scene_main.addLight(&skyLight); 
 	scene_main.addLight(&flashLight); 

@@ -24,13 +24,13 @@ namespace Drx11 {
 
 	// Buffer Functions
 
-	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuAccessFlags, const void* data) {
+	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data) {
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = usage;
 		buffDesc.ByteWidth = byteWidth;
 		buffDesc.BindFlags = bindFlags;
-		buffDesc.CPUAccessFlags = cpuAccessFlags;
+		buffDesc.CPUAccessFlags = cpuFlags;
 		buffDesc.MiscFlags = 0;
 		buffDesc.StructureByteStride = 0;
 
@@ -44,8 +44,8 @@ namespace Drx11 {
 		return true;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr_t pvData, unsigned vCount) {
-		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, pvData);
+	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr_t vData, unsigned vCount) {
+		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, vData);
 	}
 
 	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
@@ -73,16 +73,16 @@ namespace Drx11 {
 	}
 
 	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset) {
-		D3D11_INPUT_ELEMENT_DESC inputElementDesc;
-		inputElementDesc.SemanticName = input->semantic.c_str();
-		inputElementDesc.SemanticIndex = 0;
-		inputElementDesc.Format = Drx11::getShaderFormat(input->type);
-		inputElementDesc.InputSlot = 0;
-		inputElementDesc.AlignedByteOffset = offset;
-		inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		inputElementDesc.InstanceDataStepRate = 0;
+		D3D11_INPUT_ELEMENT_DESC vertexElemDesc;
+		vertexElemDesc.SemanticName = input->semantic.c_str();
+		vertexElemDesc.SemanticIndex = 0;
+		vertexElemDesc.Format = Drx11::getShaderFormat(input->type);
+		vertexElemDesc.InputSlot = 0;
+		vertexElemDesc.AlignedByteOffset = offset;
+		vertexElemDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		vertexElemDesc.InstanceDataStepRate = 0;
 
-		return inputElementDesc;
+		return vertexElemDesc;
 	}
 
 	static D3D11_SAMPLER_DESC genSamplerDesc(enum TEX_Mode mode) {
@@ -278,23 +278,22 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	// setting vertex input layout
 	if (buildCount == FIRST_BUILD_CALL) { // must be invoked only once!
-		D3D11_INPUT_ELEMENT_DESC* layout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
-		unsigned inputElementOffset = 0;
+		D3D11_INPUT_ELEMENT_DESC* vertexLayout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
+		unsigned vertexElemOffset = 0;
 		for (unsigned inputNum = 0; inputNum < _entryShader->getInputCount(); inputNum++) {
-			*(layout_ptr + inputNum) = Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(inputNum), inputElementOffset);
-			inputElementOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(inputNum)->type);
+			*(vertexLayout_ptr + inputNum) = Drx11::getElementDescFromInput(_entryShader->getInputAtIndex(inputNum), vertexElemOffset);
+			vertexElemOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(inputNum)->type);
 		}
-		UINT layoutElemCount = (unsigned)_entryShader->getInputCount();
 
 		_device->CreateInputLayout(
-			layout_ptr, layoutElemCount,
-			// _pipeline.vsBlob->GetBufferPointer(), _pipeline.vsBlob->GetBufferSize(),
-			_pipeline->vsBlob->GetBufferPointer(), _pipeline->vsBlob->GetBufferSize(),
+			vertexLayout_ptr, _entryShader->getInputCount(),
+			_pipeline->vsBlob->GetBufferPointer(), 
+			_pipeline->vsBlob->GetBufferSize(),
 			&_vertexDataLayout
 		);
 
 		_deviceCtx->IASetInputLayout(_vertexDataLayout);
-		free(layout_ptr); // deallocating layout_ptr and all associated data
+		free(vertexLayout_ptr); // deallocating vertexLayout_ptr and all associated data
 	}
 
 	// scene block buffer generation
@@ -480,7 +479,7 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SCENE_RENDER_ID) {
 		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
 		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes);
 	}
@@ -513,47 +512,46 @@ void Topl_Renderer_Drx11::drawMode() {
 }
 
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
-	if(renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
-		Buffer_Drx11* sceneBlockBuff = &_buffers.front();
-		if (sceneBlockBuff != nullptr) {
-			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
-			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
-		}
-	}
-	else {
-		Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-		Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-		Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+	 if (!_buffers.empty()) {
+		 if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) { // Scene Target
+			 Buffer_Drx11* sceneBlockBuff = &_buffers.front();
+			 if (sceneBlockBuff != nullptr) {
+				 _deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+				 _deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
+			 }
+		 }
+		 else { // Drawable Target
+			 Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+			 Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+			 Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
 
-		if (renderBlockBuff != nullptr) {
-			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-		}
+			 if (renderBlockBuff != nullptr) {
+				 _deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+				 _deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
+			 }
 
-		UINT stride = sizeof(Geo_Vertex);
-		UINT offset = 0;
+			 if (vertexBuff == nullptr || vertexBuff->count == 0)
+				 return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+			 else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
 
-		if (vertexBuff == nullptr || vertexBuff->count == 0)
-			return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-		else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &stride, &offset);
+			 if (indexBuff != nullptr && indexBuff->count > 0)
+				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-		if (indexBuff != nullptr && indexBuff->count > 0)
-			_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+			 for (unsigned t = 0; t < _textures.size(); t++)
+				 if (_textures.at(t).renderID == renderID) {
+					 ID3D11SamplerState* sampler = _textures.at(t).sampler;
+					 ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 
-		for (unsigned t = 0; t < _textures.size(); t++)
-			if (_textures.at(t).renderID == renderID) {
-				ID3D11SamplerState* sampler = _textures.at(t).sampler;
-				ID3D11ShaderResourceView* resView = _textures.at(t).resView;
+					 _deviceCtx->PSSetShaderResources(0, 1, &resView);
+					 _deviceCtx->PSSetSamplers(0, 1, &sampler);
+					 break;
+				 }
 
-				_deviceCtx->PSSetShaderResources(0, 1, &resView);
-				_deviceCtx->PSSetSamplers(0, 1, &sampler);
-				break;
-			}
-
-		// Draw Call!
-		if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-		else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
-	}
+			 // Draw Call!
+			 if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+			 else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+		 }
+	 }
 } 
 
 Buffer_Drx11* Topl_Renderer_Drx11::findBuffer(BUFF_Type type, unsigned long renderID){

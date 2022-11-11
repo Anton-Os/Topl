@@ -34,7 +34,7 @@ std::string angelAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Angel-RightLeg.png"
 };
 
-std::string demonAssets[HUMANOID_PARTS_COUNT] = {
+std::string devilAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Demon-Head.png",
 	Topl_App::getImagesPath() + "Demon-LeftWing.png",
 	Topl_App::getImagesPath() + "Demon-RightWing.png",
@@ -43,14 +43,15 @@ std::string demonAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Demon-RightLeg.png"
 };
 
-unsigned checkerMap_callback(double xFrac, double yFrac) {
-	if (xFrac < 0.05 || xFrac > 0.95 || yFrac < 0.05 || yFrac > 0.95) return 0xFF4D4942; // border color
-	else if (xFrac > 0.5) return (yFrac > 0.5) ? 0xFFed9679 : 0xFFffa1b1; // right checker pattern
-	else return (yFrac > 0.5)? 0xFFffa1b1 : 0xFFed9679; // left checker pattern
+unsigned radGradient_callback(double xFrac, double yFrac) {
+	if (xFrac < 0.05 || xFrac > 0.95 || yFrac < 0.05 || yFrac > 0.95) return 0xAA2b184f; // border color
+	else return blend(0xFFff8754, 0xFF54ffff, sqrt(((xFrac - 0.5) * (xFrac - 0.5)) + ((yFrac - 0.5) * (yFrac - 0.5)))); // gradient callback
 }
 
-Rasteron_Image* checkerImg = createMappedImg({ 256, 256 }, checkerMap_callback);
-Img_Base characterImages[HUMANOID_PARTS_COUNT] = { Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg), Img_Base(checkerImg) };
+Rasteron_Image* radialImg = createMappedImg({ 256, 256 }, radGradient_callback);
+Img_Base characterImages[HUMANOID_PARTS_COUNT] = { Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg) };
+Img_Base ghostImages[HUMANOID_PARTS_COUNT], angelImages[HUMANOID_PARTS_COUNT], devilImages[HUMANOID_PARTS_COUNT];
+// Img_Base* characterImages[HUMANOID_PARTS_COUNT] = { &ghostImages[0], &ghostImages[1], &ghostImages[2], &ghostImages[3], &ghostImages[4], &ghostImages[5] };
 Geo_Humanoid2D character = Geo_Humanoid2D("character", noAssets);
 
 struct Playground_App : public Topl_App {

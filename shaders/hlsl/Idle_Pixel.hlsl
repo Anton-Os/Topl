@@ -1,13 +1,5 @@
 // Values
 
-cbuffer CONST_BLOCK : register(b0) {
-	uint renderID;
-}
-
-cbuffer CONST_SCENE_BLOCK : register(b1) {
-	uint mode;
-}
-
 struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Main

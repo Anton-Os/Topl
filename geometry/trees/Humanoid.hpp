@@ -9,32 +9,39 @@
 
 // Base Humanoid
 
-#define HUMANOID_PARTS_COUNT 6 // There are 6 body parts total
+#define HUMANOID_PARTS_COUNT 6 // There are 6 torso parts total
 
 enum HUMANOID_Anatomy {
 	HUMANOID_Head = 0,
 	HUMANOID_LeftArm = 1,
 	HUMANOID_RightArm = 2,
-	HUMANOID_Body = 3,
+	HUMANOID_Torso = 3,
 	HUMANOID_LeftLeg = 4,
 	HUMANOID_RightLeg = 5
 };
 
+const std::string bodyPartsStr[HUMANOID_PARTS_COUNT] = {
+	"head", "leftArm", "rightArm", "torso", "leftLeg", "rightLeg"
+};
+
 class Geo_Humanoid {
 public:
-	void orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles); // orients body parts
-	void orientAll(std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT]); // orients all body parts
+	void orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles); // orients torso parts
+	void orientAll(std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT]); // orients all torso parts
 
+	void addLinks(Topl_Scene* scene, const std::string& prefix);
 	void presetLinks();
 protected:
 	Geo_Humanoid(){}
 	// Geometry Actors
-	Geo_Actor *head, *leftArm, *rightArm, *body, *leftLeg, *rightLeg;
-	// Physics properties associated with each body part
-    Phys_Actor head_phys, body_phys, leftArm_phys, rightArm_phys, leftLeg_phys, rightLeg_phys;
-	// Main links "Starfish" Shape
-	Phys_Connector body_head_link, body_leftArm_link, body_rightArm_link, body_leftLeg_link, body_rightLeg_link;
-	// Stability links "Pentagon" Shape
+	Geo_Actor *head, *leftArm, *rightArm, *torso, *leftLeg, *rightLeg;
+	Geo_Actor** bodyActors[HUMANOID_PARTS_COUNT] = { &head, &leftArm, &rightArm, &torso, &leftLeg, &rightLeg };
+	// Physics Properties
+    Phys_Actor head_phys, leftArm_phys, rightArm_phys, torso_phys, leftLeg_phys, rightLeg_phys;
+	Phys_Actor* bodyPhysics[HUMANOID_PARTS_COUNT] = { &head_phys, &leftArm_phys, &rightArm_phys, &torso_phys, &leftLeg_phys, &rightLeg_phys };
+	// Starfish shaped links from body
+	Phys_Connector torso_head_link, torso_leftArm_link, torso_rightArm_link, torso_leftLeg_link, torso_rightLeg_link;
+	// Pentagon shaped links surrounding body
 	Phys_Connector head_leftArm_link, head_rightArm_link, leftArm_leftLeg_link, rightArm_rightLeg_link, leftLeg_rightLeg_link;
 };
 
@@ -52,7 +59,7 @@ public:
 		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
 		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm],
 		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Body],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Torso],
 		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
 		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
 	}) {
@@ -70,7 +77,7 @@ public:
 		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
 		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm], 
 		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Body],
+		(Geo_RenderObj*)_renderObjs[HUMANOID_Torso],
 		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
 		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
 	}) {

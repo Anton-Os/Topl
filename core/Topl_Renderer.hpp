@@ -8,10 +8,10 @@
 
 // RenderTarget
 
-#define SPECIAL_SCENE_RENDER_ID 0
+#define SCENE_RENDER_ID 0
 
 struct RenderTarget {
-	RenderTarget() { renderID = SPECIAL_SCENE_RENDER_ID; }
+	RenderTarget() { renderID = SCENE_RENDER_ID; }
 	RenderTarget(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
@@ -23,11 +23,11 @@ struct RenderTarget {
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
     BUFF_Index_UI = 1, // index buffer type
-    BUFF_Render_Block = 2, // render block buffer types
+    BUFF_Render_Block = 2, // render block buffer type
 };
 
 struct Buffer : public RenderTarget {
-    Buffer() : RenderTarget(SPECIAL_SCENE_RENDER_ID){}
+    Buffer() : RenderTarget(SCENE_RENDER_ID){}
     Buffer(unsigned id, enum BUFF_Type t) : RenderTarget(id){ type = t; }
     Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTarget(id){ type = t; count = c; }
 
@@ -142,7 +142,7 @@ private:
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
 	virtual void attachMaterial(const Img_Material* material, unsigned id) = 0;
 
-    Img_Frames frameCache = Img_Frames("cache", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH, FRAME_CACHE_COUNT);
+    Img_Frames frameCache = Img_Frames("cache", FRAME_CACHE_COUNT);
 #endif
 };
 

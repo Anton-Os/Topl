@@ -23,4 +23,4 @@ endif()
 
 add_executable(Test_Diagnostic demos/test/Diagnostic.cpp)
 target_include_directories(Test_Diagnostic PRIVATE core support support/numeric geometry shaders ${RESOURCE_DIR})
-target_link_libraries(Test_Diagnostic PRIVATE CORELIB)
+target_link_libraries(Test_Diagnostic PRIVATE GEOLIB CORELIB)

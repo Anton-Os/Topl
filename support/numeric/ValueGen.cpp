@@ -4,7 +4,8 @@
 // Numeric Operations
 
 unsigned genColorID(unsigned renderID) {
-	unsigned short colorInc = renderID / COLOR_ID_TYPES;
+	// unsigned short colorInc = (renderID / COLOR_ID_TYPES) + 1;
+	unsigned short colorInc = ((renderID / COLOR_ID_TYPES) + 1) * 70; // testing for emphasis
 
 	switch (renderID % COLOR_ID_TYPES) {
 	case 0: return 0xFFFFFFFF - ((colorInc << 16) + (colorInc << 8) + colorInc);
@@ -68,20 +69,34 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 // Transformation Operations
 
 static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
-    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
-        (2.0f * bounds.nearPlane) / (bounds.right - bounds.left), 0.0f, (bounds.right + bounds.left) / (bounds.right - bounds.left), 0.0f,
-        0.0f, (2.0f * bounds.nearPlane) / (bounds.top - bounds.bottom), (bounds.top + bounds.bottom) / (bounds.top - bounds.bottom), 0.0f,
-        0.0f, 0.0f, (bounds.nearPlane + bounds.farPlane) / (bounds.nearPlane - bounds.farPlane), (2.0f * bounds.nearPlane * bounds.farPlane) / (bounds.nearPlane - bounds.farPlane),
+	float r = bounds.right; float l = bounds.left;
+	float t = bounds.top; float b = bounds.bottom;
+	float n = bounds.nearPlane; float f = bounds.farPlane;
+
+    /* Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
+        (2.0f * n) / (r - l), 0.0f, (r + l) / (r - l), 0.0f,
+        0.0f, (2.0f * n) / (t - b), (t + b) / (t - b), 0.0f,
+        0.0f, 0.0f, (n + f) / (n - f), (2.0f * n * f) / (n - f),
         0.0f, 0.0f, -1.0f, 0.0f
-    });
+    }); */
+	Mat4x4 projMatrix = Mat4x4({ // From Game Engine Architecture page 437
+		(2.0f * n) / (r - l), 0.0f, 0.0f, 0.0f,
+		0.0f, (2.0f * n) / (t - b), 0.0f, 0.0f,
+		(r + l) / (r - l), (t + b) / (t - b), -((f + n) / (f - n)), -1.0f,
+		0.0f, 0.0f, -((2.0f * n * f) / (f - n)), 0.0f
+	});
     return projMatrix;
 }
 
 static Mat4x4 genOrthoMatrix(SpatialBounds3D bounds){
+	float r = bounds.right; float l = bounds.left;
+	float t = bounds.top; float b = bounds.bottom;
+	float n = bounds.nearPlane; float f = bounds.farPlane;
+
     Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
-        2.0f / (bounds.right - bounds.left), 0.0f, 0.0f, (bounds.left + bounds.right) / (bounds.left - bounds.right),
-        0.0f, 2.0f / (bounds.top - bounds.bottom), 0.0f, (bounds.bottom + bounds.top) / (bounds.bottom - bounds.top),
-        0.0f, 0.0f, 2.0f / (bounds.nearPlane - bounds.farPlane), (bounds.farPlane + bounds.nearPlane) / (bounds.farPlane - bounds.nearPlane),
+        2.0f / (r - l), 0.0f, 0.0f, (l + r) / (l - r),
+        0.0f, 2.0f / (t - b), 0.0f, (b + t) / (b - t),
+        0.0f, 0.0f, 2.0f / (n - f), (f + n) / (f - n),
         0.0f, 0.0f, 0.0f, 1.0f });
     return projMatrix;
 }

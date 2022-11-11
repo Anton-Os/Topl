@@ -16,7 +16,7 @@ typedef std::pair<Vec3f, Vec2f> orientation_pair;
 
 class Geo_Tree {
 public:
-    Geo_Tree(const std::string& prefix){} // Empty items constructor
+	Geo_Tree(const std::string& prefix) { _prefix = prefix;  } // Empty constructor
     Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs); // Fixed items constructor
     Geo_Tree(const std::string& prefix, const Geo_Actor* actor, unsigned count); // Duplicate items constructor
 

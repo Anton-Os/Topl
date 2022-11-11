@@ -203,7 +203,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		if (renderObj->getIndices() != nullptr) {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], renderObj->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderObj->getIndexCount() * sizeof(unsigned), renderObj->getIndices(), GL_STATIC_DRAW);
 		}
 		else {
@@ -214,7 +214,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		// vertices generation
 		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], renderObj->getVertexCount()));
 		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // Gets the latest buffer for now
+		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
 		glBufferData(GL_ARRAY_BUFFER, renderObj->getVertexCount() * sizeof(Geo_Vertex), renderObj->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
@@ -309,7 +309,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t blockBytes;
 	Buffer_GL4* targetBuff = nullptr;
 
-	if (_buffers.front().renderID == SPECIAL_SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SCENE_RENDER_ID) {
 		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
 		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
@@ -348,35 +348,39 @@ void Topl_Renderer_GL4::drawMode() {
 }
 
 void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
-	if (renderID == SPECIAL_SCENE_RENDER_ID && _buffers.front().renderID == SPECIAL_SCENE_RENDER_ID)
-		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-	else {
-		for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
-			if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
+	if (!_buffers.empty()) {
+		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
+			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
+		else { // Drawable Target
+			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
+				if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
 
-		Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-		Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-		Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
-		if (renderBlockBuff != nullptr)
-			glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
+			Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
+			Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
+			Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+			if (renderBlockBuff != nullptr)
+				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-		if (indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+			if (vertexBuff != nullptr) glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
+			if (indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
-		for (unsigned t = 0; t < _textures.size(); t++) 
-			if (_textures.at(t).renderID == renderID) {
-				glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
-				break;
+			for (unsigned t = 0; t < _textures.size(); t++)
+				if (_textures.at(t).renderID == renderID) {
+					glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
+					break;
+				}
+
+			// Draw Call!
+			if (vertexBuff != nullptr) {
+				if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
+				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
 			}
 
-		// Draw Call!
-		if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
-		else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
-
-		// Unbinding
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			// Unbinding
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
 	}
 }
 

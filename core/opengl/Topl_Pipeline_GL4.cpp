@@ -51,6 +51,9 @@ namespace GL4 {
 }
 
 void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
+	if (pipeline == nullptr)
+		return logMessage(MESSAGE_Exclaim, "Pipeline cannot be null!");
+
 	_pipeline = pipeline;
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
 	
@@ -59,6 +62,9 @@ void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 }
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
@@ -101,6 +107,9 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 }
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());

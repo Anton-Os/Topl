@@ -14,15 +14,9 @@ struct Idle_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) {  }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
-		bytes->clear(); // make sure there is no preexisting data
-		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
-	}
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {}
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes->clear(); // make sure there is no preexisting data
-		// appendDataToBytes(0, sizeof(unsigned), bytes); // mode
-	}
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {}
 };
 
 struct GL4_Idle_VertexShader : public Idle_VertexShader {

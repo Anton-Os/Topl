@@ -78,7 +78,7 @@ public:
 #ifdef RASTERON_H
     Rasteron_Image* frame() override;
 #endif
-private:
+protected:
 	void init(NATIVE_WINDOW window) override;
 	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
 	void update(const Topl_Scene* scene) override;
@@ -106,4 +106,7 @@ private:
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
 	std::vector<Buffer_Drx11> _buffers;
 	std::vector<Texture_Drx11> _textures;
+
+	const UINT _vertexStride = sizeof(Geo_Vertex);
+	const UINT _vertexOffset = 0;
 };

@@ -19,8 +19,14 @@ void Animotion_App::init() {
 
 	// Geometries and Scene Elements
 
-	model.configure(&scene);
-	model.move({ 0.0f, -0.25f, 0.0f });
+	model1.configure(&scene);
+	model1.move({ 0.0f, -0.25f, 0.0f });
+
+	model2.configure(&scene);
+	model2.move({ 0.5f, -0.25f, 0.0f });
+
+	model3.configure(&scene);
+	model3.move({ -0.5f, -0.25f, 0.0f });
 
 	_renderer->buildScene(&scene);
 	_renderer->setDrawMode(DRAW_Triangles);

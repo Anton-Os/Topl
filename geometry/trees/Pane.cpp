@@ -3,9 +3,7 @@
 Geo_FlatSquare Geo_PaneLayout::_decoySquare = Geo_FlatSquare(PANE_RADIUS);
 Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_RenderObj*)&_decoySquare);
 
-namespace _Pane {
-	std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
-}
+static std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
 
 Geo_Pane* Geo_PaneLayout::getChildPane(unsigned index) {
 	if (index > _panes.size()) {
@@ -45,9 +43,9 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		unsigned short yOffset = (p - 1) / _columns;
 
 		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
-		scene->addGeometry(getPrefix() + _Pane::genPaneName(p), actor);
+		scene->addGeometry(getPrefix() + genPaneName(p), actor);
 #ifdef RASTERON_H
-		scene->addTexture(getPrefix() + _Pane::genPaneName(p), _panes[p - 1].getBackground());
+		scene->addTexture(getPrefix() + genPaneName(p), _panes[p - 1].getBackground());
 #endif
 	}
 

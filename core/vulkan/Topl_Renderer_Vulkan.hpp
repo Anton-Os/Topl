@@ -26,7 +26,6 @@ public:
 	void setViewport(const Topl_Viewport* viewport) override;
 	void switchFramebuff() override;
 	void build(const Topl_Scene* scene) override;
-	// void texturize(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_Vulkan* pipeline);
 	void genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
@@ -34,11 +33,10 @@ public:
 #ifdef RASTERON_H
 	Rasteron_Image* frame() override;
 #endif
-private:
+protected:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
 	void drawMode(void) override;
-	// void render(const Topl_Scene* scene) override;
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;

@@ -37,7 +37,7 @@ protected:
 	}
 
 	unsigned _mode = FLAT_MODE_SOLID;
-	float _alphaVal = 0.75f;
+	float _alphaVal = 1.0f;
 };
 
 struct GL4_Flat_VertexShader : public Flat_VertexShader {

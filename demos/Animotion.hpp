@@ -18,13 +18,15 @@ private:
 	Topl_Scene scene;
 	Topl_Camera camera;
 
-	Phys_Motion motion1 = Phys_Motion(MOTION_Linear, Vec3f({ 0.0f, 1.0f, 0.0f }), MOTION_TIME);
+	Phys_Motion motion1 = Phys_Motion(MOTION_Instant, Vec3f({ 0.0f, 1.0f, 0.0f }), MOTION_TIME);
 	Phys_Motion motion2 = Phys_Motion(MOTION_Linear, Vec3f({ -1.0f, 0.0f, 1.0f }), MOTION_TIME);
-	Phys_Motion motion3 = Phys_Motion(MOTION_Linear, Vec3f({ 0.5f, -5.0f, 1.0f }), Vec3f({ -1.0f, 10.0f, -1.0f }), MOTION_TIME);
+	Phys_Motion motion3 = Phys_Motion(MOTION_Orbit, Vec3f({ 0.5f, -5.0f, 1.0f }), Vec3f({ -1.0f, 10.0f, -1.0f }), MOTION_TIME);
 
 	// Geometries and Drawable Objects
 
-	Geo_Model model = Geo_Model("SpinTop", Topl_App::getModelsPath() + "SpinTop.obj"); // model object
+	Geo_Model model1 = Geo_Model("SpinTop1", Topl_App::getModelsPath() + "SpinTop.obj");
+	Geo_Model model2 = Geo_Model("SpinTop2", Topl_App::getModelsPath() + "SpinTop.obj");
+	Geo_Model model3 = Geo_Model("SpinTop3", Topl_App::getModelsPath() + "SpinTop.obj");
 
 	// Shaders and Pipelines
 

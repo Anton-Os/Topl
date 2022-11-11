@@ -11,20 +11,18 @@ struct Img_Base {
 #ifdef RASTERON_H // required library for loading images
     Img_Base(unsigned color){ setColorImage(color); } // Solid Constructor
     Img_Base(const std::string& filePath){ setFileImage(filePath); } // File Constructor
-    Img_Base(Rasteron_Text textObj){ 
-        setTextImage( &textObj); // Text Constructor
-    }
+    Img_Base(Rasteron_Text textObj){ setTextImage( &textObj); } // Text Constructor
     Img_Base(Rasteron_Image* refImage){ setImage(refImage); } // Custom Constructor
     ~Img_Base(){
         if(image != NULL) deleteImg(image);
     }
 
     void setColorImage(unsigned color){
-        if(image != NULL) deleteImg(image); // delete old image
+        if(image != NULL) deleteImg(image);
 		image = createSolidImg({ 256, 256 }, color);
     }
     void setFileImage(const std::string& filePath){
-        if(image != NULL) deleteImg(image); // delete old image
+        if(image != NULL) deleteImg(image);
 		char newFilePath[1024];
 		strcpy(&newFilePath[0], filePath.c_str());
 #ifdef _WIN32
@@ -33,11 +31,11 @@ struct Img_Base {
         image = createRefImg(&newFilePath[0]);
     }
     void setTextImage(Rasteron_Text* textObj){
-        if(image != NULL) deleteImg(image); // delete old image
+        if(image != NULL) deleteImg(image);
 		image = bakeTextI(textObj);
     }
     void setImage(Rasteron_Image* refImage){
-        if(image != NULL) deleteImg(image); // delete old image
+        if(image != NULL) deleteImg(image);
         image = createCopyImg(refImage);
     }
     Rasteron_Image* getImage(){ return image; }
@@ -51,17 +49,17 @@ private:
 struct Img_Frames {
     Img_Frames(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-	Img_Frames(std::string prefix, unsigned height, unsigned width, unsigned short frameCount){
-		data = allocNewAnim(prefix.c_str(), { height, width }, frameCount);
+	Img_Frames(std::string prefix, unsigned short frameCount){
+		data = allocNewAnim(prefix.c_str(), frameCount);
 	}
 	~Img_Frames(){ deleteAnim(data); }
 	
-	void addNewFrame(const Rasteron_Image *const refImg){
+	void appendFrame(ref_image_t refImg){
         if(frameIndex == data->frameCount){
 		    frameIndex = 0; 
             replay++;
         }
-        addFrame(data, refImg, frameIndex);
+        addFrameData(data, refImg, frameIndex);
         frameIndex++;
     }
 	Rasteron_Image* getFrameAt(unsigned index) const { return getFrame(data, index); }
@@ -88,20 +86,25 @@ enum MATERIAL_Property {
 };
 
 struct Img_Material { 
-    Img_Material(){} // Empty Constructor
+    Img_Material() : height(256), width(256) {} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-    Img_Material(std::string prefix, unsigned height, unsigned width){
-		data = allocNewAnim(prefix.c_str(), { height, width }, MAX_MATERIAL_PROPERTIES);
+    Img_Material(std::string prefix, unsigned h, unsigned w) : height(height), width(w) {
+		data = allocNewAnim(prefix.c_str(), MAX_MATERIAL_PROPERTIES);
 	}
 	~Img_Material(){ deleteAnim(data); }
 	
-	void addNewLayer(const Rasteron_Image *const refImg, MATERIAL_Property property){
-        addFrame(data, refImg, property);
+	void addLayer(ref_image_t refImg, MATERIAL_Property property){
+		if (refImg->height == height && refImg->width == width)
+			addFrameData(data, refImg, property);
+		// else logMessage(MESSAGE_Exclaim, "image must match width and height of material");
     }
 	Rasteron_Image* getLayer(MATERIAL_Property property) const { return getFrame(data, property); }
 
 private:
 	Rasteron_Animation* data; // underlying data
+	
+	const unsigned height;
+	const unsigned width;
 #endif
 };
 
