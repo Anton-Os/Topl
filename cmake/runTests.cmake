@@ -15,12 +15,6 @@ add_executable(Test_InputTracer demos/test/InputTracer.cpp)
 target_include_directories(Test_InputTracer PUBLIC support ${RESOURCE_DIR})
 target_link_libraries(Test_InputTracer PRIVATE CORELIB)
 
-if(Vulkan_FOUND)
-    add_executable(Test_HelloVulkan demos/test/HelloVulkan.cpp)
-    target_include_directories(Test_HelloVulkan PUBLIC core support support/numeric geometry shaders ${RESOURCE_DIR})
-    target_link_libraries(Test_HelloVulkan PRIVATE CORELIB)
-endif()
-
 add_executable(Test_Diagnostic demos/test/Diagnostic.cpp)
 target_include_directories(Test_Diagnostic PRIVATE core support support/numeric geometry shaders ${RESOURCE_DIR})
 target_link_libraries(Test_Diagnostic PRIVATE GEOLIB CORELIB)

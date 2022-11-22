@@ -63,7 +63,7 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 	}
 	else { // All Targets
 		if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
-			for (unsigned r = 1; r < _renderIDs; r++) renderTarget(r);
+			for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
 		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) // draw in reverse order
 			for (unsigned r = _renderIDs; r > 0; r--) renderTarget(r);
 	}

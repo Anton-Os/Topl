@@ -24,8 +24,8 @@ out vec4 color;
 
 void main() {
 	if(mode == 1){ // alternate mode
-		vec3 light_color = ambient; // ambient test
-		// vec3 light_color = diffuse; // diffuse test
+		// vec3 light_color = ambient; // ambient test
+		vec3 light_color = diffuse; // diffuse test
 		// vec3 light_color = specular; // specular test
 		color = vec4(light_color, 1.0f);
 	} else if(mode == 2){ // depth mode

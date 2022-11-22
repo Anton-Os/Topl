@@ -7,16 +7,37 @@
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
-// OpenGL Test Renderer
-struct Barebones_Renderer_GL4 : public Topl_Renderer_GL4 {
-	Barebones_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer_GL4(window) {
-		genPipeline(&pipeline, &vertexShader, &fragmentShader);
-		_renderIDs = 1;
-		_isBuilt = true;
-		config();
+#define ACTOR_COUNT 40000
+
+struct Diagnostic_TestConfig {
+	Diagnostic_TestConfig(unsigned long* renderIDs, bool* isBuilt) {
+		*renderIDs = 1;
+		*isBuilt = true;
 	}
 
-	void config();
+	void buildTest(Topl_Renderer* renderer) {
+		renderer->setDrawMode(DRAW_Strip);
+
+		for(unsigned a = 0; a < ACTOR_COUNT; a++){
+			actors[a] = Geo_Actor((Geo_RenderObj*)&triangle);
+			scene.addGeometry(&actors[a]);
+		}
+		renderer->buildScene(&scene);
+	}
+
+	Topl_Scene scene;
+
+	Geo_FlatTriangle triangle = Geo_FlatTriangle(1.0);
+	Geo_Actor actors[ACTOR_COUNT];
+};
+
+// OpenGL Test Renderer
+struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4, public Diagnostic_TestConfig {
+	Diagnostic_Renderer_GL4(NATIVE_WINDOW window) 
+	: Topl_Renderer_GL4(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt) {
+		genPipeline(&pipeline, &vertexShader, &fragmentShader);
+		buildTest(this);
+	}
 
 	Topl_Pipeline_GL4 pipeline;
 	GL4_Idle_VertexShader vertexShader;
@@ -28,15 +49,12 @@ struct Barebones_Renderer_GL4 : public Topl_Renderer_GL4 {
 
 #ifdef _WIN32
 // DirectX Test Renderer
-struct Barebones_Renderer_Drx11 : public Topl_Renderer_Drx11 {
-	Barebones_Renderer_Drx11(NATIVE_WINDOW window) : Topl_Renderer_Drx11(window) {
+struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11, public Diagnostic_TestConfig {
+	Diagnostic_Renderer_Drx11(NATIVE_WINDOW window) 
+	: Topl_Renderer_Drx11(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt) {
 		genPipeline(&pipeline, &vertexShader, &fragmentShader);
-		_renderIDs = 1;
-		_isBuilt = true;
-		// config();
+		buildTest(this);
 	}
-
-	void config();
 
 	Topl_Pipeline_Drx11 pipeline;
 	Drx11_Idle_VertexShader vertexShader;
@@ -44,5 +62,13 @@ struct Barebones_Renderer_Drx11 : public Topl_Renderer_Drx11 {
 	Drx11_Advance_GeometryShader geomShader;
 	Drx11_Advance_TessCtrlShader tessCtrlShader;
 	Drx11_Advance_TessEvalShader tessEvalShader;
+};
+#endif
+
+#ifdef VULKAN_H
+// Vulkan Test Renderer
+struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan, public Diagnostic_TestConfig {
+	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)
+	: Topl_Renderer_Vulkan(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt){}
 };
 #endif

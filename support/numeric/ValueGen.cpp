@@ -1,6 +1,5 @@
 #include "ValueGen.hpp"
 
-
 // Numeric Operations
 
 unsigned genColorID(unsigned renderID) {
@@ -69,22 +68,17 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 // Transformation Operations
 
 static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
-	float r = bounds.right; float l = bounds.left;
-	float t = bounds.top; float b = bounds.bottom;
+	float r = bounds.left; float l = bounds.right; // flipped
+	float t = bounds.bottom; float b = bounds.top; // flipped
 	float n = bounds.nearPlane; float f = bounds.farPlane;
 
-    /* Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
+    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
         (2.0f * n) / (r - l), 0.0f, (r + l) / (r - l), 0.0f,
         0.0f, (2.0f * n) / (t - b), (t + b) / (t - b), 0.0f,
-        0.0f, 0.0f, (n + f) / (n - f), (2.0f * n * f) / (n - f),
+        0.0f, 0.0f, -((f + n) / (f - n)), -((2.0f * n * f) / (f - n)),
         0.0f, 0.0f, -1.0f, 0.0f
-    }); */
-	Mat4x4 projMatrix = Mat4x4({ // From Game Engine Architecture page 437
-		(2.0f * n) / (r - l), 0.0f, 0.0f, 0.0f,
-		0.0f, (2.0f * n) / (t - b), 0.0f, 0.0f,
-		(r + l) / (r - l), (t + b) / (t - b), -((f + n) / (f - n)), -1.0f,
-		0.0f, 0.0f, -((2.0f * n * f) / (f - n)), 0.0f
-	});
+    });
+
     return projMatrix;
 }
 

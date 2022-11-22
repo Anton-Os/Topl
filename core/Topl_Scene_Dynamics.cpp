@@ -14,18 +14,14 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 // Scene Dynamics
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
-	// Find matching geometry component
 	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if((*actor)->getName() == name){
+			_actorPhys_map.erase(*actor);
 			_actorPhys_map.insert({ *actor, physActor });
-			return;
 		}
-		
-	return logMessage(MESSAGE_Exclaim, "Could not locate geometry actor for object: " + name);
 }
 
 void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
-	// Find matching geometry component
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) 
@@ -39,7 +35,6 @@ void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 }
 
 void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
-
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
@@ -52,20 +47,18 @@ void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, co
 
 	if(!connector->getIsPreset()) 
 		connector->preset(link1->getPosition(), link2->getPosition()); // presets link data to defaults
-		// connector->preset(*link1->getPos(), *link2->getPos()); // presets link data to defaults
 
 	_linkedItems.push_back({connector, std::make_pair(link1, link2)}); // add new link
 }
 
 void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos) {
-
 	const Geo_Actor* targetActor = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) targetActor = *actor;
 	if (targetActor == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name);
 
 	if(!connector->getIsPreset()){
-		connector->kVal = PHYS_ROD_K; // TODO: Change to rod type instead of modifying k value
+		connector->kVal = PHYS_ROD_K;
 		connector->preset(targetActor->getPosition(), *pos);
 	}
 
@@ -87,7 +80,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 void Topl_Scene::resolvePhysics() {
 	double elapseSecs = _ticker.getRelSecs();
 
-	// Resolve Link Forces
+	// Resolve Link Connections
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
 		Phys_Connector* connector = link->connector;
 		const Geo_Actor* linkItem1 = link->linkedItems.first;
@@ -127,7 +120,7 @@ void Topl_Scene::resolvePhysics() {
 		}
 	}
 
-	// Resolve Anchor Forces
+	// Resolve Anchor Connections
 	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++){
 		Phys_Connector* connector = anchor->connector;
 		const Geo_Actor* actor = anchor->anchoredItems.first;
@@ -155,7 +148,7 @@ void Topl_Scene::resolvePhysics() {
 		}
 	}
 
-	// Resolve general movement here
+	// Resolve All Forces
 	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _actorPhys_map.begin(); m != _actorPhys_map.end(); m++) {
 		Geo_Actor* targetGeo = m->first;
 		Phys_Actor* physActor = m->second;

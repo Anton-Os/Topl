@@ -1,8 +1,6 @@
 #include "Topl_App.hpp"
 
 Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
-    srand(time(NULL)); // seed random number generation
-
     _platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);

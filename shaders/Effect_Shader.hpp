@@ -18,15 +18,20 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		bytes->clear(); // make sure there is no preexisting data
 
-		Vec2i screenRes = Vec2i({ TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT });
+		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 	
 		alignDataToBytes((uint8*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
 		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
 	}
+
+	void setWidth(int w) { if(w > 0) width = w; }
+	void setHeight(int h) { if(h > 0) height = h; }
 protected:
 	unsigned _mode = EFFECT_MODE_CURSOR;
+	int width = TOPL_WIN_WIDTH;
+	int height = TOPL_WIN_HEIGHT;
 };
 
 struct GL4_Effect_VertexShader : public Effect_VertexShader {

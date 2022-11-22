@@ -23,7 +23,7 @@ static Vec3f displaceVec = { 0.0f, 0.0f, 0.0f };
 static Vec3f pawnVec = { 0.0f, 0.0f, 0.0f };
 
 static void callback_press(float x, float y) {
-	if (hoverColor == (CLEAR_COLOR_HEX & 0x00FFFFFF)) puts("\nBackground pressed!");
+	if (hoverColor == (CLEAR_COLOR_CODE & 0x00FFFFFF)) puts("\nBackground pressed!");
 	else puts("\nObject pressed!");
 }
 
@@ -34,25 +34,31 @@ static void callback_release(float x, float y) {
 
 static void callback_pane(unsigned short num) { printf("pane %d callback_pressed!", num); }
 
+unsigned drawCursor_callback(double xFrac, double yFrac) {
+	float cursorX = Platform::getCursorX();
+	float cursorY = Platform::getCursorY();
+
+	if (cursorX - 0.5f == xFrac); // cursor and image offset match!
+	else if (cursorY - 0.5f == yFrac); // cursor and image offset match!
+}
+
 static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
 	static unsigned swapCount = 0;
-	if (swapCount % 100 == 33) { // ghost swap
-		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p] = &ghostImages[p];
-		renderer->texturize(scene); */
-	}
-	else if (swapCount % 100 == 66) { // angel swap
-		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p] = &angelImages[p];
-		renderer->texturize(scene); */
-	}
-	else if (swapCount % 100 == 99) { // demon swap
-		/* for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-			characterImages[p] = &devilImages[p];
-		renderer->texturize(scene); */
-	}
-	swapCount++;
 
+	if (swapCount % 100 == 33) // ghost swap
+		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			scene->addTexture(character.getPrefix() + bodyPartsStr[p], ghostImages[p].getImage());
+	else if (swapCount % 100 == 66) // angel swap
+		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			scene->addTexture(character.getPrefix() + bodyPartsStr[p], angelImages[p].getImage());
+	else if (swapCount % 100 == 99) // demon swap
+		for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
+			scene->addTexture(character.getPrefix() + bodyPartsStr[p], devilImages[p].getImage());
+
+	if (swapCount % 100 == 33 || swapCount % 100 == 66 || swapCount % 100 == 99)
+		renderer->texturize(scene);
+
+	swapCount++;
 }
 
 void Playground_App::createPipeline() {
@@ -80,12 +86,8 @@ void Playground_App::createScene_Main() {
 	}
 
 	character.configure(&scene_main);
-	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++)
-		scene_main.addTexture(character.getPrefix() + bodyPartsStr[p], ghostImages[p].getImage());
-
-	/* scene_main.addLight(&skyLight); 
-	scene_main.addLight(&flashLight); 
-	scene_main.addLight(&lampLight); */
+	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) // initial texture assignment
+		scene_main.addTexture(character.getPrefix() + bodyPartsStr[p], yellowImg.getImage());
 
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline); // switch to correct pipeline
 	_renderer->buildScene(&scene_main); 
@@ -140,7 +142,8 @@ void Playground_App::init() {
 	createScene_Details();
 
 	_renderer->setCamera(&camera1); // no projection
-	// _renderer->setCamera(&camera2); // ortho projection
+	_renderer->setCamera(&camera2); // ortho projection
+	// camera3.setPos({ 0, 0, -VIEW_SPACE - 0.1f });
 	// _renderer->setCamera(&camera3); // perspective projection
 
 	_renderer->setDrawMode(DRAW_Triangles);
@@ -170,8 +173,8 @@ void Playground_App::loop(unsigned long frame) {
 }
 
 void Playground_App::preFrame() {
-	coneActor1.updateRot({ 0, -0.01f });
-	coneActor2.updateRot({ 0, 0.01f });
+	coneActor1.updateRot({ 0.0f, -0.05f, 0.0f });
+	coneActor2.updateRot({ 0.0f, 0.0f, 0.05f });
 	
 	character.move((displaceVec - character.getOrigin()) * 0.33);
 
@@ -183,7 +186,6 @@ void Playground_App::postFrame() {
 
 	frameImage = _renderer->frame();
 	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage->height, frameImage->width, frameImage->data); // draw to output file
-
 	deleteImg(frameImage);
 }
 

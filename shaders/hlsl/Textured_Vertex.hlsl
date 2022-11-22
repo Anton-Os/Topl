@@ -3,7 +3,7 @@
 cbuffer CONST_BLOCK : register(b0) {
 	// uint renderID;
 	float3 offset;
-	float2 rotation;
+	float3 rotation;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -25,34 +25,38 @@ struct VS_OUTPUT {
 
 // Functions
 
-float3x3 calcRotMatrix(float2 rotCoords) {
-	float3x3 zRotMatrix = {
-		cos(rotation.x), sin(rotation.x), 0,
-		-1 * sin(rotation.x), cos(rotation.x), 0,
+float3x3 calcRotMatrix(float3 angles) {
+	float3x3 zRotMatrix = { // Roll
+		cos(angles.x), sin(angles.x), 0,
+		-1 * sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	};
 
-	float3x3 yRotMatrix = {
-		cos(rotation.y), 0, sin(rotation.y),
-		0, 1, 0,
-		-1.0 * sin(rotation.y), 0, cos(rotation.y)
+	float3x3 xRotMatrix = { // Pitch
+		1, 0, 0,
+		0, cos(angles.y), sin(angles.y),
+		0, -sin(angles.y), cos(angles.y)
 	};
 
-	return mul(zRotMatrix, yRotMatrix);
+	float3x3 yRotMatrix = { // Yaw
+		cos(angles.z), 0, sin(angles.z),
+		0, 1, 0,
+		-1.0 * sin(angles.z), 0, cos(angles.z)
+	};
+
+	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
-	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
-
-	float3 zAxis = normalize(lPos - cPos);
-	float3 xAxis = normalize(cross(defaultUpVec, zAxis));
-	float3 yAxis = cross(zAxis, xAxis);
+float4x4 calcCamMatrix(float3 cPos, float3 lPos) { // camera postion and relative look position
+	float3 forward = normalize(cPos - lPos);
+	float3 up = float3(0, 1, 0);
+	float3 right = cross(forward, up);
 
 	float4x4 camMatrix = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0,
-		xAxis.y, yAxis.y, zAxis.y, 0.0,
-		xAxis.z, yAxis.z, zAxis.z, 0.0,
-		-1.0 * dot(xAxis, cPos), -1.0 * dot(yAxis, cPos), -1.0 * dot(zAxis, cPos), 1.0
+		right.x, up.x, forward.x, cPos.x,
+		right.y, up.y, forward.y, cPos.y,
+		right.z, up.z, forward.z, cPos.z,
+		0.0, 0.0, 0.0, 1.0
 	};
 
 	return camMatrix;
@@ -63,11 +67,11 @@ float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and targe
 VS_OUTPUT main(VS_INPUT input) {
 	VS_OUTPUT output;
 
-	float3 rotCoords = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0);
+	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
+	output.pos = float4(angles.x, angles.y, angles.z, 1.0);
 
-	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
-	output.pos = mul(projMatrix, output.pos + float4(offset, 0.0));
+	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
+	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
 
 	return output;

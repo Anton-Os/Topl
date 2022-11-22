@@ -43,16 +43,12 @@ std::string devilAssets[HUMANOID_PARTS_COUNT] = {
 	Topl_App::getImagesPath() + "Demon-RightLeg.png"
 };
 
-unsigned radGradient_callback(double xFrac, double yFrac) {
-	if (xFrac < 0.05 || xFrac > 0.95 || yFrac < 0.05 || yFrac > 0.95) return 0xAA2b184f; // border color
-	else return blend(0xFFff8754, 0xFF54ffff, sqrt(((xFrac - 0.5) * (xFrac - 0.5)) + ((yFrac - 0.5) * (yFrac - 0.5)))); // gradient callback
-}
-
-Rasteron_Image* radialImg = createMappedImg({ 256, 256 }, radGradient_callback);
-Img_Base characterImages[HUMANOID_PARTS_COUNT] = { Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg) };
+Img_Base yellowImg = Img_Base(0xFFFFFF00);
+Img_Base characterImages[HUMANOID_PARTS_COUNT]; // = { Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg), Img_Base(radialImg) };
 Img_Base ghostImages[HUMANOID_PARTS_COUNT], angelImages[HUMANOID_PARTS_COUNT], devilImages[HUMANOID_PARTS_COUNT];
-// Img_Base* characterImages[HUMANOID_PARTS_COUNT] = { &ghostImages[0], &ghostImages[1], &ghostImages[2], &ghostImages[3], &ghostImages[4], &ghostImages[5] };
 Geo_Humanoid2D character = Geo_Humanoid2D("character", noAssets);
+
+Rasteron_Image* frameImage = nullptr;
 
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
@@ -83,8 +79,8 @@ private:
 	Geo_Actor sphereActors[PLAYGROUND_SPHERES_COUNT];
 
 	// Overlay Scene Elements
-	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9);
-	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3);
+	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9, PANE_RADIUS, 0.0f);
+	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3, PANE_RADIUS, 0.0f);
 
 	// Detail Scene Elements
 	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.2f); 
@@ -96,7 +92,6 @@ private:
 
 	// Textures, Materials, Heightmaps
 
-	Rasteron_Image* frameImage = nullptr;
 	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
 	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
 	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];

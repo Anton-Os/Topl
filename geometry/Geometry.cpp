@@ -1,10 +1,5 @@
 #include "Geometry.hpp"
 
-static void genTexCoords_center(unsigned vertexCount, Vec2f* data){
-    for (unsigned t = 0; t < vertexCount; t++)
-        *(data + t) = Vec2f({ 0.5f, 0.5f}); // take the center value of texture
-}
-
 // Geo_Vertex Operations
 
 Geo_Vertex::Geo_Vertex(Vec3f pos){
@@ -16,6 +11,11 @@ Geo_Vertex::Geo_Vertex(Vec3f pos, Vec2f texc){
     position[0] = pos[0]; position[1] = pos[1]; position[2] = pos[2];
 	texcoord[0] = texc[0]; texcoord[1] = texc[1];
 }
+
+// Transform Callbacks
+
+float shiftTForm(float input, double amount) { return input + amount; }
+float scaleTForm(float input, double factor) { return input * factor; }
 
 // Geo_RenderObj Operations
 
@@ -32,7 +32,7 @@ Geo_RenderObj::Geo_RenderObj(unsigned v){ // Vertex only constructor
 
 Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices constructor
     _vertexCount = v;
-    _indicesCount = i;
+    _indexCount = i;
     if((_vertexCount - 1) % 2 == 0) _startAngle = MATH_PI / (_vertexCount - 1); // offset angle for each even side length
 
     if(_vertexCount != 0){
@@ -40,14 +40,14 @@ Geo_RenderObj::Geo_RenderObj(unsigned v, unsigned i){ // Vertex and Indices cons
         _normals = (Vec3f*)malloc(_vertexCount * sizeof(Vec3f));
         _texcoords = (Vec2f*)malloc(_vertexCount * sizeof(Vec2f));
     }
-    if(_indicesCount != 0) _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
+    if(_indexCount != 0) _indices = (unsigned*)malloc(_indexCount * sizeof(unsigned));
 }
 
 // Geo_RenderObj::Geo_RenderObj(const Geo_RenderObj& renderObj){ // copy constructor
 void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
     cleanup(); // make sure to completely erase old object first
     _vertexCount = refObj->getVertexCount();
-    _indicesCount = refObj->getIndexCount();
+    _indexCount = refObj->getIndexCount();
 
     if(_vertexCount != 0){
         _pos = (Vec3f*)malloc(_vertexCount * sizeof(Vec3f));
@@ -64,21 +64,21 @@ void Geo_RenderObj::clone(const Geo_RenderObj* refObj){
         }
     }
 
-    if(_indicesCount != 0){ 
-        _indices = (unsigned*)malloc(_indicesCount * sizeof(unsigned));
+    if(_indexCount != 0){ 
+        _indices = (unsigned*)malloc(_indexCount * sizeof(unsigned));
 
         ui_cptr_t indices_ref = refObj->getIndices();
-        for(unsigned i = 0; i < _indicesCount; i++) *(_indices + i) = *(indices_ref + i);
+        for(unsigned i = 0; i < _indexCount; i++) *(_indices + i) = *(indices_ref + i);
     }
 }
 
-void Geo_RenderObj::fuse(const Geo_RenderObj* refObj){
+/* void Geo_RenderObj::fuse(const Geo_RenderObj* refObj){
     // TODO: backup current data here
     
     // cleanup(); // make sure to completely erase old object first
     _vertexCount += refObj->getVertexCount();
-    _indicesCount += refObj->getIndexCount();
-}
+    _indexCount += refObj->getIndexCount();
+} */
 
 void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis){
     if(_vertexCount == 0 || _pos == nullptr) return; // no processing can occur
@@ -95,12 +95,12 @@ void Geo_RenderObj::modify(vTformCallback callback, double mod, AXIS_Target axis
 	}
 }
 
-void Geo_RenderObj::fillRenderObj(){
+void Geo_RenderObj::init(){
     genPos(_pos);
-    genNormals(_normals); // if(_normals == nullptr) genPos(_normals); // normals match position data if none are present
-    genTexCoords(_texcoords); // if(_texcoords == nullptr) genTexCoords_center(getVertexCount(), _texcoords);
+    genNormals(_normals);
+    genTexCoords(_texcoords);
 	// genVertices(); // generate vertices immediately
-	if (_indicesCount != 0) genIndices(_indices);
+	if (_indexCount != 0) genIndices(_indices);
 }
 
 void Geo_RenderObj::genVertices(){
@@ -112,7 +112,7 @@ void Geo_RenderObj::genVertices(){
 
 void Geo_RenderObj::cleanup() {
     _vertexCount = 0;
-    _indicesCount = 0;
+    _indexCount = 0;
 
     if (_vertices != nullptr) free(_vertices);
     if (_pos != nullptr) free(_pos);

@@ -63,19 +63,12 @@ struct Input_TracerPath {
 };
 
 struct Input_CursorRange {
-    Input_CursorRange(float xRange[2], float yRange[2]){
-        xRange[0] = clamp(xRange[0]); xRange[1] = clamp(xRange[1]); // clamping values
-		yRange[0] = clamp(yRange[0]); yRange[1] = clamp(yRange[1]); // clamping values
-        
-        xMin = (xRange[0] < xRange[1])? xRange[0] : xRange[1]; xMax = (xRange[0] > xRange[1])? xRange[0] : xRange[1]; // setting min and max x values
-        yMin = (yRange[0] < yRange[1])? yRange[0] : yRange[1]; yMax = (yRange[0] > yRange[1])? yRange[0] : yRange[1]; // setting min and max y values
-    }
-    static float clamp(float val){
-        if(val > MAX_CURSOR_BOUND) val = MAX_CURSOR_BOUND; else if(val < MIN_CURSOR_BOUND) val = MIN_CURSOR_BOUND;
-		return val;
-    }
-    float xMin; float xMax; // horizontal range
-    float yMin; float yMax; // vertical range
+	// Input_CursorRange(float xRange[2], float yRange[2]);
+	Input_CursorRange(std::initializer_list<float> xRange, std::initializer_list<float> yRange);
+    float xMin = MIN_CURSOR_BOUND; 
+	float xMax = MAX_CURSOR_BOUND;
+    float yMin = MIN_CURSOR_BOUND;
+	float yMax = MAX_CURSOR_BOUND;
 };
 
 typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of tracer steps inside of a path

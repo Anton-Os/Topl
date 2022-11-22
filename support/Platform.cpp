@@ -27,7 +27,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}
-	case (WM_CHAR): { Platform::keyControl.addKeyPress((char)wParam); }
+	case (WM_CHAR): { if(wParam != 0) Platform::keyControl.addKeyPress((char)wParam); }
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }

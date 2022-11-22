@@ -176,12 +176,14 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 
 	// scene block buffer generation
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
-	_bufferIndex++; // increments to next available slot
-	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	if (!shaderBlockData.empty()) {
+		_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
+		_bufferIndex++; // increments to next available slot
+		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -191,13 +193,15 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
 
 		// render block buffer generation
-		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
-		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		if (!shaderBlockData.empty()) {
+			_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
+			_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
+			_bufferIndex++; // increments to next available slot
+			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		}
 
 		// indices generation
 		if (renderObj->getIndices() != nullptr) {
@@ -286,6 +290,7 @@ void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id
 
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
+	Rasteron_Image* materialImage = material->createImage();
 	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
 	glTexImage3D(
 		GL_TEXTURE_3D, 
@@ -295,12 +300,14 @@ void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id
 		MAX_MATERIAL_PROPERTIES, 
 		0, GL_RGBA, 
 		GL_UNSIGNED_BYTE,
-		material->getLayer(MATERIAL_Albedo)->data  // TODO: Pass Full Material Data
+		materialImage->data
 	);
 	glGenerateMipmap(GL_TEXTURE_3D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
 		_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, textureTarget));
+
+	deleteImg(materialImage);
 }
 
 #endif

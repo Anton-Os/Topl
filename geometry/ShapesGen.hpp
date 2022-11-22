@@ -4,15 +4,6 @@
 
 // Shape Modification Operations
 
-static void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback callback, AXIS_Target axis);
-static void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback);
-static void modifyShape(Geo_RenderObj* renderObj, double mod, vTformCallback xCallback, vTformCallback yCallback, vTformCallback zCallback);
-
-float shiftTForm(float input, double amount); // shifts point by amount
-float stretchTForm(float input, double factor); // stretches point by factor
-float contortTform(float input, double rest); // equalizes values to rest value
-float distortTForm(float input, double radii); // distorts value based on concentric radii
-
 /* class Geo_ConstructShape : public Geo_RenderObj{
 public:
     Geo_ConstructShape(renderObj_cptr_t obj1, renderObj_cptr_t obj2) : refObj1(obj1), refObj2(obj2)
@@ -53,7 +44,7 @@ public:
     Geo_RenderObj(
         pow(refObj->getVertexCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
-        fillRenderObj();
+        init();
     }
 private:
     void genPos(Vec3f* data) override;
@@ -69,7 +60,7 @@ public:
     Geo_RenderObj(
         pow(refObj->getVertexCount(), iterations),
         pow(refObj->getIndexCount(), iterations)){
-        fillRenderObj();
+        init();
     }
 private:
     void genPos(Vec3f* data) override;

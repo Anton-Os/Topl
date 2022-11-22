@@ -26,14 +26,13 @@ Geo_Tree::~Geo_Tree(){
     }
 }
 
-void Geo_Tree::rotate(Vec2f angles){
+void Geo_Tree::rotate(Vec3f angles){
     rotateAll(angles);
 
     Vec3f origin = getOrigin();
     for(unsigned a = 0; a < _actorCount; a++){
         Geo_Actor* actor =  *(_actorData + a);
         Vec3f actor_pos = actor->getPosition() - origin;
-        // Vec2f actor_angles = *(actor->getRot());
         
         float x = (actor_pos[0] * cos(angles[0])) - (actor_pos[1] * sin(angles[0]));
         float y = (actor_pos[0] * sin(angles[0])) + (actor_pos[1] * cos(angles[0]));

@@ -16,6 +16,16 @@ void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
 
 // Mouse Interaction
 
+Input_CursorRange::Input_CursorRange(std::initializer_list<float> xRange, std::initializer_list<float> yRange){
+	float x1 = *xRange.begin(); float y1 = *yRange.begin();
+	float x2 = *(xRange.end() - 1); float y2 = *(yRange.end() - 1);
+
+	xMin = (x1 < x2) ? x1 : x2; 
+	xMax = (x1 > x2) ? x1 : x2;
+	yMin = (y1 < y2) ? y1 : y2; 
+	yMax = (y1 > y2) ? y1 : y2;
+}
+
 void Input_MouseControl::addCallback(enum MOUSE_Button mb, pressCallback callback) {
 	_mouseCallback_map.insert(std::make_pair(mb, callback));
 }

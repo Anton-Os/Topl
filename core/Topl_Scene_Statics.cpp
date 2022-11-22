@@ -3,14 +3,13 @@
 // Scene Statics
 
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
-	if(index >= _geoActors.size()) return nullptr; // Error
-	else return _geoActors.at(index); 
+	if (index < _geoActors.size()) return _geoActors.at(index);
+	else return nullptr;
 }
 
 actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if((*actor)->getName() == name) return *actor;
-
 	return nullptr; // Error
 }
 
@@ -38,8 +37,10 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
 void Topl_Scene::addTexture(const std::string& name, const Rasteron_Image* image) {
 	if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if (name == (*actor)->getName())
+		if (name == (*actor)->getName()) {
+			_actorTex_map.erase(*actor);
 			_actorTex_map.insert({ *actor, image });
+		}
 }
 
 const Rasteron_Image* Topl_Scene::getTexture(const std::string& name) const {
@@ -51,8 +52,10 @@ const Rasteron_Image* Topl_Scene::getTexture(const std::string& name) const {
 void Topl_Scene::addMaterial(const std::string& name, const Img_Material* material) {
 	if (material->getLayer(MATERIAL_Albedo) == nullptr) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if (name == (*actor)->getName())
+		if (name == (*actor)->getName()) {
+			_actorMaterial_map.erase(*actor);
 			_actorMaterial_map.insert({ *actor, material });
+		}
 }
 
 const Img_Material* Topl_Scene::getMaterial(const std::string& name) const {

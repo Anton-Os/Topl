@@ -115,9 +115,7 @@ struct Matrix {
 		return data[r][c];
 	} */
 
-    Matrix operator* (const Matrix& input){
-        return {}; // Implement multiplication
-    }
+	Matrix operator* (const Matrix& input) { return {}; } // TODO: implement multiplication
 };
 
 typedef const unsigned* const ui_cptr_t;

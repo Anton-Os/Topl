@@ -44,11 +44,11 @@ private:
 #endif
 };
 
-// Frames of images implementing Rasteron_Animation
+// Frames based on a sequence
 
 struct Img_Frames {
     Img_Frames(){} // Empty Constructor
-#ifdef RASTERON_H // required library for loading images
+#ifdef RASTERON_H
 	Img_Frames(std::string prefix, unsigned short frameCount){
 		data = allocNewAnim(prefix.c_str(), frameCount);
 	}
@@ -72,7 +72,7 @@ private:
 #endif
 };
 
-// Material layers of images implementing Rasteron_Animation
+// Material based on layers
 
 #define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
 
@@ -87,9 +87,10 @@ enum MATERIAL_Property {
 
 struct Img_Material { 
     Img_Material() : height(256), width(256) {} // Empty Constructor
-#ifdef RASTERON_H // required library for loading images
+#ifdef RASTERON_H
     Img_Material(std::string prefix, unsigned h, unsigned w) : height(height), width(w) {
 		data = allocNewAnim(prefix.c_str(), MAX_MATERIAL_PROPERTIES);
+		// TODO: create default material images
 	}
 	~Img_Material(){ deleteAnim(data); }
 	
@@ -99,9 +100,11 @@ struct Img_Material {
 		// else logMessage(MESSAGE_Exclaim, "image must match width and height of material");
     }
 	Rasteron_Image* getLayer(MATERIAL_Property property) const { return getFrame(data, property); }
+	Rasteron_Image* createImage() const { return createCompositeImg(data); }
 
 private:
-	Rasteron_Animation* data; // underlying data
+	Rasteron_Animation* data = nullptr; // underlying data
+	// Rasteron_Image* materialImage = nullptr;
 	
 	const unsigned height;
 	const unsigned width;
@@ -116,7 +119,7 @@ struct Img_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Heightm
     Img_Heightmap(const Rasteron_Image* refImage)
     : Geo_RenderObj(refImage->height * refImage->width) {
         heightmap = createHeightmap(refImage);
-		fillRenderObj();
+		init();
     }
 
     ~Img_Heightmap(){ deleteHeightmap(heightmap); }

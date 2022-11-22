@@ -9,7 +9,8 @@ public:
         (refShape.segments + 1, // vertex count is number of segments +1 for the center point
         refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
         _shape2D = refShape;
-        fillRenderObj();
+		_depth += 0.0001;
+        init();
     }
 
     Geo_Flat(NGon2D refShape, float z) // Z Value Constructor
@@ -18,7 +19,7 @@ public:
      refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
         _shape2D = refShape;
         _depth = z;
-        fillRenderObj();
+        init();
     }
 
     float getRadius() const { return _shape2D.radius; }

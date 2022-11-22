@@ -10,7 +10,7 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		bytes->clear(); // make sure there is no preexisting data
 
 		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec2f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {

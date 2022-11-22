@@ -51,7 +51,7 @@ public:
 	void setPos(const Vec3f& pos){ _pos = pos; }
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
 	void setLookPos(const Vec3f& vec){ _lookPos = vec; }
-	void updateLookPos(const Vec3f& vec){ _lookPos = _pos + vec; }
+	void updateLookPos(const Vec3f& vec) { _lookPos = _lookPos + vec; }
 	vec3f_cptr_t getPos() const { return &_pos; }
 	vec3f_cptr_t getLookPos() const { return &_lookPos; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }

@@ -16,6 +16,7 @@ void Splitscreen_App::init() {
 		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_FRACTAL);
 		fragShader = Drx11_Effect_FragmentShader();
 	}
+	// vertexShader1.setHeight(Platform::getViewportHeight(_platform->getParentWindow()));
 
 	pipeline1 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader);
 	pipeline2 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader);
@@ -29,12 +30,12 @@ void Splitscreen_App::init() {
 }
 
 void Splitscreen_App::loop(unsigned long frame) {
-	_renderer->setPipeline(pipeline2);
+	_renderer->setPipeline(pipeline1);
 	_renderer->updateScene(&scene);
 	_renderer->setViewport(&viewports[0]);
 	_renderer->renderScene(&scene);
 	
-	_renderer->setPipeline(pipeline1);
+	_renderer->setPipeline(pipeline2);
 	_renderer->updateScene(&scene);
 	_renderer->setViewport(&viewports[1]);
 	_renderer->renderScene(&scene);

@@ -8,7 +8,7 @@ public:
         refShape.segments * 12 ){ // triangle for front and back and 2 for sides
         _shape2D = refShape;
         _depth = _shape2D.radius;
-        fillRenderObj();
+        init();
     }
 
     Geo_Extruded(NGon2D refShape, float depth) // Depth Constructor
@@ -17,7 +17,7 @@ public:
         refShape.segments * 12 ){ // triangle for front and back and 2 for sides
         _shape2D = refShape;
         _depth = depth;
-        fillRenderObj();
+        init();
     }
 
     float getRadius() const { return _shape2D.radius; }

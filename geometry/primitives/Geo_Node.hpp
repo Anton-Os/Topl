@@ -21,12 +21,12 @@ public:
 	Geo_Mesh(const aiMesh* mesh) 
 	: Geo_RenderObj(getMeshAttribCount(mesh, MESH_Vertex), getMeshAttribCount(mesh, MESH_Index)) {
 		_assimpMeshes = { mesh };
-		fillRenderObj();
+		init();
 	}
 	Geo_Mesh(const std::vector<const aiMesh*>& meshes) 
 	: Geo_RenderObj(getMeshesAttribCount(meshes, MESH_Vertex), getMeshesAttribCount(meshes, MESH_Index)) {
 		_assimpMeshes = std::vector<const aiMesh*>(meshes.begin(), meshes.end());
-		fillRenderObj();
+		init();
 	}
 	virtual ~Geo_Mesh() {}
 

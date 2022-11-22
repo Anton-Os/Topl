@@ -12,31 +12,30 @@ class Geo_Actor {
 public:
 	Geo_Actor(){}
 	Geo_Actor(const Geo_RenderObj* renderObj) { _renderObj = renderObj; }
-	~Geo_Actor(){ }
 
 	void setName(const std::string& name) { _name = name; }
+	std::string getName() const { return _name; }
 	void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }
+	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
 
 	void setPos(const Vec3f& moveVec){ _position = moveVec; }
 	void updatePos(const Vec3f& moveVec){ _position = _position + moveVec; }
-	void setRot(const Vec2f& angleVec){ _rotation = angleVec; }
-	void updateRot(const Vec2f& angleVec){ _rotation = _rotation + angleVec; }
-	
-	std::string getName() const { return _name; }
+	void setRot(const Vec3f& angleVec){ _rotation = angleVec; }
+	void updateRot(const Vec3f& angleVec){ _rotation = _rotation + angleVec; }
 
-	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
 	vec3f_cptr_t getPos() const { return &_position; }
 	Vec3f getPosition() const { return _position; }
-	vec2f_cptr_t getRot() const { return &_rotation; }
-	Vec2f getRotation() const { return _rotation; }
+	vec3f_cptr_t getRot() const { return &_rotation; }
+	Vec3f getRotation() const { return _rotation; }
 private:
-	// unsigned renderID;
-	std::string _name = DEFAULT_ACTOR_NAME;
-
 	// Data Types
-	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
-	Vec2f _rotation = Vec2f({ 0.0f, 0.0f});
+	std::string _name = DEFAULT_ACTOR_NAME;
 	const Geo_RenderObj* _renderObj = nullptr;
+	const Geo_InstancedObj* _instancedObj = nullptr;
+
+	// Orientation Types
+	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
+	Vec3f _rotation = Vec3f({ 0.0f, 0.0f});
 };
 
 typedef const Geo_Actor* const actor_cptr;

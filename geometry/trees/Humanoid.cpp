@@ -12,20 +12,20 @@ static void resizeToSprite(const Rasteron_Sprite* sprite, Geo_FlatSquare* square
 	float width = sprite->bounds.topRight_point[0] * 2;
 	float height = sprite->bounds.topRight_point[1] * 2;
 
-	if (width != height) { // no stretch for matching width and height
-		float stretchX = height / width;
-		stretchX += (stretchX < 1.0f) ? (1.0f - stretchX) / 2 : -1 * ((stretchX - 1.0f) / 2); // half the stretch amount
-		square->modify(stretchTForm, stretchX, AXIS_X);
+	if (width != height) { // no scale for matching width and height
+		float scaleX = height / width;
+		scaleX += (scaleX < 1.0f) ? (1.0f - scaleX) / 2 : -1 * ((scaleX - 1.0f) / 2); // half the scale amount
+		square->scale(scaleX, AXIS_X);
 
-		float stretchY = width / height;
-		stretchY += (stretchY < 1.0f) ? (1.0f - stretchY) / 2 : -1 * ((stretchY - 1.0f) / 2); // half the stretch amount
-		square->modify(stretchTForm, stretchY, AXIS_Y);
+		float scaleY = width / height;
+		scaleY += (scaleY < 1.0f) ? (1.0f - scaleY) / 2 : -1 * ((scaleY - 1.0f) / 2); // half the scale amount
+		square->scale(scaleY, AXIS_Y);
 	}
 }
 
 // Humanoid operations
 
-void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles){
+void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec3f& angles){
 	Geo_Actor* actor;
 	switch(target){
 	case HUMANOID_Head: actor = head; break;
@@ -40,7 +40,7 @@ void Geo_Humanoid::orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f
 	actor->updateRot(angles);
 }
 
-void Geo_Humanoid::orientAll(std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT]){
+void Geo_Humanoid::orientAll(std::pair<Vec3f, Vec3f> orientations[HUMANOID_PARTS_COUNT]){
 	orient(HUMANOID_Head, orientations[HUMANOID_Head].first, orientations[HUMANOID_Head].second);
 	orient(HUMANOID_LeftArm, orientations[HUMANOID_LeftArm].first, orientations[HUMANOID_LeftArm].second);
 	orient(HUMANOID_RightArm, orientations[HUMANOID_RightArm].first, orientations[HUMANOID_RightArm].second);
@@ -117,13 +117,13 @@ void Geo_Humanoid2D::configure(Topl_Scene* scene) {
 		scene->addPhysics(getPrefix() + bodyPartsStr[p], bodyPhysics[p]); // add physics to scene
 	}
 
-	std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
-		std::make_pair(Vec3f({ 0.0f, 0.3f, 0.0 }), Vec2f({ 0.0, 0.0f })), // Head
-		std::make_pair(Vec3f({ -0.35f, 0.1f, 0.0 }), Vec2f({ 0.0, 0.0 })), // Left Arm
-		std::make_pair(Vec3f({ 0.35f, 0.1f, 0.0 }), Vec2f({ 0.0, 0.0 })), // Right Arm
-		std::make_pair(Vec3f({ 0.0f, 0.0f, 0.0 }), Vec2f({ 0.0, 0.0 })), // torso
-		std::make_pair(Vec3f({ -0.15f, -0.35f, 0.0 }), Vec2f({ -MATH_HALF_PI, 0.0 })), // Left Leg
-		std::make_pair(Vec3f({ 0.15f, -0.35f, 0.0 }), Vec2f({ MATH_HALF_PI, 0.0 })) // Right Leg
+	std::pair<Vec3f, Vec3f> orientations[HUMANOID_PARTS_COUNT] = { // shared orientations
+		std::make_pair(Vec3f({ 0.0f, 0.3f, 0.0 }), Vec3f({ 0.0, 0.0f })), // Head
+		std::make_pair(Vec3f({ -0.35f, 0.1f, 0.0 }), Vec3f({ 0.0, 0.0 })), // Left Arm
+		std::make_pair(Vec3f({ 0.35f, 0.1f, 0.0 }), Vec3f({ 0.0, 0.0 })), // Right Arm
+		std::make_pair(Vec3f({ 0.0f, 0.0f, 0.0 }), Vec3f({ 0.0, 0.0 })), // torso
+		std::make_pair(Vec3f({ -0.15f, -0.35f, 0.0 }), Vec3f({ -MATH_HALF_PI, 0.0 })), // Left Leg
+		std::make_pair(Vec3f({ 0.15f, -0.35f, 0.0 }), Vec3f({ MATH_HALF_PI, 0.0 })) // Right Leg
 	};
 
 	orientAll(orientations); // setting orientations

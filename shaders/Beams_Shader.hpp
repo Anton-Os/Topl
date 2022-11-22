@@ -15,7 +15,7 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		bytes->clear(); // make sure there is no preexisting data
 
 		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec2f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
@@ -47,7 +47,7 @@ private:
 protected:
 	unsigned _mode = BEAMS_MODE_ALTERNATE;
 
-	Topl_Light skyLight = Topl_Light({ 0.0, -1.0f, 0.0 });
+	Topl_Light skyLight = Topl_Light({ 0.0, 1.0f, 0.0 });
 	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, 1.0 });
 	Topl_Light lampLight = Topl_Light({ -1.0, 0.0f, 0.0 });
 };

@@ -18,13 +18,13 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_columns = columns;
 
 	// Modifying Root Pane RenderObj
-	_rootSquare.modify(::stretchTForm, (_height * 2) + _border, AXIS_Y);
-	_rootSquare.modify(::stretchTForm, (_width * 2) + _border, AXIS_X);
+	_rootSquare.modify(::scaleTForm, (_height * 2) + _border, AXIS_Y);
+	_rootSquare.modify(::scaleTForm, (_width * 2) + _border, AXIS_X);
 
 	// Modifying Child Panes RenderObj
 	_panes.resize(getActorCount() - 1);
-	_childSquare.modify(::stretchTForm, ((_height * 2) / _rows) -_border, AXIS_Y);
-	_childSquare.modify(::stretchTForm, ((_width * 2) / _columns) -_border, AXIS_X);
+	_childSquare.modify(::scaleTForm, ((_height * 2) / _rows) -_border, AXIS_Y);
+	_childSquare.modify(::scaleTForm, ((_width * 2) / _columns) -_border, AXIS_X);
 }
 
 void Geo_PaneLayout::configure(Topl_Scene* scene) {

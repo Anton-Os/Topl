@@ -19,7 +19,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	
 		alignDataToBytes((uint8*)&color, sizeof(Vec4f), NO_PADDING, bytes);
 		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec2f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
@@ -33,7 +33,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 protected:
 	Vec4f genFlatColor(unsigned renderID) const {
 		unsigned colorID = genColorID(renderID);
-		return Vec4f({ (colorID & 0xFF) / 255.0f, (colorID & 0xFF00) / 255.0f, (colorID & 0xFF00) / 255.0f, _alphaVal }); // default value
+		return Vec4f({ ((colorID & 0xFF0000) >> 16) / 255.0f, ((colorID & 0xFF00) >> 8) / 255.0f, (colorID & 0xFF) / 255.0f, _alphaVal });
 	}
 
 	unsigned _mode = FLAT_MODE_SOLID;

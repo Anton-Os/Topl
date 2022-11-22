@@ -42,7 +42,7 @@ void Geo_Conic::genIndices(unsigned* data){
 	// Indexing BASE
 	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
 
-	for (i = 0; i < _indicesCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
+	for (i = 0; i < _indexCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
 		*(data + i + 0) = 0; // center point
 		*(data + i + 1) = currentVertex; // target vertex
 		*(data + i + 2) = currentVertex + 1; // connect to next vertex
@@ -56,7 +56,7 @@ void Geo_Conic::genIndices(unsigned* data){
 
 	// Indexing APEX
 	currentVertex = 1; // currentVertex needs to reset!
-	for(i = _indicesCount / 2; i < _indicesCount - 3; i += 3){ // iterate to the end minus 1 trig
+	for(i = _indexCount / 2; i < _indexCount - 3; i += 3){ // iterate to the end minus 1 trig
 		*(data + i + 0) = _vertexCount - 1; // apex point
 		*(data + i + 1) = currentVertex + 1; // connect to next vertex
 		*(data + i + 2) = currentVertex; // target vertex

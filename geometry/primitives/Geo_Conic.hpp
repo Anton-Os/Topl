@@ -8,7 +8,7 @@ public:
      refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
         _shape2D = refShape;
         _apex = Vec3f({ 0.0f, 0.0f, refShape.radius + DEFAULT_Z }); // default apex
-        fillRenderObj();
+        init();
     }
 
     Geo_Conic(NGon2D refShape, Vec3f apex) // Apex Constructor
@@ -17,7 +17,7 @@ public:
      refShape.segments * 6){ // 1 base triangle and 1 apex connecting triangle
         _shape2D = refShape;
         _apex = apex; // manual apex
-        fillRenderObj();
+        init();
     }
 
     float getRadius() const { return _shape2D.radius; }

@@ -8,9 +8,9 @@
 #include "Topl_Scene.hpp"
 
 typedef std::pair<std::string, Geo_Actor*> geoName_pair;
-typedef std::pair<Vec3f, Vec2f> orientation_pair;
+typedef std::pair<Vec3f, Vec3f> orientation_pair;
 
-#define NO_ORIENTATION std::make_pair(Vec3f(0.0f, 0.0f, 0.0f), Vec2f(0.0f, 0.0f));
+#define NO_ORIENTATION std::make_pair(Vec3f(0.0f, 0.0f, 0.0f), Vec3f(0.0f, 0.0f, 0.0f));
 
 // Tree
 
@@ -27,8 +27,8 @@ public:
     void move(Vec3f vec){ 
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updatePos(vec);
     }
-	void rotate(Vec2f angles); // rotation of actors around origin
-    void rotateAll(Vec2f angles){ // piecewise rotation of all actors
+	void rotate(Vec3f angles); // rotation of actors around origin
+    void rotateAll(Vec3f angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _actorCount; g++) (*(_actorData + g))->updateRot(angles);
     }
 

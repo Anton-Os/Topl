@@ -26,8 +26,8 @@ const std::string bodyPartsStr[HUMANOID_PARTS_COUNT] = {
 
 class Geo_Humanoid {
 public:
-	void orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec2f& angles); // orients torso parts
-	void orientAll(std::pair<Vec3f, Vec2f> orientations[HUMANOID_PARTS_COUNT]); // orients all torso parts
+	void orient(HUMANOID_Anatomy target, const Vec3f& pos, const Vec3f& angles); // orients torso parts
+	void orientAll(std::pair<Vec3f, Vec3f> orientations[HUMANOID_PARTS_COUNT]); // orients all torso parts
 
 	void addLinks(Topl_Scene* scene, const std::string& prefix);
 	void presetLinks();

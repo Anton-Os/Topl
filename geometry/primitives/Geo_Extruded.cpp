@@ -63,7 +63,7 @@ void Geo_Extruded::genIndices(unsigned* data){
 
 	// Indexing FRONT FACE
 	unsigned v = 1;
-	for (i = 0; i < (_indicesCount / 4) - 3; i += 3) {
+	for (i = 0; i < (_indexCount / 4) - 3; i += 3) {
 		*(data + i + 0) = 0; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
@@ -78,7 +78,7 @@ void Geo_Extruded::genIndices(unsigned* data){
 
 	// Indexing BACK FACE
 	v = _vertexCount / 2 + 1;
-	for (i = _indicesCount / 4; i < (_indicesCount / 2) - 3; i += 3) {
+	for (i = _indexCount / 4; i < (_indexCount / 2) - 3; i += 3) {
 		*(data + i + 0) = _vertexCount / 2; // origin point
 		*(data + i + 1) = v; // take the start vertex
 		*(data + i + 2) = v + 1; // connect to next vertex
@@ -93,7 +93,7 @@ void Geo_Extruded::genIndices(unsigned* data){
 
 	// Indexing SIDE FACES
 	v = 1;
-	for (i = _indicesCount / 2; i < _indicesCount - 6; i += 6) {
+	for (i = _indexCount / 2; i < _indexCount - 6; i += 6) {
 		*(data + i + 0) = v;
 		*(data + i + 2) = v + (_vertexCount / 2) + 1;
 		*(data + i + 1) = v + 1;

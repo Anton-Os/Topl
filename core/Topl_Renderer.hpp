@@ -86,7 +86,7 @@ enum DRAW_Mode {
 
 #define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
 #define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
-#define CLEAR_COLOR_HEX 0xFA191919 // hexadecimal version of clear color
+#define CLEAR_COLOR_CODE 0xFA191919 // hexadecimal version of clear color
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached

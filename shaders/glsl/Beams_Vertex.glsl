@@ -5,7 +5,7 @@
 layout(std140, binding = 0) uniform Block {
 	// uint renderID
 	vec3 offset;
-	vec2 rotation;
+	vec3 rotation;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
@@ -41,30 +41,30 @@ float calcSpec(vec3 light, vec3 target, vec3 camera){
 float calcDiffuse(vec3 light, vec3 target){
 	float intensity = dot(normalize(light), normalize(target));
 	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
-	float attenuation = 1 / (length(light) * length(light)); // length * length is equal to length^2
-	// return intensity;
+	float attenuation = 1 / (length(light) * length(light));
 	return intensity * attenuation;
 }
 
-float calcAmbient(vec3 light){
-	const float attenuation = 0.1;
-	return ((light.r * attenuation) + (light.g * attenuation) + (light.b * attenuation)) / 3;
-}
-
-mat3 calcRotMatrix(vec2 rotCoords){
-	mat3 zRotMatrix = mat3(
-		cos(rotCoords.x), -1.0f * sin(rotCoords.x), 0,
-		sin(rotCoords.x), cos(rotCoords.x), 0,
+mat3 calcRotMatrix(vec3 angles) {
+	mat3 zRotMatrix = mat3( // Roll
+		cos(angles.x), -sin(angles.x), 0,
+		sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	);
 
-	mat3 yRotMatrix = mat3(
-		cos(rotCoords.y), 0, -1.0 * sin(rotCoords.y),
-		0, 1, 0,
-		sin(rotCoords.y), 0, cos(rotCoords.y)
+	mat3 xRotMatrix = mat3( // Pitch
+		1, 0, 0,
+		0, cos(angles.y), sin(angles.y),
+		0, -sin(angles.y), cos(angles.y)
 	);
 
-	return zRotMatrix * yRotMatrix;
+	mat3 yRotMatrix = mat3( // Yaw
+		cos(angles.z), 0, sin(angles.z),
+		0, 1, 0,
+		-1.0 * sin(angles.z), 0, cos(angles.z)
+	);
+
+	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
 mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
@@ -87,8 +87,8 @@ mat4 calcCameraMatrix(vec3 cPos, vec3 lPos){
 // Main
 
 void main() {
-	vec3 rotCoords = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
+	vec3 angles = calcRotMatrix(rotation) * pos;
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f);
 
 	gl_Position = final_pos + vec4(offset, 0.0f); // * projMatrix;
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
@@ -98,9 +98,9 @@ void main() {
 	const float ambient_intensity = 0.25f;
 	ambient_out = ambient_intensity * skyLight_value;
 	// diffuse shading
-	const float skyLight_intensity = calcDiffuse(skyLight_pos, pos);
+	const float skyLight_intensity = calcDiffuse(skyLight_pos, angles);
 	diffuse_out = (skyLight_intensity * skyLight_value); // + (flashLight_intensity * flashLight_value);
 	// specular shading
-	const float specular_intensity = calcSpec(skyLight_pos, pos, cam_pos);
+	const float specular_intensity = calcSpec(skyLight_pos, angles, cam_pos);
 	specular_out = reflect(skyLight_pos, pos); // for testing
 }

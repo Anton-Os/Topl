@@ -10,7 +10,7 @@ public:
         ((refShape.xSegments + 1) * (refShape.ySegments + 1)) * 6 // Index Count
     ){
         _shape3D = refShape;
-        fillRenderObj();
+        init();
     }
 
 	float getRadius() const { return _shape3D.radius; }
@@ -27,7 +27,7 @@ class Geo_IcoSphere : public Geo_RenderObj {
     Geo_IcoSphere(NGon3D refShape)
     : Geo_RenderObj( 1, 1 ){ // include correct vertex and index count
         _shape3D = refShape;
-        fillRenderObj();
+        init();
     }
 
 	float getRadius() const { return _shape3D.radius; }

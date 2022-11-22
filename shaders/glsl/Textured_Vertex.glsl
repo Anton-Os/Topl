@@ -5,7 +5,7 @@
 layout(std140, binding = 0) uniform Block {
 	// uint renderID
 	vec3 offset;
-	vec2 rotation;
+	vec3 rotation;
 };
 
 layout(std140, binding = 1) uniform SceneBlock{
@@ -22,46 +22,50 @@ layout(location = 0) out vec2 texcoord_out;
 
 // Functions
 
-mat3 calcRotMatrix(vec2 rotCoords) {
-	mat3 zRotMatrix = mat3(
-		cos(rotCoords.x), -1.0f * sin(rotCoords.x), 0,
-		sin(rotCoords.x), cos(rotCoords.x), 0,
+mat3 calcRotMatrix(vec3 angles) {
+	mat3 zRotMatrix = mat3( // Roll
+		cos(angles.x), -sin(angles.x), 0,
+		sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	);
 
-	mat3 yRotMatrix = mat3(
-		cos(rotCoords.y), 0, -1.0f * sin(rotCoords.y),
-		0, 1, 0,
-		sin(rotCoords.y), 0, cos(rotCoords.y)
+	mat3 xRotMatrix = mat3( // Pitch
+		1, 0, 0,
+		0, cos(angles.y), sin(angles.y),
+		0, -sin(angles.y), cos(angles.y)
 	);
 
-	return zRotMatrix * yRotMatrix;
+	mat3 yRotMatrix = mat3( // Yaw
+		cos(angles.z), 0, sin(angles.z),
+		0, 1, 0,
+		-1.0 * sin(angles.z), 0, cos(angles.z)
+	);
+
+	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCameraMatrix(vec3 cPos, vec3 lPos) {
-	vec3 defaultUpVec = vec3(0.0, 1.0, 0.0);
-
-	vec3 zAxis = normalize(cPos - lPos);
-	vec3 xAxis = normalize(cross(defaultUpVec, zAxis));
-	vec3 yAxis = cross(zAxis, xAxis);
+mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // camera postion and relative look position
+	vec3 forward = normalize(lPos - cPos);
+	vec3 right = vec3(1, 0, 0); // calcRotMatrix(vec2(0, lPos.x)) * forward;
+	vec3 up = cross(forward, right);
 
 	mat4 camMatrix = mat4(
-		xAxis.x, xAxis.y, xAxis.z, -1.0 * dot(xAxis, cPos),
-		yAxis.x, yAxis.y, yAxis.z, -1.0 * dot(yAxis, cPos),
-		zAxis.x, zAxis.y, zAxis.z, -1.0 * dot(zAxis, cPos),
+		right.x, up.x, forward.x, cPos.x,
+		right.y, up.y, forward.y, cPos.y,
+		right.z, up.z, forward.z, cPos.z,
 		0.0, 0.0, 0.0, 1.0
 	);
 
-	return camMatrix;
+	return camMatrix; // * rotMatrix;
 }
 
 // Main
 
 void main() {
-	vec3 rotCoords = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(rotCoords.x, rotCoords.y, rotCoords.z, 1.0f);
+	vec3 angles = calcRotMatrix(rotation) * pos;
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f);
 
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCameraMatrix(cam_pos, look_pos) * projMatrix;
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 	texcoord_out = texcoord;
 }

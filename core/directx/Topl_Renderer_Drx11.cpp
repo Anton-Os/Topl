@@ -186,7 +186,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	ID3D11Texture2D* depthTex = NULL;
 	_device->CreateTexture2D(&depthTexDesc, NULL, &depthTex);
 
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -218,7 +218,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 
 	// Blend State Creation
 
-	D3D11_BLEND_DESC blendStateDesc;
+	D3D11_BLEND_DESC blendStateDesc = {};
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
 
 	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -298,8 +298,10 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	// scene block buffer generation
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-	_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
-	_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
+	if (!shaderBlockData.empty()) {
+		_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
+		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
+	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -310,10 +312,12 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 		// render block buffer generation
 		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
-		ID3D11Buffer* renderBlockBuff = nullptr;
-		_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
-		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
-		if (!_isBuilt) return; // Error
+		if (!shaderBlockData.empty()) {
+			ID3D11Buffer* renderBlockBuff = nullptr;
+			_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
+			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
+			if (!_isBuilt) return; // Error
+		}
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
@@ -444,8 +448,9 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
+	Rasteron_Image* materialImage = material->createImage();
 	D3D11_SUBRESOURCE_DATA texData;
-	texData.pSysMem = material->getLayer(MATERIAL_Albedo)->data; // TODO: Pass Full Material Data
+	texData.pSysMem = materialImage->data;
 	texData.SysMemPitch = sizeof(uint32_t) * material->getLayer(MATERIAL_Albedo)->height;
 	texData.SysMemSlicePitch = 0;
 
@@ -471,6 +476,8 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 			return;
 		}
 	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // Texture Addition
+
+	deleteImg(materialImage);
 }
 #endif
 
