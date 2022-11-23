@@ -40,6 +40,7 @@ unsigned drawCursor_callback(double xFrac, double yFrac) {
 
 	if (cursorX - 0.5f == xFrac); // cursor and image offset match!
 	else if (cursorY - 0.5f == yFrac); // cursor and image offset match!
+	return ZERO_COLOR;
 }
 
 static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
@@ -116,10 +117,10 @@ void Playground_App::createScene_Overlay() {
 }
 
 void Playground_App::createScene_Details() {
-	coneActor1.updatePos(Vec3f({ 0.7f, -0.7f, 0.0f }));
-	scene_details.addGeometry("Cone1", &coneActor1);
-	coneActor2.updatePos(Vec3f({ -0.7f, 0.7f, 0.0f }));
-	scene_details.addGeometry("Cone2", &coneActor2);
+	prismActor.updatePos(Vec3f({ 0.7f, -0.7f, 0.0f }));
+	scene_details.addGeometry("Cone1", &prismActor);
+	coneActor.updatePos(Vec3f({ -0.7f, 0.7f, 0.0f }));
+	scene_details.addGeometry("Cone2", &coneActor);
 
 	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, litPipeline);
 	_renderer->buildScene(&scene_details); // build operation
@@ -173,8 +174,8 @@ void Playground_App::loop(unsigned long frame) {
 }
 
 void Playground_App::preFrame() {
-	coneActor1.updateRot({ 0.0f, -0.05f, 0.0f });
-	coneActor2.updateRot({ 0.0f, 0.0f, 0.05f });
+	prismActor.updateRot({ 0.0f, -0.05f, 0.0f });
+	coneActor.updateRot({ 0.0f, 0.0f, 0.05f });
 	
 	character.move((displaceVec - character.getOrigin()) * 0.33);
 

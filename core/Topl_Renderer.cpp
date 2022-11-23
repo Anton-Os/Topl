@@ -25,7 +25,7 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 
 bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
-    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for update call!");
+    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Not built for update call!");
     if(!_isPipelineReady || !_isBuilt) return false; // failure
 
     update(scene);
@@ -37,16 +37,36 @@ void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
     drawMode(); // sets the proper draw mode
 }
 
-bool Topl_Renderer::renderScene(const Topl_Scene* scene){
-	if (!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
-    if (!_isBuilt) logMessage(MESSAGE_Exclaim, "Scene not built for draw call!");
-    if (_renderIDs == 0) logMessage(MESSAGE_Exclaim, "No render targets for draw call!");
+bool Topl_Renderer::renderAll() {
 	if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
+		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
+		_isDrawn = false;
+		return false; // error
+	}
+	else _isDrawn = true;
+
+	// Render All Targets in Sequence
+
+	renderTarget(SCENE_RENDER_ID); // first target is scene block data
+	if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
+		for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
+	else if (_isDrawInOrder == INVERSE_DRAW_ORDER) // draw in reverse order
+		for (unsigned r = _renderIDs; r > 0; r--) renderTarget(r);
+
+	_frameIDs++; // increment frame counter
+	return _isDrawn;
+}
+
+bool Topl_Renderer::renderScene(const Topl_Scene* scene){
+	if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
+		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
         _isDrawn = false;
-        return false; // failure
+        return false; // error
     } else _isDrawn = true;
 
-    renderTarget(SCENE_RENDER_ID); // first target as scene block data
+	// Render Scene Targets in Sequence
+
+    renderTarget(SCENE_RENDER_ID); // first target is scene block data
 	if(scene != nullptr){ // Scene Targets
 		if (_isDrawInOrder == REGULAR_DRAW_ORDER) { // draw in regular order
 			for (unsigned g = 0; g < scene->getActorCount(); g++)
@@ -61,15 +81,9 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 					: logMessage(MESSAGE_Exclaim, "renderID not found!");
 		}
 	}
-	else { // All Targets
-		if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
-			for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
-		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) // draw in reverse order
-			for (unsigned r = _renderIDs; r > 0; r--) renderTarget(r);
-	}
 
     _frameIDs++; // increment frame counter
-    return _isDrawn; // render call sets variable to true on success
+    return _isDrawn;
 }
 
 void Topl_Renderer::texturize(const Topl_Scene* scene) {

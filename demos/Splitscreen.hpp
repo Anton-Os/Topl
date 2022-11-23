@@ -21,8 +21,8 @@ private:
 
 	// Geometries and Drawable Objects
 
-	Geo_Plane plane;
-	Geo_Actor planeActor = Geo_Actor((Geo_RenderObj*)&plane);
+	Geo_FlatSquare plane = Geo_FlatSquare(1000.0);
+	Geo_Actor planeActor = Geo_Actor((Geo_Renderable*)&plane);
 
 	// Shaders and Pipelines
 

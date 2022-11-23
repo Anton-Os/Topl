@@ -113,34 +113,27 @@ private:
 
 // Heightmap wrapper around Rasteron_Heightmap
 
-struct Img_Heightmap : public Geo_RenderObj { // wrapper around Rasteron_Heightmap
-    Img_Heightmap(){} // Empty Constructor
+struct Img_Heightmap : public Geo_Renderable { // wrapper around Rasteron_Heightmap
+    // Img_Heightmap() : Geo_Renderable(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
     Img_Heightmap(const Rasteron_Image* refImage)
-    : Geo_RenderObj(refImage->height * refImage->width) {
+    : Geo_Renderable(refImage->height * refImage->width) {
         heightmap = createHeightmap(refImage);
-		init();
+		genVertices(); genIndices();
     }
 
     ~Img_Heightmap(){ deleteHeightmap(heightmap); }
 private:
-    void genPos(Vec3f* data) override {
-		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
-	}
-    void genNormals(Vec3f* data) override { 
-		for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
-			*(data + p) = Vec3f({ 0.0f, (float)*(heightmap->data + p), 0.0f });
-	} 
-    void genTexCoords(Vec2f* data) override {
-		float xInc = 1.0f / heightmap->width;
-		float yInc = 1.0f / heightmap->height;
-
+    void genVertices() override {
 		for (unsigned r = 0; r < heightmap->height; r++)
-			for (unsigned c = 0; c < heightmap->width; c++)
-				*(data + (r * heightmap->width) + c) = Vec2f({ xInc * c, yInc * r });
+			for (unsigned c = 0; c < heightmap->width; c++) {
+				Vec3f pos = Vec3f({ 0.0f, (float)*(heightmap->data + (r * heightmap->width + c)), 0.0f });
+				Vec2f texcoord = Vec2f({ (1.0f / heightmap->width) * c, (1.0f / heightmap->height) * r });
+				_vertices[(r * heightmap->width + c)] = Geo_Vertex(pos, texcoord);
+			}
 	}
-    void genIndices(unsigned* data) override { return; } // No indices by default
+
+    void genIndices() override { return; } // No indices by default
 
     Rasteron_Heightmap* heightmap = NULL;
 #endif

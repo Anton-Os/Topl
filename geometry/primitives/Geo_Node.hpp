@@ -1,5 +1,3 @@
-#include <vector>
-
 #include <assimp/scene.h>
 
 #include "Geo_Actor.hpp"
@@ -15,29 +13,32 @@ enum MESH_Attribute {
 unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
 unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
 
-class Geo_Mesh : public Geo_RenderObj {
+class Geo_Mesh : public Geo_Renderable {
 public:
-	Geo_Mesh() : Geo_RenderObj() {}
-	Geo_Mesh(const aiMesh* mesh) 
-	: Geo_RenderObj(getMeshAttribCount(mesh, MESH_Vertex), getMeshAttribCount(mesh, MESH_Index)) {
+	Geo_Mesh(const aiMesh* mesh)
+	: Geo_Renderable(
+		getMeshAttribCount(mesh, MESH_Vertex),
+		getMeshAttribCount(mesh, MESH_Index)
+	){
 		_assimpMeshes = { mesh };
-		init();
+		genVertices(); genIndices();
 	}
-	Geo_Mesh(const std::vector<const aiMesh*>& meshes) 
-	: Geo_RenderObj(getMeshesAttribCount(meshes, MESH_Vertex), getMeshesAttribCount(meshes, MESH_Index)) {
+
+	Geo_Mesh(const std::vector<const aiMesh*>& meshes)
+		: Geo_Renderable(
+			getMeshesAttribCount(meshes, MESH_Vertex),
+			getMeshesAttribCount(meshes, MESH_Index)
+		) {
 		_assimpMeshes = std::vector<const aiMesh*>(meshes.begin(), meshes.end());
-		init();
+		genVertices(); genIndices();
 	}
-	virtual ~Geo_Mesh() {}
 
 	unsigned short getMeshCount() const { return _assimpMeshes.size(); }
 private:
-	void genPos(Vec3f* data) override;
-	void genNormals(Vec3f* data) override;
-	void genTexCoords(Vec2f* data) override;
-	void genIndices(unsigned* data) override;
+	void genVertices() override;
+	void genIndices() override;
 
-	std::vector<const aiMesh*> _assimpMeshes; // multiple meshes are combined
+	std::vector<const aiMesh*> _assimpMeshes;
 };
 
 class Geo_Node : public Geo_Actor {

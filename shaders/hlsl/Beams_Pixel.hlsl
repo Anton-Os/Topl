@@ -25,8 +25,8 @@ struct PS_INPUT {
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(mode == 1){ // alternate mode
 		// float3 light_color = input.ambient; // ambient test
-		float3 light_color = input.diffuse; // diffuse test
-		// float3 light_color = input.specular; // specular test
+		// float3 light_color = input.diffuse; // diffuse test
+		float3 light_color = input.specular; // specular test
 		return float4(light_color, 1.0f);
 	} else if(mode == 2){ // depth mode
 		float depth = sqrt(pow(input.pos1.x, 2) + pow(input.pos1.y, 2) + pow(input.pos1.z, 2)); // depth calculation

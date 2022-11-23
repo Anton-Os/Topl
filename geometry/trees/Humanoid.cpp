@@ -108,7 +108,7 @@ void Geo_Humanoid2D::configure(Topl_Scene* scene) {
 	rightLeg = getNextActor();
 
 	for (unsigned p = 0; p < HUMANOID_PARTS_COUNT; p++) {
-		(*bodyActors[p])->setRenderObj(_renderObjs[p]); // set render object for body part
+		(*bodyActors[p])->setRenderable(_renderObjs[p]); // set render object for body part
 		scene->addGeometry(getPrefix() + bodyPartsStr[p], *bodyActors[p]); // add geometry to scene
 
 		if (_sprites[p] != nullptr)

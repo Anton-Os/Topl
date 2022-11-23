@@ -3,6 +3,8 @@
 #include "Topl_App.hpp"
 
 #include "primitives/Geo_Flat.hpp"
+#include "primitives/Geo_Conic.hpp"
+#include "primitives/Geo_Extruded.hpp"
 
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
@@ -19,7 +21,7 @@ struct Diagnostic_TestConfig {
 		renderer->setDrawMode(DRAW_Strip);
 
 		for(unsigned a = 0; a < ACTOR_COUNT; a++){
-			actors[a] = Geo_Actor((Geo_RenderObj*)&triangle);
+			actors[a] = Geo_Actor((Geo_Renderable*)&triangle);
 			scene.addGeometry(&actors[a]);
 		}
 		renderer->buildScene(&scene);
@@ -27,7 +29,7 @@ struct Diagnostic_TestConfig {
 
 	Topl_Scene scene;
 
-	Geo_FlatTriangle triangle = Geo_FlatTriangle(1.0);
+	Geo_ConicCircle triangle = Geo_ConicCircle(1.0);
 	Geo_Actor actors[ACTOR_COUNT];
 };
 

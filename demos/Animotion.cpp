@@ -13,12 +13,12 @@ static void callback_a() { Animotion_App::camera.updatePos({ -MOVE_AMOUNT, 0.0, 
 static void callback_s() { Animotion_App::camera.updatePos({ 0.0, -MOVE_AMOUNT, 0.0 }); }
 static void callback_d() { Animotion_App::camera.updatePos({ MOVE_AMOUNT, 0.0, 0.0 }); }
 
-#define LOOK_AMOUNT 0.025
+#define LOOK_AMOUNT 0.01
 
 static void callback_up(float x, float y) { Animotion_App::camera.updateLookPos({ 0.0, LOOK_AMOUNT, 0.0 }); }
-static void callback_left (float x, float y) { /* Animotion_App::camera.updateLookPos({ -LOOK_AMOUNT, 0.0, 0.0 }); */ }
+static void callback_left (float x, float y) { Animotion_App::camera.updateLookPos({ -LOOK_AMOUNT, 0.0, 0.0 }); }
 static void callback_down(float x, float y) { Animotion_App::camera.updateLookPos({ 0.0, -LOOK_AMOUNT, 0.0 }); }
-static void callback_right(float x, float y) { /* Animotion_App::camera.updateLookPos({ LOOK_AMOUNT, 0.0, 0.0 }); */}
+static void callback_right(float x, float y) { Animotion_App::camera.updateLookPos({ LOOK_AMOUNT, 0.0, 0.0 });}
 
 void Animotion_App::init() {
 	srand(time(NULL));

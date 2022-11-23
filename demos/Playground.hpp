@@ -4,7 +4,8 @@
 #include "Flat_Shader.hpp"
 #include "Beams_Shader.hpp"
 
-#include "Primitives/Geo_Conic.hpp"
+#include "primitives/Geo_Conic.hpp"
+#include "primitives/Geo_Extruded.hpp"
 #include "primitives/Geo_Sphere.hpp"
 #include "trees/Geo_Sequence.hpp"
 #include "trees/Geo_Grid.hpp"
@@ -74,7 +75,7 @@ private:
 
 	// Main Scene Elements
 	Geo_FlatSquare square = Geo_FlatSquare(1.0f);
-	Geo_Actor platformActor = Geo_Actor((Geo_RenderObj*)&square);
+	Geo_Actor platformActor = Geo_Actor((Geo_Renderable*)&square);
 	Geo_Sphere sphere = Geo_Sphere({ 0.025f, 200, 200 });
 	Geo_Actor sphereActors[PLAYGROUND_SPHERES_COUNT];
 
@@ -83,10 +84,10 @@ private:
 	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3, PANE_RADIUS, 0.0f);
 
 	// Detail Scene Elements
-	Geo_ConicTriangle cone1 = Geo_ConicTriangle(0.2f); 
-	Geo_ConicHex cone2 = Geo_ConicHex(0.2f, Vec3f({ 0.1f, 0.1f, 0.3f }));
-	Geo_Actor coneActor1 = Geo_Actor((Geo_RenderObj*)&cone1);
-	Geo_Actor coneActor2 = Geo_Actor((Geo_RenderObj*)&cone2);
+	Geo_ExtrudedTriangle prism = Geo_ExtrudedTriangle(0.2f); 
+	Geo_ConicCircle cone = Geo_ConicCircle(0.2f, Vec3f({ 0.1f, 0.1f, 0.3f }));
+	Geo_Actor prismActor = Geo_Actor((Geo_Renderable*)&prism);
+	Geo_Actor coneActor = Geo_Actor((Geo_Renderable*)&cone);
 	// Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
 	// Geo_Grid grid = Geo_Grid("grid", &coneActor1, gridParams);
 
@@ -98,7 +99,7 @@ private:
 	Img_Material material = Img_Material("material1", 4096, 4096);
 	/* Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
 	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
-	Geo_Actor heightmapActor = Geo_Actor((Geo_RenderObj*)&heightmap); */
+	Geo_Actor heightmapActor = Geo_Actor((Geo_Renderable*)&heightmap); */
 
 	// Shaders and Pipelines
 

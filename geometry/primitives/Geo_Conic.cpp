@@ -1,70 +1,63 @@
 #include "Geo_Conic.hpp"
 
-void Geo_Conic::genPos(Vec3f* data){
-	const double angle = (MATH_PI * 2) / _shape2D.segments;
-	const float radius = _shape2D.radius * RADIAL_UNITS;
+void Geo_Conic::genVertices() {
+	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + Z_INCREMENT }, { 0.5f, 0.5f }); // origin
+	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f }); // apex
 
-    Vec3f centerVertex = Vec3f({ 0.0f, 0.0f, DEFAULT_Z });
-    *(data + 0) = centerVertex; // first vertex is the center vertex
-	*(data + _vertexCount - 1) = _apex; // last vertex is the apex vertex
-
-	for (unsigned v = 1; v < _vertexCount - 1; v++)
-		*(data + v) = Vec3f({
-			(float)sin(_startAngle + (v * angle)) * radius,
-			(float)cos(_startAngle + (v * angle)) * radius,
+	for (unsigned v = 1; v < _vertices.size() - 1; v++) {
+		Vec3f pos = Vec3f({ 
+			(float)sin(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
+			(float)cos(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
 			(float)DEFAULT_Z
 		});
-}
 
-void Geo_Conic::genNormals(Vec3f* data){
-	Vec3f frontNormalVec = Vec3f({ 0.0f, 0.0f, -1.0f });
-	Vec3f backNormalVec = Vec3f({ 0.0f, 0.0f, 1.0f });
+		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
 
-	for(unsigned v = 0; v < _vertexCount - 1; v++) *(data + v) = frontNormalVec; // front facing normal for base
-	*(data + _vertexCount - 1) = backNormalVec; // back facing normal for apex
-}
-
-void Geo_Conic::genTexCoords(Vec2f* data) {
-	*(data + 0) = Vec2f({ 0.5f, 0.5f }); // center point will always be shared
-	for (unsigned t = 1; t < _vertexCount; t++)
-		switch((t - 1) % 4){
-			case 0: *(data + t) = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: *(data + t) = Vec2f({ 0.0f, 0.0f }); break; // top left
-			case 2: *(data + t) = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: *(data + t) = Vec2f({ 1.0f, 1.0f }); break; // top right
+		Vec2f texcoord;
+		switch ((v - 1) % 4) {
+			case 0: texcoord = Vec2f({ 1.0f, 0.0f }); break; // bottom left
+			case 1: texcoord = Vec2f({ 1.0f, 1.0f }); break; // top right
+			case 2: texcoord = Vec2f({ 0.0f, 1.0f }); break; // bottom right
+			case 3: texcoord = Vec2f({ 0.0f, 0.0f }); break; // top left
 		}
-	*(data + _vertexCount - 1) = Vec2f({ 0.5f, 0.5f }); // apex point will always be shared
+
+		_vertices[v] = Geo_Vertex(pos, texcoord);
+	}
 }
 
-void Geo_Conic::genIndices(unsigned* data){
-	unsigned i; // increments as more indices are added
+void Geo_Conic::genIndices() {
+	unsigned i; // current index
+	unsigned v = 1; // tracks current vertex
 
-	// Indexing BASE
-	unsigned currentVertex = 1; // starting from index 1, which is the rightmost point
+	{
+		// Base Indexing
+		for (i = 0; i < (_indices.size() / 2) - 3; i += 3) {
+			_indices[i] = 0; // origin
+			_indices[i + 1] = v; // target
+			_indices[i + 2] = v + 1; // next vertex
+			v++;
+		}
 
-	for (i = 0; i < _indexCount / 2 - 3; i += 3) { // iterate halfway through minus 1 trig
-		*(data + i + 0) = 0; // center point
-		*(data + i + 1) = currentVertex; // target vertex
-		*(data + i + 2) = currentVertex + 1; // connect to next vertex
-		currentVertex++;
+		// special case for last base triangle
+		_indices[i] = 0;
+		_indices[i + 1] = v;
+		_indices[i + 2] = 1;
 	}
 
-	// special case
-	*(data + i + 0) = 0; // center point
-	*(data + i + 1) = currentVertex;
-	*(data + i + 2) = 1; // connect back to first point in sequence
+	{
+		// Apex Indexing
+		v = 1; // reset
 
-	// Indexing APEX
-	currentVertex = 1; // currentVertex needs to reset!
-	for(i = _indexCount / 2; i < _indexCount - 3; i += 3){ // iterate to the end minus 1 trig
-		*(data + i + 0) = _vertexCount - 1; // apex point
-		*(data + i + 1) = currentVertex + 1; // connect to next vertex
-		*(data + i + 2) = currentVertex; // target vertex
-		currentVertex++;
+		for (i = _indices.size() / 2; i < _indices.size() - 3; i += 3) {
+			_indices[i] = _vertices.size() - 1; // apex
+			_indices[i + 1] = v + 1; // next vertex
+			_indices[i + 2] = v; // target
+			v++;
+		}
+
+		// special case for last apex triangle
+		_indices[i] = _vertices.size() - 1;
+		_indices[i + 1] = v;
+		_indices[i + 2] = 1;
 	}
-
-	// special case
-	*(data + i + 0) = _vertexCount - 1; // apex point
-	*(data + i + 1) = currentVertex;
-	*(data + i + 2) = 1; // connect back to first point in sequence
 }

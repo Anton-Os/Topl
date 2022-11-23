@@ -48,17 +48,6 @@ float3x3 calcRotMatrix(float3 angles){
 }
 
 float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // camera postion and relative look position
-	float3 forward = normalize(lPos - cPos);
-	/* float3 up = float3(0, 1, 0);
-	float3 right = cross(forward, up);
-	
-	float4x4 camMatrix = {
-		right.x, up.x, forward.x, cPos.x,
-		right.y, up.y, forward.y, cPos.y,
-		right.z, up.z, forward.z, cPos.z,
-		0.0, 0.0, 0.0, 1.0
-	}; */
-
 	float4x4 camMatrix = {
 		1, 0, 0, -cPos.x,
 		0, 1, 0, -cPos.y,
@@ -66,7 +55,19 @@ float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // camera postion and relative
 		0, 0, 0, 1
 	};
 
-	return camMatrix; // TODO: Multiply by calculated rotation
+	float3 forward = normalize(lPos - cPos);
+	float pitch = -lPos.y; // TODO: find y rotation angle from forward
+	float yaw = -lPos.x; // TODO: find x rotation angle from forward
+	float3x3 rotMatrix = calcRotMatrix(float3(0.0, pitch, yaw));
+
+	float4x4 camRotMatrix = {
+		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], 0,
+		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], 0,
+		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], 0,
+		0, 0, 0, 1
+	};
+
+	return mul(camRotMatrix, camMatrix);
 }
 
 // Main

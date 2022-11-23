@@ -1,7 +1,7 @@
 #include "Splitscreen.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
 void Splitscreen_App::init() {

@@ -190,7 +190,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
+		// Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
+		Geo_Renderable* renderObj = (Geo_Renderable*)actor->getRenderable();
 
 		// render block buffer generation
 		if (!shaderBlockData.empty()) {

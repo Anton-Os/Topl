@@ -4,7 +4,7 @@
 #define ITERATIONS 6
 
 int main(){
-    NGon3D ngon = { 0.1, 6, 6 };
+    Shape3D ngon = { 0.1, 6, 6 };
     Geo_Sphere sphere = Geo_Sphere(ngon);
 
     Geo_DuplexShape duplexShape = Geo_DuplexShape((Geo_RenderObj*)&sphere, ITERATIONS);

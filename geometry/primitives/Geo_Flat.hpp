@@ -2,81 +2,55 @@
 
 #include "Geometry.hpp"
 
-class Geo_Flat : public Geo_RenderObj {
+class Geo_Flat : public Geo_Renderable {
 public:
-    Geo_Flat(NGon2D refShape) // Generic Constructor
-    : Geo_RenderObj
-        (refShape.segments + 1, // vertex count is number of segments +1 for the center point
-        refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
-        _shape2D = refShape;
-		_depth += 0.0001;
-        init();
-    }
+	Geo_Flat(Shape2D shape) 
+	: Geo_Renderable(shape.segments + 1, shape.segments * 3) {
+		_shape = shape;
+		genVertices(); genIndices();
+	}
 
-    Geo_Flat(NGon2D refShape, float z) // Z Value Constructor
-    : Geo_RenderObj
-    (refShape.segments + 1, // vertex count is number of segments +1 for the center point
-     refShape.segments * 3 ){ // each segment requires 1 triangle (3 vertices total)
-        _shape2D = refShape;
-        _depth = z;
-        init();
-    }
+	Geo_Flat(Shape2D shape, float z)
+	: Geo_Renderable(shape.segments + 1, shape.segments * 3) {
+		_shape = shape;
+		_depth = z;
+		genVertices(); genIndices();
+	}
 
-    float getRadius() const { return _shape2D.radius; }
-    unsigned getSegments() const { return _shape2D.segments; }
+	float getRadius(){ return _shape.radius; }
+	float getSegments(){ return _shape.segments; }
 private:
-    void genPos(Vec3f* data) override;
-    void genNormals(Vec3f* data) override;
-	void genTexCoords(Vec2f* data) override;
-    void genIndices(unsigned* data) override;
+	void genVertices() override;
+	void genIndices() override;
 
-    NGon2D _shape2D;
-    float _depth = DEFAULT_Z;
+	Shape2D _shape;
+	float _depth = DEFAULT_Z;
 };
 
 struct Geo_FlatTriangle : public Geo_Flat {
-    Geo_FlatTriangle(float radius) : Geo_Flat({ radius, 3 }){}
-    Geo_FlatTriangle(float radius, float z) : Geo_Flat({ radius, 3 }, z){}
+	Geo_FlatTriangle() : Geo_Flat({ 1.0, 3 }) {}
+	Geo_FlatTriangle(float radius) : Geo_Flat({ radius, 3 }) {}
+	Geo_FlatTriangle(float radius, float z) : Geo_Flat({ radius, 3 }, z) {}
 };
 
-class Geo_FlatSquare : public Geo_Flat {
-public:
-    Geo_FlatSquare(float radius) : Geo_Flat({ radius, 4 }){}
-    Geo_FlatSquare(float radius, float z) : Geo_Flat({ radius, 4 }, z){}
+struct Geo_FlatSquare : public Geo_Flat {
+	Geo_FlatSquare() : Geo_Flat({ 1.0, 4 }) {}
+	Geo_FlatSquare(float radius) : Geo_Flat({ radius, 4 }) {}
+	Geo_FlatSquare(float radius, float z) : Geo_Flat({ radius, 4 }, z) {}
 };
 
 struct Geo_FlatHex : public Geo_Flat {
-    Geo_FlatHex(float radius) : Geo_Flat({ radius, 6 }){}
-    Geo_FlatHex(float radius, float z) : Geo_Flat({ radius, 6 }, z){}
+	Geo_FlatHex() : Geo_Flat({ 1.0, 6 }) {}
+	Geo_FlatHex(float radius) : Geo_Flat({ radius, 6 }) {}
+	Geo_FlatHex(float radius, float z) : Geo_Flat({ radius, 6 }, z) {}
 };
 
 struct Geo_FlatCircle : public Geo_Flat {
-    Geo_FlatCircle(float radius) : Geo_Flat({ radius, DEFAULT_CIRCLE_SEGS }){}
-    Geo_FlatCircle(float radius, float z) : Geo_Flat({ radius, DEFAULT_CIRCLE_SEGS }, z){}
+	Geo_FlatCircle() : Geo_Flat({ 1.0, CIRCLE_SEGMENTS }) {}
+	Geo_FlatCircle(float radius) : Geo_Flat({ radius, CIRCLE_SEGMENTS }) {}
+	Geo_FlatCircle(float radius, float z) : Geo_Flat({ radius, CIRCLE_SEGMENTS }, z) {}
 };
 
-// Extended Types
-
-#define DEFAULT_PLANE_LENGTH 10000.00 // stretches very far
-
-struct Geo_Plane : public Geo_FlatSquare {
-	Geo_Plane() 
-    : Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {  // Generic Constructor
-        axis1 = Vec3f({ 1.0f, 0.0f, 0.0f });
-        axis2 = Vec3f({ 0.0f, 1.0f, 0.0f });
-    }
-    
-    Geo_Plane(Vec3f a1, Vec3f a2) // Arbitrary plane constructor
-		: Geo_FlatSquare(DEFAULT_PLANE_LENGTH) {
-		axis1 = a1; 
-		axis1.normalize();
-		axis2 = a2;
-		axis2.normalize();
-	}
-
-	Vec3f axis1;
-	Vec3f axis2;
-};
 
 #define GEO_FLAT_H
 #endif

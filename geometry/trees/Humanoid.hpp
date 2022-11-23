@@ -56,12 +56,12 @@ public:
 	)
 	: Geo_Humanoid(),
 	Geo_Tree(prefix, {
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
-		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Torso],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
-		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
+		(Geo_Renderable*)_renderObjs[HUMANOID_Head], 
+		(Geo_Renderable*)_renderObjs[HUMANOID_LeftArm],
+		(Geo_Renderable*)_renderObjs[HUMANOID_RightArm],
+		(Geo_Renderable*)_renderObjs[HUMANOID_Torso],
+		(Geo_Renderable*)_renderObjs[HUMANOID_LeftLeg], 
+		(Geo_Renderable*)_renderObjs[HUMANOID_RightLeg]
 	}) {
 		for (unsigned a = 0; a < HUMANOID_PARTS_COUNT; a++) _assetPaths[a] = assetPaths[a]; // copy over assets
 	}
@@ -74,12 +74,12 @@ public:
 	)
 	: Geo_Humanoid(),
 	Geo_Tree(prefix, {
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Head], 
-		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftArm], 
-		(Geo_RenderObj*)_renderObjs[HUMANOID_RightArm],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_Torso],
-		(Geo_RenderObj*)_renderObjs[HUMANOID_LeftLeg], 
-		(Geo_RenderObj*)_renderObjs[HUMANOID_RightLeg]
+		(Geo_Renderable*)_renderObjs[HUMANOID_Head], 
+		(Geo_Renderable*)_renderObjs[HUMANOID_LeftArm], 
+		(Geo_Renderable*)_renderObjs[HUMANOID_RightArm],
+		(Geo_Renderable*)_renderObjs[HUMANOID_Torso],
+		(Geo_Renderable*)_renderObjs[HUMANOID_LeftLeg], 
+		(Geo_Renderable*)_renderObjs[HUMANOID_RightLeg]
 	}) {
 		for (unsigned a = 0; a < HUMANOID_PARTS_COUNT; a++) _assetPaths[a] = assetPaths[a]; // copy over assets
 		configure(scene); 

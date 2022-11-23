@@ -1,9 +1,9 @@
 #include "Geo_Tree.hpp"
 
-Geo_Tree::Geo_Tree(const std::string& prefix, std::initializer_list<Geo_RenderObj*> renderObjs){
+Geo_Tree::Geo_Tree(const std::string& prefix, std::initializer_list<Geo_Renderable*> renderObjs){
     _prefix = prefix;
     _actorData = (Geo_Actor**)malloc(renderObjs.size() * sizeof(Geo_Actor*));
-    for(std::initializer_list<Geo_RenderObj*>::iterator renderObj = renderObjs.begin(); renderObj < renderObjs.end(); renderObj++){
+    for(std::initializer_list<Geo_Renderable*>::iterator renderObj = renderObjs.begin(); renderObj < renderObjs.end(); renderObj++){
         *(_actorData + _actorCount) = new Geo_Actor(*(renderObj));
         _actorCount++;
     }

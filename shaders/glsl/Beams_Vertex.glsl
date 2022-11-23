@@ -29,12 +29,8 @@ layout(location = 4) out vec3 specular_out;
 
 // Functions
 
-vec3 reflect(vec3 light, vec3 target){
-	return light - ((2 * dot(light, normalize(target)) * normalize(target))); 
-}
-
 float calcSpec(vec3 light, vec3 target, vec3 camera){
-	vec3 reflectVec = reflect(light, target);
+	vec3 reflectVec = light - ((2 * dot(light, normalize(target)) * normalize(target))); // reflection vefctor
 	return dot(-1.0 * normalize(camera), reflectVec);
 }
 
@@ -99,8 +95,8 @@ void main() {
 	ambient_out = ambient_intensity * skyLight_value;
 	// diffuse shading
 	const float skyLight_intensity = calcDiffuse(skyLight_pos, angles);
-	diffuse_out = (skyLight_intensity * skyLight_value); // + (flashLight_intensity * flashLight_value);
+	diffuse_out = skyLight_intensity * skyLight_value; // + (flashLight_intensity * flashLight_value);
 	// specular shading
 	const float specular_intensity = calcSpec(skyLight_pos, angles, cam_pos);
-	specular_out = reflect(skyLight_pos, pos); // for testing
+	specular_out = specular_intensity * skyLight_value; // reflect(skyLight_pos, pos); // for testing
 }

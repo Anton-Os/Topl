@@ -2,8 +2,8 @@
 
 #include "Diagnostic.hpp"
 
-#define APP_BACKEND APP_OpenGL_4
-// #define APP_BACKEND APP_DirectX_11
+// #define APP_BACKEND APP_OpenGL_4
+#define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
 #define FRAME_AVG_TIME 500
@@ -35,10 +35,9 @@ int main(int argc, char** argv) {
 
 	Timer_Ticker _ticker;
 	double frameAvg = 0.0;
-	std::cout << "Frame Time: " << std::endl;
 	while(1){
 		double frameTime = _ticker.getRelMillisecs();
-		if (frameTime > FRAME_SPIKE_TIME) std::cout << frameTime << ", "; // print frame time
+		if (frameTime > FRAME_SPIKE_TIME) std::cout << "Spike: " << frameTime << ", "; // print frame time
 		
 		frameAvg += frameTime;
 		if (renderer->getFrameCount() % FRAME_AVG_TIME == 0) {
@@ -49,7 +48,7 @@ int main(int argc, char** argv) {
 		// platform.handleEvents(DISABLE_CURSOR_UPDATE);
 		
 		renderer->clearView();
-		renderer->renderScene(nullptr);
+		renderer->renderAll();
 		renderer->switchFramebuff();
 	}
 

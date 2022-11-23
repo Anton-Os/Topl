@@ -32,20 +32,12 @@ struct VS_OUTPUT {
 
 // Functions
 
-float sharpen(float intensity, uint curve){
-	const float scale = 5.0f;
-
-	if(intensity <= 0.0) return intensity;
-	else return pow(intensity, curve) * pow(scale, curve);
-}
-
 float calcSpec(float3 light, float3 target, float3 camera){
-	float lightDP = dot(normalize(light), target); // light dot product
-	float camDP = dot(normalize(camera), target); // camera dot product
+	float l = dot(normalize(light), target); // light dot product
 
-	// return dot(camera, reflectVec);
-	// return 0.5 * dot(float3(0.0f, 0.0f, -1.0f), normalize(reflectVec));
-	return sharpen(lightDP, 2);
+	float p = 8;
+	if(l > 0) return pow(l + 0.25, p) * pow(2, p); // sharpen effect
+	return 0.0;
 }
 
 float calcDiffuse(float3 light, float3 target){

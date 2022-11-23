@@ -3,16 +3,12 @@
 static std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
 
 Geo_Grid_Params::Geo_Grid_Params(gridAttrib_pair xyzAttrib){
-    x = xyzAttrib; 
-	y = xyzAttrib; 
-	z = xyzAttrib;
+    x = xyzAttrib;  y = xyzAttrib; z = xyzAttrib;
     clamp();
 }
 
 Geo_Grid_Params::Geo_Grid_Params(gridAttrib_pair xAttrib, gridAttrib_pair yAttrib, gridAttrib_pair zAttrib){
-    x = xAttrib; 
-	y = yAttrib; 
-	z = zAttrib;
+    x = xAttrib; y = yAttrib; z = zAttrib;
     clamp();
 }
 

@@ -31,7 +31,6 @@ list(APPEND support_src
 )
 
 list(APPEND geometry_src
-    geometry/Geometry.cpp
     geometry/ShapesGen.cpp
 
     geometry/primitives/Geo_Flat.cpp
@@ -226,11 +225,12 @@ if(WIN32)
 endif()
 if(Vulkan_FOUND)
     find_file(glslc_exec "glslc" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
-    # if(NOT ${glslc_exec} EQUAL "glslc_exec-NOTFOUND")
+    if(NOT ${glslc_exec} EQUAL "glslc_exec-NOTFOUND")
+		message(STATUS "searching for glslc inside ${VULKAN_PATH}/Bin/")
         # foreach(shader IN ITEMS ${gl4_shaders})
             # Compile shaders to spirv and store in binary directory
         #endforeach()
-    #endif()
+    endif()
 endif()
 
 configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")

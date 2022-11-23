@@ -11,12 +11,14 @@
 class Geo_Actor {
 public:
 	Geo_Actor(){}
-	Geo_Actor(const Geo_RenderObj* renderObj) { _renderObj = renderObj; }
+	Geo_Actor(const Geo_Renderable* renderable) { _renderable = renderable; }
 
 	void setName(const std::string& name) { _name = name; }
 	std::string getName() const { return _name; }
-	void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }
-	const Geo_RenderObj* getRenderObj() const { return _renderObj; }
+	// void setRenderObj(const Geo_RenderObj* renderObj){ _renderObj = renderObj; }
+	void setRenderable(const Geo_Renderable* renderable) { _renderable = renderable; }
+	// const Geo_RenderObj* getRenderObj() const { return _renderObj; }
+	const Geo_Renderable* getRenderable() const { return _renderable; }
 
 	void setPos(const Vec3f& moveVec){ _position = moveVec; }
 	void updatePos(const Vec3f& moveVec){ _position = _position + moveVec; }
@@ -30,8 +32,8 @@ public:
 private:
 	// Data Types
 	std::string _name = DEFAULT_ACTOR_NAME;
-	const Geo_RenderObj* _renderObj = nullptr;
-	const Geo_InstancedObj* _instancedObj = nullptr;
+	// const Geo_RenderObj* _renderObj = nullptr;
+	const Geo_Renderable* _renderable = nullptr; // New Implementation
 
 	// Orientation Types
 	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });

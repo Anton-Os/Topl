@@ -6,35 +6,45 @@
 
 // Vertices
 
-#define POSITION_COUNT 3
-#define NORMALS_COUNT 3
-#define TEXCOORD_COUNT 2
-
 enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
 
 struct Geo_Vertex {
-	Geo_Vertex(Vec3f pos); // Position data constructor
-	Geo_Vertex(Vec3f pos, Vec2f texc); // Extended constructor
+	Geo_Vertex() {} // empty constructor
+	Geo_Vertex(Vec3f p) { // position constructor
+		position = p; texcoord = Vec2f({ 0.0, 0.0 });
+	}
+	Geo_Vertex(Vec3f p, Vec2f t) {// full constructor
+		position = p; texcoord = t;
+	}
 
-	float position[POSITION_COUNT];
-	// float normals[NORMALS_COUNT]; // include if needed
-	float texcoord[TEXCOORD_COUNT];
+	Vec3f position;
+	// Vec3f normal;
+	Vec2f texcoord;
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;
 
 // Shape Description
 
-#define RADIAL_UNITS 0.7071f // converts specified coordinates to screen units
-#define DEFAULT_CIRCLE_SEGS 1000 // default segments for a circular object
-#define DEFAULT_Z 0.0f
+#define SCREEN_UNITS 0.7071f // converts specified coordinates to screen units
+#define CIRCLE_SEGMENTS 1000 // default segments for a circular object
+#define DEFAULT_Z 0.0f // default depth value for objects
+#define Z_INCREMENT 0.00001f // increment to depth prevents geometry obstruction
 
-struct NGon2D {
-    float radius;
+struct Shape2D {
+	float getSize() const { return radius * SCREEN_UNITS; } // radius converted to screen units
+	float getAngle() const { return (MATH_PI * 2) / segments; } // angle increment between vertices
+	float getInitAngle() const { return (segments % 2 == 0) ? MATH_PI / segments : 0.0; } // starting angle for vertices
+    
+	float radius;
     unsigned short segments;
 };
 
-struct NGon3D {
+struct Shape3D {
+	float getSize() const { return radius * SCREEN_UNITS; } // radius converted to screen units
+	float getAngleX() const { return (MATH_PI * 2) / xSegments; } // angle increment on x axis
+	float getAngleY() const { return (MATH_PI * 2) / ySegments; } // angle increment on y axis
+
 	float radius;
 	unsigned short xSegments;
 	unsigned short ySegments;
@@ -42,99 +52,51 @@ struct NGon3D {
 
 // Transform Functions
 
-enum AXIS_Target { AXIS_X, AXIS_Y, AXIS_Z };
+enum AXIS_Target { 
+	AXIS_X = 0, 
+	AXIS_Y = 1, 
+	AXIS_Z = 2 
+};
 
 typedef float (*vTformCallback)(float, double); // callback for transforming vertex attributes given input and modifier arguments
 
-float shiftTForm(float input, double amount); // shifts point by amount
-float scaleTForm(float input, double factor); // stretches point by factor
+static float shiftTForm(float input, double amount) { return input + amount; } // shifts point by amount
+static float scaleTForm(float input, double factor) { return input * factor; } // scales point by factor
 
-// Render Object
+// Renderable Object
 
-#define SINGLE_INSTANCE_COUNT 1
-
-class Geo_InstancedObj {
-public:
-	void setInstanceCount(unsigned count) { _instanceCount = count; }
-	unsigned getInstanceCount() const { return _instanceCount; }
-private:
-	// Add instance specific data
-	unsigned _instanceCount = SINGLE_INSTANCE_COUNT; // used for instanced draw
-};
-
-class Geo_RenderObj {
-public:
-	Geo_RenderObj(){} // empty constructor
-	Geo_RenderObj(unsigned v); // vertex only constructor
-    Geo_RenderObj(unsigned v, unsigned i); // vertex and indices constructor
-	Geo_RenderObj(const Geo_RenderObj& renderObj){ clone(&renderObj); }; // copy constructor
-	virtual ~Geo_RenderObj(){ cleanup(); }
-
-	void clone(const Geo_RenderObj* refObj); // copies from reference object
-	// void fuse(const Geo_RenderObj* refObj); // fuses with reference object
-
-	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modify position attirbute
-	void shift(double factor, AXIS_Target axis) { modify(shiftTForm, factor, axis); }; // shifts position attribute
-	void scale(double factor, AXIS_Target axis) { modify(scaleTForm, factor, axis); } // scales position attribute
-
-    unsigned getVertexCount() const { return _vertexCount; }
-    unsigned getIndexCount() const { return _indexCount; }
-	vertex_cptr_t getVertices() {
-		genVertices();
-		return _vertices;
-	}
-	vec3f_cptr_t getPos() const { return _pos; }
-	vec3f_cptr_t getNormals() const { return _normals; }
-    vec2f_cptr_t getTexCoords() const { return _texcoords; }
-	ui_cptr_t getIndices() const { return _indices; }
-protected:
-	void init(); // called to populate internal data
-
-	void genVertices();
-    virtual void genPos(Vec3f* data) = 0;
-	virtual void genNormals(Vec3f* data) = 0;
-    virtual void genTexCoords(Vec2f* data) = 0;
-    virtual void genIndices(unsigned* data) = 0;
-
-	double _startAngle = 0.0; // start angle for vertex generation
-
-    unsigned _vertexCount = 0;
-	Geo_Vertex* _vertices = nullptr;
-    Vec3f* _pos = nullptr;
-	Vec3f* _normals = nullptr;
-    Vec2f* _texcoords = nullptr;
-
-	unsigned _indexCount = 0;
-	unsigned* _indices = nullptr;
-private:
-	void cleanup();
-};
-
-// Implementation to replace Render Object
 class Geo_Renderable {
 public:
-	Geo_Renderable(unsigned v); // vertex only constructor
-	Geo_Renderable(unsigned v, unsigned i); // vertex and indices constructor
+	Geo_Renderable(unsigned v) { // vertex only constructor
+		_vertices.resize(v);
+	}
+	
+	Geo_Renderable(unsigned v, unsigned i) { // vertex and indices constructor
+		_vertices.resize(v);
+		_indices.resize(i);
+	}
 
 	void clone(const Geo_Renderable* refObj);
 
-	void modify(vTformCallback callback, double mod, AXIS_Target axis); // modify position attirbute
+	void modify(vTformCallback callback, double mod, AXIS_Target axis) { // modify position attirbute
+		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
+			v->position[axis] = callback(v->position[axis], mod);
+	}
 	void shift(double factor, AXIS_Target axis) { modify(shiftTForm, factor, axis); }; // shifts position attribute
 	void scale(double factor, AXIS_Target axis) { modify(scaleTForm, factor, axis); } // scales position attribute
 
-	size_t getVertexCount(){ return _vertices.size(); }
+	size_t getVertexCount() const { return _vertices.size(); }
 	vertex_cptr_t getVertices(){ return _vertices.data(); }
-	size_t getIndexCount(){ return _indices.size(); }
+	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices(){ return _indices.data(); }
 protected:
 	virtual void genVertices() = 0;
 	virtual void genIndices() = 0;
 
+	std::pair<bool, bool> _renderStatus = std::make_pair(false, false); // checks for vertex generation
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 };
-
-typedef const Geo_RenderObj* const renderObj_cptr_t;
 
 #define GEOMETRY_H
 #endif

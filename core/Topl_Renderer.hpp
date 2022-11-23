@@ -102,8 +102,8 @@ public:
     bool updateScene(const Topl_Scene* scene);
     void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
+	bool renderAll();
     bool renderScene(const Topl_Scene* scene);
-    // bool renderAll();
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
     virtual void switchFramebuff() = 0; // switches front and back buffers
@@ -131,6 +131,8 @@ protected:
     unsigned long _renderIDs = 0; // id for each render target
     std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
+
+	Timer_Ticker _ticker; // internal timer
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
