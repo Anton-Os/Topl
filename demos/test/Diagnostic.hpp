@@ -27,7 +27,10 @@ struct Diagnostic_TestConfig {
 		renderer->buildScene(&scene);
 	}
 
+	friend class Topl_Renderer;
+
 	Topl_Scene scene;
+	Timer_Ticker ticker;
 
 	Geo_ConicCircle triangle = Geo_ConicCircle(1.0);
 	Geo_Actor actors[ACTOR_COUNT];

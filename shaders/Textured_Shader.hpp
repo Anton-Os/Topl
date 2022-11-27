@@ -18,7 +18,7 @@ struct Textured_VertexShader : public Topl_EntryShader {
 
 		appendDataToBytes((uint8*)&_time, sizeof(double), bytes);
 		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getLookPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 

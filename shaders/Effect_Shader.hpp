@@ -1,7 +1,7 @@
 #include "Topl_Shader_Pipeline.h"
 
 #define EFFECT_MODE_CURSOR 0
-#define EFFECT_MODE_FRACTAL 1
+#define EFFECT_MODE_SPECIAL 1
 
 // Vertex Shaders
 

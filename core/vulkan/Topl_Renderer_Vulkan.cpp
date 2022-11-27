@@ -24,16 +24,17 @@ void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
 
 #ifdef RASTERON_H
 
-Rasteron_Image* Topl_Renderer_Vulkan::frame() {
-	Rasteron_Image* image = createSolidImg({ TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH }, CLEAR_COLOR_CODE);
-	return image;
+Img_Base Topl_Renderer_Vulkan::frame() {
+	_frameImage = Img_Base();
+	_frameImage.setColorImage(CLEAR_COLOR_CODE);
+	return _frameImage;
 }
 
 void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned id){
 	// Implement texture attaching
 }
 
-void Topl_Renderer_Vulkan::attachMaterial(const Img_Material* material, unsigned id) {
+void Topl_Renderer_Vulkan::attachVolume(const Img_Volume* material, unsigned id) {
 	// Implement Body
 }
 

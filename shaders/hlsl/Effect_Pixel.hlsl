@@ -10,9 +10,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	uint mode;
 }
 
-struct PS_INPUT {
-	float4 pos : SV_POSITION;
-};
+struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Functions
 
@@ -23,25 +21,17 @@ float3 cursorDist(float2 cursorPos, float2 pixelCoord){
 	return float3(red, green, blue);
 }
 
-float3 mandlebrot(uint2 screenRes, float2 pixelCoord){
-	const double size = 10.0f;
-	const uint max_iters = 1000;
-	
-	double x = 0; double y = 0;
-	uint iter = 0;
-	while(x * x + y * y <= size && iter < max_iters){
-		double temp = (x * x) - (y * y) + pixelCoord.x;
-		y = (2 * x * y) + pixelCoord.y;
-		x = temp;
-		iter++;
-	}
+float3 whirlpools(float2 coord){
+	float distances[9] = {
+		distance(coord, float2(0.75, 0.75)), distance(coord, float2(0.25, 0.25)), distance(coord, float2(0.75, 0.25)), 
+		distance(coord, float2(0.25, 0.75)), distance(coord, float2(0.5, 0.75)), distance(coord, float2(0.5, 0.25)),
+		distance(coord, float2(0.75, 0.5)), distance(coord, float2(0.25, 0.5)), distance(coord, float2(0.5, 0.5))
+	};
 
-	if(iter < max_iters) return float3(1.0f / iter, 2.5f / iter, 1.0f / iter); // custom colors
-	else return float3(0.0f, 0.0f, 0.0f); // black pixel
-}
+	float minDist = distances[0];
+	for (uint m = 1; m < 9; m++) if (distances[m] < minDist) minDist = distances[m]; // calculate closest point
 
-float3 mandlebulb(uint2 screenRes, float2 pixelCoord){
-	return float3(0.0f, 0.0f, 1.0f); // placeholder
+	return float3(sin(minDist * 10), cos(minDist * 100), tan(minDist * 500));
 }
 
 // Main
@@ -49,11 +39,8 @@ float3 mandlebulb(uint2 screenRes, float2 pixelCoord){
 float4 main(PS_INPUT input) : SV_TARGET{
 	// effects go here
 	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f;
-	float2 pixelCoordsAdj = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); 
-	float2 pixelOffset = float2(-0.25f, -0.25f);
+	float2 pixelCoordsAdj = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y);
 
-	if (mode == 1)
-		return float4(mandlebrot(screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
-	else 
-		return float4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
+	if (mode == 1) return float4(whirlpools(pixelCoordsAdj), 1.0f); // special mode
+	else return float4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
 }

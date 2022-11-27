@@ -49,8 +49,6 @@ Img_Base characterImages[HUMANOID_PARTS_COUNT]; // = { Img_Base(radialImg), Img_
 Img_Base ghostImages[HUMANOID_PARTS_COUNT], angelImages[HUMANOID_PARTS_COUNT], devilImages[HUMANOID_PARTS_COUNT];
 Geo_Humanoid2D character = Geo_Humanoid2D("character", noAssets);
 
-Rasteron_Image* frameImage = nullptr;
-
 struct Playground_App : public Topl_App {
     Playground_App(const char* execPath, APP_Backend backend) 
 		: Topl_App(execPath, "Playground", backend){}
@@ -96,7 +94,7 @@ private:
 	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
 	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
 	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
-	Img_Material material = Img_Material("material1", 4096, 4096);
+	// Img_Volume volume = Img_Volume("volume", 4096, 4096, 256);
 	/* Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
 	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
 	Geo_Actor heightmapActor = Geo_Actor((Geo_Renderable*)&heightmap); */

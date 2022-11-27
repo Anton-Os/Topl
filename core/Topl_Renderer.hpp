@@ -37,7 +37,7 @@ struct Buffer : public RenderTarget {
 
 // Texture
 
-enum TEX_Frmt { TEX_1D, TEX_2D, TEX_3D };
+enum TEX_Frmt { TEX_1D, TEX_2D, TEX_Array, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
 struct Texture : public RenderTarget {
@@ -110,7 +110,7 @@ public:
 	void texturize(const Topl_Scene* scene); // loads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
-    virtual Rasteron_Image* frame() = 0;
+    virtual Img_Base frame() = 0;
 	unsigned getPixelAt(float x, float y);
     // void frameCapture(Img_Frames* frames);
 #endif
@@ -132,19 +132,18 @@ protected:
     std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
 
+	Img_Base _frameImage; // internal frame
 	Timer_Ticker _ticker; // internal timer
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
     virtual void drawMode() = 0;
-	// virtual void render(const Topl_Scene* scene) = 0;
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
+	// virtual void postprocess(Rasteron_Image* framebuffer) = 0; // modify output image
 #ifdef RASTERON_H
 	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
-	virtual void attachMaterial(const Img_Material* material, unsigned id) = 0;
-
-    Img_Frames frameCache = Img_Frames("cache", FRAME_CACHE_COUNT);
+	virtual void attachVolume(const Img_Volume* volume, unsigned id) = 0;
 #endif
 };
 

@@ -7,7 +7,7 @@
 // #define APP_BACKEND App_Vulkan
 
 #define FRAME_AVG_TIME 500
-#define FRAME_SPIKE_TIME 10
+#define FRAME_SPIKE_TIME 20
 
 // Diagnose Main Loop
 
@@ -31,25 +31,25 @@ int main(int argc, char** argv) {
 	Topl_Renderer* renderer = nullptr;
 
 	if (APP_BACKEND == APP_OpenGL_4) renderer = new Diagnostic_Renderer_GL4(platform.getParentWindow());
-	else if(APP_BACKEND == APP_DirectX_11) renderer = new Diagnostic_Renderer_Drx11(platform.getParentWindow());
+	else if (APP_BACKEND == APP_DirectX_11) renderer = new Diagnostic_Renderer_Drx11(platform.getParentWindow());
+	else if (APP_BACKEND == APP_Vulkan) renderer = new Diagnostic_Renderer_Vulkan(platform.getParentWindow());
 
 	Timer_Ticker _ticker;
 	double frameAvg = 0.0;
 	while(1){
-		double frameTime = _ticker.getRelMillisecs();
-		if (frameTime > FRAME_SPIKE_TIME) std::cout << "Spike: " << frameTime << ", "; // print frame time
-		
-		frameAvg += frameTime;
-		if (renderer->getFrameCount() % FRAME_AVG_TIME == 0) {
-			std::cout << "\nAverage: " << frameAvg / FRAME_AVG_TIME << std::endl; // print frame average
-			frameAvg = 0.0; // reset
-		}
-
 		// platform.handleEvents(DISABLE_CURSOR_UPDATE);
 		
+		double f1 = _ticker.getRelMillisecs();
 		renderer->clearView();
+		double f2 = _ticker.getRelMillisecs();
 		renderer->renderAll();
+		double f3 = _ticker.getRelMillisecs();
 		renderer->switchFramebuff();
+		double f4 = _ticker.getRelMillisecs();
+
+		if(f1 + f2 + f3 + f4 > FRAME_SPIKE_TIME)
+			std::cout << "Frame times: " << f1 << ", " << f2 << ", " << f3 << ", " << f4 << ", " 
+			<< " Total: " << f1 + f2 + f3 + f4 << std::endl;
 	}
 
 	if(renderer != nullptr) delete(renderer);

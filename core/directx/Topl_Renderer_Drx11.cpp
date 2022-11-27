@@ -342,7 +342,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 #ifdef RASTERON_H
 
-Rasteron_Image* Topl_Renderer_Drx11::frame() {
+Img_Base Topl_Renderer_Drx11::frame() {
 	HRESULT result;
 
 	ID3D11Texture2D* framebuff;
@@ -365,19 +365,22 @@ Rasteron_Image* Topl_Renderer_Drx11::frame() {
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
 	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData);
 
-	Rasteron_Image* image = allocNewImg("framebuff", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	Rasteron_Image* stageImage = allocNewImg("stage", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
 	unsigned srcOffset = 0; unsigned dstOffset = 0;
 	unsigned pitch = resource.RowPitch / 4; // << 2;
-	for (unsigned r = 0; r < image->height - 1; r++) {
-		for (unsigned c = 0; c < image->width; c++)
-			*(image->data + dstOffset + c) = *(sourceData + srcOffset + c);
+	for (unsigned r = 0; r < stageImage->height - 1; r++) {
+		for (unsigned c = 0; c < stageImage->width; c++)
+			*(stageImage->data + dstOffset + c) = *(sourceData + srcOffset + c);
 		srcOffset += pitch;
-		dstOffset += image->width;
+		dstOffset += stageImage->width;
 	}
 	_deviceCtx->Unmap(framebuffTex, 0);
+	switchRB(stageImage->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // flipping red and blue bits
 
-	switchRB(image->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // edits
-	return image;
+	_frameImage = Img_Base();
+	_frameImage.setImage(stageImage);
+	deleteImg(stageImage);
+	return _frameImage;
 }
 
 void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned renderID) {
@@ -389,8 +392,8 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-	texDesc.Width = image->height;
-	texDesc.Height = image->width;
+	texDesc.Width = image->height; // inverse
+	texDesc.Height = image->width; // inverse
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -430,7 +433,7 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition
 }
 
-void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned renderID) {
+void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned renderID) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc = Drx11::genSamplerDesc(_texMode);
@@ -439,9 +442,9 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 
 	D3D11_TEXTURE3D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-	texDesc.Width = material->getLayer(MATERIAL_Albedo)->height;
-	texDesc.Height = material->getLayer(MATERIAL_Albedo)->width;
-	texDesc.Depth = MAX_MATERIAL_PROPERTIES;
+	texDesc.Width = volume->getWidth();
+	texDesc.Height = volume->getHeight();
+	texDesc.Depth = volume->getDepth();
 	texDesc.MipLevels = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -449,10 +452,10 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	Rasteron_Image* materialImage = material->createImage();
+	const Img_Base* volumeImage = volume->extractVolImage();
 	D3D11_SUBRESOURCE_DATA texData;
-	texData.pSysMem = materialImage->data;
-	texData.SysMemPitch = sizeof(uint32_t) * material->getLayer(MATERIAL_Albedo)->height;
+	texData.pSysMem = volumeImage->getImage()->data;
+	texData.SysMemPitch = sizeof(uint32_t) * volume->getWidth();
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture3D* texture;
@@ -466,7 +469,7 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 
 	ID3D11ShaderResourceView* resView;
 	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
-	_deviceCtx->UpdateSubresource(texture, 0, 0, material->getLayer(MATERIAL_Albedo)->data, texData.SysMemPitch, 0);
+	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeImage->getImage()->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resView);
 
 	for (std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
@@ -477,8 +480,6 @@ void Topl_Renderer_Drx11::attachMaterial(const Img_Material* material, unsigned 
 			return;
 		}
 	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // Texture Addition
-
-	deleteImg(materialImage);
 }
 #endif
 
@@ -538,10 +539,8 @@ void Topl_Renderer_Drx11::drawMode() {
 				 _deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 			 }
 
-			 if (vertexBuff == nullptr || vertexBuff->count == 0)
-				 return logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-			 else _deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
-
+			 if (vertexBuff != nullptr && vertexBuff->count > 0)
+				_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
 			 if (indexBuff != nullptr && indexBuff->count > 0)
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
@@ -556,8 +555,11 @@ void Topl_Renderer_Drx11::drawMode() {
 				 }
 
 			 // Draw Call!
-			 if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-			 else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+			 if (vertexBuff != nullptr && vertexBuff->count != 0) {
+				 if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+				 else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+			 }
+			 else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 		 }
 	 }
 } 

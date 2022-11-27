@@ -242,19 +242,22 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 
 #ifdef RASTERON_H
 
-Rasteron_Image* Topl_Renderer_GL4::frame() {
+Img_Base Topl_Renderer_GL4::frame() {
 	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx.window);
 	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
 
-	Rasteron_Image* frameImage = allocNewImg("frame", viewportWidth, viewportHeight);
-	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, frameImage->data);
-	Rasteron_Image* flipImage = createFlipImg(frameImage, FLIP_Upside);
-	Rasteron_Image* mirrorImage = createMirrorImg(flipImage);
-	switchRB(mirrorImage->data, viewportHeight * viewportWidth); // edits
+	Rasteron_Image* stageImage = allocNewImg("frame", viewportWidth, viewportHeight);
+	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);
+	Rasteron_Image* flipImage = createFlipImg(stageImage, FLIP_Upside); // flipping image over
+	Rasteron_Image* mirrorImage = createMirrorImg(flipImage); // mirroring left and right sides
+	switchRB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
 
+	_frameImage = Img_Base();
+	_frameImage.setImage(mirrorImage);
+	deleteImg(stageImage);
 	deleteImg(flipImage);
-	deleteImg(frameImage);
-	return mirrorImage;
+	deleteImg(mirrorImage);
+	return _frameImage;
 }
 
 void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id) {
@@ -278,7 +281,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 		_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, textureTarget)); // Texture Addition
 }
 
-void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id) {
+void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned id) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
@@ -291,24 +294,22 @@ void Topl_Renderer_GL4::attachMaterial(const Img_Material* material, unsigned id
 
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	Rasteron_Image* materialImage = material->createImage();
+	const Img_Base* volumeImage = volume->extractVolImage();
 	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
 	glTexImage3D(
-		GL_TEXTURE_3D, 
-		0, GL_RGBA, 
-		material->getLayer(MATERIAL_Albedo)->height, 
-		material->getLayer(MATERIAL_Albedo)->width, 
-		MAX_MATERIAL_PROPERTIES, 
-		0, GL_RGBA, 
+		GL_TEXTURE_3D,
+		0, GL_RGBA,
+		volume->getWidth(),
+		volume->getHeight(),
+		volume->getDepth(),
+		0, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		materialImage->data
+		volumeImage->getImage()->data
 	);
 	glGenerateMipmap(GL_TEXTURE_3D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
 		_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, textureTarget));
-
-	deleteImg(materialImage);
 }
 
 #endif
@@ -369,8 +370,10 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 			if (renderBlockBuff != nullptr)
 				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-			if (vertexBuff != nullptr) glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-			if (indexBuff != nullptr) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+			if (vertexBuff != nullptr && vertexBuff->count > 0) 
+				glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
+			if (indexBuff != nullptr && indexBuff->count > 0) 
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 			for (unsigned t = 0; t < _textures.size(); t++)
 				if (_textures.at(t).renderID == renderID) {
@@ -379,10 +382,11 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				}
 
 			// Draw Call!
-			if (vertexBuff != nullptr) {
+			if (vertexBuff != nullptr && vertexBuff->count != 0) {
 				if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
-			}
+			} 
+			else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 
 			// Unbinding
 			glBindVertexArray(0);

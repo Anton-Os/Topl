@@ -45,7 +45,7 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 		actor->updatePos(Vec3f({ origin[0] + (xInc * xOffset), origin[1] + (float)(-1.0 * yInc * yOffset), 0.0f })); // adjust these values
 		scene->addGeometry(getPrefix() + genPaneName(p), actor);
 #ifdef RASTERON_H
-		scene->addTexture(getPrefix() + genPaneName(p), _panes[p - 1].getBackground());
+		scene->addTexture(getPrefix() + genPaneName(p), _panes[p - 1].getBackground()->getImage());
 #endif
 	}
 
@@ -53,16 +53,6 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 	rootActor->setRenderable((Geo_Renderable*)&_rootSquare);
 	scene->addGeometry(getPrefix() + "root", rootActor);
 #ifdef RASTERON_H
-	scene->addTexture(getPrefix() + "root", _rootPane.getBackground());
+	scene->addTexture(getPrefix() + "root", _rootPane.getBackground()->getImage()); // selection image active
 #endif
-}
-
-bool Geo_PaneLayout::interact(float xPos, float yPos, unsigned color){
-	if(xPos > getOrigin()[0] + _width || xPos < getOrigin()[0] - _width) return false; // lies out of x bounds
-	if(yPos > getOrigin()[1] + _height || yPos < getOrigin()[1] - _height) return false; // lies out of y bounds
-	
-	for(std::vector<Geo_Pane>::iterator pane = _panes.begin(); pane != _panes.end(); pane++)
-		if(pane->getColor() == color && pane->callback != nullptr)
-			pane->callback(); // pane interaction has occured
-	return true;
 }

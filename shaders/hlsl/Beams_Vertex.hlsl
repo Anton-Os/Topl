@@ -17,35 +17,14 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float3 lampLight_pos; float3 lampLight_value;
 }
 
-struct VS_INPUT {
-	float4 pos : POSITION;
-};
+struct VS_INPUT { float4 pos : POSITION; };
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	float3 pos1 : POSITION;
-
-	float3 ambient : COLOR0;
-	float3 diffuse : COLOR1;
-	float3 specular : COLOR2;
+	float3 pos1 : POSITION; // vertex position
 };
 
 // Functions
-
-float calcSpec(float3 light, float3 target, float3 camera){
-	float l = dot(normalize(light), target); // light dot product
-
-	float p = 8;
-	if(l > 0) return pow(l + 0.25, p) * pow(2, p); // sharpen effect
-	return 0.0;
-}
-
-float calcDiffuse(float3 light, float3 target){
-	float intensity = dot(normalize(light), normalize(target));
-	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
-	float attenuation = 1 / (length(light) * length(light));
-	return intensity * attenuation;
-}
 
 float3x3 calcRotMatrix(float3 angles) {
 	float3x3 zRotMatrix = { // Roll
@@ -69,7 +48,7 @@ float3x3 calcRotMatrix(float3 angles) {
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and target position
+float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and vertex position
 	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
 
 	float3 zAxis = normalize(lPos - cPos);
@@ -97,16 +76,6 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
 	output.pos += float4(offset, 0.0f); // output.pos += mul(projMatrix, offset);
 	output.pos1 = float3(output.pos.x, output.pos.y, output.pos.z);
-
-	// ambient shading
-	const float ambient_intensity = 0.25f; // ambient light intensity
-	output.ambient = ambient_intensity * skyLight_value;
-	// diffuse shading
-	const float skyLight_diffuse = calcDiffuse(skyLight_pos, angles);
-	output.diffuse = (skyLight_diffuse * skyLight_value); // + (flashLight_diffuse * flashLight_value);
-	// specular shading
-	const float specular_intensity = calcSpec(skyLight_pos, angles, cam_pos);
-	output.specular = specular_intensity * skyLight_value;
 
 	return output;
 }

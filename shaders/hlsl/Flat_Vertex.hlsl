@@ -14,9 +14,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4x4 projMatrix;
 }
 
-struct VS_INPUT {
-	float4 pos : POSITION;
-};
+struct VS_INPUT { float4 pos : POSITION; };
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
@@ -47,7 +45,18 @@ float3x3 calcRotMatrix(float3 angles){
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // camera postion and relative look position
+float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // lookAt matrix in progress
+	float3 forward = normalize(cPos - lPos);
+	float3 right = cross(forward, float3(0, 1, 0));
+	float3 up = -cross(forward, right);
+
+	float4x4 camRotMatrix = {
+		right.x, up.x, forward.x, 0,
+		right.y, up.y, forward.y, 0,
+		right.z, up.z, forward.z, 0,
+		0, 0, 0, 1
+	};
+
 	float4x4 camMatrix = {
 		1, 0, 0, -cPos.x,
 		0, 1, 0, -cPos.y,
@@ -55,19 +64,8 @@ float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // camera postion and relative
 		0, 0, 0, 1
 	};
 
-	float3 forward = normalize(lPos - cPos);
-	float pitch = -lPos.y; // TODO: find y rotation angle from forward
-	float yaw = -lPos.x; // TODO: find x rotation angle from forward
-	float3x3 rotMatrix = calcRotMatrix(float3(0.0, pitch, yaw));
-
-	float4x4 camRotMatrix = {
-		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], 0,
-		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], 0,
-		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], 0,
-		0, 0, 0, 1
-	};
-
-	return mul(camRotMatrix, camMatrix);
+	return camMatrix;
+	// return camRotMatrix;
 }
 
 // Main
@@ -75,7 +73,7 @@ float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // camera postion and relative
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is position
 	VS_OUTPUT output;
 
-	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
+	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.z, input.pos.z));
 	output.pos = float4(angles.x, angles.y, angles.z, 1.0);
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
@@ -88,6 +86,13 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 			case 2: output.flatColor = float4(0.0f, 1.0f, 1.0f, 0.8f); break; // substract red
 			case 3: output.flatColor = float4(1.0f, 1.0f, 1.0f, 0.8f); break; // white
 		}
+	}
+	else if (mode == 2) { // directional mode
+		if (output.pos.x > 0 && output.pos.z > 0) output.flatColor = float4(1.0f, 1.0f, 0.0f, 0.8f);
+		else if (output.pos.x > 0 && output.pos.z < 0) output.flatColor = float4(1.0f, 0.0f, 1.0f, 0.8f);
+		else if (output.pos.x < 0 && output.pos.z > 0) output.flatColor = float4(0.0f, 1.0f, 1.0f, 0.8f);
+		else if (output.pos.x > 0 && output.pos.z < 0) output.flatColor = float4(1.0f, 1.0f, 1.0f, 0.8f);
+		else output.flatColor = float4(0.0f, 1.0f, 0.0f, 0.8f);
 	}
 	else output.flatColor = output.flatColor = color; // solid mode // default
 

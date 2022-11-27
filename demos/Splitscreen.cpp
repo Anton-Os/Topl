@@ -9,11 +9,11 @@ void Splitscreen_App::init() {
 
 	if (APP_BACKEND == APP_OpenGL_4) {
 		vertexShader1 = GL4_Effect_VertexShader(EFFECT_MODE_CURSOR);
-		vertexShader2 = GL4_Effect_VertexShader(EFFECT_MODE_FRACTAL);
+		vertexShader2 = GL4_Effect_VertexShader(EFFECT_MODE_SPECIAL);
 		fragShader = GL4_Effect_FragmentShader();
 	} else {
 		vertexShader1 = Drx11_Effect_VertexShader(EFFECT_MODE_CURSOR);
-		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_FRACTAL);
+		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_SPECIAL);
 		fragShader = Drx11_Effect_FragmentShader();
 	}
 	// vertexShader1.setHeight(Platform::getViewportHeight(_platform->getParentWindow()));

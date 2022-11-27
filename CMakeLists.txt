@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.7)
 project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
 
-set (CMAKE_CXX_STANDARD 11) # should apply to everything
+set (CMAKE_CXX_STANDARD 11)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
+    message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
+endif()
+
 # Extrenal Libraries
 include("cmake/externalTargets.cmake")
 include("cmake/findVulkan.cmake")

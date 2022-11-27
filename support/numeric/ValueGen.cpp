@@ -83,9 +83,9 @@ static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
 }
 
 static Mat4x4 genOrthoMatrix(SpatialBounds3D bounds){
-	float r = bounds.right; float l = bounds.left;
-	float t = bounds.top; float b = bounds.bottom;
-	float n = bounds.nearPlane; float f = bounds.farPlane;
+	float r = bounds.right / 2; float l = bounds.left / 2;
+	float t = bounds.top / 2; float b = bounds.bottom / 2;
+	float n = bounds.nearPlane / 2; float f = bounds.farPlane / 2;
 
     Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
         2.0f / (r - l), 0.0f, 0.0f, (l + r) / (l - r),

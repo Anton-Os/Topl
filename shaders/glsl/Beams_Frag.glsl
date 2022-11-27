@@ -1,9 +1,11 @@
 #version 440
 
+// Values
+
 layout(std140, binding = 1) uniform SceneBlock{
 	uint mode;
-	vec3 look_pos;
 	vec3 cam_pos;
+	vec3 look_pos;
 	// mat4 projMatrix;
 
 	vec3 skyLight_pos; vec3 skyLight_value;
@@ -11,22 +13,36 @@ layout(std140, binding = 1) uniform SceneBlock{
 	vec3 lampLight_pos; vec3 lampLight_value;
 };
 
-// Values
 
 layout(location = 1) in vec3 pos;
-layout(location = 2) in vec3 ambient;
-layout(location = 3) in vec3 diffuse;
-layout(location = 4) in vec3 specular;
 
 out vec4 color;
+
+// Functions
+
+float calcSpec(vec3 light, vec3 camera, vec3 vertex) {
+	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
+	return max(pow(dot(reflectVec, -normalize(cam_pos)), 3), 0);
+}
+
+float calcDiffuse(vec3 light, vec3 vertex) {
+	float intensity = dot(normalize(light), normalize(vertex));
+	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
+	float attenuation = 1 / (length(light) * length(light));
+	return intensity * attenuation;
+}
 
 // Main
 
 void main() {
+	vec3 ambient = skyLight_value * 0.2;
+	vec3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, pos) * 0.5;
+	vec3 specular = skyLight_value * calcSpec(skyLight_pos, cam_pos, pos);
+
 	if(mode == 1){ // alternate mode
 		// vec3 light_color = ambient; // ambient test
-		vec3 light_color = diffuse; // diffuse test
-		// vec3 light_color = specular; // specular test
+		// vec3 light_color = diffuse; // diffuse test
+		vec3 light_color = specular; // specular test
 		color = vec4(light_color, 1.0f);
 	} else if(mode == 2){ // depth mode
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation

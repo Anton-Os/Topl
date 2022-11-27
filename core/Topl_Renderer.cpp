@@ -46,7 +46,6 @@ bool Topl_Renderer::renderAll() {
 	else _isDrawn = true;
 
 	// Render All Targets in Sequence
-
 	renderTarget(SCENE_RENDER_ID); // first target is scene block data
 	if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
 		for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
@@ -95,8 +94,8 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 		if (texture != nullptr) attachTexture(texture, renderID);
 		// else logMessage(MESSAGE_Exclaim, "Texure cannot be null!");
 
-		const Img_Material* material = scene->getMaterial(actor->getName());
-		if (material != nullptr) attachMaterial(material, renderID);
+		const Img_Volume* material = scene->getMaterial(actor->getName());
+		if (material != nullptr) attachVolume(material, renderID);
 		// else logMessage(MESSAGE_Exclaim, "Material cannot be null!");
 	}
 }
@@ -104,10 +103,9 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
-    Rasteron_Image* image = frame();
-    unsigned offset = getPixOffset_cursor(pixPoint, image);
-    unsigned color = *(image->data + offset);
-    deleteImg(image);
+    Img_Base image = frame();
+    unsigned offset = getPixOffset_cursor(pixPoint, image.getImage());
+    unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets
 }
 

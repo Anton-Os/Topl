@@ -1,6 +1,7 @@
 #ifndef IO_H
 
 #include <ios>
+#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>

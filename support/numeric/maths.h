@@ -111,9 +111,8 @@ struct VectorXI {
 template <unsigned short r, unsigned short c>
 struct Matrix {
 	float data[r][c];
-	/* float operator () (unsigned short r, unsigned short c) {
-		return data[r][c];
-	} */
+
+	float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
 
 	Matrix operator* (const Matrix& input) { return {}; } // TODO: implement multiplication
 };

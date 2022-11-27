@@ -31,7 +31,7 @@ public:
 	void genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
 	void genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H
-	Rasteron_Image* frame() override;
+	Img_Base frame() override;
 #endif
 protected:
   	void init(NATIVE_WINDOW window) override;
@@ -40,10 +40,8 @@ protected:
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachMaterial(const Img_Material* material, unsigned id) override;
+	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;
-
-	// enum _drawMode_Vulkan; // Vulkan specific draw mode
 };

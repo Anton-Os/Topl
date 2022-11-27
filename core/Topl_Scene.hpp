@@ -37,8 +37,10 @@ typedef const Topl_Light* const light_cptr; // typedef for safety
 
 class Topl_Camera {
 public:
-	// Identity projection constructor
-	Topl_Camera() { _projMatrix = MAT_4x4_IDENTITY; } // Identity matrix
+	Topl_Camera() { // Identity matrix
+		_projMatrix = MAT_4x4_IDENTITY;
+		_projMatrix(2, 2) = -1; // flip z axis
+	}
 	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
 		_projMatrix = genProjMatrix(projType, SpatialBounds3D());
 	}
@@ -50,14 +52,14 @@ public:
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
-	void setLookPos(const Vec3f& vec){ _lookPos = vec; }
-	void updateLookPos(const Vec3f& vec) { _lookPos = _lookPos + vec; }
+	void setRotation(const Vec3f& vec){ _rotation = vec; }
+	void updateRotation(const Vec3f& vec) { _rotation = _rotation + vec; }
 	vec3f_cptr_t getPos() const { return &_pos; }
-	vec3f_cptr_t getLookPos() const { return &_lookPos; }
+	vec3f_cptr_t getRotation() const { return &_rotation; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
-	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f });
-	Vec3f _lookPos = Vec3f({ 0.0f, 0.0f, 1.0f });
+	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f }); // in front of scene
+	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
 	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
 };
 
@@ -80,7 +82,7 @@ public:
 	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
-	void addMaterial(const std::string& name, const Img_Material* material);
+	void addVolTexture(const std::string& name, const Img_Volume* volume);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
@@ -90,8 +92,8 @@ public:
 #ifdef RASTERON_H
 	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
-	unsigned getMaterialCount() const { return _actorMaterial_map.size(); }
-	const Img_Material* getMaterial(const std::string& name) const;
+	unsigned getMaterialCount() const { return _actorTex3D_map.size(); }
+	const Img_Volume* getMaterial(const std::string& name) const;
 #endif
 
 	// Dynamics Section
@@ -109,9 +111,8 @@ private:
 	// Topl_Camera _camera;
 	std::vector<Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
-	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to a single texture
-	// std::map<Geo_Actor*, const Img_Base*> __actorTex_map; // associates geometry actor to a single texture
-	std::map<Geo_Actor*, const Img_Material*> _actorMaterial_map; // associates geometry actor to multiple textures
+	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to single texture
+	std::map<Geo_Actor*, const Img_Volume*> _actorTex3D_map; // associates geometry actor to volumetric texture
 #endif
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::map<Geo_Actor*, Phys_Actor*> _actorPhys_map; // associates geometry to a physics structure

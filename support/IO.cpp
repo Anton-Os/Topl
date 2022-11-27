@@ -40,7 +40,7 @@ std::string getParentDir(const char* str){
     return parentDir;
 }
 
-void logMessage(enum MESSAGE_Type type, std::string message){
+/* void logMessage(enum MESSAGE_Type type, std::string message){
     std::ofstream file(MESSAGE_LOG_FILE, std::ofstream::out | std::ofstream::app);
     switch(type){
         case MESSAGE_Comment: file << " * "; break;
@@ -49,6 +49,14 @@ void logMessage(enum MESSAGE_Type type, std::string message){
     }
     file << message << "\n\n";
     file.close();
+} */
+
+void logMessage(enum MESSAGE_Type type, std::string message) {
+	switch (type) {
+	case MESSAGE_Comment: std::cout << message ; break;
+	case MESSAGE_Question: std::clog << message << " (?) "; break;
+	case MESSAGE_Exclaim: std::cerr << message << " (!) "; break;
+	}
 }
 
 void logMessage(std::string message){

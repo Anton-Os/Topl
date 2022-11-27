@@ -4,7 +4,7 @@
 // #define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
-#define VIEW_SPACE 2.0f
+#define VIEW_SPACE 3.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
 #define PRE_FRAME_FRAC 5
@@ -18,30 +18,21 @@ Topl_Light Playground_App::skyLight = Topl_Light({ 0.0, -1.0f, 0.0 });
 Topl_Light Playground_App::flashLight = Topl_Light({ 0.0, 0.0f, 1.0 });
 Topl_Light Playground_App::lampLight = Topl_Light({ -1.0, 0.0f, 0.0 });
 
-static unsigned hoverColor = ZERO_COLOR;
-static Vec3f displaceVec = { 0.0f, 0.0f, 0.0f };
+static unsigned pickerColor = ZERO_COLOR;
+static Vec3f pickerVec = { 0.0f, 0.0f, 0.0f };
 static Vec3f pawnVec = { 0.0f, 0.0f, 0.0f };
 
 static void callback_press(float x, float y) {
-	if (hoverColor == (CLEAR_COLOR_CODE & 0x00FFFFFF)) puts("\nBackground pressed!");
+	if (pickerColor == (CLEAR_COLOR_CODE & 0x00FFFFFF)) puts("\nBackground pressed!");
 	else puts("\nObject pressed!");
 }
 
 static void callback_release(float x, float y) { 
 	printf("Displacement is %6.4lf, %6.4lf ", x, y);
-	displaceVec = { x, y, 0.0f }; 
+	pickerVec = { x, y, 0.0f }; 
 }
 
 static void callback_pane(unsigned short num) { printf("pane %d callback_pressed!", num); }
-
-unsigned drawCursor_callback(double xFrac, double yFrac) {
-	float cursorX = Platform::getCursorX();
-	float cursorY = Platform::getCursorY();
-
-	if (cursorX - 0.5f == xFrac); // cursor and image offset match!
-	else if (cursorY - 0.5f == yFrac); // cursor and image offset match!
-	return ZERO_COLOR;
-}
 
 static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
 	static unsigned swapCount = 0;
@@ -98,7 +89,8 @@ void Playground_App::createScene_Overlay() {
 	rowLayout.move(Vec3f({ 0.7f, 0.7f, 0.0f }));
 	for (unsigned short p = 0; p < rowLayout.getRowCount(); p++) {
 		Rasteron_Image* rowPaneImg = createSolidImg({ PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH }, BLACK_COLOR + (0x08 * p));
-		rowLayout.getChildPane(p)->selectImage(rowPaneImg);
+		rowLayout.getChildPane(p)->getBackground()->setImage(rowPaneImg);
+		deleteImg(rowPaneImg);
 	}
 	rowLayout.configure(&scene_overlay);
 
@@ -107,8 +99,9 @@ void Playground_App::createScene_Overlay() {
 		if (p < PLAYGROUND_PANE_COUNT) {
 			std::string text = std::to_string(p + 1); // count should begin at 1
 			boxedTextObjs[p] = { fontStr.c_str(), text.c_str(), WHITE_COLOR, 0xFF333333 };
-			Rasteron_Image* image = bakeTextI(&boxedTextObjs[p]);
-			boxedLayout.getChildPane(p)->selectImage(image);
+			Rasteron_Image* boxPaneImg = bakeTextI(&boxedTextObjs[p]);
+			boxedLayout.getChildPane(p)->getBackground()->setImage(boxPaneImg);
+			deleteImg(boxPaneImg);
 		}
 	boxedLayout.configure(&scene_overlay);
 
@@ -142,9 +135,8 @@ void Playground_App::init() {
 	createScene_Overlay();
 	createScene_Details();
 
-	_renderer->setCamera(&camera1); // no projection
+	// _renderer->setCamera(&camera1); // no projection
 	_renderer->setCamera(&camera2); // ortho projection
-	// camera3.setPos({ 0, 0, -VIEW_SPACE - 0.1f });
 	// _renderer->setCamera(&camera3); // perspective projection
 
 	_renderer->setDrawMode(DRAW_Triangles);
@@ -177,17 +169,33 @@ void Playground_App::preFrame() {
 	prismActor.updateRot({ 0.0f, -0.05f, 0.0f });
 	coneActor.updateRot({ 0.0f, 0.0f, 0.05f });
 	
-	character.move((displaceVec - character.getOrigin()) * 0.33);
+	character.move((pickerVec - character.getOrigin()) * 0.33);
 
 	scene_main.resolvePhysics();
 }
 
-void Playground_App::postFrame() {
-	hoverColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+static void drawCursorPicker(Rasteron_Image* image, unsigned color) {
+	for (unsigned p = 0; p < image->width * image->height; p++) // Cursor Distance Test
+		if (getPixDist(p, getPixOffset_cursor({ pickerVec[0], pickerVec[1] }, image), image->width) < 20.0)
+			*(image->data + p) = color; // switch color
+}
 
-	frameImage = _renderer->frame();
-	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage->height, frameImage->width, frameImage->data); // draw to output file
-	deleteImg(frameImage);
+void Playground_App::postFrame() {
+	pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+
+	for (unsigned short p = 0; p < rowLayout.getRowCount(); p++) {
+		Geo_Pane* pane = rowLayout.getChildPane(p);
+		// TODO: Get render id cooresponding to pane
+	}
+
+	for (unsigned short p = 0; p < boxedLayout.getRowCount() * boxedLayout.getColCount(); p++) {
+		Geo_Pane* pane = boxedLayout.getChildPane(p);
+		// TODO: Get render id cooresponding to pane
+	}
+
+	Img_Base frameImage = _renderer->frame();
+	drawCursorPicker(frameImage.getImage(), 0xFF00FF00);
+	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage.getImage()->height, frameImage.getImage()->width, frameImage.getImage()->data);
 }
 
 int main(int argc, char** argv) {

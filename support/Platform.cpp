@@ -96,7 +96,6 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	RECT windowRect;
 	GetWindowRect(_context.window, &windowRect);
 	
-	// Check if cursor is inside screen space
 	if (point.x < windowRect.right && point.x > windowRect.left && point.y > windowRect.top && point.y < windowRect.bottom) {
 		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
 		LONG centerX = windowRect.left + halfWidth;
@@ -104,7 +103,8 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
 		LONG centerY = windowRect.top + halfHeight;
-		*yPos = -1.0f * (point.y - centerY) / (float)halfHeight;
+		*yPos = -(point.y - centerY) / (float)halfHeight;
+		if (*yPos > 0.0 && *yPos < 1.0) *yPos *= 1.03;  // positive y position adjusted for accuracy
 
 		return true;
 	} else return false; // Cursor is outside the screen space!

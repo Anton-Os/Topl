@@ -2,6 +2,7 @@
 
 #define FLAT_MODE_SOLID 0 // for semi-transparent white
 #define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors
+#define FLAT_MODE_DIRECTION 2 // for interpolating along xyz
 
 #define FLAT_COLOR_INC 0.002f // value for generating color id
 
@@ -27,7 +28,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 
 		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
 		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getLookPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 protected:

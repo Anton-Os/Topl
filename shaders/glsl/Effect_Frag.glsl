@@ -24,7 +24,7 @@ vec3 cursorDist(vec2 cursorPos, vec2 pixelCoord){
 }
 
 vec3 mandlebrot(uvec2 screenRes, vec2 pixelCoord){
-	const double size = 10.0f;
+	const double size = 3.0f;
 	const uint max_iters = 1000;
 	
 	double x = 0; double y = 0;
@@ -41,20 +41,12 @@ vec3 mandlebrot(uvec2 screenRes, vec2 pixelCoord){
 	else return vec3(0.0f, 0.0f, 0.0f);
 }
 
-vec3 mandlebulb(uvec2 screenRes, vec2 pixelCoord){ // generate 3d fractal here!
-	return vec3(0.0f, 0.0f, 1.0f); // placeholder
-}
-
 // Main
 
 void main() {
-	// effects go here
 	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f;
 	vec2 pixelCoordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // hard values
-	vec2 pixelOffset = vec2(-0.25f, -0.25f);
 
-	if (mode == 1) 
-		color = vec4(mandlebrot(screenRes, pixelCoordsAdj + pixelOffset), 1.0f); // fractal mode
-	else 
-		color = vec4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
+	if (mode == 1) color = vec4(mandlebrot(screenRes, pixelCoordsAdj + vec2(-0.25f, 0.5f)), 1.0f); // special mode
+	else color = vec4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
 }

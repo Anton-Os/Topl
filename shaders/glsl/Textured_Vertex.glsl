@@ -44,19 +44,15 @@ mat3 calcRotMatrix(vec3 angles) {
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // camera postion and relative look position
-	vec3 forward = normalize(lPos - cPos);
-	vec3 right = vec3(1, 0, 0); // calcRotMatrix(vec2(0, lPos.x)) * forward;
-	vec3 up = cross(forward, right);
-
+mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
 	mat4 camMatrix = mat4(
-		right.x, up.x, forward.x, cPos.x,
-		right.y, up.y, forward.y, cPos.y,
-		right.z, up.z, forward.z, cPos.z,
-		0.0, 0.0, 0.0, 1.0
+		1, 0, 0, -cPos.x,
+		0, 1, 0, -cPos.y,
+		0, 0, 1, -cPos.z,
+		0, 0, 0, 1
 	);
 
-	return camMatrix; // * rotMatrix;
+	return camMatrix;;
 }
 
 // Main
