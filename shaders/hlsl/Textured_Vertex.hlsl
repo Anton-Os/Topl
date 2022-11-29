@@ -1,9 +1,9 @@
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
-	// uint renderID;
 	float3 offset;
 	float3 rotation;
+	float3 texScroll; // texture coordinate scrolling
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -15,12 +15,12 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 struct VS_INPUT {
 	float4 pos : POSITION;
-	float2 texcoord : TEXCOORD;
+	float3 texcoord : TEXCOORD;
 };
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	float2 texcoord : TEXCOORD0;
+	float3 texcoord : TEXCOORD0;
 };
 
 // Functions
@@ -72,7 +72,7 @@ VS_OUTPUT main(VS_INPUT input) {
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
-	output.texcoord = float2(input.texcoord[0], input.texcoord[1]);
+	output.texcoord = input.texcoord + texScroll;
 
 	return output;
 }

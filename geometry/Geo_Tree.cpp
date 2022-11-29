@@ -53,8 +53,8 @@ Vec3f Geo_Tree::getOrigin(){
 }
 
 Geo_Actor* Geo_Tree::getNextActor(){
-    if(_actorOffset <= _actorCount){
-        _actorOffset++;   
-        return *(_actorData + _actorOffset - 1); // to increment offset above in one line
-    } else return nullptr; // error has occured here
+	if (_actorOffset > _actorCount) _actorOffset = 0; // reset
+	else _actorOffset++; // increment
+
+	return *(_actorData + _actorOffset - 1);
 }

@@ -4,22 +4,36 @@
 #define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
+void callback_w() { 
+	viewport1.yOffset -= 1; viewport1.height += 1;
+	viewport2.yOffset -= 1; viewport2.height -= 1;
+}
+
+void callback_s() {
+	viewport1.yOffset += 1; viewport1.height -= 1;
+	viewport2.yOffset += 1; viewport2.height += 1;
+}
+
 void Splitscreen_App::init() {
 	// Shaders and Pipeline
 
 	if (APP_BACKEND == APP_OpenGL_4) {
 		vertexShader1 = GL4_Effect_VertexShader(EFFECT_MODE_CURSOR);
-		vertexShader2 = GL4_Effect_VertexShader(EFFECT_MODE_SPECIAL);
+		vertexShader2 = GL4_Effect_VertexShader(EFFECT_MODE_FRACTAL);
 		fragShader = GL4_Effect_FragmentShader();
 	} else {
 		vertexShader1 = Drx11_Effect_VertexShader(EFFECT_MODE_CURSOR);
-		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_SPECIAL);
+		vertexShader2 = Drx11_Effect_VertexShader(EFFECT_MODE_FRACTAL);
 		fragShader = Drx11_Effect_FragmentShader();
 	}
-	// vertexShader1.setHeight(Platform::getViewportHeight(_platform->getParentWindow()));
 
 	pipeline1 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader1, &fragShader);
 	pipeline2 = Topl_Factory::genPipeline(APP_BACKEND, &vertexShader2, &fragShader);
+
+	// Events and Callbacks
+
+	Platform::keyControl.addCallback('w', callback_w);
+	Platform::keyControl.addCallback('s', callback_s);
 
 	// Geometries and Scene Elements
 
@@ -32,12 +46,12 @@ void Splitscreen_App::init() {
 void Splitscreen_App::loop(unsigned long frame) {
 	_renderer->setPipeline(pipeline1);
 	_renderer->updateScene(&scene);
-	_renderer->setViewport(&viewports[0]);
+	_renderer->setViewport(&viewport1);
 	_renderer->renderScene(&scene);
-	
+
 	_renderer->setPipeline(pipeline2);
 	_renderer->updateScene(&scene);
-	_renderer->setViewport(&viewports[1]);
+	_renderer->setViewport(&viewport2);
 	_renderer->renderScene(&scene);
 }
 

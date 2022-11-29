@@ -2,7 +2,7 @@
 
 #include "Geo_Tree.hpp"
 #ifdef TOPL_ENABLE_MODEL
-	#include "Model.hpp"
+	#include "Geo_Model.hpp"
 #endif
 
 #include "primitives/Geo_Flat.hpp"

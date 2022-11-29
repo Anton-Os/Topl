@@ -46,24 +46,24 @@ struct Texture : public RenderTarget {
 		format = f; 
         mode = m;
 	}
-	// Additional data fields when needed and Derived texture object types
     enum TEX_Frmt format;
 	enum TEX_Mode mode;
+	// unsigned short property; // for multiple textures
 };
 
 // Viewport
 
 struct Topl_Viewport {
     Topl_Viewport(){} // Full-Screen Constructor
-    Topl_Viewport(unsigned x, unsigned y, unsigned w, unsigned h){
+    Topl_Viewport(int x, int y, int w, int h){
         xOffset = x; yOffset = y;
         width = w; height = h;
     }
 
-    unsigned xOffset = 0; 
-    unsigned yOffset = 0;
-    unsigned width = TOPL_WIN_WIDTH;
-	unsigned height = TOPL_WIN_HEIGHT;
+    int xOffset = 0; 
+	int yOffset = 0;
+	int width = TOPL_WIN_WIDTH;
+	int height = TOPL_WIN_HEIGHT;
 };
 
 // Renderer
@@ -112,7 +112,6 @@ public:
 #ifdef RASTERON_H
     virtual Img_Base frame() = 0;
 	unsigned getPixelAt(float x, float y);
-    // void frameCapture(Img_Frames* frames);
 #endif
     unsigned long getRenderID(const Geo_Actor* actor);
 protected:

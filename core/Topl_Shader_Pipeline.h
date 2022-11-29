@@ -80,7 +80,7 @@ public:
 	Topl_EntryShader(std::string fileSrc) // Filename Constructor
 	: Topl_Shader(SHDR_Vertex, fileSrc) {
 		_inputs.push_back(Shader_Type("pos", "POSITION", SHDR_float_vec3)); // default pos input
-		_inputs.push_back(Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2)); // default texcoord input
+		_inputs.push_back(Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec3)); // default texcoord input
 	}
 
     Topl_EntryShader( // Inputs Constructor
@@ -93,8 +93,15 @@ public:
     const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
     unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual void genRenderBlock(const Geo_Actor *const component, unsigned renderID, blockBytes_t* bytes) const = 0;
-    virtual void genSceneBlock(const Topl_Scene *const scene, const Topl_Camera *const camera, blockBytes_t* bytes) const = 0;
+	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const {
+		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
+	}
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+	}
 
 private:
     std::vector<Shader_Type> _inputs; // inputs are required for vertex layout

@@ -52,6 +52,26 @@ private:
 #endif
 };
 
+// Material based on layers
+
+#define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
+
+enum MATERIAL_Property {
+	MATERIAL_Base = 0,
+	MATERIAL_Normals = 1,
+	MATERIAL_Height = 2,
+	MATERIAL_Metal = 3,
+	MATERIAL_Roughness = 4,
+	MATERIAL_Occlusion = 5
+};
+
+struct Img_MaterialUnit : public Img_Base {
+	Img_MaterialUnit() : Img_Base(){ property = MATERIAL_Base; }
+	Img_MaterialUnit(enum MATERIAL_Property p) : Img_Base(){ property = p; }
+
+	enum MATERIAL_Property property;
+};
+
 // Frames based on a sequence
 
 struct Img_Frames {
@@ -78,43 +98,6 @@ private:
 
     Rasteron_Animation* data; // underlying data
 #endif
-};
-
-// Material based on layers
-
-#define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
-
-enum MATERIAL_Property {
-	MATERIAL_Albedo = 0,
-	MATERIAL_Normals = 1,
-	MATERIAL_Height = 2,
-	MATERIAL_Metal = 3,
-	MATERIAL_Roughness = 4,
-	MATERIAL_Occlusion = 5
-};
-
-struct Img_Material {
-	Img_Material() : width(IMG_SIDE_LEN), height(IMG_SIDE_LEN) {} // Empty Constructor
-#ifdef RASTERON_H
-	Img_Material(std::string prefix, unsigned w, unsigned h) : width(w), height(h) {
-		data = allocNewAnim(prefix.c_str(), MAX_MATERIAL_PROPERTIES);
-	}
-	~Img_Material() { deleteAnim(data); }
-
-	void addLayer(ref_image_t refImg, MATERIAL_Property property) {
-		if (refImg->height == height && refImg->width == width)
-			addFrameData(data, refImg, property);
-		else return; // error
-		materialImg = Img_Base(createCompositeImg(data));
-	}
-	Rasteron_Image* getLayer(MATERIAL_Property property) const { return getFrame(data, property); }
-	const Img_Base* extractMatImg() const { return &materialImg; }
-
-private:
-	Img_Base materialImg;
-	Rasteron_Animation* data = nullptr; // underlying data
-#endif
-	const unsigned width, height;
 };
 
 // Volume based on slices
@@ -164,8 +147,10 @@ private:
 #ifdef RASTERON_H
 		for (unsigned r = 0; r < heightmap->height; r++)
 			for (unsigned c = 0; c < heightmap->width; c++) {
-				Vec3f pos = Vec3f({ 0.0f, (float)*(heightmap->data + (r * heightmap->width + c)), 0.0f });
-				Vec2f texcoord = Vec2f({ (1.0f / heightmap->width) * c, (1.0f / heightmap->height) * r });
+				float x = (1.0f / heightmap->width) * c;
+				float y = (1.0f / heightmap->height) * r;
+				Vec3f pos = Vec3f({ x, y, (float)*(heightmap->data + (r * heightmap->width + c)) });
+				Vec3f texcoord = Vec3f({ x, y, (float)*(heightmap->data + (r * heightmap->width + c)) });
 				_vertices[(r * heightmap->width + c)] = Geo_Vertex(pos, texcoord);
 			}
 #endif

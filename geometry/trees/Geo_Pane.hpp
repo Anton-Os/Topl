@@ -6,20 +6,26 @@
 
 #define PANE_IMAGE_WIDTH 256
 #define PANE_IMAGE_HEIGHT 256
-#define PANE_IMAGE_COLOR 0xAAFFFFFF // semi-transpertent default color
 #define PANE_Z 0.0f
 
 class Geo_Pane {
 public:
-	Geo_Pane(){
+	Geo_Pane() : _actor(nullptr) {
 #ifdef RASTERON_H
 		_backgroundImg.setColorImage(genRandColor()); // random color assignment
 #endif
 	}
 
+	Geo_Pane(Geo_Actor* a) : _actor(a) {
+#ifdef RASTERON_H
+		_backgroundImg.setColorImage(genRandColor()); // random color assignment
+#endif
+	}
+
+	Geo_Actor* getActor() { return _actor; }
 	Img_Base* getBackground() { return &_backgroundImg; }
 private:
-	// const Geo_Actor* const _actor;
+	Geo_Actor* _actor;
 	Img_Base _backgroundImg;
 };
 

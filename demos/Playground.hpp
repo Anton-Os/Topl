@@ -7,10 +7,10 @@
 #include "primitives/Geo_Conic.hpp"
 #include "primitives/Geo_Extruded.hpp"
 #include "primitives/Geo_Sphere.hpp"
-#include "trees/Geo_Sequence.hpp"
+#include "trees/Geo_Chain.hpp"
 #include "trees/Geo_Grid.hpp"
-#include "trees/Pane.hpp"
-#include "trees/Humanoid.hpp"
+#include "trees/Geo_Pane.hpp"
+#include "trees/Geo_Humanoid.hpp"
 
 #define PLAYGROUND_SPHERES_COUNT 6
 #define PLAYGROUND_PANE_COUNT 9
@@ -78,8 +78,8 @@ private:
 	Geo_Actor sphereActors[PLAYGROUND_SPHERES_COUNT];
 
 	// Overlay Scene Elements
-	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9, PANE_RADIUS, 0.0f);
-	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3, PANE_RADIUS, 0.0f);
+	Geo_RowLayout rowLayout = Geo_RowLayout("Rows", 9, PANE_RADIUS, 0.05f);
+	Geo_BoxedLayout boxedLayout = Geo_BoxedLayout("Boxes", 3, PANE_RADIUS, 0.05f);
 
 	// Detail Scene Elements
 	Geo_ExtrudedTriangle prism = Geo_ExtrudedTriangle(0.2f); 

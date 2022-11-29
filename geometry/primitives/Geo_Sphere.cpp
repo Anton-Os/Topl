@@ -15,7 +15,7 @@ void Geo_Sphere::genVertices() {
 
 			Vec3f pos = Vec3f({ x, y, z });
 			Vec3f normal = Vec3f({ x, y, z });
-			Vec2f texcoord = Vec2f({ x, y });
+			Vec3f texcoord = Vec3f({ x, y, z });
 
 			_vertices[v] = Geo_Vertex(pos, texcoord);
 			v++; // increment to next vertex

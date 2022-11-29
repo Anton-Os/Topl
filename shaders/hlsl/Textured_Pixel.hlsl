@@ -3,8 +3,8 @@
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
 
-// SamplerState areaSampler : register(s2);
 // Texture3D areaTex : register(t2);
+// SamplerState areaSampler : register(s2);
 
 SamplerState customSampler {
 	Filter = MIN_MAG_MIP_LINEAR;
@@ -14,7 +14,7 @@ SamplerState customSampler {
 
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
-	float2 texcoord : TEXCOORD0;
+	float3 texcoord : TEXCOORD0;
 };
 
 // Functions
@@ -33,7 +33,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	uint width;
 	baseTex.GetDimensions(width, height); */
 
-	float4 color = baseTex.Sample(baseSampler, input.texcoord);
+	float4 color = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y));
 	color = switchRB(color);
 	return color;
 }

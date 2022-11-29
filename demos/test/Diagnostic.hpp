@@ -9,14 +9,9 @@
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
-#define ACTOR_COUNT 40000
+#define ACTOR_COUNT 1
 
-struct Diagnostic_TestConfig {
-	Diagnostic_TestConfig(unsigned long* renderIDs, bool* isBuilt) {
-		*renderIDs = 1;
-		*isBuilt = true;
-	}
-
+struct TestConfig {
 	void buildTest(Topl_Renderer* renderer) {
 		renderer->setDrawMode(DRAW_Strip);
 
@@ -27,8 +22,6 @@ struct Diagnostic_TestConfig {
 		renderer->buildScene(&scene);
 	}
 
-	friend class Topl_Renderer;
-
 	Topl_Scene scene;
 	Timer_Ticker ticker;
 
@@ -37,9 +30,9 @@ struct Diagnostic_TestConfig {
 };
 
 // OpenGL Test Renderer
-struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4, public Diagnostic_TestConfig {
+struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4, public TestConfig {
 	Diagnostic_Renderer_GL4(NATIVE_WINDOW window) 
-	: Topl_Renderer_GL4(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt) {
+	: Topl_Renderer_GL4(window), TestConfig() {
 		genPipeline(&pipeline, &vertexShader, &fragmentShader);
 		buildTest(this);
 	}
@@ -54,9 +47,9 @@ struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4, public Diagnostic_Tes
 
 #ifdef _WIN32
 // DirectX Test Renderer
-struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11, public Diagnostic_TestConfig {
+struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11, public TestConfig {
 	Diagnostic_Renderer_Drx11(NATIVE_WINDOW window) 
-	: Topl_Renderer_Drx11(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt) {
+	: Topl_Renderer_Drx11(window), TestConfig() {
 		genPipeline(&pipeline, &vertexShader, &fragmentShader);
 		buildTest(this);
 	}
@@ -72,8 +65,8 @@ struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11, public Diagnostic
 
 #ifdef VULKAN_H
 // Vulkan Test Renderer
-struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan, public Diagnostic_TestConfig {
+struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan, public TestConfig {
 	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)
-	: Topl_Renderer_Vulkan(window), Diagnostic_TestConfig(&_renderIDs, &_isBuilt){}
+	: Topl_Renderer_Vulkan(window), TestConfig(){}
 };
 #endif

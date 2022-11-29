@@ -1,4 +1,4 @@
-#include "trees/Humanoid.hpp"
+#include "trees/Geo_Humanoid.hpp"
 
 static float getSpriteWidth(const Rasteron_Sprite* sprite) {
 	return sprite->bounds.topRight_point[0] * 2;

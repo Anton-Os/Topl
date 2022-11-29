@@ -2,21 +2,21 @@
 
 // Parameters
 
-struct Geo_Sequence_Params {
-	Geo_Sequence_Params() { direction = Vec3f({ 0.1f, 0.0f, 0.0f }); }
-    Geo_Sequence_Params(Vec3f d) { direction = d; }
+struct Geo_Chain_Params {
+	Geo_Chain_Params() { direction = Vec3f({ 0.1f, 0.0f, 0.0f }); }
+    Geo_Chain_Params(Vec3f d) { direction = d; }
     
     Vec3f direction;
 };
 
 // Geometry Sequence
 
-class Geo_Sequence : public Geo_Tree, public Geo_DynamicSet {
+class Geo_Chain : public Geo_Tree, public Geo_DynamicSet {
 public:
-    Geo_Sequence( // Prebake Constructor
+    Geo_Chain( // Prebake Constructor
         const std::string& prefix, 
         const Geo_Actor* geo, 
-        const Geo_Sequence_Params& params,
+        const Geo_Chain_Params& params,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
@@ -28,11 +28,11 @@ public:
         });
     }
 
-    Geo_Sequence( // Config Constructor
+    Geo_Chain( // Config Constructor
         const std::string& prefix, 
         Topl_Scene* scene, 
         const Geo_Actor* geo, 
-        const Geo_Sequence_Params& props,
+        const Geo_Chain_Params& props,
         unsigned count)
     : Geo_Tree(prefix, geo, count),
     Geo_DynamicSet(count){
@@ -48,5 +48,5 @@ public:
     void configure(Topl_Scene* scene) override;
 private:
     Vec3f _origin; // determines starting position for geometry
-    Geo_Sequence_Params _params;
+    Geo_Chain_Params _params;
 };

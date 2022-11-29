@@ -23,6 +23,11 @@ static void callback_e() { Animotion_App::camera.updatePos({ 0.0, 0.0, MOVE_AMOU
 
 #define LOOK_AMOUNT 0.01
 
+Input_CursorRange upRange = Input_CursorRange({ -1.0f, 1.0f }, { 0.8f, 1.0f });
+Input_CursorRange leftRange = Input_CursorRange({ -0.8f, -1.0f }, { -1.0f, 1.0f });
+Input_CursorRange downRange = Input_CursorRange({ -1.0f, 1.0f }, { -0.8f, -1.0f });
+Input_CursorRange rightRange = Input_CursorRange({ 0.8f, 1.0f }, { -1.0f, 1.0f });
+
 static void callback_up(float x, float y) { Animotion_App::camera.updateRotation({ 0.0, LOOK_AMOUNT, 0.0 }); }
 static void callback_left (float x, float y) { Animotion_App::camera.updateRotation({ -LOOK_AMOUNT, 0.0, 0.0 }); }
 static void callback_down(float x, float y) { Animotion_App::camera.updateRotation({ 0.0, -LOOK_AMOUNT, 0.0 }); }

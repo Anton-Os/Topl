@@ -5,7 +5,7 @@
 uniform sampler2D baseTex;
 // uniform sampler3D areaTex;
 
-layout(location = 0) in vec2 texcoord;
+layout(location = 0) in vec3 texcoord;
 
 out vec4 color;
 
@@ -21,7 +21,7 @@ vec4 switchRB(vec4 color){ // switch red and blue color values
 // Main
 
 void main() {
-	color = texture(baseTex, texcoord);
+	color = texture(baseTex, vec2(texcoord.x, texcoord.y));
 	color = switchRB(color);
 
 	if (color.a < 0.5) discard; // quick blending fix

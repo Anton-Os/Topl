@@ -3,14 +3,9 @@
 #include "Flat_Shader.hpp"
 
 #include "primitives/Geo_Sphere.hpp"
-#include "trees/Model.hpp"
+#include "trees/Geo_Model.hpp"
 
 #define MOTION_TIME 3.0
-
-Input_CursorRange upRange = Input_CursorRange({ -1.0f, 1.0f }, { 0.8f, 1.0f });
-Input_CursorRange leftRange = Input_CursorRange({ -0.8f, -1.0f }, { -1.0f, 1.0f });
-Input_CursorRange downRange = Input_CursorRange({ -1.0f, 1.0f }, { -0.8f, -1.0f });
-Input_CursorRange rightRange = Input_CursorRange({ 0.8f, 1.0f }, { -1.0f, 1.0f });
 
 struct Animotion_App : public Topl_App {
     Animotion_App(const char* execPath, APP_Backend backend) 

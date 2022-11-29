@@ -7,24 +7,20 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	Textured_VertexShader(std::string name) : Topl_EntryShader(name) {  }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
-		bytes->clear(); // make sure there is no preexisting data
-
-		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
+		Topl_EntryShader::genRenderBlock(actor, renderID, bytes);
+		appendDataToBytes((uint8*)&_texScroll, sizeof(Vec3f), bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes->clear(); // make sure there is no preexisting data
-
 		appendDataToBytes((uint8*)&_time, sizeof(double), bytes);
-		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
 
 	void setTime(double t) { _time = t; }
 private:
 	double _time = 0.0;
+	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
+	// Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });
 };
 
 struct GL4_Textured_VertexShader : public Textured_VertexShader {

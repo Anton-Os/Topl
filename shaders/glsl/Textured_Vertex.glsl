@@ -3,9 +3,9 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
-	// uint renderID
 	vec3 offset;
 	vec3 rotation;
+	vec3 texScroll; // texture coordinate scrolling
 };
 
 layout(std140, binding = 1) uniform SceneBlock{
@@ -16,9 +16,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec2 texcoord;
+layout(location = 1) in vec3 texcoord;
 
-layout(location = 0) out vec2 texcoord_out;
+layout(location = 0) out vec3 texcoord_out;
 
 // Functions
 
@@ -63,5 +63,5 @@ void main() {
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
-	texcoord_out = texcoord;
+	texcoord_out = texcoord + texScroll;
 }

@@ -1,8 +1,8 @@
-#include "Geo_Sequence.hpp"
+#include "Geo_Chain.hpp"
 
 static std::string genLinkName(unsigned num){ return "link" + std::to_string(num); }
 
-void Geo_Sequence::configure(Topl_Scene* scene){
+void Geo_Chain::configure(Topl_Scene* scene){
     Geo_Actor* prevActor = nullptr;
     Geo_Actor* actor = nullptr;
     

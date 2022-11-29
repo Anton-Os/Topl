@@ -11,15 +11,15 @@ enum VERTEX_Attrib { VERTEX_Pos, VERTEX_Normal, VERTEX_Texcoord };
 struct Geo_Vertex {
 	Geo_Vertex() {} // empty constructor
 	Geo_Vertex(Vec3f p) { // position constructor
-		position = p; texcoord = Vec2f({ 0.0, 0.0 });
+		position = p; texcoord = Vec3f({ 0.0, 0.0, 0.0 });
 	}
-	Geo_Vertex(Vec3f p, Vec2f t) {// full constructor
+	Geo_Vertex(Vec3f p, Vec3f t) {// full constructor
 		position = p; texcoord = t;
 	}
 
 	Vec3f position;
 	// Vec3f normal;
-	Vec2f texcoord;
+	Vec3f texcoord;
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;
@@ -92,6 +92,12 @@ public:
 protected:
 	virtual void genVertices() = 0;
 	virtual void genIndices() = 0;
+
+	static Vec3f getTexCoord(unsigned v) { // get default texcoord from vertex number
+		float x = ((v - 1) % 4 == 0 || (v - 1) % 4 == 1)? 1.0f : 0.0f;
+		float y = ((v - 1) % 4 == 1 || (v - 1) % 4 == 2) ? 1.0f : 0.0f;
+		return Vec3f({ x, y, DEFAULT_Z });
+	}
 
 	std::pair<bool, bool> _renderStatus = std::make_pair(false, false); // checks for vertex generation
 	std::vector<Geo_Vertex> _vertices;

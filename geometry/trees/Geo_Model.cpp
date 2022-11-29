@@ -1,4 +1,4 @@
-#include "Model.hpp"
+#include "Geo_Model.hpp"
 
 namespace _Model {
     std::string genNodeName(unsigned num){ return "node" + std::to_string(num); }

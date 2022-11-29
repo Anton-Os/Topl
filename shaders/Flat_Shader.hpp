@@ -14,22 +14,15 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	Flat_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
-		bytes->clear(); // make sure there is no preexisting data
-
 		Vec4f color = genFlatColor(renderID);
-	
+
 		alignDataToBytes((uint8*)&color, sizeof(Vec4f), NO_PADDING, bytes);
-		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
+		Topl_EntryShader::genRenderBlock(actor, renderID, bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes->clear(); // make sure there is no preexisting data
-
 		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
-		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
 protected:
 	Vec4f genFlatColor(unsigned renderID) const {

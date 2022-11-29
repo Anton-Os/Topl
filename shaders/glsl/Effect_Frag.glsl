@@ -16,37 +16,38 @@ out vec4 color;
 
 // Functions
 
-vec3 cursorDist(vec2 cursorPos, vec2 pixelCoord){
-	float red = 1.0f - (distance(cursorPos, pixelCoord) * 5); // receding color from center
-	float green = (distance(cursorPos, pixelCoord) < 0.03) ? 1.0 : 0.0; // small acute bullseye center
-	float blue = (distance(cursorPos, pixelCoord) - 0.1) / 3; // increasing color from center
+vec3 bullseye(vec2 cursorPos, vec2 coord){
+	float red = pow(1 - min(abs(cursorPos.x - coord.x), abs(cursorPos.y - coord.y)), 20); // crosshairs
+	float green = tan(distance(cursorPos, coord) * 50); // spirals
+	float blue = 1 / distance(cursorPos, coord); // gradient
 	return vec3(red, green, blue);
 }
 
-vec3 mandlebrot(uvec2 screenRes, vec2 pixelCoord){
-	const double size = 3.0f;
-	const uint max_iters = 1000;
-	
+#define FRACTAL_SIZE 3.0 // max fractal size
+#define FRACTAL_ITER 1000 // max fractal iteratons
+
+// Mandlebrot Set
+vec3 mandlebrot(uvec2 screenRes, vec2 coord){
 	double x = 0; double y = 0;
-	uint iter = 0;
-	while(x * x + y * y <= size && iter < max_iters){
-		double temp = (x * x) - (y * y) + pixelCoord.x;
-		y = (2 * x * y) + pixelCoord.y;
+	uint i = 0; // iteration count
+
+	while(x * x + y * y <= FRACTAL_SIZE && i < FRACTAL_ITER){
+		double temp = (x * x) - (y * y) + coord.x;
+		y = (2 * x * y) + coord.y;
 		x = temp;
-		iter++;
+		i++;
 	}
 
-	// Custom Colors
-	if(iter < max_iters) return vec3(max(0.03f * iter, 0.5f), 0.0f, 1.0f / iter);
-	else return vec3(0.0f, 0.0f, 0.0f);
+	if(i < FRACTAL_ITER) return vec3(0.05f * i, sin(i), 1.0f / i); // custom colors outside set
+	else return vec3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
 // Main
 
 void main() {
-	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f;
-	vec2 pixelCoordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // hard values
+	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
+	vec2 coordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
-	if (mode == 1) color = vec4(mandlebrot(screenRes, pixelCoordsAdj + vec2(-0.25f, 0.5f)), 1.0f); // special mode
-	else color = vec4(cursorDist(cursorPosAdj, pixelCoordsAdj), 1.0f); // cursor mode // default
+	if (mode == 1) color = vec4(mandlebrot(screenRes, (coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
+	else color = vec4(bullseye(cursorPosAdj, coordsAdj), 1.0f); // cursor mode // default
 }

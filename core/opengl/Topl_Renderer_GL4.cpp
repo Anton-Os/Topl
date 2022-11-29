@@ -107,9 +107,6 @@ static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc) {
 	*hglrc = wglCreateContext(*windowDC);
 	wglMakeCurrent(*windowDC, *hglrc);
 }
-
-static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
-
 #elif defined(__linux__)
 static void init_linux(GLXContext graphicsContext, Display* display, Window* window) {
 	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -118,8 +115,6 @@ static void init_linux(GLXContext graphicsContext, Display* display, Window* win
 	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
 	glXMakeCurrent(display, *window, graphicsContext);
 }
-
-static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
 #endif
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
@@ -151,14 +146,23 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 
 void Topl_Renderer_GL4::clearView() {
 	glClearColor(CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA);
-	// glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
-	if (viewport != nullptr) glViewport(viewport->xOffset, viewport->yOffset, viewport->width, viewport->height);
+	unsigned x = viewport->xOffset; // -(viewport->xOffset - (viewport->width / 2))
+	unsigned y = -viewport->yOffset - viewport->height + Platform::getViewportHeight(_platformCtx.window);
+
+	if (viewport != nullptr)
+		glViewport(x, y, viewport->width, viewport->height);
 	else _isBuilt = false; // Error
 }
+
+#ifdef _WIN32
+static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
+#elif defined(__linux__)
+static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
+#endif
 
 void Topl_Renderer_GL4::switchFramebuff() {
 	if (_isDrawn) {
@@ -175,6 +179,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
 	// scene block buffer generation
+	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
 	if (!shaderBlockData.empty()) {
 		_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
@@ -194,8 +199,9 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		Geo_Renderable* renderObj = (Geo_Renderable*)actor->getRenderable();
 
 		// render block buffer generation
+		shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		if (!shaderBlockData.empty()) {
-			_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
@@ -271,6 +277,7 @@ void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned i
 		}
 	}
 
+	// glActiveTexture(GL_TEXTURE0 + property); // include for multi-texture support
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
 	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
@@ -315,29 +322,31 @@ void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned id) {
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
-	blockBytes_t blockBytes;
+	blockBytes_t shaderBlockData;
 	Buffer_GL4* targetBuff = nullptr;
 
 	if (_buffers.front().renderID == SCENE_RENDER_ID) {
-		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes);
+		shaderBlockData.clear();
+		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
-		unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
 		if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
 		else {
 			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-			unsigned blockSize = sizeof(uint8_t) * blockBytes.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBytes.data(), GL_STATIC_DRAW);
+			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		}
 	}
 
@@ -360,7 +369,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 	if (!_buffers.empty()) {
 		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
 			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-		else { // Drawable Target
+		else if (renderID != SCENE_RENDER_ID) { // Drawable Target
 			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
 				if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
 

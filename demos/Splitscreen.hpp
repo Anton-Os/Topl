@@ -4,6 +4,11 @@
 
 #include "primitives/Geo_Flat.hpp"
 
+Topl_Viewport viewport1 = Topl_Viewport(0, TOPL_WIN_HEIGHT / 2, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2);
+Topl_Viewport viewport2 = Topl_Viewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2);
+// Topl_Viewport viewport1 = Topl_Viewport(TOPL_WIN_WIDTH / 2, 0, TOPL_WIN_WIDTH / 2, TOPL_WIN_HEIGHT);
+// Topl_Viewport viewport2 = Topl_Viewport(0, 0, TOPL_WIN_WIDTH / 2, TOPL_WIN_HEIGHT);
+
 struct Splitscreen_App : public Topl_App {
     Splitscreen_App(const char* execPath, APP_Backend backend) 
 		: Topl_App(execPath, "Splitscreen", backend){}
@@ -14,10 +19,6 @@ private:
 	// Configurations
 
 	Topl_Scene scene;
-	Topl_Viewport viewports[2] = {
-		Topl_Viewport(0, TOPL_WIN_HEIGHT / 2, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // bottom-half pane
-		Topl_Viewport(0, 0, TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT / 2), // top-half pane
-	};
 
 	// Geometries and Drawable Objects
 

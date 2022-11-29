@@ -37,21 +37,21 @@ list(APPEND support_src
 
 list(APPEND geometry_src
     geometry/ShapesGen.cpp
-
+	# primitives
     geometry/primitives/Geo_Flat.cpp
     geometry/primitives/Geo_Conic.cpp
     geometry/primitives/Geo_Extruded.cpp
     geometry/primitives/Geo_Sphere.cpp
-
+	# trees
     geometry/Geo_Tree.cpp
-	geometry/trees/Geo_Sequence.cpp
+	geometry/trees/Geo_Chain.cpp
     geometry/trees/Geo_Grid.cpp
-    geometry/trees/Pane.cpp
-    geometry/trees/Humanoid.cpp
+    geometry/trees/Geo_Pane.cpp
+    geometry/trees/Geo_Humanoid.cpp
 )
 if(Assimp_FOUND)
     list(APPEND geometry_src
-        geometry/trees/Model.cpp
+        geometry/trees/Geo_Model.cpp
         geometry/primitives/Geo_Node.cpp
     )
 endif()

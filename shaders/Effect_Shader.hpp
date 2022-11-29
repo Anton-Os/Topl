@@ -1,7 +1,7 @@
 #include "Topl_Shader_Pipeline.h"
 
 #define EFFECT_MODE_CURSOR 0
-#define EFFECT_MODE_SPECIAL 1
+#define EFFECT_MODE_FRACTAL 1
 
 // Vertex Shaders
 
@@ -11,13 +11,10 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
-		bytes->clear(); // make sure there is no preexisting data
 		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		bytes->clear(); // make sure there is no preexisting data
-
 		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 	

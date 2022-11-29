@@ -10,14 +10,7 @@ void Geo_Extruded::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
-
-		Vec2f texcoord;
-		switch ((v - 1) % 4) {
-			case 0: texcoord = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: texcoord = Vec2f({ 1.0f, 1.0f }); break; // top right
-			case 2: texcoord = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: texcoord = Vec2f({ 0.0f, 0.0f }); break; // top left
-		}
+		Vec3f texcoord = getTexCoord(v);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
@@ -31,14 +24,7 @@ void Geo_Extruded::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
-
-		Vec2f texcoord;
-		switch ((v - 1) % 4) {
-		case 0: texcoord = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-		case 1: texcoord = Vec2f({ 1.0f, 1.0f }); break; // top right
-		case 2: texcoord = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-		case 3: texcoord = Vec2f({ 0.0f, 0.0f }); break; // top left
-		}
+		Vec3f texcoord = getTexCoord(v);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}

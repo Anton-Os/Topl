@@ -37,7 +37,7 @@ void Geo_Mesh::genVertices() {
 	for (std::vector<const aiMesh*>::const_iterator mesh = _assimpMeshes.cbegin(); mesh < _assimpMeshes.cend(); mesh++)
 		for (unsigned v = 0; v < _vertices.size(); v++) {
 			Vec3f pos, normal;
-			Vec2f texcoord;
+			Vec3f texcoord;
 			if ((*mesh)->HasPositions()) {
 				aiVector3D* attrib = (*mesh)->mVertices + v;
 				// pos = Vec3f({ attrib->x, attrib->y, attrib->z });
@@ -49,7 +49,7 @@ void Geo_Mesh::genVertices() {
 			}
 			if ((*mesh)->HasTextureCoords(0)) {
 				aiVector3D* attrib = *((*mesh)->mTextureCoords) + v;
-				texcoord = Vec2f({ attrib->x, attrib->y });
+				texcoord = Vec3f({ attrib->x, attrib->y, attrib->z });
 			}
 
 			_vertices[v] = Geo_Vertex(pos, texcoord);

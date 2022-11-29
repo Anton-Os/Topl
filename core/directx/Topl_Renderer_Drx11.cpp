@@ -297,6 +297,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	}
 
 	// scene block buffer generation
+	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
 	if (!shaderBlockData.empty()) {
 		_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
@@ -312,6 +313,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 		Geo_Renderable* renderObj = (Geo_Renderable*)actor->getRenderable();
 
 		// render block buffer generation
+		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		if (!shaderBlockData.empty()) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
@@ -485,26 +487,28 @@ void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned render
 
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
-	blockBytes_t blockBytes;
+	blockBytes_t shaderBlockData;
 	Buffer_Drx11* renderBlockBuff = nullptr;
 
 	if (_buffers.front().renderID == SCENE_RENDER_ID) {
-		_entryShader->genSceneBlock(scene, _activeCamera, &blockBytes); 
-		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &blockBytes);
+		shaderBlockData.clear();
+		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
+		Drx11::createBlockBuff(&_device, &_buffers.front().buffer, &shaderBlockData);
 	}
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		_entryShader->genRenderBlock(actor, renderID, &blockBytes);
+		shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
 		for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
 				renderBlockBuff = &(*buff);
 				break;
 			}
 
-		if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &blockBytes);
+		if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
 		if (!_isBuilt) return; // Error
 	}
 }
@@ -529,7 +533,7 @@ void Topl_Renderer_Drx11::drawMode() {
 				 _deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 			 }
 		 }
-		 else { // Drawable Target
+		 else if(renderID != SCENE_RENDER_ID) { // Drawable Target
 			 Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
 			 Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
 			 Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);

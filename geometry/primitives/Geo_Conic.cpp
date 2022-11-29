@@ -1,8 +1,8 @@
 #include "Geo_Conic.hpp"
 
 void Geo_Conic::genVertices() {
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + Z_INCREMENT }, { 0.5f, 0.5f }); // origin
-	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f }); // apex
+	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + Z_INCREMENT }, { 0.5f, 0.5f, DEFAULT_Z }); // origin
+	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
 
 	for (unsigned v = 1; v < _vertices.size() - 1; v++) {
 		Vec3f pos = Vec3f({ 
@@ -12,14 +12,7 @@ void Geo_Conic::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
-
-		Vec2f texcoord;
-		switch ((v - 1) % 4) {
-			case 0: texcoord = Vec2f({ 1.0f, 0.0f }); break; // bottom left
-			case 1: texcoord = Vec2f({ 1.0f, 1.0f }); break; // top right
-			case 2: texcoord = Vec2f({ 0.0f, 1.0f }); break; // bottom right
-			case 3: texcoord = Vec2f({ 0.0f, 0.0f }); break; // top left
-		}
+		Vec3f texcoord = getTexCoord(v);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}

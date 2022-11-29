@@ -6,7 +6,7 @@
 #define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
-#define FRAME_AVG_TIME 500
+#define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
 
 // Diagnose Main Loop
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	else if (APP_BACKEND == APP_Vulkan) renderer = new Diagnostic_Renderer_Vulkan(platform.getParentWindow());
 
 	Timer_Ticker _ticker;
-	double frameAvg = 0.0;
+	double frameTotal = 0.0;
 	while(1){
 		// platform.handleEvents(DISABLE_CURSOR_UPDATE);
 		
@@ -47,9 +47,10 @@ int main(int argc, char** argv) {
 		renderer->switchFramebuff();
 		double f4 = _ticker.getRelMillisecs();
 
-		if(f1 + f2 + f3 + f4 > FRAME_SPIKE_TIME)
+		frameTotal += f1 + f2 + f3 + f4;
+		if(f1 + f2 + f3 + f4 > frameTotal / renderer->getFrameCount())
 			std::cout << "Frame times: " << f1 << ", " << f2 << ", " << f3 << ", " << f4 << ", " 
-			<< " Total: " << f1 + f2 + f3 + f4 << std::endl;
+			<< " Total: " << f1 + f2 + f3 + f4 << " | Average: " << frameTotal / renderer->getFrameCount() << std::endl;
 	}
 
 	if(renderer != nullptr) delete(renderer);
