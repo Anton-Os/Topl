@@ -10,22 +10,23 @@
 
 class Geo_Pane {
 public:
-	Geo_Pane() : _actor(nullptr) {
+	Geo_Pane() {
 #ifdef RASTERON_H
 		_backgroundImg.setColorImage(genRandColor()); // random color assignment
 #endif
 	}
 
-	Geo_Pane(Geo_Actor* a) : _actor(a) {
+	Geo_Pane(const Geo_Actor * a) {
+		actor = a;
 #ifdef RASTERON_H
 		_backgroundImg.setColorImage(genRandColor()); // random color assignment
 #endif
 	}
 
-	Geo_Actor* getActor() { return _actor; }
 	Img_Base* getBackground() { return &_backgroundImg; }
+
+	const Geo_Actor* actor;
 private:
-	Geo_Actor* _actor;
 	Img_Base _backgroundImg;
 };
 
@@ -63,8 +64,10 @@ public:
 		resize(rows, columns);
 	}
 
-	Geo_Pane* getRootPane(){ return &_rootPane; }
-	Geo_Pane* getChildPane(unsigned index);
+	const Geo_Pane* getRootPane(){ return &_rootPane; }
+	Img_Base* getRootBackground() { return _rootPane.getBackground(); }
+	const Geo_Pane* getChildPane(unsigned index) { return &_panes[index % (_rows * _columns)]; }
+	Img_Base* getChildBackground(unsigned index) { return _panes[index % (_rows * _columns)].getBackground(); }
 	unsigned getRowCount(){ return _rows; }
 	unsigned getColCount(){ return _columns; }
 

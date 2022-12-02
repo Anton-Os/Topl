@@ -32,20 +32,20 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     return _isBuilt;
 }
 
-void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
+/* void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
     _drawMode = mode;
     drawMode(); // sets the proper draw mode
-}
+} */
 
 bool Topl_Renderer::renderAll() {
 	if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
 		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
-		_isDrawn = false;
 		return false; // error
 	}
-	else _isDrawn = true;
+	else _isPresented = false;
 
 	// Render All Targets in Sequence
+
 	renderTarget(SCENE_RENDER_ID); // first target is scene block data
 	if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
 		for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
@@ -53,15 +53,14 @@ bool Topl_Renderer::renderAll() {
 		for (unsigned r = _renderIDs; r > 0; r--) renderTarget(r);
 
 	_frameIDs++; // increment frame counter
-	return _isDrawn;
+	return true;
 }
 
 bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 	if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
 		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
-        _isDrawn = false;
         return false; // error
-    } else _isDrawn = true;
+    } else _isPresented = false;
 
 	// Render Scene Targets in Sequence
 
@@ -82,7 +81,12 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 	}
 
     _frameIDs++; // increment frame counter
-    return _isDrawn;
+    return true;
+}
+
+void Topl_Renderer::present() {
+	static Timer_Ticker ticker;
+	swapBuffers(ticker.getRelMillisecs());
 }
 
 void Topl_Renderer::texturize(const Topl_Scene* scene) {
@@ -92,11 +96,17 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
 		if (texture != nullptr) attachTexture(texture, renderID);
-		// else logMessage(MESSAGE_Exclaim, "Texure cannot be null!");
+		// else return logMessage(MESSAGE_Exclaim, "Null texture encountered!");
 
-		const Img_Volume* material = scene->getMaterial(actor->getName());
-		if (material != nullptr) attachVolume(material, renderID);
-		// else logMessage(MESSAGE_Exclaim, "Material cannot be null!");
+		const Img_Material* material = scene->getMaterialTex(actor->getName());
+		if (material != nullptr)
+			for (unsigned p = 0; p < MAX_MATERIAL_PROPERTIES; p++)
+				attachTextureUnit(material->getTexUnit((MATERIAL_Property)p)->getImage(), renderID, p);
+		// else return logMessage(MESSAGE_Exclaim, "Null material encountered!");
+
+		const Img_Volume* volume = scene->getVolumeTex(actor->getName());
+		if (volume != nullptr) attachVolume(volume, renderID);
+		// else return logMessage(MESSAGE_Exclaim, "Null volume encountered!");
 	}
 }
 

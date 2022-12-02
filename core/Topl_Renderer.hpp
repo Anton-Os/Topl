@@ -1,8 +1,8 @@
 #ifndef TOPL_RENDERER_H
 
-#include "native_os_def.h"
+#include "Platform.hpp"
 
-#include "Topl_Shader_Pipeline.h"
+#include "Topl_Pipeline.hpp"
 
 #include "Topl_Scene.hpp"
 
@@ -18,7 +18,7 @@ struct RenderTarget {
 
 // Buffer
 
-#define BUFFERS_PER_RENDERTARGET 3 // each render target has fixed number buffers, see BUFF_Type below
+#define BUFFERS_PER_RENDERTARGET 3
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
@@ -37,7 +37,7 @@ struct Buffer : public RenderTarget {
 
 // Texture
 
-enum TEX_Frmt { TEX_1D, TEX_2D, TEX_Array, TEX_3D };
+enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
 struct Texture : public RenderTarget {
@@ -45,10 +45,18 @@ struct Texture : public RenderTarget {
 	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
 		format = f; 
         mode = m;
+		binding = MATERIAL_Albedo;
 	}
+
+	Texture(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
+		format = f;
+		mode = m;
+		binding = b;
+	}
+
     enum TEX_Frmt format;
 	enum TEX_Mode mode;
-	// unsigned short property; // for multiple textures
+	unsigned binding;
 };
 
 // Viewport
@@ -91,6 +99,8 @@ enum DRAW_Mode {
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 #define FIRST_BUILD_CALL 0
+#define FRAME_RATE_SECS 1.0 / 60.0
+#define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000
 
 class Topl_Renderer {
 public:
@@ -100,14 +110,14 @@ public:
     void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
-    void setDrawMode(enum DRAW_Mode mode);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
 	bool renderAll();
     bool renderScene(const Topl_Scene* scene);
+	void present(); // present scene by swapping front and back buffers
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
-    virtual void switchFramebuff() = 0; // switches front and back buffers
-	void texturize(const Topl_Scene* scene); // loads all textures
+	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
+	void texturize(const Topl_Scene* scene); // reloads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
 #ifdef RASTERON_H
     virtual Img_Base frame() = 0;
@@ -122,27 +132,25 @@ protected:
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by user
     Topl_Viewport _defaultViewport = Topl_Viewport();
-    // unsigned short _viewportCount = 0;
     bool _isBuilt = false; // switch to true when elements of the scene are built
     bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
-    bool _isDrawn = false; // true after draw call, false after swap
+    bool _isPresented = false; // true after draw call, false after buffer swap
 	bool _isDrawInOrder = REGULAR_DRAW_ORDER; // defines order of render targets during draw call
     unsigned long _renderIDs = 0; // id for each render target
     std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
 
-	Img_Base _frameImage; // internal frame
-	Timer_Ticker _ticker; // internal timer
+	Img_Base _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
-    virtual void drawMode() = 0;
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
-	// virtual void postprocess(Rasteron_Image* framebuffer) = 0; // modify output image
+	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-	virtual void attachTexture(const Rasteron_Image* image, unsigned id) = 0;
-	virtual void attachVolume(const Img_Volume* volume, unsigned id) = 0;
+	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID) { attachTextureUnit(image, renderID, MATERIAL_Albedo); }
+	virtual void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
+	virtual void attachVolume(const Img_Volume* volume, unsigned renderID) = 0;
 #endif
 };
 

@@ -2,7 +2,7 @@
 
 // Buffer
 
-#define GL4_BUFFER_MAX 4096
+#define GL4_BUFFER_MAX 10000
 struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
@@ -12,7 +12,7 @@ struct Buffer_GL4 : public Buffer {
 
 // Vertex Array Object
 
-#define GL4_VERTEX_ARRAY_MAX 4096
+#define GL4_VERTEX_ARRAY_MAX 10000
 struct VertexArray_GL4 : public RenderTarget {
 	VertexArray_GL4() : RenderTarget() {}
 	VertexArray_GL4(unsigned id, GLuint v) : RenderTarget(id){ vao = v; }
@@ -22,10 +22,12 @@ struct VertexArray_GL4 : public RenderTarget {
 
 // Texture
 
-#define GL4_TEXTURE_BINDINGS_MAX 4096
+#define GL4_TEXTURE_BINDINGS_MAX 10000
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
+	Texture_GL4(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, b, f, m) { texture = t; }
+
 	GLuint texture;
 };
 
@@ -58,8 +60,8 @@ public:
 
 	void clearView() override;
 	void setViewport(const Topl_Viewport* viewport) override;
-	void switchFramebuff() override;
-	void build(const Topl_Scene* scene) override;
+	void swapBuffers(double frameTime) override;
+	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
@@ -69,11 +71,12 @@ public:
 #endif
 protected:
   	void init(NATIVE_WINDOW window) override;
+	void build(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene) override;
-	void drawMode(void) override;
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
-	void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);

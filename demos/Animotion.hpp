@@ -12,7 +12,7 @@ struct Animotion_App : public Topl_App {
 		: Topl_App(execPath, "Animotion", backend){}
 
 	void init() override;
-	void loop(unsigned long frame) override;
+	void loop(double frameTime) override;
 
 	static Topl_Camera camera;
 private:

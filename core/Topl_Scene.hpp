@@ -71,18 +71,22 @@ class Topl_Scene {
 public:
 	Topl_Scene() { _ticker.reset(); } // Empty Constructor
 	Topl_Scene(const std::string& filePath) { // File Load Constructor
-		_ticker.reset();
-		// TODO: Add loading logic here
+		// loadFromFile(filePath); 
 	}
 	~Topl_Scene() {}
 
-	// Statics Section
+	void saveToFile(const std::string& fileName); // saves scene data to .tp file
+	void loadFromFile(const std::string& filePath); // loads scene data from .tp file
+
+	// Static Operations
+
 	void addGeometry(Geo_Actor* actor); // add geometry
-	void addGeometry(const std::string& name, Geo_Actor* actor); // add geometry and override name
-	void addLight(Topl_Light* ls){ _lightSrc.push_back(ls); }
+	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
+	void addLight(const Topl_Light* l){ _lightSrc.push_back(l); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
-	void addVolTexture(const std::string& name, const Img_Volume* volume);
+	void addMaterialTex(const std::string& name, const Img_Material* material);
+	void addVolumeTex(const std::string& name, const Img_Volume* volume);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
@@ -92,26 +96,24 @@ public:
 #ifdef RASTERON_H
 	unsigned getTexCount() const { return _actorTex_map.size(); }
 	const Rasteron_Image* getTexture(const std::string& name) const;
-	unsigned getMaterialCount() const { return _actorTex3D_map.size(); }
-	const Img_Volume* getMaterial(const std::string& name) const;
+	unsigned getMatCount() const { return _actorTex2D_map.size(); }
+	const Img_Material* getMaterialTex(const std::string& name) const;
+	unsigned getVolCount() const { return _actorTex3D_map.size(); }
+	const Img_Volume* getVolumeTex(const std::string& name) const;
 #endif
 
-	// Dynamics Section
+	// Dynaimc Operations
 	void addForce(const std::string& name, const Vec3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
 	void resolvePhysics(); // iterates through all physics objects and applies forces 
-
-	void saveToFile(const std::string& fileName); // saves scene data to .tp file
 private:
-	void loadFromFile(const std::string& filePath); // loads scene data from .tp file
-
-	// Topl_Camera _camera;
-	std::vector<Topl_Light*> _lightSrc; // stores all light sources
+	std::vector<const Topl_Light*> _lightSrc; // stores all light sources
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Rasteron_Image*> _actorTex_map; // associates geometry actor to single texture
+	std::map<Geo_Actor*, const Img_Material*> _actorTex2D_map; // associates geometry actor to multiple 2D textures
 	std::map<Geo_Actor*, const Img_Volume*> _actorTex3D_map; // associates geometry actor to volumetric texture
 #endif
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries

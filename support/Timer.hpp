@@ -17,20 +17,20 @@ typedef void (*periodicCallback)(void);
 
 class Timer_PeriodicEvent {
 public:
-	Timer_PeriodicEvent(double period, periodicCallback callback) : periodMillisec(period){
+	Timer_PeriodicEvent(double period, periodicCallback callback) : periodMillisec(period) {
 		callbackTrigger = callback;
 	}
 	void addTime(double micros){
-		_secsElapsed += static_cast<double>(micros / MICROSEC_SEC_CONVERT);
-		while(_secsElapsed >= static_cast<double>(periodMillisec / MICROSEC_MILLI_CONVERT)){
-			_secsElapsed -= static_cast<double>(periodMillisec / MICROSEC_MILLI_CONVERT);
+		_millisecsElapsed += static_cast<double>(micros / MICROSEC_MILLI_CONVERT);
+		while(_millisecsElapsed >= periodMillisec){
+			_millisecsElapsed -= periodMillisec;
 			callbackTrigger();
 		}
 	}
 private:
 	const double periodMillisec;
 	periodicCallback callbackTrigger;
-	double _secsElapsed = 0.0;
+	double _millisecsElapsed = 0.0;
 };
 
 // Recurring Event
@@ -43,12 +43,12 @@ public:
 		callbackTrigger = callback;
 	}
 	void addTime(unsigned micros){
-		_secsElapsed += static_cast<double>(micros / MICROSEC_SEC_CONVERT); // conversion from microsecs to seconds
-		callbackTrigger(_secsElapsed);
+		_millisecsElapsed += static_cast<double>(micros / MICROSEC_MILLI_CONVERT); // conversion from microsecs to seconds
+		callbackTrigger(_millisecsElapsed);
 	}
 private:
 	recurringCallback callbackTrigger;
-	double _secsElapsed = 0.0;
+	double _millisecsElapsed = 0.0;
 };
 
 // Timer

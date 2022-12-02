@@ -16,21 +16,12 @@ Topl_App::~Topl_App() {
 
 void Topl_App::run(){
     init();
-	double loopInterval = LOOP_RESET;
 
-    while (1) { 
-        _ticker.updateTimer();
-		loopInterval += _ticker.getRelMillisecs();
+    while (1) {  
+		_platform->handleEvents(ENABLE_CURSOR_UPDATE);
 
-		if (loopInterval > LOOP_INTERVAL) {
-			_platform->handleEvents(ENABLE_CURSOR_UPDATE);
-
-			_renderer->clearView(); // clears view to solid color
-			loop(_renderer->getFrameCount()); // performs draws and updating
-			_renderer->switchFramebuff(); // switches front and back buffers
-
-			loopInterval = LOOP_RESET; // reset value 
-		}
-		else continue;
+		_renderer->clearView(); // clears view to solid color
+		loop(_ticker.getRelMillisecs()); // performs draws and updating
+		_renderer->present(); // switches front and back buffers
     }
 }

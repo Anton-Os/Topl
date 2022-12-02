@@ -15,16 +15,19 @@ struct Topl_Pipeline_Vulkan : public Topl_Pipeline {
 	Topl_Pipeline_Vulkan() : Topl_Pipeline(){}
 };
 
+#define MAX_VULKAN_NAMES 50
+
 class Topl_Renderer_Vulkan : public Topl_Renderer {
 public:
 	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(window){ 
 		init(window); 
 	}
-	~Topl_Renderer_Vulkan(){}
+	~Topl_Renderer_Vulkan();
 
 	void clearView() override;
 	void setViewport(const Topl_Viewport* viewport) override;
-	void switchFramebuff() override;
+	void swapBuffers(double frameTime) override;
+	void setDrawMode(enum DRAW_Mode mode) override;
 	void build(const Topl_Scene* scene) override;
 
 	void setPipeline(Topl_Pipeline_Vulkan* pipeline);
@@ -36,12 +39,16 @@ public:
 protected:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
-	void drawMode(void) override;
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
-	void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;
+
+	VkInstance _instance = VkInstance();
+	std::vector<VkExtensionProperties> _vulkanExtensions;
+	std::vector<VkLayerProperties> _vulkanLayers;
 };

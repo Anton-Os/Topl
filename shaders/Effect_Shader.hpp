@@ -1,4 +1,4 @@
-#include "Topl_Shader_Pipeline.h"
+#include "Topl_Pipeline.hpp"
 
 #define EFFECT_MODE_CURSOR 0
 #define EFFECT_MODE_FRACTAL 1

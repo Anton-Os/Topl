@@ -21,7 +21,7 @@ static void callback_d() { Animotion_App::camera.updatePos({ MOVE_AMOUNT, 0.0, 0
 static void callback_q() { Animotion_App::camera.updatePos({ 0.0, 0.0, -MOVE_AMOUNT }); }
 static void callback_e() { Animotion_App::camera.updatePos({ 0.0, 0.0, MOVE_AMOUNT }); }
 
-#define LOOK_AMOUNT 0.01
+#define LOOK_AMOUNT 0.001
 
 Input_CursorRange upRange = Input_CursorRange({ -1.0f, 1.0f }, { 0.8f, 1.0f });
 Input_CursorRange leftRange = Input_CursorRange({ -0.8f, -1.0f }, { -1.0f, 1.0f });
@@ -81,10 +81,9 @@ void Animotion_App::init() {
 
 	_renderer->buildScene(&scene);
 	_renderer->setCamera(&camera);
-	_renderer->setDrawMode(DRAW_Triangles);
 }
 
-void Animotion_App::loop(unsigned long frame) {
+void Animotion_App::loop(double frameTime) {
 	_renderer->updateScene(&scene);
 	_renderer->renderScene(&scene);
 }

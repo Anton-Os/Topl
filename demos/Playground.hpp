@@ -54,7 +54,7 @@ struct Playground_App : public Topl_App {
 		: Topl_App(execPath, "Playground", backend){}
 
 	void init() override;
-	void loop(unsigned long frame) override;
+	void loop(double frameTime) override;
 
 	// Configurations
 
@@ -86,18 +86,12 @@ private:
 	Geo_ConicCircle cone = Geo_ConicCircle(0.2f, Vec3f({ 0.1f, 0.1f, 0.3f }));
 	Geo_Actor prismActor = Geo_Actor((Geo_Renderable*)&prism);
 	Geo_Actor coneActor = Geo_Actor((Geo_Renderable*)&cone);
-	// Geo_Grid_Params gridParams = Geo_Grid_Params(std::make_pair(10, 0.25f), std::make_pair(1, 0.0f), std::make_pair(10, 0.1f));
-	// Geo_Grid grid = Geo_Grid("grid", &coneActor1, gridParams);
 
 	// Textures, Materials, Heightmaps
 
 	Img_Base boxedPaneImages[PLAYGROUND_PANE_COUNT];
 	std::string fontStr = std::string(Topl_App::getFontsPath() + "MajorMonoDisplay-Regular.ttf");
 	Rasteron_Text boxedTextObjs[PLAYGROUND_PANE_COUNT];
-	// Img_Volume volume = Img_Volume("volume", 4096, 4096, 256);
-	/* Img_Base heightmapImage = Img_Base(Topl_App::getImagesPath() + "BigGrid.png");
-	Img_Heightmap heightmap = Img_Heightmap(heightmapImage.getImage());
-	Geo_Actor heightmapActor = Geo_Actor((Geo_Renderable*)&heightmap); */
 
 	// Shaders and Pipelines
 

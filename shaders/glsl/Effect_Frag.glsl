@@ -12,7 +12,7 @@ layout(std140, binding = 1) uniform SceneBlock{
 	uint mode;
 };
 
-out vec4 color;
+layout(location = 0) out vec4 color;
 
 // Functions
 

@@ -14,7 +14,7 @@ struct Splitscreen_App : public Topl_App {
 		: Topl_App(execPath, "Splitscreen", backend){}
 
 	void init() override;
-	void loop(unsigned long frame) override;
+	void loop(double frameTime) override;
 private:
 	// Configurations
 

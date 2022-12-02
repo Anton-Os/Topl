@@ -1,7 +1,7 @@
 #include "Geo_Extruded.hpp"
 
 void Geo_Extruded::genVertices() {
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5 });
+	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });
 	for (unsigned v = 1; v < _vertices.size() / 2; v++) { // front face vertices
 		Vec3f pos = Vec3f({
 			(float)sin(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
@@ -10,12 +10,12 @@ void Geo_Extruded::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
-		Vec3f texcoord = getTexCoord(v);
+		Vec3f texcoord = getTexCoord(v, 0.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
 
-	_vertices[_vertices.size() / 2] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z - (_depth / 2) }, { 0.5, 0.5 });
+	_vertices[_vertices.size() / 2] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z - (_depth / 2) }, { 0.5, 0.5, 1.0f });
 	for (unsigned v = 1 + (_vertices.size() / 2); v < _vertices.size(); v++) { // back face vertices
 		Vec3f pos = Vec3f({
 			(float)sin(_shape.getInitAngle() + ((v - (_vertices.size() / 2)) * _shape.getAngle())) * _shape.getSize(),
@@ -24,7 +24,7 @@ void Geo_Extruded::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
-		Vec3f texcoord = getTexCoord(v);
+		Vec3f texcoord = getTexCoord(v, 1.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}

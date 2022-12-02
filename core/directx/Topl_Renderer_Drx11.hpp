@@ -22,10 +22,16 @@ struct Buffer_Drx11 : public Buffer {
 struct Texture_Drx11 : public Texture {
 	Texture_Drx11() : Texture() {}
 	Texture_Drx11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
-		: Texture(id, f, m) {
-			sampler = s;
-			resView = r;
-		}
+	: Texture(id, f, m) {
+		sampler = s;
+		resView = r;
+	}
+
+	Texture_Drx11(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
+	: Texture(id, b, f, m) {
+		sampler = s;
+		resView = r;
+	}
 
 	ID3D11SamplerState* sampler = nullptr;
 	ID3D11ShaderResourceView* resView = nullptr;
@@ -69,8 +75,8 @@ public:
 
 	void clearView() override;
 	void setViewport(const Topl_Viewport* viewport) override;
-	void switchFramebuff() override;
-	void build(const Topl_Scene* scene) override;
+	void swapBuffers(double frameTime) override;
+	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(Topl_Pipeline_Drx11* pipeline);
 	void genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
@@ -80,13 +86,12 @@ public:
 #endif
 protected:
 	void init(NATIVE_WINDOW window) override;
-	// void init(NATIVE_WINDOW window, std::initializer_list<Topl_Viewport> viewports) override;
+	void build(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene) override;
-	void drawMode(void) override;
-	// void render(const Topl_Scene* scene) override;
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
-	void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
+	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 	Buffer_Drx11* findBuffer(BUFF_Type type, unsigned long renderID);

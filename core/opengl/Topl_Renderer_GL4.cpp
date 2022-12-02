@@ -150,7 +150,7 @@ void Topl_Renderer_GL4::clearView() {
 }
 
 void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
-	unsigned x = viewport->xOffset; // -(viewport->xOffset - (viewport->width / 2))
+	unsigned x = viewport->xOffset;
 	unsigned y = -viewport->yOffset - viewport->height + Platform::getViewportHeight(_platformCtx.window);
 
 	if (viewport != nullptr)
@@ -164,14 +164,21 @@ static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
 static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
 #endif
 
-void Topl_Renderer_GL4::switchFramebuff() {
-	if (_isDrawn) {
-#ifdef _WIN32 // Swap buffers in windows
+void Topl_Renderer_GL4::swapBuffers(double frameTime) {
+	static double totalTime = 0;
+	totalTime += frameTime;
+
+	if (!_isPresented && totalTime > FRAME_RATE_MILLISECS) { 
+	// if (!_isPresented && totalTime > 0.0) {
+		totalTime = 0.0;
+		// while (totalTime > FRAME_RATE_MILLISECS) totalTime -= FRAME_RATE_MILLISECS;
+
+#ifdef _WIN32
 		swapBuffers_win(&_platformCtx.deviceCtx);
 #elif defined(__linux__)
 		swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif
-		_isDrawn = false; // await future draw call
+		_isPresented = true;
 	}
 }
 
@@ -266,36 +273,38 @@ Img_Base Topl_Renderer_GL4::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* rawImage, unsigned id) {
+void Topl_Renderer_GL4::attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
 	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
-		if (tex->renderID == id) {
+		// if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // with binding
+		if (tex->renderID == renderID && tex->format == TEX_2D) { // Texture Substitution
 			textureTarget = tex->texture;
-			_textureIndex--; // decrement since texture binding is located
+			if (_textureIndex > 1) _textureIndex--; // decrement if texture binding is located
 		}
 	}
 
-	// glActiveTexture(GL_TEXTURE0 + property); // include for multi-texture support
+	// glActiveTexture(GL_TEXTURE0 + binding); // include for multi-texture support
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
 	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rawImage->height, rawImage->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawImage->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
-		_textures.push_back(Texture_GL4(id, TEX_2D, _texMode, textureTarget)); // Texture Addition
+		_textures.push_back(Texture_GL4(renderID, TEX_2D, _texMode, textureTarget)); // Texture Addition
+		// _textures.push_back(Texture_GL4(renderID, binding, TEX_2D, _texMode, textureTarget)); // with binding
 }
 
-void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned id) {
+void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
 	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
-		if (tex->renderID == id) {
+		if (tex->renderID == renderID && tex->format == TEX_3D) {
 			textureTarget = tex->texture;
-			_textureIndex--; // decrement since texture binding is located
+			if (_textureIndex > 1) _textureIndex--; // decrement since texture binding is located
 		}
 	}
 
@@ -316,7 +325,7 @@ void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned id) {
 	glGenerateMipmap(GL_TEXTURE_3D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
-		_textures.push_back(Texture_GL4(id, TEX_3D, _texMode, textureTarget));
+		_textures.push_back(Texture_GL4(renderID, TEX_3D, _texMode, textureTarget));
 }
 
 #endif
@@ -351,10 +360,11 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	return;
 }
 
-void Topl_Renderer_GL4::drawMode() {
+void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
+	_drawMode = mode;
+
 	switch (_drawMode) {
 	case DRAW_Triangles: _drawMode_GL4 = GL_TRIANGLES; break;
 	case DRAW_Points: _drawMode_GL4 = GL_POINTS; break;
@@ -366,6 +376,7 @@ void Topl_Renderer_GL4::drawMode() {
 }
 
 void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
+	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (!_buffers.empty()) {
 		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
 			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
@@ -385,7 +396,8 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 			for (unsigned t = 0; t < _textures.size(); t++)
-				if (_textures.at(t).renderID == renderID) {
+				if (_textures.at(t).renderID == renderID && _textures.at(t).format == TEX_2D) {
+					// glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
 					glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
 					break;
 				}

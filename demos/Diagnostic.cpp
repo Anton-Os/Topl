@@ -2,8 +2,8 @@
 
 #include "Diagnostic.hpp"
 
-// #define APP_BACKEND APP_OpenGL_4
-#define APP_BACKEND APP_DirectX_11
+#define APP_BACKEND APP_OpenGL_4
+// #define APP_BACKEND APP_DirectX_11
 // #define APP_BACKEND App_Vulkan
 
 #define FRAME_AVG_TIME 100
@@ -36,15 +36,17 @@ int main(int argc, char** argv) {
 
 	Timer_Ticker _ticker;
 	double frameTotal = 0.0;
+	double swapTime = 0.0;
+
 	while(1){
-		// platform.handleEvents(DISABLE_CURSOR_UPDATE);
+		platform.handleEvents(DISABLE_CURSOR_UPDATE);
 		
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clearView();
 		double f2 = _ticker.getRelMillisecs();
 		renderer->renderAll();
 		double f3 = _ticker.getRelMillisecs();
-		renderer->switchFramebuff();
+		renderer->present();
 		double f4 = _ticker.getRelMillisecs();
 
 		frameTotal += f1 + f2 + f3 + f4;

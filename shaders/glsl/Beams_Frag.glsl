@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform SceneBlock{
 
 layout(location = 1) in vec3 pos;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
 
 // Functions
 

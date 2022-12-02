@@ -3,13 +3,11 @@
 #include "Topl_App.hpp"
 
 #include "primitives/Geo_Flat.hpp"
-#include "primitives/Geo_Conic.hpp"
-#include "primitives/Geo_Extruded.hpp"
 
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
-#define ACTOR_COUNT 1
+#define ACTOR_COUNT 99999
 
 struct TestConfig {
 	void buildTest(Topl_Renderer* renderer) {
@@ -22,10 +20,12 @@ struct TestConfig {
 		renderer->buildScene(&scene);
 	}
 
+	// TODO: Include other tests
+
 	Topl_Scene scene;
 	Timer_Ticker ticker;
 
-	Geo_ConicCircle triangle = Geo_ConicCircle(1.0);
+	Geo_FlatTriangle triangle = Geo_FlatTriangle();
 	Geo_Actor actors[ACTOR_COUNT];
 };
 
@@ -67,6 +67,11 @@ struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11, public TestConfig
 // Vulkan Test Renderer
 struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan, public TestConfig {
 	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)
-	: Topl_Renderer_Vulkan(window), TestConfig(){}
+	: Topl_Renderer_Vulkan(window), TestConfig(){
+		_isBuilt = true;
+		_renderIDs = 1;
+	}
+
+	Topl_Pipeline_Vulkan pipeline;
 };
 #endif

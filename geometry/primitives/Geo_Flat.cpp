@@ -1,7 +1,7 @@
 #include "Geo_Flat.hpp"
 
 void Geo_Flat::genVertices() {
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f }); // origin
+	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin
 
 	for (unsigned v = 1; v < _vertices.size(); v++) {
 		Vec3f pos = Vec3f({
@@ -11,7 +11,7 @@ void Geo_Flat::genVertices() {
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
-		Vec3f texcoord = getTexCoord(v);
+		Vec3f texcoord = getTexCoord(v, 0.0f);
 
 		_vertices[v] = Geo_Vertex(pos , texcoord);
 	}

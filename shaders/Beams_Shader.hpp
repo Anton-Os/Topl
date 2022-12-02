@@ -1,4 +1,4 @@
-#include "Topl_Shader_Pipeline.h"
+#include "Topl_Pipeline.hpp"
 
 #define BEAMS_MODE_LIGHT 0
 #define BEAMS_MODE_ALTERNATE 1

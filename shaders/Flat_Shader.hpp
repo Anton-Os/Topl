@@ -1,4 +1,4 @@
-#include "Topl_Shader_Pipeline.h"
+#include "Topl_Pipeline.hpp"
 
 #define FLAT_MODE_SOLID 0 // for semi-transparent white
 #define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors

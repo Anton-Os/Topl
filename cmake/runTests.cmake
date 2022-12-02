@@ -14,7 +14,3 @@ target_link_libraries(Test_OddShapes PRIVATE GEOLIB)
 add_executable(Test_InputTracer demos/test/InputTracer.cpp)
 target_include_directories(Test_InputTracer PUBLIC support ${RESOURCE_DIR})
 target_link_libraries(Test_InputTracer PRIVATE CORELIB)
-
-add_executable(Test_Diagnostic demos/test/Diagnostic.cpp)
-target_include_directories(Test_Diagnostic PRIVATE core support support/numeric geometry shaders ${RESOURCE_DIR})
-target_link_libraries(Test_Diagnostic PRIVATE GEOLIB CORELIB)

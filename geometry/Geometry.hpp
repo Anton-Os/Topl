@@ -93,10 +93,10 @@ protected:
 	virtual void genVertices() = 0;
 	virtual void genIndices() = 0;
 
-	static Vec3f getTexCoord(unsigned v) { // get default texcoord from vertex number
+	static Vec3f getTexCoord(unsigned v, float z) { // get default texcoord from vertex number
 		float x = ((v - 1) % 4 == 0 || (v - 1) % 4 == 1)? 1.0f : 0.0f;
 		float y = ((v - 1) % 4 == 1 || (v - 1) % 4 == 2) ? 1.0f : 0.0f;
-		return Vec3f({ x, y, DEFAULT_Z });
+		return Vec3f({ x, y, z });
 	}
 
 	std::pair<bool, bool> _renderStatus = std::make_pair(false, false); // checks for vertex generation

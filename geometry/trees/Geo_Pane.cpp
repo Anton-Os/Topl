@@ -5,14 +5,6 @@ Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_Renderable*)&_decoySquare
 
 static std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
 
-Geo_Pane* Geo_PaneLayout::getChildPane(unsigned index) {
-	if (index > _panes.size()) {
-		perror("Pane index is out of bounds!");
-		return nullptr;
-	}
-	return &_panes.at(index);
-}
-
 void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_rows = rows;
 	_columns = columns;
@@ -29,11 +21,11 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 
 void Geo_PaneLayout::configure(Topl_Scene* scene) {
 	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
-	Geo_Actor* actor = nullptr; // keeps track of child actor being processed 
 
 	// child panes
 	for (unsigned p = 1; p < getActorCount(); p++) {
-		actor = getNextActor();
+		Geo_Actor* actor = getNextActor();
+		_panes[p - 1].actor = actor;
 		actor->setRenderable((Geo_Renderable*)&_childSquare);
 
 		float xInc = (_width / _columns);
@@ -50,9 +42,10 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 	}
 
 	// root pane
+	_rootPane.actor = rootActor;
 	rootActor->setRenderable((Geo_Renderable*)&_rootSquare);
 	scene->addGeometry(getPrefix() + "root", rootActor);
 #ifdef RASTERON_H
-	scene->addTexture(getPrefix() + "root", _rootPane.getBackground()->getImage()); // selection image active
+	scene->addTexture(getPrefix() + "root", _rootPane.getBackground()->getImage());
 #endif
 }

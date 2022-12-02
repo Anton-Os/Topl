@@ -40,19 +40,22 @@ void Splitscreen_App::init() {
 	scene.addGeometry(&planeActor);
 
 	_renderer->buildScene(&scene);
-	_renderer->setDrawMode(DRAW_Triangles);
 }
 
-void Splitscreen_App::loop(unsigned long frame) {
-	_renderer->setPipeline(pipeline1);
-	_renderer->updateScene(&scene);
-	_renderer->setViewport(&viewport1);
-	_renderer->renderScene(&scene);
+void Splitscreen_App::loop(double frameTime) {
+	{
+		_renderer->setPipeline(pipeline1);
+		_renderer->updateScene(&scene);
+		_renderer->setViewport(&viewport1);
+		_renderer->renderScene(&scene);
+	}
 
-	_renderer->setPipeline(pipeline2);
-	_renderer->updateScene(&scene);
-	_renderer->setViewport(&viewport2);
-	_renderer->renderScene(&scene);
+	{
+		_renderer->setPipeline(pipeline2);
+		_renderer->updateScene(&scene);
+		_renderer->setViewport(&viewport2);
+		_renderer->renderScene(&scene);
+	}
 }
 
 int main(int argc, char** argv) {

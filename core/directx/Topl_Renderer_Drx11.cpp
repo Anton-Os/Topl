@@ -150,16 +150,15 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	swapChainDesc.Windowed = TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	HRESULT result; // Error handler
+	HRESULT result; // error checking variable
 
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&swapChainDesc, &_swapChain, &_device, NULL, &_deviceCtx);
-	if (FAILED(result)) return;
+	if (FAILED(result)) return logMessage(MESSAGE_Exclaim, "CreateAndSwapChain() failed");
 
-	// ID3D11Texture2D* backBuffer;
 	ID3D11Resource* backBuffer; // bgfx renderer_d3d11.cpp line 4660
 	result = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-	if (FAILED(result)) return; // Provide error handling code
+	if (FAILED(result)) return logMessage(MESSAGE_Exclaim, "GetBuffer() from swapchain failed");
 
 	_device->CreateRenderTargetView(backBuffer, NULL, &_rtView);
 	backBuffer->Release();
@@ -265,10 +264,10 @@ void Topl_Renderer_Drx11::setViewport(const Topl_Viewport* viewport) {
 	else _isBuilt = false; // Error
 }
 
-void Topl_Renderer_Drx11::switchFramebuff() {
-	if (_isDrawn) {
+void Topl_Renderer_Drx11::swapBuffers(double frameTime) {
+	if (!_isPresented) {
 		_swapChain->Present(0, 0);
-		_isDrawn = false; // await future draw call
+		_isPresented = true;
 	}
 }
 
@@ -319,7 +318,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
-			if (!_isBuilt) return; // Error
+			if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 		}
 
 		// indices generation
@@ -329,13 +328,13 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, renderObj->getIndexCount()));
 		}
 		else _buffers.push_back(Buffer_Drx11(renderID, BUFF_Index_UI, indexBuff, 0));
-		if (!_isBuilt) return; // Error
+		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// vertices generation
 		ID3D11Buffer* vertexBuff = nullptr;
 		_isBuilt = Drx11::createVertexBuff(&_device, &vertexBuff, renderObj->getVertices(), renderObj->getVertexCount());
 		_buffers.push_back(Buffer_Drx11(renderID, BUFF_Vertex_Type, vertexBuff, renderObj->getVertexCount()));
-		if (!_isBuilt) return; // Error
+		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
 
 	buildCount++;
@@ -385,7 +384,7 @@ Img_Base Topl_Renderer_Drx11::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned renderID) {
+void Topl_Renderer_Drx11::attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc = Drx11::genSamplerDesc(_texMode);
@@ -426,13 +425,16 @@ void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned re
 	_deviceCtx->GenerateMips(resView);
 
 	for(std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
-		if (tex->renderID == renderID) { // Texture Substitution
+		// if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // with binding
+		if (tex->renderID == renderID && tex->format == TEX_2D) { // Texture Substitution
 			tex->resView->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
 			*tex = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
+			// Texture_Drx11(renderID, binding, TEX_2D, _texMode, sampler, resView) // with binding
 			return;
 		}
 	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition
+	// _textures.push_back(Texture_Drx11(renderID, binding, TEX_2D, _texMode, sampler, resView)); // with binding
 }
 
 void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned renderID) {
@@ -458,7 +460,7 @@ void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned render
 	D3D11_SUBRESOURCE_DATA texData;
 	texData.pSysMem = volumeImage->getImage()->data;
 	texData.SysMemPitch = sizeof(uint32_t) * volume->getWidth();
-	texData.SysMemSlicePitch = 0;
+	texData.SysMemSlicePitch = sizeof(uint32_t) * volume->getHeight();
 
 	ID3D11Texture3D* texture;
 	result = _device->CreateTexture3D(&texDesc, &texData, &texture);
@@ -472,10 +474,9 @@ void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned render
 	ID3D11ShaderResourceView* resView;
 	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
 	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeImage->getImage()->data, texData.SysMemPitch, 0);
-	_deviceCtx->GenerateMips(resView);
 
 	for (std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
-		if (tex->renderID == renderID) { // Texture Substitution
+		if (tex->renderID == renderID && tex->format == TEX_3D) { // Texture Substitution
 			tex->resView->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
 			*tex = Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView);
@@ -509,11 +510,13 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 			}
 
 		if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
-		if (!_isBuilt) return; // Error
+		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
 	}
 }
 
-void Topl_Renderer_Drx11::drawMode() {
+void Topl_Renderer_Drx11::setDrawMode(enum DRAW_Mode mode) {
+	_drawMode = mode;
+
 	switch (_drawMode) {
 	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
 	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
@@ -524,7 +527,9 @@ void Topl_Renderer_Drx11::drawMode() {
 	}
 }
 
+
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
+	 // static Buffer_Drx11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	 if (!_buffers.empty()) {
 		 if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) { // Scene Target
 			 Buffer_Drx11* sceneBlockBuff = &_buffers.front();
@@ -549,7 +554,7 @@ void Topl_Renderer_Drx11::drawMode() {
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			 for (unsigned t = 0; t < _textures.size(); t++)
-				 if (_textures.at(t).renderID == renderID) {
+				 if (_textures.at(t).renderID == renderID && _textures.at(t).format == TEX_2D) {
 					 ID3D11SamplerState* sampler = _textures.at(t).sampler;
 					 ID3D11ShaderResourceView* resView = _textures.at(t).resView;
 

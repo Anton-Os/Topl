@@ -8,7 +8,7 @@
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
 
 #define PRE_FRAME_FRAC 5
-#define POST_FRAME_FRAC 20
+#define POST_FRAME_FRAC 60
 
 Topl_Camera Playground_App::camera1 = Topl_Camera();
 Topl_Camera Playground_App::camera2 = Topl_Camera(PROJECTION_Ortho, VIEW_SPACE);
@@ -18,21 +18,20 @@ Topl_Light Playground_App::skyLight = Topl_Light({ 0.0, -1.0f, 0.0 });
 Topl_Light Playground_App::flashLight = Topl_Light({ 0.0, 0.0f, 1.0 });
 Topl_Light Playground_App::lampLight = Topl_Light({ -1.0, 0.0f, 0.0 });
 
-static unsigned pickerColor = ZERO_COLOR;
+// static unsigned pickerColor = ZERO_COLOR;
 static Vec3f pickerVec = { 0.0f, 0.0f, 0.0f };
 static Vec3f pawnVec = { 0.0f, 0.0f, 0.0f };
 
-static void callback_press(float x, float y) {
-	if (pickerColor == (CLEAR_COLOR_CODE & 0x00FFFFFF)) puts("\nBackground pressed!");
-	else puts("\nObject pressed!");
-}
+static void callback_press(float x, float y) { pickerVec = { x, y, 0.0f }; }
+static void callback_release(float x, float y) { pickerVec = { x, y, 0.0f }; }
 
-static void callback_release(float x, float y) { 
-	printf("Displacement is %6.4lf, %6.4lf ", x, y);
-	pickerVec = { x, y, 0.0f }; 
+static void callback_picker(Topl_Renderer* renderer, Geo_PaneLayout* paneLayout, unsigned color) { 
+	for (unsigned p = 0; p < paneLayout->getRowCount() * paneLayout->getColCount(); p++) {
+		unsigned colorID = genColorID(renderer->getRenderID(paneLayout->getChildPane(p)->actor));
+		if (colorID == color)
+			logMessage("Pane no. " + std::to_string(p) + " pressed!");
+	}
 }
-
-static void callback_pane(unsigned short num) { printf("pane %d callback_pressed!", num); }
 
 static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
 	static unsigned swapCount = 0;
@@ -56,12 +55,12 @@ static void event_character_swap(Topl_Renderer* renderer, Topl_Scene* scene) {
 void Playground_App::createPipeline() {
 	if (APP_BACKEND == APP_OpenGL_4) {
 		vertexShader1 = GL4_Textured_VertexShader(); fragShader1 = GL4_Textured_FragmentShader();
-		vertexShader2 = GL4_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = GL4_Flat_FragmentShader();
+		vertexShader2 = GL4_Flat_VertexShader(); fragShader2 = GL4_Flat_FragmentShader();
 		vertexShader3 = GL4_Beams_VertexShader(); fragShader3 = GL4_Beams_FragmentShader();
 	}
 	else if (APP_BACKEND == APP_DirectX_11) {
 		vertexShader1 = Drx11_Textured_VertexShader(); fragShader1 = Drx11_Textured_FragmentShader();
-		vertexShader2 = Drx11_Flat_VertexShader(FLAT_MODE_ALTERNATE); fragShader2 = Drx11_Flat_FragmentShader();
+		vertexShader2 = Drx11_Flat_VertexShader(); fragShader2 = Drx11_Flat_FragmentShader();
 		vertexShader3 = Drx11_Beams_VertexShader(); fragShader3 = Drx11_Beams_FragmentShader();
 	}
 
@@ -89,7 +88,7 @@ void Playground_App::createScene_Overlay() {
 	rowLayout.move(Vec3f({ 0.7f, 0.7f, 0.0f }));
 	for (unsigned short p = 0; p < rowLayout.getRowCount(); p++) {
 		Rasteron_Image* rowPaneImg = createSolidImg({ PANE_IMAGE_HEIGHT, PANE_IMAGE_WIDTH }, BLACK_COLOR + (0x08 * p));
-		rowLayout.getChildPane(p)->getBackground()->setImage(rowPaneImg);
+		rowLayout.getChildBackground(p)->setImage(rowPaneImg);
 		deleteImg(rowPaneImg);
 	}
 	rowLayout.configure(&scene_overlay);
@@ -100,7 +99,7 @@ void Playground_App::createScene_Overlay() {
 			std::string text = std::to_string(p + 1); // count should begin at 1
 			boxedTextObjs[p] = { fontStr.c_str(), text.c_str(), WHITE_COLOR, 0xFF333333 };
 			Rasteron_Image* boxPaneImg = bakeTextI(&boxedTextObjs[p]);
-			boxedLayout.getChildPane(p)->getBackground()->setImage(boxPaneImg);
+			boxedLayout.getChildBackground(p)->setImage(boxPaneImg);
 			deleteImg(boxPaneImg);
 		}
 	boxedLayout.configure(&scene_overlay);
@@ -138,31 +137,35 @@ void Playground_App::init() {
 	// _renderer->setCamera(&camera1); // no projection
 	_renderer->setCamera(&camera2); // ortho projection
 	// _renderer->setCamera(&camera3); // perspective projection
-
-	_renderer->setDrawMode(DRAW_Triangles);
 }
 
-void Playground_App::loop(unsigned long frame) {
-	if(frame % PRE_FRAME_FRAC == 0) preFrame();
+void Playground_App::loop(double frameTime) {
+	if(_renderer->getFrameCount() % PRE_FRAME_FRAC == 0) preFrame();
 
-	vertexShader1.setTime(_ticker.getAbsMillisecs());
-	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
+	{
+		vertexShader1.setTime(_ticker.getAbsMillisecs());
+		Topl_Factory::switchPipeline(APP_BACKEND, _renderer, texPipeline);
 
-	event_character_swap(_renderer, &scene_main); // character swap
-	_renderer->updateScene(&scene_main);
-	_renderer->renderScene(&scene_main);
+		event_character_swap(_renderer, &scene_main); // character swap
+		_renderer->updateScene(&scene_main);
+		_renderer->renderScene(&scene_main);
+	}
 
-	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
+	{
+		Topl_Factory::switchPipeline(APP_BACKEND, _renderer, colPipeline);
 
-	_renderer->updateScene(&scene_overlay);
-	_renderer->renderScene(&scene_overlay);
+		_renderer->updateScene(&scene_overlay);
+		_renderer->renderScene(&scene_overlay);
+	}
 
-	Topl_Factory::switchPipeline(APP_BACKEND, _renderer, litPipeline);
+	{
+		Topl_Factory::switchPipeline(APP_BACKEND, _renderer, litPipeline);
 
-	_renderer->updateScene(&scene_details);
-	_renderer->renderScene(&scene_details);
+		_renderer->updateScene(&scene_details);
+		_renderer->renderScene(&scene_details);
+	}
 
-	if(frame % POST_FRAME_FRAC == 0) postFrame();
+	if(_renderer->getFrameCount() % POST_FRAME_FRAC == 0) postFrame();
 }
 
 void Playground_App::preFrame() {
@@ -181,21 +184,15 @@ static void drawCursorPicker(Rasteron_Image* image, unsigned color) {
 }
 
 void Playground_App::postFrame() {
-	pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-
-	for (unsigned short p = 0; p < rowLayout.getRowCount(); p++) {
-		Geo_Pane* pane = rowLayout.getChildPane(p);
-		// TODO: Get render id cooresponding to pane
+	unsigned pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	if (pickerColor != (CLEAR_COLOR_CODE & 0x00FFFFFF)) {
+		callback_picker(_renderer, &rowLayout, pickerColor);
+		callback_picker(_renderer, &boxedLayout, pickerColor);
 	}
 
-	for (unsigned short p = 0; p < boxedLayout.getRowCount() * boxedLayout.getColCount(); p++) {
-		Geo_Pane* pane = boxedLayout.getChildPane(p);
-		// TODO: Get render id cooresponding to pane
-	}
-
-	Img_Base frameImage = _renderer->frame();
-	drawCursorPicker(frameImage.getImage(), 0xFF00FF00);
-	writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage.getImage()->height, frameImage.getImage()->width, frameImage.getImage()->data);
+	// Img_Base frameImage = _renderer->frame();
+	// drawCursorPicker(frameImage.getImage(), 0xFF00FF00);
+	// writeFileImageRaw("Frame.bmp", IMG_Bmp, frameImage.getImage()->height, frameImage.getImage()->width, frameImage.getImage()->data);
 }
 
 int main(int argc, char** argv) {

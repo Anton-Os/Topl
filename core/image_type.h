@@ -54,50 +54,39 @@ private:
 
 // Material based on layers
 
-#define MAX_MATERIAL_PROPERTIES 6 // matches MATERIAL_Property enumeration
+#define MAX_MATERIAL_PROPERTIES 8 // matches MATERIAL_Property enumeration
 
 enum MATERIAL_Property {
-	MATERIAL_Base = 0,
+	MATERIAL_Albedo = 0,
 	MATERIAL_Normals = 1,
 	MATERIAL_Height = 2,
 	MATERIAL_Metal = 3,
 	MATERIAL_Roughness = 4,
-	MATERIAL_Occlusion = 5
+	MATERIAL_Opacity = 5,
+	MATERIAL_Enviornment = 6,
+	MATERIAL_Shadow = 7,
 };
 
-struct Img_MaterialUnit : public Img_Base {
-	Img_MaterialUnit() : Img_Base(){ property = MATERIAL_Base; }
-	Img_MaterialUnit(enum MATERIAL_Property p) : Img_Base(){ property = p; }
+struct Img_TextureUnit : public Img_Base {
+	Img_TextureUnit() : Img_Base(){ property = MATERIAL_Albedo; }
+	Img_TextureUnit(enum MATERIAL_Property p) : Img_Base(){ property = p; }
 
 	enum MATERIAL_Property property;
 };
 
-// Frames based on a sequence
+struct Img_Material {
+	const Img_TextureUnit* getTexUnit(MATERIAL_Property property) const { return &texUnits[property]; }
 
-struct Img_Frames {
-    Img_Frames(){} // Empty Constructor
-#ifdef RASTERON_H
-	Img_Frames(std::string prefix, unsigned short frameCount){
-		data = allocNewAnim(prefix.c_str(), frameCount);
-	}
-	~Img_Frames(){ deleteAnim(data); }
-	
-	void appendFrame(ref_image_t refImg){
-        if(frameIndex == data->frameCount){
-		    frameIndex = 0; 
-            replay++;
-        }
-        addFrameData(data, refImg, frameIndex);
-        frameIndex++;
-    }
-	Rasteron_Image* getFrameAt(unsigned index) const { return getFrame(data, index); }
-
-private:
-    unsigned short frameIndex = 0; // keeps track of current frame for draw
-    unsigned short replay = 0; // increments as scene replays itself
-
-    Rasteron_Animation* data; // underlying data
-#endif
+	Img_TextureUnit texUnits[MAX_MATERIAL_PROPERTIES] = {
+		Img_TextureUnit(MATERIAL_Albedo),
+		Img_TextureUnit(MATERIAL_Normals),
+		Img_TextureUnit(MATERIAL_Height),
+		Img_TextureUnit(MATERIAL_Metal),
+		Img_TextureUnit(MATERIAL_Roughness),
+		Img_TextureUnit(MATERIAL_Opacity),
+		Img_TextureUnit(MATERIAL_Enviornment),
+		Img_TextureUnit(MATERIAL_Shadow)
+	};
 };
 
 // Volume based on slices
@@ -105,8 +94,11 @@ private:
 struct Img_Volume { 
     Img_Volume() : width(IMG_SIDE_LEN), height(IMG_SIDE_LEN), depth(IMG_SIDE_LEN) {} // Empty Constructor
 #ifdef RASTERON_H
-    Img_Volume(std::string prefix, unsigned w, unsigned h,unsigned z) : width(w), height(h), depth(z) {
-		data = allocNewAnim(prefix.c_str(), depth);
+	Img_Volume(unsigned s) : width(s), height(s), depth(s) { // Matching Lengths
+		data = allocNewAnim("volume", depth);
+	}
+    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z) { // Custom Lengths
+		data = allocNewAnim("volume", depth);
 	}
 	~Img_Volume(){ deleteAnim(data); }
 	
@@ -114,7 +106,10 @@ struct Img_Volume {
 		if (refImg->height == height && refImg->width == width)
 			addFrameData(data, refImg, d);
 		else return; // error
-		volumeImg = Img_Base(createCompositeImg(data)); // recreate material
+
+		Rasteron_Image* compositeImg = createCompositeImg(data);
+		volumeImg.setImage(compositeImg); // recreate entire volume image
+		deleteImg(compositeImg);
     }
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? getFrame(data, d) : nullptr;}
 	const Img_Base* extractVolImage() const { return &volumeImg; }

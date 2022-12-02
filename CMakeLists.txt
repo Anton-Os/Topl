@@ -202,11 +202,13 @@ endforeach()
 # include("cmake/legacyDemos.cmake")
 include("cmake/runTests.cmake")
 
+add_executable(Demo_Diagnostic demos/Diagnostic.cpp)
 add_executable(Demo_Playground demos/Playground.cpp)
-add_executable(Demo_Splitscreen demos/Splitscreen.cpp)
 add_executable(Demo_Animotion demos/Animotion.cpp)
+add_executable(Demo_Splitscreen demos/Splitscreen.cpp)
+add_executable(Demo_Subsurface demos/Subsurface.cpp)
 
-list(APPEND demo_targets Demo_Playground Demo_Splitscreen Demo_Animotion) # add all demo targets to a list
+list(APPEND demo_targets Demo_Diagnostic Demo_Playground Demo_Animotion Demo_Splitscreen Demo_Subsurface) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support support/numeric geometry shaders)
@@ -221,20 +223,54 @@ endforeach()
 # Copying and managing implemented here with custom targets
 
 file(GLOB gl4_shaders ${SHADERS_DIR}/glsl/*.glsl)
-file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
-add_custom_target(ShaderEdit SOURCES ${gl4_shaders} ${drx11_shaders})
+add_custom_target(GL4_ShaderEdit SOURCES ${gl4_shaders})
+add_dependencies(GL4_ShaderEdit GL4_ENGINE)
 
-add_dependencies(ShaderEdit GL4_ENGINE)
 if(WIN32)
-  add_dependencies(ShaderEdit Drx11_ENGINE)
+	file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
+	add_custom_target(Drx11_ShaderEdit SOURCES ${drx11_shaders})
+	add_dependencies(Drx11_ShaderEdit Drx11_ENGINE)
 endif()
+
 if(Vulkan_FOUND)
-    find_file(glslc_exec "glslc" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
-    if(NOT ${glslc_exec} EQUAL "glslc_exec-NOTFOUND")
-		message(STATUS "searching for glslc inside ${VULKAN_PATH}/Bin/")
-        # foreach(shader IN ITEMS ${gl4_shaders})
-            # Compile shaders to spirv and store in binary directory
-        #endforeach()
+	function(compileShader shaderFile shaderType)
+		get_filename_component(shader_name ${shaderFile} NAME)
+		message(STATUS "Compiling ${shaderType} shader ${shader_name}")
+
+		string(FIND ${shader_name} shaderType isShaderType)
+		message("${isShaderType}")
+		if(NOT isShaderType EQUAL -1)
+			message("Compiling ${shaderType} shader ${shaderFile}")
+			exec_program(
+				${glslc_exec} 
+				${CMAKE_BINARY_DIR} 
+				ARGS "-fshader-stage=vertex ${shaderFile} -o ${shader_name}.spv"
+			)
+		endif()
+	endfunction()
+
+	message(STATUS "Searching inside ${VULKAN_PATH}/Bin/")
+
+    find_file(glslc_exec "glslc" "glslc.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
+	if(NOT ${glslc_exec} STREQUAL "glslc_exec-NOTFOUND")
+		message("${glslc_exec} executing")
+        foreach(shader IN ITEMS ${gl4_shaders})
+			get_filename_component(shader_name ${shader} NAME)
+
+			string(FIND ${shader_name} "Vert" isVertexShader)
+			if(NOT isVertexShader EQUAL -1)
+				message("Compiling vertex shader ${shader_name} inisde of ${shader}")
+				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+			endif()
+			
+			string(FIND ${shader_name} "Frag" isFragmentShader)
+			if(NOT isFragmentShader EQUAL -1)
+				message("Compiling fragment shader ${shader_name} inisde of ${shader}")
+				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=fragment ${shader} -o ${shader_name}.spv")
+			endif()
+
+            # TODO: Add support for tesselation and geometry shaders
+        endforeach()
     endif()
 endif()
 

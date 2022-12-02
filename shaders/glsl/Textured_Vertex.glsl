@@ -52,7 +52,7 @@ mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
 		0, 0, 0, 1
 	);
 
-	return camMatrix;;
+	return camMatrix;
 }
 
 // Main

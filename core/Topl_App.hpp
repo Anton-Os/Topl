@@ -2,10 +2,6 @@
 
 #include "Topl_Factory.hpp"
 
-#define LOOP_RESET -0.0001
-#define LOOP_INTERVAL 0.0
-// #define LOOP_INTERVAL 1.0 / 60.0
-
 class Topl_App {
 public:
     Topl_App(const char* execPath, const char* name, APP_Backend backend);
@@ -20,7 +16,7 @@ public:
 	const static std::string getResourcesPath() { return std::string(ASSETS_DIR) + "res/"; }
 protected:
     virtual void init() = 0;
-    virtual void loop(unsigned long frame) = 0;
+    virtual void loop(double frameTime) = 0;
 
 	// Rendering
 	const enum APP_Backend _backend;

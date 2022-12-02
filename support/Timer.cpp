@@ -28,7 +28,7 @@ void Timer_Ticker::updateTimer(){
     for(std::vector<Timer_PeriodicEvent>::iterator currentEvent = _periodicEvents.begin(); currentEvent != _periodicEvents.end(); currentEvent++)
         currentEvent->addTime(_relMicrosElapsed.count()); // update time elapsed of all periodic events
     for(std::vector<Timer_RecurringEvent>::iterator currentEvent = _recurringEvents.begin(); currentEvent != _recurringEvents.end(); currentEvent++)
-        currentEvent->addTime(_relMicrosElapsed.count()); // update time elapsed of all periodic events
+        currentEvent->addTime(_relMicrosElapsed.count()); // update time elapsed of all recurring events
 
     _startSecs = _endSecs; // internally adjusting timing functions
 }
