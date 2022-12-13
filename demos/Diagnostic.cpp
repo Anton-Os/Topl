@@ -4,7 +4,7 @@
 
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
-// #define APP_BACKEND App_Vulkan
+// #define APP_BACKEND APP_Vulkan
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20

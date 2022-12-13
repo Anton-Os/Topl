@@ -104,10 +104,10 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
 		LONG centerY = windowRect.top + halfHeight;
 		*yPos = -(point.y - centerY) / (float)halfHeight;
-		if (*yPos > 0.0 && *yPos < 1.0) *yPos *= 1.03;  // positive y position adjusted for accuracy
+		if (*yPos > 0.0 && *yPos < 1.0) *yPos *= 1.05;  // positive y position adjusted
 
 		return true;
-	} else return false; // Cursor is outside the screen space!
+	} else return false; // cursor outside the screen space!
 }
 
 #elif defined(__linux__)

@@ -278,14 +278,13 @@ void Topl_Renderer_GL4::attachTextureUnit(const Rasteron_Image* image, unsigned 
 	_textureIndex++; // increments to next available slot
 
 	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
-		// if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // with binding
-		if (tex->renderID == renderID && tex->format == TEX_2D) { // Texture Substitution
+		if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // multi-texture substitution
 			textureTarget = tex->texture;
 			if (_textureIndex > 1) _textureIndex--; // decrement if texture binding is located
 		}
 	}
 
-	// glActiveTexture(GL_TEXTURE0 + binding); // include for multi-texture support
+	glActiveTexture(GL_TEXTURE0 + binding);
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
 	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
@@ -293,8 +292,7 @@ void Topl_Renderer_GL4::attachTextureUnit(const Rasteron_Image* image, unsigned 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
-		_textures.push_back(Texture_GL4(renderID, TEX_2D, _texMode, textureTarget)); // Texture Addition
-		// _textures.push_back(Texture_GL4(renderID, binding, TEX_2D, _texMode, textureTarget)); // with binding
+		_textures.push_back(Texture_GL4(renderID, (MATERIAL_Property)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
 }
 
 void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID) {
@@ -308,6 +306,7 @@ void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID
 		}
 	}
 
+	glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
 	const Img_Base* volumeImage = volume->extractVolImage();
@@ -396,11 +395,16 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 			for (unsigned t = 0; t < _textures.size(); t++)
-				if (_textures.at(t).renderID == renderID && _textures.at(t).format == TEX_2D) {
-					// glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
-					glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
-					break;
-				}
+				if (_textures.at(t).renderID == renderID) {
+					if (_textures.at(t).format == TEX_2D) {
+						glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
+						glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
+					}
+					else if (_textures.at(t).format == TEX_3D) {
+						glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
+						glBindTexture(GL_TEXTURE_3D, _textures.at(t).texture);
+					}
+				} 
 
 			// Draw Call!
 			if (vertexBuff != nullptr && vertexBuff->count != 0) {

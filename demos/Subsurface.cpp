@@ -2,7 +2,7 @@
 
 // #define APP_BACKEND APP_OpenGL_4
 #define APP_BACKEND APP_DirectX_11
-// #define APP_BACKEND App_Vulkan
+// #define APP_BACKEND APP_Vulkan
 
 unsigned radialImageCallback(double x, double y) {
 	return blend(0xFF000000, 0xFFFFFFFF, sqrt(((x - 0.5) * (x - 0.5)) + ((y - 0.5) * (y - 0.5)))); // radial gradient
@@ -27,14 +27,12 @@ void Subsurface_App::init() {
 	Rasteron_Text text = Rasteron_Text({ fontPath.c_str(), "Topl", 0xFF000000, 0xFFFFFFFF });
 	base.setTextImage(&text);
 
-	material1.texUnits[MATERIAL_Albedo].setColorImage(0xFFDDDDDD); // light-grey
-	material1.texUnits[MATERIAL_Normals].setColorImage(0xFF0000FF); // red
-	material1.texUnits[MATERIAL_Height].setColorImage(0xFF00FF00); // green
-	material1.texUnits[MATERIAL_Metal].setColorImage(0xFFFF0000); // blue
-	material1.texUnits[MATERIAL_Roughness].setColorImage(0xFFFFFF00); // yellow
-	material1.texUnits[MATERIAL_Opacity].setColorImage(0xFFFF00FF); // magenta
+	material1.texUnits[MATERIAL_Albedo].setColorImage(0xFFFFFF00); // yellow
+	material1.texUnits[MATERIAL_Height].setColorImage(0xFF0000FF); // red
+	material1.texUnits[MATERIAL_Roughness].setColorImage(0xFF00FF00); // green
+	material1.texUnits[MATERIAL_Opacity].setColorImage(0xFFFF0000); // blue
 	material1.texUnits[MATERIAL_Enviornment].setColorImage(0xFF00FFFF); // cyan
-	material1.texUnits[MATERIAL_Shadow].setColorImage(0xFF333333); // dark-grey
+	material1.texUnits[MATERIAL_Shadow].setColorImage(0xFFFF00FF); // magenta
 
 	Rasteron_Image* testImage = createMappedImg({ volume1.getHeight(), volume1.getWidth() }, radialImageCallback);
 	for (unsigned d = 0; d < volume1.getDepth(); d++) volume1.addSlice(testImage, d);

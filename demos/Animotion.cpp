@@ -2,11 +2,11 @@
 
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
-// #define APP_BACKEND App_Vulkan
+// #define APP_BACKEND APP_Vulkan
 
-Topl_Camera Animotion_App::camera = Topl_Camera();
+// Topl_Camera Animotion_App::camera = Topl_Camera();
 // Topl_Camera Animotion_App::camera = Topl_Camera(PROJECTION_Ortho, 1.0);
-// Topl_Camera Animotion_App::camera = Topl_Camera(PROJECTION_Perspective, 1.0);
+Topl_Camera Animotion_App::camera = Topl_Camera(PROJECTION_Perspective, 1.0);
 
 #define MOVE_AMOUNT 0.25
 
@@ -39,10 +39,10 @@ void Animotion_App::init() {
 	// Shaders and Pipeline
 
 	if (APP_BACKEND == APP_OpenGL_4) {
-		vertShader = GL4_Flat_VertexShader(FLAT_MODE_DIRECTION);
+		vertShader = GL4_Flat_VertexShader();
 		fragShader = GL4_Flat_FragmentShader();
 	} else {
-		vertShader = Drx11_Flat_VertexShader(FLAT_MODE_DIRECTION);
+		vertShader = Drx11_Flat_VertexShader();
 		fragShader = Drx11_Flat_FragmentShader();
 	}
 
@@ -65,7 +65,7 @@ void Animotion_App::init() {
 
 	// Geometries and Scene Elements
 
-	camera.setPos({ 0.0, 0.0, -0.0 });
+	camera.setPos({ 0.0, 0.0, 0.0 });
 
 	sphereActor.setPos({ 0.0, 0.0, -1.0f });
 	scene.addGeometry("Sphere", &sphereActor);

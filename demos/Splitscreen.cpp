@@ -2,7 +2,7 @@
 
 // #define APP_BACKEND APP_OpenGL_4
 #define APP_BACKEND APP_DirectX_11
-// #define APP_BACKEND App_Vulkan
+// #define APP_BACKEND APP_Vulkan
 
 void callback_w() { 
 	viewport1.yOffset -= 1; viewport1.height += 1;

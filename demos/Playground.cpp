@@ -2,7 +2,7 @@
 
 #define APP_BACKEND APP_OpenGL_4
 // #define APP_BACKEND APP_DirectX_11
-// #define APP_BACKEND App_Vulkan
+// #define APP_BACKEND APP_Vulkan
 
 #define VIEW_SPACE 3.0f
 #define CAMERA_LOOK Vec3f({ 0.0f, 0.0f, 2.0f })
@@ -25,11 +25,11 @@ static Vec3f pawnVec = { 0.0f, 0.0f, 0.0f };
 static void callback_press(float x, float y) { pickerVec = { x, y, 0.0f }; }
 static void callback_release(float x, float y) { pickerVec = { x, y, 0.0f }; }
 
-static void callback_picker(Topl_Renderer* renderer, Geo_PaneLayout* paneLayout, unsigned color) { 
+static void callback_picker(Topl_Renderer* renderer, Geo_PaneLayout* paneLayout, unsigned color) {
 	for (unsigned p = 0; p < paneLayout->getRowCount() * paneLayout->getColCount(); p++) {
-		unsigned colorID = genColorID(renderer->getRenderID(paneLayout->getChildPane(p)->actor));
-		if (colorID == color)
-			logMessage("Pane no. " + std::to_string(p) + " pressed!");
+		const Geo_Actor* targetActor = paneLayout->getChildPane(p)->actor;
+		unsigned colorID = 0xFFFFFF & genColorID(renderer->getRenderID(targetActor));
+		if (colorID == color) logMessage("Pane no. " + std::to_string(p) + " pressed! ");
 	}
 }
 
@@ -134,8 +134,8 @@ void Playground_App::init() {
 	createScene_Overlay();
 	createScene_Details();
 
-	// _renderer->setCamera(&camera1); // no projection
-	_renderer->setCamera(&camera2); // ortho projection
+	_renderer->setCamera(&camera1); // no projection
+	// _renderer->setCamera(&camera2); // ortho projection
 	// _renderer->setCamera(&camera3); // perspective projection
 }
 
@@ -186,6 +186,7 @@ static void drawCursorPicker(Rasteron_Image* image, unsigned color) {
 void Playground_App::postFrame() {
 	unsigned pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	if (pickerColor != (CLEAR_COLOR_CODE & 0x00FFFFFF)) {
+		// std::cout << "picker color: " << pickerColor << std::endl;
 		callback_picker(_renderer, &rowLayout, pickerColor);
 		callback_picker(_renderer, &boxedLayout, pickerColor);
 	}

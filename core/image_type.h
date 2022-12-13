@@ -54,17 +54,15 @@ private:
 
 // Material based on layers
 
-#define MAX_MATERIAL_PROPERTIES 8 // matches MATERIAL_Property enumeration
+#define MAX_TEX_BINDINGS 6 // matches MATERIAL_Property enumeration
 
 enum MATERIAL_Property {
 	MATERIAL_Albedo = 0,
-	MATERIAL_Normals = 1,
-	MATERIAL_Height = 2,
-	MATERIAL_Metal = 3,
-	MATERIAL_Roughness = 4,
-	MATERIAL_Opacity = 5,
-	MATERIAL_Enviornment = 6,
-	MATERIAL_Shadow = 7,
+	MATERIAL_Height = 1,
+	MATERIAL_Roughness = 2,
+	MATERIAL_Opacity = 3,
+	MATERIAL_Enviornment = 4,
+	MATERIAL_Shadow = 5,
 };
 
 struct Img_TextureUnit : public Img_Base {
@@ -77,11 +75,9 @@ struct Img_TextureUnit : public Img_Base {
 struct Img_Material {
 	const Img_TextureUnit* getTexUnit(MATERIAL_Property property) const { return &texUnits[property]; }
 
-	Img_TextureUnit texUnits[MAX_MATERIAL_PROPERTIES] = {
+	Img_TextureUnit texUnits[MAX_TEX_BINDINGS] = {
 		Img_TextureUnit(MATERIAL_Albedo),
-		Img_TextureUnit(MATERIAL_Normals),
 		Img_TextureUnit(MATERIAL_Height),
-		Img_TextureUnit(MATERIAL_Metal),
 		Img_TextureUnit(MATERIAL_Roughness),
 		Img_TextureUnit(MATERIAL_Opacity),
 		Img_TextureUnit(MATERIAL_Enviornment),

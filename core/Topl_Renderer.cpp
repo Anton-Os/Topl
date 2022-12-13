@@ -100,7 +100,7 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 
 		const Img_Material* material = scene->getMaterialTex(actor->getName());
 		if (material != nullptr)
-			for (unsigned p = 0; p < MAX_MATERIAL_PROPERTIES; p++)
+			for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
 				attachTextureUnit(material->getTexUnit((MATERIAL_Property)p)->getImage(), renderID, p);
 		// else return logMessage(MESSAGE_Exclaim, "Null material encountered!");
 
@@ -120,8 +120,8 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
 }
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
-    // for(std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)
-	for (std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)
-	    if(actor == m->second) return m->first;
+    for (std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)
+	    if(actor == m->second) 
+			return m->first;
     return 0; // No render target found!
 }

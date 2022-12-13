@@ -425,16 +425,14 @@ void Topl_Renderer_Drx11::attachTextureUnit(const Rasteron_Image* image, unsigne
 	_deviceCtx->GenerateMips(resView);
 
 	for(std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
-		// if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // with binding
-		if (tex->renderID == renderID && tex->format == TEX_2D) { // Texture Substitution
+		if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // multi-texture subsitution
 			tex->resView->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView);
-			// Texture_Drx11(renderID, binding, TEX_2D, _texMode, sampler, resView) // with binding
+			*tex = Texture_Drx11(renderID, (MATERIAL_Property)binding, TEX_2D, _texMode, sampler, resView);
 			return;
 		}
-	_textures.push_back(Texture_Drx11(renderID, TEX_2D, _texMode, sampler, resView)); // Texture Addition
-	// _textures.push_back(Texture_Drx11(renderID, binding, TEX_2D, _texMode, sampler, resView)); // with binding
+
+	_textures.push_back(Texture_Drx11(renderID, (MATERIAL_Property)binding, TEX_2D, _texMode, sampler, resView)); // multi-texture addition
 }
 
 void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned renderID) {
@@ -476,13 +474,13 @@ void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned render
 	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeImage->getImage()->data, texData.SysMemPitch, 0);
 
 	for (std::vector<Texture_Drx11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
-		if (tex->renderID == renderID && tex->format == TEX_3D) { // Texture Substitution
+		if (tex->renderID == renderID && tex->format == TEX_3D) { // texture substitution
 			tex->resView->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
 			*tex = Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView);
 			return;
 		}
-	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // Texture Addition
+	_textures.push_back(Texture_Drx11(renderID, TEX_3D, _texMode, sampler, resView)); // texture addition
 }
 #endif
 
@@ -527,6 +525,8 @@ void Topl_Renderer_Drx11::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
+static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
+static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
 	 // static Buffer_Drx11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
@@ -554,14 +554,19 @@ void Topl_Renderer_Drx11::setDrawMode(enum DRAW_Mode mode) {
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			 for (unsigned t = 0; t < _textures.size(); t++)
-				 if (_textures.at(t).renderID == renderID && _textures.at(t).format == TEX_2D) {
-					 ID3D11SamplerState* sampler = _textures.at(t).sampler;
-					 ID3D11ShaderResourceView* resView = _textures.at(t).resView;
-
-					 _deviceCtx->PSSetShaderResources(0, 1, &resView);
-					 _deviceCtx->PSSetSamplers(0, 1, &sampler);
-					 break;
+				 if (_textures.at(t).renderID == renderID ) {
+					 if (_textures.at(t).format == TEX_2D) {
+						 samplers[_textures.at(t).binding] = _textures.at(t).sampler;
+						 resViews[_textures.at(t).binding] = _textures.at(t).resView;
+					 }
+					 else if (_textures.at(t).format == TEX_3D) {
+						 samplers[MAX_TEX_BINDINGS] = _textures.at(t).sampler;
+						 resViews[MAX_TEX_BINDINGS] = _textures.at(t).resView;
+					 }
 				 }
+
+			 _deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
+			 _deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
 
 			 // Draw Call!
 			 if (vertexBuff != nullptr && vertexBuff->count != 0) {
