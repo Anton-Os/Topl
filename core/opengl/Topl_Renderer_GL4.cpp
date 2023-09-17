@@ -267,9 +267,9 @@ Img_Base Topl_Renderer_GL4::frame() {
 
 	_frameImage = Img_Base();
 	_frameImage.setImage(mirrorImage);
-	deleteImg(stageImage);
-	deleteImg(flipImage);
-	deleteImg(mirrorImage);
+	free_image(stageImage);
+	free_image(flipImage);
+	free_image(mirrorImage);
 	return _frameImage;
 }
 

@@ -89,6 +89,8 @@ void Topl_Renderer::present() {
 	swapBuffers(ticker.getRelMillisecs());
 }
 
+#ifdef RASTERON_H
+
 void Topl_Renderer::texturize(const Topl_Scene* scene) {
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
@@ -118,6 +120,10 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets
 }
+
+#else
+	void Topl_Renderer::texturize(const Topl_Scene* scene) {} // blank body
+#endif
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
     for (std::map<unsigned long, const Geo_Actor*>::const_iterator m = _renderTargets_map.cbegin(); m != _renderTargets_map.cend(); m++)

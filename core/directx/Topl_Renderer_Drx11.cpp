@@ -380,7 +380,7 @@ Img_Base Topl_Renderer_Drx11::frame() {
 
 	_frameImage = Img_Base();
 	_frameImage.setImage(stageImage);
-	deleteImg(stageImage);
+	free_image(stageImage);
 	return _frameImage;
 }
 

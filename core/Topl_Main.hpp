@@ -2,10 +2,10 @@
 
 #include "Topl_Factory.hpp"
 
-class Topl_App {
+class Topl_Main {
 public:
-    Topl_App(const char* execPath, const char* name, APP_Backend backend);
-	~Topl_App();
+    Topl_Main(const char* execPath, const char* name, APP_Backend backend);
+	~Topl_Main();
 
 	void run();
 

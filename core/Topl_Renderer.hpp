@@ -117,8 +117,8 @@ public:
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
-	void texturize(const Topl_Scene* scene); // reloads all textures
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
+    void texturize(const Topl_Scene* scene); // reloads all textures
 #ifdef RASTERON_H
     virtual Img_Base frame() = 0;
 	unsigned getPixelAt(float x, float y);

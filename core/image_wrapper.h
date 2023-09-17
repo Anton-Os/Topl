@@ -43,7 +43,7 @@ struct Img_Base {
 private:
 	void cleanup() {
 		if (image != NULL) {
-			deleteImg(image);
+			free_image(image);
 			image = NULL; // reset
 		}
 	}
@@ -105,7 +105,7 @@ struct Img_Volume {
 
 		Rasteron_Image* compositeImg = createCompositeImg(data);
 		volumeImg.setImage(compositeImg); // recreate entire volume image
-		deleteImg(compositeImg);
+		free_image(compositeImg);
     }
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? getFrame(data, d) : nullptr;}
 	const Img_Base* extractVolImage() const { return &volumeImg; }
@@ -131,7 +131,7 @@ struct Img_Heightmap : public Geo_Renderable { // wrapper around Rasteron_Height
 		genVertices(); genIndices();
     }
 
-    ~Img_Heightmap(){ deleteHeightmap(heightmap); }
+    ~Img_Heightmap(){ free_heightmap(heightmap); }
 #endif
 private:
     void genVertices() override {

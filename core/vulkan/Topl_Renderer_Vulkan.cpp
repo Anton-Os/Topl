@@ -20,7 +20,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = "Topl";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "Topl Vulkan Engine";
+	appInfo.pEngineName = "Topl Engine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
@@ -64,6 +64,8 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 
 	result = vkCreateInstance(&createInfo, nullptr, &_instance);
 	if (result != VK_SUCCESS) return logMessage(MESSAGE_Exclaim, "Vulkan Instance creation failed");
+
+	// TODO: Continue with setup
 }
 
 Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {

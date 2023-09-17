@@ -5,7 +5,7 @@
 #include "physics.h"
 #include "physics_motion.h"
 
-#include "image_type.h"
+#include "image_wrapper.h"
 #include "support_def.h"
 
 #include "IO.hpp"

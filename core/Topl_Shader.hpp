@@ -90,13 +90,13 @@ public:
 	unsigned short getInputCount() const { return _inputs.size(); }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)actor->getRot(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
 	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)camera->getRotation(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 
 private:

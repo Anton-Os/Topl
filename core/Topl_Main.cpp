@@ -1,20 +1,20 @@
-#include "Topl_App.hpp"
+#include "Topl_Main.hpp"
 
-Topl_App::Topl_App(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
+Topl_Main::Topl_Main(const char* execPath, const char* name, APP_Backend backend) : _backend(backend) {
     _platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
 	_renderer->setDrawMode(DRAW_Triangles);
 }
 
-Topl_App::~Topl_App() {
+Topl_Main::~Topl_Main() {
     delete(_platform);
 #ifdef RASTERON_H
 	cleanupFreeType();
 #endif
 }
 
-void Topl_App::run(){
+void Topl_Main::run(){
     init();
 
     while (1) {  

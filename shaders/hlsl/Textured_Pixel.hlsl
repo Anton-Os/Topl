@@ -23,8 +23,8 @@ float4 switchRB(float4 color){ // switch red and blue color values
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	float4 color = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y));
-	// float4 color = areaTex.Sample(areaSampler, float3(input.texcoord.x, input.texcoord.y, input.texcoord.z));
+	// float4 color = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y));
+	float4 color = areaTex.Sample(areaSampler, float3(input.texcoord.x, input.texcoord.y, input.texcoord.z));
 	color = switchRB(color);
 	return color;
 }

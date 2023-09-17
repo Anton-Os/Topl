@@ -27,8 +27,8 @@ vec4 switchRB(vec4 color){ // switch red and blue color values
 // Main
 
 void main() {
-	color = texture(baseTex, vec2(texcoord.x, texcoord.y));
-	// color = texture(volumeTex, vec3(texcoord.x, texcoord.y, texcoord.z));
+	// color = texture(baseTex, vec2(texcoord.x, texcoord.y));
+	color = texture(volumeTex, vec3(texcoord.x, texcoord.y, texcoord.z));
 	color = switchRB(color);
 
 	if (color.a < 0.5) discard; // quick blending fix

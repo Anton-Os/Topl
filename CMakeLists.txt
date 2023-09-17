@@ -47,9 +47,9 @@ list(APPEND geometry_src
 	geometry/trees/Geo_Chain.cpp
     geometry/trees/Geo_Grid.cpp
     geometry/trees/Geo_Pane.cpp
-    geometry/trees/Geo_Humanoid.cpp
+    # geometry/trees/Geo_Humanoid.cpp
 )
-if(Assimp_FOUND)
+if(SUPPORT_3D AND Assimp_FOUND)
     list(APPEND geometry_src
         geometry/trees/Geo_Model.cpp
         geometry/primitives/Geo_Node.cpp
@@ -57,7 +57,7 @@ if(Assimp_FOUND)
 endif()
 
 list(APPEND core_src
-    core/Topl_App.cpp
+    core/Topl_Main.cpp
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
 
@@ -93,7 +93,7 @@ target_include_directories(GEOLIB INTERFACE
     $<INSTALL_INTERFACE:include/Topl>
 )
 
-if(Assimp_FOUND) # linking targets to Assimp
+if(SUPPORT_3D AND Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
    target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
    if(WIN32)
@@ -199,16 +199,15 @@ endforeach()
 
 # ------------- Demos and Tests ------------- #
 
-# include("cmake/legacyDemos.cmake")
 include("cmake/runTests.cmake")
 
-add_executable(Demo_Diagnostic demos/Diagnostic.cpp)
-add_executable(Demo_Playground demos/Playground.cpp)
-add_executable(Demo_Animotion demos/Animotion.cpp)
-add_executable(Demo_Splitscreen demos/Splitscreen.cpp)
-add_executable(Demo_Subsurface demos/Subsurface.cpp)
+add_executable(Diagnostic demos/Diagnostic.cpp)
+# add_executable(Playground demos/Playground.cpp)
+# add_executable(Animotion demos/Animotion.cpp)
+# add_executable(Splitscreen demos/Splitscreen.cpp)
+# add_executable(Subsurface demos/Subsurface.cpp)
 
-list(APPEND demo_targets Demo_Diagnostic Demo_Playground Demo_Animotion Demo_Splitscreen Demo_Subsurface) # add all demo targets to a list
+list(APPEND demo_targets Diagnostic) # Playground Animotion Splitscreen Subsurface) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support support/numeric geometry shaders)
