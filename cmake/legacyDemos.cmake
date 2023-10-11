@@ -2,7 +2,7 @@
 
 if(WIN32)
     add_executable(Legacy_Drx11_Pawns
-        geometry/trees/Humanoid.cpp
+        geometry/constructs/Humanoid.cpp
 
         demos/legacy/Drx11_Pawns.cpp
     )
@@ -15,7 +15,7 @@ if(WIN32)
 	target_link_libraries(Legacy_Drx11_Surface PRIVATE Drx11_ENGINE)
 
     add_executable(Legacy_Drx11_Overlay 
-        geometry/trees/Pane.cpp
+        geometry/constructs/Pane.cpp
 
         demos/legacy/Drx11_Overlay.cpp
     )
@@ -25,7 +25,7 @@ endif()
 # OpenGL Demos
 
 add_executable(Legacy_GL4_Pawns
-    geometry/trees/Humanoid.cpp
+    geometry/constructs/Humanoid.cpp
 
     demos/legacy/GL4_Pawns.cpp
 )
@@ -38,7 +38,7 @@ add_executable(Legacy_GL4_Surface demos/legacy/GL4_Surface.cpp)
 target_link_libraries(Legacy_GL4_Surface PRIVATE GL4_ENGINE)
 
 add_executable(Legacy_GL4_Overlay
-    geometry/trees/Pane.cpp
+    geometry/constructs/Pane.cpp
 
     demos/legacy/GL4_Overlay.cpp
 )

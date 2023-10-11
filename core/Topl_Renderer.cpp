@@ -103,7 +103,7 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 		const Img_Material* material = scene->getMaterialTex(actor->getName());
 		if (material != nullptr)
 			for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
-				attachTextureUnit(material->getTexUnit((MATERIAL_Property)p)->getImage(), renderID, p);
+				attachTexture(material->getLayer((unsigned short)p)->getImage(), renderID, p);
 		// else return logMessage(MESSAGE_Exclaim, "Null material encountered!");
 
 		const Img_Volume* volume = scene->getVolumeTex(actor->getName());

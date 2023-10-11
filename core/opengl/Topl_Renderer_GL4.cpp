@@ -202,8 +202,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		// Geo_RenderObj* renderObj = (Geo_RenderObj*)actor->getRenderObj();
-		Geo_Renderable* renderObj = (Geo_Renderable*)actor->getRenderable();
+		// Geo_RenderObj* mesh = (Geo_RenderObj*)actor->getRenderObj();
+		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
 		// render block buffer generation
 		shaderBlockData.clear();
@@ -218,11 +218,11 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		}
 
 		// indices generation
-		if (renderObj->getIndices() != nullptr) {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], renderObj->getIndexCount()));
+		if (mesh->getIndices() != nullptr) {
+			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], mesh->getIndexCount()));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderObj->getIndexCount() * sizeof(unsigned), renderObj->getIndices(), GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
 		}
 		else {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
@@ -230,10 +230,10 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		}
 
 		// vertices generation
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], renderObj->getVertexCount()));
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], mesh->getVertexCount()));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
-		glBufferData(GL_ARRAY_BUFFER, renderObj->getVertexCount() * sizeof(Geo_Vertex), renderObj->getVertices(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
 		_vertexArrays.push_back(VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]));
@@ -273,7 +273,7 @@ Img_Base Topl_Renderer_GL4::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_GL4::attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
@@ -292,7 +292,7 @@ void Topl_Renderer_GL4::attachTextureUnit(const Rasteron_Image* image, unsigned 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (_textureSlots[_textureIndex - 1] == textureTarget)
-		_textures.push_back(Texture_GL4(renderID, (MATERIAL_Property)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
+		_textures.push_back(Texture_GL4(renderID, (unsigned short)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
 }
 
 void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID) {

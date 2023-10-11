@@ -26,7 +26,7 @@ struct VertexArray_GL4 : public RenderTarget {
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
-	Texture_GL4(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, b, f, m) { texture = t; }
+	Texture_GL4(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, b, f, m) { texture = t; }
 
 	GLuint texture;
 };
@@ -39,7 +39,7 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 	GLuint shaderProg; // Linked Shader Program
 
 	GLuint vertexShader;
-	GLuint fragmentShader;
+	GLuint pixelShader;
 	GLuint geomShader;
 	GLuint tessCtrlShader;
 	GLuint tessEvalShader;
@@ -76,7 +76,7 @@ protected:
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
+	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);

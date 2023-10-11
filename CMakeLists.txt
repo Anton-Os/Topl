@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(Topl DESCRIPTION "Topl Graphics and Animation Engine")
+project(Topl DESCRIPTION "Topl Graphics Engine")
 
 set (CMAKE_CXX_STANDARD 11)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -26,7 +26,7 @@ if(WIN32)
 endif()
 
 list(APPEND support_src
-	support/numeric/ValueGen.cpp
+	support/ValueGen.cpp
 
 	support/IO.cpp
 	support/Controls.cpp
@@ -37,22 +37,20 @@ list(APPEND support_src
 
 list(APPEND geometry_src
     geometry/ShapesGen.cpp
-	# primitives
-    geometry/primitives/Geo_Flat.cpp
-    geometry/primitives/Geo_Conic.cpp
-    geometry/primitives/Geo_Extruded.cpp
-    geometry/primitives/Geo_Sphere.cpp
-	# trees
-    geometry/Geo_Tree.cpp
-	geometry/trees/Geo_Chain.cpp
-    geometry/trees/Geo_Grid.cpp
-    geometry/trees/Geo_Pane.cpp
-    # geometry/trees/Geo_Humanoid.cpp
+	# meshes
+    geometry/meshes/Geo_Flat.cpp
+    geometry/meshes/Geo_Conic.cpp
+    geometry/meshes/Geo_Extruded.cpp
+    geometry/meshes/Geo_Sphere.cpp
+	# constructs
+    # geometry/Geo_Construct.cpp
+    # geometry/constructs/Geo_Pane.cpp
+    # geometry/constructs/Geo_Humanoid.cpp
 )
 if(SUPPORT_3D AND Assimp_FOUND)
     list(APPEND geometry_src
-        geometry/trees/Geo_Model.cpp
-        geometry/primitives/Geo_Node.cpp
+        geometry/constructs/Geo_Model.cpp
+        geometry/meshes/Geo_Node.cpp
     )
 endif()
 
@@ -71,7 +69,7 @@ add_library(CORELIB # Core Library
     ${support_src}
     ${core_src}
 )
-target_include_directories(CORELIB PRIVATE core support support/numeric geometry)
+target_include_directories(CORELIB PRIVATE core support physics geometry)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
     INTERFACE
@@ -87,7 +85,7 @@ elseif(UNIX AND NOT APPLE) # Unix Specific
 endif()
 
 add_library(GEOLIB ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core support support/numeric geometry)
+target_include_directories(GEOLIB PRIVATE core support physics geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -129,7 +127,7 @@ if(WIN32)
         core/directx/Topl_Pipeline_Drx11.cpp
         core/directx/Topl_Renderer_Drx11.cpp
     )
-    target_include_directories(Drx11_ENGINE PRIVATE core support support/numeric geometry)
+    target_include_directories(Drx11_ENGINE PRIVATE core support physics geometry)
     target_include_directories(Drx11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -145,7 +143,7 @@ if(Vulkan_FOUND)
         core/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(Vulkan_ENGINE PRIVATE core support support/numeric geometry)
+    target_include_directories(Vulkan_ENGINE PRIVATE core support physics geometry)
     target_include_directories(Vulkan_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -160,7 +158,7 @@ add_library(GL4_ENGINE
     core/opengl/Topl_Pipeline_GL4.cpp
     core/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PRIVATE core support support/numeric geometry)
+target_include_directories(GL4_ENGINE PRIVATE core support physics geometry)
 target_include_directories(GL4_ENGINE INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -210,7 +208,7 @@ add_executable(Diagnostic demos/Diagnostic.cpp)
 list(APPEND demo_targets Diagnostic) # Playground Animotion Splitscreen Subsurface) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support support/numeric geometry shaders)
+    target_include_directories(${target} PRIVATE core support physics geometry shaders)
     target_link_libraries(${target} PRIVATE CORELIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
@@ -262,10 +260,10 @@ if(Vulkan_FOUND)
 				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
 			endif()
 			
-			string(FIND ${shader_name} "Frag" isFragmentShader)
-			if(NOT isFragmentShader EQUAL -1)
-				message("Compiling fragment shader ${shader_name} inisde of ${shader}")
-				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=fragment ${shader} -o ${shader_name}.spv")
+			string(FIND ${shader_name} "Frag" isPixelShader)
+			if(NOT isPixelShader EQUAL -1)
+				message("Compiling pixel shader ${shader_name} inisde of ${shader}")
+				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=pixel ${shader} -o ${shader_name}.spv")
 			endif()
 
             # TODO: Add support for tesselation and geometry shaders
@@ -288,7 +286,7 @@ install(TARGETS CORELIB GEOLIB ${engine_targets}
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
-	${CMAKE_CURRENT_SOURCE_DIR}/support/numeric*.h
+	${CMAKE_CURRENT_SOURCE_DIR}/physics*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
 )

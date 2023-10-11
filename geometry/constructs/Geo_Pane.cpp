@@ -1,7 +1,7 @@
 #include "Geo_Pane.hpp"
 
 Geo_FlatSquare Geo_PaneLayout::_decoySquare = Geo_FlatSquare(PANE_RADIUS);
-Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_Renderable*)&_decoySquare);
+Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_Mesh*)&_decoySquare);
 
 static std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }
 
@@ -9,24 +9,20 @@ void Geo_PaneLayout::resize(unsigned rows, unsigned columns) {
 	_rows = rows;
 	_columns = columns;
 
-	// sizing root pane
-	_rootSquare.scale((_height * 2) + _border, AXIS_Y);
-	_rootSquare.scale((_width * 2) + _border, AXIS_X);
+	_rootSquare.scale({(_width * 2) + _border, (_height * 2) + _border, 0.0f});
 
-	// sizing child panes
-	_panes.resize(getActorCount() - 1);
-	_childSquare.scale(((_height * 2) / _rows) -_border, AXIS_Y);
-	_childSquare.scale(((_width * 2) / _columns) -_border, AXIS_X);
+	_panes.resize(_geoActors.size() - 1); // resizing child panes
+	_childSquare.scale({((_width * 2) / _columns) - _border, ((_height * 2) / _rows) - _border, 0.0f});
 }
 
 void Geo_PaneLayout::configure(Topl_Scene* scene) {
-	Geo_Actor* rootActor = getNextActor(); // 1st actor is root pane
+	Geo_Actor* rootActor = &_geoActors[0]; // 1st actor is root pane
 
 	// child panes
-	for (unsigned p = 1; p < getActorCount(); p++) {
-		Geo_Actor* actor = getNextActor();
+	for (unsigned p = 1; p < _geoActors.size(); p++) {
+		Geo_Actor* actor = &_geoActors[p];
 		_panes[p - 1].actor = actor;
-		actor->setRenderable((Geo_Renderable*)&_childSquare);
+		actor->setMesh((Geo_Mesh*)&_childSquare);
 
 		float xInc = (_width / _columns);
 		float yInc = (_height / _rows);
@@ -43,7 +39,7 @@ void Geo_PaneLayout::configure(Topl_Scene* scene) {
 
 	// root pane
 	_rootPane.actor = rootActor;
-	rootActor->setRenderable((Geo_Renderable*)&_rootSquare);
+	rootActor->setMesh((Geo_Mesh*)&_rootSquare);
 	scene->addGeometry(getPrefix() + "root", rootActor);
 #ifdef RASTERON_H
 	scene->addTexture(getPrefix() + "root", _rootPane.getBackground()->getImage());

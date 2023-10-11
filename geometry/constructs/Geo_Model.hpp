@@ -1,15 +1,15 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-#include "Geo_Tree.hpp"
-#include "primitives/Geo_Node.hpp"
+#include "Geo_Construct.hpp"
+#include "meshes/Geo_Node.hpp"
 
-class Geo_Model : public Geo_Tree {
+class Geo_Model : public Geo_Construct {
 public:
     Geo_Model( // Prebake Constructor
 		const std::string& prefix,
         const std::string& filePath
-    ) : Geo_Tree(prefix){
+    ) : Geo_Construct(prefix){
         _filePath = filePath;
     }
 
@@ -17,14 +17,14 @@ public:
 		const std::string& prefix,
         const std::string& filePath,
         Topl_Scene* scene
-    ) : Geo_Tree(prefix){
+    ) : Geo_Construct(prefix){
         _filePath = filePath;
         configure(scene);
     }
 
     ~Geo_Model();
 
-	void move(Vec3f vec) { // replace Geo_Tree move()
+	void move(Vec3f vec) { // replace Geo_Construct move()
 		for (std::vector<Geo_Node*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
 			(*n)->updatePos({ vec });
 	}

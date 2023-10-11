@@ -32,7 +32,7 @@ struct Buffer : public RenderTarget {
     Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTarget(id){ type = t; count = c; }
 
     enum BUFF_Type type; // type of buffer 
-    unsigned count = 1; // no. of primitives
+    unsigned count = 1; // no. of meshes
 };
 
 // Texture
@@ -45,10 +45,10 @@ struct Texture : public RenderTarget {
 	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
 		format = f; 
         mode = m;
-		binding = MATERIAL_Albedo;
+		binding = 0;
 	}
 
-	Texture(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
+	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
 		format = f;
 		mode = m;
 		binding = b;
@@ -76,13 +76,7 @@ struct Topl_Viewport {
 
 // Renderer
 
-enum DRAW_Mode {
-	DRAW_Points,
-	DRAW_Lines,
-	DRAW_Triangles, // Default
-	DRAW_Fan,
-	DRAW_Strip
-};
+enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip };
 
 #define REGULAR_DRAW_ORDER true
 #define INVERSE_DRAW_ORDER false
@@ -148,8 +142,8 @@ private:
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID) { attachTextureUnit(image, renderID, MATERIAL_Albedo); }
-	virtual void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
+	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID) { attachTexture(image, renderID, 0); } // attaches to default binding
+	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
 	virtual void attachVolume(const Img_Volume* volume, unsigned renderID) = 0;
 #endif
 };

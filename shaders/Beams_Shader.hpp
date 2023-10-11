@@ -12,10 +12,10 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	Beams_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
-		appendDataToBytes((uint8*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)camera->getRotation(), sizeof(Vec3f), bytes);
-		// appendDataToBytes((uint8*)camera->getProjMatrix(), camera->getProjMatrix()->size() * sizeof(float), bytes);
+		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
+		// appendDataToBytes((uint8_t*)camera->getProjMatrix(), camera->getProjMatrix()->size() * sizeof(float), bytes);
 
 		appendLight(&skyLight, bytes);
 		appendLight(&flashLight, bytes);
@@ -32,8 +32,8 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	}
 private:
 	static void appendLight(const Topl_Light* light, blockBytes_t* bytes) {
-		appendDataToBytes((uint8*)&light->pos, sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8*)&light->value, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&light->pos, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&light->value, sizeof(Vec3f), bytes);
 	}
 protected:
 	unsigned _mode = BEAMS_MODE_LIGHT;
@@ -53,17 +53,17 @@ struct Drx11_Beams_VertexShader : public Beams_VertexShader {
 	Drx11_Beams_VertexShader(unsigned mode) : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl", mode) {}
 };
 
-// Fragment Shaders
+// Pixel Shaders
 
-struct Beams_FragmentShader : public Topl_Shader {
-	Beams_FragmentShader() : Topl_Shader(){}
-	Beams_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name){ }
+struct Beams_PixelShader : public Topl_Shader {
+	Beams_PixelShader() : Topl_Shader(){}
+	Beams_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
 };
 
-struct GL4_Beams_FragmentShader : public Beams_FragmentShader {
-	GL4_Beams_FragmentShader() : Beams_FragmentShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
+struct GL4_Beams_PixelShader : public Beams_PixelShader {
+	GL4_Beams_PixelShader() : Beams_PixelShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
 };
 
-struct Drx11_Beams_FragmentShader : public Beams_FragmentShader {
-	Drx11_Beams_FragmentShader() : Beams_FragmentShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
+struct Drx11_Beams_PixelShader : public Beams_PixelShader {
+	Drx11_Beams_PixelShader() : Beams_PixelShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
 };

@@ -13,10 +13,10 @@ enum MESH_Attribute {
 unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
 unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
 
-class Geo_Mesh : public Geo_Renderable {
+class Geo_Mesh : public Geo_Mesh {
 public:
 	Geo_Mesh(const aiMesh* mesh)
-	: Geo_Renderable(
+	: Geo_Mesh(
 		getMeshAttribCount(mesh, MESH_Vertex),
 		getMeshAttribCount(mesh, MESH_Index)
 	){
@@ -25,7 +25,7 @@ public:
 	}
 
 	Geo_Mesh(const std::vector<const aiMesh*>& meshes)
-		: Geo_Renderable(
+		: Geo_Mesh(
 			getMeshesAttribCount(meshes, MESH_Vertex),
 			getMeshesAttribCount(meshes, MESH_Index)
 		) {

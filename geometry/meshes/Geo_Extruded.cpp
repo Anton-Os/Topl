@@ -4,8 +4,8 @@ void Geo_Extruded::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });
 	for (unsigned v = 1; v < _vertices.size() / 2; v++) { // front face vertices
 		Vec3f pos = Vec3f({
-			(float)sin(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
-			(float)cos(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
+			(float)sin(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
+			(float)cos(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
 			(float)DEFAULT_Z + (_depth / 2)
 		});
 
@@ -18,8 +18,8 @@ void Geo_Extruded::genVertices() {
 	_vertices[_vertices.size() / 2] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z - (_depth / 2) }, { 0.5, 0.5, 1.0f });
 	for (unsigned v = 1 + (_vertices.size() / 2); v < _vertices.size(); v++) { // back face vertices
 		Vec3f pos = Vec3f({
-			(float)sin(_shape.getInitAngle() + ((v - (_vertices.size() / 2)) * _shape.getAngle())) * _shape.getSize(),
-			(float)cos(_shape.getInitAngle() + ((v - (_vertices.size() / 2)) * _shape.getAngle())) * _shape.getSize(),
+			(float)sin(ANGLE_START(_shape.segments) + ((v - (_vertices.size() / 2)) * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
+			(float)cos(ANGLE_START(_shape.segments) + ((v - (_vertices.size() / 2)) * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
 			(float)DEFAULT_Z - (_depth / 2)
 		});
 

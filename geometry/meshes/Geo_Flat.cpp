@@ -5,15 +5,15 @@ void Geo_Flat::genVertices() {
 
 	for (unsigned v = 1; v < _vertices.size(); v++) {
 		Vec3f pos = Vec3f({
-			(float)sin(_shape.getInitAngle() + ((v - 1) * _shape.getAngle())) * _shape.getSize(),
-			(float)cos(_shape.getInitAngle() + ((v - 1) * _shape.getAngle())) * _shape.getSize(),
+			(float)sin(ANGLE_START(_shape.segments) + ((v - 1) * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
+			(float)cos(ANGLE_START(_shape.segments) + ((v - 1) * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
 			(float)_depth
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
 		Vec3f texcoord = getTexCoord(v, 0.0f);
 
-		_vertices[v] = Geo_Vertex(pos , texcoord);
+		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
 }
 

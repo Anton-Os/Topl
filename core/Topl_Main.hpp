@@ -4,7 +4,7 @@
 
 class Topl_Main {
 public:
-    Topl_Main(const char* execPath, const char* name, APP_Backend backend);
+    Topl_Main(const char* execPath, const char* name, TARGET_Backend backend);
 	~Topl_Main();
 
 	void run();
@@ -19,7 +19,7 @@ protected:
     virtual void loop(double frameTime) = 0;
 
 	// Rendering
-	const enum APP_Backend _backend;
+	const enum TARGET_Backend _backend;
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 

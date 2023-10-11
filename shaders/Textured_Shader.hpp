@@ -8,11 +8,11 @@ struct Textured_VertexShader : public Topl_EntryShader {
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genRenderBlock(actor, renderID, bytes);
-		appendDataToBytes((uint8*)&_texScroll, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8*)&_time, sizeof(double), bytes);
+		appendDataToBytes((uint8_t*)&_time, sizeof(double), bytes);
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
 
@@ -31,17 +31,17 @@ struct Drx11_Textured_VertexShader : public Textured_VertexShader {
 	Drx11_Textured_VertexShader() : Textured_VertexShader(genPrefix_hlsl() + "Textured_Vertex.hlsl") {}
 };
 
-// Fragment Shaders
+// Pixel Shaders
 
-struct Textured_FragmentShader : public Topl_Shader {
-	Textured_FragmentShader() : Topl_Shader(){}
-	Textured_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
+struct Textured_PixelShader : public Topl_Shader {
+	Textured_PixelShader() : Topl_Shader(){}
+	Textured_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct GL4_Textured_FragmentShader : public Textured_FragmentShader {
-	GL4_Textured_FragmentShader() : Textured_FragmentShader(genPrefix_glsl() + "Textured_Frag.glsl") {}
+struct GL4_Textured_PixelShader : public Textured_PixelShader {
+	GL4_Textured_PixelShader() : Textured_PixelShader(genPrefix_glsl() + "Textured_Frag.glsl") {}
 };
 
-struct Drx11_Textured_FragmentShader : public Textured_FragmentShader {
-	Drx11_Textured_FragmentShader() : Textured_FragmentShader(genPrefix_hlsl() + "Textured_Pixel.hlsl") { }
+struct Drx11_Textured_PixelShader : public Textured_PixelShader {
+	Drx11_Textured_PixelShader() : Textured_PixelShader(genPrefix_hlsl() + "Textured_Pixel.hlsl") { }
 };

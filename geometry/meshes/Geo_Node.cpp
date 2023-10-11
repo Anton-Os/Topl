@@ -89,6 +89,6 @@ Geo_Node::Geo_Node(const aiScene* scene, const aiNode* node) : Geo_Actor() {
 		}
 		else puts("No meshes detected!");
 
-		if(_mesh != nullptr) setRenderable((Geo_Renderable*)_mesh);
+		if(_mesh != nullptr) setMesh((Geo_Mesh*)_mesh);
 	}
 }

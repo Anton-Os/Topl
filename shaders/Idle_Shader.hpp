@@ -27,17 +27,17 @@ struct Drx11_Idle_VertexShader : public Idle_VertexShader {
 	Drx11_Idle_VertexShader() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
 };
 
-// Fragment Shaders
+// Pixel Shaders
 
-struct Idle_FragmentShader : public Topl_Shader {
-	Idle_FragmentShader() : Topl_Shader(){}
-	Idle_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
+struct Idle_PixelShader : public Topl_Shader {
+	Idle_PixelShader() : Topl_Shader(){}
+	Idle_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct GL4_Idle_FragmentShader : public Idle_FragmentShader {
-	GL4_Idle_FragmentShader() : Idle_FragmentShader(genPrefix_glsl() + "Idle_Frag.glsl") {}
+struct GL4_Idle_PixelShader : public Idle_PixelShader {
+	GL4_Idle_PixelShader() : Idle_PixelShader(genPrefix_glsl() + "Idle_Frag.glsl") {}
 };
 
-struct Drx11_Idle_FragmentShader : public Idle_FragmentShader {
-	Drx11_Idle_FragmentShader() : Idle_FragmentShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
+struct Drx11_Idle_PixelShader : public Idle_PixelShader {
+	Drx11_Idle_PixelShader() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
 };

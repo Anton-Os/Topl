@@ -8,10 +8,10 @@
 
 // Backends List
 
-enum APP_Backend {
-	APP_OpenGL_4,
-	APP_DirectX_11,
-	APP_Vulkan
+enum TARGET_Backend {
+	TARGET_OpenGL,
+	TARGET_DirectX11,
+	TARGET_Vulkan
 };
 
 // Engine Configuration
@@ -42,10 +42,10 @@ struct Vulkan_Engine_Config : public Engine_Config {
 class Topl_Factory {
 public:
 	~Topl_Factory();
-	static Topl_Renderer* genRenderer(APP_Backend backend, Platform* platform);
+	static Topl_Renderer* genRenderer(TARGET_Backend backend, Platform* platform);
 
-	static Topl_Pipeline* genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	static Topl_Pipeline* genPipeline(APP_Backend backend,
+	static Topl_Pipeline* genPipeline(TARGET_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	static Topl_Pipeline* genPipeline(TARGET_Backend backend,
 		entry_shader_cptr vertexSource,
 		shader_cptr pixelSource,
 		shader_cptr tessCtrlSource,
@@ -53,7 +53,7 @@ public:
 		shader_cptr geomSource
 	);
 
-	static void switchPipeline(APP_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
+	static void switchPipeline(TARGET_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
 private:
 	static void configPipelines(); // config helper function
 

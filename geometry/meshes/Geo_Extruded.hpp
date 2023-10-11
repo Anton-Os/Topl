@@ -1,16 +1,16 @@
-#include "Geometry.hpp"
+#include "Geo_Mesh.hpp"
 
-class Geo_Extruded : public Geo_Renderable {
+class Geo_Extruded : public Geo_Mesh {
 public:
 	Geo_Extruded(Shape2D shape)
-	: Geo_Renderable((shape.segments + 1) * 2, shape.segments * 12) {
+	: Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
 		_shape = shape;
 		_depth = shape.radius;
 		genVertices(); genIndices();
 	}
 
 	Geo_Extruded(Shape2D shape, float depth) 
-	: Geo_Renderable((shape.segments + 1) * 2, shape.segments * 12) {
+	: Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
 		_shape = shape;
 		_depth = depth;
 		genVertices(); genIndices();

@@ -2,11 +2,12 @@
 
 #include <map>
 
-#include "physics.h"
-#include "physics_motion.h"
-
 #include "image_wrapper.h"
 #include "support_def.h"
+
+#include "Phys_Actor.h"
+#include "Phys_Connector.h"
+#include "Phys_Motion.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
@@ -55,7 +56,7 @@ public:
 	void setRotation(const Vec3f& vec){ _rotation = vec; }
 	void updateRotation(const Vec3f& vec) { _rotation = _rotation + vec; }
 	vec3f_cptr_t getPos() const { return &_pos; }
-	vec3f_cptr_t getRotation() const { return &_rotation; }
+	vec3f_cptr_t getRot() const { return &_rotation; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
 	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f }); // in front of scene

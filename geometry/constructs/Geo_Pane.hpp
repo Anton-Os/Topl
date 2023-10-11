@@ -1,6 +1,6 @@
-#include "primitives/Geo_Flat.hpp"
+#include "meshes/Geo_Flat.hpp"
 
-#include "Geo_Tree.hpp"
+#include "Geo_Construct.hpp"
 
 // Pane Object
 
@@ -12,14 +12,14 @@ class Geo_Pane {
 public:
 	Geo_Pane() {
 #ifdef RASTERON_H
-		_backgroundImg.setColorImage(genRandColor()); // random color assignment
+		_backgroundImg.setColorImage(actor->getId()); // random color assignment
 #endif
 	}
 
 	Geo_Pane(const Geo_Actor * a) {
 		actor = a;
 #ifdef RASTERON_H
-		_backgroundImg.setColorImage(genRandColor()); // random color assignment
+		_backgroundImg.setColorImage(actor->getId()); // random color assignment
 #endif
 	}
 
@@ -35,12 +35,12 @@ private:
 #define PANE_RADIUS 0.5
 #define PANE_BORDER 0.05f
 
-class Geo_PaneLayout : public Geo_Tree {
+class Geo_PaneLayout : public Geo_Construct {
 public:
 	Geo_PaneLayout(
 		const std::string& prefix,
 		unsigned rows, unsigned columns
-	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
+	) : Geo_Construct(prefix, &_decoyActor, (rows * columns) + 1) {
 		resize(rows, columns);
 	}
 
@@ -48,7 +48,7 @@ public:
 		const std::string& prefix,
 		unsigned rows, unsigned columns,
 		float radius, float border
-	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
+	) : Geo_Construct(prefix, &_decoyActor, (rows * columns) + 1) {
 		_width = radius; _height = radius;
 		_border = border;
 		resize(rows, columns);
@@ -58,7 +58,7 @@ public:
 		const std::string& prefix,
 		unsigned rows, unsigned columns,
 		float width, float height, float border
-	) : Geo_Tree(prefix, &_decoyActor, (rows * columns) + 1) {
+	) : Geo_Construct(prefix, &_decoyActor, (rows * columns) + 1) {
 		_width = width; _height = height;
 		_border = border;
 		resize(rows, columns);

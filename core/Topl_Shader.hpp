@@ -10,7 +10,7 @@
 
 enum SHDR_Type {
 	SHDR_Vertex,
-	SHDR_Fragment,
+	SHDR_Pixel,
 	SHDR_Geom,
 	SHDR_TessCtrl,
 	SHDR_TessEval
@@ -95,7 +95,7 @@ public:
 	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)camera->getRotation(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 

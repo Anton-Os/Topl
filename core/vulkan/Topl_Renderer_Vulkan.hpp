@@ -1,7 +1,13 @@
 // Vulkan Specific Inclusions
 
+#define VK_PROTOTYPES
+#ifdef _WIN32
+	#define VK_USE_PLATFORM_WIN32_KHR
+#endif 
+
 #include <vulkan/vk_platform.h>
 #include <vulkan/vulkan.h>
+
 
 // Renderer Implementation
 
@@ -42,13 +48,31 @@ protected:
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
+	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 
 	Topl_Pipeline_Vulkan* _pipeline;
 
-	VkInstance _instance = VkInstance();
+	// unsigned _physicalDeviceIdx = 0; // TODO: Make configurable if more than one device
+	std::vector<VkPhysicalDevice> _physicalDevices = {};
+	std::vector<VkQueueFamilyProperties> _queueFamilyProps = {};
+	VkInstance _instance;
+	VkDevice _logicDevice;
+	VkQueue _graphicsQueue;
+	VkSurfaceKHR _surface;
+	VkSurfaceCapabilitiesKHR _surfaceCaps = {};
+	std::vector<VkSurfaceFormatKHR> _surfaceFormats = {};
+	std::vector<VkPresentModeKHR> _presentModes = {};
+	VkSwapchainKHR _swapchain;
+	std::vector<VkImage> _swapchainImages = {};
+	std::vector<VkImageView> _swapchainImageViews = {};
+	VkRenderPass _renderpass;
+	VkPipelineLayout _pipelineLayout;
+	VkCommandPool _commandPool;
+	std::vector<VkCommandBuffer> _commandBuffers = {};
+
+
 	std::vector<VkExtensionProperties> _vulkanExtensions;
 	std::vector<VkLayerProperties> _vulkanLayers;
 };

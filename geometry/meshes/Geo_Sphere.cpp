@@ -3,13 +3,13 @@
 void Geo_Sphere::genVertices() {
 	unsigned v = 0; // target vertex
 
-	for (unsigned stack = 0; stack <= _shape.xSegments; stack++) {
-		float stackAngle = (MATH_PI / 2) - (stack * (MATH_PI / _shape.xSegments));
-		float xy = _shape.getSize() * cosf(stackAngle);
-		float z = _shape.getSize() * sinf(stackAngle);
-		for (unsigned slice = 0; slice <= _shape.ySegments; slice++) {
+	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {
+		float stackAngle = (MATH_PI / 2) - (stack * (MATH_PI / _shape.xSegs));
+		float xy = RADIUS_SIZE(_shape.radius) * cosf(stackAngle);
+		float z = RADIUS_SIZE(_shape.radius) * sinf(stackAngle);
+		for (unsigned slice = 0; slice <= _shape.ySegs; slice++) {
 			// float sliceAngle = slice * ((2 * MATH_PI) / _shape.ySegments);
-			float sliceAngle = slice * _shape.getAngleY();
+			float sliceAngle = slice * ANGLE_OFFSET(_shape.ySegs);
 			float x = xy * cosf(sliceAngle);
 			float y = xy * sinf(sliceAngle);
 
@@ -26,10 +26,10 @@ void Geo_Sphere::genVertices() {
 void Geo_Sphere::genIndices() {
 	unsigned i = 0;
 
-	for (unsigned stack = 0; stack <= _shape.xSegments; stack++) {
-		unsigned stackIndex = stack * (_shape.ySegments + 1);
-		unsigned nextIndex = stackIndex + _shape.ySegments + 1;
-		for (unsigned slice = 0; slice <= _shape.ySegments; slice++) {
+	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {
+		unsigned stackIndex = stack * (_shape.ySegs + 1);
+		unsigned nextIndex = stackIndex + _shape.ySegs + 1;
+		for (unsigned slice = 0; slice <= _shape.ySegs; slice++) {
 			stackIndex++;
 			nextIndex++;
 
@@ -39,7 +39,7 @@ void Geo_Sphere::genIndices() {
 				_indices[i + 2] = stackIndex + 1;
 				i += 3;
 			}
-			if (stack < _shape.xSegments - 1) { // index all except last stack
+			if (stack < _shape.xSegs - 1) { // index all except last stack
 				_indices[i] = stackIndex + 1;
 				_indices[i + 1] = nextIndex;
 				_indices[i + 2] = nextIndex + 1;

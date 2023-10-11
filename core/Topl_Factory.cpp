@@ -39,20 +39,20 @@ Topl_Factory::~Topl_Factory(){
 
 // Factory Renderer
 
-Topl_Renderer* Topl_Factory::genRenderer(APP_Backend backend, Platform* platform){
+Topl_Renderer* Topl_Factory::genRenderer(TARGET_Backend backend, Platform* platform){
     switch(backend){
-    case APP_OpenGL_4:
+    case TARGET_OpenGL:
         if(GL4_engine_cfg.renderer == nullptr) 
 			GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getParentWindow());
         return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
-	case APP_DirectX_11:
+	case TARGET_DirectX11:
         if(Drx11_engine_cfg.renderer == nullptr) 
 			Drx11_engine_cfg.renderer = new Topl_Renderer_Drx11(platform->getParentWindow());
         return (Topl_Renderer*)Drx11_engine_cfg.renderer;
 #endif
 #ifdef VULKAN_H
-	case APP_Vulkan:
+	case TARGET_Vulkan:
 		if (Vulkan_engine_cfg.renderer == nullptr) 
 			Vulkan_engine_cfg.renderer = new Topl_Renderer_Vulkan(platform->getParentWindow());
 		return (Topl_Renderer*)Vulkan_engine_cfg.renderer;
@@ -76,11 +76,11 @@ void Topl_Factory::configPipelines() {
 #endif
 }
 
-Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+Topl_Pipeline* Topl_Factory::genPipeline(TARGET_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	configPipelines();
 
     switch(backend){
-    case APP_OpenGL_4:
+    case TARGET_OpenGL:
         if(GL4_engine_cfg.renderer == nullptr) return nullptr; // Error
         else {
             Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
@@ -90,7 +90,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
             return *pipeline;
         }
 #ifdef _WIN32
-    case APP_DirectX_11:
+    case TARGET_DirectX11:
         if(Drx11_engine_cfg.renderer == nullptr) return nullptr; // Error
         else {
             Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
@@ -101,7 +101,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
         }
 #endif
 #ifdef VULKAN_H
-	case APP_Vulkan:
+	case TARGET_Vulkan:
 		if(Vulkan_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
 			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
@@ -115,11 +115,11 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
     }
 }
 
-Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
+Topl_Pipeline* Topl_Factory::genPipeline(TARGET_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
 	configPipelines();
 
 	switch (backend) {
-	case APP_OpenGL_4:
+	case TARGET_OpenGL:
 		if (GL4_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
 			Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
@@ -129,7 +129,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 			return *pipeline;
 		}
 #ifdef _WIN32
-	case APP_DirectX_11:
+	case TARGET_DirectX11:
 		if (Drx11_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
 			Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
@@ -140,7 +140,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
 		}
 #endif
 #ifdef VULKAN_H
-	case APP_Vulkan:
+	case TARGET_Vulkan:
 		if (Vulkan_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
 			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
@@ -154,15 +154,15 @@ Topl_Pipeline* Topl_Factory::genPipeline(APP_Backend backend, entry_shader_cptr 
     }
 }
 
-void Topl_Factory::switchPipeline(APP_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline) {
-	if (backend == APP_OpenGL_4)
+void Topl_Factory::switchPipeline(TARGET_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline) {
+	if (backend == TARGET_OpenGL)
 		((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
 #ifdef _WIN32
-	else if (backend == APP_DirectX_11)
+	else if (backend == TARGET_DirectX11)
 		((Topl_Renderer_Drx11*)renderer)->setPipeline((Topl_Pipeline_Drx11*)pipeline);
 #endif
 #ifdef VULKAN_H
-	else if (backend == APP_Vulkan)
+	else if (backend == TARGET_Vulkan)
 		((Topl_Renderer_Vulkan*)renderer)->setPipeline((Topl_Pipeline_Vulkan*)pipeline);
 #endif
 	else return; // Error

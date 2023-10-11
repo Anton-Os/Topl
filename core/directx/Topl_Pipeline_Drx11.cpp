@@ -43,7 +43,7 @@ void Topl_Renderer_Drx11::setPipeline(Topl_Pipeline_Drx11* pipeline) {
 
 void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr) 
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
@@ -69,7 +69,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 
 void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code

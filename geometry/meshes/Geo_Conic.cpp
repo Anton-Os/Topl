@@ -6,8 +6,8 @@ void Geo_Conic::genVertices() {
 
 	for (unsigned v = 1; v < _vertices.size() - 1; v++) {
 		Vec3f pos = Vec3f({ 
-			(float)sin(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
-			(float)cos(_shape.getInitAngle() + (v * _shape.getAngle())) * _shape.getSize(),
+			(float)sin(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
+			(float)cos(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
 			(float)DEFAULT_Z
 		});
 

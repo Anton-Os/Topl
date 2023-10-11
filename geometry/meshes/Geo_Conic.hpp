@@ -1,16 +1,16 @@
-#include "Geometry.hpp"
+#include "Geo_Mesh.hpp"
 
-class Geo_Conic : public Geo_Renderable {
+class Geo_Conic : public Geo_Mesh {
 public:
 	Geo_Conic(Shape2D shape)
-	: Geo_Renderable(shape.segments + 2, shape.segments * 6) {
+	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
 		_apex = Vec3f({ 0.0f, 0.0f, shape.radius + DEFAULT_Z }); // default apex
 		genVertices(); genIndices();
 	}
 
 	Geo_Conic(Shape2D shape, Vec3f apex)
-	: Geo_Renderable(shape.segments + 2, shape.segments * 6) {
+	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
 		_apex = apex; // custom apex
 		genVertices(); genIndices();

@@ -2,7 +2,7 @@
 
 #include "support_def.h"
 
-#include "Geometry.hpp"
+#include "Geo_Mesh.hpp"
 
 #define IMG_SIDE_LEN 256
 
@@ -56,33 +56,26 @@ private:
 
 #define MAX_TEX_BINDINGS 6 // matches MATERIAL_Property enumeration
 
-enum MATERIAL_Property {
+/* enum MATERIAL_Property {
 	MATERIAL_Albedo = 0,
 	MATERIAL_Height = 1,
 	MATERIAL_Roughness = 2,
 	MATERIAL_Opacity = 3,
 	MATERIAL_Enviornment = 4,
 	MATERIAL_Shadow = 5,
-};
+}; */
 
-struct Img_TextureUnit : public Img_Base {
-	Img_TextureUnit() : Img_Base(){ property = MATERIAL_Albedo; }
-	Img_TextureUnit(enum MATERIAL_Property p) : Img_Base(){ property = p; }
+struct Img_Layer : public Img_Base {
+	Img_Layer() : Img_Base(){ layer = 0; }
+	Img_Layer(unsigned short l) : Img_Base(){ layer = l; }
 
-	enum MATERIAL_Property property;
+	unsigned short layer;
 };
 
 struct Img_Material {
-	const Img_TextureUnit* getTexUnit(MATERIAL_Property property) const { return &texUnits[property]; }
+	const Img_Layer* getLayer(unsigned short l) const { return &layers[l]; }
 
-	Img_TextureUnit texUnits[MAX_TEX_BINDINGS] = {
-		Img_TextureUnit(MATERIAL_Albedo),
-		Img_TextureUnit(MATERIAL_Height),
-		Img_TextureUnit(MATERIAL_Roughness),
-		Img_TextureUnit(MATERIAL_Opacity),
-		Img_TextureUnit(MATERIAL_Enviornment),
-		Img_TextureUnit(MATERIAL_Shadow)
-	};
+	Img_Layer layers[MAX_TEX_BINDINGS] = { Img_Layer(0), Img_Layer(1), Img_Layer(2), Img_Layer(3), Img_Layer(4), Img_Layer(5) };
 };
 
 // Volume based on slices
@@ -122,11 +115,11 @@ private:
 
 // Heightmap wrapper around Rasteron_Heightmap
 
-struct Img_Heightmap : public Geo_Renderable { // wrapper around Rasteron_Heightmap
-    Img_Heightmap() : Geo_Renderable(0){} // Empty Constructor
+struct Img_Heightmap : public Geo_Mesh { // wrapper around Rasteron_Heightmap
+    Img_Heightmap() : Geo_Mesh(0){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
     Img_Heightmap(const Rasteron_Image* refImage)
-    : Geo_Renderable(refImage->height * refImage->width) {
+    : Geo_Mesh(refImage->height * refImage->width) {
         heightmap = createHeightmap(refImage);
 		genVertices(); genIndices();
     }

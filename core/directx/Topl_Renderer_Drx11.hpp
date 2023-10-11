@@ -27,7 +27,7 @@ struct Texture_Drx11 : public Texture {
 		resView = r;
 	}
 
-	Texture_Drx11(unsigned id, MATERIAL_Property b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
+	Texture_Drx11(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
 	: Texture(id, b, f, m) {
 		sampler = s;
 		resView = r;
@@ -91,7 +91,7 @@ protected:
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachTextureUnit(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
+	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 	Buffer_Drx11* findBuffer(BUFF_Type type, unsigned long renderID);

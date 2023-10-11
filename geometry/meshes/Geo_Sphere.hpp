@@ -1,13 +1,13 @@
-#include "Geometry.hpp"
+#include "Geo_Mesh.hpp"
 
 // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 
-class Geo_Sphere : public Geo_Renderable {
+class Geo_Sphere : public Geo_Mesh {
 public:
 	Geo_Sphere(Shape3D shape)
-	: Geo_Renderable(
-		((shape.xSegments + 1) * (shape.ySegments + 1)), // slices and stacks
-		((shape.xSegments + 1) * (shape.ySegments + 1)) * 6 // index count
+	: Geo_Mesh(
+		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
+		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count
 	){
 		_shape = shape;
 

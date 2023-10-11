@@ -1,6 +1,6 @@
 #ifndef PHYS_CONNECTOR_H
 
-#include "maths.h"
+#include "Geo_Actor.hpp"
 
 #define PHYS_DEFAULT_K 1000.0 // K value by default
 #define PHYS_ROD_K 10000.0 // K value for rod connector
@@ -52,6 +52,23 @@ struct Phys_Connector {
     double restLength = BAD_CONNECTOR_LEN; // tries to reach this rest length
 	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
 };
+
+// Links and Anchors
+
+typedef std::pair<const Geo_Actor*, const Geo_Actor*> link_pair;
+typedef std::pair<const Geo_Actor*, const Vec3f*> anchor_pair;
+
+struct LinkedItems { // wrapper around connector with 2 actors being linked
+	Phys_Connector* connector;
+	link_pair linkedItems;
+};
+typedef const LinkedItems* const linkedItems_cptr;
+
+struct AnchoredItems { // Wrapper around connector with 1 actor being anchored
+	Phys_Connector* connector;
+	anchor_pair anchoredItems;
+};
+typedef const AnchoredItems* const anchorItem_cptr;
 
 #define PHYS_CONNECTOR_H
 #endif

@@ -18,9 +18,9 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 	
-		alignDataToBytes((uint8*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
-		alignDataToBytes((uint8*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
-		appendDataToBytes((uint8*)&_mode, sizeof(unsigned), bytes);
+		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }
@@ -41,17 +41,17 @@ struct Drx11_Effect_VertexShader : public Effect_VertexShader {
 	Drx11_Effect_VertexShader(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
 };
 
-// Fragment Shaders
+// Pixel Shaders
 
-struct Effect_FragmentShader : public Topl_Shader {
-	Effect_FragmentShader() : Topl_Shader(){}
-	Effect_FragmentShader(std::string name) : Topl_Shader(SHDR_Fragment, name) { }
+struct Effect_PixelShader : public Topl_Shader {
+	Effect_PixelShader() : Topl_Shader(){}
+	Effect_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct GL4_Effect_FragmentShader : public Effect_FragmentShader {
-	GL4_Effect_FragmentShader() : Effect_FragmentShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
+struct GL4_Effect_PixelShader : public Effect_PixelShader {
+	GL4_Effect_PixelShader() : Effect_PixelShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
 };
 
-struct Drx11_Effect_FragmentShader : public Effect_FragmentShader {
-	Drx11_Effect_FragmentShader() : Effect_FragmentShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
+struct Drx11_Effect_PixelShader : public Effect_PixelShader {
+	Drx11_Effect_PixelShader() : Effect_PixelShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
 };

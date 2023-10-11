@@ -63,7 +63,7 @@ void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 
 	// Vertex Shader
 
@@ -74,12 +74,12 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 		pipeline->isReady = false;
 	}
 
-	// Fragment Shader
+	// Pixel Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->fragmentShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->fragmentShader == 0) {
-		GL4::errorShaderCompile("Fragment", pipeline->fragmentShader);
+	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+	if (pipeline->pixelShader == 0) {
+		GL4::errorShaderCompile("Pixel", pipeline->pixelShader);
 		pipeline->isReady = false;
 	}
 
@@ -88,7 +88,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	pipeline->shaderProg = glCreateProgram();
 	glAttachShader(pipeline->shaderProg, pipeline->vertexShader);
-	glAttachShader(pipeline->shaderProg, pipeline->fragmentShader);
+	glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
 	glLinkProgram(pipeline->shaderProg);
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
@@ -98,7 +98,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	}
 	else { // detach after successful link
 		glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
-		glDetachShader(pipeline->shaderProg, pipeline->fragmentShader);
+		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
 	}
 
 	pipeline->entryShader = vertexShader;
@@ -108,7 +108,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and fragment shaders cannot be null!");
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 
 	// Vertex Shader
 
@@ -119,12 +119,12 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 		pipeline->isReady = false;
 	}
 
-	// Fragment Shader
+	// Pixel Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->fragmentShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->fragmentShader == 0) {
-		GL4::errorShaderCompile("Fragment", pipeline->fragmentShader);
+	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+	if (pipeline->pixelShader == 0) {
+		GL4::errorShaderCompile("Pixel", pipeline->pixelShader);
 		pipeline->isReady = false;
 	}
 
@@ -169,7 +169,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	if (tessCtrlShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
 	if(tessEvalShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->tessEvalShader);
 	if(geomShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->geomShader);
-	glAttachShader(pipeline->shaderProg, pipeline->fragmentShader);
+	glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
 	glLinkProgram(pipeline->shaderProg);
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
@@ -179,7 +179,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	}
 	else { // detach after successful link
 		glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
-		glDetachShader(pipeline->shaderProg, pipeline->fragmentShader);
+		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
 	}
 
 	pipeline->entryShader = vertexShader;

@@ -1,17 +1,17 @@
 #ifndef GEO_FLAT_H
 
-#include "Geometry.hpp"
+#include "Geo_Mesh.hpp"
 
-class Geo_Flat : public Geo_Renderable {
+class Geo_Flat : public Geo_Mesh {
 public:
 	Geo_Flat(Shape2D shape) 
-	: Geo_Renderable(shape.segments + 1, shape.segments * 3) {
+	: Geo_Mesh(shape.segments + 1, shape.segments * 3) {
 		_shape = shape;
 		genVertices(); genIndices();
 	}
 
 	Geo_Flat(Shape2D shape, float z)
-	: Geo_Renderable(shape.segments + 1, shape.segments * 3) {
+	: Geo_Mesh(shape.segments + 1, shape.segments * 3) {
 		_shape = shape;
 		_depth = z;
 		genVertices(); genIndices();
