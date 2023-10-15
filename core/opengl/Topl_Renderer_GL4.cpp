@@ -142,6 +142,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 	glPointSize(3.0f);
 
 	setViewport(&_defaultViewport);
+	setDrawMode(DRAW_Triangles);
 }
 
 void Topl_Renderer_GL4::clearView() {
@@ -199,7 +200,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
-		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
+		_renderObjs_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 		// Geo_RenderObj* mesh = (Geo_RenderObj*)actor->getRenderObj();
@@ -411,6 +412,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
 				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
 			} 
+			// TODO: Include instanced draw call
 			else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 
 			// Unbinding

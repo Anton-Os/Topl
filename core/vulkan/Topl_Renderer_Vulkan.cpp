@@ -322,7 +322,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	result = vkAllocateCommandBuffers(_logicDevice, &commandBufferAllocInfo, _commandBuffers.data());
 	if(result == VK_SUCCESS) logMessage("Command buffers creation success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command buffers creation failure! \n");
-	
 
 	// Render Pass Creation
 
@@ -367,8 +366,8 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
 
-	/*
-	VkClearValue clearValues[2];
+
+	/* VkClearValue clearValues[2];
 	clearValues[0].color = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
 	clearValues[1].depthStencil = { 1.0f, 0 };
 	VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
@@ -384,9 +383,101 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 		// renderPassInfo.framebuffer = XXXX; // NEED FRAMEBUFFERS!!!
 		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
 	} */
+
+	// Vertex Input State
+	
+	_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	_vertexInputInfo.vertexBindingDescriptionCount = 0; // TODO: Add vertex bindings
+	_vertexInputInfo.pVertexBindingDescriptions = nullptr;
+	_vertexInputInfo.vertexAttributeDescriptionCount = 0; // TODO: Add vertex attributes
+	_vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+
+	// Rasetrizer State
+
+	_rasterStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	_rasterStateInfo.depthClampEnable = VK_FALSE;
+	_rasterStateInfo.rasterizerDiscardEnable = VK_FALSE;
+	_rasterStateInfo.polygonMode = VK_POLYGON_MODE_FILL;
+	_rasterStateInfo.cullMode = VK_CULL_MODE_NONE;
+	_rasterStateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	_rasterStateInfo.depthBiasEnable = VK_FALSE;
+	_rasterStateInfo.depthBiasConstantFactor = 0.0;
+	_rasterStateInfo.depthBiasClamp = 0.0;
+	_rasterStateInfo.depthBiasSlopeFactor = 0.0;
+
+	// Multisampling State
+
+	_multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	_multisampleInfo.sampleShadingEnable = VK_FALSE;
+	_multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	_multisampleInfo.minSampleShading = 1.0f;
+	_multisampleInfo.pSampleMask = nullptr;
+	_multisampleInfo.alphaToCoverageEnable = VK_FALSE;
+	_multisampleInfo.alphaToOneEnable = VK_FALSE;
+
+	// Depth and Stencil State
+
+	_depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	_depthStencilInfo.pNext = nullptr;
+	_depthStencilInfo.flags = 0;
+	_depthStencilInfo.depthTestEnable = ENABLE_VULKAN_DEPTH;
+	_depthStencilInfo.depthWriteEnable = ENABLE_VULKAN_DEPTH;
+	_depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+	_depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+	_depthStencilInfo.stencilTestEnable = VK_FALSE;
+	_depthStencilInfo.back.failOp = VK_STENCIL_OP_KEEP;
+	_depthStencilInfo.back.passOp = VK_STENCIL_OP_KEEP;
+	_depthStencilInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
+	_depthStencilInfo.back.compareMask = 0;
+	_depthStencilInfo.back.reference = 0;
+	_depthStencilInfo.back.depthFailOp = VK_STENCIL_OP_KEEP;
+	_depthStencilInfo.back.writeMask = 0;
+	_depthStencilInfo.minDepthBounds = 0;
+	_depthStencilInfo.maxDepthBounds = 0;
+	_depthStencilInfo.stencilTestEnable = VK_FALSE;
+	_depthStencilInfo.front = _depthStencilInfo.back;
+
+	// Color Blending State
+
+	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.blendEnable = VK_TRUE;
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+	_colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	_colorBlendInfo.logicOpEnable = VK_TRUE;
+	_colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;
+	_colorBlendInfo.attachmentCount = 1;
+	_colorBlendInfo.pAttachments = &colorBlendAttachment;
+	_colorBlendInfo.blendConstants[0] = 0.0f;
+	_colorBlendInfo.blendConstants[1] = 0.0f;
+	_colorBlendInfo.blendConstants[2] = 0.0f;
+	_colorBlendInfo.blendConstants[3] = 0.0f;
+
+	// Pipeline Layout Creation
+
+	_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	_pipelineLayoutInfo.setLayoutCount = 0;
+	_pipelineLayoutInfo.pSetLayouts = nullptr;
+	_pipelineLayoutInfo.pushConstantRangeCount = 0;
+	_pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
+	result = vkCreatePipelineLayout(_logicDevice, &_pipelineLayoutInfo, nullptr, &_pipelineLayout);
+	if(result == VK_SUCCESS) logMessage("Pipeline layout creation success\n");
+	else return logMessage(MESSAGE_Exclaim, "Pipeline layout creation failure!\n");
+
+	setViewport(&_defaultViewport);
+	setDrawMode(DRAW_Triangles);
 }
 
 Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {
+	vkDestroyPipelineLayout(_logicDevice, _pipelineLayout, nullptr);
+	vkDestroyRenderPass(_logicDevice, _renderpass, nullptr);
 	vkFreeCommandBuffers(_logicDevice, _commandPool, _commandBuffers.size(), _commandBuffers.data());
 	vkDestroyCommandPool(_logicDevice, _commandPool, nullptr);
 	for(unsigned i = 0; i < _swapchainImageViews.size(); i++) vkDestroyImageView(_logicDevice, _swapchainImageViews[i], NULL);
@@ -401,7 +492,33 @@ void Topl_Renderer_Vulkan::clearView(){
 }
 
 void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
-	// Implement viewport setting
+	VkViewport vp = {};
+	vp.x = 0;
+	vp.y = 0;
+	vp.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
+	vp.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
+	vp.minDepth = 0.0f;
+	vp.maxDepth = 1.0f;
+
+	VkRect2D scissorRect = {};
+	scissorRect.offset = { 0, 0 };
+	scissorRect.extent.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
+	scissorRect.extent.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
+
+	VkDynamicState dynamicStates[2] = {
+		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR
+	};
+
+	_dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	_dynamicStateInfo.dynamicStateCount = 2;
+	_dynamicStateInfo.pDynamicStates = dynamicStates;
+
+	_viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	_viewportStateInfo.viewportCount = 1; // should be adjustable?
+	_viewportStateInfo.pViewports = &vp;
+	_viewportStateInfo.scissorCount = 1;
+	_viewportStateInfo.pScissors = &scissorRect;
 }
 
 void Topl_Renderer_Vulkan::swapBuffers(double frameTime){ 
@@ -410,7 +527,6 @@ void Topl_Renderer_Vulkan::swapBuffers(double frameTime){
 }
 
 void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
-	// Implement building operation
 	_isBuilt = true;
 }
 
@@ -439,12 +555,15 @@ void Topl_Renderer_Vulkan::update(const Topl_Scene* scene){
 void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
 	_drawMode = mode;
 
+	_inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	_inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
 	switch(_drawMode) {
-	case DRAW_Points: break;
-	case DRAW_Lines: break;
-	case DRAW_Triangles: break;
-	case DRAW_Fan: break;
-	case DRAW_Strip: break;
+	case DRAW_Points: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
+	case DRAW_Lines: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
+	case DRAW_Triangles: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
+	case DRAW_Fan: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN; break;
+	case DRAW_Strip: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; break;
 	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported yet!\n");
 	}
 }

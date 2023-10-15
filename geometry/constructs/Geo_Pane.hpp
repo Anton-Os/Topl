@@ -1,4 +1,4 @@
-#include "meshes/Geo_Flat.hpp"
+#include "meshes/Geo_Shape.hpp"
 
 #include "Geo_Construct.hpp"
 
@@ -77,15 +77,15 @@ protected:
 
     Geo_Pane _rootPane = Geo_Pane(); // root
 	std::vector<Geo_Pane> _panes; // children
-	Geo_FlatSquare _rootSquare = Geo_FlatSquare(PANE_RADIUS, PANE_Z);
-	Geo_FlatSquare _childSquare = Geo_FlatSquare(PANE_RADIUS, PANE_Z);
+	Geo_ShapeSquare _rootSquare = Geo_ShapeSquare(PANE_RADIUS, PANE_Z);
+	Geo_ShapeSquare _childSquare = Geo_ShapeSquare(PANE_RADIUS, PANE_Z);
     
 	unsigned _rows, _columns; 
 	float _width = PANE_RADIUS; 
 	float _height = PANE_RADIUS;
 	float _border = PANE_BORDER;
 
-	static Geo_FlatSquare _decoySquare;
+	static Geo_ShapeSquare _decoySquare;
 	static Geo_Actor _decoyActor;
 };
 

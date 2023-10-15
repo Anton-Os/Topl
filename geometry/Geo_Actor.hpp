@@ -7,6 +7,8 @@
 #define DEFAULT_ACTOR_ID 0
 #define DEFAULT_ACTOR_NAME "actor"
 
+typedef void (*pickerCallback)(void);
+
 class Geo_Actor {
 public:
 	Geo_Actor(){}
@@ -36,9 +38,6 @@ private:
 	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f });
 	// Vec3f _scale = Vec3f({ 0.0f, 0.0f, 0.0f });
-
-	// Other types
-	void (*pickerCallback)(void); // callback based on color picker
 };
 
 typedef const Geo_Actor* const actor_cptr;

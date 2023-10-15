@@ -23,7 +23,8 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case(WM_CREATE): {
 		// Create Function Here
 	}
-	case(WM_PAINT): {}
+	case(WM_PAINT): { }
+	case(WM_SIZE): { }
 	case(WM_KEYDOWN): {}
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{}

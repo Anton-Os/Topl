@@ -1,6 +1,6 @@
 #include "Geo_Pane.hpp"
 
-Geo_FlatSquare Geo_PaneLayout::_decoySquare = Geo_FlatSquare(PANE_RADIUS);
+Geo_ShapeSquare Geo_PaneLayout::_decoySquare = Geo_ShapeSquare(PANE_RADIUS);
 Geo_Actor Geo_PaneLayout::_decoyActor = Geo_Actor((Geo_Mesh*)&_decoySquare);
 
 static std::string genPaneName(unsigned num) { return "pane" + std::to_string(num); }

@@ -6,13 +6,13 @@
 
 #include "Topl_Scene.hpp"
 
-// RenderTarget
+// RenderObj
 
 #define SCENE_RENDER_ID 0
 
-struct RenderTarget {
-	RenderTarget() { renderID = SCENE_RENDER_ID; }
-	RenderTarget(unsigned id) { renderID = id; }
+struct RenderObj {
+	RenderObj() { renderID = SCENE_RENDER_ID; }
+	RenderObj(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
 
@@ -26,10 +26,10 @@ enum BUFF_Type {
     BUFF_Render_Block = 2, // render block buffer type
 };
 
-struct Buffer : public RenderTarget {
-    Buffer() : RenderTarget(SCENE_RENDER_ID){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderTarget(id){ type = t; }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderTarget(id){ type = t; count = c; }
+struct Buffer : public RenderObj {
+    Buffer() : RenderObj(SCENE_RENDER_ID){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderObj(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderObj(id){ type = t; count = c; }
 
     enum BUFF_Type type; // type of buffer 
     unsigned count = 1; // no. of meshes
@@ -40,15 +40,15 @@ struct Buffer : public RenderTarget {
 enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
-struct Texture : public RenderTarget {
-	Texture() : RenderTarget(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
+struct Texture : public RenderObj {
+	Texture() : RenderObj(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
 		format = f; 
         mode = m;
 		binding = 0;
 	}
 
-	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderTarget(id) {
+	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
 		format = f;
 		mode = m;
 		binding = b;
@@ -131,7 +131,7 @@ protected:
     bool _isPresented = false; // true after draw call, false after buffer swap
 	bool _isDrawInOrder = REGULAR_DRAW_ORDER; // defines order of render targets during draw call
     unsigned long _renderIDs = 0; // id for each render target
-    std::map<unsigned long, const Geo_Actor*> _renderTargets_map; // maps each render target to unique id
+    std::map<unsigned long, const Geo_Actor*> _renderObjs_map; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
 
 	Img_Base _frameImage; // internal frame container

@@ -19,9 +19,15 @@ struct Texture_Vulkan : public Texture { Texture_Vulkan() : Texture() {} };
 
 struct Topl_Pipeline_Vulkan : public Topl_Pipeline {
 	Topl_Pipeline_Vulkan() : Topl_Pipeline(){}
+	~Topl_Pipeline_Vulkan(){ }
+
+	VkPipelineShaderStageCreateInfo vertexStageInfo, pixelStageInfo;
+
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	VkPipeline pipeline = {};
 };
 
-#define MAX_VULKAN_NAMES 50
+#define ENABLE_VULKAN_DEPTH true
 
 class Topl_Renderer_Vulkan : public Topl_Renderer {
 public:
@@ -51,9 +57,12 @@ protected:
 	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
+	void finalizePipeline(); // operation to finalize pipeline creation
 
 	Topl_Pipeline_Vulkan* _pipeline;
 
+	std::vector<VkExtensionProperties> _vulkanExtensions;
+	std::vector<VkLayerProperties> _vulkanLayers;
 	// unsigned _physicalDeviceIdx = 0; // TODO: Make configurable if more than one device
 	std::vector<VkPhysicalDevice> _physicalDevices = {};
 	std::vector<VkQueueFamilyProperties> _queueFamilyProps = {};
@@ -71,8 +80,13 @@ protected:
 	VkPipelineLayout _pipelineLayout;
 	VkCommandPool _commandPool;
 	std::vector<VkCommandBuffer> _commandBuffers = {};
-
-
-	std::vector<VkExtensionProperties> _vulkanExtensions;
-	std::vector<VkLayerProperties> _vulkanLayers;
+	VkPipelineViewportStateCreateInfo _viewportStateInfo = {};
+	VkPipelineDynamicStateCreateInfo _dynamicStateInfo = {};
+	VkPipelineVertexInputStateCreateInfo _vertexInputInfo = {};
+	VkPipelineInputAssemblyStateCreateInfo _inputAssemblyInfo = {};
+	VkPipelineRasterizationStateCreateInfo _rasterStateInfo = {};
+	VkPipelineMultisampleStateCreateInfo _multisampleInfo = {};
+	VkPipelineDepthStencilStateCreateInfo _depthStencilInfo = {};
+	VkPipelineColorBlendStateCreateInfo _colorBlendInfo = {};
+	VkPipelineLayoutCreateInfo _pipelineLayoutInfo = {};
 };

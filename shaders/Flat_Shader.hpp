@@ -8,13 +8,13 @@
 
 // Vertex Shaders
 
-struct Flat_VertexShader : public Topl_EntryShader {
-	Flat_VertexShader() : Topl_EntryShader(){}
-	Flat_VertexShader(std::string name) : Topl_EntryShader(name) { }
-	Flat_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
+struct Shape_VertexShader : public Topl_EntryShader {
+	Shape_VertexShader() : Topl_EntryShader(){}
+	Shape_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Shape_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
-		Vec4f color = genFlatColor(renderID);
+		Vec4f color = genShapeColor(renderID);
 
 		alignDataToBytes((uint8_t*)&color, sizeof(Vec4f), NO_PADDING, bytes);
 		Topl_EntryShader::genRenderBlock(actor, renderID, bytes);
@@ -25,7 +25,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
 protected:
-	Vec4f genFlatColor(unsigned renderID) const {
+	Vec4f genShapeColor(unsigned renderID) const {
 		unsigned colorID = genColorID(renderID);
 		return Vec4f({ ((colorID & 0xFF0000) >> 16) / 255.0f, ((colorID & 0xFF00) >> 8) / 255.0f, (colorID & 0xFF) / 255.0f, _alphaVal });
 	}
@@ -34,27 +34,27 @@ protected:
 	float _alphaVal = 1.0f;
 };
 
-struct GL4_Flat_VertexShader : public Flat_VertexShader {
-	GL4_Flat_VertexShader() : Flat_VertexShader(genPrefix_glsl() + "Flat_Vertex.glsl") {}
-	GL4_Flat_VertexShader(unsigned mode) : Flat_VertexShader(genPrefix_glsl() + "Flat_Vertex.glsl", mode) {}
+struct GL4_Shape_VertexShader : public Shape_VertexShader {
+	GL4_Shape_VertexShader() : Shape_VertexShader(genPrefix_glsl() + "Shape_Vertex.glsl") {}
+	GL4_Shape_VertexShader(unsigned mode) : Shape_VertexShader(genPrefix_glsl() + "Shape_Vertex.glsl", mode) {}
 };
 
-struct Drx11_Flat_VertexShader : public Flat_VertexShader {
-	Drx11_Flat_VertexShader() : Flat_VertexShader(genPrefix_hlsl() + "Flat_Vertex.hlsl") {}
-	Drx11_Flat_VertexShader(unsigned mode) : Flat_VertexShader(genPrefix_hlsl() + "Flat_Vertex.hlsl", mode) {}
+struct Drx11_Shape_VertexShader : public Shape_VertexShader {
+	Drx11_Shape_VertexShader() : Shape_VertexShader(genPrefix_hlsl() + "Shape_Vertex.hlsl") {}
+	Drx11_Shape_VertexShader(unsigned mode) : Shape_VertexShader(genPrefix_hlsl() + "Shape_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
 
-struct Flat_PixelShader : public Topl_Shader {
-	Flat_PixelShader() : Topl_Shader(){} // Blank Constructor
-	Flat_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
+struct Shape_PixelShader : public Topl_Shader {
+	Shape_PixelShader() : Topl_Shader(){} // Blank Constructor
+	Shape_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
 };
 
-struct GL4_Flat_PixelShader : public Flat_PixelShader {
-	GL4_Flat_PixelShader() : Flat_PixelShader(genPrefix_glsl() + "Flat_Frag.glsl") {}
+struct GL4_Shape_PixelShader : public Shape_PixelShader {
+	GL4_Shape_PixelShader() : Shape_PixelShader(genPrefix_glsl() + "Shape_Frag.glsl") {}
 };
 
-struct Drx11_Flat_PixelShader : public Flat_PixelShader {
-	Drx11_Flat_PixelShader() : Flat_PixelShader(genPrefix_hlsl() + "Flat_Pixel.hlsl") {}
+struct Drx11_Shape_PixelShader : public Shape_PixelShader {
+	Drx11_Shape_PixelShader() : Shape_PixelShader(genPrefix_hlsl() + "Shape_Pixel.hlsl") {}
 };

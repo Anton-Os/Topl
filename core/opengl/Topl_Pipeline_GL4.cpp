@@ -14,39 +14,20 @@ namespace GL4 {
 
 		glCompileShader(shader);
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-		if (result == GL_FALSE) return shader; // return 0;
+		if (result == GL_FALSE) { // On shader compilation error
+			GLint maxLen;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLen);
+
+			char* errorLog = (char*)malloc(maxLen * sizeof(char));
+			glGetShaderInfoLog(shader, maxLen, &maxLen, errorLog);
+			logMessage(MESSAGE_Exclaim, "Shader Compilation Error: \n" + std::string(source) + "\n");
+			perror(errorLog);
+			free(errorLog);
+
+			return 0;
+		}
 
 		return shader;
-	}
-
-	// Error Handling
-
-	void errorShaderCompile(const char* shaderName, GLuint shader) {
-		perror("Shader compilation failed"); // Add more robust error checking
-
-		GLint maxLen;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLen);
-
-		char* errorLog = (char*)malloc(maxLen * sizeof(char));
-		glGetShaderInfoLog(shader, maxLen, &maxLen, errorLog);
-		perror(errorLog);
-		free(errorLog);
-
-		return;
-	}
-
-	void errorProgramLink(GLuint shaderProg){
-		perror("Shader program failed to link");
-
-		GLint maxLen;
-		glGetProgramiv(shaderProg, GL_INFO_LOG_LENGTH, &maxLen);
-
-		char* errorLog = (char*)malloc(maxLen * sizeof(char));
-		glGetProgramInfoLog(shaderProg, maxLen, &maxLen, errorLog);
-		perror(errorLog);
-		free(errorLog);
-
-		return;
 	}
 }
 
@@ -64,42 +45,24 @@ void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
+	else pipeline->isReady = true; // set to true until error encountered
 
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
 	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
-	if (pipeline->vertexShader == 0) {
-		GL4::errorShaderCompile("Vertex", pipeline->vertexShader);
-		pipeline->isReady = false;
-	}
+	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->pixelShader == 0) {
-		GL4::errorShaderCompile("Pixel", pipeline->pixelShader);
-		pipeline->isReady = false;
-	}
+	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
-	// Shader Program Creation and Linking
-	GLint result;
+	// Program Linking
 
-	pipeline->shaderProg = glCreateProgram();
-	glAttachShader(pipeline->shaderProg, pipeline->vertexShader);
-	glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
-	glLinkProgram(pipeline->shaderProg);
-
-	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
-	if (result == GL_FALSE){
-		GL4::errorProgramLink(pipeline->shaderProg);
-		pipeline->isReady = false;
-	}
-	else { // detach after successful link
-		glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
-		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
-	}
+	linkShaders(pipeline, vertexShader, pixelShader, nullptr, nullptr, nullptr);
+	if(pipeline->isReady == false) return logMessage(MESSAGE_Exclaim, "Error during pipeline generation");
 
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
@@ -109,34 +72,26 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
+	else pipeline->isReady = true; // set to true until error encountered
 
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
 	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
-	if (pipeline->vertexShader == 0) {
-		GL4::errorShaderCompile("Vertex", pipeline->vertexShader);
-		pipeline->isReady = false;
-	}
+	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->pixelShader == 0) {
-		GL4::errorShaderCompile("Pixel", pipeline->pixelShader);
-		pipeline->isReady = false;
-	}
+	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
 	// Geometry Shader
 
 	if (geomShader != nullptr) { // optional stage
 		std::string geomShaderSrc = readFile(geomShader->getFilePath());
 		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
-		if (pipeline->geomShader == 0) {
-			GL4::errorShaderCompile("Geometry", pipeline->geomShader);
-			pipeline->isReady = false;
-		}
+		if(pipeline->geomShader == 0) pipeline->isReady = false;
 	}
 
 	// Tess. Control Shader
@@ -144,10 +99,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	if(tessCtrlShader != nullptr){ // optional stage
 		std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath());
 		pipeline->tessCtrlShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
-		if (pipeline->tessCtrlShader == 0) {
-			GL4::errorShaderCompile("Tess. Control", pipeline->tessCtrlShader);
-			pipeline->isReady = false;
-		}
+		if(pipeline->tessCtrlShader == 0) pipeline->isReady = false;
 	}
 
 	// Tess. Evaluation Shader
@@ -155,18 +107,25 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	if(tessEvalShader != nullptr){ // optional stage
 		std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath());
 		pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
-		if (pipeline->tessEvalShader == 0) {
-			GL4::errorShaderCompile("Tess. Eval", pipeline->tessEvalShader);
-			pipeline->isReady = false;
-		}
+		if(pipeline->tessEvalShader == 0) pipeline->isReady = false;
 	}
 
-	// Shader Program Creation and Linking
-	GLint result;
+	// Program Linking
 
+	linkShaders(pipeline, vertexShader, pixelShader, geomShader, tessCtrlShader, tessEvalShader);
+	if(pipeline->isReady == false) return logMessage(MESSAGE_Exclaim, "Error during pipeline generation");
+
+	pipeline->entryShader = vertexShader;
+	pipeline->isReady = true;
+	setPipeline(pipeline);
+}
+
+void Topl_Renderer_GL4::linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+	GLint result;
+	
 	pipeline->shaderProg = glCreateProgram();
 	glAttachShader(pipeline->shaderProg, pipeline->vertexShader);
-	if (tessCtrlShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
+	if(tessCtrlShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
 	if(tessEvalShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->tessEvalShader);
 	if(geomShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->geomShader);
 	glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
@@ -174,15 +133,23 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
 	if (result == GL_FALSE){
-		GL4::errorProgramLink(pipeline->shaderProg);
+		GLint maxLen;
+		glGetProgramiv(pipeline->shaderProg, GL_INFO_LOG_LENGTH, &maxLen);
+
+		char* errorLog = (char*)malloc(maxLen * sizeof(char));
+		glGetProgramInfoLog(pipeline->shaderProg, maxLen, &maxLen, errorLog);
+		logMessage(MESSAGE_Exclaim, "Shader Linking Error!\n");
+		perror(errorLog);
+		free(errorLog);
+
 		pipeline->isReady = false;
+		return;
 	}
 	else { // detach after successful link
 		glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
+		if(tessCtrlShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
+		if(tessEvalShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessEvalShader);
+		if(geomShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->geomShader);
 		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
 	}
-
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
-	setPipeline(pipeline);
 }

@@ -13,9 +13,9 @@ struct Buffer_GL4 : public Buffer {
 // Vertex Array Object
 
 #define GL4_VERTEX_ARRAY_MAX 10000
-struct VertexArray_GL4 : public RenderTarget {
-	VertexArray_GL4() : RenderTarget() {}
-	VertexArray_GL4(unsigned id, GLuint v) : RenderTarget(id){ vao = v; }
+struct VertexArray_GL4 : public RenderObj {
+	VertexArray_GL4() : RenderObj() {}
+	VertexArray_GL4(unsigned id, GLuint v) : RenderObj(id){ vao = v; }
 
 	GLuint vao;
 };
@@ -65,7 +65,7 @@ public:
 
 	void setPipeline(Topl_Pipeline_GL4* pipeline);
 	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr geomShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
+	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif
@@ -79,6 +79,7 @@ protected:
 	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
+	void linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);
 
 	Topl_Pipeline_GL4* _pipeline;

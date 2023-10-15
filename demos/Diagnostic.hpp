@@ -2,14 +2,14 @@
 
 #include "Topl_Main.hpp"
 
-#include "meshes/Geo_Flat.hpp"
+#include "meshes/Geo_Shape.hpp"
 
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #define ACTOR_COUNT 1
 
-Geo_FlatTriangle triangle = Geo_FlatTriangle();
+Geo_ShapeTriangle triangle = Geo_ShapeTriangle();
 Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 
 Topl_Scene test_scene = Topl_Scene();
@@ -59,12 +59,13 @@ struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11 {
 struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan {
 	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)
 	: Topl_Renderer_Vulkan(window){
+		// genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_isBuilt = true;
 		_renderIDs = 1;
 	}
 
 	Topl_Pipeline_Vulkan pipeline;
-	// Vulkan_Idle_VertexShader vertexShader
-	// Vulkan_Idle_PixelShader pixelShader;
+	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");
+	Idle_PixelShader pixelShader = Idle_PixelShader("spirv/Idle_Frag.glsl.spv");
 };
 #endif

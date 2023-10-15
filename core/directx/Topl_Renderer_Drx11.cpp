@@ -248,6 +248,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 	_deviceCtx->RSSetState(_rasterizerState);
 
 	setViewport(&_defaultViewport); // Viewport Creation
+	setDrawMode(DRAW_Triangles);
 }
 
 void Topl_Renderer_Drx11::clearView() {
@@ -305,7 +306,7 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
-		_renderTargets_map.insert({ _renderIDs, scene->getGeoActor(g) });
+		_renderObjs_map.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 		// Geo_RenderObj* mesh = (Geo_RenderObj*)actor->getRenderObj();

@@ -38,19 +38,18 @@ list(APPEND support_src
 list(APPEND geometry_src
     geometry/ShapesGen.cpp
 	# meshes
-    geometry/meshes/Geo_Flat.cpp
+    geometry/meshes/Geo_Shape.cpp
     geometry/meshes/Geo_Conic.cpp
-    geometry/meshes/Geo_Extruded.cpp
+    geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Sphere.cpp
 	# constructs
-    # geometry/Geo_Construct.cpp
     # geometry/constructs/Geo_Pane.cpp
     # geometry/constructs/Geo_Humanoid.cpp
 )
 if(SUPPORT_3D AND Assimp_FOUND)
     list(APPEND geometry_src
-        geometry/constructs/Geo_Model.cpp
         geometry/meshes/Geo_Node.cpp
+        geometry/constructs/Geo_Model.cpp
     )
 endif()
 
@@ -197,8 +196,6 @@ endforeach()
 
 # ------------- Demos and Tests ------------- #
 
-include("cmake/runTests.cmake")
-
 add_executable(Diagnostic demos/Diagnostic.cpp)
 # add_executable(Playground demos/Playground.cpp)
 # add_executable(Animotion demos/Animotion.cpp)
@@ -230,21 +227,21 @@ if(WIN32)
 endif()
 
 if(Vulkan_FOUND)
-	function(compileShader shaderFile shaderType)
-		get_filename_component(shader_name ${shaderFile} NAME)
-		message(STATUS "Compiling ${shaderType} shader ${shader_name}")
+	# function(compileShader shaderFile shaderType)
+	#	get_filename_component(shader_name ${shaderFile} NAME)
+	#	message(STATUS "Compiling ${shaderType} shader ${shader_name}")
 
-		string(FIND ${shader_name} shaderType isShaderType)
-		message("${isShaderType}")
-		if(NOT isShaderType EQUAL -1)
-			message("Compiling ${shaderType} shader ${shaderFile}")
-			exec_program(
-				${glslc_exec} 
-				${CMAKE_BINARY_DIR} 
-				ARGS "-fshader-stage=vertex ${shaderFile} -o ${shader_name}.spv"
-			)
-		endif()
-	endfunction()
+	#	string(FIND ${shader_name} shaderType isShaderType)
+	#	message("${isShaderType}")
+	#	if(NOT isShaderType EQUAL -1)
+	#		message("Compiling ${shaderType} shader ${shaderFile}")
+	#		exec_program(
+	#			${glslc_exec} 
+	#			${CMAKE_BINARY_DIR} 
+	#			ARGS "-fshader-stage=vertex ${shaderFile} -o ${shader_name}.spv"
+	#		)
+	#	endif()
+	# endfunction()
 
 	message(STATUS "Searching inside ${VULKAN_PATH}/Bin/")
 
@@ -256,17 +253,38 @@ if(Vulkan_FOUND)
 
 			string(FIND ${shader_name} "Vert" isVertexShader)
 			if(NOT isVertexShader EQUAL -1)
-				message("Compiling vertex shader ${shader_name} inisde of ${shader}")
-				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+				message("Compiling vertex shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
 			endif()
 			
-			string(FIND ${shader_name} "Frag" isPixelShader)
-			if(NOT isPixelShader EQUAL -1)
-				message("Compiling pixel shader ${shader_name} inisde of ${shader}")
-				exec_program(${glslc_exec} ${CMAKE_BINARY_DIR} ARGS "-fshader-stage=pixel ${shader} -o ${shader_name}.spv")
+			string(FIND ${shader_name} "Frag" isFragShader)
+			if(NOT isFragShader EQUAL -1)
+				message("Compiling fragment shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=frag ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=frag ${shader} -o ${shader_name}.spv")
 			endif()
 
-            # TODO: Add support for tesselation and geometry shaders
+            string(FIND ${shader_name} "Geo" isGeomShader)
+			if(NOT isGeomShader EQUAL -1)
+				message("Compiling geometry shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=geom ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=geom ${shader} -o ${shader_name}.spv")
+			endif()
+
+            string(FIND ${shader_name} "Tess" isTessShader)
+			if(NOT isTessShader EQUAL -1)
+				string(FIND ${shader_name} "Eval" isTessEvalShader)
+                if(NOT isTessEvalShader EQUAL -1)
+                    message("Compiling tesselation evaluation shader ${shader_name} inside of ${shader}")
+                    # exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=tesseval ${shader} -o ${shader_name}.spv")
+                    exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=tesseval ${shader} -o ${shader_name}.spv")
+                else()
+                    message("Compiling tesselation control shader ${shader_name} inside of ${shader}")
+                    # exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=tesscontrol ${shader} -o ${shader_name}.spv")
+                    exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=tesscontrol ${shader} -o ${shader_name}.spv")
+                endif()
+			endif()
         endforeach()
     endif()
 endif()

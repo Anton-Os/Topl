@@ -16,18 +16,18 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if((*actor)->getName() == name){
-			_actorPhys_map.erase(*actor);
-			_actorPhys_map.insert({ *actor, physActor });
+			_physicsMap.erase(*actor);
+			_physicsMap.insert({ *actor, physActor });
 		}
 }
 
 void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			if (_actorPhys_map.find(*actor) == _actorPhys_map.end()) 
+			if (_physicsMap.find(*actor) == _physicsMap.end()) 
 				return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name); 
 
-			Phys_Actor* physActor = _actorPhys_map.find(*actor)->second;
+			Phys_Actor* physActor = _physicsMap.find(*actor)->second;
 			vec3f_cptr_t targetPos = (*actor)->getPos();
 
 			if(!physActor->addForce(forceVec)) return logMessage(MESSAGE_Exclaim, "Forces excess!");
@@ -149,7 +149,7 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve All Forces
-	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _actorPhys_map.begin(); m != _actorPhys_map.end(); m++) {
+	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _physicsMap.begin(); m != _physicsMap.end(); m++) {
 		Geo_Actor* targetGeo = m->first;
 		Phys_Actor* physActor = m->second;
 		

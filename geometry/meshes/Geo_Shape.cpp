@@ -1,6 +1,6 @@
-#include "Geo_Flat.hpp"
+#include "Geo_Shape.hpp"
 
-void Geo_Flat::genVertices() {
+void Geo_Shape::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin
 
 	for (unsigned v = 1; v < _vertices.size(); v++) {
@@ -17,7 +17,7 @@ void Geo_Flat::genVertices() {
 	}
 }
 
-void Geo_Flat::genIndices() {
+void Geo_Shape::genIndices() {
 	unsigned v = 1; // tracks current vertex
 	for (unsigned i = 0; i < _indices.size() - 3; i += 3) {
 		_indices[i + 0] = 0; // origin
