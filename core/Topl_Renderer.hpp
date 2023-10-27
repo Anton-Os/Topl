@@ -6,19 +6,19 @@
 
 #include "Topl_Scene.hpp"
 
-// RenderObj
+// Renderable
 
 #define SCENE_RENDER_ID 0
 
-struct RenderObj {
-	RenderObj() { renderID = SCENE_RENDER_ID; }
-	RenderObj(unsigned id) { renderID = id; }
+struct Renderable {
+	Renderable() { renderID = SCENE_RENDER_ID; }
+	Renderable(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
 
 // Buffer
 
-#define BUFFERS_PER_RENDERTARGET 3
+#define BUFFERS_PER_TARGET 3
 
 enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
@@ -26,10 +26,10 @@ enum BUFF_Type {
     BUFF_Render_Block = 2, // render block buffer type
 };
 
-struct Buffer : public RenderObj {
-    Buffer() : RenderObj(SCENE_RENDER_ID){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderObj(id){ type = t; }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderObj(id){ type = t; count = c; }
+struct Buffer : public Renderable {
+    Buffer() : Renderable(SCENE_RENDER_ID){}
+    Buffer(unsigned id, enum BUFF_Type t) : Renderable(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : Renderable(id){ type = t; count = c; }
 
     enum BUFF_Type type; // type of buffer 
     unsigned count = 1; // no. of meshes
@@ -40,15 +40,15 @@ struct Buffer : public RenderObj {
 enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
-struct Texture : public RenderObj {
-	Texture() : RenderObj(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
+struct Texture : public Renderable {
+	Texture() : Renderable(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : Renderable(id) {
 		format = f; 
         mode = m;
 		binding = 0;
 	}
 
-	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
+	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : Renderable(id) {
 		format = f;
 		mode = m;
 		binding = b;

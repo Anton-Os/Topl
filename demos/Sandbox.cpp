@@ -16,11 +16,13 @@ void Sandbox_Demo::init(){
     hexActor.setPos({ 0.5f, -0.5f, 0.0f });
     scene.addGeometry("Hex", &hexActor);
 
-    Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, flatPipeline);
+    Topl_Factory::switchPipeline(TARGET_DirectX11, _renderer, beamPipeline);
     _renderer->buildScene(&scene);
 }
 
 void Sandbox_Demo::loop(double frameTime){
+    logMessage("Frame: " + std::to_string(_renderer->getFrameCount()));
+
     boxActor.updateRot({ 0.01F * (float)frameTime, 0.0F, 0.0F });
     pyramidActor.updateRot({ -0.01F * (float)frameTime, 0.0F, 0.0F });
     sphereActor.updateRot({ 0.0F, 0.01F * (float)frameTime, 0.0F });
@@ -31,7 +33,7 @@ void Sandbox_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    Sandbox_Demo demo = Sandbox_Demo(argv[0], TARGET_OpenGL);
+    Sandbox_Demo demo = Sandbox_Demo(argv[0], TARGET_DirectX11);
 
     demo.run();
     return 0;

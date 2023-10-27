@@ -13,9 +13,9 @@ struct Buffer_GL4 : public Buffer {
 // Vertex Array Object
 
 #define GL4_VERTEX_ARRAY_MAX 10000
-struct VertexArray_GL4 : public RenderObj {
-	VertexArray_GL4() : RenderObj() {}
-	VertexArray_GL4(unsigned id, GLuint v) : RenderObj(id){ vao = v; }
+struct VertexArray_GL4 : public Renderable {
+	VertexArray_GL4() : Renderable() {}
+	VertexArray_GL4(unsigned id, GLuint v) : Renderable(id){ vao = v; }
 
 	GLuint vao;
 };

@@ -1,6 +1,6 @@
-#include "directx/Topl_Renderer_Drx11.hpp"
+#include "directx/Topl_Renderer_DX11.hpp"
 
-namespace Drx11 {
+namespace DX11 {
     bool compileShader(const char* shaderFilePath, LPCSTR shaderTarget, ID3DBlob** blob){
 		ID3DBlob* errorBuff;
 		size_t sourceSize;
@@ -25,7 +25,7 @@ namespace Drx11 {
 	}
 }
 
-void Topl_Renderer_Drx11::setPipeline(Topl_Pipeline_Drx11* pipeline) {
+void Topl_Renderer_DX11::setPipeline(Topl_Pipeline_DX11* pipeline) {
 	if (pipeline == nullptr) 
 		return logMessage(MESSAGE_Exclaim, "Pipeline cannot be null!");
 
@@ -41,13 +41,13 @@ void Topl_Renderer_Drx11::setPipeline(Topl_Pipeline_Drx11* pipeline) {
 	}
 }
 
-void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr) 
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
+	if(!DX11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
 	hr = _device->CreateVertexShader(
 		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
 		NULL, &pipeline->vertexShader
@@ -55,7 +55,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// pixel shader compilation and creation code
-	if(!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
+	if(!DX11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
 	hr = _device->CreatePixelShader(
 		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
 		NULL, &pipeline->pixelShader
@@ -67,13 +67,13 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	setPipeline(pipeline);
 }
 
-void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
+void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
 
 	// vertex shader compilation and creation code
-	if(!Drx11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
+	if(!DX11::compileShader(vertexShader->getFilePath(), "vs_5_0", &pipeline->vsBlob)) return;
 	hr = _device->CreateVertexShader(
 		pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(),
 		NULL, &pipeline->vertexShader
@@ -81,7 +81,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 	if (FAILED(hr)) { pipeline->isReady = false; return; }
 
 	// pixel shader compilation and creation code
-	if (!Drx11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
+	if (!DX11::compileShader(pixelShader->getFilePath(), "ps_5_0", &pipeline->psBlob)) return;
 	hr = _device->CreatePixelShader(
 		pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),
 		NULL, &pipeline->pixelShader
@@ -90,7 +90,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 
 	// geometry shader compilation and creation code
 	if (geomShader != nullptr) { // optional stage
-		if (!Drx11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline->gsBlob)) return;
+		if (!DX11::compileShader(geomShader->getFilePath(), "gs_5_0", &pipeline->gsBlob)) return;
 		hr = _device->CreateGeometryShader(
 			pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(),
 			NULL, &pipeline->geomShader
@@ -100,7 +100,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 
 	// hull shader compilation and creation code
 	if (hullShader != nullptr) { // optional stage
-		if (!Drx11::compileShader(hullShader->getFilePath(), "hs_5_0", &pipeline->hsBlob)) return;
+		if (!DX11::compileShader(hullShader->getFilePath(), "hs_5_0", &pipeline->hsBlob)) return;
 		hr = _device->CreateHullShader(
 			pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(),
 			NULL, &pipeline->hullShader);
@@ -109,7 +109,7 @@ void Topl_Renderer_Drx11::genPipeline(Topl_Pipeline_Drx11* pipeline, entry_shade
 
 	// domain shader compilation and creation code
 	if (domainShader != nullptr) { // optional stage
-		if (!Drx11::compileShader(domainShader->getFilePath(), "ds_5_0", &pipeline->dsBlob)) return;
+		if (!DX11::compileShader(domainShader->getFilePath(), "ds_5_0", &pipeline->dsBlob)) return;
 		hr = _device->CreateDomainShader(
 			pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(),
 			NULL, &pipeline->domainShader

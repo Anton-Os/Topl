@@ -2,7 +2,7 @@
 
 GL4_Engine_Config Topl_Factory::GL4_engine_cfg = GL4_Engine_Config();
 #ifdef _WIN32
-Drx11_Engine_Config Topl_Factory::Drx11_engine_cfg = Drx11_Engine_Config();
+DX11_Engine_Config Topl_Factory::DX11_engine_cfg = DX11_Engine_Config();
 #endif
 #ifdef VULKAN_H
 Vulkan_Engine_Config Topl_Factory::Vulkan_engine_cfg = Vulkan_Engine_Config();
@@ -12,7 +12,7 @@ Topl_Factory::~Topl_Factory(){
     // Renderer Cleanup
 	if(GL4_engine_cfg.renderer != nullptr) delete(GL4_engine_cfg.renderer);
 #ifdef _WIN32
-    if(Drx11_engine_cfg.renderer != nullptr) delete(Drx11_engine_cfg.renderer);
+    if(DX11_engine_cfg.renderer != nullptr) delete(DX11_engine_cfg.renderer);
 #endif
 #ifdef VULKAN_H
 	if(Vulkan_engine_cfg.renderer != nullptr) delete(Vulkan_engine_cfg.renderer);
@@ -24,9 +24,9 @@ Topl_Factory::~Topl_Factory(){
         free(GL4_engine_cfg.pipelines);
     }
 #ifdef _WIN32
-    if(Drx11_engine_cfg.pipelines != nullptr){
-        for(unsigned p = 0; p < Drx11_engine_cfg.pipeIndex; p++) delete(*(Drx11_engine_cfg.pipelines + p));
-        free(Drx11_engine_cfg.pipelines);
+    if(DX11_engine_cfg.pipelines != nullptr){
+        for(unsigned p = 0; p < DX11_engine_cfg.pipeIndex; p++) delete(*(DX11_engine_cfg.pipelines + p));
+        free(DX11_engine_cfg.pipelines);
     }
 #endif
 #ifdef VULKAN_H
@@ -47,9 +47,9 @@ Topl_Renderer* Topl_Factory::genRenderer(TARGET_Backend backend, Platform* platf
         return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
 	case TARGET_DirectX11:
-        if(Drx11_engine_cfg.renderer == nullptr) 
-			Drx11_engine_cfg.renderer = new Topl_Renderer_Drx11(platform->getParentWindow());
-        return (Topl_Renderer*)Drx11_engine_cfg.renderer;
+        if(DX11_engine_cfg.renderer == nullptr) 
+			DX11_engine_cfg.renderer = new Topl_Renderer_DX11(platform->getParentWindow());
+        return (Topl_Renderer*)DX11_engine_cfg.renderer;
 #endif
 #ifdef VULKAN_H
 	case TARGET_Vulkan:
@@ -67,8 +67,8 @@ void Topl_Factory::configPipelines() {
 	if (GL4_engine_cfg.pipelines == nullptr) 
 		GL4_engine_cfg.pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
 #ifdef _WIN32
-	if (Drx11_engine_cfg.pipelines == nullptr) 
-		Drx11_engine_cfg.pipelines = (Topl_Pipeline_Drx11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Drx11*));
+	if (DX11_engine_cfg.pipelines == nullptr) 
+		DX11_engine_cfg.pipelines = (Topl_Pipeline_DX11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_DX11*));
 #endif
 #ifdef VULKAN_H
 	if (Vulkan_engine_cfg.pipelines == nullptr) 
@@ -91,12 +91,12 @@ Topl_Pipeline* Topl_Factory::genPipeline(TARGET_Backend backend, entry_shader_cp
         }
 #ifdef _WIN32
     case TARGET_DirectX11:
-        if(Drx11_engine_cfg.renderer == nullptr) return nullptr; // Error
+        if(DX11_engine_cfg.renderer == nullptr) return nullptr; // Error
         else {
-            Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
-            *pipeline = new Topl_Pipeline_Drx11();
-            Drx11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
-            Drx11_engine_cfg.pipeIndex++;
+            Topl_Pipeline_DX11** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
+            *pipeline = new Topl_Pipeline_DX11();
+            DX11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
+            DX11_engine_cfg.pipeIndex++;
             return *pipeline;
         }
 #endif
@@ -130,12 +130,12 @@ Topl_Pipeline* Topl_Factory::genPipeline(TARGET_Backend backend, entry_shader_cp
 		}
 #ifdef _WIN32
 	case TARGET_DirectX11:
-		if (Drx11_engine_cfg.renderer == nullptr) return nullptr; // Error
+		if (DX11_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_Drx11** pipeline = Drx11_engine_cfg.pipelines + Drx11_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_Drx11();
-			Drx11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
-			Drx11_engine_cfg.pipeIndex++;
+			Topl_Pipeline_DX11** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_DX11();
+			DX11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+			DX11_engine_cfg.pipeIndex++;
 			return *pipeline;
 		}
 #endif
@@ -159,7 +159,7 @@ void Topl_Factory::switchPipeline(TARGET_Backend backend, Topl_Renderer* rendere
 		((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
 #ifdef _WIN32
 	else if (backend == TARGET_DirectX11)
-		((Topl_Renderer_Drx11*)renderer)->setPipeline((Topl_Pipeline_Drx11*)pipeline);
+		((Topl_Renderer_DX11*)renderer)->setPipeline((Topl_Pipeline_DX11*)pipeline);
 #endif
 #ifdef VULKAN_H
 	else if (backend == TARGET_Vulkan)

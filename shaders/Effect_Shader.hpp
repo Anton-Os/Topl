@@ -36,9 +36,9 @@ struct Effect_VertexShader_GL4 : public Effect_VertexShader {
 	Effect_VertexShader_GL4(unsigned mode) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl", mode){}
 };
 
-struct Effect_VertexShader_Drx11 : public Effect_VertexShader {
-    Effect_VertexShader_Drx11() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
-	Effect_VertexShader_Drx11(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
+struct Effect_VertexShader_DX11 : public Effect_VertexShader {
+    Effect_VertexShader_DX11() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
+	Effect_VertexShader_DX11(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
@@ -52,6 +52,6 @@ struct Effect_PixelShader_GL4 : public Effect_PixelShader {
 	Effect_PixelShader_GL4() : Effect_PixelShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
 };
 
-struct Effect_PixelShader_Drx11 : public Effect_PixelShader {
-	Effect_PixelShader_Drx11() : Effect_PixelShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
+struct Effect_PixelShader_DX11 : public Effect_PixelShader {
+	Effect_PixelShader_DX11() : Effect_PixelShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
 };

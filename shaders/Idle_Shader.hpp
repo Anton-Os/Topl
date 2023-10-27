@@ -23,8 +23,8 @@ struct Idle_VertexShader_GL4 : public Idle_VertexShader {
 	Idle_VertexShader_GL4() : Idle_VertexShader(genPrefix_glsl() + "Idle_Vertex.glsl") {}
 };
 
-struct Idle_VertexShader_Drx11 : public Idle_VertexShader {
-	Idle_VertexShader_Drx11() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
+struct Idle_VertexShader_DX11 : public Idle_VertexShader {
+	Idle_VertexShader_DX11() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
 };
 
 // Pixel Shaders
@@ -38,6 +38,6 @@ struct Idle_PixelShader_GL4 : public Idle_PixelShader {
 	Idle_PixelShader_GL4() : Idle_PixelShader(genPrefix_glsl() + "Idle_Frag.glsl") {}
 };
 
-struct Idle_PixelShader_Drx11 : public Idle_PixelShader {
-	Idle_PixelShader_Drx11() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
+struct Idle_PixelShader_DX11 : public Idle_PixelShader {
+	Idle_PixelShader_DX11() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
 };

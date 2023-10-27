@@ -13,7 +13,7 @@
 {
 	Topl_Renderer_GL4 renderer_GL = Topl_Renderer_GL4(platform.getParentWindow());
 #ifdef _WIN32
-	Topl_Renderer_Drx11 renderer_Drx = Topl_Renderer_Drx11(platform.getParentWindow());
+	Topl_Renderer_DX11 renderer_Drx = Topl_Renderer_DX11(platform.getParentWindow());
 #endif
 #ifdef VULKAN_H
 	Topl_Renderer_Vulkan renderer_Vk = Topl_Renderer_Vulkan(platform.getParentWindow());
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	Topl_Renderer* renderer = nullptr;
 
 	if (TARGET_BACKEND == TARGET_OpenGL) renderer = new Diagnostic_Renderer_GL4(platform.getParentWindow());
-	else if (TARGET_BACKEND == TARGET_DirectX11) renderer = new Diagnostic_Renderer_Drx11(platform.getParentWindow());
+	else if (TARGET_BACKEND == TARGET_DirectX11) renderer = new Diagnostic_Renderer_DX11(platform.getParentWindow());
 	else if (TARGET_BACKEND == TARGET_Vulkan) renderer = new Diagnostic_Renderer_Vulkan(platform.getParentWindow());
 
 	Timer_Ticker _ticker;

@@ -27,8 +27,8 @@ struct Textured_VertexShader_GL4 : public Textured_VertexShader {
 	Textured_VertexShader_GL4() : Textured_VertexShader(genPrefix_glsl() + "Textured_Vertex.glsl") {}
 };
 
-struct Textured_VertexShader_Drx11 : public Textured_VertexShader {
-	Textured_VertexShader_Drx11() : Textured_VertexShader(genPrefix_hlsl() + "Textured_Vertex.hlsl") {}
+struct Textured_VertexShader_DX11 : public Textured_VertexShader {
+	Textured_VertexShader_DX11() : Textured_VertexShader(genPrefix_hlsl() + "Textured_Vertex.hlsl") {}
 };
 
 // Pixel Shaders
@@ -42,6 +42,6 @@ struct Textured_PixelShader_GL4 : public Textured_PixelShader {
 	Textured_PixelShader_GL4() : Textured_PixelShader(genPrefix_glsl() + "Textured_Frag.glsl") {}
 };
 
-struct Textured_PixelShader_Drx11 : public Textured_PixelShader {
-	Textured_PixelShader_Drx11() : Textured_PixelShader(genPrefix_hlsl() + "Textured_Pixel.hlsl") { }
+struct Textured_PixelShader_DX11 : public Textured_PixelShader {
+	Textured_PixelShader_DX11() : Textured_PixelShader(genPrefix_hlsl() + "Textured_Pixel.hlsl") { }
 };

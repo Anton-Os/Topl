@@ -1,25 +1,25 @@
 # DirectX Demos
 
 if(WIN32)
-    add_executable(Legacy_Drx11_Pawns
+    add_executable(Legacy_DX11_Pawns
         geometry/constructs/Humanoid.cpp
 
-        demos/legacy/Drx11_Pawns.cpp
+        demos/legacy/DX11_Pawns.cpp
     )
-    target_link_libraries(Legacy_Drx11_Pawns PRIVATE Drx11_ENGINE)
+    target_link_libraries(Legacy_DX11_Pawns PRIVATE DX11_ENGINE)
 
-    add_executable(Legacy_Drx11_Planetary demos/legacy/Drx11_Planetary.cpp)
-	target_link_libraries(Legacy_Drx11_Planetary PRIVATE Drx11_ENGINE)
+    add_executable(Legacy_DX11_Planetary demos/legacy/DX11_Planetary.cpp)
+	target_link_libraries(Legacy_DX11_Planetary PRIVATE DX11_ENGINE)
     
-    add_executable(Legacy_Drx11_Surface demos/legacy/Drx11_Surface.cpp)
-	target_link_libraries(Legacy_Drx11_Surface PRIVATE Drx11_ENGINE)
+    add_executable(Legacy_DX11_Surface demos/legacy/DX11_Surface.cpp)
+	target_link_libraries(Legacy_DX11_Surface PRIVATE DX11_ENGINE)
 
-    add_executable(Legacy_Drx11_Overlay 
+    add_executable(Legacy_DX11_Overlay 
         geometry/constructs/Pane.cpp
 
-        demos/legacy/Drx11_Overlay.cpp
+        demos/legacy/DX11_Overlay.cpp
     )
-	target_link_libraries(Legacy_Drx11_Overlay PRIVATE Drx11_ENGINE)
+	target_link_libraries(Legacy_DX11_Overlay PRIVATE DX11_ENGINE)
 endif()
 
 # OpenGL Demos

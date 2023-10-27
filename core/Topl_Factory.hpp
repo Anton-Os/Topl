@@ -1,6 +1,6 @@
 #include "opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
 #ifdef _WIN32
-#include "directx/Topl_Renderer_Drx11.hpp"
+#include "directx/Topl_Renderer_DX11.hpp"
 #endif
 #ifdef VULKAN_H
 #include "vulkan/Topl_Renderer_Vulkan.hpp"
@@ -24,9 +24,9 @@ struct GL4_Engine_Config : public Engine_Config {
 };
 
 #ifdef _WIN32
-struct Drx11_Engine_Config : public Engine_Config {
-	Topl_Renderer_Drx11* renderer;
-	Topl_Pipeline_Drx11** pipelines;
+struct DX11_Engine_Config : public Engine_Config {
+	Topl_Renderer_DX11* renderer;
+	Topl_Pipeline_DX11** pipelines;
 };
 #endif
 
@@ -61,7 +61,7 @@ private:
 
 	static GL4_Engine_Config GL4_engine_cfg;
 #ifdef _WIN32
-	static Drx11_Engine_Config Drx11_engine_cfg;
+	static DX11_Engine_Config DX11_engine_cfg;
 #endif
 #ifdef VULKAN_H
 	static Vulkan_Engine_Config Vulkan_engine_cfg;

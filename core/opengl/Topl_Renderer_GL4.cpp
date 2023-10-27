@@ -397,6 +397,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 		else if (renderID != SCENE_RENDER_ID) { // Drawable Target
 			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++) // Optimize! 
 				if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
+			// VertexArray_GL4* vertexArray = std::find_if(_vertexArrays.begin(); _vertexArrays.end(); { /* expression */ })
 
 			Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID); // Optimize!
 			Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID); // Optimize!

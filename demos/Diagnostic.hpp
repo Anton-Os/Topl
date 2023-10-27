@@ -35,22 +35,22 @@ struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4{
 
 #ifdef _WIN32
 // DirectX Test Renderer
-struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11 {
-	Diagnostic_Renderer_Drx11(NATIVE_WINDOW window) 
-	: Topl_Renderer_Drx11(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
+struct Diagnostic_Renderer_DX11 : public Topl_Renderer_DX11 {
+	Diagnostic_Renderer_DX11(NATIVE_WINDOW window) 
+	: Topl_Renderer_DX11(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
 
 	void build(const Topl_Scene* scene) override {
 		logMessage("Diagnostic Build (DirectX11)");
 		setDrawMode(DRAW_Triangles);
-		Topl_Renderer_Drx11::build(scene); 
+		Topl_Renderer_DX11::build(scene); 
 	}
 
-	Topl_Pipeline_Drx11 pipeline;
-	Idle_VertexShader_Drx11 vertexShader;
-	Idle_PixelShader_Drx11 pixelShader;
-	/* Advance_GeometryShader_Drx11 geomShader;
-	Advance_TessCtrlShader_Drx11 tessCtrlShader;
-	Advance_TessEvalShader_Drx11 tessEvalShader; */
+	Topl_Pipeline_DX11 pipeline;
+	Idle_VertexShader_DX11 vertexShader;
+	Idle_PixelShader_DX11 pixelShader;
+	/* Advance_GeometryShader_DX11 geomShader;
+	Advance_TessCtrlShader_DX11 tessCtrlShader;
+	Advance_TessEvalShader_DX11 tessEvalShader; */
 };
 #endif
 

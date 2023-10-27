@@ -123,16 +123,16 @@ endif()
 # Building DirectX Engine
 
 if(WIN32)
-    add_library(Drx11_ENGINE
-        core/directx/Topl_Pipeline_Drx11.cpp
-        core/directx/Topl_Renderer_Drx11.cpp
+    add_library(DX11_ENGINE
+        core/directx/Topl_Pipeline_DX11.cpp
+        core/directx/Topl_Renderer_DX11.cpp
     )
-    target_include_directories(Drx11_ENGINE PRIVATE core support physics geometry)
-    target_include_directories(Drx11_ENGINE INTERFACE
+    target_include_directories(DX11_ENGINE PRIVATE core support physics geometry)
+    target_include_directories(DX11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
     )
-    set_target_properties(Drx11_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+    set_target_properties(DX11_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 endif()
 
 # Building Vulkan Engine
@@ -180,7 +180,7 @@ endif()
 
 list(APPEND engine_targets GL4_ENGINE) # OpenGL available cross-platform
 if(WIN32)
-    list(APPEND engine_targets Drx11_ENGINE) # DirectX available on windows
+    list(APPEND engine_targets DX11_ENGINE) # DirectX available on windows
 endif()
 if(Vulkan_FOUND)
     list(APPEND engine_targets Vulkan_ENGINE) # Vulkan available with library
@@ -224,8 +224,8 @@ add_dependencies(GL4_ShaderEdit GL4_ENGINE)
 
 if(WIN32)
 	file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
-	add_custom_target(Drx11_ShaderEdit SOURCES ${drx11_shaders})
-	add_dependencies(Drx11_ShaderEdit Drx11_ENGINE)
+	add_custom_target(DX11_ShaderEdit SOURCES ${drx11_shaders})
+	add_dependencies(DX11_ShaderEdit DX11_ENGINE)
 endif()
 
 if(Vulkan_FOUND)
