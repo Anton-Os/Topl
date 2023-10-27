@@ -146,7 +146,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 }
 
 void Topl_Renderer_GL4::clearView() {
-	glClearColor(CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA);
+	glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -189,14 +189,14 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	if (!shaderBlockData.empty()) {
+	// if (!shaderBlockData.empty()) {
 		_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
+	// }
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -208,15 +208,15 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 
 		// render block buffer generation
 		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
-		if (!shaderBlockData.empty()) {
+		_entryShader->genRenderBlock(actor, &shaderBlockData);
+	//	if (!shaderBlockData.empty()) {
 			_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
 			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
 			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		}
+	//	}
 
 		// indices generation
 		if (mesh->getIndices() != nullptr) {
@@ -274,7 +274,7 @@ Img_Base Topl_Renderer_GL4::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_GL4::attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
@@ -346,8 +346,9 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
+		// Shader Render Block
 		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
+		_entryShader->genRenderBlock(actor, &shaderBlockData);
 		for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
 
@@ -357,6 +358,19 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		}
+
+		// Texture Update
+		for (unsigned t = 0; t < _textures.size(); t++)
+			if (_textures.at(t).renderID == renderID) {
+				if (_textures.at(t).format == TEX_2D) {
+					glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
+					glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
+				}
+				else if (_textures.at(t).format == TEX_3D) {
+					glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
+					glBindTexture(GL_TEXTURE_3D, _textures.at(t).texture);
+				}
+			}
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -381,12 +395,12 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
 			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 		else if (renderID != SCENE_RENDER_ID) { // Drawable Target
-			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++)
+			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++) // Optimize! 
 				if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
 
-			Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-			Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-			Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+			Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID); // Optimize!
+			Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID); // Optimize!
+			Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID); // Optimize!
 			if (renderBlockBuff != nullptr)
 				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
@@ -395,7 +409,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 			if (indexBuff != nullptr && indexBuff->count > 0) 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
-			for (unsigned t = 0; t < _textures.size(); t++)
+			/* for (unsigned t = 0; t < _textures.size(); t++) // Move this!
 				if (_textures.at(t).renderID == renderID) {
 					if (_textures.at(t).format == TEX_2D) {
 						glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
@@ -405,7 +419,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 						glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 						glBindTexture(GL_TEXTURE_3D, _textures.at(t).texture);
 					}
-				} 
+				} */
 
 			// Draw Call!
 			if (vertexBuff != nullptr && vertexBuff->count != 0) {
@@ -413,7 +427,7 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
 			} 
 			// TODO: Include instanced draw call
-			else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+			else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
 
 			// Unbinding
 			glBindVertexArray(0);

@@ -1,11 +1,10 @@
+#ifndef GEO_CHAIN_H
+
 #include "Geo_Construct.hpp"
 
-// Parameters
 // Geometry Chain
 
-static std::string genLinkName(unsigned num){ return "link" + std::to_string(num); }
-
-class Geo_Chain : public Geo_Construct, {
+class Geo_Chain : public Geo_Construct {
 public:
     Geo_Chain(const std::string& prefix, const Geo_Actor* actor, Vec3f direction, unsigned count)
     : Geo_Construct(prefix, actor, count){ // Non-configured Constructor
@@ -28,6 +27,8 @@ public:
         configure(scene);
     }
 
+    static std::string genLinkName(unsigned num){ return "link" + std::to_string(num); }
+
     void configure(Topl_Scene* scene) override {
         for(unsigned c = 0; c < _geoActors.size(); c++){
             _geoActors[c].updatePos(_origin + (_direction * c));
@@ -41,6 +42,8 @@ public:
         }
     }
 private:
-    Vec3f _origin; // determines starting position for geometry
     Vec3f _direction = Vec3f({ 0.1f, 0.0f, 0.0f });
 };
+
+#define GEO_CHAIN_H
+#endif

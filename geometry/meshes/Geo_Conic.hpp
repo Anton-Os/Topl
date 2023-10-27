@@ -1,3 +1,5 @@
+#ifndef GEO_CONIC_H
+
 #include "Geo_Mesh.hpp"
 
 class Geo_Conic : public Geo_Mesh {
@@ -33,10 +35,10 @@ struct Geo_ConicTriangle : public Geo_Conic {
 	Geo_ConicTriangle(float radius, Vec3f apex) : Geo_Conic({ radius, 3 }, apex) {}
 };
 
-struct Geo_ConicSquare : public Geo_Conic { // Pyramid
-	Geo_ConicSquare() : Geo_Conic({ 1.0, 4 }) {}
-	Geo_ConicSquare(float radius) : Geo_Conic({ radius, 4 }) {}
-	Geo_ConicSquare(float radius, Vec3f apex) : Geo_Conic({ radius, 4 }, apex) {}
+struct Geo_ConicQuad : public Geo_Conic { // Pyramid
+	Geo_ConicQuad() : Geo_Conic({ 1.0, 4 }) {}
+	Geo_ConicQuad(float radius) : Geo_Conic({ radius, 4 }) {}
+	Geo_ConicQuad(float radius, Vec3f apex) : Geo_Conic({ radius, 4 }, apex) {}
 };
 
 struct Geo_ConicHex : public Geo_Conic {
@@ -50,3 +52,6 @@ struct Geo_ConicCircle : public Geo_Conic { // Conic
 	Geo_ConicCircle(float radius) : Geo_Conic({ radius, CIRCLE_SEGMENTS }) {}
 	Geo_ConicCircle(float radius, Vec3f apex) : Geo_Conic({ radius, CIRCLE_SEGMENTS }, apex) {}
 };
+
+#define GEO_CONIC_H
+#endif

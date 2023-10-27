@@ -89,7 +89,7 @@ public:
 	const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
 	unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const {
+	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
 	}

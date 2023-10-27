@@ -14,17 +14,17 @@ struct Idle_VertexShader : public Topl_EntryShader {
 			} // Inputs
 		) {  }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {}
+	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {}
 };
 
-struct GL4_Idle_VertexShader : public Idle_VertexShader {
-	GL4_Idle_VertexShader() : Idle_VertexShader(genPrefix_glsl() + "Idle_Vertex.glsl") {}
+struct Idle_VertexShader_GL4 : public Idle_VertexShader {
+	Idle_VertexShader_GL4() : Idle_VertexShader(genPrefix_glsl() + "Idle_Vertex.glsl") {}
 };
 
-struct Drx11_Idle_VertexShader : public Idle_VertexShader {
-	Drx11_Idle_VertexShader() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
+struct Idle_VertexShader_Drx11 : public Idle_VertexShader {
+	Idle_VertexShader_Drx11() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
 };
 
 // Pixel Shaders
@@ -34,10 +34,10 @@ struct Idle_PixelShader : public Topl_Shader {
 	Idle_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct GL4_Idle_PixelShader : public Idle_PixelShader {
-	GL4_Idle_PixelShader() : Idle_PixelShader(genPrefix_glsl() + "Idle_Frag.glsl") {}
+struct Idle_PixelShader_GL4 : public Idle_PixelShader {
+	Idle_PixelShader_GL4() : Idle_PixelShader(genPrefix_glsl() + "Idle_Frag.glsl") {}
 };
 
-struct Drx11_Idle_PixelShader : public Idle_PixelShader {
-	Drx11_Idle_PixelShader() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
+struct Idle_PixelShader_Drx11 : public Idle_PixelShader {
+	Idle_PixelShader_Drx11() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
 };

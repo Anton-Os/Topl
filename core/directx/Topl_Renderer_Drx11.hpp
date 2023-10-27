@@ -90,8 +90,8 @@ protected:
 	void update(const Topl_Scene* scene) override;
 	void renderTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
-	// void attachTexture(const Rasteron_Image* image, unsigned id) override;
-	void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
+	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
+	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* material, unsigned id) override;
 #endif
 	Buffer_Drx11* findBuffer(BUFF_Type type, unsigned long renderID);

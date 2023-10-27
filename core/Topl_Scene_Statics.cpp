@@ -2,6 +2,25 @@
 
 // Scene Statics
 
+void Topl_Scene::addGeometry(Geo_Actor* actor) {
+	for(unsigned a = 0; a < _geoActors.size(); a++)
+		if(_geoActors[a]->getName() == actor->getName()){
+			_geoActors[a] = actor; // overwrite geometry
+			return;
+		}
+	_geoActors.push_back(actor); // add new geometry
+}
+
+void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
+	actor->setName(name);
+	addGeometry(actor);
+}
+
+void Topl_Scene::addPickerCallback(const std::string& name, pickerCallback callback){
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if(name == (*actor)->getName()) _pickerCallbackMap.insert({ *actor, callback }); 
+}
+
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
 	if (index < _geoActors.size()) return _geoActors.at(index);
 	else return nullptr;
@@ -18,18 +37,10 @@ light_cptr Topl_Scene::getLight(unsigned index) const {
 	else return _lights.at(index);
 }
 
-void Topl_Scene::addGeometry(Geo_Actor* actor) {
-	for(unsigned a = 0; a < _geoActors.size(); a ++)
-		if(_geoActors[a]->getName() == actor->getName()){
-			_geoActors[a] = actor; // overwrite geometry
-			return;
-		}
-	_geoActors.push_back(actor); // add new geometry
-}
-
-void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
-	actor->setName(name);
-	addGeometry(actor);
+pickerCallback Topl_Scene::getPickerCallback(unsigned color){
+	for(std::map<Geo_Actor*, pickerCallback>::const_iterator p = _pickerCallbackMap.cbegin(); p != _pickerCallbackMap.cend(); p++)
+		if(color == p->first->getId()) return p->second;
+	return nullptr; // no callback
 }
 
 #ifdef RASTERON_H

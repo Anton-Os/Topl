@@ -7,10 +7,10 @@
 
 // Numeric Operations
 
-#define COLOR_ID_TYPES 7
+// #define COLOR_ID_TYPES 7
 
-unsigned genColorID(unsigned renderID);
-unsigned genRandColor();
+// unsigned genColorID(unsigned renderID);
+// unsigned genRandColor();
 
 // Data Operations
 

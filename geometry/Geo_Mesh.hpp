@@ -1,4 +1,4 @@
-#ifndef GEOMETRY_H
+#ifndef GEO_MESH_H
 
 #include <vector>
 
@@ -65,5 +65,5 @@ protected:
 	std::vector<unsigned> _indices;
 };
 
-#define GEOMETRY_H
+#define GEO_MESH_H
 #endif

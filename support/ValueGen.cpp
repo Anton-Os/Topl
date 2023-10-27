@@ -2,7 +2,7 @@
 
 // Numeric Operations
 
-unsigned genColorID(unsigned renderID) {
+/* unsigned genColorID(unsigned renderID) {
 	// unsigned short colorInc = (renderID / COLOR_ID_TYPES) + 1;
 	unsigned short colorInc = ((renderID / COLOR_ID_TYPES) + 1) * 70; // testing for emphasis
 
@@ -22,7 +22,7 @@ unsigned genRandColor() {
 	uint8_t greenBit = rand() % 255;
 	uint8_t blueBit = rand() % 255;
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
-}
+} */
 
 // Data Operations
 

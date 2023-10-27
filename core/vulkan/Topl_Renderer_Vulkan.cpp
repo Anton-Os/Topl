@@ -212,7 +212,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevices[0], _surface, &_surfaceCaps);
 
-
 	unsigned formatCount;
 
 	vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevices[0], _surface, &formatCount, nullptr);
@@ -366,9 +365,8 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
 
-
 	/* VkClearValue clearValues[2];
-	clearValues[0].color = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
+	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
 	clearValues[1].depthStencil = { 1.0f, 0 };
 	VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
 	
@@ -538,7 +536,7 @@ Img_Base Topl_Renderer_Vulkan::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_Vulkan::attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_Vulkan::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	// Implement texture attaching
 }
 

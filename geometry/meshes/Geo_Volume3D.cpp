@@ -1,4 +1,4 @@
-#include "Geo_Volume.hpp"
+#include "Geo_Volume3D.hpp"
 
 void Geo_Volume::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });

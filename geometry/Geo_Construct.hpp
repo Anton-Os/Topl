@@ -1,4 +1,4 @@
-#ifndef GEO_TREE_H
+#ifndef GEO_CONSTRUCT_H
 
 #include <initializer_list>
 #include <string>
@@ -16,8 +16,8 @@ typedef std::pair<Vec3f, Vec3f> orientation_pair; // MOVE THIS!!!
 
 class Geo_Construct {
 public:
-	Geo_Construct(const std::string& prefix) { _prefix = prefix;  } // Empty constructor
-    // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshs) // Fixed items constructor
+	Geo_Construct(const std::string& prefix) { _prefix = prefix; } // Empty constructor
+    // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshes) // Fixed items constructor
     Geo_Construct(const std::string& prefix, const Geo_Actor* actor, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
         _geoActors.resize(count);
@@ -26,13 +26,13 @@ public:
 
     std::string getPrefix(){ return _prefix + "_"; }
     Vec3f getOrigin(){
-        Vec3f origin = Vec3f({ 0.0f, 0.0f, 0.0f });
+        _origin = Vec3f({ 0.0f, 0.0f, 0.0f });
         for(unsigned a = 0; a < _geoActors.size(); a++){
             Geo_Actor* actor =  &_geoActors[a];
-            origin = origin + *actor->getPos();
+            _origin = _origin + *actor->getPos();
         }
-        origin = Vec3f({ origin[0] / _geoActors.size(), origin[1] / _geoActors.size(), origin[2] / _geoActors.size() });
-        return origin;
+        _origin = Vec3f({ _origin[0] / _geoActors.size(), _origin[1] / _geoActors.size(), _origin[2] / _geoActors.size() });
+        return _origin;
     }
     void move(Vec3f vec){ 
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
@@ -58,11 +58,13 @@ public:
 
     virtual void configure(Topl_Scene* scene) = 0; // function to pass data into  scene
 protected:
+    Vec3f _origin = Vec3f({ 0.0f, 0.0f, 0.0f });
+
     std::string _prefix;
     std::vector<Geo_Actor> _geoActors;
     std::vector<Phys_Actor> _physActors; // physics actors
 	std::vector<Phys_Connector> _links; // links
 };
 
-#define GEO_TREE_H
+#define GEO_CONSTRUCT_H
 #endif

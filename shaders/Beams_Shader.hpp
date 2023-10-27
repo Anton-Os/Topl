@@ -43,14 +43,14 @@ protected:
 	Topl_Light lampLight = Topl_Light({ 0.0, 0.0f, 1.0 });
 };
 
-struct GL4_Beams_VertexShader : public Beams_VertexShader {
-	GL4_Beams_VertexShader() : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl") {}
-	GL4_Beams_VertexShader(unsigned mode) : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl", mode) {}
+struct Beams_VertexShader_GL4 : public Beams_VertexShader {
+	Beams_VertexShader_GL4() : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl") {}
+	Beams_VertexShader_GL4(unsigned mode) : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl", mode) {}
 };
 
-struct Drx11_Beams_VertexShader : public Beams_VertexShader {
-	Drx11_Beams_VertexShader() : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl") {}
-	Drx11_Beams_VertexShader(unsigned mode) : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl", mode) {}
+struct Beams_VertexShader_Drx11 : public Beams_VertexShader {
+	Beams_VertexShader_Drx11() : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl") {}
+	Beams_VertexShader_Drx11(unsigned mode) : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -60,10 +60,10 @@ struct Beams_PixelShader : public Topl_Shader {
 	Beams_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
 };
 
-struct GL4_Beams_PixelShader : public Beams_PixelShader {
-	GL4_Beams_PixelShader() : Beams_PixelShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
+struct Beams_PixelShader_GL4 : public Beams_PixelShader {
+	Beams_PixelShader_GL4() : Beams_PixelShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
 };
 
-struct Drx11_Beams_PixelShader : public Beams_PixelShader {
-	Drx11_Beams_PixelShader() : Beams_PixelShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
+struct Beams_PixelShader_Drx11 : public Beams_PixelShader {
+	Beams_PixelShader_Drx11() : Beams_PixelShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
 };

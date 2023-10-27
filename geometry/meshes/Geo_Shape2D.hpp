@@ -1,4 +1,4 @@
-#ifndef GEO_FLAT_H
+#ifndef GEO_SHAPE2D_H
 
 #include "Geo_Mesh.hpp"
 
@@ -33,10 +33,10 @@ struct Geo_ShapeTriangle : public Geo_Shape {
 	Geo_ShapeTriangle(float radius, float z) : Geo_Shape({ radius, 3 }, z) {}
 };
 
-struct Geo_ShapeSquare : public Geo_Shape {
-	Geo_ShapeSquare() : Geo_Shape({ 1.0, 4 }) {}
-	Geo_ShapeSquare(float radius) : Geo_Shape({ radius, 4 }) {}
-	Geo_ShapeSquare(float radius, float z) : Geo_Shape({ radius, 4 }, z) {}
+struct Geo_ShapeQuad : public Geo_Shape {
+	Geo_ShapeQuad() : Geo_Shape({ 1.0, 4 }) {}
+	Geo_ShapeQuad(float radius) : Geo_Shape({ radius, 4 }) {}
+	Geo_ShapeQuad(float radius, float z) : Geo_Shape({ radius, 4 }, z) {}
 };
 
 struct Geo_ShapeHex : public Geo_Shape {
@@ -52,5 +52,5 @@ struct Geo_ShapeCircle : public Geo_Shape {
 };
 
 
-#define GEO_FLAT_H
+#define GEO_SHAPE2D_H
 #endif

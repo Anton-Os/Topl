@@ -4,15 +4,18 @@
 
 // Actor
 
-#define DEFAULT_ACTOR_ID 0
+#define DEFAULT_ACTOR_ID 0xFFFFFFFF
 #define DEFAULT_ACTOR_NAME "actor"
 
 typedef void (*pickerCallback)(void);
 
 class Geo_Actor {
 public:
-	Geo_Actor(){}
-	Geo_Actor(const Geo_Mesh* mesh) { _mesh = mesh; }
+	Geo_Actor(){ _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255)); }
+	Geo_Actor(const Geo_Mesh* mesh) { 
+		_id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255));
+		_mesh = mesh; 
+	}
 
 	void setName(const std::string& name) { _name = name; }
 	void setMesh(const Geo_Mesh* mesh) { _mesh = mesh; }

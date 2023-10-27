@@ -25,3 +25,24 @@ void Topl_Main::run(){
 		_renderer->present(); // switches front and back buffers
     }
 }
+
+
+#ifdef RASTERON_H
+unsigned Topl_Main::colorPicker(Topl_Scene* scene){
+	unsigned pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+
+	bool pickerFound = false;
+
+	for(unsigned a = 0; a < scene->getActorCount(); a++){
+		actor_cptr actor = getGeoActor(a);
+		if(actor->getId == pickerColor) {
+			logMessage("Picker match detected for " + std::to_string(pickerColor) + '\n');
+			// TODO: Fire callback inside of scene for target actor
+			pickerFound = true;
+			break;
+		}
+	}
+
+	return (pickerFound)? pickerColor : 0; // return 0 if no matches found
+}
+#endif

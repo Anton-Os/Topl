@@ -2,7 +2,7 @@
 
 #include "Topl_Main.hpp"
 
-#include "meshes/Geo_Shape.hpp"
+#include "meshes/Geo_Shape2D.hpp"
 
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
@@ -26,11 +26,11 @@ struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4{
 	}
 
 	Topl_Pipeline_GL4 pipeline;
-	GL4_Idle_VertexShader vertexShader;
-	GL4_Idle_PixelShader pixelShader;
-	/* GL4_Advance_GeometryShader geomShader;
-	GL4_Advance_TessCtrlShader tessCtrlShader;
-	GL4_Advance_TessEvalShader tessEvalShader; */
+	Idle_VertexShader_GL4 vertexShader;
+	Idle_PixelShader_GL4 pixelShader;
+	/* Advance_GeometryShader_GL4 geomShader;
+	Advance_TessCtrlShader_GL4 tessCtrlShader;
+	Advance_TessEvalShader_GL4 tessEvalShader; */
 };
 
 #ifdef _WIN32
@@ -46,11 +46,11 @@ struct Diagnostic_Renderer_Drx11 : public Topl_Renderer_Drx11 {
 	}
 
 	Topl_Pipeline_Drx11 pipeline;
-	Drx11_Idle_VertexShader vertexShader;
-	Drx11_Idle_PixelShader pixelShader;
-	/* Drx11_Advance_GeometryShader geomShader;
-	Drx11_Advance_TessCtrlShader tessCtrlShader;
-	Drx11_Advance_TessEvalShader tessEvalShader; */
+	Idle_VertexShader_Drx11 vertexShader;
+	Idle_PixelShader_Drx11 pixelShader;
+	/* Advance_GeometryShader_Drx11 geomShader;
+	Advance_TessCtrlShader_Drx11 tessCtrlShader;
+	Advance_TessEvalShader_Drx11 tessEvalShader; */
 };
 #endif
 

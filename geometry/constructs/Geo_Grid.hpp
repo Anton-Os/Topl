@@ -1,6 +1,8 @@
+#ifndef GEO_GRID_H
+
 #include "Geo_Construct.hpp"
 
-// Parameters
+// Grid Parameters
 
 typedef std::pair<unsigned short, float> gridSize_pair;
 
@@ -10,12 +12,12 @@ struct Geo_Grid_Params {
 		// assert(size > 0);
     	x = size;  y = size; z = size;
 	}
-	Geo_Grid_Params( gridSize_pair xSize, gridSize_pair ySize, gridSize_pair zSize){
+	Geo_Grid_Params(gridSize_pair xSize, gridSize_pair ySize, gridSize_pair zSize){
 		// assert(xSize > 0 && ySize > 0 && zSize > 0);
     	x = xSize; y = ySize; z = zSize;
 	}
 
-	unsigned getGridCount() const { return x.first * y.first * z.first; }
+	unsigned getGridSize() const { return x.first * y.first * z.first; }
 
 	gridSize_pair x = std::make_pair(1, 0.0f); // x axis size and spacing
 	gridSize_pair y = std::make_pair(1, 0.0f); // y axis size and spacing
@@ -24,12 +26,10 @@ struct Geo_Grid_Params {
 
 // Geometry Grid
 
-static std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
-
 class Geo_Grid : public Geo_Construct{
 public:
 	Geo_Grid(const std::string& prefix, const Geo_Actor* actor, const Geo_Grid_Params& params) 
-	: Geo_Construct(prefix, actor, params.getGridCount()){ // Non-configured Constuctor
+	: Geo_Construct(prefix, actor, params.getGridSize()){ // Non-configured Constuctor
         _params = params;
 		_origin = Vec3f({
 			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
@@ -38,8 +38,8 @@ public:
 		});
     }
 
-    Geo_Grid( const std::string& prefix, Topl_Scene* scene, const Geo_Actor* actor, const Geo_Grid_Params& params) 
-	: Geo_Construct(prefix, actor, params.getGridCount()){ // Configured Constuctor
+    Geo_Grid(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* actor, const Geo_Grid_Params& params) 
+	: Geo_Construct(prefix, actor, params.getGridSize()){ // Configured Constuctor
         _params = params;
 		_origin = Vec3f({
 			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
@@ -48,6 +48,8 @@ public:
 		});
 		configure(scene);
     }
+	
+	static std::string genCellName(unsigned num){ return "cell" + std::to_string(num); }
 
 	void configure(Topl_Scene* scene) override {
 		Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
@@ -68,10 +70,12 @@ public:
 
 			_geoActors[c].updatePos(_origin + offset);
 			scene->addGeometry(getPrefix() + genCellName(c + 1), &_geoActors[c]);
-			scene->addPhysics(getPrefix() + genCellName(c + 1), &_physActors.at(c));
+			// scene->addPhysics(getPrefix() + genCellName(c + 1), &_physActors.at(c));
 		}
 	}
 private:
-	Vec3f _origin;
     Geo_Grid_Params _params;
 };
+
+#define GEO_GRID_H
+#endif

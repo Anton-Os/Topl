@@ -97,13 +97,13 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 		unsigned renderID = getRenderID(actor);
 
 		const Rasteron_Image* texture = scene->getTexture(actor->getName());
-		if (texture != nullptr) attachTexture(texture, renderID);
+		if (texture != nullptr) attachTexAt(texture, renderID);
 		// else return logMessage(MESSAGE_Exclaim, "Null texture encountered!");
 
 		const Img_Material* material = scene->getMaterialTex(actor->getName());
 		if (material != nullptr)
 			for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
-				attachTexture(material->getLayer((unsigned short)p)->getImage(), renderID, p);
+				attachTexAt(material->getLayer((unsigned short)p)->getImage(), renderID, p);
 		// else return logMessage(MESSAGE_Exclaim, "Null material encountered!");
 
 		const Img_Volume* volume = scene->getVolumeTex(actor->getName());

@@ -252,7 +252,7 @@ void Topl_Renderer_Drx11::init(NATIVE_WINDOW window) {
 }
 
 void Topl_Renderer_Drx11::clearView() {
-	const float clearColor[] = { CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_RGB, CLEAR_COLOR_ALPHA };
+	const float clearColor[] = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
 	_deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }
@@ -299,10 +299,10 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-	if (!shaderBlockData.empty()) {
+	// if (!shaderBlockData.empty()) {
 		_isBuilt = Drx11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
 		_buffers.push_back(Buffer_Drx11(_sceneBlockBuff));
-	}
+	// }
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
@@ -314,13 +314,13 @@ void Topl_Renderer_Drx11::build(const Topl_Scene* scene) {
 
 		// render block buffer generation
 		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
-		if (!shaderBlockData.empty()) {
+		_entryShader->genRenderBlock(actor, &shaderBlockData);
+	//	if (!shaderBlockData.empty()) {
 			ID3D11Buffer* renderBlockBuff = nullptr;
 			_isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
 			_buffers.push_back(Buffer_Drx11(renderID, BUFF_Render_Block, renderBlockBuff));
 			if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
-		}
+	//	}
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
@@ -385,7 +385,7 @@ Img_Base Topl_Renderer_Drx11::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_Drx11::attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_Drx11::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc = Drx11::genSamplerDesc(_texMode);
@@ -485,6 +485,8 @@ void Topl_Renderer_Drx11::attachVolume(const Img_Volume* volume, unsigned render
 }
 #endif
 
+static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
+static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 
 void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
@@ -500,12 +502,26 @@ void Topl_Renderer_Drx11::update(const Topl_Scene* scene) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
+		// Shader Render Block
 		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, renderID, &shaderBlockData);
+		_entryShader->genRenderBlock(actor, &shaderBlockData);
 		for (std::vector<Buffer_Drx11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
 			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
 				renderBlockBuff = &(*buff);
 				break;
+			}
+
+		// Texture Update
+		for (unsigned t = 0; t < _textures.size(); t++) // Move this!
+			if (_textures.at(t).renderID == renderID ) {
+				if (_textures.at(t).format == TEX_2D) {
+					samplers[_textures.at(t).binding] = _textures.at(t).sampler;
+					resViews[_textures.at(t).binding] = _textures.at(t).resView;
+				}
+				else if (_textures.at(t).format == TEX_3D) {
+					samplers[MAX_TEX_BINDINGS] = _textures.at(t).sampler;
+					resViews[MAX_TEX_BINDINGS] = _textures.at(t).resView;
+				}
 			}
 
 		if (renderBlockBuff != nullptr) _isBuilt = Drx11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
@@ -526,9 +542,6 @@ void Topl_Renderer_Drx11::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
-static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
-
  void Topl_Renderer_Drx11::renderTarget(unsigned long renderID) {
 	 // static Buffer_Drx11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	 if (!_buffers.empty()) {
@@ -540,9 +553,9 @@ static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 			 }
 		 }
 		 else if(renderID != SCENE_RENDER_ID) { // Drawable Target
-			 Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID);
-			 Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID);
-			 Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID);
+			 Buffer_Drx11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID); // Optimize!
+			 Buffer_Drx11* indexBuff = findBuffer(BUFF_Index_UI, renderID); // Optimize!
+			 Buffer_Drx11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID); // Optimize!
 
 			 if (renderBlockBuff != nullptr) {
 				 _deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
@@ -554,7 +567,7 @@ static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 			 if (indexBuff != nullptr && indexBuff->count > 0)
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			 for (unsigned t = 0; t < _textures.size(); t++)
+			 /* for (unsigned t = 0; t < _textures.size(); t++) // Move this!
 				 if (_textures.at(t).renderID == renderID ) {
 					 if (_textures.at(t).format == TEX_2D) {
 						 samplers[_textures.at(t).binding] = _textures.at(t).sampler;
@@ -564,7 +577,7 @@ static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 						 samplers[MAX_TEX_BINDINGS] = _textures.at(t).sampler;
 						 resViews[MAX_TEX_BINDINGS] = _textures.at(t).resView;
 					 }
-				 }
+				} */
 
 			 _deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
 			 _deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);

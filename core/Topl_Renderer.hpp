@@ -86,9 +86,11 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
-#define CLEAR_COLOR_ALPHA 0.98f // used for alpha channel clear color
-#define CLEAR_COLOR_RGB 0.1f // used for rgb channels for clear color
-#define CLEAR_COLOR_CODE 0xFA191919 // hexadecimal version of clear color
+#define CLEAR_R 0.0F // 0.290196F // red clear color code
+#define CLEAR_G 0.0F // 0.254902F // green clear color code
+#define CLEAR_B 0.0F // 0.164706F // blue clear color code
+#define CLEAR_A 1.0F // used for alpha channel clear color
+#define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
@@ -142,8 +144,8 @@ private:
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID) { attachTexture(image, renderID, 0); } // attaches to default binding
-	virtual void attachTexture(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
+	virtual void attachTexAt(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
+	virtual void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
 	virtual void attachVolume(const Img_Volume* volume, unsigned renderID) = 0;
 #endif
 };

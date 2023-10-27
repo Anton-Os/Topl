@@ -10,7 +10,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, unsigned renderID, blockBytes_t* bytes) const override {
+	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
 	}
 
@@ -31,14 +31,14 @@ protected:
 	int height = TOPL_WIN_HEIGHT;
 };
 
-struct GL4_Effect_VertexShader : public Effect_VertexShader {
-    GL4_Effect_VertexShader() : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){}
-	GL4_Effect_VertexShader(unsigned mode) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl", mode){}
+struct Effect_VertexShader_GL4 : public Effect_VertexShader {
+    Effect_VertexShader_GL4() : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl"){}
+	Effect_VertexShader_GL4(unsigned mode) : Effect_VertexShader(genPrefix_glsl() + "Effect_Vertex.glsl", mode){}
 };
 
-struct Drx11_Effect_VertexShader : public Effect_VertexShader {
-    Drx11_Effect_VertexShader() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
-	Drx11_Effect_VertexShader(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
+struct Effect_VertexShader_Drx11 : public Effect_VertexShader {
+    Effect_VertexShader_Drx11() : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl"){}
+	Effect_VertexShader_Drx11(unsigned mode) : Effect_VertexShader(genPrefix_hlsl() + "Effect_Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
@@ -48,10 +48,10 @@ struct Effect_PixelShader : public Topl_Shader {
 	Effect_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct GL4_Effect_PixelShader : public Effect_PixelShader {
-	GL4_Effect_PixelShader() : Effect_PixelShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
+struct Effect_PixelShader_GL4 : public Effect_PixelShader {
+	Effect_PixelShader_GL4() : Effect_PixelShader(genPrefix_glsl() + "Effect_Frag.glsl") { }
 };
 
-struct Drx11_Effect_PixelShader : public Effect_PixelShader {
-	Drx11_Effect_PixelShader() : Effect_PixelShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
+struct Effect_PixelShader_Drx11 : public Effect_PixelShader {
+	Effect_PixelShader_Drx11() : Effect_PixelShader(genPrefix_hlsl() + "Effect_Pixel.hlsl") { }
 };

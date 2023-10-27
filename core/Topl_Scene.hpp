@@ -83,6 +83,7 @@ public:
 
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
+	void addPickerCallback(const std::string& name, pickerCallback callback); // add picker color callback
 	void addLight(const Topl_Light* l){ _lights.push_back(l); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Rasteron_Image* image);
@@ -92,6 +93,7 @@ public:
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
+	pickerCallback getPickerCallback(unsigned color); // gets callback based on active color
 	unsigned getLightCount() const { return _lights.size(); }
 	light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H

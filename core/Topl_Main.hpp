@@ -18,6 +18,10 @@ protected:
     virtual void init() = 0;
     virtual void loop(double frameTime) = 0;
 
+#ifdef RASTERON_H
+	unsigned colorPicker(Topl_Scene* scene);
+#endif
+
 	// Rendering
 	const enum TARGET_Backend _backend;
 	Platform* _platform = nullptr;

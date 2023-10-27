@@ -1,4 +1,4 @@
-#include "Geo_Shape.hpp"
+#include "Geo_Shape2D.hpp"
 
 void Geo_Shape::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin

@@ -1,3 +1,5 @@
+#define ASSIMP_FOUND
+
 #include <assimp/scene.h>
 
 #include "Geo_Actor.hpp"
@@ -13,10 +15,10 @@ enum MESH_Attribute {
 unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
 unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
 
-class Geo_Mesh : public Geo_Mesh {
+class Geo_Node : public Geo_Mesh {
 public:
-	Geo_Mesh(const aiMesh* mesh)
-	: Geo_Mesh(
+	Geo_Node(const aiMesh* mesh)
+	: Geo_Node(
 		getMeshAttribCount(mesh, MESH_Vertex),
 		getMeshAttribCount(mesh, MESH_Index)
 	){
@@ -24,11 +26,11 @@ public:
 		genVertices(); genIndices();
 	}
 
-	Geo_Mesh(const std::vector<const aiMesh*>& meshes)
-		: Geo_Mesh(
-			getMeshesAttribCount(meshes, MESH_Vertex),
-			getMeshesAttribCount(meshes, MESH_Index)
-		) {
+	Geo_Node(const std::vector<const aiMesh*>& meshes)
+	: Geo_Node(
+		getMeshesAttribCount(meshes, MESH_Vertex),
+		getMeshesAttribCount(meshes, MESH_Index)
+	) {
 		_assimpMeshes = std::vector<const aiMesh*>(meshes.begin(), meshes.end());
 		genVertices(); genIndices();
 	}
@@ -41,15 +43,17 @@ private:
 	std::vector<const aiMesh*> _assimpMeshes;
 };
 
-class Geo_Node : public Geo_Actor {
+class Geo_NodeActor : public Geo_Actor {
 public:
-    Geo_Node(const aiScene* scene, const aiNode* node);
-	~Geo_Node() { if(_mesh != nullptr) delete(_mesh);}
+    Geo_NodeActor(const aiScene* scene, const aiNode* node);
+	~Geo_NodeActor() { if(_mesh != nullptr) delete(_mesh);}
 
-	const Geo_Mesh* getMesh() const { return _mesh; }
+	const Geo_Node* getMesh() const { return _mesh; }
 private:
     const aiScene* _scene = nullptr;
     const aiNode* _node = nullptr;
 
-	Geo_Mesh* _mesh = nullptr;
+	Geo_Node* _mesh = nullptr;
 };
+
+#endif

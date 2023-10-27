@@ -1,3 +1,5 @@
+#ifndef GEO_VOLUME3D_H
+
 #include "Geo_Mesh.hpp"
 
 class Geo_Volume : public Geo_Mesh {
@@ -29,10 +31,10 @@ struct Geo_VolumeTriangle : public Geo_Volume {
 	Geo_VolumeTriangle(float radius, float depth) : Geo_Volume({ radius, 3 }, depth) {}
 };
 
-struct Geo_VolumeSquare : public Geo_Volume { // Box
-	Geo_VolumeSquare() : Geo_Volume({ 1.0, 4 }) {}
-	Geo_VolumeSquare(float radius) : Geo_Volume({ radius, 4 }) {}
-	Geo_VolumeSquare(float radius, float depth) : Geo_Volume({ radius, 4 }, depth) {}
+struct Geo_VolumeQuad : public Geo_Volume { // Box
+	Geo_VolumeQuad() : Geo_Volume({ 1.0, 4 }) {}
+	Geo_VolumeQuad(float radius) : Geo_Volume({ radius, 4 }) {}
+	Geo_VolumeQuad(float radius, float depth) : Geo_Volume({ radius, 4 }, depth) {}
 };
 
 struct Geo_VolumeHex : public Geo_Volume {
@@ -46,3 +48,6 @@ struct Geo_VolumeCircle : public Geo_Volume { // Cylinder
 	Geo_VolumeCircle(float radius) : Geo_Volume({ radius, CIRCLE_SEGMENTS }) {}
 	Geo_VolumeCircle(float radius, float depth) : Geo_Volume({ radius, CIRCLE_SEGMENTS }, depth) {}
 };
+
+#define GEO_VOLUME3D_H
+#endif
