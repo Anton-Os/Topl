@@ -92,7 +92,7 @@ protected:
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
-	void attachVolume(const Img_Volume* material, unsigned id) override;
+	void attachVolume(const Img_Volume* multiTex, unsigned id) override;
 #endif
 	Buffer_DX11* findBuffer(BUFF_Type type, unsigned long renderID);
 

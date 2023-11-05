@@ -1,6 +1,6 @@
 #include "Geo_Shape2D.hpp"
 
-void Geo_Shape::genVertices() {
+void Geo_Shape2D::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin
 
 	for (unsigned v = 1; v < _vertices.size(); v++) {
@@ -17,7 +17,7 @@ void Geo_Shape::genVertices() {
 	}
 }
 
-void Geo_Shape::genIndices() {
+void Geo_Shape2D::genIndices() {
 	unsigned v = 1; // tracks current vertex
 	for (unsigned i = 0; i < _indices.size() - 3; i += 3) {
 		_indices[i + 0] = 0; // origin

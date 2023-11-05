@@ -18,10 +18,13 @@ class Geo_Construct {
 public:
 	Geo_Construct(const std::string& prefix) { _prefix = prefix; } // Empty constructor
     // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshes) // Fixed items constructor
-    Geo_Construct(const std::string& prefix, const Geo_Actor* actor, unsigned count){ // Duplicate items constructor
+    Geo_Construct(const std::string& prefix, const Geo_Mesh* mesh, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
         _geoActors.resize(count);
-        for(unsigned g = 0; g < count; g++) _geoActors[g] = Geo_Actor(*actor);
+#ifdef TOPL_ENABLE_PHYSICS    
+        _physActors.resize(count);
+#endif
+        for(unsigned g = 0; g < count; g++) _geoActors[g] = Geo_Actor(mesh);
     }
 
     std::string getPrefix(){ return _prefix + "_"; }
@@ -62,8 +65,10 @@ protected:
 
     std::string _prefix;
     std::vector<Geo_Actor> _geoActors;
+#ifdef TOPL_ENABLE_PHYSICS
     std::vector<Phys_Actor> _physActors; // physics actors
-	std::vector<Phys_Connector> _links; // links
+	std::vector<Phys_Connector> _links; // physics links
+#endif
 };
 
 #define GEO_CONSTRUCT_H

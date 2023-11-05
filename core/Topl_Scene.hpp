@@ -5,15 +5,17 @@
 #include "image_wrapper.h"
 #include "support_def.h"
 
-#include "Phys_Actor.h"
-#include "Phys_Connector.h"
-#include "Phys_Motion.h"
-
 #include "IO.hpp"
 #include "Timer.hpp"
 #include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
+
+#ifdef TOPL_ENABLE_PHYSICS
+#include "Phys_Actor.h"
+#include "Phys_Connector.h"
+#include "Phys_Motion.h"
+#endif
 
 // Light
 
@@ -76,55 +78,56 @@ public:
 	}
 	~Topl_Scene() {}
 
-	void saveToFile(const std::string& fileName); // saves scene data to .tp file
-	void loadFromFile(const std::string& filePath); // loads scene data from .tp file
+	// void saveToFile(const std::string& fileName); // saves scene data to .tp file
+	// void loadFromFile(const std::string& filePath); // loads scene data from .tp file
 
 	// Static Operations
 
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
 	void addPickerCallback(const std::string& name, pickerCallback callback); // add picker color callback
-	void addLight(const Topl_Light* l){ _lights.push_back(l); }
+	// oid addLight(const Topl_Light* l){ _lights.push_back(l); }
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, const Rasteron_Image* image);
-	void addMaterialTex(const std::string& name, const Img_Material* material);
-	void addVolumeTex(const std::string& name, const Img_Volume* volume);
+	void addTexture(const std::string& name, const Img_Base* image);
+	void addArrayTex(const std::string& name, const Img_Array* multiTex);
+	void addVolumeTex(const std::string& name, const Img_Volume* volumeTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	pickerCallback getPickerCallback(unsigned color); // gets callback based on active color
-	unsigned getLightCount() const { return _lights.size(); }
-	light_cptr getLight(unsigned index) const; // access to light source by index
+	// unsigned getLightCount() const { return _lights.size(); }
+	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
-	// unsigned getTexCount() const { return _textureMap.size(); }
-	const Rasteron_Image* getTexture(const std::string& name) const;
-	// unsigned getMatCount() const { return _materialMap.size(); }
-	const Img_Material* getMaterialTex(const std::string& name) const;
-	// unsigned getVolCount() const { return _volumeMap.size(); }
+	const Img_Base* getTexture(const std::string& name) const;
+	const Img_Array* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;
 #endif
+	void delActor(const std::string& name);
 
 	// Dynaimc Operations
+#ifdef TOPL_ENABLE_PHYSICS
 	void resolvePhysics(); // iterates through all physics objects and applies forces 
 	void addForce(const std::string& name, const Vec3f& vec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
+#endif
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	std::vector<const Topl_Light*> _lights; // stores all light sources
 	std::map<Geo_Actor*, pickerCallback> _pickerCallbackMap;
-#ifdef RASTERON_H
-	std::map<Geo_Actor*, const Rasteron_Image*> _textureMap; // associates geometry actor to single texture
-	std::map<Geo_Actor*, const Img_Material*> _materialMap; // associates geometry actor to multiple 2D textures
-	std::map<Geo_Actor*, const Img_Volume*> _volumeMap; // associates geometry actor to volumetric texture
-#endif
+#ifdef TOPL_ENABLE_PHYSICS
 	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors
 	std::vector<AnchoredItems> _anchoredItems; // stores anchored actors and connectors
 	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
-	
+#endif
+#ifdef RASTERON_H
+	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture
+	std::map<Geo_Actor*, const Img_Array*> _multiTexMap; // associates geometry actor to multiple 2D textures
+	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture
+#endif
 	Timer_Ticker _ticker; // used for internal updates
 };
 

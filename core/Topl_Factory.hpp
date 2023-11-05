@@ -2,7 +2,7 @@
 #ifdef _WIN32
 #include "directx/Topl_Renderer_DX11.hpp"
 #endif
-#ifdef VULKAN_H
+#ifdef TOPL_ENABLE_VULKAN
 #include "vulkan/Topl_Renderer_Vulkan.hpp"
 #endif
 
@@ -30,7 +30,7 @@ struct DX11_Engine_Config : public Engine_Config {
 };
 #endif
 
-#ifdef VULKAN_H
+#ifdef TOPL_ENABLE_VULKAN
 struct Vulkan_Engine_Config : public Engine_Config {
 	Topl_Renderer_Vulkan* renderer;
 	Topl_Pipeline_Vulkan** pipelines;
@@ -63,7 +63,7 @@ private:
 #ifdef _WIN32
 	static DX11_Engine_Config DX11_engine_cfg;
 #endif
-#ifdef VULKAN_H
+#ifdef TOPL_ENABLE_VULKAN
 	static Vulkan_Engine_Config Vulkan_engine_cfg;
 #endif
 };

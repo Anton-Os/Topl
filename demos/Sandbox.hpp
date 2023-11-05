@@ -1,13 +1,13 @@
 #include "meshes/Geo_Shape2D.hpp"
-#include "meshes/Geo_Conic.hpp"
-#include "meshes/Geo_Volume3D.hpp"
+#include "meshes/Geo_Shape3D.hpp"
+#include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Sphere.hpp"
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
-// #include "constructs/Geo_Model.hpp"
 #include "constructs/Geo_Layout.hpp"
 #include "constructs/Geo_Puppet.hpp"
+// #include "constructs/Geo_Model.hpp"
 
 #include "Flat_Shader.hpp"
 #include "Textured_Shader.hpp"
@@ -27,7 +27,7 @@ struct Sandbox_Demo : public Topl_Main {
     void loop(double frameTime) override;
 
     Topl_Scene scene; // for main elements
-    Topl_Scene gui; // for gui elements
+    Topl_Scene overlay; // for gui elements
     Topl_Scene details; // for details elements
 private:
     Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline;
@@ -36,12 +36,19 @@ private:
     Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
     Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
 
-    Geo_VolumeQuad boxMesh = Geo_VolumeQuad();
+    Geo_Quad3D boxMesh = Geo_Quad3D();
     Geo_Actor boxActor = Geo_Actor(&boxMesh);
-    Geo_ConicTriangle pyramidMesh = Geo_ConicTriangle();
+    Geo_TriangleCone pyramidMesh = Geo_TriangleCone();
     Geo_Actor pyramidActor = Geo_Actor(&pyramidMesh);
     Geo_Sphere sphereMesh = Geo_Sphere();
     Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
-    Geo_ShapeHex hexMesh = Geo_ShapeHex();
+    Geo_Hex2D hexMesh = Geo_Hex2D();
     Geo_Actor hexActor = Geo_Actor(&hexMesh);
+
+    Geo_Chain chain = Geo_Chain("chain", &sphereMesh, Vec3f({0.0F, 0.1F, 0.0F}), 9);
+    Geo_Grid grid = Geo_Grid("grid", &boxMesh, Geo_Grid_Params(std::make_pair(3, 0.25F)));
+    
+    Geo_GridLayout layout1 = Geo_GridLayout(3);
+    Geo_VertLayout layout2 = Geo_VertLayout(9);
+    Geo_HorzLayout layout3 = Geo_HorzLayout(9);
 };

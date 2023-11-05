@@ -24,8 +24,8 @@ ExternalProject_Add(GLEW
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-set(SUPPORT_3D OFF CACHE BOOL "Include 3D model loading" FORCE)
-if(SUPPORT_3D)
+set(SUPPORT_MODELS OFF CACHE BOOL "Include 3D model loading" FORCE)
+if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
         GIT_REPOSITORY "https://github.com/assimp/assimp.git"
         GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
@@ -53,6 +53,6 @@ endif()
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
-if(NOT SUPPORT_3D)
+if(NOT SUPPORT_MODELS)
     set(Assimp_FOUND 0) # override variable to not found
 endif()

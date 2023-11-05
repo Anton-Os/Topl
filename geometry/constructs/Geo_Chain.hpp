@@ -6,8 +6,8 @@
 
 class Geo_Chain : public Geo_Construct {
 public:
-    Geo_Chain(const std::string& prefix, const Geo_Actor* actor, Vec3f direction, unsigned count)
-    : Geo_Construct(prefix, actor, count){ // Non-configured Constructor
+    Geo_Chain(const std::string& prefix, const Geo_Mesh* mesh, Vec3f direction, unsigned count)
+    : Geo_Construct(prefix, mesh, count){ // Non-configured Constructor
 		_direction = direction;
         _origin = Vec3f({
 			(_direction.data[0] * count) * -0.5f,
@@ -16,8 +16,8 @@ public:
         });
     }
 
-    Geo_Chain(const std::string& prefix, Topl_Scene* scene, const Geo_Actor* actor, Vec3f direction, unsigned count)
-    : Geo_Construct(prefix, actor, count) { // Configured Constructor
+    Geo_Chain(const std::string& prefix, Topl_Scene* scene, const Geo_Mesh* mesh, Vec3f direction, unsigned count)
+    : Geo_Construct(prefix, mesh, count) { // Configured Constructor
 		_direction = direction;
         _origin = Vec3f({
 			(_direction.data[0] * count) * -0.5f,
@@ -27,18 +27,19 @@ public:
         configure(scene);
     }
 
-    static std::string genLinkName(unsigned num){ return "link" + std::to_string(num); }
+    std::string getLinkName(unsigned num){ return getPrefix() + "link" + std::to_string(num); }
 
     void configure(Topl_Scene* scene) override {
+#ifdef TOPL_ENABLE_PHYSICS
+    _links.resize(_geoActors.size() - 1);
+#endif
         for(unsigned c = 0; c < _geoActors.size(); c++){
             _geoActors[c].updatePos(_origin + (_direction * c));
-            scene->addGeometry(getPrefix() + genLinkName(c + 1), &_geoActors[c]);
-            scene->addPhysics(getPrefix() + genLinkName(c + 1), &_physActors.at(c));
-
-            if(c > 0){
-                _links.push_back(Phys_Connector());
-                scene->addLink(&_links.back(), getPrefix() + genLinkName(c), getPrefix() + genLinkName(c + 1));
-            }
+            scene->addGeometry(getLinkName(c + 1), &_geoActors[c]);
+#ifdef TOPL_ENABLE_PHYSICS
+            scene->addPhysics(getLinkName(c + 1), &_physActors.at(c));
+            if(c > 0) scene->addLink(&_links[c - 1], getLinkName(c), getLinkName(c + 1));
+#endif
         }
     }
 private:

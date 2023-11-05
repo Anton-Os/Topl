@@ -36,17 +36,13 @@ list(APPEND support_src
 )
 
 list(APPEND geometry_src
-    geometry/ShapesGen.cpp
 	# meshes
     geometry/meshes/Geo_Shape2D.cpp
-    geometry/meshes/Geo_Conic.cpp
-    geometry/meshes/Geo_Volume3D.cpp
+    geometry/meshes/Geo_Shape3D.cpp
+    geometry/meshes/Geo_Cone.cpp
     geometry/meshes/Geo_Sphere.cpp
-	# constructs
-    # geometry/constructs/Geo_Pane.cpp
-    # geometry/constructs/Geo_Humanoid.cpp
 )
-if(SUPPORT_3D AND Assimp_FOUND)
+if(SUPPORT_MODELS AND Assimp_FOUND)
     message(STATUS, "Building 3D Model sources")
     list(APPEND geometry_src
         geometry/meshes/Geo_Node.cpp
@@ -54,14 +50,18 @@ if(SUPPORT_3D AND Assimp_FOUND)
     )
 endif()
 
+
 list(APPEND core_src
     core/Topl_Main.cpp
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
-
     core/Topl_Scene_Statics.cpp
-    core/Topl_Scene_Dynamics.cpp
 )
+
+set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
+if(SUPPORT_PHYSICS)
+    list(APPEND core_src core/Topl_Scene_Dynamics.cpp)
+endif()
 
 # -------------- Core and Geometry Libraries ------------- #
 
@@ -91,7 +91,7 @@ target_include_directories(GEOLIB INTERFACE
     $<INSTALL_INTERFACE:include/Topl>
 )
 
-if(SUPPORT_3D AND Assimp_FOUND) # linking targets to Assimp
+if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
    target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
    if(WIN32)

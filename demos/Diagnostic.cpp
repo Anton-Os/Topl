@@ -15,7 +15,7 @@
 #ifdef _WIN32
 	Topl_Renderer_DX11 renderer_Drx = Topl_Renderer_DX11(platform.getParentWindow());
 #endif
-#ifdef VULKAN_H
+#ifdef TOPL_ENABLE_VULKAN
 	Topl_Renderer_Vulkan renderer_Vk = Topl_Renderer_Vulkan(platform.getParentWindow());
 #endif
 } */

@@ -6,13 +6,13 @@
 
 #include "Topl_Scene.hpp"
 
-// Renderable
+// RenderObj
 
 #define SCENE_RENDER_ID 0
 
-struct Renderable {
-	Renderable() { renderID = SCENE_RENDER_ID; }
-	Renderable(unsigned id) { renderID = id; }
+struct RenderObj {
+	RenderObj() { renderID = SCENE_RENDER_ID; }
+	RenderObj(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
 
@@ -26,10 +26,10 @@ enum BUFF_Type {
     BUFF_Render_Block = 2, // render block buffer type
 };
 
-struct Buffer : public Renderable {
-    Buffer() : Renderable(SCENE_RENDER_ID){}
-    Buffer(unsigned id, enum BUFF_Type t) : Renderable(id){ type = t; }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : Renderable(id){ type = t; count = c; }
+struct Buffer : public RenderObj {
+    Buffer() : RenderObj(SCENE_RENDER_ID){}
+    Buffer(unsigned id, enum BUFF_Type t) : RenderObj(id){ type = t; }
+    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderObj(id){ type = t; count = c; }
 
     enum BUFF_Type type; // type of buffer 
     unsigned count = 1; // no. of meshes
@@ -40,15 +40,15 @@ struct Buffer : public Renderable {
 enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
-struct Texture : public Renderable {
-	Texture() : Renderable(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : Renderable(id) {
+struct Texture : public RenderObj {
+	Texture() : RenderObj(){}
+	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
 		format = f; 
         mode = m;
 		binding = 0;
 	}
 
-	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : Renderable(id) {
+	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
 		format = f;
 		mode = m;
 		binding = b;
@@ -144,9 +144,9 @@ private:
 	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-	virtual void attachTexAt(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
+	virtual void attachTex(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
 	virtual void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
-	virtual void attachVolume(const Img_Volume* volume, unsigned renderID) = 0;
+	virtual void attachTex3D(const Img_Volume* volumeTex, unsigned renderID) = 0;
 #endif
 };
 

@@ -3,7 +3,7 @@
 // Keyboard Interaction
 
 void Input_KeyControl::addKeyPress(char keyCode) {
-	if (keyCode == '\0') return; // null keycode can be skippedS
+	if (keyCode == '\0') return; // null keycode can be skipped
 	for (std::map<char, keyCallback>::const_iterator c = _keyCallback_map.cbegin(); c != _keyCallback_map.cend(); c++)
 		if (keyCode == c->first) c->second(); // Makes callback go off
 	

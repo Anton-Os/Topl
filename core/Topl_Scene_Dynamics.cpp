@@ -1,5 +1,7 @@
 #include "Topl_Scene.hpp"
 
+#ifdef TOPL_ENABLE_PHYSICS
+
 // recomputes connector attributes
 static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, const Vec3f& pos2){
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
@@ -169,3 +171,5 @@ void Topl_Scene::resolvePhysics() {
 		physActor->acceleration = VEC_3F_ZERO; // resetting acceleration
 	}
 }
+
+#endif

@@ -1,4 +1,4 @@
-#define ASSIMP_FOUND
+#define TOPL_ENABLE_MODELS
 
 #include <assimp/scene.h>
 

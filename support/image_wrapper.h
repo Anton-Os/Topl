@@ -72,7 +72,7 @@ struct Img_Layer : public Img_Base {
 	unsigned short layer;
 };
 
-struct Img_Material {
+struct Img_Array {
 	const Img_Layer* getLayer(unsigned short l) const { return &layers[l]; }
 
 	Img_Layer layers[MAX_TEX_BINDINGS] = { Img_Layer(0), Img_Layer(1), Img_Layer(2), Img_Layer(3), Img_Layer(4), Img_Layer(5) };
@@ -84,10 +84,10 @@ struct Img_Volume {
     Img_Volume() : width(IMG_SIDE_LEN), height(IMG_SIDE_LEN), depth(IMG_SIDE_LEN) {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s) { // Matching Lengths
-		data = allocNewAnim("volume", depth);
+		data = allocNewAnim("volumeTex", depth);
 	}
     Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z) { // Custom Lengths
-		data = allocNewAnim("volume", depth);
+		data = allocNewAnim("volumeTex", depth);
 	}
 	~Img_Volume(){ deleteAnim(data); }
 	
@@ -97,17 +97,17 @@ struct Img_Volume {
 		else return; // error
 
 		Rasteron_Image* compositeImg = createCompositeImg(data);
-		volumeImg.setImage(compositeImg); // recreate entire volume image
+		volumeTexImg.setImage(compositeImg); // recreate entire volumeTex image
 		free_image(compositeImg);
     }
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? getFrame(data, d) : nullptr;}
-	const Img_Base* extractVolImage() const { return &volumeImg; }
+	const Img_Base* extractVolImage() const { return &volumeTexImg; }
 
 	unsigned getWidth() const { return width; }
 	unsigned getHeight() const { return height; }
 	unsigned getDepth() const { return depth; }
 private:
-	Img_Base volumeImg;
+	Img_Base volumeTexImg;
 	Rasteron_Animation* data = nullptr; // underlying data
 #endif
 	const unsigned width, height, depth;

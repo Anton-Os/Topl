@@ -16,20 +16,38 @@ void Sandbox_Demo::init(){
     hexActor.setPos({ 0.5f, -0.5f, 0.0f });
     scene.addGeometry("Hex", &hexActor);
 
+    // chain.configure(&scene);
+    // grid.configure(&scene);
+
     Topl_Factory::switchPipeline(TARGET_DirectX11, _renderer, beamPipeline);
     _renderer->buildScene(&scene);
+
+    layout1.configure(&overlay);
+    // layout2.configure(&overlay);
+    // layout3.configure(&overlay);
+
+    Topl_Factory::switchPipeline(TARGET_DirectX11, _renderer, flatPipeline);
+    _renderer->buildScene(&overlay);
+
 }
 
 void Sandbox_Demo::loop(double frameTime){
-    logMessage("Frame: " + std::to_string(_renderer->getFrameCount()));
+    {
+        boxActor.updateRot({ 0.01F * (float)frameTime, 0.0F, 0.0F });
+        pyramidActor.updateRot({ -0.01F * (float)frameTime, 0.0F, 0.0F });
+        sphereActor.updateRot({ 0.0F, 0.01F * (float)frameTime, 0.0F });
+        hexActor.updateRot({ 0.0F, 0.0F, 0.01F * (float)frameTime });
 
-    boxActor.updateRot({ 0.01F * (float)frameTime, 0.0F, 0.0F });
-    pyramidActor.updateRot({ -0.01F * (float)frameTime, 0.0F, 0.0F });
-    sphereActor.updateRot({ 0.0F, 0.01F * (float)frameTime, 0.0F });
-    hexActor.updateRot({ 0.0F, 0.0F, 0.01F * (float)frameTime });
+        Topl_Factory::switchPipeline(TARGET_DirectX11, _renderer, beamPipeline);
+        _renderer->updateScene(&scene);
+        _renderer->renderScene(&scene);
+    }
 
-    _renderer->updateScene(&scene);
-    _renderer->renderScene(&scene);
+    {
+        Topl_Factory::switchPipeline(TARGET_DirectX11, _renderer, flatPipeline);
+        _renderer->updateScene(&overlay);
+        _renderer->renderScene(&overlay);
+    }
 }
 
 int main(int argc, char** argv) {

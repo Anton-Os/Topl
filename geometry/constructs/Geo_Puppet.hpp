@@ -35,7 +35,7 @@ class Geo_Puppet2D : public Geo_Puppet(){
 }
 
 #endif
-#ifdef ASSIMP_FOUND
+#ifdef TOPL_ENABLE_MODELS
 
 class Geo_Puppet3D : public Geo_Puppet(){
     // TODO: Add body here

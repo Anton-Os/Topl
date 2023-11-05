@@ -9,7 +9,7 @@
 
 #define ACTOR_COUNT 1
 
-Geo_ShapeTriangle triangle = Geo_ShapeTriangle();
+Geo_Triangle2D triangle = Geo_Triangle2D();
 Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 
 Topl_Scene test_scene = Topl_Scene();
@@ -54,7 +54,7 @@ struct Diagnostic_Renderer_DX11 : public Topl_Renderer_DX11 {
 };
 #endif
 
-#ifdef VULKAN_H
+#ifdef TOPL_ENABLE_VULKAN
 // Vulkan Test Renderer
 struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan {
 	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)

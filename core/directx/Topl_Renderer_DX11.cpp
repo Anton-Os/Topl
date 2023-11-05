@@ -436,7 +436,7 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resView)); // multi-texture addition
 }
 
-void Topl_Renderer_DX11::attachVolume(const Img_Volume* volume, unsigned renderID) {
+void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(_texMode);
@@ -445,9 +445,9 @@ void Topl_Renderer_DX11::attachVolume(const Img_Volume* volume, unsigned renderI
 
 	D3D11_TEXTURE3D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-	texDesc.Width = volume->getWidth();
-	texDesc.Height = volume->getHeight();
-	texDesc.Depth = volume->getDepth();
+	texDesc.Width = volumeTex->getWidth();
+	texDesc.Height = volumeTex->getHeight();
+	texDesc.Depth = volumeTex->getDepth();
 	texDesc.MipLevels = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -455,11 +455,11 @@ void Topl_Renderer_DX11::attachVolume(const Img_Volume* volume, unsigned renderI
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	const Img_Base* volumeImage = volume->extractVolImage();
+	const Img_Base* volumeTexImage = volumeTex->extractVolImage();
 	D3D11_SUBRESOURCE_DATA texData;
-	texData.pSysMem = volumeImage->getImage()->data;
-	texData.SysMemPitch = sizeof(uint32_t) * volume->getWidth();
-	texData.SysMemSlicePitch = sizeof(uint32_t) * volume->getHeight();
+	texData.pSysMem = volumeTexImage->getImage()->data;
+	texData.SysMemPitch = sizeof(uint32_t) * volumeTex->getWidth();
+	texData.SysMemSlicePitch = sizeof(uint32_t) * volumeTex->getHeight();
 
 	ID3D11Texture3D* texture;
 	result = _device->CreateTexture3D(&texDesc, &texData, &texture);
@@ -472,7 +472,7 @@ void Topl_Renderer_DX11::attachVolume(const Img_Volume* volume, unsigned renderI
 
 	ID3D11ShaderResourceView* resView;
 	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
-	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeImage->getImage()->data, texData.SysMemPitch, 0);
+	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeTexImage->getImage()->data, texData.SysMemPitch, 0);
 
 	for (std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->format == TEX_3D) { // texture substitution

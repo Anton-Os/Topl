@@ -1,9 +1,12 @@
-// #define PARENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/Debug/" // Change Debug directory to ${CMAKE_CFG_INTDIR}
 #define ASSETS_DIR "${ASSETS_DIR}"
+#define FONTS_DIR "${ASSETS_DIR}fonts/"
+#define IMAGES_DIR "${ASSETS_DIR}images/"
+#define MODELS_DIR "${ASSETS_DIR}models/"
+#define RESOURCE_DIR "${ASSETS_DIR}res/"
 #define SHADERS_DIR "${SHADERS_DIR}"
 
 #if ${Vulkan_FOUND}
-    #define VULKAN_H
+    #define TOPL_ENABLE_VULKAN
 #endif
 #if ${Rasteron_FOUND}
     #define RASTERON_ENABLE_ANIM
@@ -12,5 +15,8 @@
     #include "Rasteron.h" // includes Rasteron main modules
 #endif
 #if ${Assimp_FOUND}
-	#define ASSIMP_FOUND
+	#define TOPL_ENABLE_MODELS
+#endif
+#if ${SUPPORT_PHYSICS}
+    #define TOPL_ENABLE_PHYSICS
 #endif

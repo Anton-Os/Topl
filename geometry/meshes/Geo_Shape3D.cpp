@@ -1,6 +1,6 @@
-#include "Geo_Volume3D.hpp"
+#include "Geo_Shape3D.hpp"
 
-void Geo_Volume::genVertices() {
+void Geo_Shape3D::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });
 	for (unsigned v = 1; v < _vertices.size() / 2; v++) { // front face vertices
 		Vec3f pos = Vec3f({
@@ -30,7 +30,7 @@ void Geo_Volume::genVertices() {
 	}
 }
 
-void Geo_Volume::genIndices() {
+void Geo_Shape3D::genIndices() {
 	unsigned i; // current index
 	unsigned v = 1; // tracks current vertex
 

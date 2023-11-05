@@ -96,19 +96,19 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		const Rasteron_Image* texture = scene->getTexture(actor->getName());
-		if (texture != nullptr) attachTexAt(texture, renderID);
+		const Rasteron_Image* texture = scene->getTexture(actor->getName())->getImage();
+		if (texture != nullptr) attachTex(texture, renderID);
 		// else return logMessage(MESSAGE_Exclaim, "Null texture encountered!");
 
-		const Img_Material* material = scene->getMaterialTex(actor->getName());
-		if (material != nullptr)
+		const Img_Array* multiTex = scene->getArrayTex(actor->getName());
+		if (multiTex != nullptr)
 			for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
-				attachTexAt(material->getLayer((unsigned short)p)->getImage(), renderID, p);
-		// else return logMessage(MESSAGE_Exclaim, "Null material encountered!");
+				attachTexAt(multiTex->getLayer((unsigned short)p)->getImage(), renderID, p);
+		// else return logMessage(MESSAGE_Exclaim, "Null multiTex encountered!");
 
-		const Img_Volume* volume = scene->getVolumeTex(actor->getName());
-		if (volume != nullptr) attachVolume(volume, renderID);
-		// else return logMessage(MESSAGE_Exclaim, "Null volume encountered!");
+		const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
+		if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
+		// else return logMessage(MESSAGE_Exclaim, "Null volumeTex encountered!");
 	}
 }
 

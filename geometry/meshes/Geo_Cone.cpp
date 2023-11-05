@@ -1,7 +1,7 @@
-#include "Geo_Conic.hpp"
+#include "Geo_Cone.hpp"
 
-void Geo_Conic::genVertices() {
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + Z_INCREMENT }, { 0.5f, 0.5f, 0.0f }); // origin
+void Geo_Cone::genVertices() {
+	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }); // origin
 	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
 
 	for (unsigned v = 1; v < _vertices.size() - 1; v++) {
@@ -18,7 +18,7 @@ void Geo_Conic::genVertices() {
 	}
 }
 
-void Geo_Conic::genIndices() {
+void Geo_Cone::genIndices() {
 	unsigned i; // current index
 	unsigned v = 1; // tracks current vertex
 

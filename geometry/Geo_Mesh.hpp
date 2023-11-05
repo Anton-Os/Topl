@@ -6,10 +6,8 @@
 
 // Shape Description
 
-#define SCREEN_UNITS 0.7071f // converts specified coordinates to screen units
-#define CIRCLE_SEGMENTS 1000 // default segments for a circular object
+#define CIRCLE_SEGMENTS 32 // 1000 // default segments for a circular object
 #define DEFAULT_Z 0.0f // default depth value for objects
-#define Z_INCREMENT 0.00001f // increment to depth prevents geometry obstruction
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
@@ -40,7 +38,7 @@ public:
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
-			v->position = callback(v->position, transform);
+			*(&v->position) = callback(v->position, transform);
 	}
 	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
 	// void rotate(Vec3f angles) { modify(rotateTForm, transform); } // rotates position attribute

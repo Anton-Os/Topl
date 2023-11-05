@@ -262,6 +262,7 @@ Img_Base Topl_Renderer_GL4::frame() {
 
 	Rasteron_Image* stageImage = allocNewImg("frame", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);
+
 	Rasteron_Image* flipImage = createFlipImg(stageImage, FLIP_Upside); // flipping image over
 	Rasteron_Image* mirrorImage = createMirrorImg(flipImage); // mirroring left and right sides
 	switchRB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
@@ -296,7 +297,7 @@ void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned render
 		_textures.push_back(Texture_GL4(renderID, (unsigned short)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
 }
 
-void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID) {
+void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
 	GLuint textureTarget = _textureSlots[_textureIndex];
 	_textureIndex++; // increments to next available slot
 
@@ -310,17 +311,17 @@ void Topl_Renderer_GL4::attachVolume(const Img_Volume* volume, unsigned renderID
 	glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	const Img_Base* volumeImage = volume->extractVolImage();
+	const Img_Base* volumeTexImage = volumeTex->extractVolImage();
 	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
 	glTexImage3D(
 		GL_TEXTURE_3D,
 		0, GL_RGBA,
-		volume->getWidth(),
-		volume->getHeight(),
-		volume->getDepth(),
+		volumeTex->getWidth(),
+		volumeTex->getHeight(),
+		volumeTex->getDepth(),
 		0, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		volumeImage->getImage()->data
+		volumeTexImage->getImage()->data
 	);
 	glGenerateMipmap(GL_TEXTURE_3D);
 

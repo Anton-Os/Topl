@@ -13,9 +13,9 @@ struct Buffer_GL4 : public Buffer {
 // Vertex Array Object
 
 #define GL4_VERTEX_ARRAY_MAX 10000
-struct VertexArray_GL4 : public Renderable {
-	VertexArray_GL4() : Renderable() {}
-	VertexArray_GL4(unsigned id, GLuint v) : Renderable(id){ vao = v; }
+struct VertexArray_GL4 : public RenderObj {
+	VertexArray_GL4() : RenderObj() {}
+	VertexArray_GL4(unsigned id, GLuint v) : RenderObj(id){ vao = v; }
 
 	GLuint vao;
 };
@@ -77,7 +77,7 @@ protected:
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
-	void attachVolume(const Img_Volume* material, unsigned id) override;
+	void attachVolume(const Img_Volume* multiTex, unsigned id) override;
 #endif
 	void linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);

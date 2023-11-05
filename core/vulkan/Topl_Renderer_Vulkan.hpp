@@ -55,7 +55,7 @@ protected:
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
-	void attachVolume(const Img_Volume* material, unsigned id) override;
+	void attachVolume(const Img_Volume* multiTex, unsigned id) override;
 #endif
 	void finalizePipeline(); // operation to finalize pipeline creation
 
