@@ -48,7 +48,7 @@ private:
     Geo_Chain chain = Geo_Chain("chain", &sphereMesh, Vec3f({0.0F, 0.1F, 0.0F}), 9);
     Geo_Grid grid = Geo_Grid("grid", &boxMesh, Geo_Grid_Params(std::make_pair(3, 0.25F)));
     
-    Geo_GridLayout layout1 = Geo_GridLayout(3);
-    Geo_VertLayout layout2 = Geo_VertLayout(9);
-    Geo_HorzLayout layout3 = Geo_HorzLayout(9);
+    Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 4);
+    Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
+    Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
 };

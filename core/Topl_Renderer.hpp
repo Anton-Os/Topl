@@ -86,17 +86,19 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
-#define CLEAR_R 0.0F // 0.290196F // red clear color code
-#define CLEAR_G 0.0F // 0.254902F // green clear color code
-#define CLEAR_B 0.0F // 0.164706F // blue clear color code
-#define CLEAR_A 1.0F // used for alpha channel clear color
-#define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 #define FIRST_BUILD_CALL 0
 #define FRAME_RATE_SECS 1.0 / 60.0
 #define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000
+#define BAD_RENDER_ID (unsigned long)- 1
+
+#define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
+#define CLEAR_R 0.0F // 0.290196F // red clear color code
+#define CLEAR_G 0.0F // 0.254902F // green clear color code
+#define CLEAR_B 0.0F // 0.164706F // blue clear color code
+#define CLEAR_A 1.0F // used for alpha channel clear color
 
 class Topl_Renderer {
 public:
@@ -107,7 +109,6 @@ public:
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
-	bool renderAll();
     bool renderScene(const Topl_Scene* scene);
 	void present(); // present scene by swapping front and back buffers
     virtual void clearView() = 0; // clears view to predefined background color
@@ -133,7 +134,7 @@ protected:
     bool _isPresented = false; // true after draw call, false after buffer swap
 	bool _isDrawInOrder = REGULAR_DRAW_ORDER; // defines order of render targets during draw call
     unsigned long _renderIDs = 0; // id for each render target
-    std::map<unsigned long, const Geo_Actor*> _renderObjs_map; // maps each render target to unique id
+    std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
     unsigned long _frameIDs = 0; // increments with each frame drawn
 
 	Img_Base _frameImage; // internal frame container

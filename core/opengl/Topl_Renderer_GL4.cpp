@@ -140,9 +140,6 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
-
-	setViewport(&_defaultViewport);
-	setDrawMode(DRAW_Triangles);
 }
 
 void Topl_Renderer_GL4::clearView() {
@@ -189,34 +186,29 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	// if (!shaderBlockData.empty()) {
-		_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
-		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	// }
+	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
+	_bufferIndex++; // increments to next available slot
+	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
-		_renderObjs_map.insert({ _renderIDs, scene->getGeoActor(g) });
+		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		// Geo_RenderObj* mesh = (Geo_RenderObj*)actor->getRenderObj();
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
 		// render block buffer generation
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-	//	if (!shaderBlockData.empty()) {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
-			_bufferIndex++; // increments to next available slot
-			glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
-			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	//	}
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
+		_bufferIndex++; // increments to next available slot
+		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
 		if (mesh->getIndices() != nullptr) {
@@ -333,7 +325,6 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
-	Buffer_GL4* targetBuff = nullptr;
 
 	if (_buffers.front().renderID == SCENE_RENDER_ID) {
 		shaderBlockData.clear();
@@ -346,32 +337,29 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
+		Buffer_GL4* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
+		if (renderBlockBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
 
 		// Shader Render Block
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		for (std::vector<Buffer_GL4>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) targetBuff = &(*buff);
+		glBindBuffer(GL_UNIFORM_BUFFER, renderBlockBuff->buffer);
+		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 
-		if (targetBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
-		else {
-			glBindBuffer(GL_UNIFORM_BUFFER, targetBuff->buffer);
-			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		// Texture Updates 
+		
+		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
+		// TODO: Find 2D textures at other bindings
+		if (tex2D != _textures.end()){
+			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
+			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
 		}
-
-		// Texture Update
-		for (unsigned t = 0; t < _textures.size(); t++)
-			if (_textures.at(t).renderID == renderID) {
-				if (_textures.at(t).format == TEX_2D) {
-					glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
-					glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
-				}
-				else if (_textures.at(t).format == TEX_3D) {
-					glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
-					glBindTexture(GL_TEXTURE_3D, _textures.at(t).texture);
-				}
-			}
+		if(tex3D != _textures.end()){
+			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
+			glBindTexture(GL_TEXTURE_3D, tex3D->texture);
+		}
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -396,13 +384,12 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
 			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
 		else if (renderID != SCENE_RENDER_ID) { // Drawable Target
-			for (std::vector<VertexArray_GL4>::iterator VAO = _vertexArrays.begin(); VAO < _vertexArrays.end(); VAO++) // Optimize! 
-				if (VAO->renderID == renderID) glBindVertexArray(VAO->vao);
-			// VertexArray_GL4* vertexArray = std::find_if(_vertexArrays.begin(); _vertexArrays.end(); { /* expression */ })
+			VertexArray_GL4* vertexArray = &(*std::find_if(_vertexArrays.begin(), _vertexArrays.end(), [renderID](const VertexArray_GL4& v) { return v.renderID == renderID; }));
+			glBindVertexArray(vertexArray->vao);
 
-			Buffer_GL4* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID); // Optimize!
-			Buffer_GL4* indexBuff = findBuffer(BUFF_Index_UI, renderID); // Optimize!
-			Buffer_GL4* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID); // Optimize!
+			Buffer_GL4* vertexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; }));
+			Buffer_GL4* indexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; }));
+			Buffer_GL4* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
 			if (renderBlockBuff != nullptr)
 				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
@@ -410,18 +397,6 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 			if (indexBuff != nullptr && indexBuff->count > 0) 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
-
-			/* for (unsigned t = 0; t < _textures.size(); t++) // Move this!
-				if (_textures.at(t).renderID == renderID) {
-					if (_textures.at(t).format == TEX_2D) {
-						glActiveTexture(GL_TEXTURE0 + _textures.at(t).binding);
-						glBindTexture(GL_TEXTURE_2D, _textures.at(t).texture);
-					}
-					else if (_textures.at(t).format == TEX_3D) {
-						glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
-						glBindTexture(GL_TEXTURE_3D, _textures.at(t).texture);
-					}
-				} */
 
 			// Draw Call!
 			if (vertexBuff != nullptr && vertexBuff->count != 0) {
@@ -437,11 +412,4 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 	}
-}
-
-Buffer_GL4* Topl_Renderer_GL4::findBuffer(BUFF_Type type, unsigned long renderID) {
-	for (std::vector<Buffer_GL4>::iterator buffer = _buffers.begin(); buffer < _buffers.end(); buffer++)
-		if (buffer->type == type && buffer->renderID == renderID)
-			return &(*buffer);
-	return nullptr; // error
 }

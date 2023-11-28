@@ -103,7 +103,7 @@ public:
 	const Img_Array* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;
 #endif
-	void delActor(const std::string& name);
+	void removeActor(const std::string& name);
 
 	// Dynaimc Operations
 #ifdef TOPL_ENABLE_PHYSICS
@@ -116,7 +116,7 @@ public:
 #endif
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
-	std::vector<const Topl_Light*> _lights; // stores all light sources
+	// std::vector<const Topl_Light*> _lights; // stores all light sources
 	std::map<Geo_Actor*, pickerCallback> _pickerCallbackMap;
 #ifdef TOPL_ENABLE_PHYSICS
 	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors

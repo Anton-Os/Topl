@@ -468,9 +468,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	result = vkCreatePipelineLayout(_logicDevice, &_pipelineLayoutInfo, nullptr, &_pipelineLayout);
 	if(result == VK_SUCCESS) logMessage("Pipeline layout creation success\n");
 	else return logMessage(MESSAGE_Exclaim, "Pipeline layout creation failure!\n");
-
-	setViewport(&_defaultViewport);
-	setDrawMode(DRAW_Triangles);
 }
 
 Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {

@@ -9,11 +9,11 @@ typedef std::pair<unsigned short, float> gridSize_pair;
 struct Geo_Grid_Params {
 	Geo_Grid_Params() {}
 	Geo_Grid_Params(gridSize_pair size){
-		// assert(size > 0);
+		// assert(size.first() > 0);
     	x = size;  y = size; z = size;
 	}
 	Geo_Grid_Params(gridSize_pair xSize, gridSize_pair ySize, gridSize_pair zSize){
-		// assert(xSize > 0 && ySize > 0 && zSize > 0);
+		// assert(xSize.first() > 0 && ySize.first() > 0 && zSize.first() > 0);
     	x = xSize; y = ySize; z = zSize;
 	}
 
@@ -34,7 +34,7 @@ public:
 		_origin = Vec3f({
 			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
 			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
-			0.0f
+			DEFAULT_Z
 		});
     }
 
@@ -44,7 +44,7 @@ public:
 		_origin = Vec3f({
 			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
 			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
-			0.0f
+			DEFAULT_Z
 		});
 		configure(scene);
     }

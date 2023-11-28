@@ -63,12 +63,11 @@ struct Input_TracerPath {
 };
 
 struct Input_CursorRange {
-	// Input_CursorRange(float xRange[2], float yRange[2]);
-	Input_CursorRange(std::initializer_list<float> xRange, std::initializer_list<float> yRange);
-    float xMin = MIN_CURSOR_BOUND; 
-	float xMax = MAX_CURSOR_BOUND;
-    float yMin = MIN_CURSOR_BOUND;
-	float yMax = MAX_CURSOR_BOUND;
+	Input_CursorRange(){} // maximum range constructor
+	Input_CursorRange(std::initializer_list<float> xRange, std::initializer_list<float> yRange); // specified range constructor
+    
+    float xMin = MIN_CURSOR_BOUND; float xMax = MAX_CURSOR_BOUND;
+    float yMin = MIN_CURSOR_BOUND; float yMax = MAX_CURSOR_BOUND;
 };
 
 typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of tracer steps inside of a path
@@ -80,14 +79,19 @@ class Input_MouseControl : public Input_Control {
 public:
     Input_MouseControl() : Input_Control(){}
     void addCallback(enum MOUSE_Button mb, pressCallback callback);
-    void addMousePress(enum MOUSE_Button mb); // mouse press
-    void addMousePress(enum MOUSE_Button mb, float x, float y); // positioned mouse press
+    void addMousePress(enum MOUSE_Button mb, float cursorX, float cursorY);// mouse press with no cursor
+    void addMousePress(enum MOUSE_Button mb); // mouse press no cursor
     void addHoverCallback(const Input_CursorRange* range, hoverCallback callback);
+    void addHoverCallback(hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
+    
+    std::pair<enum MOUSE_Button, bool> getIsHeld(){ return _isHold; }
 
-    std::vector<Input_TracerStep> _tracerSteps;
-	std::vector<Input_TracerPath> _tracerPaths;
 private:
+    std::pair<enum MOUSE_Button, bool> _isHold; // tracks state of mouse being held
+    std::vector<Input_TracerStep> _tracerSteps; // tracks steps whenever mouse event and cursor pos is known 
+	std::vector<Input_TracerPath> _tracerPaths; // tracks paths whenever mouse is held and moving
+
 	std::map<MOUSE_Button, pressCallback> _mouseCallback_map;
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;
 };

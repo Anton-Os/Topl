@@ -16,6 +16,8 @@ void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
 
 // Mouse Interaction
 
+static Input_CursorRange defaultCursorRange = Input_CursorRange();
+
 Input_CursorRange::Input_CursorRange(std::initializer_list<float> xRange, std::initializer_list<float> yRange){
 	float x1 = *xRange.begin(); float y1 = *yRange.begin();
 	float x2 = *(xRange.end() - 1); float y2 = *(yRange.end() - 1);
@@ -30,23 +32,32 @@ void Input_MouseControl::addCallback(enum MOUSE_Button mb, pressCallback callbac
 	_mouseCallback_map.insert(std::make_pair(mb, callback));
 }
 
-void Input_MouseControl::addMousePress(enum MOUSE_Button mb){
-	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
-		if(mb == c->first) c->second(INVALID_CURSOR_POS, INVALID_CURSOR_POS); // makes callback go off where keys match
-
-	stampEvent();
-}
-
 void Input_MouseControl::addMousePress(enum MOUSE_Button mb, float x, float y){
+	if(mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down)
+		_isHold = std::make_pair(mb, true);
+	else if(mb == MOUSE_LeftBtn_Up || mb == MOUSE_RightBtn_Up)
+		_isHold = std::make_pair(mb, false);
+	
 	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
 		if(mb == c->first) c->second(x, y); // makes callback go off where keys match
 	
-	_tracerSteps.push_back({ mb, std::make_pair(x, y)}); // record the movement
+	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS)
+		_tracerSteps.push_back({ mb, std::make_pair(x, y)}); // record the step
 	stampEvent();
+
+	// TODO: Record tracer paths
+}
+
+void Input_MouseControl::addMousePress(enum MOUSE_Button mb){
+	addMousePress(mb, INVALID_CURSOR_POS, INVALID_CURSOR_POS);
 }
 
 void Input_MouseControl::addHoverCallback(const Input_CursorRange* range, hoverCallback callback) {
 	_hoverCallback_map.insert(std::make_pair(range, callback));
+}
+
+void Input_MouseControl::addHoverCallback(hoverCallback callback){
+	addHoverCallback(&defaultCursorRange, callback);
 }
 
 void Input_MouseControl::addHover(float x, float y){

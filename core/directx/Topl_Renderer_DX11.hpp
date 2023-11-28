@@ -70,6 +70,9 @@ public:
 	Topl_Renderer_DX11(HWND window) : Topl_Renderer(window){
 		_isDrawInOrder = INVERSE_DRAW_ORDER;
 		init(window);
+		
+		setViewport(&_defaultViewport); // viewport creation
+		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_DX11();
 
@@ -94,7 +97,6 @@ protected:
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachVolume(const Img_Volume* multiTex, unsigned id) override;
 #endif
-	Buffer_DX11* findBuffer(BUFF_Type type, unsigned long renderID);
 
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	Topl_Pipeline_DX11* _pipeline = nullptr;

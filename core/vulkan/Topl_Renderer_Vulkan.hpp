@@ -33,6 +33,9 @@ class Topl_Renderer_Vulkan : public Topl_Renderer {
 public:
 	Topl_Renderer_Vulkan(NATIVE_WINDOW window) : Topl_Renderer(window){ 
 		init(window); 
+
+		setViewport(&_defaultViewport); // viewport creation
+		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_Vulkan();
 

@@ -55,6 +55,9 @@ public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
 		_isDrawInOrder = REGULAR_DRAW_ORDER;
 		init(window);
+
+		setViewport(&_defaultViewport); // viewport creation
+		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_GL4();
 
@@ -80,8 +83,6 @@ protected:
 	void attachVolume(const Img_Volume* multiTex, unsigned id) override;
 #endif
 	void linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
-	Buffer_GL4* findBuffer(BUFF_Type type, unsigned long renderID);
-
 	Topl_Pipeline_GL4* _pipeline;
 
 	GLenum _drawMode_GL4; // OpenGL specific draw mode

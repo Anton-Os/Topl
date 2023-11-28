@@ -8,12 +8,6 @@ public:
 	~Topl_Main();
 
 	void run();
-
-	// Paths
-	/* const static std::string getFontsPath() { return std::string(ASSETS_DIR) + "fonts/"; }
-	const static std::string getImagesPath() { return std::string(ASSETS_DIR) + "images/"; }
-	const static std::string getModelsPath() { return std::string(ASSETS_DIR) + "models/"; }
-	const static std::string getResourcesPath() { return std::string(ASSETS_DIR) + "res/"; } */
 protected:
     virtual void init() = 0;
     virtual void loop(double frameTime) = 0;
@@ -27,6 +21,6 @@ protected:
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 
-	// Utility
+	// Timing // TODO: Include internal timeline management
 	Timer_Ticker _ticker;
 };

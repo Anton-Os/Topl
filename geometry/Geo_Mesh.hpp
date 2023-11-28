@@ -34,7 +34,7 @@ public:
 		_indices.resize(i);
 	}
 
-	void clone(const Geo_Mesh* refObj);
+	// void clone(const Geo_Mesh* refMesh);
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
@@ -58,7 +58,6 @@ protected:
 		return Vec3f({ x, y, z });
 	}
 
-	std::pair<bool, bool> _renderStatus = std::make_pair(false, false); // checks for vertex generation
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 };

@@ -246,9 +246,6 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 
 	_device->CreateRasterizerState(&rasterizerStateDesc, &_rasterizerState);
 	_deviceCtx->RSSetState(_rasterizerState);
-
-	setViewport(&_defaultViewport); // Viewport Creation
-	setDrawMode(DRAW_Triangles);
 }
 
 void Topl_Renderer_DX11::clearView() {
@@ -277,7 +274,7 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
 	// setting vertex input layout
-	if (buildCount == FIRST_BUILD_CALL) { // must be invoked only once!
+	if (buildCount == FIRST_BUILD_CALL) { // invoked only once using vertex shader as reference
 		D3D11_INPUT_ELEMENT_DESC* vertexLayout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
 		unsigned vertexElemOffset = 0;
 		for (unsigned inputNum = 0; inputNum < _entryShader->getInputCount(); inputNum++) {
@@ -299,28 +296,23 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-	// if (!shaderBlockData.empty()) {
-		_isBuilt = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
-		_buffers.push_back(Buffer_DX11(_sceneBlockBuff));
-	// }
+	_isBuilt = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
+	_buffers.push_back(Buffer_DX11(_sceneBlockBuff));
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) {
 		_renderIDs++;
-		_renderObjs_map.insert({ _renderIDs, scene->getGeoActor(g) });
+		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
-		// Geo_RenderObj* mesh = (Geo_RenderObj*)actor->getRenderObj();
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
 		// render block buffer generation
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-	//	if (!shaderBlockData.empty()) {
-			ID3D11Buffer* renderBlockBuff = nullptr;
-			_isBuilt = DX11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
-			_buffers.push_back(Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff));
-			if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
-	//	}
+		ID3D11Buffer* renderBlockBuff = nullptr;
+		_isBuilt = DX11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
+		_buffers.push_back(Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff));
+		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
@@ -490,7 +482,6 @@ static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
-	Buffer_DX11* renderBlockBuff = nullptr;
 
 	if (_buffers.front().renderID == SCENE_RENDER_ID) {
 		shaderBlockData.clear();
@@ -505,24 +496,21 @@ void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 		// Shader Render Block
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		for (std::vector<Buffer_DX11>::iterator buff = _buffers.begin(); buff < _buffers.end(); buff++)
-			if (buff->renderID == renderID && buff->type == BUFF_Render_Block) {
-				renderBlockBuff = &(*buff);
-				break;
-			}
+		Buffer_DX11* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
 
-		// Texture Update
-		for (unsigned t = 0; t < _textures.size(); t++)
-			if (_textures.at(t).renderID == renderID ) {
-				if (_textures.at(t).format == TEX_2D) {
-					samplers[_textures.at(t).binding] = _textures.at(t).sampler;
-					resViews[_textures.at(t).binding] = _textures.at(t).resView;
-				}
-				else if (_textures.at(t).format == TEX_3D) {
-					samplers[MAX_TEX_BINDINGS] = _textures.at(t).sampler;
-					resViews[MAX_TEX_BINDINGS] = _textures.at(t).resView;
-				}
-			}
+		// Texture Updates
+
+		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
+		// TODO: Find 2D textures at other bindings
+		if (tex2D != _textures.end()){
+			samplers[tex2D->binding] = tex2D->sampler;
+			resViews[tex2D->binding] = tex2D->resView;
+		}
+		if(tex3D != _textures.end()){
+			samplers[MAX_TEX_BINDINGS] = tex3D->sampler;
+			resViews[MAX_TEX_BINDINGS] = tex3D->resView;
+		}
 
 		if (renderBlockBuff != nullptr) _isBuilt = DX11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
 		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
@@ -542,7 +530,7 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
- void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
+void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 	 // static Buffer_DX11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	 if (!_buffers.empty()) {
 		 if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) { // Scene Target
@@ -553,9 +541,9 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 			 }
 		 }
 		 else if(renderID != SCENE_RENDER_ID) { // Drawable Target
-			 Buffer_DX11* vertexBuff = findBuffer(BUFF_Vertex_Type, renderID); // Optimize!
-			 Buffer_DX11* indexBuff = findBuffer(BUFF_Index_UI, renderID); // Optimize!
-			 Buffer_DX11* renderBlockBuff = findBuffer(BUFF_Render_Block, renderID); // Optimize!
+			 Buffer_DX11* vertexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; }));
+			 Buffer_DX11* indexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; }));
+			 Buffer_DX11* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
 
 			 if (renderBlockBuff != nullptr) {
 				 _deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
@@ -566,18 +554,6 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 				_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
 			 if (indexBuff != nullptr && indexBuff->count > 0)
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
-
-			 /* for (unsigned t = 0; t < _textures.size(); t++) // Move this!
-				 if (_textures.at(t).renderID == renderID ) {
-					 if (_textures.at(t).format == TEX_2D) {
-						 samplers[_textures.at(t).binding] = _textures.at(t).sampler;
-						 resViews[_textures.at(t).binding] = _textures.at(t).resView;
-					 }
-					 else if (_textures.at(t).format == TEX_3D) {
-						 samplers[MAX_TEX_BINDINGS] = _textures.at(t).sampler;
-						 resViews[MAX_TEX_BINDINGS] = _textures.at(t).resView;
-					 }
-				} */
 
 			 _deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
 			 _deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
@@ -591,10 +567,3 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 		 }
 	 }
 } 
-
-Buffer_DX11* Topl_Renderer_DX11::findBuffer(BUFF_Type type, unsigned long renderID){
-	for (std::vector<Buffer_DX11>::iterator buffer = _buffers.begin(); buffer < _buffers.end(); buffer++)
-		if (buffer->type == type && buffer->renderID == renderID)
-			return &(*buffer);
-	return nullptr; // error
-}

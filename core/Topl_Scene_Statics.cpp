@@ -43,11 +43,21 @@ pickerCallback Topl_Scene::getPickerCallback(unsigned color){
 	return nullptr; // no callback
 }
 
-void Topl_Scene::delActor(const std::string& name){
-	// TODO: Remove from physics maps
-	// TODO: Remove from texture maps
-	// TODO: Remove from callback maps
-	// TODO: Remove actor
+void Topl_Scene::removeActor(const std::string& name){
+	Geo_Actor* actor = nullptr;
+	for(std::vector<Geo_Actor*>::const_iterator a = _geoActors.cbegin(); a < _geoActors.cend(); a++)
+		if((*a)->getName() == name) actor = *a;
+
+	_pickerCallbackMap.erase(actor);
+#ifdef TOPL_ENABLE_PHYSICS
+	_physicsMap.erase(actor);
+#endif
+#ifdef RASTERON_H
+	_textureMap.erase(actor);
+	_multiTexMap.erase(actor);
+	_volumeTexMap.erase(actor);
+#endif
+	std::remove(_geoActors.begin(), _geoActors.end(), actor);
 }
 
 #ifdef RASTERON_H
