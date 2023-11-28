@@ -2,10 +2,6 @@
 
 #include <string>
 
-#include "ValueGen.hpp"
-
-#include "Geo_Actor.hpp"
-
 #include "Topl_Scene.hpp"
 
 enum SHDR_Type {
@@ -106,4 +102,5 @@ private:
 typedef const Topl_EntryShader* entry_shader_cptr;
 typedef const Topl_Shader* shader_cptr;
 
+#define TOPL_SHADER_H
 #endif

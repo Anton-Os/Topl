@@ -32,9 +32,9 @@ struct Sandbox_Demo : public Topl_Main {
 private:
     Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline;
 
-    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
-    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
-    Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
+    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
+    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
+    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
 
     Geo_Quad3D boxMesh = Geo_Quad3D();
     Geo_Actor boxActor = Geo_Actor(&boxMesh);

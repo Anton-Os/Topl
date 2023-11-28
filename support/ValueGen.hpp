@@ -5,13 +5,6 @@
 
 #include "maths.h"
 
-// Numeric Operations
-
-// #define COLOR_ID_TYPES 7
-
-// unsigned genColorID(unsigned renderID);
-// unsigned genRandColor();
-
 // Data Operations
 
 typedef std::vector<uint8_t> blockBytes_t; // container used to pass data to shaders

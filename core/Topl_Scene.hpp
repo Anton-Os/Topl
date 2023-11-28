@@ -2,8 +2,8 @@
 
 #include <map>
 
-#include "image_wrapper.h"
 #include "support_def.h"
+#include "image_wrapper.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
@@ -99,6 +99,7 @@ public:
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
+	bool isTexSupport = false; // if textures exist set to true
 	const Img_Base* getTexture(const std::string& name) const;
 	const Img_Array* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;

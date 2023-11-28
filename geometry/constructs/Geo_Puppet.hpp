@@ -16,6 +16,7 @@ enum PUPPET_Part {
 typedef const Geo_Actor* puppetBlocks[PUPPET_PARTS];
 
 struct Geo_Puppet : public Geo_Construct {
+    Geo_Puppet(const std::string& prefix) : Geo_Construct(prefix){} // default constructor
     Geo_Puppet(const std::string& prefix, puppetBlocks parts) : Geo_Construct(prefix){}
     Geo_Puppet(const std::string& prefix, puppetBlocks parts, Topl_Scene* scene) : Geo_Construct(prefix){
         configure(scene);
@@ -28,20 +29,18 @@ struct Geo_Puppet : public Geo_Construct {
 
 #ifdef RASTERON_H
 
-class Geo_Puppet2D : public Geo_Puppet(){
-    // TODO: Add body here
-
+class Geo_Puppet2D : public Geo_Puppet {
+    Geo_Puppet2D(const std::string& prefix) : Geo_Puppet(prefix){}
     Rasteron_Sprite* sprites[PUPPET_PARTS];
-}
+};
 
 #endif
 #ifdef TOPL_ENABLE_MODELS
 
-class Geo_Puppet3D : public Geo_Puppet(){
-    // TODO: Add body here
-
+class Geo_Puppet3D : public Geo_Puppet {
+    Geo_Puppet3D(const std::string& prefix) : Geo_Puppet(prefix){}
     Geo_Node* nodes[PUPPET_PARTS];
-}
+};
 
 #endif
 

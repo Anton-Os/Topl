@@ -28,9 +28,9 @@ public:
 
 	~Geo_Layout(){
 #ifdef RASTERON_H
-	free_image(rootBackground);
+	/* dealloc_image(rootBk);
 	for(std::vector<Rasteron_Queue*>::iterator q = childStateBg.begin(); q != childStateBg.end(); q++)
-		free_queue(*q);
+		free_queue(*q); */
 #endif
 	}
 
@@ -59,8 +59,8 @@ protected:
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 
 #ifdef RASTERON_H
-	Img_Base* rootBackground;
-	std::map<const Geo_Actor*, Img_Base*> childBackgrounds;
+	Img_Base* rootBk; // root background
+	std::map<const Geo_Actor*, Img_Array*> childBks; // child backgrounds
 	// std::vector<Rasteron_Queue*> childStateBg;
 #endif
 };

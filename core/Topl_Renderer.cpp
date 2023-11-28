@@ -73,7 +73,7 @@ void Topl_Renderer::present() {
 #ifdef RASTERON_H
 
 void Topl_Renderer::texturize(const Topl_Scene* scene) {
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	if(scene->isTexSupport) for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
@@ -90,14 +90,14 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 		const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
 		if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
 		// else return logMessage(MESSAGE_Exclaim, "Null volumeTex encountered!");
-	}
+	} 
 }
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
     Img_Base image = frame();
-    unsigned offset = getPixOffset_cursor(pixPoint, image.getImage());
+    unsigned offset = pixelPointOffset_cursor(pixPoint, image.getImage());
     unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets
 }

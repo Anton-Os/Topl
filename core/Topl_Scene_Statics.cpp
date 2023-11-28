@@ -63,7 +63,7 @@ void Topl_Scene::removeActor(const std::string& name){
 #ifdef RASTERON_H
 
 void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
-	if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
+	// if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_textureMap.erase(*actor);

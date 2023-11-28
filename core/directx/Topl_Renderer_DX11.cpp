@@ -359,7 +359,7 @@ Img_Base Topl_Renderer_DX11::frame() {
 	result = _deviceCtx->Map(framebuffTex, subresource, D3D11_MAP_READ_WRITE, 0, &resource);
 	const unsigned int* sourceData = static_cast<const unsigned int*>(resource.pData);
 
-	Rasteron_Image* stageImage = allocNewImg("stage", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
+	Rasteron_Image* stageImage = alloc_image("stage", TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH);
 	unsigned srcOffset = 0; unsigned dstOffset = 0;
 	unsigned pitch = resource.RowPitch / 4; // << 2;
 	for (unsigned r = 0; r < stageImage->height - 1; r++) {
@@ -369,11 +369,11 @@ Img_Base Topl_Renderer_DX11::frame() {
 		dstOffset += stageImage->width;
 	}
 	_deviceCtx->Unmap(framebuffTex, 0);
-	switchRB(stageImage->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // flipping red and blue bits
+	bitSwitchRB(stageImage->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // flipping red and blue bits
 
 	_frameImage = Img_Base();
 	_frameImage.setImage(stageImage);
-	free_image(stageImage);
+	dealloc_image(stageImage);
 	return _frameImage;
 }
 

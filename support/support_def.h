@@ -8,7 +8,7 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 0
+#if 1
     #define RASTERON_ENABLE_ANIM
     #define RASTERON_ENABLE_FONT
     

@@ -34,8 +34,8 @@ unsigned Topl_Main::colorPicker(Topl_Scene* scene){
 	bool pickerFound = false;
 
 	for(unsigned a = 0; a < scene->getActorCount(); a++){
-		actor_cptr actor = getGeoActor(a);
-		if(actor->getId == pickerColor) {
+		actor_cptr actor = scene->getGeoActor(a);
+		if(actor->getId() == pickerColor) {
 			logMessage("Picker match detected for " + std::to_string(pickerColor) + '\n');
 			// TODO: Fire callback inside of scene for target actor
 			pickerFound = true;

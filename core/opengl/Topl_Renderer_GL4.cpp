@@ -252,18 +252,16 @@ Img_Base Topl_Renderer_GL4::frame() {
 	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx.window);
 	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
 
-	Rasteron_Image* stageImage = allocNewImg("frame", viewportWidth, viewportHeight);
+	Rasteron_Image* stageImage = alloc_image("frame", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);
 
-	Rasteron_Image* flipImage = createFlipImg(stageImage, FLIP_Upside); // flipping image over
-	Rasteron_Image* mirrorImage = createMirrorImg(flipImage); // mirroring left and right sides
-	switchRB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
+	Rasteron_Image* flipImage = flipImgOp(stageImage, FLIP_Upside); // flipping image over
+	Rasteron_Image* mirrorImage = mirrorImgOp(flipImage); // mirroring left and right sides
+	bitSwitchRB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
 
 	_frameImage = Img_Base();
 	_frameImage.setImage(mirrorImage);
-	free_image(stageImage);
-	free_image(flipImage);
-	free_image(mirrorImage);
+	dealloc_image(stageImage); dealloc_image(flipImage); dealloc_image(mirrorImage);
 	return _frameImage;
 }
 

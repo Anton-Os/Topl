@@ -20,7 +20,7 @@ struct Img_Base {
 
     void setColorImage(unsigned color){
 		cleanup();
-		image = createSolidImg({ IMG_SIDE_LEN, IMG_SIDE_LEN }, color);
+		image = solidImgOp({ IMG_SIDE_LEN, IMG_SIDE_LEN }, color);
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
@@ -29,21 +29,22 @@ struct Img_Base {
 #ifdef _WIN32
 		replaceFwdSlash(&newFilePath[0]);
 #endif
-        image = createRefImg(&newFilePath[0]);
+        image = loadImgOp(&newFilePath[0]);
     }
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
-		image = bakeTextI(textObj);
+		// image = bakeText(textObj, FONT_SIZE_MED);
+		image = bakeTextI(textObj, FONT_SIZE_MED);
     }
-    void setImage(Rasteron_Image* refImage){
+    void setImage(ref_image_t refImage){
 		cleanup();
-        image = createCopyImg(refImage);
+        image = copyImgOp(refImage);
     }
     Rasteron_Image* getImage() const { return image; }
 private:
 	void cleanup() {
 		if (image != NULL) {
-			free_image(image);
+			dealloc_image(image);
 			image = NULL; // reset
 		}
 	}
@@ -84,31 +85,32 @@ struct Img_Volume {
     Img_Volume() : width(IMG_SIDE_LEN), height(IMG_SIDE_LEN), depth(IMG_SIDE_LEN) {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s) { // Matching Lengths
-		data = allocNewAnim("volumeTex", depth);
+		queue = alloc_queue("volumeTex", { width, height }, depth);
 	}
     Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z) { // Custom Lengths
-		data = allocNewAnim("volumeTex", depth);
+		queue = alloc_queue("volumeTex", { width, height }, depth);
 	}
-	~Img_Volume(){ deleteAnim(data); }
+	~Img_Volume(){ dealloc_queue(queue); }
 	
 	void addSlice(ref_image_t refImg, unsigned d){
 		if (refImg->height == height && refImg->width == width)
-			addFrameData(data, refImg, d);
+			addFrameAt(queue, refImg, d);
 		else return; // error
 
-		Rasteron_Image* compositeImg = createCompositeImg(data);
-		volumeTexImg.setImage(compositeImg); // recreate entire volumeTex image
-		free_image(compositeImg);
+		// TODO: Create composite image
+		// Rasteron_Image* compositeImg = createCompositeImg(queue);
+		// volumeTexImg.setImage(compositeImg); // recreate entire volumeTex image
+		// dealloc_image(compositeImg);
     }
-	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? getFrame(data, d) : nullptr;}
+	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? getFrameAt(queue, d) : nullptr;}
 	const Img_Base* extractVolImage() const { return &volumeTexImg; }
 
 	unsigned getWidth() const { return width; }
 	unsigned getHeight() const { return height; }
 	unsigned getDepth() const { return depth; }
 private:
-	Img_Base volumeTexImg;
-	Rasteron_Animation* data = nullptr; // underlying data
+	Img_Base volumeTexImg; // conversion from 3D texture into underlying queue
+	Rasteron_Queue* queue = nullptr; // underlying data
 #endif
 	const unsigned width, height, depth;
 };
@@ -117,32 +119,34 @@ private:
 
 struct Img_Heightmap : public Geo_Mesh { // wrapper around Rasteron_Heightmap
     Img_Heightmap() : Geo_Mesh(0){} // Empty Constructor
+
 #ifdef RASTERON_H // required library for loading images
     Img_Heightmap(const Rasteron_Image* refImage)
     : Geo_Mesh(refImage->height * refImage->width) {
-        heightmap = createHeightmap(refImage);
+        heightmap = loadHeightmap(refImage);
 		genVertices(); genIndices();
     }
 
-    ~Img_Heightmap(){ free_heightmap(heightmap); }
+    ~Img_Heightmap(){ dealloc_heightmap(heightmap); }
 #endif
 private:
     void genVertices() override {
 #ifdef RASTERON_H
-		for (unsigned r = 0; r < heightmap->height; r++)
+		// TODO: Add vertex generation logic
+		/*  for (unsigned r = 0; r < heightmap->height; r++)
 			for (unsigned c = 0; c < heightmap->width; c++) {
 				float x = (1.0f / heightmap->width) * c;
 				float y = (1.0f / heightmap->height) * r;
 				Vec3f pos = Vec3f({ x, y, (float)*(heightmap->data + (r * heightmap->width + c)) });
 				Vec3f texcoord = Vec3f({ x, y, (float)*(heightmap->data + (r * heightmap->width + c)) });
 				_vertices[(r * heightmap->width + c)] = Geo_Vertex(pos, texcoord);
-			}
+			} */
 #endif
 	}
 
-    void genIndices() override { return; } // No indices by default
+    void genIndices() override { return; } // No indices by default 
 
 #ifdef RASTERON_H
     Rasteron_Heightmap* heightmap = NULL;
 #endif
-};
+}; 
