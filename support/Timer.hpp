@@ -5,11 +5,17 @@
 #include <cmath>
 #include <vector>
 
-#define FPS_60 1000.0 / 60.0 // fps in millisecs
-#define BAD_EVENT_TIME -1.0f // indicates that event timestamp is invalid
-#define CONCURRENT_THRESH 1000.0 / 240.0 // used for concurrent events
-#define MICROSEC_SEC_CONVERT 1000000.0
-#define MICROSEC_MILLI_CONVERT 1000.0
+#define INVALID_TIME -1.0
+
+#define MICROSEC_IN_SEC 1000000.0
+#define MILLISEC_IN_SEC 1000.0
+#define MICROSEC_IN_MILLISEC 1000.0
+
+#define MILILISEC_FPS30 1000.0 / 60.0 // fps in millisecs
+#define MILILISEC_FPS60 1000.0 / 60.0 // fps in millisecs
+#define MILILISEC_FPS120 1000.0 / 60.0 // fps in millisecs
+
+typedef double millisec_t; // timer calculations in milliseconds
 
 // Periodic Event
 
@@ -17,38 +23,38 @@ typedef void (*periodicCallback)(void);
 
 class Timer_PeriodicEvent {
 public:
-	Timer_PeriodicEvent(double period, periodicCallback callback) : periodMillisec(period) {
+	Timer_PeriodicEvent(millisec_t period, periodicCallback callback) : periodMillisec(period) {
 		callbackTrigger = callback;
 	}
-	void addTime(double micros){
-		_millisecsElapsed += static_cast<double>(micros / MICROSEC_MILLI_CONVERT);
+	void addTime(unsigned long microsecs){
+		_millisecsElapsed += static_cast<double>(microsecs / MICROSEC_IN_MILLISEC);
 		while(_millisecsElapsed >= periodMillisec){
 			_millisecsElapsed -= periodMillisec;
 			callbackTrigger();
 		}
 	}
 private:
-	const double periodMillisec;
+	const millisec_t periodMillisec;
 	periodicCallback callbackTrigger;
-	double _millisecsElapsed = 0.0;
+	millisec_t _millisecsElapsed = 0.0;
 };
 
 // Recurring Event
 
-typedef void (*recurringCallback)(double);
+typedef void (*recurringCallback)(millisec_t);
 
 class Timer_RecurringEvent {
 public:
 	Timer_RecurringEvent(recurringCallback callback){
 		callbackTrigger = callback;
 	}
-	void addTime(unsigned micros){
-		_millisecsElapsed += static_cast<double>(micros / MICROSEC_MILLI_CONVERT); // conversion from microsecs to seconds
+	void addTime(unsigned long microsecs){
+		_millisecsElapsed += static_cast<double>(microsecs / MICROSEC_IN_MILLISEC); // conversion from microsecsecs to seconds
 		callbackTrigger(_millisecsElapsed);
 	}
 private:
 	recurringCallback callbackTrigger;
-	double _millisecsElapsed = 0.0;
+	millisec_t _millisecsElapsed = 0.0;
 };
 
 // Timer
@@ -67,11 +73,11 @@ public:
 
 	void updateTimer();
 	double getRelMicrosecs();
-	double getRelMillisecs() { return getRelMicrosecs() / MICROSEC_MILLI_CONVERT; } // gets millisonds secs since last invocation
-	double getRelSecs(){ return getRelMicrosecs() / MICROSEC_SEC_CONVERT; } // gets seconds secs since last invocation
+	millisec_t getRelMillisecs() { return getRelMicrosecs() / MICROSEC_IN_MILLISEC; } // gets millisonds secs since last invocation
+	double getRelSecs(){ return getRelMicrosecs() / MICROSEC_IN_SEC; } // gets seconds secs since last invocation
 	double getAbsMicrosecs();
-	double getAbsMillisecs() { return getAbsMicrosecs() / MICROSEC_MILLI_CONVERT; } // gets millisonds since timer creation
-	double getAbsSecs(){ return getAbsMicrosecs() / MICROSEC_SEC_CONVERT; } // gets seconds since timer creation
+	millisec_t getAbsMillisecs() { return getAbsMicrosecs() / MICROSEC_IN_MILLISEC; } // gets millisonds since timer creation
+	double getAbsSecs(){ return getAbsMicrosecs() / MICROSEC_IN_SEC; } // gets seconds since timer creation
 private:
 	std::chrono::duration<double, std::micro> _relMicrosElapsed = std::chrono::microseconds(0); // relative time since last call
 	std::chrono::duration<double, std::micro> _absMicrosElapsed = std::chrono::microseconds(0); // absolute time since creation

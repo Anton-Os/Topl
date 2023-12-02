@@ -4,6 +4,24 @@
 #define BEAMS_MODE_ALTERNATE 1
 #define BEAMS_MODE_DEPTH 2
 
+// Light
+
+enum LIGHT_Type { 
+	LIGHT_Sky, // uniform direction
+	LIGHT_Flash, // pointing relative respect to camera
+	LIGHT_Lamp // hovers in scene
+};
+
+struct Topl_Light {
+	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor
+	Topl_Light(const Vec3f& p, const Vec3f& v) { // Extended Constructor
+		pos = p;
+		value = v;
+	}
+	Vec3f pos;
+	Vec3f value = Vec3f({ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
+};
+
 // Vertex Shaders
 
 struct Beams_VertexShader : public Topl_EntryShader {

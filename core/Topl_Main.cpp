@@ -1,6 +1,6 @@
 #include "Topl_Main.hpp"
 
-Topl_Main::Topl_Main(const char* execPath, const char* name, TARGET_Backend backend) : _backend(backend) {
+Topl_Main::Topl_Main(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
     _platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
@@ -21,28 +21,21 @@ void Topl_Main::run(){
 		_platform->handleEvents(ENABLE_CURSOR_UPDATE);
 
 		_renderer->clearView(); // clears view to solid color
-		loop(_ticker.getRelMillisecs()); // performs draws and updating
+		loop(_timeline.ticker.getRelMillisecs()); // performs draws and updating
 		_renderer->present(); // switches front and back buffers
     }
 }
 
 
 #ifdef RASTERON_H
-unsigned Topl_Main::colorPicker(Topl_Scene* scene){
+unsigned Topl_Main::colorPick(Topl_Scene* scene){
 	unsigned pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	if(scene == nullptr) return pickerColor;
+	else {
+		pickerCallback callback = scene->getPickerCallback(pickerColor);
 
-	bool pickerFound = false;
-
-	for(unsigned a = 0; a < scene->getActorCount(); a++){
-		actor_cptr actor = scene->getGeoActor(a);
-		if(actor->getId() == pickerColor) {
-			logMessage("Picker match detected for " + std::to_string(pickerColor) + '\n');
-			// TODO: Fire callback inside of scene for target actor
-			pickerFound = true;
-			break;
-		}
+		if(callback != nullptr) callback();
+		return (callback != nullptr)? pickerColor : 0; // return 0 if no matches found
 	}
-
-	return (pickerFound)? pickerColor : 0; // return 0 if no matches found
 }
 #endif

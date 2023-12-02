@@ -38,8 +38,9 @@ actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 } */
 
 pickerCallback Topl_Scene::getPickerCallback(unsigned color){
+	if(_pickerCallbackMap.size() == 0) return nullptr;
 	for(std::map<Geo_Actor*, pickerCallback>::const_iterator p = _pickerCallbackMap.cbegin(); p != _pickerCallbackMap.cend(); p++)
-		if(color == p->first->getId()) return p->second;
+		if(color & 0x00FFFFFF == p->first->getId()) return p->second; // comparison with alpha mask
 	return nullptr; // no callback
 }
 
@@ -54,7 +55,7 @@ void Topl_Scene::removeActor(const std::string& name){
 #endif
 #ifdef RASTERON_H
 	_textureMap.erase(actor);
-	_multiTexMap.erase(actor);
+	_arrayTexMap.erase(actor);
 	_volumeTexMap.erase(actor);
 #endif
 	std::remove(_geoActors.begin(), _geoActors.end(), actor);
@@ -72,23 +73,33 @@ void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 }
 
 const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
-	for (std::map<Geo_Actor*, const Img_Base*>::const_iterator t = _textureMap.cbegin(); t != _textureMap.cend(); t++)
-		if (name == t->first->getName()) return t->second;
-	return nullptr; // Error
+	if(_textureMap.empty()) return nullptr; // no textures available
+	/* else for (std::map<Geo_Actor*, const Img_Base*>::const_iterator t = _textureMap.cbegin(); t != _textureMap.cend(); t++)
+		if (name == t->first->getName()) return t->second; */
+	auto texture_it = std::find_if(
+		_textureMap.begin(), _textureMap.end(),
+		[name](const std::pair<Geo_Actor*, const Img_Base*>& p){ return p.first->getName() == name; }
+	);
+	return (texture_it != _textureMap.end())? texture_it->second : nullptr;
 }
 
 void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* multiTex) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
-			_multiTexMap.erase(*actor);
-			_multiTexMap.insert({ *actor, multiTex });
+			_arrayTexMap.erase(*actor);
+			_arrayTexMap.insert({ *actor, multiTex });
 		}
 }
 
 const Img_Array* Topl_Scene::getArrayTex(const std::string& name) const {
-	for (std::map<Geo_Actor*, const Img_Array*>::const_iterator m = _multiTexMap.cbegin(); m != _multiTexMap.cend(); m++)
-		if (name == m->first->getName()) return m->second;
-	return nullptr; // Error
+	if(_arrayTexMap.empty()) return nullptr; // no textures available
+	/* else for (std::map<Geo_Actor*, const Img_Array*>::const_iterator m = _arrayTexMap.cbegin(); m != _arrayTexMap.cend(); m++)
+		if (name == m->first->getName()) return m->second; // */
+	auto arrayTex_it = std::find_if(
+		_arrayTexMap.begin(), _arrayTexMap.end(),
+		[name](const std::pair<Geo_Actor*, const Img_Array*>& p){ return p.first->getName() == name; }
+	);
+	return (arrayTex_it != _arrayTexMap.end())? arrayTex_it->second : nullptr;
 }
 
 void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeTexTex) {
@@ -100,9 +111,14 @@ void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeT
 }
 
 const Img_Volume* Topl_Scene::getVolumeTex(const std::string& name) const {
-	for (std::map<Geo_Actor*, const Img_Volume*>::const_iterator v = _volumeTexMap.cbegin(); v != _volumeTexMap.cend(); v++)
-		if (name == v->first->getName()) return v->second;
-	return nullptr; // Error
+	if(_volumeTexMap.empty()) return nullptr; // no textures available
+	/* else for (std::map<Geo_Actor*, const Img_Volume*>::const_iterator v = _volumeTexMap.cbegin(); v != _volumeTexMap.cend(); v++)
+		if (name == v->first->getName()) return v->second; */
+	auto volumeTex_it = std::find_if(
+		_volumeTexMap.begin(), _volumeTexMap.end(),
+		[name](const std::pair<Geo_Actor*, const Img_Volume*>& p){ return p.first->getName() == name; }
+	);
+	return (volumeTex_it != _volumeTexMap.end())? volumeTex_it->second : nullptr;
 }
 
 #endif

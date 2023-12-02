@@ -483,7 +483,7 @@ static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
-	if (_buffers.front().renderID == SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SCENE_RENDERID) {
 		shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
 		DX11::createBlockBuff(&_device, &_buffers.front().buffer, &shaderBlockData);
@@ -497,20 +497,6 @@ void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
 		Buffer_DX11* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
-
-		// Texture Updates
-
-		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
-		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
-		// TODO: Find 2D textures at other bindings
-		if (tex2D != _textures.end()){
-			samplers[tex2D->binding] = tex2D->sampler;
-			resViews[tex2D->binding] = tex2D->resView;
-		}
-		if(tex3D != _textures.end()){
-			samplers[MAX_TEX_BINDINGS] = tex3D->sampler;
-			resViews[MAX_TEX_BINDINGS] = tex3D->resView;
-		}
 
 		if (renderBlockBuff != nullptr) _isBuilt = DX11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
 		if (!_isBuilt) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
@@ -533,14 +519,16 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 	 // static Buffer_DX11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	 if (!_buffers.empty()) {
-		 if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) { // Scene Target
+		 if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) { // Scene Target
 			 Buffer_DX11* sceneBlockBuff = &_buffers.front();
 			 if (sceneBlockBuff != nullptr) {
 				 _deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 				 _deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
 			 }
 		 }
-		 else if(renderID != SCENE_RENDER_ID) { // Drawable Target
+		 else if(renderID != SCENE_RENDERID) { // Drawable Target
+			 // Data & Buffer Updates
+
 			 Buffer_DX11* vertexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; }));
 			 Buffer_DX11* indexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; }));
 			 Buffer_DX11* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
@@ -558,11 +546,26 @@ void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 			 _deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
 			 _deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
 
+			// Texture Updates
+
+			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
+			// TODO: Find 2D textures at other bindings
+			if (tex2D != _textures.end()){
+				samplers[tex2D->binding] = tex2D->sampler;
+				resViews[tex2D->binding] = tex2D->resView;
+			}
+			if(tex3D != _textures.end()){
+				samplers[MAX_TEX_BINDINGS] = tex3D->sampler;
+				resViews[MAX_TEX_BINDINGS] = tex3D->resView;
+			}
+
 			 // Draw Call!
 			 if (vertexBuff != nullptr && vertexBuff->count != 0) {
 				 if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
 				 else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 			 }
+			 // TODO: Include instanced draw call
 			 else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 		 }
 	 }

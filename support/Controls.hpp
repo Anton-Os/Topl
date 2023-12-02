@@ -10,13 +10,13 @@ struct Input_Control {
     double getEventCount(){ return _eventCount; }
 protected:
     void stampEvent(){ // stamps that new event occured
-        if(_lastEvent == BAD_EVENT_TIME) _ticker.reset();
+        if(_lastEvent == INVALID_TIME) _ticker.reset();
         _lastEvent = _ticker.getRelMillisecs();
         _eventCount++;
     }
 
     Timer_Ticker _ticker; // internal timer
-    double _lastEvent = BAD_EVENT_TIME; // timestamp for most recent event
+    double _lastEvent = INVALID_TIME; // timestamp for most recent event
 	unsigned _eventCount = 0;
 };
 

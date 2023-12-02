@@ -8,10 +8,10 @@
 
 // RenderObj
 
-#define SCENE_RENDER_ID 0
+#define SCENE_RENDERID 0
 
 struct RenderObj {
-	RenderObj() { renderID = SCENE_RENDER_ID; }
+	RenderObj() { renderID = SCENE_RENDERID; }
 	RenderObj(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
@@ -27,7 +27,7 @@ enum BUFF_Type {
 };
 
 struct Buffer : public RenderObj {
-    Buffer() : RenderObj(SCENE_RENDER_ID){}
+    Buffer() : RenderObj(SCENE_RENDERID){}
     Buffer(unsigned id, enum BUFF_Type t) : RenderObj(id){ type = t; }
     Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderObj(id){ type = t; count = c; }
 
@@ -92,7 +92,7 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define FIRST_BUILD_CALL 0
 #define FRAME_RATE_SECS 1.0 / 60.0
 #define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000
-#define BAD_RENDER_ID (unsigned long)- 1
+#define INVALID_RENDERID (unsigned long)- 1
 
 #define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
 #define CLEAR_R 0.0F // 0.290196F // red clear color code

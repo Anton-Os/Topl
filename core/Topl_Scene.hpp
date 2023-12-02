@@ -17,25 +17,6 @@
 #include "Phys_Motion.h"
 #endif
 
-// Light
-
-enum LIGHT_Type { 
-	LIGHT_Sky, // uniform direction
-	LIGHT_Flash, // pointing relative respect to camera
-	LIGHT_Lamp // hovers in scene
-};
-
-struct Topl_Light {
-	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor
-	Topl_Light(const Vec3f& p, const Vec3f& v) { // Extended Constructor
-		pos = p;
-		value = v;
-	}
-	Vec3f pos;
-	Vec3f value = Vec3f({ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
-};
-typedef const Topl_Light* const light_cptr; // typedef for safety
-
 // Camera
 
 class Topl_Camera {
@@ -99,7 +80,6 @@ public:
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
-	bool isTexSupport = false; // if textures exist set to true
 	const Img_Base* getTexture(const std::string& name) const;
 	const Img_Array* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;
@@ -126,7 +106,7 @@ private:
 #endif
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture
-	std::map<Geo_Actor*, const Img_Array*> _multiTexMap; // associates geometry actor to multiple 2D textures
+	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture
 #endif
 	Timer_Ticker _ticker; // used for internal updates

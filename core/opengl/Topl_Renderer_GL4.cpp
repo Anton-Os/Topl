@@ -138,6 +138,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
 	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
 
+	// glDisable(GL_CULL_FACE);
+
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
 }
@@ -324,7 +326,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
-	if (_buffers.front().renderID == SCENE_RENDER_ID) {
+	if (_buffers.front().renderID == SCENE_RENDERID) {
 		shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
@@ -344,20 +346,6 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 		glBindBuffer(GL_UNIFORM_BUFFER, renderBlockBuff->buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
-
-		// Texture Updates 
-		
-		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
-		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
-		// TODO: Find 2D textures at other bindings
-		if (tex2D != _textures.end()){
-			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
-			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
-		}
-		if(tex3D != _textures.end()){
-			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
-			glBindTexture(GL_TEXTURE_3D, tex3D->texture);
-		}
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -379,9 +367,11 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (!_buffers.empty()) {
-		if (renderID == SCENE_RENDER_ID && _buffers.front().renderID == SCENE_RENDER_ID) // Scene Target
+		if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) // Scene Target
 			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-		else if (renderID != SCENE_RENDER_ID) { // Drawable Target
+		else if (renderID != SCENE_RENDERID) { // Drawable Target
+			// Data & Buffer Updates
+			
 			VertexArray_GL4* vertexArray = &(*std::find_if(_vertexArrays.begin(), _vertexArrays.end(), [renderID](const VertexArray_GL4& v) { return v.renderID == renderID; }));
 			glBindVertexArray(vertexArray->vao);
 
@@ -395,6 +385,20 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
 			if (indexBuff != nullptr && indexBuff->count > 0) 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
+
+			// Texture Updates 
+		
+			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
+			// TODO: Find 2D textures at other bindings
+			if (tex2D != _textures.end()){
+				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
+				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
+			}
+			if(tex3D != _textures.end()){
+				glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
+				glBindTexture(GL_TEXTURE_3D, tex3D->texture);
+			}
 
 			// Draw Call!
 			if (vertexBuff != nullptr && vertexBuff->count != 0) {

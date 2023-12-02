@@ -1,14 +1,19 @@
 #include "Sandbox.hpp"
 
+static unsigned pickerVal = 0;
+
 static Vec3f cursorVec = { 0.0F, 0.0F, 0.0F };
 static Vec3f boxVec = { 0.5f, 0.5f, 0.0f };
 static Vec3f pyramidVec = { -0.5f, 0.5f, 0.0f };
 static Vec3f sphereVec = { -0.5f, -0.5f, 0.0f };
 static Vec3f hexVec = { 0.5f, -0.5f, 0.0f };
 
-static void onPress(float x, float y){ cursorVec = { x, y, 0.0F }; }
+static void onPress(float x, float y){ 
+    cursorVec = { x, y, 0.0F };
+}
+
 static void onHover(float x, float y){ 
-    if(Platform::mouseControl.getIsHeld().second) cursorVec = { x, y, 0.0F }; 
+    // cursorVec = { x, y, 0.0F }; 
 }
 
 void shapePosUpdates(){
@@ -37,10 +42,10 @@ void shapePosUpdates(){
 void Sandbox_Demo::init(){
     srand(time(NULL));
 
-    // Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
+    Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
     Platform::mouseControl.addHoverCallback(onHover);
 
-    _ticker.addPeriodicEvent(1000, shapePosUpdates);
+    _timeline.ticker.addPeriodicEvent(1000, shapePosUpdates);
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos(boxVec);
@@ -55,10 +60,17 @@ void Sandbox_Demo::init(){
     hexActor.setPos(hexVec);
     scene.addGeometry("Hex", &hexActor);
 
+#ifdef RASTERON_H
+    scene.addTexture("Box", &colorTex1);
+    scene.addTexture("Pyramid", &colorTex2);
+    scene.addTexture("Sphere", &colorTex3);
+    scene.addTexture("Hex", &colorTex4);
+#endif
+
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    // Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, beamPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
     _renderer->buildScene(&scene);
 
     layout1.configure(&overlay);
@@ -67,7 +79,7 @@ void Sandbox_Demo::init(){
     layout3.configure(&overlay);
     layout3.shift({ -0.55F, 0.0F, 0.0F });
 
-    // Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, flatPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
@@ -84,12 +96,12 @@ void Sandbox_Demo::loop(double frameTime){
         hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
 
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, beamPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Lines);
-        Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
     }
@@ -98,16 +110,23 @@ void Sandbox_Demo::loop(double frameTime){
         layout1.shift(cursorVec - layout1.getOrigin());
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(TARGET_OpenGL, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }
 
-    // cursorVec = { 0.0F, 0.0F, 0.0F };
+#ifdef RASTERON_H
+    if(Platform::mouseControl.getIsHeld().second) {
+        pickerVal = colorPick(nullptr);
+        char hexPickColor[1024];
+        sprintf(hexPickColor, "%X\0", pickerVal);
+        std::cout << "Picker Hex: " << hexPickColor << " ";
+    }
+#endif
 }
 
 int main(int argc, char** argv) {
-    Sandbox_Demo demo = Sandbox_Demo(argv[0], TARGET_OpenGL);
+    Sandbox_Demo demo = Sandbox_Demo(argv[0], BACKEND_GL4);
 
     demo.run();
     return 0;

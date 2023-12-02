@@ -2,9 +2,9 @@
 
 #include "Diagnostic.hpp"
 
-#define TARGET_BACKEND TARGET_OpenGL
-// #define TARGET_BACKEND TARGET_DirectX11
-// #define TARGET_BACKEND TARGET_Vulkan
+#define TARGET_BACKEND BACKEND_GL4
+// #define TARGET_BACKEND BACKEND_DX11
+// #define TARGET_BACKEND BACKEND_Vulkan
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -30,15 +30,15 @@ int main(int argc, char** argv) {
 
 	Topl_Renderer* renderer = nullptr;
 
-	if (TARGET_BACKEND == TARGET_OpenGL) renderer = new Diagnostic_Renderer_GL4(platform.getParentWindow());
-	else if (TARGET_BACKEND == TARGET_DirectX11) renderer = new Diagnostic_Renderer_DX11(platform.getParentWindow());
-	else if (TARGET_BACKEND == TARGET_Vulkan) renderer = new Diagnostic_Renderer_Vulkan(platform.getParentWindow());
+	if (TARGET_BACKEND == BACKEND_GL4) renderer = new Diagnostic_Renderer_GL4(platform.getParentWindow());
+	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new Diagnostic_Renderer_DX11(platform.getParentWindow());
+	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new Diagnostic_Renderer_Vulkan(platform.getParentWindow());
 
 	Timer_Ticker _ticker;
 	double frameTotal = 0.0;
 	double swapTime = 0.0;
 
-	if(TARGET_BACKEND != TARGET_Vulkan){
+	if(TARGET_BACKEND != BACKEND_Vulkan){
 		test_scene.addGeometry(&actor);
 		renderer->buildScene(&test_scene);
 	}
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 	while(1){
 		platform.handleEvents(DISABLE_CURSOR_UPDATE);
 
-		if(TARGET_BACKEND != TARGET_Vulkan){
+		if(TARGET_BACKEND != BACKEND_Vulkan){
 			// Frame Rate and Render Profiling
 			double f1 = _ticker.getRelMillisecs();
 			renderer->clearView();

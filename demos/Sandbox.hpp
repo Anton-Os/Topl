@@ -16,7 +16,7 @@
 #include "Topl_Main.hpp"
 
 struct Sandbox_Demo : public Topl_Main {
-    Sandbox_Demo(const char* execPath, TARGET_Backend backend) 
+    Sandbox_Demo(const char* execPath, BACKEND_Target backend) 
     : Topl_Main(execPath, "Sandbox", backend){
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
         texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
@@ -38,11 +38,11 @@ private:
 
     Geo_Quad3D boxMesh = Geo_Quad3D();
     Geo_Actor boxActor = Geo_Actor(&boxMesh);
-    Geo_TriangleCone pyramidMesh = Geo_TriangleCone();
+    Geo_Triangle2D pyramidMesh = Geo_Triangle2D();
     Geo_Actor pyramidActor = Geo_Actor(&pyramidMesh);
     Geo_Sphere sphereMesh = Geo_Sphere();
     Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
-    Geo_Hex2D hexMesh = Geo_Hex2D();
+    Geo_HexCone hexMesh = Geo_HexCone();
     Geo_Actor hexActor = Geo_Actor(&hexMesh);
 
     Geo_Chain chain = Geo_Chain("chain", &sphereMesh, Vec3f({0.0F, 0.1F, 0.0F}), 9);
@@ -51,4 +51,9 @@ private:
     Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 4);
     Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
     Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
+
+#ifdef RASTERON_H
+    Img_Base colorTex1 = Img_Base(0xFFFF0000); Img_Base colorTex2 = Img_Base(0xFF0000FF);
+    Img_Base colorTex3 = Img_Base(0xFF00FFFF); Img_Base colorTex4 = Img_Base(0xFFFF00FF);
+#endif
 };

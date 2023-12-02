@@ -8,30 +8,30 @@
 
 // Backends List
 
-enum TARGET_Backend {
-	TARGET_OpenGL,
-	TARGET_DirectX11,
-	TARGET_Vulkan
+enum BACKEND_Target {
+	BACKEND_GL4,
+	BACKEND_DX11,
+	BACKEND_Vulkan
 };
 
 // Engine Configuration
 
 struct Engine_Config { unsigned pipeIndex; };
 
-struct GL4_Engine_Config : public Engine_Config {
+struct Engine_Config_GL4 : public Engine_Config {
 	Topl_Renderer_GL4* renderer;
 	Topl_Pipeline_GL4** pipelines;
 };
 
 #ifdef _WIN32
-struct DX11_Engine_Config : public Engine_Config {
+struct Engine_Config_DX11 : public Engine_Config {
 	Topl_Renderer_DX11* renderer;
 	Topl_Pipeline_DX11** pipelines;
 };
 #endif
 
 #ifdef TOPL_ENABLE_VULKAN
-struct Vulkan_Engine_Config : public Engine_Config {
+struct Engine_Config_Vulkan : public Engine_Config {
 	Topl_Renderer_Vulkan* renderer;
 	Topl_Pipeline_Vulkan** pipelines;
 };
@@ -42,10 +42,10 @@ struct Vulkan_Engine_Config : public Engine_Config {
 class Topl_Factory {
 public:
 	~Topl_Factory();
-	static Topl_Renderer* genRenderer(TARGET_Backend backend, Platform* platform);
+	static Topl_Renderer* genRenderer(BACKEND_Target backend, Platform* platform);
 
-	static Topl_Pipeline* genPipeline(TARGET_Backend backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	static Topl_Pipeline* genPipeline(TARGET_Backend backend,
+	static Topl_Pipeline* genPipeline(BACKEND_Target backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	static Topl_Pipeline* genPipeline(BACKEND_Target backend,
 		entry_shader_cptr vertexSource,
 		shader_cptr pixelSource,
 		shader_cptr tessCtrlSource,
@@ -53,17 +53,17 @@ public:
 		shader_cptr geomSource
 	);
 
-	static void switchPipeline(TARGET_Backend backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
+	static void switchPipeline(BACKEND_Target backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
 private:
 	static void configPipelines(); // config helper function
 
 	// Engine Instances
 
-	static GL4_Engine_Config GL4_engine_cfg;
+	static Engine_Config_GL4 GL4_engine_cfg;
 #ifdef _WIN32
-	static DX11_Engine_Config DX11_engine_cfg;
+	static Engine_Config_DX11 DX11_engine_cfg;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	static Vulkan_Engine_Config Vulkan_engine_cfg;
+	static Engine_Config_Vulkan Vulkan_engine_cfg;
 #endif
 };

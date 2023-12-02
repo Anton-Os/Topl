@@ -46,7 +46,7 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
         return false; // error
     } else _isPresented = false;
 
-    renderTarget(SCENE_RENDER_ID); // render is scene block data
+    renderTarget(SCENE_RENDERID); // render is scene block data
 	if(scene != nullptr){ // Scene Targets
 		if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
 			for (unsigned g = 0; g < scene->getActorCount(); g++)
@@ -73,24 +73,23 @@ void Topl_Renderer::present() {
 #ifdef RASTERON_H
 
 void Topl_Renderer::texturize(const Topl_Scene* scene) {
-	if(scene->isTexSupport) for(unsigned g = 0; g < scene->getActorCount(); g++) {
+	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		const Rasteron_Image* texture = scene->getTexture(actor->getName())->getImage();
-		if (texture != nullptr) attachTex(texture, renderID);
-		// else return logMessage(MESSAGE_Exclaim, "Null texture encountered!");
+		if(actor != nullptr && renderID != INVALID_RENDERID){
+			const Img_Base* texture = scene->getTexture(actor->getName());
+			if(texture != nullptr) attachTex(texture->getImage(), renderID);
 
-		const Img_Array* multiTex = scene->getArrayTex(actor->getName());
-		if (multiTex != nullptr)
-			for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
-				attachTexAt(multiTex->getLayer((unsigned short)p)->getImage(), renderID, p);
-		// else return logMessage(MESSAGE_Exclaim, "Null multiTex encountered!");
+			const Img_Array* multiTex = scene->getArrayTex(actor->getName());
+			if (multiTex != nullptr)
+				for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
+					attachTexAt(multiTex->getLayer((unsigned short)p)->getImage(), renderID, p);
 
-		const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
-		if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
-		// else return logMessage(MESSAGE_Exclaim, "Null volumeTex encountered!");
-	} 
+			const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
+			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
+		}
+	}
 }
 
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
@@ -107,9 +106,10 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
 #endif
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
+	if(actor == nullptr) return INVALID_RENDERID;
 	auto renderId_it = std::find_if(
 		_renderObjMap.begin(), _renderObjMap.end(),
 		[actor](const std::pair<unsigned long, const Geo_Actor*>& p){ return p.second == actor; }
 	);
-	return (renderId_it != _renderObjMap.end())? renderId_it->first : BAD_RENDER_ID; 
+	return (renderId_it != _renderObjMap.end())? renderId_it->first : INVALID_RENDERID; 
 }

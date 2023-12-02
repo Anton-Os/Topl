@@ -569,6 +569,6 @@ void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
 } */
 
 void Topl_Renderer_Vulkan::renderTarget(unsigned long renderID){
-	// if(renderID == SPECIAL_SCENE_RENDER_ID) { }
+	// if(renderID == SCENE_RENDERID) { }
 	// else {}
 }
