@@ -34,21 +34,40 @@ public:
 #endif
 	}
 
-	void shift(Vec3f vec){ // TODO: Include root actor as part of _geoActors
-		Geo_Construct::shift(vec);
-		rootActor.updatePos(vec);
-    }
-
 	void configure(Topl_Scene* scene) override {
+		_geoActors.resize(_params.getGridSize() + 1);
+		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
+		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
+
 		// childMesh.scale({ 1.25F, 1.25F, 1.25F });
 		childMesh.scale({ 1.0F / _params.x.first, 1.0F / _params.y.first, 0.0F });
 		Geo_Grid::configure(scene);
 
-		// _geoActors.resize(rootActor); // TODO: Include as part of geoActors
-		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
-		scene->addGeometry(getPrefix() + "root", &rootActor);
+		scene->addGeometry(getPrefix() + "root", &_geoActors.back());
 #ifdef RASTERON_H
-		// TODO: Add texturing commands
+		std::string fontFilePath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
+		std::replace(fontFilePath.begin(), fontFilePath.end(), '/', '\\');
+
+		Rasteron_Text textObj = { fontFilePath.c_str(), "X", 0xFFEEEEEE, 0xFF000000 };
+		rootImg.setTextImage(&textObj);
+		scene->addTexture(getPrefix() + "root", &rootImg);
+		for(unsigned p = 0; p < _params.getGridSize(); p++){
+			std::string paneName = std::to_string(p + 1);
+			textObj.text = paneName.c_str();
+			paneImgs.insert({ &_geoActors.at(p), Img_Base() });
+			paneImgs.at(&_geoActors.at(p)).setTextImage(&textObj);
+			scene->addTexture(getCellName(p + 1), &paneImgs.at(&_geoActors.at(p)));
+
+			paneImgArrays.insert({ &_geoActors.at(p), Img_Array() });
+			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
+				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at(p)).getImage());
+				for(unsigned i = 0; i < stageImg->width * stageImg->height; i++)
+					if(*(stageImg->data + i) == 0xFFEEEEEE) *(stageImg->data + i) = 0xFF000000 | (0xCC << t);
+				addFrameAt(paneImgArrays.at(&_geoActors.at(p)).getQueue(), stageImg, t);
+				dealloc_image(stageImg);
+			}
+			// scene->addArrayTex(getCellName(p + 1), &paneImgArrays.at(&_geoActors.at(p))); // Uncomment this
+		}
 #endif
 	}
 protected:
@@ -59,9 +78,12 @@ protected:
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 
 #ifdef RASTERON_H
-	Img_Base* rootBk; // root background
-	std::map<const Geo_Actor*, Img_Array*> childBks; // child backgrounds
+	Img_Base rootImg; // root background
+	std::map<const Geo_Actor*, Img_Base> paneImgs; // child backgrounds
+	std::map<const Geo_Actor*, Img_Array> paneImgArrays; // child backgrounds in array
 	// std::vector<Rasteron_Queue*> childStateBg;
+
+	std::vector<pickerCallback> _pickerFuncs;
 #endif
 };
 

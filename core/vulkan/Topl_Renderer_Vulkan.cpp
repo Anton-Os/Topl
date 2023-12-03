@@ -537,7 +537,7 @@ void Topl_Renderer_Vulkan::attachTexAt(const Rasteron_Image* image, unsigned ren
 	// Implement texture attaching
 }
 
-void Topl_Renderer_Vulkan::attachTex3D(const Img_Volume* multiTex, unsigned renderID) {
+void Topl_Renderer_Vulkan::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
 	// Implement Body
 }
 

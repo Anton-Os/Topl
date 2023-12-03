@@ -61,7 +61,7 @@ public:
 		const unsigned short depth = _params.z.first;
 		const float z = _params.z.second;
 		
-		for(unsigned c = 0; c < _geoActors.size(); c++){
+		for(unsigned c = 0; c < _params.getGridSize(); c++){
 			offset = Vec3f({
 				((c % width) * x),
 				((c % (height * width)) / width) * y,

@@ -95,7 +95,7 @@ protected:
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
-	void attachTex3D(const Img_Volume* multiTex, unsigned id) override;
+	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
 
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };

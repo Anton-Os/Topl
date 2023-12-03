@@ -80,7 +80,7 @@ protected:
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
-	void attachTex3D(const Img_Volume* multiTex, unsigned id) override;
+	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
 	void linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 	Topl_Pipeline_GL4* _pipeline;

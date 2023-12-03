@@ -8,6 +8,7 @@
 #define DEFAULT_ACTOR_NAME "actor"
 
 typedef void (*pickerCallback)(void);
+typedef void (*shaderCallback)(void);
 
 class Geo_Actor {
 public:
@@ -31,6 +32,9 @@ public:
 	vec3f_cptr_t getPos() const { return &_position; }
 	vec3f_cptr_t getRot() const { return &_rotation; }
 	// vec3f_cptr_t getSiz() const { return &_scale; }
+
+	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
+	shaderCallback shaderFunc = nullptr; // invoked during shader render block
 private:
 	// Data types
 	unsigned _id = DEFAULT_ACTOR_ID; // id used for color picking

@@ -54,9 +54,9 @@ typedef const Topl_Camera* const camera_cptr;
 class Topl_Scene {
 public:
 	Topl_Scene() { _ticker.reset(); } // Empty Constructor
-	Topl_Scene(const std::string& filePath) { // File Load Constructor
+	/* Topl_Scene(const std::string& filePath) { // File Load Constructor
 		// loadFromFile(filePath); 
-	}
+	} */
 	~Topl_Scene() {}
 
 	// void saveToFile(const std::string& fileName); // saves scene data to .tp file
@@ -64,19 +64,18 @@ public:
 
 	// Static Operations
 
+	pickerCallback invokePicker(unsigned color); // gets callback based on active color
+
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
-	void addPickerCallback(const std::string& name, pickerCallback callback); // add picker color callback
-	// oid addLight(const Topl_Light* l){ _lights.push_back(l); }
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Img_Base* image);
-	void addArrayTex(const std::string& name, const Img_Array* multiTex);
+	void addArrayTex(const std::string& name, const Img_Array* arrayTex);
 	void addVolumeTex(const std::string& name, const Img_Volume* volumeTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
-	pickerCallback getPickerCallback(unsigned color); // gets callback based on active color
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H

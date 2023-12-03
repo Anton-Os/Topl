@@ -2,6 +2,12 @@
 
 // Scene Statics
 
+pickerCallback Topl_Scene::invokePicker(unsigned color){
+	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if(((*actor)->getId() & 0x000000FF) == (color & 0x000000FF)) return (*actor)->pickerFunc;
+	return nullptr; // no callback
+}
+
 void Topl_Scene::addGeometry(Geo_Actor* actor) {
 	for(unsigned a = 0; a < _geoActors.size(); a++)
 		if(_geoActors[a]->getName() == actor->getName()){
@@ -14,11 +20,6 @@ void Topl_Scene::addGeometry(Geo_Actor* actor) {
 void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
 	actor->setName(name);
 	addGeometry(actor);
-}
-
-void Topl_Scene::addPickerCallback(const std::string& name, pickerCallback callback){
-	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if(name == (*actor)->getName()) _pickerCallbackMap.insert({ *actor, callback }); 
 }
 
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
@@ -36,13 +37,6 @@ actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
 	if(index > _lights.size()) return nullptr;
 	else return _lights.at(index);
 } */
-
-pickerCallback Topl_Scene::getPickerCallback(unsigned color){
-	if(_pickerCallbackMap.size() == 0) return nullptr;
-	for(std::map<Geo_Actor*, pickerCallback>::const_iterator p = _pickerCallbackMap.cbegin(); p != _pickerCallbackMap.cend(); p++)
-		if(color & 0x00FFFFFF == p->first->getId()) return p->second; // comparison with alpha mask
-	return nullptr; // no callback
-}
 
 void Topl_Scene::removeActor(const std::string& name){
 	Geo_Actor* actor = nullptr;
@@ -83,11 +77,11 @@ const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
 	return (texture_it != _textureMap.end())? texture_it->second : nullptr;
 }
 
-void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* multiTex) {
+void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* arrayTex) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_arrayTexMap.erase(*actor);
-			_arrayTexMap.insert({ *actor, multiTex });
+			_arrayTexMap.insert({ *actor, arrayTex });
 		}
 }
 

@@ -28,11 +28,11 @@ void Topl_Main::run(){
 
 
 #ifdef RASTERON_H
-unsigned Topl_Main::colorPick(Topl_Scene* scene){
+unsigned Topl_Main::invokePicker(Topl_Scene* scene){
 	unsigned pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	if(scene == nullptr) return pickerColor;
 	else {
-		pickerCallback callback = scene->getPickerCallback(pickerColor);
+		pickerCallback callback = scene->invokePicker(pickerColor);
 
 		if(callback != nullptr) callback();
 		return (callback != nullptr)? pickerColor : 0; // return 0 if no matches found

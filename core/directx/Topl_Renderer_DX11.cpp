@@ -425,7 +425,10 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 			return;
 		}
 
+
 	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resView)); // multi-texture addition
+
+	// texture->Release(); // test deallocation
 }
 
 void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
@@ -474,11 +477,10 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 			return;
 		}
 	_textures.push_back(Texture_DX11(renderID, TEX_3D, _texMode, sampler, resView)); // texture addition
+
+	// texture->Release(); // test deallocation
 }
 #endif
-
-static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
-static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
@@ -515,6 +517,10 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
+
+
+static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
+static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
 
 void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 	 // static Buffer_DX11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;

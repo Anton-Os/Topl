@@ -4,7 +4,7 @@
 
 #include "Geo_Mesh.hpp"
 
-#define IMG_SIDE_LEN 256
+#define DEFAULT_IMG_SIZE 256
 
 // Base Image wrapper around Rasteron_Image
 
@@ -20,7 +20,7 @@ struct Img_Base {
 
     void setColorImage(unsigned color){
 		cleanup();
-		image = solidImgOp({ IMG_SIDE_LEN, IMG_SIDE_LEN }, color);
+		image = solidImgOp({ DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, color);
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
@@ -33,8 +33,8 @@ struct Img_Base {
     }
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
-		// image = bakeText(textObj, FONT_SIZE_MED);
-		image = bakeTextI(textObj, FONT_SIZE_MED);
+		_invertFont = FONT_INVERT; // make sure font renders correctly
+		image = bakeText(textObj, FONT_SIZE_MED);
     }
     void setImage(ref_image_t refImage){
 		cleanup();
@@ -54,35 +54,47 @@ private:
 };
 
 // Material based on layers
+#define DEFAULT_TEX_BINDING 0 // for base texture
+#define MAX_TEX_BINDINGS 8 // matches LAYER_Property enumeration
 
-#define MAX_TEX_BINDINGS 6 // matches MATERIAL_Property enumeration
-
-/* enum MATERIAL_Property {
-	MATERIAL_Albedo = 0,
-	MATERIAL_Height = 1,
-	MATERIAL_Roughness = 2,
-	MATERIAL_Opacity = 3,
-	MATERIAL_Enviornment = 4,
-	MATERIAL_Shadow = 5,
+/* enum LAYER_Property {
+	LAYER_Albedo = 0,
+	LAYER_Height = 1,
+	LAYER_Roughness = 2,
+	LAYER_Opacity = 3,
+	LAYER_Enviornment = 4,
+	LAYER_Shadow = 5,
+	LAYER_Illumination = 6,
+	LAYER_Testing = 7,
 }; */
 
-struct Img_Layer : public Img_Base {
-	Img_Layer() : Img_Base(){ layer = 0; }
-	Img_Layer(unsigned short l) : Img_Base(){ layer = l; }
+/* struct Img_Layer : public Img_Base {
+	Img_Layer() : Img_Base(){ binding = DEFAULT_TEX_BINDING; }
+	Img_Layer(unsigned short l) : Img_Base(){ binding = l; }
 
-	unsigned short layer;
-};
+	unsigned short binding;
+}; */
 
 struct Img_Array {
-	const Img_Layer* getLayer(unsigned short l) const { return &layers[l]; }
+	Img_Array(){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, 8); }
+	Img_Array(unsigned short count){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, count); }
 
-	Img_Layer layers[MAX_TEX_BINDINGS] = { Img_Layer(0), Img_Layer(1), Img_Layer(2), Img_Layer(3), Img_Layer(4), Img_Layer(5) };
+	/* const Img_Layer* getLayer(unsigned short l) const { return (l < MAX_TEX_BINDINGS)? &layers[l] : nullptr; }
+	void setLayer(unsigned short l, ref_image_t image){ if(l < MAX_TEX_BINDINGS) layers[l].setImage(image); }
+	Img_Layer layers[MAX_TEX_BINDINGS] = { 
+		Img_Layer(0), Img_Layer(1), Img_Layer(2), Img_Layer(3), 
+		Img_Layer(4), Img_Layer(5), Img_Layer(6), Img_Layer(7) 
+	}; */
+
+	Rasteron_Queue* getQueue() const { return data; }
+private:
+	Rasteron_Queue* data;
 };
 
 // Volume based on slices
 
 struct Img_Volume { 
-    Img_Volume() : width(IMG_SIDE_LEN), height(IMG_SIDE_LEN), depth(IMG_SIDE_LEN) {} // Empty Constructor
+    Img_Volume() : width(DEFAULT_IMG_SIZE), height(DEFAULT_IMG_SIZE), depth(DEFAULT_IMG_SIZE) {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s) { // Matching Lengths
 		queue = alloc_queue("volumeTex", { width, height }, depth);

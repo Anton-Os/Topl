@@ -1,6 +1,7 @@
 #include "Sandbox.hpp"
 
 static unsigned pickerVal = 0;
+static unsigned short pickerPane = 0;
 
 static Vec3f cursorVec = { 0.0F, 0.0F, 0.0F };
 static Vec3f boxVec = { 0.5f, 0.5f, 0.0f };
@@ -8,13 +9,13 @@ static Vec3f pyramidVec = { -0.5f, 0.5f, 0.0f };
 static Vec3f sphereVec = { -0.5f, -0.5f, 0.0f };
 static Vec3f hexVec = { 0.5f, -0.5f, 0.0f };
 
-static void onPress(float x, float y){ 
-    cursorVec = { x, y, 0.0F };
-}
+static void onPress(float x, float y){ cursorVec = { x, y, 0.0F }; }
+static void onHover(float x, float y){ if(Platform::mouseControl.getIsHeld().second) cursorVec = { x, y, 0.0F }; }
 
-static void onHover(float x, float y){ 
-    // cursorVec = { x, y, 0.0F }; 
-}
+static void boxPicker(){ std::cout << "Box pressed!" << std::endl; }
+static void pyramidPicker(){ std::cout << "Pyramid pressed!" << std::endl; }
+static void spherePicker(){ std::cout << "Sphere pressed!" << std::endl; }
+static void hexPicker(){ std::cout << "Hexagon pressed!" << std::endl; }
 
 void shapePosUpdates(){
     static unsigned updateCall = 0;
@@ -43,21 +44,25 @@ void Sandbox_Demo::init(){
     srand(time(NULL));
 
     Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
-    Platform::mouseControl.addHoverCallback(onHover);
+    // Platform::mouseControl.addHoverCallback(onHover);
 
     _timeline.ticker.addPeriodicEvent(1000, shapePosUpdates);
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos(boxVec);
+    boxActor.pickerFunc = boxPicker;
     scene.addGeometry("Box", &boxActor);
     pyramidMesh.scale({ 0.25f, 0.25f, 0.25f});
     pyramidActor.setPos(pyramidVec);
+    pyramidActor.pickerFunc = pyramidPicker;
     scene.addGeometry("Pyramid", &pyramidActor);
     sphereMesh.scale({ 0.25f, 0.25f, 0.25f});
     sphereActor.setPos(sphereVec);
+    sphereActor.pickerFunc = spherePicker;
     scene.addGeometry("Sphere", &sphereActor);
     hexMesh.scale({ 0.25f, 0.25f, 0.25f});
     hexActor.setPos(hexVec);
+    hexActor.pickerFunc = hexPicker;
     scene.addGeometry("Hex", &hexActor);
 
 #ifdef RASTERON_H
@@ -96,7 +101,7 @@ void Sandbox_Demo::loop(double frameTime){
         hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
 
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
@@ -104,25 +109,25 @@ void Sandbox_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
+
+#ifdef RASTERON_H
+    if(Platform::mouseControl.getIsHeld().second) {
+        pickerVal = invokePicker(&scene);
+        // char hexPickColor[1024];
+        // sprintf(hexPickColor, "%X\0", pickerVal);
+        // std::cout << "Picker Hex: " << hexPickColor << " ";
+    }
+#endif
     }
 
     {
         layout1.shift(cursorVec - layout1.getOrigin());
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }
-
-#ifdef RASTERON_H
-    if(Platform::mouseControl.getIsHeld().second) {
-        pickerVal = colorPick(nullptr);
-        char hexPickColor[1024];
-        sprintf(hexPickColor, "%X\0", pickerVal);
-        std::cout << "Picker Hex: " << hexPickColor << " ";
-    }
-#endif
 }
 
 int main(int argc, char** argv) {

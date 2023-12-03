@@ -6,10 +6,11 @@ layout(std140, binding = 0) uniform Block {
 	vec3 offset;
 	vec3 rotation;
 	vec3 texScroll; // texture coordinate scrolling
+	uint texMode; // texture mode selection
 };
 
 layout(std140, binding = 1) uniform SceneBlock{
-	double time;
+	// double time;
 	vec3 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
@@ -19,6 +20,7 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
 
 layout(location = 0) out vec3 texcoord_out;
+layout(location = 1) out uint texmode_out;
 
 // Functions
 
@@ -64,4 +66,5 @@ void main() {
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 	texcoord_out = texcoord + texScroll;
+	texmode_out = texMode;
 }

@@ -20,9 +20,9 @@ public:
     // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshes) // Fixed items constructor
     Geo_Construct(const std::string& prefix, const Geo_Mesh* mesh, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
-        _geoActors.resize(count);
+        if(_geoActors.empty()) _geoActors.resize(count);
 #ifdef TOPL_ENABLE_PHYSICS    
-        _physActors.resize(count);
+        if(_physActors.empty()) _physActors.resize(count);
 #endif
         for(unsigned g = 0; g < count; g++) _geoActors[g] = Geo_Actor(mesh);
     }

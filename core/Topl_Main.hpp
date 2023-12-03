@@ -28,7 +28,7 @@ public:
 
 	void run();
 #ifdef RASTERON_H
-	unsigned colorPick(Topl_Scene* scene);
+	unsigned invokePicker(Topl_Scene* scene);
 #endif
 
 	// unsigned picker = 0x0;
