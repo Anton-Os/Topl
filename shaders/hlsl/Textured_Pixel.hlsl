@@ -38,7 +38,7 @@ float4 color_correct(float4 color){ // switch red and blue color values
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	input.texcoord += texScroll; // adjusting texture to scroll value
-	if(texMode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
+	/* if(texMode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
 	else if(texMode != 0){
 		if(texMode == 1) return float4(0.0, 1.0, 0.0, 1.0); // color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
 		if(texMode == 2) return float4(0.0, 0.0, 1.0, 1.0); //color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
@@ -49,5 +49,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		if(texMode == 7) return float4(1.0, 1.0, 1.0, 1.0); //color_correct(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)));
 		else return float4(1.0, 0.0, 0.0, 1.0); // error
 	}
-	else return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
+	else */ return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
+	
 }

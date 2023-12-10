@@ -49,20 +49,32 @@ public:
 		std::replace(fontFilePath.begin(), fontFilePath.end(), '/', '\\');
 
 		Rasteron_Text textObj = { fontFilePath.c_str(), "X", 0xFFEEEEEE, 0xFF000000 };
-		rootImg.setTextImage(&textObj);
+		rootImg.setColorImage(0xFF8822EE); // rootImg.setTextImage(&textObj);
 		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			std::string paneName = std::to_string(p + 1);
 			textObj.text = paneName.c_str();
 			paneImgs.insert({ &_geoActors.at(p), Img_Base() });
 			paneImgs.at(&_geoActors.at(p)).setTextImage(&textObj);
+			{
+				Rasteron_Image* testImage = solidImgOp({ 1024, 1024 }, getPaneColor(p));
+				for(unsigned p = 0; p < 1024 * 1024; p++){
+					double x = (1.0 / (double)1024) * (unsigned)(p % 1024);
+		    		double y = (1.0 / (double)1024) * (double)(p / 1024);
+
+					if(sqrt((fabs(0.5 - x) * fabs(0.5 - x)) + (fabs(0.5 - y) * fabs(0.5 - y))) < 0.35) 
+						*(testImage->data + p) = 0xFF8822EE; // 0xFFFFFFFF - getPaneColor(p);
+				}
+				paneImgs.at(&_geoActors.at(p)).setImage(testImage);
+				dealloc_image(testImage);
+			}
 			scene->addTexture(getCellName(p + 1), &paneImgs.at(&_geoActors.at(p)));
 
 			paneImgArrays.insert({ &_geoActors.at(p), Img_Array() });
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
 				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at(p)).getImage());
 				for(unsigned i = 0; i < stageImg->width * stageImg->height; i++)
-					if(*(stageImg->data + i) == 0xFFEEEEEE) *(stageImg->data + i) = 0xFF000000 | (0xCC << t);
+					if(*(stageImg->data + i) == 0xFFEEEEEE) *(stageImg->data + i) = getPaneColor(t);
 				addFrameAt(paneImgArrays.at(&_geoActors.at(p)).getQueue(), stageImg, t);
 				dealloc_image(stageImg);
 			}
@@ -78,6 +90,16 @@ protected:
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 
 #ifdef RASTERON_H
+	unsigned getPaneColor(unsigned short index){
+		switch(index){
+			case 0: return 0xFFEEEEEE;
+			case 1: return 0xFF0000FF; case 2: return 0xFF00FF00; case 3: return 0xFFFF0000;
+			case 4: return 0xFFFFFF00; case 5: return 0xFFFF00FF; case 6: return 0xFF00FFFF;
+			case 7: return 0xFF333333;
+			default: return 0xFF000000;
+		}
+	}
+
 	Img_Base rootImg; // root background
 	std::map<const Geo_Actor*, Img_Base> paneImgs; // child backgrounds
 	std::map<const Geo_Actor*, Img_Array> paneImgArrays; // child backgrounds in array

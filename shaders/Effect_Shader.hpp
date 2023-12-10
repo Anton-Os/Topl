@@ -1,3 +1,5 @@
+#include "Platform.hpp"
+
 #include "Topl_Pipeline.hpp"
 
 #define EFFECT_MODE_CURSOR 0
@@ -11,7 +13,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		appendDataToBytes((uint8_t*)&renderID, sizeof(unsigned), bytes); // renderID
+		appendDataToBytes(0, sizeof(unsigned), bytes); // renderID
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {

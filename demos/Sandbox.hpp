@@ -12,6 +12,7 @@
 #include "Flat_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
+#include "Effect_Shader.hpp"
 
 #include "Topl_Main.hpp"
 
@@ -51,9 +52,4 @@ private:
     Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 3);
     Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
     Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
-
-#ifdef RASTERON_H
-    Img_Base colorTex1 = Img_Base(0xFFFF0000); Img_Base colorTex2 = Img_Base(0xFF0000FF);
-    Img_Base colorTex3 = Img_Base(0xFF00FFFF); Img_Base colorTex4 = Img_Base(0xFFFF00FF);
-#endif
 };

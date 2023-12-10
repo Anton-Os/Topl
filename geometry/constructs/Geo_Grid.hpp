@@ -50,6 +50,7 @@ public:
     }
 	
 	std::string getCellName(unsigned num){ return getPrefix() + "cell" + std::to_string(num); }
+	const Geo_Grid_Params* getParams(){ return &_params; }
 
 	void configure(Topl_Scene* scene) override {
 		Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });

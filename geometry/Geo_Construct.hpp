@@ -37,6 +37,7 @@ public:
         _origin = Vec3f({ _origin[0] / _geoActors.size(), _origin[1] / _geoActors.size(), _origin[2] / _geoActors.size() });
         return _origin;
     }
+    Geo_Actor* getGeoActor(unsigned short a){ return &_geoActors[a]; }
     void shift(Vec3f vec){ 
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
     }

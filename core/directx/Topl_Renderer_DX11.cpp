@@ -549,30 +549,30 @@ void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 			 if (indexBuff != nullptr && indexBuff->count > 0)
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			 _deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
-			 _deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
-
 			// Texture Updates
 
 			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
 			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
 			// TODO: Find 2D textures at other bindings
 			if (tex2D != _textures.end()){
-				samplers[tex2D->binding] = tex2D->sampler;
-				resViews[tex2D->binding] = tex2D->resView;
+				samplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
+				resViews[DEFAULT_TEX_BINDING] = tex2D->resView;
 			}
 			if(tex3D != _textures.end()){
 				samplers[MAX_TEX_BINDINGS] = tex3D->sampler;
 				resViews[MAX_TEX_BINDINGS] = tex3D->resView;
 			}
 
-			 // Draw Call!
-			 if (vertexBuff != nullptr && vertexBuff->count != 0) {
-				 if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-				 else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
-			 }
-			 // TODO: Include instanced draw call
-			 else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+			_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
+			_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
+
+			// Draw Call!
+			if (vertexBuff != nullptr && vertexBuff->count != 0) {
+				if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+				else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+			}
+			// TODO: Include instanced draw call
+			else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 		 }
 	 }
 } 
