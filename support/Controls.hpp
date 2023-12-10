@@ -57,6 +57,8 @@ struct Input_TracerStep {
 #define MAX_PATH_STEPS 4096
 
 struct Input_TracerPath {
+    Input_TracerPath(enum MOUSE_Button b){ button = b; } 
+
 	MOUSE_Button button;
 	std::pair<float, float> steps[MAX_PATH_STEPS];
 	unsigned stepsCount;
@@ -85,10 +87,11 @@ public:
     void addHoverCallback(hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
     
-    std::pair<enum MOUSE_Button, bool> getIsHeld(){ return _isHold; }
-
+    std::pair<enum MOUSE_Button, bool> getIsMouseDown(){ return _isMouseDown; }
+    const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }
+    const std::vector<Input_TracerPath>* getTracerPaths() const { return &_tracerPaths; }
 private:
-    std::pair<enum MOUSE_Button, bool> _isHold; // tracks state of mouse being held
+    std::pair<enum MOUSE_Button, bool> _isMouseDown; // tracks state of mouse being held
     std::vector<Input_TracerStep> _tracerSteps; // tracks steps whenever mouse event and cursor pos is known 
 	std::vector<Input_TracerPath> _tracerPaths; // tracks paths whenever mouse is held and moving
 

@@ -1,6 +1,9 @@
 #include "directx/Topl_Renderer_DX11.hpp"
 
 namespace DX11 {
+	static ID3D11SamplerState* texSamplers[MAX_TEX_BINDINGS + 1];
+	static ID3D11ShaderResourceView* texResources[MAX_TEX_BINDINGS + 1];
+
 	// Shader Functions
 
 	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
@@ -116,10 +119,19 @@ Topl_Renderer_DX11::~Topl_Renderer_DX11() {
 	_deviceCtx->Release();
 
 	if(_vertexDataLayout != nullptr) _vertexDataLayout->Release();
-	_rtView->Release();
+	if(_rtView != nullptr) _rtView->Release();
 	if(_dsView != nullptr) _dsView->Release();
-	_blendState->Release();
-	_rasterizerState->Release();
+	if(_blendState != nullptr) _blendState->Release();
+	if(_rasterizerState != nullptr) _rasterizerState->Release();
+
+	if(_sceneBlockBuff != nullptr) _sceneBlockBuff->Release();
+	for(std::vector<Buffer_DX11>::iterator buff = _buffers.begin(); buff != _buffers.end(); buff++)
+		buff->buffer->Release();
+	
+	for(std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++){
+		if(tex->sampler != nullptr) tex->sampler->Release();
+		if(tex->resource != nullptr) tex->resource->Release();
+	}
 }
 
 void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
@@ -406,27 +418,27 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 	ID3D11Texture2D* texture;
 	result = _device->CreateTexture2D(&texDesc, &texData, &texture);
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC resViewDesc;
-	ZeroMemory(&resViewDesc, sizeof(resViewDesc));
-	resViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	resViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	resViewDesc.Texture2D.MipLevels = -1;
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceDesc;
+	ZeroMemory(&resourceDesc, sizeof(resourceDesc));
+	resourceDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	resourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	resourceDesc.Texture2D.MipLevels = -1;
 
-	ID3D11ShaderResourceView* resView;
-	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
+	ID3D11ShaderResourceView* resource;
+	_device->CreateShaderResourceView(texture, &resourceDesc, &resource);
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
-	_deviceCtx->GenerateMips(resView);
+	_deviceCtx->GenerateMips(resource);
 
 	for(std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // multi-texture subsitution
-			tex->resView->Release(); // erase old texture
+			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resView);
+			*tex = Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource);
 			return;
 		}
 
 
-	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resView)); // multi-texture addition
+	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource)); // multi-texture addition
 
 	// texture->Release(); // test deallocation
 }
@@ -459,24 +471,24 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	ID3D11Texture3D* texture;
 	result = _device->CreateTexture3D(&texDesc, &texData, &texture);
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC resViewDesc;
-	ZeroMemory(&resViewDesc, sizeof(resViewDesc));
-	resViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	resViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-	resViewDesc.Texture2D.MipLevels = -1;
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceDesc;
+	ZeroMemory(&resourceDesc, sizeof(resourceDesc));
+	resourceDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	resourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+	resourceDesc.Texture2D.MipLevels = -1;
 
-	ID3D11ShaderResourceView* resView;
-	_device->CreateShaderResourceView(texture, &resViewDesc, &resView);
+	ID3D11ShaderResourceView* resource;
+	_device->CreateShaderResourceView(texture, &resourceDesc, &resource);
 	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeTexImage->getImage()->data, texData.SysMemPitch, 0);
 
 	for (std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->format == TEX_3D) { // texture substitution
-			tex->resView->Release(); // erase old texture
+			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = Texture_DX11(renderID, TEX_3D, _texMode, sampler, resView);
+			*tex = Texture_DX11(renderID, TEX_3D, _texMode, sampler, resource);
 			return;
 		}
-	_textures.push_back(Texture_DX11(renderID, TEX_3D, _texMode, sampler, resView)); // texture addition
+	_textures.push_back(Texture_DX11(renderID, TEX_3D, _texMode, sampler, resource)); // texture addition
 
 	// texture->Release(); // test deallocation
 }
@@ -518,10 +530,6 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-
-static ID3D11SamplerState* samplers[MAX_TEX_BINDINGS + 1];
-static ID3D11ShaderResourceView* resViews[MAX_TEX_BINDINGS + 1];
-
 void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 	 // static Buffer_DX11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	 if (!_buffers.empty()) {
@@ -555,16 +563,16 @@ void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
 			// TODO: Find 2D textures at other bindings
 			if (tex2D != _textures.end()){
-				samplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
-				resViews[DEFAULT_TEX_BINDING] = tex2D->resView;
+				DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
+				DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
 			}
 			if(tex3D != _textures.end()){
-				samplers[MAX_TEX_BINDINGS] = tex3D->sampler;
-				resViews[MAX_TEX_BINDINGS] = tex3D->resView;
+				DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;
+				DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
 			}
 
-			_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &samplers[0]);
-			_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &resViews[0]);
+			_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &DX11::texSamplers[0]);
+			_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 
 			// Draw Call!
 			if (vertexBuff != nullptr && vertexBuff->count != 0) {

@@ -13,7 +13,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		appendDataToBytes(0, sizeof(unsigned), bytes); // renderID
+		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes); // renderID
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {

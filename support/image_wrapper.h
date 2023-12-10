@@ -68,23 +68,10 @@ private:
 	LAYER_Testing = 7,
 }; */
 
-/* struct Img_Layer : public Img_Base {
-	Img_Layer() : Img_Base(){ binding = DEFAULT_TEX_BINDING; }
-	Img_Layer(unsigned short l) : Img_Base(){ binding = l; }
-
-	unsigned short binding;
-}; */
 
 struct Img_Array {
 	Img_Array(){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, 8); }
 	Img_Array(unsigned short count){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, count); }
-
-	/* const Img_Layer* getLayer(unsigned short l) const { return (l < MAX_TEX_BINDINGS)? &layers[l] : nullptr; }
-	void setLayer(unsigned short l, ref_image_t image){ if(l < MAX_TEX_BINDINGS) layers[l].setImage(image); }
-	Img_Layer layers[MAX_TEX_BINDINGS] = { 
-		Img_Layer(0), Img_Layer(1), Img_Layer(2), Img_Layer(3), 
-		Img_Layer(4), Img_Layer(5), Img_Layer(6), Img_Layer(7) 
-	}; */
 
 	Rasteron_Queue* getQueue() const { return data; }
 private:

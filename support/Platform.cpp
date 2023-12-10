@@ -54,6 +54,10 @@ void Platform::createWindow(unsigned width, unsigned height){
 	// _context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
 	RegisterClass(&_context.windowClass);
 
+	LPCTSTR cursor = IDC_ARROW;
+    auto hCursor = LoadCursor(NULL, cursor);
+    SetCursor(hCursor);
+
 	_context.window = CreateWindow(
 		"Topl",
 		_winName,

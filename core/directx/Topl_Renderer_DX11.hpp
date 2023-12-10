@@ -24,17 +24,17 @@ struct Texture_DX11 : public Texture {
 	Texture_DX11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
 	: Texture(id, f, m) {
 		sampler = s;
-		resView = r;
+		resource = r;
 	}
 
 	Texture_DX11(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
 	: Texture(id, b, f, m) {
 		sampler = s;
-		resView = r;
+		resource = r;
 	}
 
 	ID3D11SamplerState* sampler = nullptr;
-	ID3D11ShaderResourceView* resView = nullptr;
+	ID3D11ShaderResourceView* resource = nullptr;
 };
 
 // Pipeline
@@ -42,16 +42,11 @@ struct Texture_DX11 : public Texture {
 struct Topl_Pipeline_DX11 : public Topl_Pipeline {
 	Topl_Pipeline_DX11() : Topl_Pipeline(){}
 	~Topl_Pipeline_DX11(){
-		if(vertexShader != nullptr) vertexShader->Release();
-		if(pixelShader != nullptr) pixelShader->Release();
-		if(hullShader != nullptr) hullShader->Release();
-		if(domainShader != nullptr) domainShader->Release();
-		if(geomShader != nullptr) geomShader->Release();
-		if(vsBlob != nullptr) vsBlob->Release();
-		if(psBlob != nullptr) psBlob->Release();
-		if(hsBlob != nullptr) hsBlob->Release();
-		if(dsBlob != nullptr) dsBlob->Release();
-		if(gsBlob != nullptr) gsBlob->Release();
+		if(vertexShader != nullptr) vertexShader->Release(); if(vsBlob != nullptr) vsBlob->Release();
+		if(pixelShader != nullptr) pixelShader->Release(); if(psBlob != nullptr) psBlob->Release();
+		if(hullShader != nullptr) hullShader->Release(); if(hsBlob != nullptr) hsBlob->Release();
+		if(domainShader != nullptr) domainShader->Release(); if(dsBlob != nullptr) dsBlob->Release();
+		if(geomShader != nullptr) geomShader->Release(); if(gsBlob != nullptr) gsBlob->Release();
 	}
 
 	ID3D11VertexShader* vertexShader = nullptr;

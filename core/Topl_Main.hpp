@@ -21,6 +21,8 @@ private:
 	std::map<int*, std::map<millisec_t, int>> tformTable_int;
 };
 
+#define NO_PICKER_OBJ nullptr
+
 class Topl_Main {
 public:
     Topl_Main(const char* execPath, const char* name, BACKEND_Target backend);
@@ -31,8 +33,11 @@ public:
 	unsigned invokePicker(Topl_Scene* scene);
 #endif
 
-	// unsigned picker = 0x0;
-	// Vec2f cursor = {};
+	static Vec3f cursorPos;
+#ifdef RASTERON_H
+	static unsigned pickerVal; // picker for color
+	static const Geo_Actor* pickerObj; // picker for actor
+#endif
 protected:
     virtual void init() = 0;
     virtual void loop(millisec_t frameTime) = 0;

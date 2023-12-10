@@ -64,7 +64,7 @@ public:
 
 	// Static Operations
 
-	pickerCallback invokePicker(unsigned color); // gets callback based on active color
+	const Geo_Actor* invokePicker(unsigned color); // gets callback based on active color
 
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry

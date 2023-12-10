@@ -26,12 +26,11 @@ public:
 	void updateRot(const Vec3f& angleVec){ _rotation = _rotation + angleVec; }
 
 	unsigned getId() const { return _id; }
-	// Vec4f getPickerColor() const { return Vec4f({  }); } // TODO: get color from _id
 	std::string getName() const { return _name; }
 	const Geo_Mesh* getMesh() const { return _mesh; }
 	vec3f_cptr_t getPos() const { return &_position; }
 	vec3f_cptr_t getRot() const { return &_rotation; }
-	// vec3f_cptr_t getSiz() const { return &_scale; }
+	// vec3f_cptr_t getSize() const { return &_scale; }
 
 	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
 	shaderCallback shaderFunc = nullptr; // invoked during shader render block

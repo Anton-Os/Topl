@@ -22,20 +22,11 @@ struct Sandbox_Demo : public Topl_Main {
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
         texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
         beamPipeline = Topl_Factory::genPipeline(backend, &beamVShader, &beamPShader);
+        effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
     }
 
     void init() override;
     void loop(double frameTime) override;
-
-    Topl_Scene scene; // for main elements
-    Topl_Scene overlay; // for gui elements
-    Topl_Scene details; // for details elements
-private:
-    Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline;
-
-    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
-    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
-    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
 
     Geo_Quad3D boxMesh = Geo_Quad3D();
     Geo_Actor boxActor = Geo_Actor(&boxMesh);
@@ -52,4 +43,17 @@ private:
     Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 3);
     Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
     Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
-};
+
+private:
+    Topl_Scene scene; // for main elements
+    Topl_Scene overlay; // for gui elements
+    Topl_Scene details; // for details elements
+
+    Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline, *effectPipeline;
+
+    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
+    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
+    Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
+    Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
+
+} *instance; // USE INSTANCE OBJECT FOR DEMO
