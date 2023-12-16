@@ -4,10 +4,11 @@ cbuffer CONST_BLOCK : register(b0) {
 	// uint renderID;
 	float3 offset;
 	float3 rotation;
+	float3 scale;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	uint mode;
+	int mode;
 	float4 cam_pos;
 	float4 look_pos;
 	// float4x4 projMatrix;
@@ -71,7 +72,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	VS_OUTPUT output;
 
 	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(angles.x, angles.y, angles.z, 1.0);
+	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0);
 
 	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
 	output.pos += float4(offset, 0.0f); // output.pos += mul(projMatrix, offset);

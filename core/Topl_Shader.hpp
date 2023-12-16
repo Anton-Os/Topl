@@ -82,17 +82,18 @@ public:
 		if(actor->shaderFunc != nullptr) actor->shaderFunc();
 		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
 	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 
-	void setMode(unsigned m){ _mode = m; }
+	void setMode(int m){ _mode = m; }
 protected:
-	unsigned _mode = DEFAULT_SHADER_MODE;
+	int _mode = DEFAULT_SHADER_MODE;
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };

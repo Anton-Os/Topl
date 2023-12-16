@@ -3,7 +3,7 @@
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock{
-	uint mode;
+	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
 	// mat4 projMatrix;

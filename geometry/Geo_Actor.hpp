@@ -24,13 +24,14 @@ public:
 	void updatePos(const Vec3f& moveVec){ _position = _position + moveVec; }
 	void setRot(const Vec3f& angleVec){ _rotation = angleVec; }
 	void updateRot(const Vec3f& angleVec){ _rotation = _rotation + angleVec; }
+	void setSize(const Vec3f& scaleVec){ _scale = scaleVec; }
 
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }
 	const Geo_Mesh* getMesh() const { return _mesh; }
 	vec3f_cptr_t getPos() const { return &_position; }
 	vec3f_cptr_t getRot() const { return &_rotation; }
-	// vec3f_cptr_t getSize() const { return &_scale; }
+	vec3f_cptr_t getSize() const { return &_scale; }
 
 	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
 	shaderCallback shaderFunc = nullptr; // invoked during shader render block
@@ -43,7 +44,7 @@ private:
 	// Orientation types
 	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f });
-	// Vec3f _scale = Vec3f({ 0.0f, 0.0f, 0.0f });
+	Vec3f _scale = Vec3f({ 1.0f, 1.0f, 1.0f });
 };
 
 typedef const Geo_Actor* const actor_cptr;

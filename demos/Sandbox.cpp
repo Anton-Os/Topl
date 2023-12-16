@@ -1,6 +1,7 @@
 #include "Sandbox.hpp"
 
 static unsigned texMode = 0;
+static Vec3f texScroll = { 0.0, 0.0, 0.0 };
 
 #ifdef RASTERON_H
 unsigned boxImgOp(double x, double y){ return (sin(x * 20) > 0.5)? 0xFF0000FF : 0xFFFFFF00; }
@@ -46,7 +47,8 @@ static void onHover(float x, float y){
     }
 }
 
-void texModeUpdates(){ (texMode < 8)? texMode++ : texMode = 0; }
+void texModeCycle(){ (texMode < 8)? texMode++ : texMode = 0; }
+void texScrollCycle(){ texScroll[0] += 0.05; }
 
 static void box_shadercall(){ /* Add body for render block */ }
 static void pyramid_shadercall(){ /* Add body for render block */ }
@@ -60,7 +62,8 @@ void Sandbox_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
     Platform::mouseControl.addHoverCallback(onHover);
 
-    _timeline.ticker.addPeriodicEvent(1000, texModeUpdates);
+    _timeline.ticker.addPeriodicEvent(1000, texModeCycle);
+    _timeline.ticker.addPeriodicEvent(50, texScrollCycle);
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos({ 0.5f, 0.5f, 0.0f });
@@ -148,8 +151,6 @@ void Sandbox_Demo::loop(double frameTime){
     _renderer->clearView();
 
     {
-        // texMode = 1;
-
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
         beamVShader.setMode(texMode % 4);
@@ -159,6 +160,7 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
         texVShader.setMode(texMode);
+        texVShader.setTexScroll(texScroll);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }

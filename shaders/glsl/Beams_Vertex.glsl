@@ -6,10 +6,11 @@ layout(std140, binding = 0) uniform Block {
 	// uint renderID
 	vec3 offset;
 	vec3 rotation;
+	vec3 scale;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
-	uint mode;
+	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
 	// mat4 projMatrix;
@@ -63,7 +64,7 @@ mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
 
 void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f);
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0f);
 
 	gl_Position = final_pos + vec4(offset, 0.0f);
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);

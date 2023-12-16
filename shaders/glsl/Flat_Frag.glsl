@@ -6,10 +6,11 @@ layout(std140, binding = 0) uniform Block{
 	vec4 color;
 	vec3 offset;
 	vec3 rotation;
+	vec3 scale;
 };
 
 layout(std140, binding = 1) uniform SceneBlock{
-	uint mode;
+	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;

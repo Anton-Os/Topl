@@ -7,7 +7,7 @@ cbuffer CONST_BLOCK : register(b0) {
 cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int2 screenRes;
 	float2 cursorPos;
-	uint mode;
+	int mode;
 }
 
 struct VS_INPUT {

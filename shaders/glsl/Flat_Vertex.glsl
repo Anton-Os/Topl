@@ -8,10 +8,11 @@ layout(std140, binding = 0) uniform Block {
 	vec4 color;
 	vec3 offset;
 	vec3 rotation;
+	vec3 scale;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {
-	uint mode;
+	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
@@ -73,6 +74,7 @@ mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // Custom Function
 void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
 	vec4 final_pos = vec4(angles.x + offset.x, angles.y + offset.y, angles.z + (-offset.z + 0.5) * 2, 1.0f);
+	final_pos *= vec4(scale.x, scale.y, scale.z, 1.0f);
 
 	mat4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
 	gl_Position = final_pos * cameraMatrix * projMatrix;

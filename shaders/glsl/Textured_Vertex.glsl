@@ -5,11 +5,12 @@
 layout(std140, binding = 0) uniform Block {
 	vec3 offset;
 	vec3 rotation;
+	vec3 scale;
 	vec3 texScroll; // texture coordinate scrolling
 };
 
 layout(std140, binding = 1) uniform SceneBlock{
-	uint mode;
+	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
@@ -19,7 +20,7 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
 
 layout(location = 0) out vec3 texcoord_out;
-layout(location = 1) out uint mode_out;
+layout(location = 1) out int mode_out;
 
 // Functions
 
@@ -60,7 +61,7 @@ mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
 
 void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f);
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0f);
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;

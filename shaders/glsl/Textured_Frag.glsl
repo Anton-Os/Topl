@@ -13,7 +13,7 @@ layout(binding = 7) uniform sampler2D tex7; // testing?
 layout(binding = 8) uniform sampler3D volumeTex;
 
 layout(location = 0) in vec3 texcoord;
-layout(location = 1) flat in uint mode;
+layout(location = 1) flat in int mode;
 
 layout(location = 0) out vec4 color;
 
