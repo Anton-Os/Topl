@@ -13,7 +13,7 @@ layout(binding = 7) uniform sampler2D tex7; // testing?
 layout(binding = 8) uniform sampler3D volumeTex;
 
 layout(location = 0) in vec3 texcoord;
-layout(location = 1) flat in uint texmode;
+layout(location = 1) flat in uint mode;
 
 layout(location = 0) out vec4 color;
 
@@ -28,15 +28,15 @@ vec4 color_correct(vec4 color){ // switch red and blue color values
 // Main
 
 void main() {
-	if(texmode == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
-	if(texmode != 0){
-		if(texmode == 1) color = vec4(0.0, 1.0, 0.0, 1.0); // color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 2) color = vec4(0.0, 0.0, 1.0, 1.0); // color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 3) color = vec4(1.0, 1.0, 0.0, 1.0); // color_correct(texture(tex3, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 4) color = vec4(0.0, 1.0, 1.0, 1.0); // color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 5) color = vec4(1.0, 0.0, 1.0, 1.0); // color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 6) color = vec4(0.5, 0.5, 0.5, 1.0); // color_correct(texture(tex6, vec2(texcoord.x, texcoord.y)));
-		else if(texmode == 7) color = vec4(1.0, 1.0, 1.0, 1.0); // color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
+	if(mode == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
+	else if(mode != 0){
+		if(mode == 1) color = color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 2) color = color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 3) color = color_correct(texture(tex3, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 4) color = color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 5) color = color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 6) color = color_correct(texture(tex6, vec2(texcoord.x, texcoord.y)));
+		else if(mode == 7) color = color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
 		else color = vec4(1.0, 0.0, 0.0, 1.0); // error
 	}
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture

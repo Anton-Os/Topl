@@ -4,11 +4,10 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 offset;
 	float3 rotation;
 	float3 texScroll; // texture coordinate scrolling
-	uint texMode; // texture mode selection
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
-	// double time;
+	uint mode;
 	float4 cam_pos;
 	float4 look_pos;
 	float4x4 projMatrix;

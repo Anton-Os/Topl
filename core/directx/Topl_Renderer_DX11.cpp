@@ -543,29 +543,35 @@ void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 		 else if(renderID != SCENE_RENDERID) { // Drawable Target
 			 // Data & Buffer Updates
 
-			 Buffer_DX11* vertexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; }));
-			 Buffer_DX11* indexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; }));
-			 Buffer_DX11* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
+			 auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			 auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
+			 auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
 
-			 if (renderBlockBuff != nullptr) {
+			 if (renderBlockBuff != _buffers.end()) {
 				 _deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 				 _deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
 			 }
 
-			 if (vertexBuff != nullptr && vertexBuff->count > 0)
+			 if (vertexBuff != _buffers.end() && vertexBuff->count > 0)
 				_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
-			 if (indexBuff != nullptr && indexBuff->count > 0)
+			 if (indexBuff != _buffers.end() && indexBuff->count > 0)
 				 _deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
 
 			// Texture Updates
 
 			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
-			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
-			// TODO: Find 2D textures at other bindings
 			if (tex2D != _textures.end()){
 				DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
 				DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
 			}
+			for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
+				tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
+				if (tex2D != _textures.end()){
+					DX11::texSamplers[b] = tex2D->sampler;
+					DX11::texResources[b] = tex2D->resource;
+				}
+			}
+			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
 			if(tex3D != _textures.end()){
 				DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;
 				DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
@@ -575,8 +581,9 @@ void Topl_Renderer_DX11::renderTarget(unsigned long renderID) {
 			_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 
 			// Draw Call!
-			if (vertexBuff != nullptr && vertexBuff->count != 0) {
-				if (indexBuff != nullptr && indexBuff->count != 0) _deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
+			if (vertexBuff != _buffers.end() && vertexBuff->count != 0) {
+				if (indexBuff != _buffers.end() && indexBuff->count != 0) 
+					_deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
 				else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
 			}
 			// TODO: Include instanced draw call

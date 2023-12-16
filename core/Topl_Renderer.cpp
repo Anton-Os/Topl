@@ -83,7 +83,7 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 
 			const Img_Array* arrayTex = scene->getArrayTex(actor->getName());
 			if (arrayTex != nullptr)
-				for (unsigned p = 0; p < MAX_TEX_BINDINGS; p++)
+				for (unsigned p = 1; p < MAX_TEX_BINDINGS; p++) // begin from 1 not to override first texture
 					attachTexAt(getFrameAt(arrayTex->getQueue(), p), renderID, p);
 					// attachTexAt(arrayTex->getLayer((unsigned short)p)->getImage(), renderID, p);
 

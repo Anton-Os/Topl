@@ -17,6 +17,4 @@ layout(location = 1) in vec2 texcoord;
 
 // Main
 
-void main() {
-	gl_Position = vec4(pos, 1.0);
-}
+void main() { gl_Position = vec4(pos, 1.0); }

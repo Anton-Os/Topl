@@ -372,38 +372,45 @@ void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
 		else if (renderID != SCENE_RENDERID) { // Drawable Target
 			// Data & Buffer Updates
 			
-			VertexArray_GL4* vertexArray = &(*std::find_if(_vertexArrays.begin(), _vertexArrays.end(), [renderID](const VertexArray_GL4& v) { return v.renderID == renderID; }));
-			glBindVertexArray(vertexArray->vao);
+			auto vertexArray = std::find_if(_vertexArrays.begin(), _vertexArrays.end(), [renderID](const VertexArray_GL4& v) { return v.renderID == renderID; });
+			if(vertexArray != _vertexArrays.end()) glBindVertexArray(vertexArray->vao);
 
-			Buffer_GL4* vertexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; }));
-			Buffer_GL4* indexBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; }));
-			Buffer_GL4* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
-			if (renderBlockBuff != nullptr)
+			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
+			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
+			if (renderBlockBuff != _buffers.end())
 				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
 
-			if (vertexBuff != nullptr && vertexBuff->count > 0) 
+			if (vertexBuff != _buffers.end() && vertexBuff->count > 0) 
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-			if (indexBuff != nullptr && indexBuff->count > 0) 
+			if (indexBuff != _buffers.end() && indexBuff->count > 0) 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
 
 			// Texture Updates 
 		
 			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
-			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
-			// TODO: Find 2D textures at other bindings
 			if (tex2D != _textures.end()){
 				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
 				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
 			}
+			for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
+				tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
+				if (tex2D != _textures.end()){
+					glActiveTexture(GL_TEXTURE0 + tex2D->binding);
+					glBindTexture(GL_TEXTURE_2D, tex2D->texture);
+				}
+			}
+			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
 			if(tex3D != _textures.end()){
 				glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 				glBindTexture(GL_TEXTURE_3D, tex3D->texture);
 			}
 
 			// Draw Call!
-			if (vertexBuff != nullptr && vertexBuff->count != 0) {
-				if (indexBuff != nullptr && indexBuff->count != 0) glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0);
-				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // When no indices are present
+			if (vertexBuff != _buffers.end() && vertexBuff->count != 0) {
+				if (indexBuff != _buffers.end() && indexBuff->count != 0) 
+					glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // non-indexed draw
 			} 
 			// TODO: Include instanced draw call
 			else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");

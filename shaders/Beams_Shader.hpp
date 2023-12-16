@@ -1,8 +1,10 @@
 #include "Topl_Pipeline.hpp"
 
 #define BEAMS_MODE_LIGHT 0
-#define BEAMS_MODE_ALTERNATE 1
-#define BEAMS_MODE_DEPTH 2
+#define BEAMS_MODE_AMBIENT 1
+#define BEAMS_MODE_DIFFUSE 2
+#define BEAMS_MODE_SPECULAR 3
+#define BEAMS_MODE_DEPTH 4
 
 // Light
 
@@ -54,7 +56,7 @@ private:
 		appendDataToBytes((uint8_t*)&light->value, sizeof(Vec3f), bytes);
 	}
 protected:
-	unsigned _mode = BEAMS_MODE_LIGHT;
+	// unsigned _mode = BEAMS_MODE_DIFFUSE;
 
 	Topl_Light skyLight = Topl_Light({ 0.0, 1.0f, 0.0 });
 	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, -1.0 });

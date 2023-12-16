@@ -18,8 +18,15 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 offset;
 	float3 rotation;
 	float3 texScroll; // texture coordinate scrolling
-	uint texMode; // texture mode selection
 }
+
+cbuffer CONST_SCENE_BLOCK : register(b1) {
+	uint mode;
+	float4 cam_pos;
+	float4 look_pos;
+	float4x4 projMatrix;
+}
+
 
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
@@ -37,18 +44,17 @@ float4 color_correct(float4 color){ // switch red and blue color values
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	input.texcoord += texScroll; // adjusting texture to scroll value
-	/* if(texMode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
-	else if(texMode != 0){
-		if(texMode == 1) return float4(0.0, 1.0, 0.0, 1.0); // color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 2) return float4(0.0, 0.0, 1.0, 1.0); //color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 3) return float4(1.0, 1.0, 0.0, 1.0); //color_correct(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 4) return float4(0.0, 1.0, 1.0, 1.0); //color_correct(tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 5) return float4(1.0, 0.0, 1.0, 1.0); //color_correct(tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 6) return float4(0.5, 0.5, 0.5, 1.0); //color_correct(tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)));
-		if(texMode == 7) return float4(1.0, 1.0, 1.0, 1.0); //color_correct(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)));
+	if(mode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
+	else if(mode != 0){
+		if(mode == 1) return color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 2) return color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 3) return color_correct(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 4) return color_correct(tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 5) return color_correct(tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 6) return color_correct(tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)));
+		if(mode == 7) return color_correct(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)));
 		else return float4(1.0, 0.0, 0.0, 1.0); // error
 	}
-	else */ return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
+	else return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
 	
 }

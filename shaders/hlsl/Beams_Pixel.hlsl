@@ -44,15 +44,12 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, input.pos1 - offset) * 0.5;
 	float3 specular = skyLight_value * calcSpec(cam_pos, input.pos1);
 
-	if(mode == 1){ // alternate mode
-		// float3 light_color = ambient; // ambient test
-		// float3 light_color = diffuse; // diffuse test
-		float3 light_color = specular; // specular test
-		return float4(light_color, 1.0f);
-	} else if(mode == 2){ // depth mode
+	if(mode == 1) return float4(ambient, 1.0f);
+	else if(mode == 2) return float4(diffuse, 1.0f);
+	else if(mode == 3) return float4(specular, 1.0f);
+	else if(mode == 4){ // depth mode
 		float depth = sqrt(pow(input.pos1.x, 2) + pow(input.pos1.y, 2) + pow(input.pos1.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
-		// return float4(pos, 1.0f);
 	}
-	else return float4(ambient + diffuse + specular, 1.0); // light mode // default
+	else return float4(ambient + diffuse + specular, 1.0); // all lighting
 }

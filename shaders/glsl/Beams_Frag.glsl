@@ -39,13 +39,12 @@ void main() {
 	vec3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, pos) * 0.5;
 	vec3 specular = skyLight_value * calcSpec(skyLight_pos, cam_pos, pos);
 
-	if(mode == 1){ // alternate mode
-		// vec3 light_color = ambient; // ambient test
-		// vec3 light_color = diffuse; // diffuse test
-		vec3 light_color = specular; // specular test
-		color = vec4(light_color, 1.0f);
-	} else if(mode == 2){ // depth mode
+	if(mode == 1) color = vec4(ambient, 1.0f);
+	else if(mode == 2) color = vec4(diffuse, 1.0f);
+	else if(mode == 3) color = vec4(specular, 1.0f);
+	else if(mode == 4){ // depth mode
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation
 		color = vec4(depth, depth, depth, 1.0f);
-	} else color = vec4(ambient + diffuse + specular, 1.0f); // light mode // default
+	} 
+	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

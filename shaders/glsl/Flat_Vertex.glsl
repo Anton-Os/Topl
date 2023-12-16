@@ -27,8 +27,8 @@ layout(location = 1) out vec3 pos_out;
 
 mat3 calcRotMatrix(vec3 angles){
 	mat3 zRotMatrix = mat3( // Roll
-		cos(angles.z), -sin(angles.z), 0,
-		sin(angles.z), cos(angles.z), 0,
+		cos(angles.x), -sin(angles.x), 0,
+		sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	);
 
@@ -36,12 +36,12 @@ mat3 calcRotMatrix(vec3 angles){
 		1, 0, 0,
 		0, cos(angles.y), sin(angles.y),
 		0, -sin(angles.y), cos(angles.y)
-	); 
+	);
 
 	mat3 yRotMatrix = mat3( // Yaw
-		cos(angles.x), 0, sin(angles.x),
+		cos(angles.z), 0, sin(angles.z),
 		0, 1, 0,
-		-1.0 * sin(angles.x), 0, cos(angles.x)
+		-1.0 * sin(angles.z), 0, cos(angles.z)
 	);
 
 	return zRotMatrix * yRotMatrix * xRotMatrix;

@@ -4,13 +4,7 @@
 
 #include "Topl_Scene.hpp"
 
-enum SHDR_Type {
-	SHDR_Vertex,
-	SHDR_Pixel,
-	SHDR_Geom,
-	SHDR_TessCtrl,
-	SHDR_TessEval
-};
+enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval };
 
 enum SHDR_ValueType {
 	SHDR_float, SHDR_float_vec2, SHDR_float_vec3, SHDR_float_vec4,
@@ -27,18 +21,17 @@ enum SHDR_ValueType {
 struct Shader_Type {
 	Shader_Type() {}
 	Shader_Type(const std::string& n, SHDR_ValueType t) {
-		name = n;
-		type = t;
+		name = n; type = t;
 	}
 	Shader_Type(const std::string& n, const std::string& s, SHDR_ValueType t) {
-		name = n;
-		semantic = s;
-		type = t;
+		name = n; semantic = s; type = t;
 	}
 	std::string name;
 	std::string semantic = ""; // Relevant for DirectX
 	SHDR_ValueType type;
 };
+
+#define DEFAULT_SHADER_MODE 0
 
 // Shader
 
@@ -91,11 +84,15 @@ public:
 		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
 	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
 
+	void setMode(unsigned m){ _mode = m; }
+protected:
+	unsigned _mode = DEFAULT_SHADER_MODE;
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };

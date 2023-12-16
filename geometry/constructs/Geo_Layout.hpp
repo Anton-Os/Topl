@@ -49,7 +49,7 @@ public:
 		std::replace(fontFilePath.begin(), fontFilePath.end(), '/', '\\');
 
 		Rasteron_Text textObj = { fontFilePath.c_str(), "X", 0xFFEEEEEE, 0xFF000000 };
-		rootImg.setColorImage(getPaneColor(0)); // .setTextImage(&textObj);
+		rootImg.setColorImage(0xFF333333); // .setTextImage(&textObj);
 		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			std::string paneName = std::to_string(p + 1);
@@ -66,7 +66,7 @@ public:
 				addFrameAt(paneImgArrays.at(&_geoActors.at(p)).getQueue(), stageImg, t);
 				dealloc_image(stageImg);
 			}
-			// scene->addArrayTex(getCellName(p + 1), &paneImgArrays.at(&_geoActors.at(p))); // Uncomment this
+			scene->addArrayTex(getCellName(p + 1), &paneImgArrays.at(&_geoActors.at(p))); // Uncomment this
 		}
 #endif
 	}
@@ -79,12 +79,12 @@ protected:
 
 #ifdef RASTERON_H
 	unsigned getPaneColor(unsigned short index){
-		switch(index){
-			case 0: return 0xFFEEEEEE;
+		switch(index % 8){
+			case 0: return 0xFF88EE22;
 			case 1: return 0xFF0000FF; case 2: return 0xFF00FF00; case 3: return 0xFFFF0000;
 			case 4: return 0xFFFFFF00; case 5: return 0xFFFF00FF; case 6: return 0xFF00FFFF;
-			case 7: return 0xFF333333;
-			default: return 0xFF8822EE;
+			case 7: return 0xFF8822EE;
+			default: return 0xFF333333;
 		}
 	}
 

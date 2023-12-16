@@ -3,8 +3,18 @@
 static unsigned texMode = 0;
 
 #ifdef RASTERON_H
-Img_Base texture1 = Img_Base(0xFF0000FF); Img_Base texture2 = Img_Base(0xFF00FF00);
-Img_Base texture3 = Img_Base(0xFFFFFF00); Img_Base texture4 = Img_Base(0xFFFF00FF);
+unsigned boxImgOp(double x, double y){ return (sin(x * 20) > 0.5)? 0xFF0000FF : 0xFFFFFF00; }
+unsigned pyramidImgOp(double x, double y){ return (cos(y * 20) < 0.5)? 0xFFFF0000 : 0xFF00FFFF; }
+unsigned sphereImgOp(double x, double y){ return (tan(x * y) > 0.25 && tan(x * y) < 0.75)? 0xFF8833CC : 0xFF88CC33; }
+unsigned hexImgOp(double x, double y){ return (x > 0.4 && x < 0.6 && y > 0.4 && y < 0.6)? 0xFF3333333 : 0xFFEEEEEE; }
+
+Rasteron_Image* boxImg = mapImgOp({1024, 1024}, boxImgOp);
+Rasteron_Image* pyramidImg = mapImgOp({1024, 1024}, pyramidImgOp);
+Rasteron_Image* sphereImg = mapImgOp({1024, 1024}, sphereImgOp);
+Rasteron_Image* hexImg = mapImgOp({1024, 1024}, hexImgOp);
+
+Img_Base boxTex = Img_Base(boxImg); Img_Base pyramidTex = Img_Base(pyramidImg);
+Img_Base sphereTex = Img_Base(sphereImg); Img_Base hexTex = Img_Base(hexImg);
 #endif
 
 static void onHover(float x, float y){ 
@@ -14,41 +24,34 @@ static void onHover(float x, float y){
         if(Topl_Main::pickerObj != NO_PICKER_OBJ){
             std::cout << "Topl_Main picker object: " << Topl_Main::pickerObj->getName() << std::endl;
 
-            if(Topl_Main::pickerObj->getId() == instance->boxActor.getId()) instance->boxActor.setPos(Topl_Main::cursorPos);
-            else if(Topl_Main::pickerObj->getId() == instance->pyramidActor.getId()) instance->pyramidActor.setPos(Topl_Main::cursorPos);
-            else if(Topl_Main::pickerObj->getId() == instance->sphereActor.getId()) instance->sphereActor.setPos(Topl_Main::cursorPos);
-            else if(Topl_Main::pickerObj->getId() == instance->hexActor.getId()) instance->hexActor.setPos(Topl_Main::cursorPos);
+            if(Topl_Main::pickerObj->getId() == _instance->boxActor.getId()) {
+                _instance->boxActor.setPos(Topl_Main::cursorPos);
+                boxTex.setColorImage(0xFF00FF00);
+            } else if(Topl_Main::pickerObj->getId() == _instance->pyramidActor.getId()){
+                _instance->pyramidActor.setPos(Topl_Main::cursorPos);
+                pyramidTex.setColorImage(0xFF00FF00);
+            } else if(Topl_Main::pickerObj->getId() == _instance->sphereActor.getId()){
+                _instance->sphereActor.setPos(Topl_Main::cursorPos);
+                sphereTex.setColorImage(0xFF00FF00);
+            } else if(Topl_Main::pickerObj->getId() == _instance->hexActor.getId()){ 
+                _instance->hexActor.setPos(Topl_Main::cursorPos);
+                hexTex.setColorImage(0xFF00FF00);
+            }
             // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Main::cursorPos - layoutVec);
         }
-    } else Topl_Main::pickerObj = NO_PICKER_OBJ;
-}
-
-static void boxPass(){ /* Add body for render block */ }
-static void pyramidPass(){ /* Add body for render block */ }
-static void spherePass(){ /* Add body for render block */ }
-static void hexPass(){ /* Add body for render block */ }
-
-void texModeUpdates(){ 
-    static unsigned updateCall = 0;
-
-    if(texMode < MAX_TEX_BINDINGS) texMode++; else texMode = 0; 
-
-    if(updateCall % 4 == 0){
-        texture1.setColorImage(0xFF0000FF); texture2.setColorImage(0xFF00FF00);
-        texture3.setColorImage(0xFFFFFF00); texture4.setColorImage(0xFFFF00FF);
-    } else if(updateCall % 4 == 1){
-        texture1.setColorImage(0xFFFF00FF); texture2.setColorImage(0xFF0000FF);
-        texture3.setColorImage(0xFF00FF00); texture4.setColorImage(0xFFFFFF00);
-    } else if(updateCall % 4 == 2){
-        texture1.setColorImage(0xFFFFFF00); texture2.setColorImage(0xFFFF00FF);
-        texture3.setColorImage(0xFF0000FF); texture4.setColorImage(0xFF00FF00);
-    } else if(updateCall % 4 == 3){
-        texture1.setColorImage(0xFF00FF00); texture2.setColorImage(0xFFFFFF00);
-        texture3.setColorImage(0xFFFF00FF); texture4.setColorImage(0xFF0000FF);
+    } else {
+        Topl_Main::pickerObj = NO_PICKER_OBJ;
+        boxTex.setImage(boxImg); pyramidTex.setImage(pyramidImg);
+        sphereTex.setImage(sphereImg); hexTex.setImage(hexImg);
     }
-
-    updateCall++;
 }
+
+void texModeUpdates(){ (texMode < 8)? texMode++ : texMode = 0; }
+
+static void box_shadercall(){ /* Add body for render block */ }
+static void pyramid_shadercall(){ /* Add body for render block */ }
+static void sphere_shadercall(){ /* Add body for render block */ }
+static void hex_shadercall(){ /* Add body for render block */ }
 
 void Sandbox_Demo::init(){
     srand(time(NULL));
@@ -61,41 +64,47 @@ void Sandbox_Demo::init(){
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos({ 0.5f, 0.5f, 0.0f });
-    boxActor.shaderFunc = boxPass;
+    boxActor.shaderFunc = box_shadercall;
     scene.addGeometry("Box", &boxActor);
+    details.addGeometry("Box", &boxActor);
     pyramidMesh.scale({ 0.25f, 0.25f, 0.25f});
     pyramidActor.setPos({ -0.5f, 0.5f, 0.0f });
-    pyramidActor.shaderFunc = pyramidPass;
+    pyramidActor.shaderFunc = pyramid_shadercall;
     scene.addGeometry("Pyramid", &pyramidActor);
+    details.addGeometry("Pyramid", &pyramidActor);
     sphereMesh.scale({ 0.25f, 0.25f, 0.25f});
     sphereActor.setPos({ -0.5f, -0.5f, 0.0f });
-    sphereActor.shaderFunc = spherePass;
+    sphereActor.shaderFunc = sphere_shadercall;
     scene.addGeometry("Sphere", &sphereActor);
+    details.addGeometry("Sphere", &sphereActor);
     hexMesh.scale({ 0.25f, 0.25f, 0.25f});
     hexActor.setPos({ 0.5f, -0.5f, 0.0f });
-    hexActor.shaderFunc = hexPass;
+    hexActor.shaderFunc = hex_shadercall;
     scene.addGeometry("Hex", &hexActor);
+    details.addGeometry("Hex", &hexActor);
 
 #ifdef RASTERON_H
-    scene.addTexture("Box", &texture1);
-    scene.addTexture("Pyramid", &texture2);
-    scene.addTexture("Sphere", &texture3);
-    scene.addTexture("Hex", &texture4);
+    scene.addTexture("Box", &boxTex);
+    scene.addTexture("Pyramid", &pyramidTex);
+    scene.addTexture("Sphere", &sphereTex);
+    scene.addTexture("Hex", &hexTex);
 #endif
 
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, beamPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
+    _renderer->buildScene(&details);
+    
     layout1.configure(&overlay);
     layout2.configure(&overlay);
     layout2.shift({ 0.55, 0.0, 0.0 });
     layout3.configure(&overlay);
     layout3.shift({ -0.55, 0.0, 0.0 });
 
-    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
@@ -103,16 +112,9 @@ void Sandbox_Demo::loop(double frameTime){
     // Object Updates
     
     {
-#ifdef RASTERON_H
-        if(_renderer->getFrameCount() % 60 == 0){
-            _renderer->texturize(&scene);
-            _renderer->texturize(&overlay);
-        }
-#endif
-
-        boxActor.updateRot({ 0.003F * (float)frameTime, 0.0F, 0.0F });
-        pyramidActor.updateRot({ -0.003F * (float)frameTime, 0.0F, 0.0F });
-        sphereActor.updateRot({ 0.0F, 0.003F * (float)frameTime, 0.0F });
+        boxActor.updateRot({ 0.0F, 0.003F * (float)frameTime, 0.0F });
+        pyramidActor.updateRot({ 0.003F * (float)frameTime, 0.0F, 0.0F });
+        sphereActor.updateRot({ -0.003F * (float)frameTime, -0.003F * (float)frameTime, -0.003F * (float)frameTime });
         hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
 
         // layout.shift(layoutVec - layout.getOrigin());
@@ -122,44 +124,56 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 
 #ifdef RASTERON_H
-    if(Platform::mouseControl.getIsMouseDown().second) {
-        invokePicker(&scene);
-        invokePicker(&overlay);
-    }
+        if(Platform::mouseControl.getIsMouseDown().second) {
+            invokePicker(&scene);
+            _renderer->texturize(&scene);
+            invokePicker(&overlay);
+            _renderer->texturize(&overlay);
+        }
 #endif
     }
 
     // Textured Render
 
+    _renderer->clearView();
+
     {
-        _renderer->setDrawMode(DRAW_Points);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
-        texVShader.setTexMode(texMode);
+        // texMode = 1;
+
+        _renderer->setDrawMode(DRAW_Triangles);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
+        beamVShader.setMode(texMode % 4);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
-        texVShader.setTexMode(texMode);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+        texVShader.setMode(texMode);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }
 }
 
 int main(int argc, char** argv) {
-    instance = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _instance = new Sandbox_Demo(argv[0], BACKEND_GL4);
 
-    instance->run();
-    delete(instance);
+    _instance->run();
+    delete(_instance);
+#ifdef RASTERON_H
+    dealloc_image(boxImg);
+    dealloc_image(pyramidImg);
+    dealloc_image(sphereImg);
+    dealloc_image(hexImg);
+#endif
     return 0;
 }

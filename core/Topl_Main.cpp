@@ -43,6 +43,8 @@ void Topl_Main::run(){
 #ifdef RASTERON_H
 unsigned Topl_Main::invokePicker(Topl_Scene* scene){
 	Topl_Main::pickerVal = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	if((Topl_Main::pickerVal & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
+		Topl_Main::pickerObj = nullptr;
 	if(scene != nullptr){ 
 		const Geo_Actor* actor = scene->invokePicker(Topl_Main::pickerVal);
 		if(actor != nullptr) Topl_Main::pickerObj = actor; 

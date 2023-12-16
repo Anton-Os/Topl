@@ -12,7 +12,8 @@
     #define RASTERON_ENABLE_ANIM
     #define RASTERON_ENABLE_FONT
     
-    #include "Rasteron.h" // includes Rasteron main modules
+    #include "Rasteron.h" // includes Rasteron main modules and features
+    // #include "Experimental.h" // included Rasteron experimental modules
 #endif
 #if 0
 	#define TOPL_ENABLE_MODELS

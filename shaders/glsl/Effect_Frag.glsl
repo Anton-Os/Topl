@@ -16,7 +16,7 @@ layout(location = 0) out vec4 color;
 
 // Functions
 
-vec3 bullseye(vec2 cursorPos, vec2 coord){
+vec3 cursorTarget(vec2 cursorPos, vec2 coord){
 	float red = pow(1 - min(abs(cursorPos.x - coord.x), abs(cursorPos.y - coord.y)), 20); // crosshairs
 	float green = tan(distance(cursorPos, coord) * 50); // spirals
 	float blue = 1 / distance(cursorPos, coord); // gradient
@@ -26,8 +26,8 @@ vec3 bullseye(vec2 cursorPos, vec2 coord){
 #define FRACTAL_SIZE 3.0 // max fractal size
 #define FRACTAL_ITER 1000 // max fractal iteratons
 
-// Mandlebrot Set
-vec3 mandlebrot(uvec2 screenRes, vec2 coord){
+// mandlebrotSet Set
+vec3 mandlebrotSet(uvec2 screenRes, vec2 coord){
 	double x = 0; double y = 0;
 	uint i = 0; // iteration count
 
@@ -48,6 +48,6 @@ void main() {
 	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
 	vec2 coordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
-	if (mode == 1) color = vec4(mandlebrot(screenRes, (coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
-	else color = vec4(bullseye(cursorPosAdj, coordsAdj), 1.0f); // cursor mode // default
+	if (mode == 1) color = vec4(cursorTarget(cursorPosAdj, coordsAdj), 1.0f); // cursor track mode
+	else color = vec4(mandlebrotSet(screenRes, (coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
 }

@@ -2,8 +2,8 @@
 
 #include "Topl_Pipeline.hpp"
 
-#define EFFECT_MODE_CURSOR 0
-#define EFFECT_MODE_FRACTAL 1
+#define EFFECT_MODE_FRACTALS 0
+#define EFFECT_MODE_CURSORY 1
 
 // Vertex Shaders
 
@@ -28,7 +28,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	void setWidth(int w) { if(w > 0) width = w; }
 	void setHeight(int h) { if(h > 0) height = h; }
 protected:
-	unsigned _mode = EFFECT_MODE_CURSOR;
+	unsigned _mode = EFFECT_MODE_FRACTALS;
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
 };

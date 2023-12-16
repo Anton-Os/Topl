@@ -1,10 +1,10 @@
 #include "Topl_Pipeline.hpp"
 
-#define FLAT_MODE_SOLID 0 // for semi-transparent white
-#define FLAT_MODE_ALTERNATE 1 // for alternating vertex colors
-#define FLAT_MODE_DIRECTION 2 // for interpolating along xyz
+#define MAX_FLAT_MODE 3
 
-#define FLAT_COLOR_INC 0.002f // value for generating color id
+#define FLAT_MODE_SOLID 0 // default color from id
+#define FLAT_MODE_PATTERN 1 // alternating vertex colors
+#define FLAT_MODE_XYZ 2 // interpolates along xyz axis
 
 // Vertex Shaders
 
@@ -20,16 +20,17 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
+		// appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
+
+	// void setMode(unsigned short m){ if(m < 3) _mode = m; }
 protected:
 	Vec4f getColor(const Geo_Actor* const actor) const {
 		unsigned colorID = actor->getId();
 		return Vec4f({ ((colorID & 0xFF0000) >> 16) / 255.0f, ((colorID & 0xFF00) >> 8) / 255.0f, (colorID & 0xFF) / 255.0f, _alphaVal });
 	}
 
-	unsigned _mode = FLAT_MODE_SOLID;
 	float _alphaVal = 1.0f;
 };
 
