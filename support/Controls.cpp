@@ -4,14 +4,20 @@
 
 void Input_KeyControl::addKeyPress(char keyCode) {
 	if (keyCode == '\0') return; // null keycode can be skipped
+	for(std::vector<anyKeyCallback>::iterator m = _anyKeyCallbacks.begin(); m != _anyKeyCallbacks.end(); m++)
+		(*m)(keyCode); // triggers callback
 	for (std::map<char, keyCallback>::const_iterator c = _keyCallback_map.cbegin(); c != _keyCallback_map.cend(); c++)
-		if (keyCode == c->first) c->second(); // Makes callback go off
+		if (keyCode == c->first) c->second(); // triggers callback if match
 	
 	stampEvent();
 }
 
 void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
 	_keyCallback_map.insert(std::make_pair(keyCode, callback));
+}
+
+void Input_KeyControl::addAnyCallback(anyKeyCallback callback){
+	_anyKeyCallbacks.push_back(callback);
 }
 
 // Mouse Interaction

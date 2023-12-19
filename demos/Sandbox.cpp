@@ -20,28 +20,28 @@ Img_Base sphereTex = Img_Base(sphereImg); Img_Base hexTex = Img_Base(hexImg);
 
 static void onHover(float x, float y){ 
     if(Platform::mouseControl.getIsMouseDown().second) {
-        Topl_Main::cursorPos = { x, y, 0.0F }; 
+        Topl_Program::cursorPos = { x, y, 0.0F }; 
 
-        if(Topl_Main::pickerObj != NO_PICKER_OBJ){
-            std::cout << "Topl_Main picker object: " << Topl_Main::pickerObj->getName() << std::endl;
+        if(Topl_Program::pickerObj != NO_PICKER_OBJ){
+            std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
 
-            if(Topl_Main::pickerObj->getId() == _instance->boxActor.getId()) {
-                _instance->boxActor.setPos(Topl_Main::cursorPos);
+            if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId()) {
+                _instance->boxActor.setPos(Topl_Program::cursorPos);
                 boxTex.setColorImage(0xFF00FF00);
-            } else if(Topl_Main::pickerObj->getId() == _instance->pyramidActor.getId()){
-                _instance->pyramidActor.setPos(Topl_Main::cursorPos);
+            } else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()){
+                _instance->pyramidActor.setPos(Topl_Program::cursorPos);
                 pyramidTex.setColorImage(0xFF00FF00);
-            } else if(Topl_Main::pickerObj->getId() == _instance->sphereActor.getId()){
-                _instance->sphereActor.setPos(Topl_Main::cursorPos);
+            } else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()){
+                _instance->sphereActor.setPos(Topl_Program::cursorPos);
                 sphereTex.setColorImage(0xFF00FF00);
-            } else if(Topl_Main::pickerObj->getId() == _instance->hexActor.getId()){ 
-                _instance->hexActor.setPos(Topl_Main::cursorPos);
+            } else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId()){ 
+                _instance->hexActor.setPos(Topl_Program::cursorPos);
                 hexTex.setColorImage(0xFF00FF00);
             }
-            // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Main::cursorPos - layoutVec);
+            // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Program::cursorPos - layoutVec);
         }
     } else {
-        Topl_Main::pickerObj = NO_PICKER_OBJ;
+        Topl_Program::pickerObj = NO_PICKER_OBJ;
         boxTex.setImage(boxImg); pyramidTex.setImage(pyramidImg);
         sphereTex.setImage(sphereImg); hexTex.setImage(hexImg);
     }
@@ -50,10 +50,10 @@ static void onHover(float x, float y){
 void texModeCycle(){ (texMode < 8)? texMode++ : texMode = 0; }
 void texScrollCycle(){ texScroll[0] += 0.05; }
 
-static void box_shadercall(){ /* Add body for render block */ }
-static void pyramid_shadercall(){ /* Add body for render block */ }
-static void sphere_shadercall(){ /* Add body for render block */ }
-static void hex_shadercall(){ /* Add body for render block */ }
+static void box_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
+static void pyramid_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
+static void sphere_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
+static void hex_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
 
 void Sandbox_Demo::init(){
     srand(time(NULL));

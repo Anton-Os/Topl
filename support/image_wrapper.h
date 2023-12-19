@@ -34,6 +34,9 @@ struct Img_Base {
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
 		_invertFont = FONT_INVERT; // make sure font renders correctly
+		/* Rasteron_Image* textImg = textImgOp(textObj, FONT_SIZE_MED);
+		image = antialiasImgOp(textImg);
+		dealloc_image(textImg); */
 		image = textImgOp(textObj, FONT_SIZE_MED);
     }
     void setImage(ref_image_t refImage){
@@ -57,17 +60,7 @@ private:
 #define DEFAULT_TEX_BINDING 0 // for base texture
 #define MAX_TEX_BINDINGS 8 // matches LAYER_Property enumeration
 
-/* enum LAYER_Property {
-	LAYER_Albedo = 0,
-	LAYER_Height = 1,
-	LAYER_Roughness = 2,
-	LAYER_Opacity = 3,
-	LAYER_Enviornment = 4,
-	LAYER_Shadow = 5,
-	LAYER_Illumination = 6,
-	LAYER_Testing = 7,
-}; */
-
+/* enum LAYER_Property { LAYER_Albedo = 0, LAYER_Height = 1, LAYER_Roughness = 2, LAYER_Opacity = 3, LAYER_Enviornment = 4, LAYER_Shadow = 5, LAYER_Illumination = 6, LAYER_Testing = 7, }; */
 
 struct Img_Array {
 	Img_Array(){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, 8); }

@@ -1,4 +1,5 @@
 // Vulkan Specific Inclusions
+#undef ENABLE_DEBUG_LAYERS
 
 #define VK_PROTOTYPES
 #ifdef _WIN32
@@ -21,7 +22,7 @@ struct Topl_Pipeline_Vulkan : public Topl_Pipeline {
 	Topl_Pipeline_Vulkan() : Topl_Pipeline(){}
 	~Topl_Pipeline_Vulkan(){ }
 
-	VkPipelineShaderStageCreateInfo vertexStageInfo, pixelStageInfo;
+	VkPipelineShaderStageCreateInfo vertexSInfo, pixelSInfo, geomSInfo, tessCtrlSInfo, tessEvalSInfo;
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	VkPipeline pipeline = {};
@@ -60,7 +61,6 @@ protected:
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
-	void finalizePipeline(); // operation to finalize pipeline creation
 
 	Topl_Pipeline_Vulkan* _pipeline;
 

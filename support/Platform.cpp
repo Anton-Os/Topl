@@ -15,23 +15,22 @@ static void addMousePress(enum MOUSE_Button button){
 }
 
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
-	PAINTSTRUCT ps;
-	HDC hDC = GetDC(window);
-	RECT rect;
+	static bool isKeyReady = false;
 
 	switch (message) {
-	case(WM_CREATE): {
-		// Create Function Here
-	}
+	case(WM_CREATE): {}
 	case(WM_PAINT): { }
 	case(WM_SIZE): { }
-	case(WM_KEYDOWN): {}
+	case(WM_KEYDOWN): { isKeyReady = true; }
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{
 		if(Platform::getCursorX() != INVALID_CURSOR_POS && Platform::getCursorY() != INVALID_CURSOR_POS)
 			Platform::mouseControl.addHover(Platform::getCursorX(), Platform::getCursorY());
 	}
-	case (WM_CHAR): { if(wParam != 0) Platform::keyControl.addKeyPress((char)wParam); }
+	case (WM_CHAR): { 
+		if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
+		isKeyReady = false;
+	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }

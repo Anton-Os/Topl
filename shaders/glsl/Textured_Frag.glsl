@@ -19,6 +19,11 @@ layout(location = 0) out vec4 color;
 
 // Funtions
 
+/* vec4 color_layer(vec4 color, vec4 oldColor){
+	if(color.a < oldColor.a) return oldColor;
+	else return vec4((color.r * color.a) + (oldColor.r * (1 - color.a)), (color.g * color.a) + (oldColor.g * (1 - color.a)), (color.b * color.a) + (oldColor.b * (1 - color.a)), color.a);
+} */
+
 vec4 color_correct(vec4 color){ // switch red and blue color values
 	float t = color.r;
 	color.r = color.b; color.b = t;
@@ -39,7 +44,24 @@ void main() {
 		else if(mode == 7) color = color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
 		else color = vec4(1.0, 0.0, 0.0, 1.0); // error
 	}
+	/* else if(mode < 0 && mode > -8){ // Alpha Values go to top
+		if(mode <= 1 && texture(tex1, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex1, vec2(texcoord.x, texcoord.y));
+		if(mode <= 2 && texture(tex2, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex2, vec2(texcoord.x, texcoord.y));
+		if(mode <= 1 && texture(tex3, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex3, vec2(texcoord.x, texcoord.y));
+		if(mode <= 2 && texture(tex4, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex4, vec2(texcoord.x, texcoord.y));
+		if(mode <= 1 && texture(tex5, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex5, vec2(texcoord.x, texcoord.y));
+		if(mode <= 2 && texture(tex6, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex6, vec2(texcoord.x, texcoord.y));
+		if(mode <= 1 && texture(tex7, vec2(texcoord.x, texcoord.y)).a > color.a) 
+			color = texture(tex7, vec2(texcoord.x, texcoord.y));
+	} */
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
-	if (color.a < 0.1) discard; // quick blending fix
+
+	if (color.a < 0.05) discard; // blending fix
 }

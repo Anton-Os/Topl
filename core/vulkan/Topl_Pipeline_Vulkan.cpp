@@ -6,13 +6,13 @@ namespace Vulkan {
 		
 		VkShaderModuleCreateInfo shaderCreateInfo = {};
 		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		shaderCreateInfo.codeSize = shaderSrc.length() * 4; // multiply by 4 to get size in bytes
+		shaderCreateInfo.codeSize = shaderSrc.length(); // multiply by 4 to get size in bytes
 		shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(shaderSrc.c_str());
 
-		logMessage("Shader source: " + shaderSrc); // TODO: Get past this point!!!
+		// logMessage("Shader source: " + shaderSrc); // TODO: Get past this point!!!
 		result = vkCreateShaderModule(device, &shaderCreateInfo, nullptr, shaderModule);
-		if(result == VK_SUCCESS) logMessage("Shader module creation success\n");
-		else return logMessage(MESSAGE_Exclaim, "Shader module creation failure!\n");
+		if(result == VK_SUCCESS) logMessage(" shader module creation success\n");
+		else return logMessage(MESSAGE_Exclaim, " shader module creation failure!\n");
 	}
 }
 
@@ -26,74 +26,30 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	std::cout << "Vertex Shader path: " << vertexShader->getFilePath(); // for testing
 	VkShaderModule vertexShaderModule = {};
 	Vulkan::createShaderModule(_logicDevice, &vertexShaderModule, vertexShaderSrc);
 
-	pipeline->vertexStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipeline->vertexStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipeline->vertexStageInfo.module = vertexShaderModule;
-	pipeline->vertexStageInfo.pName = "main";
+	pipeline->vertexSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipeline->vertexSInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	pipeline->vertexSInfo.module = vertexShaderModule;
+	pipeline->vertexSInfo.pName = "main";
 
 	std::string pixelShaderSrc = readFile(pixelShader->getFilePath());
+	std::cout << "Pixel Shader path: " << pixelShader->getFilePath(); // for testing
 	VkShaderModule pixelShaderModule = {};
 	Vulkan::createShaderModule(_logicDevice, &pixelShaderModule, pixelShaderSrc);
 
-	pipeline->pixelStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipeline->pixelStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipeline->pixelStageInfo.module = pixelShaderModule;
-	pipeline->pixelStageInfo.pName = "main";
+	pipeline->pixelSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipeline->pixelSInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	pipeline->pixelSInfo.module = pixelShaderModule;
+	pipeline->pixelSInfo.pName = "main";
 
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
-	setPipeline(pipeline);
+	std::cout << "Shaders Creation Checkpoint!" << std::endl;
 
-	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
-	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
-
-	finalizePipeline(); // combine everything from init() and genPipeline() steps
-}
-
-void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader){
-	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
-	
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
-	VkShaderModule vertexShaderModule = {};
-	Vulkan::createShaderModule(_logicDevice, &vertexShaderModule, vertexShaderSrc);
-
-	pipeline->vertexStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipeline->vertexStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipeline->vertexStageInfo.module = vertexShaderModule;
-	pipeline->vertexStageInfo.pName = "main";
-
-	std::string pixelShaderSrc = readFile(pixelShader->getFilePath());
-	VkShaderModule pixelShaderModule = {};
-	Vulkan::createShaderModule(_logicDevice, &pixelShaderModule, pixelShaderSrc);
-
-	pipeline->pixelStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	pipeline->pixelStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipeline->pixelStageInfo.module = pixelShaderModule;
-	pipeline->pixelStageInfo.pName = "main";
-
-	// TODO: Populate geometry shader
-	// TODO: Populate tesselation control shader
-	// TODO: Populate tesselation evaluation shader
-	
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
-	setPipeline(pipeline);
-
-	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
-	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
-	// TODO: Destroy any other shader modules
-
-	finalizePipeline(); // combine everything from init() and genPipeline() steps
-}
-
-void Topl_Renderer_Vulkan::finalizePipeline(){
 	VkPipelineShaderStageCreateInfo shaderStages[2] = { // TODO: Make configurable
-		_pipeline->vertexStageInfo,
-		_pipeline->pixelStageInfo
+		_pipeline->vertexSInfo,
+		_pipeline->pixelSInfo
 	};
 
 	_pipeline->pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -112,7 +68,118 @@ void Topl_Renderer_Vulkan::finalizePipeline(){
 	_pipeline->pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 	_pipeline->pipelineInfo.basePipelineIndex = -1;
 
+	// setDrawMode(DRAW_Triangles);
+
+	std::cout << "Pipeline Creation Checkpoint!" << std::endl;
+
 	if(vkCreateGraphicsPipelines(_logicDevice, VK_NULL_HANDLE, 1, &_pipeline->pipelineInfo, nullptr, &_pipeline->pipeline) == VK_SUCCESS)
 		logMessage("Pipeline creation success\n");
 	else return logMessage("Pipeline creation failure!");
+
+	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
+	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
+
+	pipeline->entryShader = vertexShader;
+	pipeline->isReady = true;
+	// setPipeline(pipeline);
+}
+
+void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
+	
+	unsigned short shaderStageCount = 0;
+	VkPipelineShaderStageCreateInfo shaderStages[5];
+
+	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	VkShaderModule vertexShaderModule = {};
+	Vulkan::createShaderModule(_logicDevice, &vertexShaderModule, vertexShaderSrc);
+
+	pipeline->vertexSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipeline->vertexSInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	pipeline->vertexSInfo.module = vertexShaderModule;
+	pipeline->vertexSInfo.pName = "main";
+	shaderStages[0] = _pipeline->vertexSInfo;
+
+	std::string pixelShaderSrc = readFile(pixelShader->getFilePath());
+	VkShaderModule pixelShaderModule = {};
+	Vulkan::createShaderModule(_logicDevice, &pixelShaderModule, pixelShaderSrc);
+
+	pipeline->pixelSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	pipeline->pixelSInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	pipeline->pixelSInfo.module = pixelShaderModule;
+	pipeline->pixelSInfo.pName = "main";
+	shaderStages[1] = _pipeline->pixelSInfo;
+
+	VkShaderModule geomShaderModule = {};
+	if(geomShader != nullptr){
+		shaderStageCount++;
+
+		std::string geomShaderSrc = readFile(geomShader->getFilePath());
+		VkShaderModule geomShaderModule = {};
+		Vulkan::createShaderModule(_logicDevice, &geomShaderModule, geomShaderSrc);
+
+		pipeline->geomSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipeline->geomSInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+		pipeline->geomSInfo.module = geomShaderModule;
+		pipeline->geomSInfo.pName = "main";
+		shaderStages[shaderStageCount] = _pipeline->geomSInfo;
+	}
+
+	VkShaderModule tessCtrlShaderModule = {};
+	if(tessCtrlShader != nullptr){
+		shaderStageCount++;
+
+		std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath());
+		VkShaderModule tessCtrlShaderModule = {};
+		Vulkan::createShaderModule(_logicDevice, &tessCtrlShaderModule, tessCtrlShaderSrc);
+
+		pipeline->tessCtrlSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipeline->tessCtrlSInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		pipeline->tessCtrlSInfo.module = tessCtrlShaderModule;
+		pipeline->tessCtrlSInfo.pName = "main";
+		shaderStages[shaderStageCount] = _pipeline->tessCtrlSInfo;
+	}
+
+	VkShaderModule tessEvalShaderModule = {};
+	if(tessEvalShader != nullptr){
+		shaderStageCount++;
+
+		std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath());
+		VkShaderModule tessEvalShaderModule = {};
+		Vulkan::createShaderModule(_logicDevice, &tessEvalShaderModule, tessEvalShaderSrc);
+
+		pipeline->tessEvalSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipeline->tessEvalSInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		pipeline->tessEvalSInfo.module = tessEvalShaderModule;
+		pipeline->tessEvalSInfo.pName = "main";
+		shaderStages[shaderStageCount] = _pipeline->tessEvalSInfo;
+	}
+
+	_pipeline->pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	_pipeline->pipelineInfo.stageCount = shaderStageCount;
+	_pipeline->pipelineInfo.pStages = shaderStages;
+	_pipeline->pipelineInfo.pVertexInputState = &_vertexInputInfo;
+	_pipeline->pipelineInfo.pInputAssemblyState = &_inputAssemblyInfo;
+	_pipeline->pipelineInfo.pViewportState = &_viewportStateInfo;
+	_pipeline->pipelineInfo.pRasterizationState = &_rasterStateInfo;
+	_pipeline->pipelineInfo.pMultisampleState = &_multisampleInfo;
+	_pipeline->pipelineInfo.pDepthStencilState = &_depthStencilInfo;
+	_pipeline->pipelineInfo.pColorBlendState = &_colorBlendInfo;
+	_pipeline->pipelineInfo.layout = _pipelineLayout;
+	_pipeline->pipelineInfo.renderPass = _renderpass;
+	_pipeline->pipelineInfo.subpass = 0;
+	_pipeline->pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+	_pipeline->pipelineInfo.basePipelineIndex = -1; // 0
+
+	if(vkCreateGraphicsPipelines(_logicDevice, VK_NULL_HANDLE, 1, &_pipeline->pipelineInfo, nullptr, &_pipeline->pipeline) == VK_SUCCESS)
+		logMessage("Pipeline creation success\n");
+	else return logMessage("Pipeline creation failure!");
+
+	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
+	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
+
+	pipeline->entryShader = vertexShader;
+	pipeline->isReady = true;
+	// setPipeline(pipeline);
 }

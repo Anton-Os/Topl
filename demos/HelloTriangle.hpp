@@ -1,6 +1,6 @@
 #define RENDER_TEST_ENABLE
 
-#include "Topl_Main.hpp"
+#include "Topl_Program.hpp"
 
 #include "meshes/Geo_Shape2D.hpp"
 
@@ -15,12 +15,12 @@ Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 Topl_Scene test_scene = Topl_Scene();
 
 // OpenGL Test Renderer
-struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4{
-	Diagnostic_Renderer_GL4(NATIVE_WINDOW window) 
+struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
+	HelloTriangle_Renderer_GL4(NATIVE_WINDOW window) 
 	: Topl_Renderer_GL4(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
 
 	void build(const Topl_Scene* scene) override { 
-		logMessage("Diagnostic Build (OpenGL)");
+		logMessage("HelloTriangle Build (OpenGL)");
 		setDrawMode(DRAW_Triangles);
 		Topl_Renderer_GL4::build(scene); 
 	}
@@ -35,12 +35,12 @@ struct Diagnostic_Renderer_GL4 : public Topl_Renderer_GL4{
 
 #ifdef _WIN32
 // DirectX Test Renderer
-struct Diagnostic_Renderer_DX11 : public Topl_Renderer_DX11 {
-	Diagnostic_Renderer_DX11(NATIVE_WINDOW window) 
+struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
+	HelloTriangle_Renderer_DX11(NATIVE_WINDOW window) 
 	: Topl_Renderer_DX11(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
 
 	void build(const Topl_Scene* scene) override {
-		logMessage("Diagnostic Build (DirectX11)");
+		logMessage("HelloTriangle Build (DirectX11)");
 		setDrawMode(DRAW_Triangles);
 		Topl_Renderer_DX11::build(scene); 
 	}
@@ -56,10 +56,12 @@ struct Diagnostic_Renderer_DX11 : public Topl_Renderer_DX11 {
 
 #ifdef TOPL_ENABLE_VULKAN
 // Vulkan Test Renderer
-struct Diagnostic_Renderer_Vulkan : public Topl_Renderer_Vulkan {
-	Diagnostic_Renderer_Vulkan(NATIVE_WINDOW window)
+struct HelloTriangle_Renderer_Vulkan : public Topl_Renderer_Vulkan {
+	HelloTriangle_Renderer_Vulkan(NATIVE_WINDOW window)
 	: Topl_Renderer_Vulkan(window){
-		// genPipeline(&pipeline, &vertexShader, &pixelShader);
+		setViewport(&_defaultViewport);
+		setDrawMode(DRAW_Triangles);
+		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_isBuilt = true;
 		_renderIDs = 1;
 	}

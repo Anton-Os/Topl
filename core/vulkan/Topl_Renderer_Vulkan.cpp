@@ -72,18 +72,18 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 #endif
 	};
 
-/* #ifdef ENABLE_DEBUG_LAYERS
+#ifdef ENABLE_DEBUG_LAYERS
 	const unsigned instanceLayerCount = 1;
 	const char* instanceLayers[instanceLayerCount] = { "VK_LAYER_LUNARG_standard_validation" };
-#endif */
+#endif
 
 	VkInstanceCreateInfo instanceInfo = {};
 	instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceInfo.pApplicationInfo = &appInfo;
-/* #ifdef ENABLE_DEBUG_LAYERS
+#ifdef ENABLE_DEBUG_LAYERS
 	instanceInfo.enabledLayerCount = instanceLayerCount;
 	instanceInfo.ppEnabledLayerNames = instanceLayers;
-#endif */
+#endif
 	instanceInfo.enabledExtensionCount = instanceExtCount;
 	instanceInfo.ppEnabledExtensionNames = instanceExtensions;
 
@@ -91,11 +91,11 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	if(result == VK_SUCCESS) logMessage("Instance creation success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Instance creation failure!\n");
 
-/* #ifdef ENABLE_DEBUG_LAYERS
+#ifdef ENABLE_DEBUG_LAYERS
 	result = Vulkan::createDebugReport(&_instance);
 	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
-#endif */
+#endif
 
 
 	// Physical Device Enumeration

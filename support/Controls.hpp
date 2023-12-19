@@ -23,14 +23,17 @@ protected:
 
 // Keys
 
-typedef void (*keyCallback)(void); // Triggers action on a particular keypress
+typedef void (*keyCallback)(void); // Triggers action on a specified keypress
+typedef void (*anyKeyCallback)(char); // Triggers action on any keypress
 
 class Input_KeyControl : public Input_Control {
 public:
 	Input_KeyControl() : Input_Control(){}
 	void addKeyPress(char keyCode);
 	void addCallback(char keyCode, keyCallback callback);
+    void addAnyCallback(anyKeyCallback callback);
 private:
+    std::vector<anyKeyCallback> _anyKeyCallbacks;
 	std::map<char, keyCallback> _keyCallback_map;
 };
 

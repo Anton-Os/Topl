@@ -7,18 +7,18 @@
 
 #include "Geo_Construct.hpp"
 
-class Geo_Model : public Geo_Construct {
+class Geo_Model3D : public Geo_Construct {
 public:
-    Geo_Model(const std::string& prefix,const std::string& filePath) : Geo_Construct(prefix){ // Non-Configured Constructor
+    Geo_Model3D(const std::string& prefix, const std::string& filePath) : Geo_Construct(prefix){ // Non-Configured Constructor
         _filePath = filePath;
     }
 
-    Geo_Model(const std::string& prefix,const std::string& filePath, Topl_Scene* scene) : Geo_Construct(prefix){ // Configured Constructor
+    Geo_Model3D(const std::string& prefix, const std::string& filePath, Topl_Scene* scene) : Geo_Construct(prefix){ // Configured Constructor
         _filePath = filePath;
         configure(scene);
     }
 
-    ~Geo_Model(){
+    ~Geo_Model3D(){
         if(_nodes != nullptr){
             for(unsigned n = 0; n < _nodeCount; n++) delete(*(_nodes + n));
             free(_nodes);

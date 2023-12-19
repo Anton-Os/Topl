@@ -6,19 +6,16 @@
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
 #include "constructs/Geo_Layout.hpp"
-#include "constructs/Geo_Puppet.hpp"
-// #include "constructs/Geo_Model.hpp"
 
 #include "Flat_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
 #include "Effect_Shader.hpp"
 
-#include "Topl_Main.hpp"
+#include "Topl_Program.hpp"
 
-struct Sandbox_Demo : public Topl_Main {
-    Sandbox_Demo(const char* execPath, BACKEND_Target backend) 
-    : Topl_Main(execPath, "Sandbox", backend){
+struct Sandbox_Demo : public Topl_Program {
+    Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
         beamPipeline = Topl_Factory::genPipeline(backend, &beamVShader, &beamPShader);
         effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
@@ -43,7 +40,6 @@ struct Sandbox_Demo : public Topl_Main {
     Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 3);
     Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
     Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
-
 private:
     Topl_Scene scene; // for main elements
     Topl_Scene overlay; // for gui elements

@@ -6,27 +6,25 @@
 
 class Topl_Timeline {
 public:
-	Topl_Timeline(){
-		// TODO: Add event timer for calculating transforms
-	}
+	Topl_Timeline(){}
 
-	// void addTform_float(float* target, std::pair(millisec_t, float));
-	// void addTform_double(double* target, std::pair(millisec_t, double));
-	// void addTform_int(int* target, std::pair(millisec_t, double));
+	void addSequence_float(float* var, std::pair<millisec_t, float> timeTarget);
+	// void addSequence_double(double* var, std::pair(millisec_t, double));
+	// void addSequence_int(int* var, std::pair(millisec_t, double));
 
 	Timer_Ticker ticker;
 private:
-	std::map<float*, std::map<millisec_t, float>> tformTable_float;
-	std::map<double*, std::map<millisec_t, double>> tformTable_double;
-	std::map<int*, std::map<millisec_t, int>> tformTable_int;
+	std::map<float*, std::map<millisec_t, float>> _float_map;
+	// std::map<double*, std::map<millisec_t, double>> _double_map;
+	// std::map<int*, std::map<millisec_t, int>> _int_map;
 };
 
 #define NO_PICKER_OBJ nullptr
 
-class Topl_Main {
+class Topl_Program {
 public:
-    Topl_Main(const char* execPath, const char* name, BACKEND_Target backend);
-	~Topl_Main();
+    Topl_Program(const char* execPath, const char* name, BACKEND_Target backend);
+	~Topl_Program();
 
 	void run();
 #ifdef RASTERON_H
@@ -34,6 +32,7 @@ public:
 #endif
 
 	static Vec3f cursorPos;
+	static std::string userInput;
 #ifdef RASTERON_H
 	static unsigned pickerVal; // picker for color
 	static const Geo_Actor* pickerObj; // picker for actor

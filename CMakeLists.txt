@@ -46,13 +46,13 @@ if(SUPPORT_MODELS AND Assimp_FOUND)
     message(STATUS, "Building 3D Model sources")
     list(APPEND geometry_src
         geometry/meshes/Geo_Node.cpp
-        # geometry/constructs/Geo_Model.cpp
+        geometry/constructs/Geo_Model.cpp
     )
 endif()
 
 
 list(APPEND core_src
-    core/Topl_Main.cpp
+    core/Topl_Program.cpp
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
     core/Topl_Scene_Statics.cpp
@@ -197,14 +197,14 @@ endforeach()
 
 # ------------- Demos and Tests ------------- #
 
-add_executable(Diagnostic demos/Diagnostic.cpp)
+add_executable(HelloTriangle demos/HelloTriangle.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 # add_executable(Playground demos/Playground.cpp)
 # add_executable(Animotion demos/Animotion.cpp)
 # add_executable(Splitscreen demos/Splitscreen.cpp)
 # add_executable(Subsurface demos/Subsurface.cpp)
 
-list(APPEND demo_targets Diagnostic Sandbox) # Playground Animotion Splitscreen Subsurface) # add all demo targets to a list
+list(APPEND demo_targets HelloTriangle Sandbox) # Playground Animotion Splitscreen Subsurface) # add all demo targets to a list
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)

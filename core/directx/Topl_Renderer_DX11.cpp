@@ -218,6 +218,7 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 	ID3D11DepthStencilState* depthStencilState;
 	_device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	_deviceCtx->OMSetDepthStencilState(depthStencilState, 1);
+	depthStencilState->Release();
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc;
 	dsViewDesc.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
@@ -385,7 +386,11 @@ Img_Base Topl_Renderer_DX11::frame() {
 
 	_frameImage = Img_Base();
 	_frameImage.setImage(stageImage);
+
 	dealloc_image(stageImage);
+	framebuffTex->Release();
+	framebuff->Release();
+
 	return _frameImage;
 }
 

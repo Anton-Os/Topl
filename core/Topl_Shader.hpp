@@ -79,7 +79,7 @@ public:
 	unsigned short getInputCount() const { return _inputs.size(); }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		if(actor->shaderFunc != nullptr) actor->shaderFunc();
+		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_Shader*)this);
 		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
