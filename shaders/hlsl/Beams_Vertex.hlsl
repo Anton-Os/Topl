@@ -11,7 +11,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;
 	float4 cam_pos;
 	float4 look_pos;
-	// float4x4 projMatrix;
+	float4x4 projMatrix;
 
 	float3 skyLight_pos; float3 skyLight_value;
 	float3 flashLight_pos; float3 flashLight_value;
@@ -22,7 +22,7 @@ struct VS_INPUT { float4 pos : POSITION; };
 
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	float3 pos1 : POSITION; // vertex position
+	float3 vertex_pos : POSITION; // vertex position
 };
 
 // Functions
@@ -49,22 +49,17 @@ float3x3 calcRotMatrix(float3 angles) {
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCameraMatrix(float3 cPos, float3 lPos){ // camera postion and vertex position
-	float3 defaultUpVec = float3(0.0, 1.0, 0.0);
-
-	float3 zAxis = normalize(lPos - cPos);
-	float3 xAxis = normalize(cross(defaultUpVec, zAxis));
-	float3 yAxis = cross(zAxis, xAxis);
-
+float4x4 calcCamMatrix(float3 cPos, float3 angles) { // camera postion and relative look position
 	float4x4 camMatrix = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0,
-		xAxis.y, yAxis.y, zAxis.y, 0.0,
-		xAxis.z, yAxis.z, zAxis.z, 0.0,
-		-1.0 * dot(xAxis, cPos), -1.0 * dot(yAxis, cPos), -1.0 * dot(zAxis, cPos), 1.0
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
+		0, 0, 0, 1
 	};
 
 	return camMatrix;
 }
+
 
 // Main
 
@@ -74,9 +69,9 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
 	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0);
 
-	float4x4 cameraMatrix = calcCameraMatrix(cam_pos, look_pos); // TODO: include camera matrix with projection
-	output.pos += float4(offset, 0.0f); // output.pos += mul(projMatrix, offset);
-	output.pos1 = float3(output.pos.x, output.pos.y, output.pos.z);
+	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
+	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
+	output.pos = mul(cameraMatrix, output.pos + float4(offset, 0.0));
 
 	return output;
 }

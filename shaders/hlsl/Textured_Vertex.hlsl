@@ -9,6 +9,7 @@ cbuffer CONST_BLOCK : register(b0) {
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;
+	// float zoom;
 	float4 cam_pos;
 	float4 look_pos;
 	float4x4 projMatrix;
@@ -48,16 +49,12 @@ float3x3 calcRotMatrix(float3 angles) {
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCamMatrix(float3 cPos, float3 lPos) { // camera postion and relative look position
-	float3 forward = normalize(cPos - lPos);
-	float3 up = float3(0, 1, 0);
-	float3 right = cross(forward, up);
-
+float4x4 calcCamMatrix(float3 cPos, float3 angles) { // camera postion and relative look position
 	float4x4 camMatrix = {
-		right.x, up.x, forward.x, cPos.x,
-		right.y, up.y, forward.y, cPos.y,
-		right.z, up.z, forward.z, cPos.z,
-		0.0, 0.0, 0.0, 1.0
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
+		0, 0, 0, 1
 	};
 
 	return camMatrix;

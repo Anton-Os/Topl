@@ -9,7 +9,7 @@ layout(std140, binding = 0) uniform Block{
 layout(std140, binding = 1) uniform SceneBlock{
 	ivec2 screenRes;
 	vec2 cursorPos;
-	uint mode;
+	int mode;
 };
 
 layout(location = 0) out vec4 color;

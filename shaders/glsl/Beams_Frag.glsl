@@ -6,7 +6,7 @@ layout(std140, binding = 1) uniform SceneBlock{
 	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
-	// mat4 projMatrix;
+	mat4 projMatrix;
 
 	vec3 skyLight_pos; vec3 skyLight_value;
 	vec3 flashLight_pos; vec3 flashLight_value;

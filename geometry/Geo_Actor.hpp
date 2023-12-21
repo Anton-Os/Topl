@@ -7,10 +7,10 @@
 #define DEFAULT_ACTOR_ID 0xFFFFFFFF
 #define DEFAULT_ACTOR_NAME "actor"
 
-extern struct Topl_Shader;
+extern struct Topl_EntryShader;
 
 typedef void (*pickerCallback)(void);
-typedef void (*shaderCallback)(Topl_Shader*);
+typedef void (*shaderCallback)(Topl_EntryShader*);
 
 class Geo_Actor {
 public:
@@ -27,6 +27,7 @@ public:
 	void setRot(const Vec3f& angleVec){ _rotation = angleVec; }
 	void updateRot(const Vec3f& angleVec){ _rotation = _rotation + angleVec; }
 	void setSize(const Vec3f& scaleVec){ _scale = scaleVec; }
+	void updateSize(const Vec3f& scaleVec){ _scale = _scale + scaleVec; }
 
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }

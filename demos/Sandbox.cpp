@@ -1,5 +1,7 @@
 #include "Sandbox.hpp"
 
+
+static int mode = SANDBOX_MODE_MOVE;
 static unsigned texMode = 0;
 static Vec3f texScroll = { 0.0, 0.0, 0.0 };
 
@@ -18,6 +20,35 @@ Img_Base boxTex = Img_Base(boxImg); Img_Base pyramidTex = Img_Base(pyramidImg);
 Img_Base sphereTex = Img_Base(sphereImg); Img_Base hexTex = Img_Base(hexImg);
 #endif
 
+static void updateActor(Geo_Actor* actor){
+    switch(mode){
+        case SANDBOX_MODE_HIDE: break; // TODO: hide actor
+        case SANDBOX_MODE_MOVE: actor->setPos(Topl_Program::cursorPos); break;
+        case SANDBOX_MODE_ROTATE: break; // TODO: rotate actor
+        case SANDBOX_MODE_SCALE: break; // TODO: scale actor
+        case SANDBOX_MODE_REWIND: break; // TODO: rewind time
+        case SANDBOX_MODE_PLAYPAUSE: break; // TODO: play or pause time
+        case SANDBOX_MODE_FORWARD: break; // TODO: fast forward time
+        case SANDBOX_MODE_PAN: break; // TODO: pan scene
+        case SANDBOX_MODE_LOOK: break; // TODO: rotate scene
+        case SANDBOX_MODE_ZOOM: break; // TODO: zoom scene
+        default: actor->setPos(Topl_Program::cursorPos);
+    }
+}
+
+static void onAnyKey(char k){ 
+    if(isdigit(k)){ 
+        mode = k - '0'; // conversion from char to decimal
+        std::cout << "Key mode: " << std::to_string(mode) << std::endl;
+    } 
+    else if(toupper(k) == 'W') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
+    else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
+    else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
+    else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
+    else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
+    else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
+} // sets sandbox mode
+
 static void onHover(float x, float y){ 
     if(Platform::mouseControl.getIsMouseDown().second) {
         Topl_Program::cursorPos = { x, y, 0.0F }; 
@@ -26,16 +57,20 @@ static void onHover(float x, float y){
             std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
 
             if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId()) {
-                _instance->boxActor.setPos(Topl_Program::cursorPos);
+                // _instance->boxActor.setPos(Topl_Program::cursorPos);
+                updateActor(&_instance->boxActor);
                 boxTex.setColorImage(0xFF00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()){
-                _instance->pyramidActor.setPos(Topl_Program::cursorPos);
+                // _instance->pyramidActor.setPos(Topl_Program::cursorPos);
+                updateActor(&_instance->pyramidActor);
                 pyramidTex.setColorImage(0xFF00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()){
-                _instance->sphereActor.setPos(Topl_Program::cursorPos);
+                // _instance->sphereActor.setPos(Topl_Program::cursorPos);
+                updateActor(&_instance->sphereActor);
                 sphereTex.setColorImage(0xFF00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId()){ 
-                _instance->hexActor.setPos(Topl_Program::cursorPos);
+                // _instance->hexActor.setPos(Topl_Program::cursorPos);
+                updateActor(&_instance->hexActor);
                 hexTex.setColorImage(0xFF00FF00);
             }
             // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Program::cursorPos - layoutVec);
@@ -50,14 +85,15 @@ static void onHover(float x, float y){
 void texModeCycle(){ (texMode < 8)? texMode++ : texMode = 0; }
 void texScrollCycle(){ texScroll[0] += 0.05; }
 
-static void box_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
-static void pyramid_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
-static void sphere_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
-static void hex_shadercall(Topl_Shader* shader){ /* Add body for render block */ }
+static void box_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
+static void pyramid_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
+static void sphere_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
+static void hex_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
 
 void Sandbox_Demo::init(){
     srand(time(NULL));
 
+    Platform::keyControl.addAnyCallback(onAnyKey);
     // Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
     Platform::mouseControl.addHoverCallback(onHover);
@@ -96,9 +132,9 @@ void Sandbox_Demo::init(){
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
+    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, beamPipeline);
     _renderer->buildScene(&details);
     
     layout1.configure(&overlay);
@@ -107,7 +143,7 @@ void Sandbox_Demo::init(){
     layout3.configure(&overlay);
     layout3.shift({ -0.55, 0.0, 0.0 });
 
-    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
@@ -115,8 +151,8 @@ void Sandbox_Demo::loop(double frameTime){
     // Object Updates
     
     {
-        boxActor.updateRot({ 0.0F, 0.003F * (float)frameTime, 0.0F });
-        pyramidActor.updateRot({ 0.003F * (float)frameTime, 0.0F, 0.0F });
+        boxActor.updateRot({ 0.003F * (float)frameTime, 0.0F });
+        pyramidActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
         sphereActor.updateRot({ -0.003F * (float)frameTime, -0.003F * (float)frameTime, -0.003F * (float)frameTime });
         hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
 
@@ -127,12 +163,12 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 
@@ -152,13 +188,14 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamPipeline);
-        beamVShader.setMode(texMode % 4);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, beamPipeline);
+        beamVShader.setMode(0);
+        texVShader.setMode(0);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
         texVShader.setMode(texMode);
         texVShader.setTexScroll(texScroll);
         _renderer->updateScene(&overlay);
@@ -167,7 +204,7 @@ void Sandbox_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _instance = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _instance = new Sandbox_Demo(argv[0], BACKEND_DX11);
 
     _instance->run();
     delete(_instance);

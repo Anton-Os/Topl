@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform SceneBlock{
 	mat4 projMatrix;
 };
 
-layout(location = 0) in flat uint vertexNo;
+layout(location = 0) in flat uint vertex_num;
 layout(location = 1) in vec3 pos;
 
 layout(location = 0) out vec4 outColor;
@@ -25,9 +25,9 @@ layout(location = 0) out vec4 outColor;
 
 void main() { 
 	if (mode == 1) // alternate mode
-		if (vertexNo % 4 == 0) outColor = vec4(1.0f, 0.0, 0.0f, color.a); // red
-		else if (vertexNo % 4 == 1) outColor = vec4(0.0f, 1.0f, 0.0f, color.a); // green
-		else if (vertexNo % 4 == 2) outColor = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
+		if (vertex_num % 4 == 0) outColor = vec4(1.0f, 0.0, 0.0f, color.a); // red
+		else if (vertex_num % 4 == 1) outColor = vec4(0.0f, 1.0f, 0.0f, color.a); // green
+		else if (vertex_num % 4 == 2) outColor = vec4(0.0f, 0.0f, 1.0f, color.a); // blue
 		else outColor = vec4(0.0f, 0.0f, 0.0f, color.a); // black
 	else if (mode == 2) { // directional mode
 		if (pos.z > 0) outColor = vec4(0, 1, 0, 0.8);

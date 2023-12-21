@@ -13,7 +13,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	int mode;
 	vec3 cam_pos;
 	vec3 look_pos;
-	// mat4 projMatrix;
+	mat4 projMatrix;
 
 	vec3 skyLight_pos; vec3 skyLight_value;
 	vec3 flashLight_pos; vec3 flashLight_value;
@@ -46,18 +46,22 @@ mat3 calcRotMatrix(vec3 angles) {
 		-1.0 * sin(angles.z), 0, cos(angles.z)
 	);
 
+	/* return mat3(
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z),
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y),
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z)
+	); */
+
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
-	mat4 camMatrix = mat4(
-		1, 0, 0, -cPos.x,
-		0, 1, 0, -cPos.y,
-		0, 0, 1, -cPos.z,
+mat4 calcCamMatrix(vec3 cPos, vec3 angles) { // placeholder camera
+	return mat4(
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
 		0, 0, 0, 1
 	);
-
-	return camMatrix;;
 }
 
 // Main
@@ -66,6 +70,8 @@ void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
 	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0f);
 
-	gl_Position = final_pos + vec4(offset, 0.0f);
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos); // * projMatrix;
+
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 }

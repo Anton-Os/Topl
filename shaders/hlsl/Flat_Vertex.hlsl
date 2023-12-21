@@ -21,8 +21,8 @@ struct VS_INPUT { float4 pos : POSITION; };
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	// float4 flatColor : COLOR0;
-	uint vertexNo : VERTEXID;
-	float4 pos1 : POSITION0;
+	uint vertex_num : VERTEXID;
+	float4 vertex_pos : POSITION0;
 };
 
 // Functions
@@ -49,25 +49,15 @@ float3x3 calcRotMatrix(float3 angles){
 	return mul(mul(xRotMatrix, yRotMatrix), zRotMatrix);
 }
 
-float4x4 calcCamMatrix(float3 cPos, float3 lPos){ // lookAt matrix in progress
+float4x4 calcCamMatrix(float3 cPos, float3 angles) { // camera postion and relative look position
 	float4x4 camMatrix = {
-		1, 0, 0, -cPos.x,
-		0, 1, 0, -cPos.y,
-		0, 0, 1, cPos.z - LOOK_RADIUS,
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
 		0, 0, 0, 1
 	};
 
-	float3x3 rotMatrix = calcRotMatrix(lPos);
-
-	float4x4 camRotMatrix = {
-		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], 0,
-		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], 0,
-		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], 0,
-		0, 0, 0, 1
-	};
-
-	// return camMatrix;
-	return mul(camRotMatrix, camMatrix);
+	return camMatrix;
 }
 
 // Main
@@ -76,15 +66,12 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	VS_OUTPUT output;
 
 	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(angles.x + offset.x, angles.y + offset.y, angles.z + (-offset.z + 0.5) * 2, 1.0);
-	output.pos *= float4(scale.x, scale.y, scale.z, 1.0);
+	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0);
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
-	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos));
-	output.pos -= float4(0, 0, LOOK_RADIUS, 0); // move back to offset camera location
-
-	output.vertexNo = vertexID;
-	output.pos1 = output.pos;
+	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	output.vertex_num = vertexID;
+	output.vertex_pos = output.pos;
 
 	return output;
 }

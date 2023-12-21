@@ -32,11 +32,12 @@ public:
 #endif
 
 	static Vec3f cursorPos;
-	static std::string userInput;
+	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H
 	static unsigned pickerVal; // picker for color
 	static const Geo_Actor* pickerObj; // picker for actor
 #endif
+	static Topl_Camera cameraObj; // custom camera object
 protected:
     virtual void init() = 0;
     virtual void loop(millisec_t frameTime) = 0;

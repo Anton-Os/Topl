@@ -79,13 +79,14 @@ public:
 	unsigned short getInputCount() const { return _inputs.size(); }
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_Shader*)this);
+		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
 		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
 	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
+		// appendDataToBytes((uint8_t*)&_zoom, sizeof(float), bytes);
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
@@ -94,6 +95,7 @@ public:
 	void setMode(int m){ _mode = m; }
 protected:
 	int _mode = DEFAULT_SHADER_MODE;
+	// float _zoom = 1.0;
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };

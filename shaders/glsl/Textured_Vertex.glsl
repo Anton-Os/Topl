@@ -43,18 +43,22 @@ mat3 calcRotMatrix(vec3 angles) {
 		-1.0 * sin(angles.z), 0, cos(angles.z)
 	);
 
+	/* return mat3(
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z),
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y),
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z)
+	); */
+
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // placeholder camera
-	mat4 camMatrix = mat4(
-		1, 0, 0, -cPos.x,
-		0, 1, 0, -cPos.y,
-		0, 0, 1, -cPos.z,
+mat4 calcCamMatrix(vec3 cPos, vec3 angles) { // placeholder camera
+	return mat4(
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
 		0, 0, 0, 1
 	);
-
-	return camMatrix;
 }
 
 // Main
@@ -65,6 +69,7 @@ void main() {
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
+	
 	texcoord_out = texcoord + texScroll;
 	mode_out = mode;
 }

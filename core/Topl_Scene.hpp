@@ -36,8 +36,10 @@ public:
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
-	void setRotation(const Vec3f& vec){ _rotation = vec; }
-	void updateRotation(const Vec3f& vec) { _rotation = _rotation + vec; }
+	void setRot(const Vec3f& vec){ _rotation = vec; }
+	void updateRot(const Vec3f& vec) { _rotation = _rotation + vec; }
+	// void setZoom(const Vec3f& vec){}
+	// void updateZoom(const Vec3f& vec){}
 	vec3f_cptr_t getPos() const { return &_pos; }
 	vec3f_cptr_t getRot() const { return &_rotation; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }

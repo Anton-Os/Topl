@@ -8,6 +8,8 @@ unsigned Topl_Program::pickerVal = NO_COLOR;
 const Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 #endif
 
+Topl_Camera Topl_Program::cameraObj = Topl_Camera();
+
 static void onAnyKey(char k){
 	if(isalnum(k)){
 		Topl_Program::userInput += k;
@@ -21,7 +23,7 @@ static void onPress(float x, float y){
 }
 
 void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> timeTarget){
-	auto sequence = std::find_if(_float_map.begin(), _float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == target; });
+	auto sequence = std::find_if(_float_map.begin(), _float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
 	// TODO: Add timeTarget cooresponding to float target
 	// if(sequence != _float_map.end()) sequence->at(target);
 }
@@ -30,6 +32,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
     _platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
+	_renderer->setCamera(&Topl_Program::cameraObj);
 	_renderer->setDrawMode(DRAW_Triangles);
 
 	Platform::keyControl.addAnyCallback(onAnyKey);

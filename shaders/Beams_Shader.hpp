@@ -35,7 +35,7 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
-		// appendDataToBytes((uint8_t*)camera->getProjMatrix(), camera->getProjMatrix()->size() * sizeof(float), bytes);
+		alignDataToBytes((uint8_t*)camera->getProjMatrix(), 0, sizeof(Mat4x4), bytes);
 
 		appendLight(&skyLight, bytes);
 		appendLight(&flashLight, bytes);

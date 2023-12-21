@@ -10,7 +10,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;
 	float4 cam_pos;
 	float4 look_pos;
-	// float4x4 projMatrix;
+	float4x4 projMatrix;
 
 	float3 skyLight_pos; float3 skyLight_value;
 	float3 flashLight_pos; float3 flashLight_value;
@@ -19,7 +19,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
-	float3 pos1 : POSITION;
+	float3 vertex_pos : POSITION;
 };
 
 // Functions
@@ -41,14 +41,14 @@ float calcDiffuse(float3 light, float3 vertex) {
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	float3 ambient = skyLight_value * 0.2;
-	float3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, input.pos1 - offset) * 0.5;
-	float3 specular = skyLight_value * calcSpec(cam_pos, input.pos1);
+	float3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, input.vertex_pos - offset) * 0.5;
+	float3 specular = skyLight_value * calcSpec(cam_pos, input.vertex_pos);
 
 	if(mode == 1) return float4(ambient, 1.0f);
 	else if(mode == 2) return float4(diffuse, 1.0f);
 	else if(mode == 3) return float4(specular, 1.0f);
 	else if(mode == 4){ // depth mode
-		float depth = sqrt(pow(input.pos1.x, 2) + pow(input.pos1.y, 2) + pow(input.pos1.z, 2)); // depth calculation
+		float depth = sqrt(pow(input.vertex_pos.x, 2) + pow(input.vertex_pos.y, 2) + pow(input.vertex_pos.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 	}
 	else return float4(ambient + diffuse + specular, 1.0); // all lighting

@@ -21,7 +21,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out uint vertexNo;
+layout(location = 0) out uint vertex_num;
 layout(location = 1) out vec3 pos_out;
 
 // Functions
@@ -48,38 +48,24 @@ mat3 calcRotMatrix(vec3 angles){
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCamMatrix(vec3 cPos, vec3 lPos) { // Custom Function
-	mat4 camMatrix = mat4(
-		1, 0, 0, -cPos.x,
-		0, 1, 0, -cPos.y,
-		0, 0, 1, cPos.z - LOOK_RADIUS,
+mat4 calcCamMatrix(vec3 cPos, vec3 angles) { // Custom Function
+	return mat4(
+		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
+		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
+		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
 		0, 0, 0, 1
 	);
-
-	mat3 rotMatrix = calcRotMatrix(lPos);
-
-	mat4 camRotMatrix = mat4(
-		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], 0,
-		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], 0,
-		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], 0,
-		0, 0, 0, 1
-	);
-
-	// return camMatrix;
-	return camMatrix * camRotMatrix;
 }
 
 // Main
 
 void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x + offset.x, angles.y + offset.y, angles.z + (-offset.z + 0.5) * 2, 1.0f);
-	final_pos *= vec4(scale.x, scale.y, scale.z, 1.0f);
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0f);
 
-	mat4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
-	gl_Position = final_pos * cameraMatrix * projMatrix;
-	gl_Position -= vec4(0, 0, LOOK_RADIUS, 0); // move back to offset camera location
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	vertexNo = gl_VertexID;
+	vertex_num = gl_VertexID;
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 }
