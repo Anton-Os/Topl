@@ -34,21 +34,30 @@ struct Geo_Puppet : public Geo_Construct {
 
 #ifdef RASTERON_H
 
+typedef const std::string puppetSpritePaths[PUPPET_PARTS]; // list of paths for loading sprites
+
 class Geo_Puppet2D : public Geo_Puppet {
+public:
     Geo_Puppet2D(const std::string& prefix) : Geo_Puppet(prefix){}
-    // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS]) : Geo_Puppet(prefix, &actors){}
+    Geo_Puppet2D(const std::string& prefix, puppetSpritePaths paths) : Geo_Puppet(prefix){} // TODO: Generate actors with sprite data
     // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
 
-    Geo_Actor actors[PUPPET_PARTS];
+protected:
+    Geo_Actor* actors[PUPPET_PARTS];
     Rasteron_Sprite* sprites[PUPPET_PARTS];
 };
 
 #endif
 #ifdef TOPL_ENABLE_MODELS
 
-class Geo_Puppet3D : public Geo_Puppet {
-    Geo_Puppet3D(const std::string& prefix) : Geo_Puppet(prefix){}
+typedef const std::string puppetModelPaths[PUPPET_PARTS]; // list of paths for loading models
 
+class Geo_Puppet3D : public Geo_Puppet {
+public:
+    Geo_Puppet3D(const std::string& prefix) : Geo_Puppet(prefix){}
+    Geo_Puppet3D(const std::string& prefix, puppetModelPaths paths) : Geo_Puppet(prefix){} // TODO: Generate actors with model data
+
+protected:
     Geo_Actor* actors[PUPPET_PARTS];
     Geo_Node* nodes[PUPPET_PARTS];
 };

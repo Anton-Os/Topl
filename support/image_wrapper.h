@@ -34,9 +34,6 @@ struct Img_Base {
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
 		_invertFont = FONT_INVERT; // make sure font renders correctly
-		/* Rasteron_Image* textImg = textImgOp(textObj, FONT_SIZE_MED);
-		image = antialiasImgOp(textImg);
-		dealloc_image(textImg); */
 		image = textImgOp(textObj, FONT_SIZE_MED);
     }
     void setImage(ref_image_t refImage){

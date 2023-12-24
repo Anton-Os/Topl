@@ -1,3 +1,5 @@
+#ifdef TOPL_ENABLE_MODELS
+
 #include "Geo_Node.hpp"
 
 // Mesh
@@ -92,3 +94,5 @@ Geo_Node::Geo_Node(const aiScene* scene, const aiNode* node) : Geo_Actor() {
 		if(_mesh != nullptr) setMesh((Geo_Mesh*)_mesh);
 	}
 }
+
+#endif

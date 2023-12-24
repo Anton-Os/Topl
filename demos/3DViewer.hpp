@@ -5,8 +5,8 @@
 
 #include "Topl_Program.hpp"
 
-struct 3DView_Demo : public Topl_Program {
-    3DView_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "3DView", backend){
+struct Viewer_Demo : public Topl_Program {
+    Viewer_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "3DViewer", backend){
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
     }
 
@@ -16,9 +16,10 @@ struct 3DView_Demo : public Topl_Program {
     Geo_Puppet2D puppet = Geo_Puppet2D("puppet"); // TODO: Test Puppet2D Implementation
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet"); // TODO: Test Puppet3D Implementation
 
-    Geo_Model3D model = Geo_Model3D("model", std::string(MODELS_DIR + "SpinTop.glb"));
+    Geo_Model3D model = Geo_Model3D("model", std::string(std::string(MODELS_DIR) + "SpinTop.glb"));
 private:
     Topl_Scene scene;
 
     Topl_Pipeline* flatPipeline;
+    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
 } *_instance;

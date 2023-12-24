@@ -52,7 +52,8 @@ endif()
 
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
-find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
 if(NOT SUPPORT_MODELS)
     set(Assimp_FOUND 0) # override variable to not found
+else()
+    find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
 endif()

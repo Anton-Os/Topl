@@ -2,21 +2,27 @@
 
 #include "Topl_Factory.hpp"
 
-#define MAX_TIMELINE_ATTRIBS 256
+#define MAX_TIMELINE_ATTRIBS 2056
+#define TIMELINE_START 0.0 // 0 millisecs will always be start
+#define TIMELINE_END 60000.0 // 1 minute will be default end
 
 class Topl_Timeline {
 public:
-	Topl_Timeline(){}
+	Topl_Timeline();
 
 	void addSequence_float(float* var, std::pair<millisec_t, float> timeTarget);
 	// void addSequence_double(double* var, std::pair(millisec_t, double));
 	// void addSequence_int(int* var, std::pair(millisec_t, double));
 
-	Timer_Ticker ticker;
+	Timer_Ticker ticker; // controls global events
+	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // controls context sensitive events
 private:
 	std::map<float*, std::map<millisec_t, float>> _float_map;
 	// std::map<double*, std::map<millisec_t, double>> _double_map;
 	// std::map<int*, std::map<millisec_t, int>> _int_map;
+
+	millisec_t _elapseTime = TIMELINE_START;
+	millisec_t _elapseRange[2] = { TIMELINE_START, TIMELINE_END };
 };
 
 #define NO_PICKER_OBJ nullptr

@@ -23,18 +23,10 @@ typedef void (*periodicCallback)(void);
 
 class Timer_PeriodicEvent {
 public:
-	Timer_PeriodicEvent(millisec_t period, periodicCallback callback) : periodMillisec(period) {
-		callbackTrigger = callback;
-	}
-	void addTime(unsigned long microsecs){
-		_millisecsElapsed += static_cast<double>(microsecs / MICROSEC_IN_MILLISEC);
-		while(_millisecsElapsed >= periodMillisec){
-			_millisecsElapsed -= periodMillisec;
-			callbackTrigger();
-		}
-	}
+	Timer_PeriodicEvent(millisec_t period, periodicCallback callback) : period(period) { callbackTrigger = callback; }
+	void addTime(unsigned long microsecs);
 private:
-	const millisec_t periodMillisec;
+	const millisec_t period;
 	periodicCallback callbackTrigger;
 	millisec_t _millisecsElapsed = 0.0;
 };
@@ -45,13 +37,8 @@ typedef void (*recurringCallback)(millisec_t);
 
 class Timer_RecurringEvent {
 public:
-	Timer_RecurringEvent(recurringCallback callback){
-		callbackTrigger = callback;
-	}
-	void addTime(unsigned long microsecs){
-		_millisecsElapsed += static_cast<double>(microsecs / MICROSEC_IN_MILLISEC); // conversion from microsecsecs to seconds
-		callbackTrigger(_millisecsElapsed);
-	}
+	Timer_RecurringEvent(recurringCallback callback){ callbackTrigger = callback; }
+	void addTime(unsigned long microsecs);
 private:
 	recurringCallback callbackTrigger;
 	millisec_t _millisecsElapsed = 0.0;
@@ -61,7 +48,7 @@ private:
 
 class Timer_Ticker { // Get number of milliss between two invocations of getSecsPassed()
 public:
-	Timer_Ticker() { reset(); }
+	Timer_Ticker(){ reset(); }
 
 	void reset();
 	void addPeriodicEvent(unsigned period, periodicCallback callback){ 
@@ -78,7 +65,7 @@ public:
 	double getAbsMicrosecs();
 	millisec_t getAbsMillisecs() { return getAbsMicrosecs() / MICROSEC_IN_MILLISEC; } // gets millisonds since timer creation
 	double getAbsSecs(){ return getAbsMicrosecs() / MICROSEC_IN_SEC; } // gets seconds since timer creation
-private:
+protected:
 	std::chrono::duration<double, std::micro> _relMicrosElapsed = std::chrono::microseconds(0); // relative time since last call
 	std::chrono::duration<double, std::micro> _absMicrosElapsed = std::chrono::microseconds(0); // absolute time since creation
 	std::chrono::steady_clock::time_point _startSecs; // helper variable for adjusting time
@@ -86,6 +73,12 @@ private:
 
 	std::vector<Timer_PeriodicEvent> _periodicEvents;
 	std::vector<Timer_RecurringEvent> _recurringEvents;
+};
+
+struct Timer_Dynamic : public Timer_Ticker {
+	Timer_Dynamic(millisec_t time) : Timer_Ticker(){ setTimer(time); }
+
+	void setTimer(millisec_t time);
 };
 
 #define TIMER_H

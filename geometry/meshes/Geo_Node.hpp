@@ -1,4 +1,6 @@
-#define TOPL_ENABLE_MODELS
+#ifndef GEO_NODE_H
+
+#ifdef TOPL_ENABLE_MODELS
 
 #include <assimp/scene.h>
 
@@ -56,4 +58,7 @@ private:
 	Geo_Node* _mesh = nullptr;
 };
 
+#endif
+
+#define GEO_NODE_H
 #endif

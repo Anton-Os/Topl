@@ -18,6 +18,19 @@ Rasteron_Image* hexImg = mapImgOp({1024, 1024}, hexImgOp);
 
 Img_Base boxTex = Img_Base(boxImg); Img_Base pyramidTex = Img_Base(pyramidImg);
 Img_Base sphereTex = Img_Base(sphereImg); Img_Base hexTex = Img_Base(hexImg);
+
+Rasteron_Queue* dialBtn_queues[3] = { loadUI_dial(MENU_XL, 4), loadUI_dial(MENU_XL, 8), loadUI_dial(MENU_XL, 16) };
+Img_Base dialBtn_textures[3] = { getFrameAt(dialBtn_queues[0], 3), getFrameAt(dialBtn_queues[1], 0), getFrameAt(dialBtn_queues[2], 8) };
+Rasteron_Queue* iconBtn_queues[3] = { loadUI_iconBtn(MENU_XL, "arrow_back"), loadUI_iconBtn(MENU_XL, "sync"), loadUI_iconBtn(MENU_XL, "arrow_forward") };
+Img_Base iconBtn_textures[3] = { getFrameAt(iconBtn_queues[0], 0), getFrameAt(iconBtn_queues[1], 1), getFrameAt(iconBtn_queues[2], 2) };
+Rasteron_Queue* checkBtn_queue = loadUI_checkBtn(MENU_XL);
+Img_Base checkBtn_textures[3] = { getFrameAt(checkBtn_queue, 0), getFrameAt(checkBtn_queue, 1), getFrameAt(checkBtn_queue, 2) };
+
+// Rasteron_Queue* slider_queues[9] = { loadUI_slider(MENU_XL, 2), loadUI_slider(MENU_XL, 3), loadUI_slider(MENU_XL, 4), loadUI_slider(MENU_XL, 5), loadUI_slider(MENU_XL, 6), loadUI_slider(MENU_XL, 7), loadUI_slider(MENU_XL, 8), loadUI_slider(MENU_XL, 9), loadUI_slider(MENU_XL, 10) };
+Rasteron_Queue* slider_queue = loadUI_slider(MENU_XL, 9);
+Img_Base slider_textures[9] = { getFrameAt(slider_queue, 0), getFrameAt(slider_queue, 1), getFrameAt(slider_queue, 2), getFrameAt(slider_queue, 3), getFrameAt(slider_queue, 4), getFrameAt(slider_queue, 5), getFrameAt(slider_queue, 6), getFrameAt(slider_queue, 7), getFrameAt(slider_queue, 8) };
+Rasteron_Queue* words_queue = alloc_queue("words", { 64, 512 }, 9);
+Img_Base words_textures[9] = { getFrameAt(words_queue, 0), getFrameAt(words_queue, 1), getFrameAt(words_queue, 2), getFrameAt(words_queue, 3), getFrameAt(words_queue, 4), getFrameAt(words_queue, 5), getFrameAt(words_queue, 6), getFrameAt(words_queue, 7), getFrameAt(words_queue, 8) };
 #endif
 
 static void updateActor(Geo_Actor* actor){
@@ -82,8 +95,8 @@ static void onHover(float x, float y){
     }
 }
 
-void texModeCycle(){ (texMode < 8)? texMode++ : texMode = 0; }
-void texScrollCycle(){ texScroll[0] += 0.05; }
+void texModeCycle(){ /* (texMode < 8)? texMode++ : texMode = 0; */ }
+void texScrollCycle(){ /* texScroll[0] += 0.05; */ }
 
 static void box_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
 static void pyramid_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
@@ -132,9 +145,9 @@ void Sandbox_Demo::init(){
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, beamPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     _renderer->buildScene(&details);
     
     layout1.configure(&overlay);
@@ -142,8 +155,34 @@ void Sandbox_Demo::init(){
     layout2.shift({ 0.55, 0.0, 0.0 });
     layout3.configure(&overlay);
     layout3.shift({ -0.55, 0.0, 0.0 });
+    
+#ifdef RASTERON_H
+    overlay.addTexture("gridLayout_cell1", &dialBtn_textures[0]);
+    overlay.addTexture("gridLayout_cell2", &dialBtn_textures[1]);
+    overlay.addTexture("gridLayout_cell3", &dialBtn_textures[2]);
+    overlay.addTexture("gridLayout_cell4", &iconBtn_textures[0]);
+    overlay.addTexture("gridLayout_cell5", &iconBtn_textures[1]);
+    overlay.addTexture("gridLayout_cell6", &iconBtn_textures[2]);
+    overlay.addTexture("gridLayout_cell7", &checkBtn_textures[0]);
+    overlay.addTexture("gridLayout_cell8", &checkBtn_textures[1]);
+    overlay.addTexture("gridLayout_cell9", &checkBtn_textures[2]);
 
-    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+    for(unsigned s = 0; s < 9; s++){
+        Rasteron_Image* flipImg = flipImgOp(slider_textures[s].getImage(), FLIP_Counter);
+        slider_textures[s].setImage(flipImg); // images need to be flipped vertically
+        overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &slider_textures[s]);
+        dealloc_image(flipImg);
+
+        std::string fontFilePath = std::string(FONTS_DIR) + "PoiretOne-Regular.ttf";
+		std::replace(fontFilePath.begin(), fontFilePath.end(), '/', '\\');
+        std::string horzCellName = "horzLayout_cell" + std::to_string(s + 1);
+        Rasteron_Text textObj = { fontFilePath.c_str(), horzCellName.c_str(), RAND_COLOR(), RAND_COLOR() };
+        words_textures[s].setTextImage(&textObj);
+        overlay.addTexture(horzCellName, &words_textures[s]);
+    }
+#endif
+
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
@@ -163,12 +202,13 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        // flatVShader.setMode(2);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 
@@ -188,14 +228,14 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, beamPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
         beamVShader.setMode(0);
         texVShader.setMode(0);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
         texVShader.setMode(texMode);
         texVShader.setTexScroll(texScroll);
         _renderer->updateScene(&overlay);
@@ -204,11 +244,19 @@ void Sandbox_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _instance = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _instance = new Sandbox_Demo(argv[0], BACKEND_GL4);
 
     _instance->run();
     delete(_instance);
 #ifdef RASTERON_H
+    for(unsigned q = 0; q < 3; q++){
+        dealloc_queue(iconBtn_queues[q]);
+        dealloc_queue(dialBtn_queues[q]);
+    }
+    dealloc_queue(checkBtn_queue);
+    dealloc_queue(slider_queue); // for(unsigned s = 0; s < 9; s++) dealloc_queue(slider_queues[s]);
+    dealloc_queue(words_queue);
+
     dealloc_image(boxImg);
     dealloc_image(pyramidImg);
     dealloc_image(sphereImg);

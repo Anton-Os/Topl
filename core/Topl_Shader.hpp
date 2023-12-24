@@ -78,18 +78,20 @@ public:
 	const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
 	unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
-		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
-	}
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
 		// appendDataToBytes((uint8_t*)&_zoom, sizeof(float), bytes);
 		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+	}
+	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
+		// _renderBlock_bytes.clear();
+		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
+		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
 	}
 
 	void setMode(int m){ _mode = m; }

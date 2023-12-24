@@ -10,6 +10,23 @@ const Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 
 Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
+Topl_Timeline::Topl_Timeline(){
+	// void addRecurringEvent() // Update internal elapsed millisecs and all variables
+}
+
+void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> timeTarget){
+	assert(_float_map.size() < MAX_TIMELINE_ATTRIBS);
+	
+	auto sequence = std::find_if(_float_map.begin(), _float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
+	
+	if(sequence != _float_map.end()) sequence->second.insert({ timeTarget.first, timeTarget.second });
+	else {
+		std::cout << "Creating float with time target!" << std::endl; // TEST
+		_float_map.insert({ var, std::map<millisec_t, float>() }); // create new object
+		_float_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
+	}
+}
+
 static void onAnyKey(char k){
 	if(isalnum(k)){
 		Topl_Program::userInput += k;
@@ -20,12 +37,6 @@ static void onAnyKey(char k){
 static void onPress(float x, float y){ 
 	Topl_Program::userInput.clear();
 	Topl_Program::cursorPos = { x, y, 0.0F }; 
-}
-
-void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> timeTarget){
-	auto sequence = std::find_if(_float_map.begin(), _float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
-	// TODO: Add timeTarget cooresponding to float target
-	// if(sequence != _float_map.end()) sequence->at(target);
 }
 
 Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
