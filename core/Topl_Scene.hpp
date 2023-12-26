@@ -19,6 +19,8 @@
 
 // Camera
 
+#define DEFAULT_ZOOM 1.0f
+
 class Topl_Camera {
 public:
 	Topl_Camera() { // Identity matrix
@@ -38,12 +40,13 @@ public:
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
 	void setRot(const Vec3f& vec){ _rotation = vec; }
 	void updateRot(const Vec3f& vec) { _rotation = _rotation + vec; }
-	// void setZoom(const Vec3f& vec){}
-	// void updateZoom(const Vec3f& vec){}
+	void setZoom(float z){ _zoom = z;}
+	const float* getZoom() const { return &_zoom;}
 	vec3f_cptr_t getPos() const { return &_pos; }
 	vec3f_cptr_t getRot() const { return &_rotation; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
+	float _zoom = DEFAULT_ZOOM; 
 	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f }); // in front of scene
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
 	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
@@ -66,8 +69,6 @@ public:
 
 	// Static Operations
 
-	const Geo_Actor* invokePicker(unsigned color); // gets callback based on active color
-
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
 #ifdef RASTERON_H
@@ -76,6 +77,7 @@ public:
 	void addVolumeTex(const std::string& name, const Img_Volume* volumeTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
+	const Geo_Actor* getPickActor(unsigned color);
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	// unsigned getLightCount() const { return _lights.size(); }

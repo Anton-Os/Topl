@@ -61,8 +61,9 @@ public:
 			paneImgArrays.insert({ &_geoActors.at(p), Img_Array() });
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
 				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at(p)).getImage());
+				unsigned background = RAND_COLOR(); unsigned foreground = RAND_COLOR();
 				for(unsigned i = 0; i < stageImg->width * stageImg->height; i++)
-					if(*(stageImg->data + i) == 0xFFEEEEEE) *(stageImg->data + i) = getPaneColor(t);
+					*(stageImg->data + i) = (*(stageImg->data + i) != 0xFFEEEEEE)? foreground : background;
 				addFrameAt(paneImgArrays.at(&_geoActors.at(p)).getQueue(), stageImg, t);
 				dealloc_image(stageImg);
 			}
@@ -78,16 +79,6 @@ protected:
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 
 #ifdef RASTERON_H
-	unsigned getPaneColor(unsigned short index){
-		switch(index % 8){
-			case 0: return 0xFF88EE22;
-			case 1: return 0xFF0000FF; case 2: return 0xFF00FF00; case 3: return 0xFFFF0000;
-			case 4: return 0xFFFFFF00; case 5: return 0xFFFF00FF; case 6: return 0xFF00FFFF;
-			case 7: return 0xFF8822EE;
-			default: return 0xFF333333;
-		}
-	}
-
 	Img_Base rootImg; // root background
 	std::map<const Geo_Actor*, Img_Base> paneImgs; // child backgrounds
 	std::map<const Geo_Actor*, Img_Array> paneImgArrays; // child backgrounds in array

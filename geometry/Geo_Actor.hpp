@@ -7,9 +7,10 @@
 #define DEFAULT_ACTOR_ID 0xFFFFFFFF
 #define DEFAULT_ACTOR_NAME "actor"
 
+extern class Geo_Actor;
 extern struct Topl_EntryShader;
 
-typedef void (*pickerCallback)(void);
+typedef void (*pickerCallback)(Geo_Actor*);
 typedef void (*shaderCallback)(Topl_EntryShader*);
 
 class Geo_Actor {

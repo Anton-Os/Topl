@@ -36,6 +36,7 @@ public:
 #ifdef RASTERON_H
 	unsigned invokePicker(Topl_Scene* scene);
 #endif
+	static Vec3f getCamCursorPos(){ return (*cameraObj.getPos() + cursorPos) * (1.0 / *cameraObj.getZoom()); } // TODO: Include roll
 
 	static Vec3f cursorPos;
 	static std::string userInput; // input is added when characters are pressed

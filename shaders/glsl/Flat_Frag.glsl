@@ -11,7 +11,7 @@ layout(std140, binding = 0) uniform Block{
 
 layout(std140, binding = 1) uniform SceneBlock{
 	int mode;
-	vec3 cam_pos;
+	vec4 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
 };

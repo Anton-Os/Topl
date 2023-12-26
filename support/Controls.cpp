@@ -43,9 +43,9 @@ void Input_MouseControl::addMousePress(enum MOUSE_Button mb, float x, float y){
 	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
 		if(mb == c->first) c->second(x, y); // makes callback go off where keys match
 	
-	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS){
+	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down)){
 		_tracerSteps.push_back({ mb, std::make_pair(x, y)}); // record the step
-		if(mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down) _tracerPaths.push_back(Input_TracerPath(mb)); // record the path
+		_tracerPaths.push_back(Input_TracerPath(mb)); // record the path
 	}
 
 	stampEvent();
@@ -68,7 +68,7 @@ void Input_MouseControl::addHover(float x, float y){
 		if(x > c->first->xMin && x < c->first->xMax && y > c->first->yMin && y < c->first->yMax)
 			c->second(x, y);
 
-	if(_isMouseDown.second && x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS){
+	if(_isMouseDown.second && x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && !_tracerPaths.empty()){
 		_tracerPaths.back().steps[_tracerPaths.back().stepsCount % MAX_PATH_STEPS] = { x, y };
 		_tracerPaths.back().stepsCount++;
 	}

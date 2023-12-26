@@ -38,10 +38,7 @@ struct Shader_Type {
 class Topl_Shader {
 public:
 	Topl_Shader() {} // Blank Constructor
-	Topl_Shader( // Filename Constructor
-		enum SHDR_Type type,
-		std::string fileSrc
-	) {
+	Topl_Shader(enum SHDR_Type type,std::string fileSrc) { // Filename Constructor
 		_shaderType = type;
 		_shaderFileSrc = fileSrc;
 		_shaderFileSrc = SHADERS_DIR + fileSrc;
@@ -62,16 +59,12 @@ class Topl_EntryShader : public Topl_Shader {
 public:
 	Topl_EntryShader() : Topl_Shader() {} // Blank Constructor
 
-	Topl_EntryShader(std::string fileSrc) // Filename Constructor
-		: Topl_Shader(SHDR_Vertex, fileSrc) {
+	Topl_EntryShader(std::string fileSrc) : Topl_Shader(SHDR_Vertex, fileSrc) { // Filename Constructor
 		_inputs.push_back(Shader_Type("pos", "POSITION", SHDR_float_vec3)); // default pos input
 		_inputs.push_back(Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec3)); // default texcoord input
 	}
 
-	Topl_EntryShader( // Inputs Constructor
-		std::string fileSrc,
-		std::initializer_list<Shader_Type> inputs
-	) : Topl_Shader(SHDR_Vertex, fileSrc) {
+	Topl_EntryShader(std::string fileSrc, std::initializer_list<Shader_Type> inputs) : Topl_Shader(SHDR_Vertex, fileSrc) {  // Inputs Constructor
 		for (std::initializer_list<Shader_Type>::iterator currentInput = inputs.begin(); currentInput < inputs.end(); currentInput++)
 			_inputs.push_back(*currentInput); // fills input list with data
 	}
@@ -81,8 +74,8 @@ public:
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
-		// appendDataToBytes((uint8_t*)&_zoom, sizeof(float), bytes);
-		appendDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), bytes);
+		alignDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), 0, bytes);
+		alignDataToBytes((uint8_t*)camera->getZoom(), sizeof(float), 0, bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
 	}
@@ -97,7 +90,6 @@ public:
 	void setMode(int m){ _mode = m; }
 protected:
 	int _mode = DEFAULT_SHADER_MODE;
-	// float _zoom = 1.0;
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 };

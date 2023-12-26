@@ -2,15 +2,6 @@
 
 // Scene Statics
 
-const Geo_Actor* Topl_Scene::invokePicker(unsigned color){
-	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if(((*actor)->getId() & 0x000000FF) == (color & 0x000000FF)){
-			if((*actor)->pickerFunc != nullptr) (*actor)->pickerFunc();
-			return *actor;
-		}
-	return nullptr; // no actor found
-}
-
 void Topl_Scene::addGeometry(Geo_Actor* actor) {
 	for(unsigned a = 0; a < _geoActors.size(); a++)
 		if(_geoActors[a]->getName() == actor->getName()){
@@ -23,6 +14,15 @@ void Topl_Scene::addGeometry(Geo_Actor* actor) {
 void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
 	actor->setName(name);
 	addGeometry(actor);
+}
+
+const Geo_Actor* Topl_Scene::getPickActor(unsigned color){
+	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if(((*actor)->getId() & 0x000000FF) == (color & 0x000000FF)){
+			if((*actor)->pickerFunc != nullptr) (*actor)->pickerFunc(*actor);
+			return *actor;
+		}
+	return nullptr; // no actor found
 }
 
 actor_cptr Topl_Scene::getGeoActor(unsigned index) const {

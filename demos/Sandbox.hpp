@@ -22,7 +22,7 @@
 #define SANDBOX_MODE_PLAYPAUSE 5 // timer function
 #define SANDBOX_MODE_FORWARD 6 // timer funtion
 #define SANDBOX_MODE_PAN 7 // scene function
-#define SANDBOX_MODE_LOOK 8 // scene function
+#define SANDBOX_MODE_PIVOT 8 // scene function
 #define SANDBOX_MODE_ZOOM 9 // scene function
 
 struct Sandbox_Demo : public Topl_Program {
@@ -58,9 +58,9 @@ private:
 
     Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline, *effectPipeline;
 
-    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
-    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
-    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
-    Effect_VertexShader_GL4 effectVShader; Effect_PixelShader_GL4 effectPShader;
+    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
+    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
+    Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
+    Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
 
 } *_instance; // USE _instance OBJECT FOR DEMO

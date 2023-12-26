@@ -4,7 +4,7 @@
 
 layout(std140, binding = 1) uniform SceneBlock{
 	int mode;
-	vec3 cam_pos;
+	vec4 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
 
@@ -20,9 +20,9 @@ layout(location = 0) out vec4 color;
 
 // Functions
 
-float calcSpec(vec3 light, vec3 camera, vec3 vertex) {
+float calcSpec(vec3 light, vec3 vertex) {
 	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
-	return max(pow(dot(reflectVec, -normalize(cam_pos)), 3), 0);
+	return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), 3), 0);
 }
 
 float calcDiffuse(vec3 light, vec3 vertex) {
@@ -37,7 +37,7 @@ float calcDiffuse(vec3 light, vec3 vertex) {
 void main() {
 	vec3 ambient = skyLight_value * 0.2;
 	vec3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, pos) * 0.5;
-	vec3 specular = skyLight_value * calcSpec(skyLight_pos, cam_pos, pos);
+	vec3 specular = skyLight_value * calcSpec(skyLight_pos, pos);
 
 	if(mode == 1) color = vec4(ambient, 1.0f);
 	else if(mode == 2) color = vec4(diffuse, 1.0f);

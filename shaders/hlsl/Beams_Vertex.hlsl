@@ -49,7 +49,7 @@ float3x3 calcRotMatrix(float3 angles) {
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 calcCamMatrix(float3 cPos, float3 angles) { // camera postion and relative look position
+float4x4 calcCamMatrix(float4 cPos, float3 angles) { // camera postion and relative look position
 	float4x4 camMatrix = {
 		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
 		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
@@ -67,7 +67,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	VS_OUTPUT output;
 
 	float3 angles = mul(calcRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0);
+	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);

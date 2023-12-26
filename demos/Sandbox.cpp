@@ -2,6 +2,7 @@
 
 
 static int mode = SANDBOX_MODE_MOVE;
+static bool isTexPipeline = true;
 static unsigned texMode = 0;
 static Vec3f texScroll = { 0.0, 0.0, 0.0 };
 
@@ -34,18 +35,24 @@ Img_Base words_textures[9] = { getFrameAt(words_queue, 0), getFrameAt(words_queu
 #endif
 
 static void updateActor(Geo_Actor* actor){
+    std::cout << "Tracer steps: " << std::to_string(Platform::mouseControl.getTracerSteps()->size()) << ", Last Step: " << std::to_string(Platform::mouseControl.getTracerSteps()->back().step.first) << ", " << std::to_string(Platform::mouseControl.getTracerSteps()->back().step.second) << std::endl;
+    if(!Platform::mouseControl.getTracerPaths()->empty()){
+        auto lastPath = Platform::mouseControl.getTracerPaths()->back();
+        std::cout << "Tracer paths: " << std::to_string(lastPath.stepsCount) << /* ", Last Path: " << std::to_string(lastPath.steps[lastPath.stepsCount - 1].first) << ", " << std::to_string(lastPath.steps[lastPath.stepsCount - 1].second) << */ std::endl;
+    }
+
     switch(mode){
         case SANDBOX_MODE_HIDE: break; // TODO: hide actor
-        case SANDBOX_MODE_MOVE: actor->setPos(Topl_Program::cursorPos); break;
+        case SANDBOX_MODE_MOVE: actor->setPos(Topl_Program::getCamCursorPos()); break;
         case SANDBOX_MODE_ROTATE: break; // TODO: rotate actor
         case SANDBOX_MODE_SCALE: break; // TODO: scale actor
-        case SANDBOX_MODE_REWIND: break; // TODO: rewind time
+        /* case SANDBOX_MODE_REWIND: break; // TODO: rewind time
         case SANDBOX_MODE_PLAYPAUSE: break; // TODO: play or pause time
         case SANDBOX_MODE_FORWARD: break; // TODO: fast forward time
         case SANDBOX_MODE_PAN: break; // TODO: pan scene
-        case SANDBOX_MODE_LOOK: break; // TODO: rotate scene
-        case SANDBOX_MODE_ZOOM: break; // TODO: zoom scene
-        default: actor->setPos(Topl_Program::cursorPos);
+        case SANDBOX_MODE_PIVOT: break; // TODO: rotate scene
+        case SANDBOX_MODE_ZOOM: break; // TODO: zoom scene */
+        default: actor->setPos(Topl_Program::getCamCursorPos());
     }
 }
 
@@ -60,7 +67,10 @@ static void onAnyKey(char k){
     else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
     else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
     else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
-} // sets sandbox mode
+    else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + 0.1);
+    else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() - 0.1);
+    else if(isspace(k)) isTexPipeline = !isTexPipeline;
+}
 
 static void onHover(float x, float y){ 
     if(Platform::mouseControl.getIsMouseDown().second) {
@@ -70,38 +80,46 @@ static void onHover(float x, float y){
             std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
 
             if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId()) {
-                // _instance->boxActor.setPos(Topl_Program::cursorPos);
                 updateActor(&_instance->boxActor);
-                boxTex.setColorImage(0xFF00FF00);
+                boxTex.setColorImage(RAND_COLOR());
             } else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()){
-                // _instance->pyramidActor.setPos(Topl_Program::cursorPos);
                 updateActor(&_instance->pyramidActor);
-                pyramidTex.setColorImage(0xFF00FF00);
+                pyramidTex.setColorImage(RAND_COLOR());
             } else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()){
-                // _instance->sphereActor.setPos(Topl_Program::cursorPos);
                 updateActor(&_instance->sphereActor);
-                sphereTex.setColorImage(0xFF00FF00);
+                sphereTex.setColorImage(RAND_COLOR());
             } else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId()){ 
-                // _instance->hexActor.setPos(Topl_Program::cursorPos);
                 updateActor(&_instance->hexActor);
-                hexTex.setColorImage(0xFF00FF00);
+                hexTex.setColorImage(RAND_COLOR());
             }
             // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Program::cursorPos - layoutVec);
+
+            // TODO: Handle GUI Events
         }
     } else {
         Topl_Program::pickerObj = NO_PICKER_OBJ;
         boxTex.setImage(boxImg); pyramidTex.setImage(pyramidImg);
         sphereTex.setImage(sphereImg); hexTex.setImage(hexImg);
+
+        // TODO: Handle Camera Events
     }
 }
 
 void texModeCycle(){ /* (texMode < 8)? texMode++ : texMode = 0; */ }
 void texScrollCycle(){ /* texScroll[0] += 0.05; */ }
 
-static void box_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
-static void pyramid_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
-static void sphere_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
-static void hex_shadercall(Topl_EntryShader* shader){ /* Add body for render block */ }
+static void default_shadercall(Topl_EntryShader* shader){ 
+    /* Add body for render block */ 
+}
+static void gridCell_pickercall(Geo_Actor* actor){
+    int c = (char)(actor->getName().back()) - '0';
+    if(c == 1 || c == 2 || c == 3)
+        dialBtn_textures[c - 1].setImage(getFrameAt(dialBtn_queues[c - 1], (dialBtn_queues[c - 1]->index + 1 < dialBtn_queues[c - 1]->frameCount)? dialBtn_queues[c - 1]->index + 1 : 0));
+    else if(c == 4 || c == 5 || c == 6)
+        iconBtn_textures[c - 4].setImage(getFrameAt(iconBtn_queues[c - 4], (iconBtn_queues[c - 4]->index + 1 < 3)? iconBtn_queues[c - 4]->index + 1 : 0));
+    if(c == 7 || c == 8 || c == 9)
+        checkBtn_textures[c - 7].setImage(getFrameAt(checkBtn_queue, 0));
+}
 
 void Sandbox_Demo::init(){
     srand(time(NULL));
@@ -116,22 +134,22 @@ void Sandbox_Demo::init(){
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos({ 0.5f, 0.5f, 0.0f });
-    boxActor.shaderFunc = box_shadercall;
+    boxActor.shaderFunc = default_shadercall;
     scene.addGeometry("Box", &boxActor);
     details.addGeometry("Box", &boxActor);
     pyramidMesh.scale({ 0.25f, 0.25f, 0.25f});
     pyramidActor.setPos({ -0.5f, 0.5f, 0.0f });
-    pyramidActor.shaderFunc = pyramid_shadercall;
+    pyramidActor.shaderFunc = default_shadercall;
     scene.addGeometry("Pyramid", &pyramidActor);
     details.addGeometry("Pyramid", &pyramidActor);
     sphereMesh.scale({ 0.25f, 0.25f, 0.25f});
     sphereActor.setPos({ -0.5f, -0.5f, 0.0f });
-    sphereActor.shaderFunc = sphere_shadercall;
+    sphereActor.shaderFunc = default_shadercall;
     scene.addGeometry("Sphere", &sphereActor);
     details.addGeometry("Sphere", &sphereActor);
     hexMesh.scale({ 0.25f, 0.25f, 0.25f});
     hexActor.setPos({ 0.5f, -0.5f, 0.0f });
-    hexActor.shaderFunc = hex_shadercall;
+    hexActor.shaderFunc = default_shadercall;
     scene.addGeometry("Hex", &hexActor);
     details.addGeometry("Hex", &hexActor);
 
@@ -145,9 +163,9 @@ void Sandbox_Demo::init(){
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
     _renderer->buildScene(&details);
     
     layout1.configure(&overlay);
@@ -155,7 +173,10 @@ void Sandbox_Demo::init(){
     layout2.shift({ 0.55, 0.0, 0.0 });
     layout3.configure(&overlay);
     layout3.shift({ -0.55, 0.0, 0.0 });
-    
+
+    Geo_Actor* gridActors[9] = { layout1.getGeoActor(0), layout1.getGeoActor(1), layout1.getGeoActor(2), layout1.getGeoActor(3), layout1.getGeoActor(4), layout1.getGeoActor(5), layout1.getGeoActor(6), layout1.getGeoActor(7), layout1.getGeoActor(8), };
+    for(unsigned g = 0; g < 9; g++){ gridActors[g]->pickerFunc = gridCell_pickercall; }
+
 #ifdef RASTERON_H
     overlay.addTexture("gridLayout_cell1", &dialBtn_textures[0]);
     overlay.addTexture("gridLayout_cell2", &dialBtn_textures[1]);
@@ -182,7 +203,7 @@ void Sandbox_Demo::init(){
     }
 #endif
 
-    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
@@ -202,13 +223,13 @@ void Sandbox_Demo::loop(double frameTime){
 
     {
         _renderer->setDrawMode(DRAW_Strip);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         // flatVShader.setMode(2);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 
@@ -227,24 +248,24 @@ void Sandbox_Demo::loop(double frameTime){
     _renderer->clearView();
 
     {
+        // beamVShader.setMode(texMode); texVShader.setMode(texMode);
+        beamVShader.setMode(0); texVShader.setMode(0);
+        texVShader.setTexScroll(texScroll);
+
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
-        beamVShader.setMode(0);
-        texVShader.setMode(0);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
-        texVShader.setMode(texMode);
-        texVShader.setTexScroll(texScroll);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }
 }
 
 int main(int argc, char** argv) {
-    _instance = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _instance = new Sandbox_Demo(argv[0], BACKEND_DX11);
 
     _instance->run();
     delete(_instance);

@@ -63,9 +63,11 @@ struct Input_TracerStep {
 struct Input_TracerPath {
     Input_TracerPath(enum MOUSE_Button b){ button = b; } 
 
+    // std::pair<float, float> getLastPath(unsigned short s){ return (s < stepsCount)? steps[stepsCount - s - 1] : steps[stepsCount - 1]; }
+
 	MOUSE_Button button;
 	std::pair<float, float> steps[MAX_PATH_STEPS];
-	unsigned stepsCount;
+	unsigned stepsCount = 0;
 };
 
 struct Input_CursorRange {
@@ -92,7 +94,9 @@ public:
     void addHover(float x, float y); // checks for hover events given cursor position
     
     std::pair<enum MOUSE_Button, bool> getIsMouseDown(){ return _isMouseDown; }
+    // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
     const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }
+    // const Input_TracerPath* getLastTracerPath(unsigned short steps) const { return (steps < _tracerPaths.size())? &_tracerPaths[_tracerPaths.size() - steps - 1] : &_tracerPaths.back(); }
     const std::vector<Input_TracerPath>* getTracerPaths() const { return &_tracerPaths; }
 private:
     std::pair<enum MOUSE_Button, bool> _isMouseDown; // tracks state of mouse being held

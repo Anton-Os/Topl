@@ -13,7 +13,7 @@ layout(std140, binding = 0) uniform Block {
 
 layout(std140, binding = 1) uniform SceneBlock {
 	int mode;
-	vec3 cam_pos;
+	vec4 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
 };
@@ -48,7 +48,7 @@ mat3 calcRotMatrix(vec3 angles){
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 calcCamMatrix(vec3 cPos, vec3 angles) { // Custom Function
+mat4 calcCamMatrix(vec4 cPos, vec3 angles) { // Custom Function
 	return mat4(
 		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
 		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
@@ -61,7 +61,7 @@ mat4 calcCamMatrix(vec3 cPos, vec3 angles) { // Custom Function
 
 void main() {
 	vec3 angles = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0f);
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;

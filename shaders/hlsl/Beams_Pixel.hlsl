@@ -24,8 +24,8 @@ struct PS_INPUT {
 
 // Functions
 
-float calcSpec(float3 camera, float3 vertex) { // Custom Function
-	float intensity = dot(normalize(camera), normalize(vertex));
+float calcSpec(float4 camera, float3 vertex) { // Custom Function
+	float intensity = dot(normalize(float3(camera.x, camera.y, camera.z)), normalize(vertex));
 	return max(pow(intensity * 5, 5), 0);
 	// return max(pow(intensity, 3), 0);
 }

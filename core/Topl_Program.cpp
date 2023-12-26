@@ -79,7 +79,7 @@ unsigned Topl_Program::invokePicker(Topl_Scene* scene){
 	if((Topl_Program::pickerVal & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
 		Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
-		const Geo_Actor* actor = scene->invokePicker(Topl_Program::pickerVal);
+		const Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerVal);
 		if(actor != nullptr) Topl_Program::pickerObj = actor; 
 	}
 	return Topl_Program::pickerVal;
