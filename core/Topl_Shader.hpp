@@ -77,7 +77,7 @@ public:
 		alignDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), 0, bytes);
 		alignDataToBytes((uint8_t*)camera->getZoom(), sizeof(float), 0, bytes);
 		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), bytes);
+		alignDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), 0, bytes);
 	}
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		// _renderBlock_bytes.clear();

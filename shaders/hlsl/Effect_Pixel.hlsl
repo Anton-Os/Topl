@@ -1,13 +1,19 @@
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
-	uint renderID;
+	float3 offset;
+	float3 rotation;
+	float3 scale;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
+	int mode;
+	float4 cam_pos;
+	float4 look_pos;
+	float4x4 projMatrix;
+
 	int2 screenRes;
 	float2 cursorPos;
-	int mode;
 }
 
 struct PS_INPUT { float4 pos : SV_POSITION; };

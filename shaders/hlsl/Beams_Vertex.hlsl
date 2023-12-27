@@ -23,6 +23,8 @@ struct VS_INPUT { float4 pos : POSITION; };
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	float3 vertex_pos : POSITION; // vertex position
+	float3 light_pos : LIGHT1; // light position
+	float3 light_val: LIGHT2; // light value
 };
 
 // Functions
@@ -71,7 +73,9 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
-	output.pos = mul(cameraMatrix, output.pos + float4(offset, 0.0));
+	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	output.light_pos = mul(transpose(projMatrix), mul(cameraMatrix, skyLight_pos));
+	output.light_val = skyLight_value;
 
 	return output;
 }

@@ -20,6 +20,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 vertex_pos : POSITION;
+	float3 light_pos : LIGHT1; // light position
+	float3 light_val: LIGHT2; // light value
 };
 
 // Functions
@@ -40,9 +42,9 @@ float calcDiffuse(float3 light, float3 vertex) {
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	float3 ambient = skyLight_value * 0.2;
-	float3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, input.vertex_pos - offset) * 0.5;
-	float3 specular = skyLight_value * calcSpec(cam_pos, input.vertex_pos);
+	float3 ambient = input.light_val * 0.2;
+	float3 diffuse = input.light_val * calcDiffuse(input.light_pos, input.vertex_pos - offset) * 0.5;
+	float3 specular = input.light_val * calcSpec(cam_pos, input.vertex_pos);
 
 	if(mode == 1) return float4(ambient, 1.0f);
 	else if(mode == 2) return float4(diffuse, 1.0f);

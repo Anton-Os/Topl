@@ -32,12 +32,7 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	Beams_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
-		alignDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), 0, bytes);
-		alignDataToBytes((uint8_t*)camera->getZoom(), sizeof(float), 0, bytes);
-		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
-		alignDataToBytes((uint8_t*)camera->getProjMatrix(), 0, sizeof(Mat4x4), bytes);
-
+		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 		appendLight(&skyLight, bytes);
 		appendLight(&flashLight, bytes);
 		appendLight(&lampLight, bytes);

@@ -57,10 +57,12 @@ public:
 			paneImgs.insert({ &_geoActors.at(p), Img_Base() });
 			paneImgs.at(&_geoActors.at(p)).setTextImage(&textObj);
 			scene->addTexture(getCellName(p + 1), &paneImgs.at(&_geoActors.at(p)));
+		}
 
+		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			paneImgArrays.insert({ &_geoActors.at(p), Img_Array() });
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
-				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at(p)).getImage());
+				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at((p + t) % _params.getGridSize())).getImage());
 				unsigned background = RAND_COLOR(); unsigned foreground = RAND_COLOR();
 				for(unsigned i = 0; i < stageImg->width * stageImg->height; i++)
 					*(stageImg->data + i) = (*(stageImg->data + i) != 0xFFEEEEEE)? foreground : background;

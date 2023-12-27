@@ -2,14 +2,20 @@
 
 // Values
 
-layout(std140, binding = 0) uniform Block{
-	uint renderID;
+layout(std140, binding = 0) uniform Block {
+	vec3 offset;
+	vec3 rotation;
+	vec3 scale;
 };
 
-layout(std140, binding = 1) uniform SceneBlock{
+layout(std140, binding = 1) uniform SceneBlock {
+	int mode;
+	vec4 cam_pos;
+	vec3 look_pos;
+	mat4 projMatrix;
+	
 	ivec2 screenRes;
 	vec2 cursorPos;
-	int mode;
 };
 
 layout(location = 0) out vec4 color;

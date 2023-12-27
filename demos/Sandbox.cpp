@@ -2,8 +2,10 @@
 
 
 static int mode = SANDBOX_MODE_MOVE;
-static bool isTexPipeline = true;
-static unsigned texMode = 0;
+// static bool isTexPipeline = true;
+static int pipelineIndex = 0;
+static bool isShaderModeVary = false;
+static unsigned shaderMode = 0;
 static Vec3f texScroll = { 0.0, 0.0, 0.0 };
 
 #ifdef RASTERON_H
@@ -12,10 +14,9 @@ unsigned pyramidImgOp(double x, double y){ return (cos(y * 20) < 0.5)? 0xFFFF000
 unsigned sphereImgOp(double x, double y){ return (tan(x * y) > 0.25 && tan(x * y) < 0.75)? 0xFF8833CC : 0xFF88CC33; }
 unsigned hexImgOp(double x, double y){ return (x > 0.4 && x < 0.6 && y > 0.4 && y < 0.6)? 0xFF3333333 : 0xFFEEEEEE; }
 
-Rasteron_Image* boxImg = mapImgOp({1024, 1024}, boxImgOp);
-Rasteron_Image* pyramidImg = mapImgOp({1024, 1024}, pyramidImgOp);
-Rasteron_Image* sphereImg = mapImgOp({1024, 1024}, sphereImgOp);
-Rasteron_Image* hexImg = mapImgOp({1024, 1024}, hexImgOp);
+// Rasteron_Image* selectImg = noiseImgOp_white({1024, 1024}, 0x33000000, 0x3300FF00);
+Rasteron_Image* boxImg = mapImgOp({1024, 1024}, boxImgOp); Rasteron_Image* pyramidImg = mapImgOp({1024, 1024}, pyramidImgOp);
+Rasteron_Image* sphereImg = mapImgOp({1024, 1024}, sphereImgOp); Rasteron_Image* hexImg = mapImgOp({1024, 1024}, hexImgOp);
 
 Img_Base boxTex = Img_Base(boxImg); Img_Base pyramidTex = Img_Base(pyramidImg);
 Img_Base sphereTex = Img_Base(sphereImg); Img_Base hexTex = Img_Base(hexImg);
@@ -69,7 +70,12 @@ static void onAnyKey(char k){
     else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
     else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + 0.1);
     else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() - 0.1);
-    else if(isspace(k)) isTexPipeline = !isTexPipeline;
+    else if(k == 0x25) texScroll[0] -= 0.05f; // left arrow
+    else if(k == 0x27) texScroll[0] += 0.05f; // right arrow
+    else if(k == 0x26) texScroll[1] -= 0.05f; // up arrow
+    else if(k == 0x28) texScroll[1] += 0.05f; // down arrow
+    else if(toupper(k) == 'X') { isShaderModeVary = !isShaderModeVary; }
+    else if(isspace(k)) (pipelineIndex < 2)? pipelineIndex++ : pipelineIndex = 0;
 }
 
 static void onHover(float x, float y){ 
@@ -81,16 +87,16 @@ static void onHover(float x, float y){
 
             if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId()) {
                 updateActor(&_instance->boxActor);
-                boxTex.setColorImage(RAND_COLOR());
+                boxTex.setColorImage(0xAA00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()){
                 updateActor(&_instance->pyramidActor);
-                pyramidTex.setColorImage(RAND_COLOR());
+                pyramidTex.setColorImage(0xAA00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()){
                 updateActor(&_instance->sphereActor);
-                sphereTex.setColorImage(RAND_COLOR());
+                sphereTex.setColorImage(0xAA00FF00);
             } else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId()){ 
                 updateActor(&_instance->hexActor);
-                hexTex.setColorImage(RAND_COLOR());
+                hexTex.setColorImage(0xAA00FF00);
             }
             // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Program::cursorPos - layoutVec);
 
@@ -105,7 +111,7 @@ static void onHover(float x, float y){
     }
 }
 
-void texModeCycle(){ /* (texMode < 8)? texMode++ : texMode = 0; */ }
+void shaderModeCycle(){ (shaderMode < 8)? shaderMode++ : shaderMode = 0; }
 void texScrollCycle(){ /* texScroll[0] += 0.05; */ }
 
 static void default_shadercall(Topl_EntryShader* shader){ 
@@ -129,8 +135,13 @@ void Sandbox_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
     Platform::mouseControl.addHoverCallback(onHover);
 
-    _timeline.ticker.addPeriodicEvent(1000, texModeCycle);
+    _timeline.ticker.addPeriodicEvent(2500, shaderModeCycle);
     _timeline.ticker.addPeriodicEvent(50, texScrollCycle);
+
+    canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
+    canvas.addGeometry("Backdrop", &canvasActor);
+    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, effectPipeline);
+    _renderer->buildScene(&canvas);
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
     boxActor.setPos({ 0.5f, 0.5f, 0.0f });
@@ -165,8 +176,8 @@ void Sandbox_Demo::init(){
 
     Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
-    _renderer->buildScene(&details);
+    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
+    // _renderer->buildScene(&details);
     
     layout1.configure(&overlay);
     layout2.configure(&overlay);
@@ -194,12 +205,12 @@ void Sandbox_Demo::init(){
         overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &slider_textures[s]);
         dealloc_image(flipImg);
 
-        std::string fontFilePath = std::string(FONTS_DIR) + "PoiretOne-Regular.ttf";
+        std::string fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 		std::replace(fontFilePath.begin(), fontFilePath.end(), '/', '\\');
-        std::string horzCellName = "horzLayout_cell" + std::to_string(s + 1);
-        Rasteron_Text textObj = { fontFilePath.c_str(), horzCellName.c_str(), RAND_COLOR(), RAND_COLOR() };
+        std::string horzCellText = "option " + std::to_string(s + 1);
+        Rasteron_Text textObj = { fontFilePath.c_str(), horzCellText.c_str(), *getFrameAt(words_queue, s)->data, RAND_COLOR()};
         words_textures[s].setTextImage(&textObj);
-        overlay.addTexture(horzCellName, &words_textures[s]);
+        overlay.addTexture("horzLayout_cell" + std::to_string(s + 1), &words_textures[s]);
     }
 #endif
 
@@ -222,6 +233,8 @@ void Sandbox_Demo::loop(double frameTime){
     // Flat Render
 
     {
+        flatVShader.setMode(0); 
+
         _renderer->setDrawMode(DRAW_Strip);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         // flatVShader.setMode(2);
@@ -247,18 +260,28 @@ void Sandbox_Demo::loop(double frameTime){
 
     _renderer->clearView();
 
+    {  
+        effectVShader.setMode(1);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, effectPipeline);
+        _renderer->updateScene(&canvas);
+        _renderer->renderScene(&canvas);
+    }
+
     {
-        // beamVShader.setMode(texMode); texVShader.setMode(texMode);
-        beamVShader.setMode(0); texVShader.setMode(0);
+        flatVShader.setMode((isShaderModeVary)? shaderMode % 3 : 0); 
+        beamVShader.setMode((isShaderModeVary)? shaderMode / 2 : 0); 
+        texVShader.setMode((isShaderModeVary)? -shaderMode : 0);
         texVShader.setTexScroll(texScroll);
 
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (pipelineIndex == 0)? texPipeline : (pipelineIndex == 1)? beamPipeline : flatPipeline);
+
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
+        // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
+        // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }

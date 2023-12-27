@@ -36,6 +36,9 @@ struct Sandbox_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
+    Geo_Quad2D canvasMesh = Geo_Quad2D(10000.0);
+    Geo_Actor canvasActor = Geo_Actor(&canvasMesh);
+
     Geo_Quad3D boxMesh = Geo_Quad3D();
     Geo_Actor boxActor = Geo_Actor(&boxMesh);
     Geo_Triangle2D pyramidMesh = Geo_Triangle2D();
@@ -52,6 +55,7 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
     Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
 private:
+    Topl_Scene canvas; // for backdrop element
     Topl_Scene scene; // for main elements
     Topl_Scene overlay; // for gui elements
     Topl_Scene details; // for details elements
