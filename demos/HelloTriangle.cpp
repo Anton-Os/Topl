@@ -2,12 +2,19 @@
 
 #include "HelloTriangle.hpp"
 
-// #define TARGET_BACKEND BACKEND_GL4
+#define TARGET_BACKEND BACKEND_GL4
 // #define TARGET_BACKEND BACKEND_DX11
-#define TARGET_BACKEND BACKEND_Vulkan
+// #define TARGET_BACKEND BACKEND_Vulkan
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
+
+#define ACTOR_COUNT 1
+
+static Geo_Triangle2D triangle = Geo_Triangle2D();
+static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
+
+static Topl_Scene scene = Topl_Scene();
 
 /* // Constructor and Destructor Testing
 {
@@ -19,6 +26,7 @@
 	Topl_Renderer_Vulkan renderer_Vk = Topl_Renderer_Vulkan(platform.getParentWindow());
 #endif
 } */
+
 
 // HelloTriangle Main Loop
 
@@ -34,18 +42,21 @@ int main(int argc, char** argv) {
 	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new HelloTriangle_Renderer_DX11(platform.getParentWindow());
 	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new HelloTriangle_Renderer_Vulkan(platform.getParentWindow());
 
-	Timer_Ticker _ticker;
+	Timer_Static _ticker;
 	double frameTotal = 0.0;
 	double swapTime = 0.0;
 
 	if(TARGET_BACKEND != BACKEND_Vulkan){
-		test_scene.addGeometry(&actor);
-		renderer->buildScene(&test_scene);
+		scene.addGeometry(&actor);
+		renderer->buildScene(&scene);
 	}
 
 	while(1){
 		platform.handleEvents(DISABLE_CURSOR_UPDATE);
 
+		// if (TARGET_BACKEND == BACKEND_GL4) renderer->setPipeline(&((HelloTriangle_Renderer_GL4*)renderer)->basePipeline);
+		// else if (TARGET_BACKEND == BACKEND_DX11) renderer->setPipeline(&((HelloTriangle_Renderer_DX11*)renderer)->basePipeline);
+		
 		if(TARGET_BACKEND != BACKEND_Vulkan){
 			// Frame Rate and Render Profiling
 			double f1 = _ticker.getRelMillisecs();

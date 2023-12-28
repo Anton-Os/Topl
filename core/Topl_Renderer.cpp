@@ -65,7 +65,7 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 }
 
 void Topl_Renderer::present() {
-	static Timer_Ticker ticker;
+	static Timer_Static ticker;
 	_frameIDs++;
 	swapBuffers(ticker.getRelMillisecs());
 }

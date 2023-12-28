@@ -34,7 +34,7 @@ vec4 color_correct(vec4 color){ // switch red and blue color values
 
 void main() {
 	if(mode == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
-	else if(mode != 0){
+	else if(mode > 0 && mode < 8){
 		if(mode == 1) color = color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
 		else if(mode == 2) color = color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));
 		else if(mode == 3) color = color_correct(texture(tex3, vec2(texcoord.x, texcoord.y)));
@@ -44,22 +44,22 @@ void main() {
 		else if(mode == 7) color = color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
 		else color = vec4(1.0, 0.0, 0.0, 1.0); // error
 	}
-	/* else if(mode < 0 && mode > -8){ // Alpha Values go to top
-		if(mode <= 1 && texture(tex1, vec2(texcoord.x, texcoord.y)).a > color.a) 
+	else if(mode < 0 && mode > -8){ // Alpha Values go to top
+		if(mode <= -1 && texture(tex1, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex1, vec2(texcoord.x, texcoord.y));
-		if(mode <= 2 && texture(tex2, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -2 && texture(tex2, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex2, vec2(texcoord.x, texcoord.y));
-		if(mode <= 1 && texture(tex3, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -3 && texture(tex3, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex3, vec2(texcoord.x, texcoord.y));
-		if(mode <= 2 && texture(tex4, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -4 && texture(tex4, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex4, vec2(texcoord.x, texcoord.y));
-		if(mode <= 1 && texture(tex5, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -5 && texture(tex5, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex5, vec2(texcoord.x, texcoord.y));
-		if(mode <= 2 && texture(tex6, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -6 && texture(tex6, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex6, vec2(texcoord.x, texcoord.y));
-		if(mode <= 1 && texture(tex7, vec2(texcoord.x, texcoord.y)).a > color.a) 
+		if(mode <= -7 && texture(tex7, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex7, vec2(texcoord.x, texcoord.y));
-	} */
+	}
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
 

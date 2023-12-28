@@ -7,17 +7,15 @@
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
-#define ACTOR_COUNT 1
-
-Geo_Triangle2D triangle = Geo_Triangle2D();
-Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
-
-Topl_Scene test_scene = Topl_Scene();
-
 // OpenGL Test Renderer
 struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 	HelloTriangle_Renderer_GL4(NATIVE_WINDOW window) 
-	: Topl_Renderer_GL4(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
+	: Topl_Renderer_GL4(window){ 
+		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
+		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+	}
 
 	void build(const Topl_Scene* scene) override { 
 		logMessage("HelloTriangle Build (OpenGL)");
@@ -25,19 +23,25 @@ struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 		Topl_Renderer_GL4::build(scene); 
 	}
 
-	Topl_Pipeline_GL4 pipeline;
+	Topl_Pipeline_GL4 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+
 	Idle_VertexShader_GL4 vertexShader;
 	Idle_PixelShader_GL4 pixelShader;
-	/* Advance_GeometryShader_GL4 geomShader;
+	Advance_GeometryShader_GL4 geomShader;
 	Advance_TessCtrlShader_GL4 tessCtrlShader;
-	Advance_TessEvalShader_GL4 tessEvalShader; */
+	Advance_TessEvalShader_GL4 tessEvalShader;
 };
 
 #ifdef _WIN32
 // DirectX Test Renderer
 struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
 	HelloTriangle_Renderer_DX11(NATIVE_WINDOW window) 
-	: Topl_Renderer_DX11(window){ genPipeline(&pipeline, &vertexShader, &pixelShader); }
+	: Topl_Renderer_DX11(window){ 
+		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
+		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+	}
 
 	void build(const Topl_Scene* scene) override {
 		logMessage("HelloTriangle Build (DirectX11)");
@@ -45,12 +49,13 @@ struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
 		Topl_Renderer_DX11::build(scene); 
 	}
 
-	Topl_Pipeline_DX11 pipeline;
+	Topl_Pipeline_DX11 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+
 	Idle_VertexShader_DX11 vertexShader;
 	Idle_PixelShader_DX11 pixelShader;
-	/* Advance_GeometryShader_DX11 geomShader;
+	Advance_GeometryShader_DX11 geomShader;
 	Advance_TessCtrlShader_DX11 tessCtrlShader;
-	Advance_TessEvalShader_DX11 tessEvalShader; */
+	Advance_TessEvalShader_DX11 tessEvalShader;
 };
 #endif
 

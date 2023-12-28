@@ -21,9 +21,9 @@ typedef double millisec_t; // timer calculations in milliseconds
 
 typedef void (*periodicCallback)(void);
 
-class Timer_PeriodicEvent {
+class PeriodicEvent {
 public:
-	Timer_PeriodicEvent(millisec_t period, periodicCallback callback) : period(period) { callbackTrigger = callback; }
+	PeriodicEvent(millisec_t period, periodicCallback callback) : period(period) { callbackTrigger = callback; }
 	void addTime(unsigned long microsecs);
 private:
 	const millisec_t period;
@@ -33,11 +33,11 @@ private:
 
 // Recurring Event
 
-typedef void (*recurringCallback)(millisec_t);
+typedef void (*recurringCallback)(millisec_t); // passes absolute seconds in callback
 
-class Timer_RecurringEvent {
+class RecurringEvent {
 public:
-	Timer_RecurringEvent(recurringCallback callback){ callbackTrigger = callback; }
+	RecurringEvent(recurringCallback callback){ callbackTrigger = callback; }
 	void addTime(unsigned long microsecs);
 private:
 	recurringCallback callbackTrigger;
@@ -46,16 +46,16 @@ private:
 
 // Timer
 
-class Timer_Ticker { // Get number of milliss between two invocations of getSecsPassed()
+class Timer_Static { // 
 public:
-	Timer_Ticker(){ reset(); }
+	Timer_Static(){ reset(); }
 
 	void reset();
 	void addPeriodicEvent(unsigned period, periodicCallback callback){ 
-		_periodicEvents.push_back(Timer_PeriodicEvent(period, callback));
+		_periodicEvents.push_back(PeriodicEvent(period, callback));
 	}
 	void addRecurringEvent(recurringCallback callback){
-		_recurringEvents.push_back(Timer_RecurringEvent(callback));
+		_recurringEvents.push_back(RecurringEvent(callback));
 	}
 
 	void updateTimer();
@@ -71,14 +71,14 @@ protected:
 	std::chrono::steady_clock::time_point _startSecs; // helper variable for adjusting time
 	std::chrono::steady_clock::time_point _endSecs; // helper variable for adjusting time
 
-	std::vector<Timer_PeriodicEvent> _periodicEvents;
-	std::vector<Timer_RecurringEvent> _recurringEvents;
+	std::vector<PeriodicEvent> _periodicEvents;
+	std::vector<RecurringEvent> _recurringEvents;
 };
 
-struct Timer_Dynamic : public Timer_Ticker {
-	Timer_Dynamic(millisec_t time) : Timer_Ticker(){ setTimer(time); }
+struct Timer_Dynamic : public Timer_Static {
+	Timer_Dynamic(millisec_t time) : Timer_Static(){ setTime(time); }
 
-	void setTimer(millisec_t time);
+	void setTime(millisec_t time);
 };
 
 #define TIMER_H

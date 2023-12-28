@@ -16,7 +16,7 @@ protected:
         _eventCount++;
     }
 
-    Timer_Ticker _ticker; // internal timer
+    Timer_Static _ticker; // internal timer
     double _lastEvent = INVALID_TIME; // timestamp for most recent event
 	unsigned _eventCount = 0;
 };
@@ -82,10 +82,12 @@ typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of
 
 typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
 typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region
+typedef void (*wheelCallback)(bool); // triggers action on wheel in positive or negative direction
 
 class Input_MouseControl : public Input_Control {
 public:
     Input_MouseControl() : Input_Control(){}
+    void setScrollCallback(wheelCallback callback){ scrollCallback = callback; }
     void addCallback(enum MOUSE_Button mb, pressCallback callback);
     void addMousePress(enum MOUSE_Button mb, float cursorX, float cursorY);// mouse press with no cursor
     void addMousePress(enum MOUSE_Button mb); // mouse press no cursor
@@ -93,6 +95,7 @@ public:
     void addHoverCallback(hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
     
+    wheelCallback scrollCallback = nullptr;
     std::pair<enum MOUSE_Button, bool> getIsMouseDown(){ return _isMouseDown; }
     // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
     const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }

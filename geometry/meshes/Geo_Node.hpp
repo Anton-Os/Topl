@@ -1,6 +1,6 @@
 #ifndef GEO_NODE_H
 
-#ifdef TOPL_ENABLE_MODELS
+// #ifdef TOPL_ENABLE_MODELS
 
 #include <assimp/scene.h>
 
@@ -19,8 +19,7 @@ unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Att
 
 class Geo_Node : public Geo_Mesh {
 public:
-	Geo_Node(const aiMesh* mesh)
-	: Geo_Node(
+	Geo_Node(const aiMesh* mesh) : Geo_Mesh(
 		getMeshAttribCount(mesh, MESH_Vertex),
 		getMeshAttribCount(mesh, MESH_Index)
 	){
@@ -28,8 +27,7 @@ public:
 		genVertices(); genIndices();
 	}
 
-	Geo_Node(const std::vector<const aiMesh*>& meshes)
-	: Geo_Node(
+	Geo_Node(const std::vector<const aiMesh*>& meshes) : Geo_Mesh(
 		getMeshesAttribCount(meshes, MESH_Vertex),
 		getMeshesAttribCount(meshes, MESH_Index)
 	) {
@@ -47,18 +45,22 @@ private:
 
 class Geo_NodeActor : public Geo_Actor {
 public:
-    Geo_NodeActor(const aiScene* scene, const aiNode* node);
+	Geo_NodeActor() : Geo_Actor(){} // Empty Constructor
+    Geo_NodeActor(const aiScene* scene, const aiNode* node) : Geo_Actor(){ 
+		if (scene != nullptr && node != nullptr) init(scene, node); 
+	}
 	~Geo_NodeActor() { if(_mesh != nullptr) delete(_mesh);}
 
 	const Geo_Node* getMesh() const { return _mesh; }
 private:
+	void init(const aiScene* scene, const aiNode* node);
     const aiScene* _scene = nullptr;
     const aiNode* _node = nullptr;
 
 	Geo_Node* _mesh = nullptr;
 };
 
-#endif
+// #endif
 
 #define GEO_NODE_H
 #endif

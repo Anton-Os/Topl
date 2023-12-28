@@ -1,8 +1,8 @@
-#ifdef TOPL_ENABLE_MODELS
+// #ifdef TOPL_ENABLE_MODELS
 
 #include "Geo_Node.hpp"
 
-// Mesh
+// Node Mesh
 
 unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib){
 	unsigned count = 0;
@@ -72,27 +72,25 @@ void Geo_Node::genIndices() {
 			}
 }
 
-// Node
+// Node Actor
 
-Geo_Node::Geo_Node(const aiScene* scene, const aiNode* node) : Geo_Actor() {
-	if (scene != nullptr && node != nullptr) {
-		setName(std::string(node->mName.C_Str()));
-		_scene = scene;
-		_node = node;
-		
-		if (node->mNumMeshes == 1) {
-			const aiMesh* refMesh = *(_scene->mMeshes + *(_node->mMeshes));
-			_mesh = new Geo_Mesh(refMesh);
-		} else if(node->mNumMeshes > 1){
-			std::vector<const aiMesh*> refMeshes = std::vector<const aiMesh*>(node->mNumMeshes);
-			for(unsigned m = 0; m < node->mNumMeshes; m++) // iterates through all meshes within current node
-				refMeshes[m] = *(_scene->mMeshes + *(_node->mMeshes + m)); 
-			_mesh = new Geo_Mesh(refMeshes);
-		}
-		else puts("No meshes detected!");
-
-		if(_mesh != nullptr) setMesh((Geo_Mesh*)_mesh);
+void Geo_NodeActor::init(const aiScene* scene, const aiNode* node) {
+	setName(std::string(node->mName.C_Str()));
+	_scene = scene;
+	_node = node;
+	
+	if (node->mNumMeshes == 1) {
+		const aiMesh* refMesh = *(_scene->mMeshes + *(_node->mMeshes));
+		_mesh = new Geo_Node(refMesh);
+	} else if(node->mNumMeshes > 1){
+		std::vector<const aiMesh*> refMeshes = std::vector<const aiMesh*>(node->mNumMeshes);
+		for(unsigned m = 0; m < node->mNumMeshes; m++) // iterates through all meshes within current node
+			refMeshes[m] = *(_scene->mMeshes + *(_node->mMeshes + m)); 
+		_mesh = new Geo_Node(refMeshes);
 	}
+	else puts("No meshes detected!");
+
+	if(_mesh != nullptr) setMesh((Geo_Mesh*)_mesh);
 }
 
-#endif
+// #endif

@@ -35,6 +35,12 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
 	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }
 	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addMousePress(MOUSE_RightBtn_Up); }
+	case (WM_MOUSEWHEEL): { 
+		if(message == WM_MOUSEWHEEL && Platform::mouseControl.scrollCallback != nullptr) 
+			Platform::mouseControl.scrollCallback(GET_WHEEL_DELTA_WPARAM(wParam) > 0);
+	}
+	/* case (WM_MBUTTONDOWN): { if(message == WM_MBUTTONDOWN) std::cout << "Scroll Down" << std::endl; }
+	case (WM_MBUTTONUP): { if(message == WM_MBUTTONUP) std::cout << "Scroll Up" << std::endl; } */
 	default:
 		return DefWindowProc(window, message, wParam, lParam);
 	}

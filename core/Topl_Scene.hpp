@@ -112,7 +112,7 @@ private:
 	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture
 #endif
-	Timer_Ticker _ticker; // used for internal updates
+	Timer_Static _ticker; // used for internal updates
 };
 
 #define TOPL_SCENE_H

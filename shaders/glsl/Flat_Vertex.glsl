@@ -21,8 +21,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 0) out uint vertex_num;
-layout(location = 1) out vec3 pos_out;
+layout(location = 0) out vec3 pos_out;
 
 // Functions
 
@@ -66,6 +65,6 @@ void main() {
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	vertex_num = gl_VertexID;
+	// vertex_num = gl_VertexID;
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 }

@@ -23,7 +23,9 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
-layout(location = 1) out vec3 pos_out;
+layout(location = 0) out vec3 pos_out;
+layout(location = 1) out vec3 light_pos_out;
+layout(location = 2) out vec3 light_val_out;
 
 // Functions
 
@@ -74,4 +76,6 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
+	light_pos_out = skyLight_pos; // vec3(vec4(skyLight_pos, 1.0) * calcCamMatrix(cam_pos, look_pos) * projMatrix);
+	light_val_out = skyLight_value;
 }

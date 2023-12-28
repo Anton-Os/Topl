@@ -14,7 +14,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 };
 
 
-layout(location = 1) in vec3 pos;
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec3 light_pos;
+layout(location = 2) in vec3 light_val;
 
 layout(location = 0) out vec4 color;
 
@@ -35,9 +37,9 @@ float calcDiffuse(vec3 light, vec3 vertex) {
 // Main
 
 void main() {
-	vec3 ambient = skyLight_value * 0.2;
-	vec3 diffuse = skyLight_value * calcDiffuse(skyLight_pos, pos) * 0.5;
-	vec3 specular = skyLight_value * calcSpec(skyLight_pos, pos);
+	vec3 ambient = light_val * 0.2;
+	vec3 diffuse = light_val * calcDiffuse(light_pos, pos) * 0.5;
+	vec3 specular = light_val * calcSpec(light_pos, pos);
 
 	if(mode == 1) color = vec4(ambient, 1.0f);
 	else if(mode == 2) color = vec4(diffuse, 1.0f);

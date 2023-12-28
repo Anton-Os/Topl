@@ -3,8 +3,8 @@
 #define MAX_FLAT_MODE 3
 
 #define FLAT_MODE_SOLID 0 // default color from id
-#define FLAT_MODE_PATTERN 1 // alternating vertex colors
-#define FLAT_MODE_XYZ 2 // interpolates along xyz axis
+#define FLAT_MODE_DIRECTION 1 // determines position on screen
+#define FLAT_MODE_COORD 2 // determines coordiates relative to object
 
 // Vertex Shaders
 

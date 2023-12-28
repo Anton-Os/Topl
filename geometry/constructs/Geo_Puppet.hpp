@@ -50,6 +50,8 @@ protected:
 #endif
 #ifdef TOPL_ENABLE_MODELS
 
+#include "meshes/Geo_Node.hpp"
+
 typedef const std::string puppetModelPaths[PUPPET_PARTS]; // list of paths for loading models
 
 class Geo_Puppet3D : public Geo_Puppet {
@@ -58,7 +60,7 @@ public:
     Geo_Puppet3D(const std::string& prefix, puppetModelPaths paths) : Geo_Puppet(prefix){} // TODO: Generate actors with model data
 
 protected:
-    Geo_Actor* actors[PUPPET_PARTS];
+    Geo_NodeActor* actors[PUPPET_PARTS];
     Geo_Node* nodes[PUPPET_PARTS];
 };
 

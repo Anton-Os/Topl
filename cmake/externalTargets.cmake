@@ -1,3 +1,6 @@
+include(ExternalProject)
+set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
+
 if(NOT Rasteron_Install_Path)
     set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
 endif()
@@ -10,9 +13,7 @@ else()
     message(WARNING "Texturing and Image modules cannot load! Build and install Rasteron submodule and point Rasteron_Install_Path variable to the Rasteron install directory")
 endif()
 
-
-include(ExternalProject)
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
+#TODO: Build Rasteron from Submodle or from Git if detected
 
 ExternalProject_Add(GLEW
         GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
@@ -24,7 +25,9 @@ ExternalProject_Add(GLEW
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-set(SUPPORT_MODELS OFF CACHE BOOL "Include 3D model loading" FORCE)
+find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
+
+set(SUPPORT_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
 if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
         GIT_REPOSITORY "https://github.com/assimp/assimp.git"
@@ -37,23 +40,21 @@ ExternalProject_Add(Assimp # 3D Model loading
     )
 endif()
 
-set(SUPPORT_AUDIO OFF CACHE BOOL "Include audio module" FORCE)
-if(SUPPORT_AUDIO)
-ExternalProject_Add(OpenAL # Audio File Loading
-        GIT_REPOSITORY "https://github.com/kcat/openal-soft.git"
-        GIT_TAG "6406cc614130ba5f04555ba46e849c685ae6eae0"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/OpenAL
-        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    )
-endif()
-
-find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
-
 if(NOT SUPPORT_MODELS)
     set(Assimp_FOUND 0) # override variable to not found
 else()
     find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
 endif()
+
+# set(SUPPORT_MEDIA OFF CACHE BOOL "Include audio module" FORCE)
+# if(SUPPORT_MEDIA)
+# ExternalProject_Add(OpenAL # Change to FFMPEG?
+#        GIT_REPOSITORY "https://github.com/kcat/openal-soft.git"
+#        GIT_TAG "6406cc614130ba5f04555ba46e849c685ae6eae0"
+
+#        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+#        PREFIX ${EXTERNAL_PROJ_DIR}/OpenAL
+#        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+#    )
+# endif()
