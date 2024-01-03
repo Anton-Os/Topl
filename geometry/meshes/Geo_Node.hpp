@@ -6,7 +6,9 @@
 
 #include "Geo_Actor.hpp"
 
-#define MESH_SCALE 0.1
+// Node Mesh
+
+#define MESH_SCALE 0.5F
 
 enum MESH_Attribute {
 	MESH_Vertex,
@@ -17,9 +19,9 @@ enum MESH_Attribute {
 unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
 unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
 
-class Geo_Node : public Geo_Mesh {
+class Geo_NodeMesh : public Geo_Mesh {
 public:
-	Geo_Node(const aiMesh* mesh) : Geo_Mesh(
+	Geo_NodeMesh(const aiMesh* mesh) : Geo_Mesh(
 		getMeshAttribCount(mesh, MESH_Vertex),
 		getMeshAttribCount(mesh, MESH_Index)
 	){
@@ -27,7 +29,7 @@ public:
 		genVertices(); genIndices();
 	}
 
-	Geo_Node(const std::vector<const aiMesh*>& meshes) : Geo_Mesh(
+	Geo_NodeMesh(const std::vector<const aiMesh*>& meshes) : Geo_Mesh(
 		getMeshesAttribCount(meshes, MESH_Vertex),
 		getMeshesAttribCount(meshes, MESH_Index)
 	) {
@@ -43,6 +45,11 @@ private:
 	std::vector<const aiMesh*> _assimpMeshes;
 };
 
+// Node Actor
+
+#define NO_NODE_COUNT 0
+#define SINGLE_NODE_COUNT 1
+
 class Geo_NodeActor : public Geo_Actor {
 public:
 	Geo_NodeActor() : Geo_Actor(){} // Empty Constructor
@@ -51,13 +58,13 @@ public:
 	}
 	~Geo_NodeActor() { if(_mesh != nullptr) delete(_mesh);}
 
-	const Geo_Node* getMesh() const { return _mesh; }
+	const Geo_NodeMesh* getMesh() const { return _mesh; }
 private:
 	void init(const aiScene* scene, const aiNode* node);
-    const aiScene* _scene = nullptr;
-    const aiNode* _node = nullptr;
+    const aiScene* _sceneRef = nullptr;
+    const aiNode* _nodeRef = nullptr;
 
-	Geo_Node* _mesh = nullptr;
+	Geo_NodeMesh* _mesh = nullptr;
 };
 
 // #endif

@@ -7,11 +7,6 @@
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
 
-layout(location = 0) out vec4 color_out;
-
 // Main
 
-void main() {
-	gl_Position = vec4(pos, 1.0f);
-	color_out = vec4(1.0, 1.0, 0.0, 1.0); // yellow test
-}
+void main() { gl_Position = vec4(pos, 1.0f); }

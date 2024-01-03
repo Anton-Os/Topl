@@ -11,10 +11,10 @@
 struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 	HelloTriangle_Renderer_GL4(NATIVE_WINDOW window) 
 	: Topl_Renderer_GL4(window){ 
+		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
-		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 	}
 
 	void build(const Topl_Scene* scene) override { 
@@ -37,10 +37,10 @@ struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
 	HelloTriangle_Renderer_DX11(NATIVE_WINDOW window) 
 	: Topl_Renderer_DX11(window){ 
-		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
-		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
 
 	void build(const Topl_Scene* scene) override {

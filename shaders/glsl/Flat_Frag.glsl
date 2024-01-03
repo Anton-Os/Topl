@@ -23,9 +23,9 @@ layout(location = 0) out vec4 outColor;
 // Main
 
 void main() { 
-	if (mode == 1) // view coordinate mode
+	if (mode == 1) // directional
 		outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, color.a);
-	else if (mode == 2) // actor coordinate mode
+	else if (mode == 2) // coordinate mode
 		outColor = vec4(pos.x - offset.x + 0.5, pos.y - offset.y + 0.5, pos.z - offset.z + 0.5, color.a);
 	else outColor = color; // solid mode // default
 }

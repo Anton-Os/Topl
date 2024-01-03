@@ -1,6 +1,9 @@
 #include "Topl_Program.hpp"
 
+Topl_Timeline Topl_Program::timeline = Topl_Timeline();
+
 Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
+bool Topl_Program::isCamera_KeyControl = true;
 bool Topl_Program::isInputEnabled = false;
 std::string Topl_Program::userInput = "";
 
@@ -33,6 +36,17 @@ static void onAnyKey(char k){
 	if(isalnum(k) || isspace(k)){
 		Topl_Program::userInput += k;
 		std::cout << Topl_Program::userInput << std::endl;
+	}
+
+	if(Topl_Program::isCamera_KeyControl){
+		if(toupper(k) == 'W') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
+		else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
+		else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
+		else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
+		else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
+		else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
+		else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
+		else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
 	}
 }
 
@@ -75,11 +89,11 @@ void Topl_Program::run(){
     init();
 
     while (1) {
-		// _timeline.dynamic_ticker.setTime(_timeline.ticker.getAbsMillisecs());
+		// Topl_Program::timeline.dynamic_persist_ticker.setTime(Topl_Program::timeline.persist_ticker.getAbsMillisecs());
 		_platform->handleEvents(ENABLE_CURSOR_UPDATE);
 
 		_renderer->clearView(); // clears view to solid color
-		loop(_timeline.ticker.getRelMillisecs()); // performs draws and updating
+		loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
 		_renderer->present(); // switches front and back buffers
 #ifdef RASTERON_H
 		addFrameAt(Topl_Program::cachedFrames, _renderer->frame().getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
@@ -103,7 +117,6 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 	Topl_Program::pickerVal = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	printf("Coordinate picker value: %X\n", Topl_Program::pickerVal);
 	return Vec3f{
 		((Topl_Program::pickerVal & 0xFF0000) >> 16) / 255.0f,
 		((Topl_Program::pickerVal & 0xFF00) >> 8) / 255.0f, 

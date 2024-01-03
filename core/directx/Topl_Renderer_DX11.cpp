@@ -312,7 +312,7 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 	_isBuilt = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
 	_buffers.push_back(Buffer_DX11(_sceneBlockBuff));
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
 		_renderIDs++;
 		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);

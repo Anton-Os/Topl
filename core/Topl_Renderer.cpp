@@ -22,8 +22,8 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 	// TODO: Vet renderable targets for any obscolete elements
 
     build(scene);
-    texturize(scene);
-    return _isBuilt;
+    if(scene->getIsTextured()) texturize(scene);
+	return _isBuilt;
 }
 
 bool Topl_Renderer::updateScene(const Topl_Scene* scene){
@@ -65,7 +65,7 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 }
 
 void Topl_Renderer::present() {
-	static Timer_Static ticker;
+	static Timer_Persist ticker;
 	_frameIDs++;
 	swapBuffers(ticker.getRelMillisecs());
 }
@@ -89,7 +89,7 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 
 			const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
 			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
-		}
+		} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 	}
 }
 

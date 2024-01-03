@@ -35,7 +35,7 @@ unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Att
 	}
 }
 
-void Geo_Node::genVertices() {
+void Geo_NodeMesh::genVertices() {
 	for (std::vector<const aiMesh*>::const_iterator mesh = _assimpMeshes.cbegin(); mesh < _assimpMeshes.cend(); mesh++)
 		for (unsigned v = 0; v < _vertices.size(); v++) {
 			Vec3f pos, normal;
@@ -58,7 +58,7 @@ void Geo_Node::genVertices() {
 		}
 }
 
-void Geo_Node::genIndices() {
+void Geo_NodeMesh::genIndices() {
 	unsigned i = 0;
 
 	for (std::vector<const aiMesh*>::const_iterator mesh = _assimpMeshes.cbegin(); mesh < _assimpMeshes.cend(); mesh++)
@@ -75,20 +75,23 @@ void Geo_Node::genIndices() {
 // Node Actor
 
 void Geo_NodeActor::init(const aiScene* scene, const aiNode* node) {
-	setName(std::string(node->mName.C_Str()));
-	_scene = scene;
-	_node = node;
+	_sceneRef = scene;
+	_nodeRef = node;
+
+	setName(std::string(_nodeRef->mName.C_Str()));
+	setPos({ _nodeRef->mTransformation.a4 * MESH_SCALE, _nodeRef->mTransformation.b4 * MESH_SCALE - 1.0F, _nodeRef->mTransformation.c4 * MESH_SCALE });
+	setRot({ 0.0f, 0.0f, 0.0f}); // TODO: Determine values from transformation matrix
+	setSize({ _nodeRef->mTransformation.a1, _nodeRef->mTransformation.b2, _nodeRef->mTransformation.c3 });
 	
-	if (node->mNumMeshes == 1) {
-		const aiMesh* refMesh = *(_scene->mMeshes + *(_node->mMeshes));
-		_mesh = new Geo_Node(refMesh);
-	} else if(node->mNumMeshes > 1){
-		std::vector<const aiMesh*> refMeshes = std::vector<const aiMesh*>(node->mNumMeshes);
-		for(unsigned m = 0; m < node->mNumMeshes; m++) // iterates through all meshes within current node
-			refMeshes[m] = *(_scene->mMeshes + *(_node->mMeshes + m)); 
-		_mesh = new Geo_Node(refMeshes);
+	if (_nodeRef->mNumMeshes == SINGLE_NODE_COUNT) {
+		const aiMesh* refMesh = *(_sceneRef->mMeshes + *(_nodeRef->mMeshes));
+		_mesh = new Geo_NodeMesh(refMesh);
+	} else if(_nodeRef->mNumMeshes > SINGLE_NODE_COUNT){
+		std::vector<const aiMesh*> refMeshes = std::vector<const aiMesh*>(_nodeRef->mNumMeshes);
+		for(unsigned m = 0; m < _nodeRef->mNumMeshes; m++) // iterates through all meshes within current node
+			refMeshes[m] = *(_sceneRef->mMeshes + *(_nodeRef->mMeshes + m)); 
+		_mesh = new Geo_NodeMesh(refMeshes);
 	}
-	else puts("No meshes detected!");
 
 	if(_mesh != nullptr) setMesh((Geo_Mesh*)_mesh);
 }

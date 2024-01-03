@@ -61,7 +61,7 @@ public:
 
 protected:
     Geo_NodeActor* actors[PUPPET_PARTS];
-    Geo_Node* nodes[PUPPET_PARTS];
+    // Geo_NodeMesh* nodes[PUPPET_PARTS];
 };
 
 #endif

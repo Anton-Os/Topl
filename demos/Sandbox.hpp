@@ -14,17 +14,6 @@
 
 #include "Topl_Program.hpp"
 
-#define SANDBOX_MODE_HIDE 0 // object funtion
-#define SANDBOX_MODE_MOVE 1 // object function
-#define SANDBOX_MODE_ROTATE 2 // object function
-#define SANDBOX_MODE_SCALE 3 // object function
-#define SANDBOX_MODE_REWIND 4 // timer function
-#define SANDBOX_MODE_PLAYPAUSE 5 // timer function
-#define SANDBOX_MODE_FORWARD 6 // timer funtion
-#define SANDBOX_MODE_PAN 7 // scene function
-#define SANDBOX_MODE_PIVOT 8 // scene function
-#define SANDBOX_MODE_ZOOM 9 // scene function
-
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);

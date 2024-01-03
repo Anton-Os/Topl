@@ -195,7 +195,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
+	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
 		_renderIDs++;
 		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);

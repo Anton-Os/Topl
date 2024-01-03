@@ -14,6 +14,14 @@ static void addMousePress(enum MOUSE_Button button){
 		: Platform::mouseControl.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
 }
 
+struct DropTarget_Win32 : virtual public IDropTarget {
+	// DropTarget_Win32 : IDropTarget(){}
+	HRESULT DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragEnter callback event" << std::endl; }
+	HRESULT DragLeave() override { std::cout << "DragLeave callback event" << std::endl; }
+	HRESULT DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragOver callback event" << std::endl; }
+	HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; }
+};
+
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
 	static bool isKeyReady = false;
 
@@ -74,6 +82,9 @@ void Platform::createWindow(unsigned width, unsigned height){
 
 	ShowWindow(_context.window, 1);
 	UpdateWindow(_context.window);
+
+	// DropTarget_Win32 dropTarget; 
+	// RegisterDragDrop(_context.window, &dropTarget);
 }
 
 void Platform::handleEvents(bool isCursorUpdate){

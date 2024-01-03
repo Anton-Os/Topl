@@ -43,7 +43,7 @@ list(APPEND geometry_src
     geometry/meshes/Geo_Sphere.cpp
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
-    message(STATUS, "Building 3D Model sources")
+    message("Building 3D Model sources")
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
 endif()
 
@@ -196,9 +196,9 @@ endforeach()
 
 add_executable(HelloTriangle demos/HelloTriangle.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
-add_executable(3DViewer demos/3DViewer.cpp)
+add_executable(Modelman demos/Modelman.cpp)
 
-list(APPEND demo_targets HelloTriangle Sandbox 3DViewer)
+list(APPEND demo_targets HelloTriangle Sandbox Modelman)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)

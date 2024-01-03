@@ -14,8 +14,8 @@ public:
 	// void addSequence_double(double* var, std::pair(millisec_t, double));
 	// void addSequence_int(int* var, std::pair(millisec_t, double));
 
-	Timer_Static ticker; // controls global events
-	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // controls context sensitive events
+	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
+	Timer_Persist persist_ticker; // constantly incrementing
 private:
 	std::map<float*, std::map<millisec_t, float>> _float_map;
 	// std::map<double*, std::map<millisec_t, double>> _double_map;
@@ -41,6 +41,7 @@ public:
 	static Vec3f getCamCursorPos(){ return (*cameraObj.getPos() + cursorPos - Vec3f{ 0.0, 0.0, -1.0} ) * (1.0 / *cameraObj.getZoom()); } // TODO: Include roll
 
 	static Vec3f cursorPos;
+	static bool isCamera_KeyControl; // static bool isCamera_MounseControl;
 	static bool isInputEnabled;
 	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H
@@ -49,11 +50,11 @@ public:
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 	static Topl_Camera cameraObj; // custom camera object
+
+	static Topl_Timeline timeline;
 protected:
     virtual void init() = 0;
     virtual void loop(millisec_t frameTime) = 0;
-
-	Topl_Timeline _timeline;
 
 	// Rendering
 	const enum BACKEND_Target _backend;

@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new HelloTriangle_Renderer_DX11(platform.getParentWindow());
 	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new HelloTriangle_Renderer_Vulkan(platform.getParentWindow());
 
-	Timer_Static _ticker;
+	Timer_Persist _ticker;
 	double frameTotal = 0.0;
 	double swapTime = 0.0;
 
@@ -52,11 +52,8 @@ int main(int argc, char** argv) {
 	}
 
 	while(1){
-		platform.handleEvents(DISABLE_CURSOR_UPDATE);
+		platform.handleEvents(ENABLE_CURSOR_UPDATE);
 
-		// if (TARGET_BACKEND == BACKEND_GL4) renderer->setPipeline(&((HelloTriangle_Renderer_GL4*)renderer)->basePipeline);
-		// else if (TARGET_BACKEND == BACKEND_DX11) renderer->setPipeline(&((HelloTriangle_Renderer_DX11*)renderer)->basePipeline);
-		
 		if(TARGET_BACKEND != BACKEND_Vulkan){
 			// Frame Rate and Render Profiling
 			double f1 = _ticker.getRelMillisecs();

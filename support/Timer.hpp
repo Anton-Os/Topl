@@ -46,9 +46,9 @@ private:
 
 // Timer
 
-class Timer_Static { // 
+class Timer_Persist {
 public:
-	Timer_Static(){ reset(); }
+	Timer_Persist(){ reset(); }
 
 	void reset();
 	void addPeriodicEvent(unsigned period, periodicCallback callback){ 
@@ -58,7 +58,7 @@ public:
 		_recurringEvents.push_back(RecurringEvent(callback));
 	}
 
-	void updateTimer();
+	virtual void updateTimer();
 	double getRelMicrosecs();
 	millisec_t getRelMillisecs() { return getRelMicrosecs() / MICROSEC_IN_MILLISEC; } // gets millisonds secs since last invocation
 	double getRelSecs(){ return getRelMicrosecs() / MICROSEC_IN_SEC; } // gets seconds secs since last invocation
@@ -75,10 +75,14 @@ protected:
 	std::vector<RecurringEvent> _recurringEvents;
 };
 
-struct Timer_Dynamic : public Timer_Static {
-	Timer_Dynamic(millisec_t time) : Timer_Static(){ setTime(time); }
+struct Timer_Dynamic : public Timer_Persist {
+	Timer_Dynamic(millisec_t time) : Timer_Persist(){ setTime(time); }
 
-	void setTime(millisec_t time);
+	virtual void updateTimer() override;
+
+	void setTime(millisec_t time); // set absolute
+	void updateTime(millisec_t time); // increment or decrement time
+	bool isPaused = false; // start or stop to handle events
 };
 
 #define TIMER_H

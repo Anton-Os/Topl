@@ -16,7 +16,7 @@ protected:
         _eventCount++;
     }
 
-    Timer_Static _ticker; // internal timer
+    Timer_Persist _ticker; // internal timer
     double _lastEvent = INVALID_TIME; // timestamp for most recent event
 	unsigned _eventCount = 0;
 };

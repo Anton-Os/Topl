@@ -40,14 +40,15 @@ public:
 
         const aiScene* aiScene = aiImporter.ReadFile(_filePath, aiFlags);
 
-         _nodeCount = aiScene->mRootNode->mNumChildren;
+        _nodeCount = aiScene->mRootNode->mNumChildren;
         _nodes = (Geo_NodeActor**)malloc(_nodeCount * sizeof(Geo_NodeActor*));
         for (unsigned n = 0; n < _nodeCount; n++) // iterates through all nodes
             *(_nodes + n) = new Geo_NodeActor(aiScene, aiScene->mRootNode->mChildren[n]);
 
         for (unsigned n = 0; n < _nodeCount; n++) {
             Geo_NodeActor* currentNode = *(_nodes + n);
-            if (currentNode->getMesh()->getMeshCount() > 0) {
+            if (currentNode->getMesh()->getMeshCount() > NO_NODE_COUNT) {
+                // TODO: Add actor to Geo_Construct parent class
                 _geoNodes.push_back(currentNode);
                 scene->addGeometry(getPrefix() + currentNode->getName(), currentNode);
             }

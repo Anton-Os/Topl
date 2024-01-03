@@ -71,8 +71,6 @@ void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 
 const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
 	if(_textureMap.empty()) return nullptr; // no textures available
-	/* else for (std::map<Geo_Actor*, const Img_Base*>::const_iterator t = _textureMap.cbegin(); t != _textureMap.cend(); t++)
-		if (name == t->first->getName()) return t->second; */
 	auto texture_it = std::find_if(
 		_textureMap.begin(), _textureMap.end(),
 		[name](const std::pair<Geo_Actor*, const Img_Base*>& p){ return p.first->getName() == name; }
@@ -90,8 +88,6 @@ void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* arrayTex)
 
 const Img_Array* Topl_Scene::getArrayTex(const std::string& name) const {
 	if(_arrayTexMap.empty()) return nullptr; // no textures available
-	/* else for (std::map<Geo_Actor*, const Img_Array*>::const_iterator m = _arrayTexMap.cbegin(); m != _arrayTexMap.cend(); m++)
-		if (name == m->first->getName()) return m->second; // */
 	auto arrayTex_it = std::find_if(
 		_arrayTexMap.begin(), _arrayTexMap.end(),
 		[name](const std::pair<Geo_Actor*, const Img_Array*>& p){ return p.first->getName() == name; }
@@ -109,8 +105,6 @@ void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeT
 
 const Img_Volume* Topl_Scene::getVolumeTex(const std::string& name) const {
 	if(_volumeTexMap.empty()) return nullptr; // no textures available
-	/* else for (std::map<Geo_Actor*, const Img_Volume*>::const_iterator v = _volumeTexMap.cbegin(); v != _volumeTexMap.cend(); v++)
-		if (name == v->first->getName()) return v->second; */
 	auto volumeTex_it = std::find_if(
 		_volumeTexMap.begin(), _volumeTexMap.end(),
 		[name](const std::pair<Geo_Actor*, const Img_Volume*>& p){ return p.first->getName() == name; }

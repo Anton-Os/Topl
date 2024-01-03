@@ -83,6 +83,7 @@ public:
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
+	bool getIsTextured() const { return _textureMap.size() > 1 || _arrayTexMap.size() > 1 || _volumeTexMap.size() > 1; }
 	const Img_Base* getTexture(const std::string& name) const;
 	const Img_Array* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;
@@ -112,7 +113,7 @@ private:
 	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture
 #endif
-	Timer_Static _ticker; // used for internal updates
+	Timer_Persist _ticker; // used for internal updates
 };
 
 #define TOPL_SCENE_H

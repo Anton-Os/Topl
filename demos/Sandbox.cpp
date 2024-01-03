@@ -1,6 +1,6 @@
 #include "Sandbox.hpp"
 
-int Sandbox_Demo::mode = SANDBOX_MODE_MOVE;
+int Sandbox_Demo::mode = 0;
 int Sandbox_Demo::pipelineIndex = 0;
 bool Sandbox_Demo::isShaderVariant = false;
 unsigned Sandbox_Demo::shaderMode = 0;
@@ -14,45 +14,15 @@ unsigned sphereImgOp(double x, double y){ return (tan(x * y) > 0.25 && tan(x * y
 unsigned hexImgOp(double x, double y){ return (x > 0.4 && x < 0.6 && y > 0.4 && y < 0.6)? 0xFF3333333 : 0xFFEEEEEE; }
 #endif
 
-static void updateActor(Geo_Actor* actor){
-    std::cout << "Tracer steps: " << std::to_string(Platform::mouseControl.getTracerSteps()->size()) << ", Last Step: " << std::to_string(Platform::mouseControl.getTracerSteps()->back().step.first) << ", " << std::to_string(Platform::mouseControl.getTracerSteps()->back().step.second) << std::endl;
-    if(!Platform::mouseControl.getTracerPaths()->empty()){
-        auto lastPath = Platform::mouseControl.getTracerPaths()->back();
-        std::cout << "Tracer paths: " << std::to_string(lastPath.stepsCount) << /* ", Last Path: " << std::to_string(lastPath.steps[lastPath.stepsCount - 1].first) << ", " << std::to_string(lastPath.steps[lastPath.stepsCount - 1].second) << */ std::endl;
-    }
-
-    switch(Sandbox_Demo::mode){
-        case SANDBOX_MODE_HIDE: break; // TODO: hide actor
-        case SANDBOX_MODE_MOVE: actor->setPos(Topl_Program::getCamCursorPos()); break;
-        case SANDBOX_MODE_ROTATE: break; // TODO: rotate actor
-        case SANDBOX_MODE_SCALE: break; // TODO: scale actor
-        /* case SANDBOX_MODE_REWIND: break; // TODO: rewind time
-        case SANDBOX_MODE_PLAYPAUSE: break; // TODO: play or pause time
-        case SANDBOX_MODE_FORWARD: break; // TODO: fast forward time
-        case SANDBOX_MODE_PAN: break; // TODO: pan scene
-        case SANDBOX_MODE_PIVOT: break; // TODO: rotate scene
-        case SANDBOX_MODE_ZOOM: break; // TODO: zoom scene */
-        default: actor->setPos(Topl_Program::getCamCursorPos());
-    }
-}
-
 static void onAnyKey(char k){ 
     if(isdigit(k)){ 
         Sandbox_Demo::mode = k - '0'; // conversion from char to decimal
         std::cout << "Key mode: " << std::to_string(Sandbox_Demo::mode) << std::endl;
     } 
-    else if(toupper(k) == 'W') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
-    else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
-    else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
-    else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
-    else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
-    else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
-    else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
-    else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
-    else if(k == 0x25) Sandbox_Demo::texScroll[0] -= 0.05f; // left arrow
-    else if(k == 0x27) Sandbox_Demo::texScroll[0] += 0.05f; // right arrow
-    else if(k == 0x26) Sandbox_Demo::texScroll[1] -= 0.05f; // up arrow
-    else if(k == 0x28) Sandbox_Demo::texScroll[1] += 0.05f; // down arrow
+    else if(k == 0x25) Topl_Program::timeline.dynamic_ticker.updateTime(-1.0); // Sandbox_Demo::texScroll[0] -= 0.05f; // left arrow
+    else if(k == 0x27) Topl_Program::timeline.dynamic_ticker.updateTime(1.0); // Sandbox_Demo::texScroll[0] += 0.05f; // right arrow
+    else if(k == 0x26) Topl_Program::timeline.dynamic_ticker.isPaused = false; // Sandbox_Demo::texScroll[1] -= 0.05f; // up arrow
+    else if(k == 0x28) Topl_Program::timeline.dynamic_ticker.isPaused = true; // Sandbox_Demo::texScroll[1] += 0.05f; // down arrow
     else if(toupper(k) == 'X') { Sandbox_Demo::isShaderVariant = !Sandbox_Demo::isShaderVariant; }
     else if(isspace(k)) (Sandbox_Demo::pipelineIndex < 2)? Sandbox_Demo::pipelineIndex++ : Sandbox_Demo::pipelineIndex = 0;
 }
@@ -62,38 +32,70 @@ static void onScroll(bool positive){
 }
 
 static void onHover(float x, float y){ 
+    static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
+    static Vec3f pickedColorVec = Vec3f{0.0, 0.0, 0.0};
+    static bool isMotionEnable = false;
+
     if(Platform::mouseControl.getIsMouseDown().second) {
         Topl_Program::cursorPos = { x, y, 0.0F }; 
+        pickedColorVec = Vec3f{
+            ((Topl_Program::pickerVal & 0xFF0000) >> 16) / 255.0f,
+            ((Topl_Program::pickerVal & 0xFF00) >> 8) / 255.0f, 
+            (Topl_Program::pickerVal & 0xFF) / 255.0f,  
+	    };
 
         if(Topl_Program::pickerObj != NO_PICKER_OBJ){
             std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
+            printf("Picker value: %X\n", Topl_Program::pickerVal);
 
-            if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId())
-                updateActor(&_instance->boxActor);
-            else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId())
-                updateActor(&_instance->pyramidActor);
-            else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId())
-                updateActor(&_instance->sphereActor);
-            else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId())
-                updateActor(&_instance->hexActor);
-            // else if(isLayoutSelect) layoutVec = layoutVec + (Topl_Program::cursorPos - layoutVec);
+            if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->boxActor.getId())
+                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    ? _instance->boxActor.setPos(Topl_Program::getCamCursorPos())
+                    : _instance->boxActor.updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 });
+            else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId())
+                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    ? _instance->pyramidActor.setPos(Topl_Program::getCamCursorPos())
+                    : _instance->pyramidActor.updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 });
+            else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->sphereActor.getId())
+                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    ? _instance->sphereActor.setPos(Topl_Program::getCamCursorPos())
+                    : _instance->sphereActor.updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 });
+            else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->hexActor.getId())
+                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    ? _instance->hexActor.setPos(Topl_Program::getCamCursorPos())
+                    : _instance->hexActor.updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 });
 
-            Topl_Program::isInputEnabled = Topl_Program::pickerObj->getId() == _instance->inputInfoActor.getId();
+            // Topl_Program::isInputEnabled = Topl_Program::pickerObj->getId() == _instance->inputInfoActor.getId();
+        } else {
+            if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
+                if(savedColorVec[0] != pickedColorVec[0] || savedColorVec[1] != pickedColorVec[1])
+                    Topl_Program::cameraObj.updatePos({ savedColorVec[0] - pickedColorVec[0], savedColorVec[1] - pickedColorVec[1], 0.0 });
+            } else if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
+                if(savedColorVec[0] != pickedColorVec[0])
+                    Topl_Program::cameraObj.updateRot({ savedColorVec[0] - pickedColorVec[0], 0.0, 0.0 });
+                if(savedColorVec[1] != pickedColorVec[1])
+                    Topl_Program::cameraObj.updateRot({ savedColorVec[1] - pickedColorVec[1], 0.0, 0.0 });
+            }
         }
-    } else Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
+        isMotionEnable = true;
+    } else {
+        isMotionEnable = false;
+        Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
+    }
+    savedColorVec = pickedColorVec;
 }
 
 void shaderModeCycle(){ (Sandbox_Demo::shaderMode < 8)? Sandbox_Demo::shaderMode++ : Sandbox_Demo::shaderMode = 0; }
 void overlayTexUpdate(){
-    static unsigned secs = 0; // make accessible inside of program timer
+    unsigned secs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / MILLISEC_IN_SEC; // make accessible inside of program timer
+    unsigned splitsecs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / 10;
 
     // Rasteron_Text inputTextObj = { Sandbox_Demo::fontFilePath.c_str(), Topl_Program::userInput.c_str(), 0xAAFF00FF, 0xFF333333 };
     // (!Topl_Program::userInput.empty())? _instance->userInput_texture.setTextImage(&inputTextObj) : _instance->userInput_texture.setColorImage(0xFFFFFF00);
-    std::string timeText = ((secs < 60)? "" : (secs % 60 < 10)? std::to_string(secs / 60) + ":0" : std::to_string(secs / 60) + ":") + std::to_string(secs % 60) + ":00"; // Get ticker from Topl_Timeline
+    std::string timeText = ((secs < 60)? "" : (secs % 60 < 10)? std::to_string(secs / 60) + ":0" : std::to_string(secs / 60) + ":") + std::to_string(secs % 60) + ":00"; //+ std::to_string(splitsecs);
     Rasteron_Text timerTextObj = { Sandbox_Demo::fontFilePath.c_str(), timeText.c_str(), 0xAA00FFFF, 0xFF333333 };
     _instance->timerCount_texture.setTextImage(&timerTextObj);
 
-    secs++;
 }
 
 static void default_shadercall(Topl_EntryShader* shader){ 
@@ -136,8 +138,8 @@ void Sandbox_Demo::init(){
     Platform::mouseControl.setScrollCallback(onScroll);
     Platform::mouseControl.addHoverCallback(onHover);
 
-    _timeline.ticker.addPeriodicEvent(2500, shaderModeCycle);
-    _timeline.ticker.addPeriodicEvent(1000, overlayTexUpdate);
+    Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
+    Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
@@ -236,13 +238,13 @@ void Sandbox_Demo::loop(double frameTime){
     // Object Updates
     
     {
-        boxActor.updateRot({ 0.003F * (float)frameTime, 0.0F });
-        pyramidActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
-        sphereActor.updateRot({ -0.003F * (float)frameTime, -0.003F * (float)frameTime, -0.003F * (float)frameTime });
-        hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
+        // boxActor.updateRot({ 0.003F * (float)frameTime, 0.0F });
+        // pyramidActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
+        // sphereActor.updateRot({ -0.003F * (float)frameTime, -0.003F * (float)frameTime, -0.003F * (float)frameTime });
+        // hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
 
 #ifdef RASTERON_H
-        if(_renderer->getFrameCount() % 10 == 0){
+        if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
             _renderer->texturize(&scene);
             _renderer->texturize(&overlay);
         }
@@ -270,50 +272,30 @@ void Sandbox_Demo::loop(double frameTime){
 #endif
     }
 
-    static Vec3f saveColor_canvas = Vec3f{0.0, 0.0, 0.0};
-    static Vec3f pickColor_canvas = coordPicker(&canvas);
-    static bool isMotionEnable = false;
-
     if(Platform::mouseControl.getIsMouseDown().second) {
-        flatVShader.setMode(FLAT_MODE_COORD); 
-
-        _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
-        _renderer->updateScene(&scene);
-        _renderer->renderScene(&scene);
-
-        _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
-        _renderer->updateScene(&overlay);
-        _renderer->renderScene(&overlay);
-
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
         _renderer->renderScene(&canvas);
 
+        flatVShader.setMode(FLAT_MODE_COORD); 
+        _renderer->setDrawMode(DRAW_Triangles);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        _renderer->updateScene(&scene);
+        _renderer->renderScene(&scene);
+
+        flatVShader.setMode(FLAT_MODE_COORD);
+        _renderer->setDrawMode(DRAW_Triangles);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        _renderer->updateScene(&overlay);
+        _renderer->renderScene(&overlay);
 #ifdef RASTERON_H
-        if(Topl_Program::pickerObj == NO_PICKER_OBJ){ // Camera Panning and Pivoting Required
-            pickColor_canvas = coordPicker(&canvas);
-            if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                if(saveColor_canvas[0] != pickColor_canvas[0] || saveColor_canvas[1] != pickColor_canvas[1])
-                    Topl_Program::cameraObj.updatePos({ saveColor_canvas[0] - pickColor_canvas[0], saveColor_canvas[1] - pickColor_canvas[1], 0.0 });
-            } else if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
-                if(saveColor_canvas[0] != pickColor_canvas[0])
-                    Topl_Program::cameraObj.updateRot({ saveColor_canvas[0] - pickColor_canvas[0], 0.0, 0.0 });
-                if(saveColor_canvas[1] != pickColor_canvas[1])
-                    Topl_Program::cameraObj.updateRot({ saveColor_canvas[1] - pickColor_canvas[1], 0.0, 0.0 });
-            }
-        }
-        // coordPicker(&canvas);
-        // coordPicker(&scene);
+        Vec3f coordPickVec = coordPicker(&scene);
+        if(coordPickVec[0] == 0.0 && coordPickVec[1] == 0.0) coordPickVec = coordPicker(&canvas);
         // coordPicker(&overlay);
 #endif
         _renderer->clearView();
-        isMotionEnable = true;
-    } else isMotionEnable = false;
-
-    saveColor_canvas = pickColor_canvas;
+    }
 
     // Display Renders
 

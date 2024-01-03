@@ -23,24 +23,24 @@ void RecurringEvent::addTime(unsigned long microsecs){
 
 // Timer
 
-void Timer_Static::reset(){
+void Timer_Persist::reset(){
     _relMicrosElapsed = microseconds(0);
     _absMicrosElapsed = microseconds(0);
     _startSecs = steady_clock::now();
 }
 
-double Timer_Static::getRelMicrosecs() {
+double Timer_Persist::getRelMicrosecs() {
     updateTimer();
     return _relMicrosElapsed.count();
 }
 
-double Timer_Static::getAbsMicrosecs() {
+double Timer_Persist::getAbsMicrosecs() {
     updateTimer();
     return _absMicrosElapsed.count();
 }
 
-void Timer_Static::updateTimer(){
-    _endSecs = steady_clock::now(); // Gets current time
+void Timer_Persist::updateTimer(){
+    _endSecs = steady_clock::now(); // gets current time
     _relMicrosElapsed = duration_cast<duration<double>>(_endSecs - _startSecs);
     _absMicrosElapsed += _relMicrosElapsed;
 
@@ -52,7 +52,21 @@ void Timer_Static::updateTimer(){
     _startSecs = _endSecs; // internally adjusting timing functions
 }
 
+void Timer_Dynamic::updateTimer(){ 
+    if(!isPaused) Timer_Persist::updateTimer();
+    else{
+        _endSecs = steady_clock::now(); // gets current time
+        _startSecs = _endSecs;
+    }
+}
+
 void Timer_Dynamic::setTime(millisec_t millisecs){
     _relMicrosElapsed = microseconds(0);
-    _absMicrosElapsed = std::chrono::duration<double>((double)millisecs * (double)MICROSEC_IN_MILLISEC);
+    _absMicrosElapsed = std::chrono::duration<double>((double)millisecs);
+}
+
+void Timer_Dynamic::updateTime(millisec_t millisecs){
+    _relMicrosElapsed = microseconds(0);
+    _absMicrosElapsed += std::chrono::duration<double>((double)millisecs);
+    if(_absMicrosElapsed < microseconds(0)) _absMicrosElapsed = microseconds(0); // clamp to lower bound
 }

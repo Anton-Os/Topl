@@ -18,6 +18,7 @@
     #include <Windows.h>
     #include <windowsx.h>
     // #include <ShellScalingApi.h>
+    #include <Ole2.h>
 
     #include "resource.h"
 
@@ -29,6 +30,7 @@
         WNDCLASS windowClass;
         NATIVE_WINDOW window;
         NATIVE_GL_CONTEXT oglCtx;
+        // IDropTarget dropTarget;
         HDC deviceCtx;
         POINT cursorPos;
         MSG eventMsg;
