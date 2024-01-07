@@ -313,11 +313,22 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 	_buffers.push_back(Buffer_DX11(_sceneBlockBuff));
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
-		_renderIDs++;
-		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		unsigned long renderID = getRenderID(actor);
+		
+		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+			_renderIDs++;
+			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
+			renderID = getRenderID(actor);
+		} else { // old data must be replaced
+			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
+			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
+			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
+			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+		}
 
 		// render block buffer generation
 		shaderBlockData.clear();

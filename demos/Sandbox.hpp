@@ -82,9 +82,9 @@ private:
 
     Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline, *effectPipeline;
 
-    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
-    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
-    Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
-    Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
+    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
+    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
+    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
+    Effect_VertexShader_GL4 effectVShader; Effect_PixelShader_GL4 effectPShader;
 
 } *_instance; // USE _instance OBJECT FOR DEMO

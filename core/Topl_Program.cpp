@@ -6,9 +6,11 @@ Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
 bool Topl_Program::isCamera_KeyControl = true;
 bool Topl_Program::isInputEnabled = false;
 std::string Topl_Program::userInput = "";
+std::map<float*, std::map<millisec_t, float>> Topl_Timeline::float_map = std::map<float*, std::map<millisec_t, float>>();
 
 #ifdef RASTERON_H
-unsigned Topl_Program::pickerVal = NO_COLOR;
+unsigned Topl_Program::pickerVal_color = NO_COLOR;
+unsigned Topl_Program::pickerVal_coord = NO_COLOR;
 const Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
@@ -16,19 +18,19 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
 Topl_Timeline::Topl_Timeline(){
-	// void addRecurringEvent() // Update internal elapsed millisecs and all variables
+	dynamic_ticker.addRecurringEvent(Topl_Timeline::sequenceCallback);
 }
 
-void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> timeTarget){
-	assert(_float_map.size() < MAX_TIMELINE_ATTRIBS);
+void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> target){
+	assert(Topl_Timeline::float_map.size() < MAX_TIMELINE_ATTRIBS);
 	
-	auto sequence = std::find_if(_float_map.begin(), _float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
+	auto sequence = std::find_if(Topl_Timeline::float_map.begin(), Topl_Timeline::float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
 	
-	if(sequence != _float_map.end()) sequence->second.insert({ timeTarget.first, timeTarget.second });
+	if(sequence != Topl_Timeline::float_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
-		std::cout << "Creating float with time target!" << std::endl; // TEST
-		_float_map.insert({ var, std::map<millisec_t, float>() }); // create new object
-		_float_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
+		Topl_Timeline::float_map.insert({ var, std::map<millisec_t, float>() }); // create object
+		if(target.first != 0.0) Topl_Timeline::float_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
+		Topl_Timeline::float_map[var].insert({ target.first, target.second }); // insert updated state at new time
 	}
 }
 
@@ -89,7 +91,7 @@ void Topl_Program::run(){
     init();
 
     while (1) {
-		// Topl_Program::timeline.dynamic_persist_ticker.setTime(Topl_Program::timeline.persist_ticker.getAbsMillisecs());
+		Topl_Program::timeline.dynamic_ticker.updateTimer();
 		_platform->handleEvents(ENABLE_CURSOR_UPDATE);
 
 		_renderer->clearView(); // clears view to solid color
@@ -105,22 +107,22 @@ void Topl_Program::run(){
 
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
-	Topl_Program::pickerVal = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	if((Topl_Program::pickerVal & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
+	Topl_Program::pickerVal_color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	if((Topl_Program::pickerVal_color & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
 		Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
-		const Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerVal);
+		const Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerVal_color);
 		if(actor != nullptr) Topl_Program::pickerObj = actor; 
 	}
-	return Topl_Program::pickerVal;
+	return Topl_Program::pickerVal_color;
 }
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
-	Topl_Program::pickerVal = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	Topl_Program::pickerVal_coord = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	return Vec3f{
-		((Topl_Program::pickerVal & 0xFF0000) >> 16) / 255.0f,
-		((Topl_Program::pickerVal & 0xFF00) >> 8) / 255.0f, 
-		(Topl_Program::pickerVal & 0xFF) / 255.0f,  
+		((Topl_Program::pickerVal_coord & 0xFF0000) >> 16) / 255.0f,
+		((Topl_Program::pickerVal_coord & 0xFF00) >> 8) / 255.0f, 
+		(Topl_Program::pickerVal_coord & 0xFF) / 255.0f,  
 	};
 }
 #endif

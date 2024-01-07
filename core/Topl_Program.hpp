@@ -10,14 +10,18 @@ class Topl_Timeline {
 public:
 	Topl_Timeline();
 
-	void addSequence_float(float* var, std::pair<millisec_t, float> timeTarget);
+	void addSequence_float(float* var, std::pair<millisec_t, float> target);
 	// void addSequence_double(double* var, std::pair(millisec_t, double));
 	// void addSequence_int(int* var, std::pair(millisec_t, double));
 
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
+
+	static void sequenceCallback(millisec_t m){ 
+		for(auto s = float_map.begin(); s != float_map.end(); s++) *(s->first) = s->second.at(0.0); // TODO: Get the real time and calculate value
+	}
 private:
-	std::map<float*, std::map<millisec_t, float>> _float_map;
+	static std::map<float*, std::map<millisec_t, float>> float_map;
 	// std::map<double*, std::map<millisec_t, double>> _double_map;
 	// std::map<int*, std::map<millisec_t, int>> _int_map;
 
@@ -45,7 +49,8 @@ public:
 	static bool isInputEnabled;
 	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H
-	static unsigned pickerVal; // picker for color
+	static unsigned pickerVal_color; // picker for color
+	static unsigned pickerVal_coord; // picker for coordinates
 	static const Geo_Actor* pickerObj; // picker for actor
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif

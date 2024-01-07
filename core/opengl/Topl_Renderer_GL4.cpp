@@ -196,37 +196,50 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
-		_renderIDs++;
-		_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		unsigned long renderID = getRenderID(actor);
+		
+		unsigned vertexBuffIndex = 0, indexBuffIndex = 0, renderBlockBuffIndex = 0;
+		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+			_renderIDs++;
+			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
+			renderID = getRenderID(actor);
+		} else { // old data must be replaced
+			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			vertexBuffIndex = (*vertexBuff).buffer;
+			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
+			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
+			indexBuffIndex = (*indexBuff).buffer;
+			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
+			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
+			renderBlockBuffIndex = (*renderBlockBuff).buffer;
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+		}
 
 		// render block buffer generation
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[_bufferIndex]));
-		_bufferIndex++; // increments to next available slot
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[(renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex]));
+		if(renderBlockBuffIndex == 0) _bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
+		(mesh->getIndices() != nullptr)
+			? _buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], mesh->getIndexCount()))
+			: _buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], 0)); // 0 indicates empty buffer
 		if (mesh->getIndices() != nullptr) {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], mesh->getIndexCount()));
-			_bufferIndex++; // increments to next available slot
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
 		}
-		else {
-			_buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[_bufferIndex], 0)); // 0 indicates empty buffer
-			_bufferIndex++; // increments to next available slot
-		}
+		if(indexBuffIndex == 0) _bufferIndex++; // increments to next available slot
 
 		// vertices generation
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[_bufferIndex], mesh->getVertexCount()));
-		_bufferIndex++; // increments to next available slot
+		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[(vertexBuffIndex != 0)? vertexBuffIndex : _bufferIndex], mesh->getVertexCount()));
+		if(vertexBuffIndex == 0) _bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
 		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 

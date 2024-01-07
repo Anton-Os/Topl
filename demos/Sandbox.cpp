@@ -39,14 +39,13 @@ static void onHover(float x, float y){
     if(Platform::mouseControl.getIsMouseDown().second) {
         Topl_Program::cursorPos = { x, y, 0.0F }; 
         pickedColorVec = Vec3f{
-            ((Topl_Program::pickerVal & 0xFF0000) >> 16) / 255.0f,
-            ((Topl_Program::pickerVal & 0xFF00) >> 8) / 255.0f, 
-            (Topl_Program::pickerVal & 0xFF) / 255.0f,  
+            ((Topl_Program::pickerVal_coord & 0xFF0000) >> 16) / 255.0f,
+            ((Topl_Program::pickerVal_coord & 0xFF00) >> 8) / 255.0f, 
+            (Topl_Program::pickerVal_coord & 0xFF) / 255.0f,  
 	    };
 
         if(Topl_Program::pickerObj != NO_PICKER_OBJ){
             std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
-            printf("Picker value: %X\n", Topl_Program::pickerVal);
 
             if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->boxActor.getId())
                 (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
@@ -101,13 +100,18 @@ void overlayTexUpdate(){
 static void default_shadercall(Topl_EntryShader* shader){ 
     /* Add body for render block */ 
 }
+
 static void gridCell_pickercall(Geo_Actor* actor){
     int c = (char)(actor->getName().back()) - '0';
-    if(c == 1 || c == 2 || c == 3)
+    float pickerVal_x = ((Topl_Program::pickerVal_coord & 0xFF0000) >> 16) / 255.0f;
+    float pickerVal_y = ((Topl_Program::pickerVal_coord & 0xFF00) >> 8) / 255.0f;
+    printf("Picker value: %X, Picker (X, Y): %f, %f\n", Topl_Program::pickerVal_coord, pickerVal_x, pickerVal_y);
+
+    if(c == 1 || c == 2 || c == 3) // dial operations
         _instance->dialBtn_textures[c - 1].setImage(getFrameAt(_instance->dialBtn_queues[c - 1], (_instance->dialBtn_queues[c - 1]->index + 1 < _instance->dialBtn_queues[c - 1]->frameCount)? _instance->dialBtn_queues[c - 1]->index + 1 : 0));
-    else if(c == 4 || c == 5 || c == 6)
+    else if(c == 4 || c == 5 || c == 6) // icon operations
         _instance->iconBtn_textures[c - 4].setImage(getFrameAt(_instance->iconBtn_queues[c - 4], (_instance->iconBtn_queues[c - 4]->index + 1 < 3)? _instance->iconBtn_queues[c - 4]->index + 1 : 0));
-    if(c == 7 || c == 8 || c == 9)
+    if(c == 7 || c == 8 || c == 9) // check operations
         _instance->checkBtn_textures[c - 7].setImage(getFrameAt(_instance->checkBtn_queue, 0));
 }
 
@@ -117,14 +121,8 @@ Sandbox_Demo::~Sandbox_Demo(){
         dealloc_queue(iconBtn_queues[q]);
         dealloc_queue(dialBtn_queues[q]);
     }
-    dealloc_queue(checkBtn_queue);
-    dealloc_queue(slider_queue); // for(unsigned s = 0; s < 9; s++) dealloc_queue(slider_queues[s]);
-    dealloc_queue(words_queue);
-
-    dealloc_image(boxImg);
-    dealloc_image(pyramidImg);
-    dealloc_image(sphereImg);
-    dealloc_image(hexImg);
+    dealloc_queue(checkBtn_queue); dealloc_queue(slider_queue); dealloc_queue(words_queue);
+    dealloc_image(boxImg); dealloc_image(pyramidImg); dealloc_image(sphereImg); dealloc_image(hexImg);
 #endif
 }
 
@@ -140,10 +138,12 @@ void Sandbox_Demo::init(){
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(1.0, 0.25));
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(1.0, 0.25));
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
-    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, effectPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, effectPipeline);
     _renderer->buildScene(&canvas);
 
     boxMesh.scale({ 0.25f, 0.25f, 0.25f});
@@ -185,9 +185,9 @@ void Sandbox_Demo::init(){
     // chain.configure(&scene);
     // grid.configure(&scene);
 
-    Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     _renderer->buildScene(&scene);
-    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     // _renderer->buildScene(&details);
     
     infoBoxMesh.scale({ 5.0f, 1.0, 1.0f });
@@ -230,26 +230,19 @@ void Sandbox_Demo::init(){
     }
 #endif
 
-    // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
     _renderer->buildScene(&overlay);
 }
 
 void Sandbox_Demo::loop(double frameTime){
     // Object Updates
     
-    {
-        // boxActor.updateRot({ 0.003F * (float)frameTime, 0.0F });
-        // pyramidActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
-        // sphereActor.updateRot({ -0.003F * (float)frameTime, -0.003F * (float)frameTime, -0.003F * (float)frameTime });
-        // hexActor.updateRot({ 0.0F, 0.0F, 0.003F * (float)frameTime });
-
 #ifdef RASTERON_H
-        if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
-            _renderer->texturize(&scene);
-            _renderer->texturize(&overlay);
-        }
-#endif
+    if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
+        _renderer->texturize(&scene);
+        _renderer->texturize(&overlay);
     }
+#endif
 
     // Capture Renders
 
@@ -257,13 +250,13 @@ void Sandbox_Demo::loop(double frameTime){
         flatVShader.setMode(FLAT_MODE_SOLID); 
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         // flatVShader.setMode(2);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 #ifdef RASTERON_H
@@ -274,25 +267,25 @@ void Sandbox_Demo::loop(double frameTime){
 
     if(Platform::mouseControl.getIsMouseDown().second) {
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
         _renderer->renderScene(&canvas);
 
         flatVShader.setMode(FLAT_MODE_COORD); 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         flatVShader.setMode(FLAT_MODE_COORD);
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
 #ifdef RASTERON_H
         Vec3f coordPickVec = coordPicker(&scene);
+        if(coordPickVec[0] == 0.0 && coordPickVec[1] == 0.0) coordPickVec = coordPicker(&overlay);
         if(coordPickVec[0] == 0.0 && coordPickVec[1] == 0.0) coordPickVec = coordPicker(&canvas);
-        // coordPicker(&overlay);
 #endif
         _renderer->clearView();
     }
@@ -301,7 +294,7 @@ void Sandbox_Demo::loop(double frameTime){
 
     /* {  
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
         _renderer->renderScene(&canvas);
     } */
@@ -312,22 +305,22 @@ void Sandbox_Demo::loop(double frameTime){
         texVShader.setMode((Sandbox_Demo::isShaderVariant)? -Sandbox_Demo::shaderMode : 0);
         texVShader.setTexScroll(Sandbox_Demo::texScroll);
 
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (Sandbox_Demo::pipelineIndex == 0)? texPipeline : (Sandbox_Demo::pipelineIndex == 1)? beamPipeline : flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (Sandbox_Demo::pipelineIndex == 0)? texPipeline : (Sandbox_Demo::pipelineIndex == 1)? beamPipeline : flatPipeline);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
+        // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&scene);
         _renderer->renderScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
+        // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&overlay);
         _renderer->renderScene(&overlay);
     }
 }
 
 int main(int argc, char** argv) {
-    _instance = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _instance = new Sandbox_Demo(argv[0], BACKEND_GL4);
 
     _instance->run();
     delete(_instance);
