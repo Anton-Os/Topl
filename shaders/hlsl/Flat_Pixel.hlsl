@@ -25,6 +25,6 @@ float4 main(PS_INPUT input) : SV_TARGET {
 	if(mode == 1) // view coordinate mode
 		return float4((input.vertex_pos.x / 2) + 0.5, (input.vertex_pos.y/ 2) + 0.5, (input.vertex_pos.z / 2) + 0.5, 1.0f);
 	else if (mode == 2) // actor coordinate mode
-		return float4(input.vertex_pos.x - offset.x + 0.5, input.vertex_pos.y - offset.y + 0.5, input.vertex_pos.z - offset.z + 0.5, 1.0f);
+		return float4((input.vertex_pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (input.vertex_pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (input.vertex_pos.z - offset.z) * 2.0 + 0.5, 1.0f);
 	else return color; // solid mode // default
 }
