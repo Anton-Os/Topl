@@ -30,7 +30,7 @@ public:
         }
     }
 
-	void move(Vec3f vec) { // replace Geo_Construct move()
+	void shift(Vec3f vec) { // replace Geo_Construct shift()
 		for (std::vector<Geo_NodeActor*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
 			(*n)->updatePos({ vec });
 	}

@@ -22,22 +22,23 @@ Topl_Timeline::Topl_Timeline(){
 }
 
 void Topl_Timeline::seqCallback(millisec_t m){
-	// TODO: Change m time to be periodic
-
 	for(auto f = Topl_Timeline::float_map.begin(); f != float_map.end(); f++){
-		std::map<millisec_t, float>::reverse_iterator r;
-		for(r = f->second.rbegin(); r != f->second.rend(); r++) if(m < r->first){ r--; break; } // std::cout << "end iterator at: " << std::to_string(r->second) << std::endl;
-		if(r == f->second.rend()) r--; // clamp to range
+		std::map<millisec_t, float>::iterator seq_start = f->second.begin();
+		std::map<millisec_t, float>::reverse_iterator seq_end = f->second.rbegin();
 
-		std::map<millisec_t, float>::iterator s;
-		for(s = f->second.begin(); s != f->second.end(); s++) if(m > s->first){ s--; break; } // std::cout << "start iterator at: " << std::to_string(s->second) << std::endl;
-		if(s == f->second.end()) s--; // clamp to range
+		if(f->second.size() > 2){ // std::cout << "2+ range detected" << std::endl;
+			auto b = std::next(seq_start);
+			while(b != f->second.end()) if(m / MILLISEC_IN_SEC > b->first){ seq_start = b; b++; } else break;
 
-		double prog =  ((m - r->first) / MILLISEC_IN_SEC) / (s->first - r->first);
+			auto t = std::next(seq_end);
+			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
+		}
+		
+		double prog =  ((m - seq_start->first) / MILLISEC_IN_SEC) / (seq_end->first - seq_start->first);
 
-		if(m / MILLISEC_IN_SEC > s->first) *(f->first) = s->second; // went over the time limit
-		else if(m / MILLISEC_IN_SEC < r->first) *(f->first) = r->second;
-		else *(f->first) = r->second + ((s->second - r->second) * prog);
+		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
+		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
+		else *(f->first) = seq_start->second + ((seq_end->second - seq_start->second) * prog);
 		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
 	}
 }

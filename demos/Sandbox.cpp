@@ -145,7 +145,9 @@ void Sandbox_Demo::init(){
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
     Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(10.0, 0.5));
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(20.0, 0.0));
     Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(10.0, 0.5));
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(20.0, 1.0));
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);

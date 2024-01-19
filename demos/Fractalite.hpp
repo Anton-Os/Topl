@@ -5,7 +5,7 @@
 
 #include "Topl_Program.hpp"
 
-#define FRACTALITE_COUNT 1024
+#define FRACTALITE_COUNT 1024 * 2
 
 struct Fractalite_Demo : public Topl_Program {
     Fractalite_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Fractalite", backend){

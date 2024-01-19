@@ -3,17 +3,19 @@
 void Fractalite_Demo::init(){
     srand(time(NULL));
 
+    Topl_Program::cameraObj.setZoom(2.0);
+
     for(unsigned a = 0; a < FRACTALITE_COUNT; a++){
-        /* switch(a % 4){
-            case 0: actors[a] = Geo_Actor(&triangles[0]); break;
-            case 1: actors[a] = Geo_Actor(&quads[0]); break;
-            case 2: actors[a] = Geo_Actor(&hexes[0]); break;
-            case 3: actors[a] = Geo_Actor(&circles[0]); break;
-        } */
-        actors[a] = Geo_Actor(&circles[a]);
+        switch(a % 4){
+            case 0: actors[a] = Geo_Actor(&triangles[a / 4]); break;
+            case 1: actors[a] = Geo_Actor(&quads[a / 4]); break;
+            case 2: actors[a] = Geo_Actor(&hexes[a / 4]); break;
+            case 3: actors[a] = Geo_Actor(&circles[a / 4]); break;
+        }
         actors[a].setName("actor" + std::to_string(a));
         actors[a].setPos({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, 0.0 });
         actors[a].setRot({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, 0.0, });
+        actors[a].setSize({ 0.01F, 0.01F, 1.0F });
         scene.addGeometry(&actors[a]);
     }
     _renderer->buildScene(&scene);
