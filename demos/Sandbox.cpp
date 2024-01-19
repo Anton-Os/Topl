@@ -110,9 +110,15 @@ static void gridCell_pickercall(Geo_Actor* actor){
     if(c == 7 || c == 8 || c == 9) // check operations
         _instance->checkBtn_textures[c - 7].setImage(getFrameAt(_instance->checkBtn_queue, 0));
     else if(c == 4 || c == 5 || c == 6) // icon operations
-        _instance->iconBtn_textures[c - 4].setImage(getFrameAt(_instance->iconBtn_queues[c - 4], (_instance->iconBtn_queues[c - 4]->index + 1 < 3)? _instance->iconBtn_queues[c - 4]->index + 1 : 0));
+        _instance->iconBtn_textures[c - 4].setImage(
+            getFrameAt(_instance->iconBtn_queues[c - 4], 
+            (_instance->iconBtn_queues[c - 4]->index + 1 < 3)? _instance->iconBtn_queues[c - 4]->index + 1 : 0)
+        );
     else if(c == 1 || c == 2 || c == 3)
-        _instance->dialBtn_textures[c - 1].setImage(getFrameAt(_instance->dialBtn_queues[c - 1], (pickerVal_x > 0.5)? (_instance->dialBtn_queues[c - 1]->index + 1) % _instance->dialBtn_queues[c - 1]->frameCount : (_instance->dialBtn_queues[c - 1]->index - 1) % _instance->dialBtn_queues[c - 1]->frameCount));
+        _instance->dialBtn_textures[c - 1].setImage(
+            getFrameAt(_instance->dialBtn_queues[c - 1], 
+            (pickerVal_x > 0.5)? (_instance->dialBtn_queues[c - 1]->index + 1) % _instance->dialBtn_queues[c - 1]->frameCount : (_instance->dialBtn_queues[c - 1]->index - 1) % _instance->dialBtn_queues[c - 1]->frameCount)
+        );
 }
 
 Sandbox_Demo::~Sandbox_Demo(){
@@ -138,8 +144,8 @@ void Sandbox_Demo::init(){
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(1.0, 0.25));
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(1.0, 0.25));
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(10.0, 0.5));
+    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(10.0, 0.5));
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);

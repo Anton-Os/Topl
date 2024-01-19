@@ -43,15 +43,11 @@ enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 struct Texture : public RenderObj {
 	Texture() : RenderObj(){}
 	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
-		format = f; 
-        mode = m;
-		binding = 0;
+		format = f; mode = m; binding = 0;
 	}
 
 	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
-		format = f;
-		mode = m;
-		binding = b;
+		format = f; mode = m; binding = b;
 	}
 
     enum TEX_Frmt format;

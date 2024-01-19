@@ -18,7 +18,28 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
 Topl_Timeline::Topl_Timeline(){
-	dynamic_ticker.addRecurringEvent(Topl_Timeline::sequenceCallback);
+	dynamic_ticker.addRecurringEvent(Topl_Timeline::seqCallback);
+}
+
+void Topl_Timeline::seqCallback(millisec_t m){
+	// TODO: Change m time to be periodic
+
+	for(auto f = Topl_Timeline::float_map.begin(); f != float_map.end(); f++){
+		std::map<millisec_t, float>::reverse_iterator r;
+		for(r = f->second.rbegin(); r != f->second.rend(); r++) if(m < r->first){ r--; break; } // std::cout << "end iterator at: " << std::to_string(r->second) << std::endl;
+		if(r == f->second.rend()) r--; // clamp to range
+
+		std::map<millisec_t, float>::iterator s;
+		for(s = f->second.begin(); s != f->second.end(); s++) if(m > s->first){ s--; break; } // std::cout << "start iterator at: " << std::to_string(s->second) << std::endl;
+		if(s == f->second.end()) s--; // clamp to range
+
+		double prog =  ((m - r->first) / MILLISEC_IN_SEC) / (s->first - r->first);
+
+		if(m / MILLISEC_IN_SEC > s->first) *(f->first) = s->second; // went over the time limit
+		else if(m / MILLISEC_IN_SEC < r->first) *(f->first) = r->second;
+		else *(f->first) = r->second + ((s->second - r->second) * prog);
+		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
+	}
 }
 
 void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> target){

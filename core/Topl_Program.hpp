@@ -17,9 +17,7 @@ public:
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
 
-	static void sequenceCallback(millisec_t m){ 
-		for(auto s = float_map.begin(); s != float_map.end(); s++) *(s->first) = s->second.at(0.0); // TODO: Get the real time and calculate value
-	}
+	static void seqCallback(millisec_t m);
 private:
 	static std::map<float*, std::map<millisec_t, float>> float_map;
 	// std::map<double*, std::map<millisec_t, double>> _double_map;

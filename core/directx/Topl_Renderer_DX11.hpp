@@ -21,16 +21,12 @@ struct Buffer_DX11 : public Buffer {
 
 struct Texture_DX11 : public Texture {
 	Texture_DX11() : Texture() {}
-	Texture_DX11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
-	: Texture(id, f, m) {
-		sampler = s;
-		resource = r;
+	Texture_DX11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, f, m) { 
+		sampler = s; resource = r;
 	}
 
-	Texture_DX11(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r)
-	: Texture(id, b, f, m) {
-		sampler = s;
-		resource = r;
+	Texture_DX11(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, b, f, m) {
+		sampler = s; resource = r;
 	}
 
 	ID3D11SamplerState* sampler = nullptr;

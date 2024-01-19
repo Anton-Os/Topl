@@ -7,6 +7,7 @@ struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) { buffer = b; }
+	
 	GLuint buffer; // OpenGL buffer
 };
 
