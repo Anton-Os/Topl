@@ -47,16 +47,15 @@ public:
 	void rotate(Vec3f angles){ // full rotation around origin
         rotateAll(angles);
 
-        Vec3f origin = getOrigin();
         for(unsigned a = 0; a < _geoActors.size(); a++){
             Geo_Actor* actor =  &_geoActors[a];
-            Vec3f actor_pos = *actor->getPos() - origin;
+            Vec3f actor_pos = *actor->getPos() - getOrigin();
             
             float x = (actor_pos[0] * cos(angles[0])) - (actor_pos[1] * sin(angles[0]));
             float y = (actor_pos[0] * sin(angles[0])) + (actor_pos[1] * cos(angles[0]));
             float z = actor_pos[2];
             actor_pos = Vec3f({ x, y, z });
-            actor->setPos(origin + actor_pos);
+            actor->setPos(getOrigin() + actor_pos);
         }
     }
 

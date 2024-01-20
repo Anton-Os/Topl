@@ -34,8 +34,6 @@ public:
 		_indices.resize(i);
 	}
 
-	// void clone(const Geo_Mesh* refMesh);
-
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
 			*(&v->position) = callback(v->position, transform);

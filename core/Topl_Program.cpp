@@ -33,7 +33,7 @@ void Topl_Timeline::seqCallback(millisec_t m){
 			auto t = std::next(seq_end);
 			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
 		}
-		
+
 		double prog =  ((m - seq_start->first) / MILLISEC_IN_SEC) / (seq_end->first - seq_start->first);
 
 		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
@@ -124,6 +124,7 @@ void Topl_Program::run(){
 #endif
 	}
 
+	// while(1){ Topl_Program::timeline.persist_ticker.update(); }
 }
 
 

@@ -20,6 +20,14 @@ public:
 		_id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255));
 		_mesh = mesh; 
 	}
+	Geo_Actor(const Geo_Actor& actor){
+		_id = actor.getId();
+		_name = actor.getName();
+		_mesh = actor.getMesh();
+		_position = *actor.getPos();
+		_rotation = *actor.getRot();
+		_scale = *actor.getSize();
+	}
 
 	void setName(const std::string& name) { _name = name; }
 	void setMesh(const Geo_Mesh* mesh) { _mesh = mesh; }

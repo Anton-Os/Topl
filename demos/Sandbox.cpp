@@ -8,10 +8,10 @@ Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 
 #ifdef RASTERON_H
-unsigned boxImgOp(double x, double y){ return (sin(x * 20) > 0.5)? 0xFF0000FF : 0xFFFFFF00; }
-unsigned pyramidImgOp(double x, double y){ return (cos(y * 20) < 0.5)? 0xFFFF0000 : 0xFF00FFFF; }
-unsigned sphereImgOp(double x, double y){ return (tan(x * y) > 0.25 && tan(x * y) < 0.75)? 0xFF8833CC : 0xFF88CC33; }
-unsigned hexImgOp(double x, double y){ return (x > 0.4 && x < 0.6 && y > 0.4 && y < 0.6)? 0xFF3333333 : 0xFFEEEEEE; }
+unsigned boxImg_callback(double x, double y){ return (sin(x * 20) > 0.5)? 0xFF0000FF : 0xFFFFFF00; }
+unsigned pyramidImg_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xFFFF0000 : 0xFF00FFFF; }
+unsigned sphereImg_callback(double x, double y){ return (tan(x * y) > 0.25 && tan(x * y) < 0.75)? 0xFF8833CC : 0xFF88CC33; }
+unsigned hexImg_callback(double x, double y){ return (x > 0.4 && x < 0.6 && y > 0.4 && y < 0.6)? 0xFF3333333 : 0xFFEEEEEE; }
 #endif
 
 static void onAnyKey(char k){ 
@@ -176,16 +176,16 @@ void Sandbox_Demo::init(){
     details.addGeometry("Hex", &hexActor);
 
 #ifdef RASTERON_H // Adding textures for scene
-    boxImg = mapImgOp({1024, 1024}, boxImgOp);
+    boxImg = mapImgOp({1024, 1024}, boxImg_callback);
     boxTex.setImage(boxImg);
     scene.addTexture("Box", &boxTex);
-    pyramidImg = mapImgOp({1024, 1024}, pyramidImgOp);
+    pyramidImg = mapImgOp({1024, 1024}, pyramidImg_callback);
     pyramidTex.setImage(pyramidImg);
     scene.addTexture("Pyramid", &pyramidTex);
-    sphereImg = mapImgOp({1024, 1024}, sphereImgOp);
+    sphereImg = mapImgOp({1024, 1024}, sphereImg_callback);
     sphereTex.setImage(sphereImg);
     scene.addTexture("Sphere", &sphereTex);
-    hexImg = mapImgOp({1024, 1024}, hexImgOp);
+    hexImg = mapImgOp({1024, 1024}, hexImg_callback);
     hexTex.setImage(hexImg);
     scene.addTexture("Hex", &hexTex);
 #endif

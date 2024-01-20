@@ -54,22 +54,22 @@ public:
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			std::string paneName = std::to_string(p + 1);
 			textObj.text = paneName.c_str();
-			paneImgs.insert({ &_geoActors.at(p), Img_Base() });
-			paneImgs.at(&_geoActors.at(p)).setTextImage(&textObj);
-			scene->addTexture(getCellName(p + 1), &paneImgs.at(&_geoActors.at(p)));
+			paneImg_map.insert({ &_geoActors.at(p), Img_Base() });
+			paneImg_map.at(&_geoActors.at(p)).setTextImage(&textObj);
+			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p)));
 		}
 
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
-			paneImgArrays.insert({ &_geoActors.at(p), Img_Array() });
+			paneImgArray_map.insert({ &_geoActors.at(p), Img_Array() });
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
-				Rasteron_Image* stageImg = copyImgOp(paneImgs.at(&_geoActors.at((p + t) % _params.getGridSize())).getImage());
+				Rasteron_Image* stageImg = copyImgOp(paneImg_map.at(&_geoActors.at((p + t) % _params.getGridSize())).getImage());
 				unsigned background = RAND_COLOR(); unsigned foreground = RAND_COLOR();
 				for(unsigned i = 0; i < stageImg->width * stageImg->height; i++)
 					*(stageImg->data + i) = (*(stageImg->data + i) != 0xFFEEEEEE)? foreground : background;
-				addFrameAt(paneImgArrays.at(&_geoActors.at(p)).getQueue(), stageImg, t);
+				addFrameAt(paneImgArray_map.at(&_geoActors.at(p)).getQueue(), stageImg, t);
 				dealloc_image(stageImg);
 			}
-			scene->addArrayTex(getCellName(p + 1), &paneImgArrays.at(&_geoActors.at(p))); // Uncomment this
+			scene->addArrayTex(getCellName(p + 1), &paneImgArray_map.at(&_geoActors.at(p))); // Uncomment this
 		}
 #endif
 	}
@@ -82,11 +82,9 @@ protected:
 
 #ifdef RASTERON_H
 	Img_Base rootImg; // root background
-	std::map<const Geo_Actor*, Img_Base> paneImgs; // child backgrounds
-	std::map<const Geo_Actor*, Img_Array> paneImgArrays; // child backgrounds in array
+	std::map<const Geo_Actor*, Img_Base> paneImg_map; // child backgrounds
+	std::map<const Geo_Actor*, Img_Array> paneImgArray_map; // child backgrounds in array
 	// std::vector<Rasteron_Queue*> childStateBg;
-
-	std::vector<pickerCallback> _pickerFuncs;
 #endif
 };
 

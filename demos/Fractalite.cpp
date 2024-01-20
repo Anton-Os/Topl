@@ -14,14 +14,19 @@ void Fractalite_Demo::init(){
         }
         actors[a].setName("actor" + std::to_string(a));
         actors[a].setPos({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, 0.0 });
-        actors[a].setRot({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, 0.0, });
-        actors[a].setSize({ 0.01F, 0.01F, 1.0F });
+        actors[a].setRot({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), 0.0, });
+        actors[a].setSize({ (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.05F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.05F, 1.0F });
         scene.addGeometry(&actors[a]);
     }
     _renderer->buildScene(&scene);
 }
 
 void Fractalite_Demo::loop(double frameTime){
+    for(unsigned a = 0; a < FRACTALITE_COUNT; a++) {
+        actors[a].updatePos({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f) / 100.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f) / 100.0F, 0.0F });
+        actors[a].updateRot({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F });
+    }
+
     _renderer->updateScene(&scene);
     _renderer->renderScene(&scene);
 }
