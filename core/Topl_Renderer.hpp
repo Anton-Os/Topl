@@ -74,14 +74,15 @@ struct Topl_Viewport {
 
 enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip };
 
-#define REGULAR_DRAW_ORDER true
-#define INVERSE_DRAW_ORDER false
+#define DRAW_NORMAL true
+#define DRAW_INVERSE false
 
 #define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
 #define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
 #define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
+#define ALL_SCENES nullptr // works for updating everything
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
@@ -96,6 +97,11 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define CLEAR_B 0.0F // 0.164706F // blue clear color code
 #define CLEAR_A 1.0F // used for alpha channel clear color
 
+#define BUILD_BIT 0  // switch to true when build operation succeeds in _flags
+#define PIPELINE_BIT 1 // switch to true when pipeline creation succeeds in _flags
+#define DRAWN_BIT 2 // switch to true after draw call and false after front/back buffer swap in _flags
+#define DRAW_ORDER_BIT 3 // defines order to render targets during draw call in _flags
+
 class Topl_Renderer {
 public:
 	Topl_Renderer(NATIVE_WINDOW window) { _platformCtx.window = window; }
@@ -105,7 +111,7 @@ public:
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
-    bool renderScene(const Topl_Scene* scene);
+    bool drawScene(const Topl_Scene* scene);
 	void present(); // present scene by swapping front and back buffers
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
@@ -118,6 +124,12 @@ public:
 #endif
     unsigned long getRenderID(const Geo_Actor* actor);
 protected:
+    unsigned long _renderIDs = 0; // id for each render target
+    unsigned long _frameIDs = 0; // increments with each frame drawn
+    std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
+    std::map<const Geo_Actor*, unsigned long> _renderTargetMap; // maps each object to renderID
+
+    std::bitset<4> _flags; // tracks important states within renderer
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific context
     entry_shader_cptr _entryShader;
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
@@ -125,20 +137,13 @@ protected:
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by user
     Topl_Viewport _defaultViewport = Topl_Viewport();
-    bool _isBuilt = false; // switch to true when elements of the scene are built
-    bool _isPipelineReady = false; // switch to true when graphics pipeline is ready
-    bool _isPresented = false; // true after draw call, false after buffer swap
-	bool _isDrawInOrder = REGULAR_DRAW_ORDER; // defines order of render targets during draw call
-    unsigned long _renderIDs = 0; // id for each render target
-    std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
-    unsigned long _frameIDs = 0; // increments with each frame drawn
 
 	Img_Base _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
-	virtual void renderTarget(unsigned long renderID) = 0; // draw call per render target
+	virtual void drawTarget(unsigned long renderID) = 0; // draw call per render target
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
 	virtual void attachTex(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding

@@ -11,7 +11,7 @@ template <unsigned short n>
 struct VectorXF { 
     float data[n];
 
-    float& operator [](unsigned short i){ return data[i]; }
+    float& operator [](unsigned short i) { return data[i]; }
     bool operator == (const VectorXF& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
@@ -70,7 +70,7 @@ template <unsigned short n>
 struct VectorXI { 
     int data[n];
 
-    int operator [](unsigned short i){ return data[i]; }
+    int& operator [](unsigned short i) const { return data[i]; }
     bool operator == (const VectorXI& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match

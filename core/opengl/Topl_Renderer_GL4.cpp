@@ -155,7 +155,7 @@ void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 
 	if (viewport != nullptr)
 		glViewport(x, y, viewport->width, viewport->height);
-	else _isBuilt = false; // Error
+	else _flags[BUILD_BIT] = false; // Error
 }
 
 #ifdef _WIN32
@@ -165,21 +165,11 @@ static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers
 #endif
 
 void Topl_Renderer_GL4::swapBuffers(double frameTime) {
-	static double totalTime = 0;
-	totalTime += frameTime;
-
-	if (!_isPresented && totalTime > FRAME_RATE_MILLISECS) { 
-	// if (!_isPresented && totalTime > 0.0) {
-		totalTime = 0.0;
-		// while (totalTime > FRAME_RATE_MILLISECS) totalTime -= FRAME_RATE_MILLISECS;
-
 #ifdef _WIN32
 		swapBuffers_win(&_platformCtx.deviceCtx);
 #elif defined(__linux__)
 		swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
 #endif
-		_isPresented = true;
-	}
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
@@ -204,6 +194,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
 			_renderIDs++;
 			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
+			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 			renderID = getRenderID(actor);
 		} else { // old data must be replaced
 			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
@@ -258,7 +249,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
 	}
 
-	_isBuilt = true;
+	_flags[BUILD_BIT] = true;
 }
 
 #ifdef RASTERON_H
@@ -339,7 +330,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
-	if (_buffers.front().renderID == SCENE_RENDERID) {
+	if (scene != ALL_SCENES && _buffers.front().renderID == SCENE_RENDERID) {
 		shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
 		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
@@ -347,18 +338,18 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	}
 
-	for (unsigned g = 0; g < scene->getActorCount(); g++) {
-		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
-		Buffer_GL4* renderBlockBuff = &(*std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; }));
-		if (renderBlockBuff == nullptr) logMessage(MESSAGE_Exclaim, "Block buffer could not be located! ");
-
-		// Shader Render Block
-		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		glBindBuffer(GL_UNIFORM_BUFFER, renderBlockBuff->buffer);
-		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+	for (unsigned g = 0; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
+		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
+		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
+		auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
+		if (renderBlockBuff != _buffers.end()){
+			// Shader Render Block
+			shaderBlockData.clear();
+			_entryShader->genRenderBlock(actor, &shaderBlockData);
+			glBindBuffer(GL_UNIFORM_BUFFER, renderBlockBuff->buffer);
+			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		}
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -377,7 +368,7 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-void Topl_Renderer_GL4::renderTarget(unsigned long renderID) {
+void Topl_Renderer_GL4::drawTarget(unsigned long renderID) {
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (!_buffers.empty()) {
 		if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) // Scene Target

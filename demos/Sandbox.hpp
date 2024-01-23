@@ -31,6 +31,7 @@ struct Sandbox_Demo : public Topl_Program {
     static bool isShaderVariant;
     static unsigned shaderMode;
     static Vec3f texScroll;
+    static Vec3f followVec;
     static std::string fontFilePath;
 
     Geo_Quad2D canvasMesh = Geo_Quad2D(10000.0);

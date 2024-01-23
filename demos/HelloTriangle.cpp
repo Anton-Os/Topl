@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 			double f1 = _ticker.getRelMillisecs();
 			renderer->clearView();
 			double f2 = _ticker.getRelMillisecs();
-			renderer->renderScene(nullptr);
+			renderer->drawScene(nullptr);
 			double f3 = _ticker.getRelMillisecs();
 			renderer->present();
 			double f4 = _ticker.getRelMillisecs();

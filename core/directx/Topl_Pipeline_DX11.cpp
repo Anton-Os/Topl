@@ -32,7 +32,7 @@ void Topl_Renderer_DX11::setPipeline(Topl_Pipeline_DX11* pipeline) {
 	_pipeline = pipeline;
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
 
-	if (_isPipelineReady) {
+	if (_flags[PIPELINE_BIT]) {
 		if (pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(pipeline->vertexShader, 0, 0);
 		if (pipeline->hullShader != nullptr) _deviceCtx->HSSetShader(pipeline->hullShader, 0, 0);
 		if (pipeline->domainShader != nullptr) _deviceCtx->DSSetShader(pipeline->domainShader, 0, 0);

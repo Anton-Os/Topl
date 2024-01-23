@@ -54,7 +54,7 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
 	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
-		_isDrawInOrder = REGULAR_DRAW_ORDER;
+		_flags[DRAW_ORDER_BIT] = DRAW_NORMAL;
 		init(window);
 
 		setViewport(&_defaultViewport); // viewport creation
@@ -77,7 +77,7 @@ protected:
   	void init(NATIVE_WINDOW window) override;
 	void build(const Topl_Scene* scene) override;
 	void update(const Topl_Scene* scene) override;
-	void renderTarget(unsigned long renderID) override;
+	void drawTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;

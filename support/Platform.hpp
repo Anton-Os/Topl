@@ -1,5 +1,7 @@
 #ifndef TOPL_PLATFORM_H
 
+#include <bitset>
+
 #include "native_os_def.h"
 
 #include "IO.hpp";

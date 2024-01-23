@@ -5,6 +5,7 @@ int Sandbox_Demo::pipelineIndex = 0;
 bool Sandbox_Demo::isShaderVariant = false;
 unsigned Sandbox_Demo::shaderMode = 0;
 Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
+Vec3f Sandbox_Demo::followVec = { 0.0f, 0.9f, 0.0f};
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 
 #ifdef RASTERON_H
@@ -63,10 +64,19 @@ static void onHover(float x, float y){
                 (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
                     ? _instance->hexActor.setPos(Topl_Program::getCamCursorPos())
                     : _instance->hexActor.updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 });
-
-            // Topl_Program::isInputEnabled = Topl_Program::pickerObj->getId() == _instance->inputInfoActor.getId();
+            /* if(isMotionEnable && (Topl_Program::pickerObj->getId() == _instance->boxActor.getId() || Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId() || Topl_Program::pickerObj->getId() == _instance->sphereActor.getId() || Topl_Program::pickerObj->getId() == _instance->hexActor.getId()))
+                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    ? Topl_Program::pickerObj->setPos(Topl_Program::getCamCursorPos())
+                    : Topl_Program::pickerObj->updateRot({ (savedColorVec[0] - pickedColorVec[0]) * 20, (savedColorVec[1] - pickedColorVec[1]) * 8, 0.0 }); */
         } else {
-            if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
+            double time = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / MILLISEC_IN_SEC;
+            // auto pos = Topl_Program::pickerObj->getPos();
+            // Topl_Program::timeline.addSequence_float(&((*pos)[0]), std::make_pair(time, Topl_Program::getCamCursorPos()[0]));
+            // Topl_Program::timeline.addSequence_float(&((*pos)[1]), std::make_pair(time, Topl_Program::getCamCursorPos()[1]));
+            Topl_Program::timeline.addSequence_float(&Sandbox_Demo::followVec[0], std::make_pair(time + 3.0, Topl_Program::getCamCursorPos()[0]));
+            Topl_Program::timeline.addSequence_float(&Sandbox_Demo::followVec[1], std::make_pair(time + 3.0, Topl_Program::getCamCursorPos()[1]));
+
+            /* if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
                 if(savedColorVec[0] != pickedColorVec[0] || savedColorVec[1] != pickedColorVec[1])
                     Topl_Program::cameraObj.updatePos({ savedColorVec[0] - pickedColorVec[0], savedColorVec[1] - pickedColorVec[1], 0.0 });
             } else if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
@@ -74,7 +84,7 @@ static void onHover(float x, float y){
                     Topl_Program::cameraObj.updateRot({ savedColorVec[0] - pickedColorVec[0], 0.0, 0.0 });
                 if(savedColorVec[1] != pickedColorVec[1])
                     Topl_Program::cameraObj.updateRot({ savedColorVec[1] - pickedColorVec[1], 0.0, 0.0 });
-            }
+            } */
         }
         isMotionEnable = true;
     } else {
@@ -144,10 +154,10 @@ void Sandbox_Demo::init(){
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(10.0, 0.5));
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(20.0, 0.0));
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(10.0, 0.5));
-    Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(20.0, 1.0));
+    // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(10.0, 0.5));
+    // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[0], std::make_pair(20.0, 0.0));
+    // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(10.0, 0.5));
+    // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(20.0, 1.0));
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
@@ -158,22 +168,18 @@ void Sandbox_Demo::init(){
     boxActor.setPos({ 0.5f, 0.5f, 0.0f });
     boxActor.shaderFunc = default_shadercall;  
     scene.addGeometry("Box", &boxActor);
-    details.addGeometry("Box", &boxActor);
     pyramidMesh.scale({ 0.25f, 0.25f, 0.25f});
     pyramidActor.setPos({ -0.5f, 0.5f, 0.0f });
     pyramidActor.shaderFunc = default_shadercall;
     scene.addGeometry("Pyramid", &pyramidActor);
-    details.addGeometry("Pyramid", &pyramidActor);
     sphereMesh.scale({ 0.25f, 0.25f, 0.25f});
     sphereActor.setPos({ -0.5f, -0.5f, 0.0f });
     sphereActor.shaderFunc = default_shadercall;
     scene.addGeometry("Sphere", &sphereActor);
-    details.addGeometry("Sphere", &sphereActor);
     hexMesh.scale({ 0.25f, 0.25f, 0.25f});
     hexActor.setPos({ 0.5f, -0.5f, 0.0f });
     hexActor.shaderFunc = default_shadercall;
     scene.addGeometry("Hex", &hexActor);
-    details.addGeometry("Hex", &hexActor);
 
 #ifdef RASTERON_H // Adding textures for scene
     boxImg = mapImgOp({1024, 1024}, boxImg_callback);
@@ -245,6 +251,7 @@ void Sandbox_Demo::init(){
 void Sandbox_Demo::loop(double frameTime){
     // Object Updates
     
+    _instance->timerInfoActor.setPos(Sandbox_Demo::followVec);
 #ifdef RASTERON_H
     if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
         _renderer->texturize(&scene);
@@ -261,12 +268,12 @@ void Sandbox_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         // flatVShader.setMode(2);
         _renderer->updateScene(&scene);
-        _renderer->renderScene(&scene);
+        _renderer->drawScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
-        _renderer->renderScene(&overlay);
+        _renderer->drawScene(&overlay);
 #ifdef RASTERON_H
         colorPicker(&scene);
         colorPicker(&overlay);
@@ -278,19 +285,19 @@ void Sandbox_Demo::loop(double frameTime){
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
-        _renderer->renderScene(&canvas);
+        _renderer->drawScene(&canvas);
 
         flatVShader.setMode(FLAT_MODE_COORD); 
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&scene);
-        _renderer->renderScene(&scene);
+        _renderer->drawScene(&scene);
 
         flatVShader.setMode(FLAT_MODE_COORD);
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&overlay);
-        _renderer->renderScene(&overlay);
+        _renderer->drawScene(&overlay);
 #ifdef RASTERON_H
         Vec3f coordPickVec = coordPicker(&scene);
         if(coordPickVec[0] == 0.0 && coordPickVec[1] == 0.0)  coordPickVec = coordPicker(&overlay);
@@ -305,7 +312,7 @@ void Sandbox_Demo::loop(double frameTime){
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
         Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
-        _renderer->renderScene(&canvas);
+        _renderer->drawScene(&canvas);
     } */
 
     {
@@ -319,12 +326,12 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->setDrawMode(DRAW_Triangles);
         // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&scene);
-        _renderer->renderScene(&scene);
+        _renderer->drawScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
         // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&overlay);
-        _renderer->renderScene(&overlay);
+        _renderer->drawScene(&overlay);
     }
 }
 

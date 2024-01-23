@@ -518,11 +518,11 @@ void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
 
 void Topl_Renderer_Vulkan::swapBuffers(double frameTime){ 
 	// Implement swapping buffers
-	_isPresented = true;
+	_flags[DRAWN_BIT] = true;
 }
 
 void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
-	_isBuilt = true;
+	_flags[BUILD_BIT] = true;
 }
 
 #ifdef RASTERON_H
@@ -568,7 +568,7 @@ void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
 	_isDrawn = true;
 } */
 
-void Topl_Renderer_Vulkan::renderTarget(unsigned long renderID){
+void Topl_Renderer_Vulkan::drawTarget(unsigned long renderID){
 	// if(renderID == SCENE_RENDERID) { }
 	// else {}
 }

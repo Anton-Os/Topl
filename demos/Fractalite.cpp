@@ -22,13 +22,22 @@ void Fractalite_Demo::init(){
 }
 
 void Fractalite_Demo::loop(double frameTime){
+    static Timer_Persist ticker = Timer_Persist();
+    std::cout << "Frame time is: " << std::to_string(frameTime) << " ms" << std::endl;
+
+    double t1 = ticker.getRelMillisecs();
     for(unsigned a = 0; a < FRACTALITE_COUNT; a++) {
         actors[a].updatePos({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f) / 100.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f) / 100.0F, 0.0F });
         actors[a].updateRot({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F });
     }
 
+    double t2 = ticker.getRelMillisecs();
     _renderer->updateScene(&scene);
-    _renderer->renderScene(&scene);
+    double t3 = ticker.getRelMillisecs();
+    _renderer->drawScene(&scene);
+    double t4 = ticker.getRelMillisecs();
+
+    std::cout << std::to_string(t1) << " ms on start, " << std::to_string(t2) << " ms on updatePos(), " << std::to_string(t3) << " ms on scene update, " << std::to_string(t4) << " ms on scene render" << std::endl;
 }
 
 int main(int argc, char** argv) {

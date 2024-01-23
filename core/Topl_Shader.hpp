@@ -74,17 +74,16 @@ public:
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
-		alignDataToBytes((uint8_t*)camera->getPos(), sizeof(Vec3f), 0, bytes);
-		alignDataToBytes((uint8_t*)camera->getZoom(), sizeof(float), 0, bytes);
-		appendDataToBytes((uint8_t*)camera->getRot(), sizeof(Vec3f), bytes);
-		alignDataToBytes((uint8_t*)camera->getProjMatrix(), sizeof(Mat4x4), 0, bytes);
+		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getPos() : &_defaultVec), sizeof(Vec3f), 0, bytes);
+		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getZoom() : &_defaultScalar), sizeof(float), 0, bytes);
+		appendDataToBytes((uint8_t*)((camera != nullptr)? camera->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
+		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getProjMatrix() : &_defaultMat), sizeof(Mat4x4), 0, bytes);
 	}
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		// _renderBlock_bytes.clear();
-		if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
-		appendDataToBytes((uint8_t*)actor->getPos(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)actor->getRot(), sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)actor->getSize(), sizeof(Vec3f), bytes);
+		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
+		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);
 	}
 
 	void setMode(int m){ _mode = m; }
@@ -92,6 +91,9 @@ protected:
 	int _mode = DEFAULT_SHADER_MODE;
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
+	Vec3f _defaultVec = VEC_3F_ZERO;
+	float _defaultScalar = 1.0f;
+	Mat4x4 _defaultMat = MAT_4x4_IDENTITY;
 };
 
 typedef const Topl_EntryShader* entry_shader_cptr;

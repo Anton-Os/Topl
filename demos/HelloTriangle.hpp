@@ -67,7 +67,7 @@ struct HelloTriangle_Renderer_Vulkan : public Topl_Renderer_Vulkan {
 		setViewport(&_defaultViewport);
 		setDrawMode(DRAW_Triangles);
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
-		_isBuilt = true;
+		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;
 	}
 

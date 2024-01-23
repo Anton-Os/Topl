@@ -7,14 +7,14 @@ void Topl_Renderer::setCamera(const Topl_Camera* camera){
 
 void Topl_Renderer::setPipeline(const Topl_Pipeline* pipeline){
     _entryShader = pipeline->entryShader;
-    _isPipelineReady = pipeline->isReady;
+    _flags[PIPELINE_BIT] = pipeline->isReady;
 }
 
 bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 	if(scene->getActorCount() == 0) logMessage(MESSAGE_Exclaim, "No geometry for build call!");
-    if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for build call!");
-	if(scene->getActorCount() == 0 || !_isPipelineReady){
-        _isBuilt = false;
+    if(!_flags[PIPELINE_BIT]) logMessage(MESSAGE_Exclaim, "Pipeline not set for build call!");
+	if(scene->getActorCount() == 0 || !_flags[PIPELINE_BIT] || scene == nullptr){
+        _flags[BUILD_BIT] = false;
         return false; // failure
     }
 
@@ -23,16 +23,16 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 
     build(scene);
     if(scene->getIsTextured()) texturize(scene);
-	return _isBuilt;
+	return _flags[BUILD_BIT];
 }
 
 bool Topl_Renderer::updateScene(const Topl_Scene* scene){
-    if(!_isPipelineReady) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
-    if(!_isBuilt) logMessage(MESSAGE_Exclaim, "Not built for update call!");
-    if(!_isPipelineReady || !_isBuilt) return false; // failure
+    if(!_flags[PIPELINE_BIT]) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
+    if(!_flags[BUILD_BIT]) logMessage(MESSAGE_Exclaim, "Not built for update call!");
+    if(!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT]) return false; // failure
 
     update(scene);
-    return _isBuilt;
+    return _flags[BUILD_BIT];
 }
 
 /* void Topl_Renderer::setDrawMode(enum DRAW_Mode mode){
@@ -40,25 +40,25 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     drawMode(); // sets the proper draw mode
 } */
 
-bool Topl_Renderer::renderScene(const Topl_Scene* scene){
-	if (!_isPipelineReady || !_isBuilt || _renderIDs == 0) {
+bool Topl_Renderer::drawScene(const Topl_Scene* scene){
+	if (!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT] || _renderIDs == 0) {
 		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
         return false; // error
-    } else _isPresented = false;
+    } else _flags[DRAWN_BIT] = false;
 
-    renderTarget(SCENE_RENDERID); // render is scene block data
-	if(scene != nullptr){ // Scene Targets
-		if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
+    drawTarget(SCENE_RENDERID); // render is scene block data
+	if(scene != ALL_SCENES){ // Scene Targets
+		if (_flags[DRAW_ORDER_BIT] == DRAW_NORMAL) // draw in regular order
 			for (unsigned g = 0; g < scene->getActorCount(); g++)
-				renderTarget(getRenderID(scene->getGeoActor(g)));
-		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) // draw in reverse order
+				drawTarget(getRenderID(scene->getGeoActor(g)));
+		else if (_flags[DRAW_ORDER_BIT] == DRAW_INVERSE) // draw in reverse order
 			for (unsigned g = scene->getActorCount(); g > 0; g--)
-				renderTarget(getRenderID(scene->getGeoActor(g - 1)));
-	} else {
-		if (_isDrawInOrder == REGULAR_DRAW_ORDER) // draw in regular order
-			for (unsigned r = 0; r <= _renderIDs; r++) renderTarget(r);
-		else if (_isDrawInOrder == INVERSE_DRAW_ORDER) // draw in reverse order
-			for (unsigned r = _renderIDs; r > 0; r--) renderTarget(r);
+				drawTarget(getRenderID(scene->getGeoActor(g - 1)));
+	} else { // All Targets
+		if (_flags[DRAW_ORDER_BIT] == DRAW_NORMAL) // draw in regular order
+			for (unsigned r = 0; r <= _renderIDs; r++) drawTarget(r);
+		else if (_flags[DRAW_ORDER_BIT] == DRAW_INVERSE) // draw in reverse order
+			for (unsigned r = _renderIDs; r > 0; r--) drawTarget(r);
 	}
 
     return true;
@@ -67,7 +67,10 @@ bool Topl_Renderer::renderScene(const Topl_Scene* scene){
 void Topl_Renderer::present() {
 	static Timer_Persist ticker;
 	_frameIDs++;
-	swapBuffers(ticker.getRelMillisecs());
+	if (!_flags[DRAWN_BIT]) { 
+		swapBuffers(ticker.getRelMillisecs());
+		_flags[DRAWN_BIT] = true;
+	}
 }
 
 #ifdef RASTERON_H
@@ -108,9 +111,5 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){
 	if(actor == nullptr) return INVALID_RENDERID;
-	auto renderId_it = std::find_if(
-		_renderObjMap.begin(), _renderObjMap.end(),
-		[actor](const std::pair<unsigned long, const Geo_Actor*>& p){ return p.second == actor; }
-	);
-	return (renderId_it != _renderObjMap.end())? renderId_it->first : INVALID_RENDERID; 
+	return (_renderTargetMap.find(actor) != _renderTargetMap.end())? _renderTargetMap.at(actor) : INVALID_RENDERID;
 }
