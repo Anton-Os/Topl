@@ -23,6 +23,7 @@ void Modelview_Demo::loop(double frameTime){
     model3.rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
 
     _renderer->updateScene(&scene);
+    _renderer->setDrawMode(DRAW_Points);
     _renderer->drawScene(&scene);
 }
 

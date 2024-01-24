@@ -568,7 +568,8 @@ void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
 	_isDrawn = true;
 } */
 
-void Topl_Renderer_Vulkan::drawTarget(unsigned long renderID){
+void Topl_Renderer_Vulkan::draw(const Geo_Actor* actor){
+	unsigned long renderID = _renderTargetMap[actor];
 	// if(renderID == SCENE_RENDERID) { }
 	// else {}
 }

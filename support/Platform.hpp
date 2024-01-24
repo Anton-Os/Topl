@@ -1,6 +1,7 @@
 #ifndef TOPL_PLATFORM_H
 
 #include <bitset>
+#include <thread>
 
 #include "native_os_def.h"
 
@@ -18,7 +19,7 @@ struct Platform {
     }
 
     void createWindow(unsigned width, unsigned height);
-    void handleEvents(bool isCursorUpdate); // handles platform specific events
+    bool handleEvents(); // handles platform specific events until end is reached
 
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
     static unsigned getViewportWidth(NATIVE_WINDOW window);

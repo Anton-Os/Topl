@@ -338,7 +338,7 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	}
 
-	for (unsigned g = 0; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
+	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
 		auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
@@ -368,7 +368,8 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-void Topl_Renderer_GL4::drawTarget(unsigned long renderID) {
+void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
+	unsigned long renderID = _renderTargetMap[actor];
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (!_buffers.empty()) {
 		if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) // Scene Target

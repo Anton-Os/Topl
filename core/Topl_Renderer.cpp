@@ -18,9 +18,6 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
         return false; // failure
     }
 
-	// TODO: Add renderable targets for any new elements
-	// TODO: Vet renderable targets for any obscolete elements
-
     build(scene);
     if(scene->getIsTextured()) texturize(scene);
 	return _flags[BUILD_BIT];
@@ -46,19 +43,21 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
         return false; // error
     } else _flags[DRAWN_BIT] = false;
 
-    drawTarget(SCENE_RENDERID); // render is scene block data
+	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
+
+    draw(SCENE_RENDERID); // render is scene block data
 	if(scene != ALL_SCENES){ // Scene Targets
 		if (_flags[DRAW_ORDER_BIT] == DRAW_NORMAL) // draw in regular order
-			for (unsigned g = 0; g < scene->getActorCount(); g++)
-				drawTarget(getRenderID(scene->getGeoActor(g)));
+			for (unsigned a = 0; a < scene->getActorCount(); a++)
+				draw(scene->getGeoActor(a));
 		else if (_flags[DRAW_ORDER_BIT] == DRAW_INVERSE) // draw in reverse order
-			for (unsigned g = scene->getActorCount(); g > 0; g--)
-				drawTarget(getRenderID(scene->getGeoActor(g - 1)));
+			for (unsigned a = scene->getActorCount(); a > 0; a--)
+				draw(scene->getGeoActor(a - 1));
 	} else { // All Targets
 		if (_flags[DRAW_ORDER_BIT] == DRAW_NORMAL) // draw in regular order
-			for (unsigned r = 0; r <= _renderIDs; r++) drawTarget(r);
+			for (unsigned r = 0; r <= _renderIDs; r++) draw(_renderObjMap[r]);
 		else if (_flags[DRAW_ORDER_BIT] == DRAW_INVERSE) // draw in reverse order
-			for (unsigned r = _renderIDs; r > 0; r--) drawTarget(r);
+			for (unsigned r = _renderIDs; r > 0; r--) draw(_renderObjMap[r]);
 	}
 
     return true;

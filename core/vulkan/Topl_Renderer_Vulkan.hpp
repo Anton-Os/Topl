@@ -40,6 +40,7 @@ public:
 	}
 	~Topl_Renderer_Vulkan();
 
+	void draw(const Geo_Actor* actor) override;
 	void clearView() override;
 	void setViewport(const Topl_Viewport* viewport) override;
 	void swapBuffers(double frameTime) override;
@@ -55,7 +56,6 @@ public:
 protected:
   	void init(NATIVE_WINDOW window) override;
 	void update(const Topl_Scene* scene) override;
-	void drawTarget(unsigned long renderID) override;
 #ifdef RASTERON_H
 	// void attachTexAt(const Rasteron_Image* image, unsigned id) override;
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;

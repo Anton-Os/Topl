@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 	}
 
 	while(1){
-		platform.handleEvents(ENABLE_CURSOR_UPDATE);
+		platform.handleEvents();
 
 		if(TARGET_BACKEND != BACKEND_Vulkan){
 			// Frame Rate and Render Profiling

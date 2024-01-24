@@ -113,6 +113,7 @@ public:
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool drawScene(const Topl_Scene* scene);
 	void present(); // present scene by swapping front and back buffers
+    virtual void draw(const Geo_Actor* actor) = 0; // draw call per render target
     virtual void clearView() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
@@ -135,7 +136,7 @@ protected:
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
-    const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by user
+    const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by userunsigned int numThreads = std::thread::hardware_concurrency();
     Topl_Viewport _defaultViewport = Topl_Viewport();
 
 	Img_Base _frameImage; // internal frame container
@@ -143,7 +144,6 @@ private:
     virtual void init(NATIVE_WINDOW window) = 0;
     virtual void build(const Topl_Scene* scene) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
-	virtual void drawTarget(unsigned long renderID) = 0; // draw call per render target
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
 	virtual void attachTex(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding

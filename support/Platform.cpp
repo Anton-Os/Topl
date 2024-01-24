@@ -87,18 +87,18 @@ void Platform::createWindow(unsigned width, unsigned height){
 	// RegisterDragDrop(_context.window, &dropTarget);
 }
 
-void Platform::handleEvents(bool isCursorUpdate){
-	if(isCursorUpdate == ENABLE_CURSOR_UPDATE) {	
-		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
-		if(!isCursorBound) resetCursor();
-		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
-	}
+bool Platform::handleEvents(){
+	bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
+	(isCursorBound)? Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos) : resetCursor();
 
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&_context.eventMsg);
 		DispatchMessage(&_context.eventMsg);
+
+		if (_context.eventMsg.message == WM_QUIT || _context.eventMsg.message == WM_CLOSE) return false; // Error code?
 	}
-	if (_context.eventMsg.message == WM_QUIT) return; // Error code?
+
+	return true;
 }
 
 unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
@@ -181,12 +181,9 @@ void Platform::createWindow(unsigned width, unsigned height){
 	XFlush(_context.display);
 }
 
-void Platform::handleEvents(bool isCursorUpdate){
-	if (isCursorUpdate == ENABLE_CURSOR_UPDATE) {
-		bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
-		if(!isCursorBound) resetCursor();
-		else Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos); // handle hover callbacks
-	}
+bool Platform::handleEvents(){
+	bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
+	(isCursorBound)? Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos) : resetCursor();
 
     int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
 	XEvent event;
@@ -204,6 +201,8 @@ void Platform::handleEvents(bool isCursorUpdate){
 		case (MotionNotify): { }
 		}
 	}
+
+	return true;
 }
 
 unsigned Platform::getViewportHeight(NATIVE_WINDOW window){

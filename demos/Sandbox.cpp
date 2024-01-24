@@ -73,8 +73,7 @@ static void onHover(float x, float y){
             // auto pos = Topl_Program::pickerObj->getPos();
             // Topl_Program::timeline.addSequence_float(&((*pos)[0]), std::make_pair(time, Topl_Program::getCamCursorPos()[0]));
             // Topl_Program::timeline.addSequence_float(&((*pos)[1]), std::make_pair(time, Topl_Program::getCamCursorPos()[1]));
-            Topl_Program::timeline.addSequence_float(&Sandbox_Demo::followVec[0], std::make_pair(time + 3.0, Topl_Program::getCamCursorPos()[0]));
-            Topl_Program::timeline.addSequence_float(&Sandbox_Demo::followVec[1], std::make_pair(time + 3.0, Topl_Program::getCamCursorPos()[1]));
+            Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(time + 3.0, Topl_Program::getCamCursorPos()));
 
             /* if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
                 if(savedColorVec[0] != pickedColorVec[0] || savedColorVec[1] != pickedColorVec[1])
@@ -326,7 +325,10 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->setDrawMode(DRAW_Triangles);
         // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
         _renderer->updateScene(&scene);
-        _renderer->drawScene(&scene);
+        _renderer->draw(&_instance->boxActor);
+        _renderer->draw(&_instance->pyramidActor);
+        _renderer->draw(&_instance->sphereActor);
+        _renderer->draw(&_instance->hexActor);
 
         _renderer->setDrawMode(DRAW_Triangles);
         // Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, (isTexPipeline)? texPipeline : beamPipeline);
