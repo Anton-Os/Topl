@@ -5,7 +5,7 @@
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
-#include "constructs/Geo_Layout.hpp"
+#include "constructs/Geo_Billboards.hpp"
 
 #include "Flat_Shader.hpp"
 #include "Textured_Shader.hpp"
@@ -51,9 +51,9 @@ struct Sandbox_Demo : public Topl_Program {
     
     Geo_Quad2D infoBoxMesh = Geo_Quad2D(0.15);
     Geo_Actor inputInfoActor = Geo_Actor(&infoBoxMesh); Geo_Actor timerInfoActor = Geo_Actor(&infoBoxMesh);
-    Geo_GridLayout layout1 = Geo_GridLayout("gridLayout", 3);
-    Geo_VertLayout layout2 = Geo_VertLayout("vertLayout", 9);
-    Geo_HorzLayout layout3 = Geo_HorzLayout("horzLayout", 9);
+    Geo_Gridboard layout1 = Geo_Gridboard("gridLayout", 3);
+    Geo_Listboard layout2 = Geo_Listboard("vertLayout", 9);
+    Geo_Crossboard layout3 = Geo_Crossboard("horzLayout", 9);
 
 #ifdef RASTERON_H
     Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg;
