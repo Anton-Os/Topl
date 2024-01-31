@@ -158,8 +158,10 @@ void Sandbox_Demo::init(){
     // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(10.0, 0.5));
     // Topl_Program::timeline.addSequence_float(&Sandbox_Demo::texScroll[1], std::make_pair(20.0, 1.0));
 
-    canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
+    // canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
+    canvasTex.setFileImage("F:\\Design\\Motivation-Build.png"); // placeholder image
+    canvas.addTexture("Backdrop", &canvasTex);
     Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, effectPipeline);
     _renderer->buildScene(&canvas);
 
@@ -231,7 +233,7 @@ void Sandbox_Demo::init(){
     overlay.addTexture("timerInfo", &timerCount_texture);
     // overlay.addTexture("inputInfo", &userInput_texture);
     for(unsigned s = 0; s < 9; s++){
-        Rasteron_Image* flipImg = flipImgOp(slider_textures[s].getImage(), FLIP_Counter);
+        Rasteron_Image* flipImg = flipImgOp(slider_textures[s].getImage(), FLIP_None);
         slider_textures[s].setImage(flipImg); // images need to be flipped vertically
         overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &slider_textures[s]);
         dealloc_image(flipImg);
@@ -253,8 +255,9 @@ void Sandbox_Demo::loop(double frameTime){
     _instance->timerInfoActor.setPos(Sandbox_Demo::followVec);
 #ifdef RASTERON_H
     if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
-        _renderer->texturize(&scene);
-        _renderer->texturize(&overlay);
+        _renderer->texturizeScene(&canvas);
+        _renderer->texturizeScene(&scene);
+        _renderer->texturizeScene(&overlay);
     }
 #endif
 
@@ -307,12 +310,13 @@ void Sandbox_Demo::loop(double frameTime){
 
     // Display Renders
 
-    /* {  
+    {  
         flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
-        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, flatPipeline);
+        texVShader.setMode(0);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, texPipeline);
         _renderer->updateScene(&canvas);
         _renderer->drawScene(&canvas);
-    } */
+    }
 
     {
         flatVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode % 3 : 0); 

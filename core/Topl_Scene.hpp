@@ -14,7 +14,6 @@
 #ifdef TOPL_ENABLE_PHYSICS
 #include "Phys_Actor.h"
 #include "Phys_Connector.h"
-#include "Phys_Motion.h"
 #endif
 
 // Camera

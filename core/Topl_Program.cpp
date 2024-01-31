@@ -126,6 +126,8 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
     Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
 	// Platform::mouseControl.addHoverCallback(onPress);
 #ifdef RASTERON_H
+	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
+
 	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
 	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
 	Topl_Program::cachedFrames = alloc_queue("frames", frameSize, CACHED_FRAME_COUNT);

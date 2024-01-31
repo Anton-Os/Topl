@@ -125,8 +125,8 @@ Topl_Renderer_DX11::~Topl_Renderer_DX11() {
 	if(_rasterizerState != nullptr) _rasterizerState->Release();
 
 	if(_sceneBlockBuff != nullptr) _sceneBlockBuff->Release();
-	for(std::vector<Buffer_DX11>::iterator buff = _buffers.begin(); buff != _buffers.end(); buff++)
-		buff->buffer->Release();
+	// for(std::vector<Buffer_DX11>::iterator buff = _buffers.begin(); buff != _buffers.end(); buff++)
+	//		buff->buffer->Release();
 	
 	for(std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++){
 		if(tex->sampler != nullptr) tex->sampler->Release();
@@ -305,7 +305,7 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
 	_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
-	_buffers.push_back(Buffer_DX11(_sceneBlockBuff));
+	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
 		actor_cptr actor = scene->getGeoActor(g);
@@ -318,12 +318,12 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 			renderID = getRenderID(actor);
 		} else { // old data must be replaced
-			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			/* auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
 			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
 			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
 			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
 			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff); */
 		}
 
 		// render block buffer generation
@@ -331,22 +331,22 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
 		ID3D11Buffer* renderBlockBuff = nullptr;
 		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
-		_buffers.push_back(Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff));
+		_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
 		if (mesh->getIndices() != nullptr) { // checks if index data exists for render object
 			_flags[BUILD_BIT] = DX11::createIndexBuff(&_device, &indexBuff, (DWORD*)mesh->getIndices(), mesh->getIndexCount());
-			_buffers.push_back(Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, mesh->getIndexCount()));
+			_indexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, mesh->getIndexCount()) });
 		}
-		else _buffers.push_back(Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, 0));
+		else _indexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, 0) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// vertices generation
 		ID3D11Buffer* vertexBuff = nullptr;
 		_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &vertexBuff, mesh->getVertices(), mesh->getVertexCount());
-		_buffers.push_back(Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()));
+		_vertexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
 
@@ -509,10 +509,10 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
-	if (scene != ALL_SCENES && _buffers.front().renderID == SCENE_RENDERID) {
+	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
 		shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-		DX11::createBlockBuff(&_device, &_buffers.front().buffer, &shaderBlockData);
+		DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &shaderBlockData);
 	}
 
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
@@ -522,9 +522,10 @@ void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 		// Shader Render Block
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-
-		if (renderBlockBuff != _buffers.end()) _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff->buffer, &shaderBlockData);
+		
+		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
+			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &shaderBlockData);
+		
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
 	}
 }
@@ -544,31 +545,25 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 
 void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
-	// static Buffer_DX11 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
-	if (!_buffers.empty()) {
-		if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) { // Scene Target
-			Buffer_DX11* sceneBlockBuff = &_buffers.front();
-			if (sceneBlockBuff != nullptr) {
-				_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
-				_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &sceneBlockBuff->buffer);
-			}
+
+	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
+		if (_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) {
+			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
+			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
 		}
-		else if(renderID != SCENE_RENDERID) { // Drawable Target
-			// Data & Buffer Updates
+	}
+	else if(renderID != SCENE_RENDERID) { // Drawable Target
+		// Data & Buffer Updates
 
-			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
-			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
-			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
+		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()) {
+			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
+			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
+		}
 
-			if (renderBlockBuff != _buffers.end()) {
-				_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-				_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &renderBlockBuff->buffer);
-			}
-
-			if (vertexBuff != _buffers.end() && vertexBuff->count > 0)
-			_deviceCtx->IASetVertexBuffers(0, 1, &vertexBuff->buffer, &_vertexStride, &_vertexOffset);
-			if (indexBuff != _buffers.end() && indexBuff->count > 0)
-				_deviceCtx->IASetIndexBuffer(indexBuff->buffer, DXGI_FORMAT_R32_UINT, 0);
+		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
+			_deviceCtx->IASetVertexBuffers(0, 1, &_vertexBufferMap.at(renderID).buffer, &_vertexStride, &_vertexOffset);
+		if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
+			_deviceCtx->IASetIndexBuffer(_indexBufferMap.at(renderID).buffer, DXGI_FORMAT_R32_UINT, 0);
 
 		// Texture Updates
 
@@ -594,13 +589,12 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 		_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 
 		// Draw Call!
-		if (vertexBuff != _buffers.end() && vertexBuff->count != 0) {
-			if (indexBuff != _buffers.end() && indexBuff->count != 0) 
-				_deviceCtx->DrawIndexed(indexBuff->count, 0, 0); // indexed draw
-			else _deviceCtx->Draw(vertexBuff->count, 0); // non-indexed draw
+		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
+			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
+				_deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
+			else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
 		}
 		// TODO: Include instanced draw call
 		else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-		}
 	}
 } 

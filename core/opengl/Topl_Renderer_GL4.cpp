@@ -178,9 +178,9 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	_buffers.push_back(Buffer_GL4(_bufferSlots[_bufferIndex]));
+	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_GL4(_bufferSlots[_bufferIndex]) });
 	_bufferIndex++; // increments to next available slot
-	glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -197,7 +197,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 			renderID = getRenderID(actor);
 		} else { // old data must be replaced
-			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+			/* auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
 			vertexBuffIndex = (*vertexBuff).buffer;
 			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
 			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
@@ -205,39 +205,39 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
 			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
 			renderBlockBuffIndex = (*renderBlockBuff).buffer;
-			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff); */
 		}
 
 		// render block buffer generation
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[(renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex]));
+		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[(renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex]) });
 		if(renderBlockBuffIndex == 0) _bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.back().buffer);
+		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
 		(mesh->getIndices() != nullptr)
-			? _buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], mesh->getIndexCount()))
-			: _buffers.push_back(Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], 0)); // 0 indicates empty buffer
+			? _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], mesh->getIndexCount()) })
+			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], 0) });
 		if (mesh->getIndices() != nullptr) {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer); // gets the latest buffer
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
 		}
 		if(indexBuffIndex == 0) _bufferIndex++; // increments to next available slot
 
 		// vertices generation
-		_buffers.push_back(Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[(vertexBuffIndex != 0)? vertexBuffIndex : _bufferIndex], mesh->getVertexCount()));
+		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[(vertexBuffIndex != 0)? vertexBuffIndex : _bufferIndex], mesh->getVertexCount()) });
 		if(vertexBuffIndex == 0) _bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_ARRAY_BUFFER, _buffers.back().buffer); // gets the latest buffer
+		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer); // gets the latest buffer
 		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
-		_vertexArrays.push_back(VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]));
+		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]) });
 		_vertexArrayIndex++; // increment to next available slot
-		GL4::genVertexArrayLayout(&_vertexArrays.back(), _entryShader);
+		GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
 	}
 
 	GLint blockCount;
@@ -330,10 +330,10 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	blockBytes_t shaderBlockData;
 
-	if (scene != ALL_SCENES && _buffers.front().renderID == SCENE_RENDERID) {
+	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
 		shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-		glBindBuffer(GL_UNIFORM_BUFFER, _buffers.front().buffer);
+		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 	}
@@ -341,12 +341,10 @@ void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
-		auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-		if (renderBlockBuff != _buffers.end()){
-			// Shader Render Block
+		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()){ // Shader Render Block
 			shaderBlockData.clear();
 			_entryShader->genRenderBlock(actor, &shaderBlockData);
-			glBindBuffer(GL_UNIFORM_BUFFER, renderBlockBuff->buffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
 			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
 			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
 		}
@@ -371,59 +369,49 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
-	if (!_buffers.empty()) {
-		if (renderID == SCENE_RENDERID && _buffers.front().renderID == SCENE_RENDERID) // Scene Target
-			glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _buffers.front().buffer);
-		else if (renderID != SCENE_RENDERID) { // Drawable Target
-			// Data & Buffer Updates
-			
-			auto vertexArray = std::find_if(_vertexArrays.begin(), _vertexArrays.end(), [renderID](const VertexArray_GL4& v) { return v.renderID == renderID; });
-			if(vertexArray != _vertexArrays.end()) glBindVertexArray(vertexArray->vao);
-
-			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
-			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
-			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-			if (renderBlockBuff != _buffers.end())
-				glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, renderBlockBuff->buffer);
-
-			if (vertexBuff != _buffers.end() && vertexBuff->count > 0) 
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuff->buffer);
-			if (indexBuff != _buffers.end() && indexBuff->count > 0) 
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff->buffer);
-
-			// Texture Updates 
+	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) // Scene Target
+		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
+	else if (renderID != SCENE_RENDERID) { // Drawable Target
+		// Data & Buffer Updates
 		
-			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		if(_vertexArrayMap.find(renderID) != _vertexArrayMap.end()) glBindVertexArray(_vertexArrayMap.at(renderID).vao);
+
+		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer);
+		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
+		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
+
+		// Texture Updates 
+	
+		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		if (tex2D != _textures.end()){
+			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
+			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
+		}
+		for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
+			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
 			if (tex2D != _textures.end()){
 				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
 				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
 			}
-			for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
-				tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
-				if (tex2D != _textures.end()){
-					glActiveTexture(GL_TEXTURE0 + tex2D->binding);
-					glBindTexture(GL_TEXTURE_2D, tex2D->texture);
-				}
-			}
-			auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
-			if(tex3D != _textures.end()){
-				glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
-				glBindTexture(GL_TEXTURE_3D, tex3D->texture);
-			}
-
-			// Draw Call!
-			if (vertexBuff != _buffers.end() && vertexBuff->count != 0) {
-				if (indexBuff != _buffers.end() && indexBuff->count != 0) 
-					glDrawElements(_drawMode_GL4, indexBuff->count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-				else glDrawArrays(_drawMode_GL4, 0, vertexBuff->count); // non-indexed draw
-			} 
-			// TODO: Include instanced draw call
-			else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
-
-			// Unbinding
-			glBindVertexArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
+		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
+		if(tex3D != _textures.end()){
+			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
+			glBindTexture(GL_TEXTURE_3D, tex3D->texture);
+		}
+
+		// Draw Call!
+		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
+			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
+				glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+			else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+		} 
+		// TODO: Include instanced draw call
+		else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
+
+		// Unbinding
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 }

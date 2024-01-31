@@ -19,7 +19,7 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
     build(scene);
-    if(scene->getIsTextured()) texturize(scene);
+    if(scene->getIsTextured()) texturizeScene(scene);
 	return _flags[BUILD_BIT];
 }
 
@@ -74,7 +74,7 @@ void Topl_Renderer::present() {
 
 #ifdef RASTERON_H
 
-void Topl_Renderer::texturize(const Topl_Scene* scene) {
+void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 	for(unsigned g = 0; g < scene->getActorCount(); g++) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
@@ -95,6 +95,7 @@ void Topl_Renderer::texturize(const Topl_Scene* scene) {
 	}
 }
 
+
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
@@ -105,7 +106,7 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
 }
 
 #else
-	void Topl_Renderer::texturize(const Topl_Scene* scene) {} // blank body
+	void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {} // blank body
 #endif
 
 unsigned long Topl_Renderer::getRenderID(const Geo_Actor* actor){

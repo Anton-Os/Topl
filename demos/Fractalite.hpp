@@ -5,7 +5,7 @@
 
 #include "Topl_Program.hpp"
 
-#define FRACTALITE_COUNT 300
+#define FRACTALITE_COUNT 2000
 
 struct Fractalite_Demo : public Topl_Program {
     Fractalite_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Fractalite", backend){
@@ -21,6 +21,9 @@ struct Fractalite_Demo : public Topl_Program {
     Geo_Circle2D circles[FRACTALITE_COUNT];
 
     Geo_Actor actors[FRACTALITE_COUNT];
+#ifdef TOPL_ENABLE_PHYSICS
+    Phys_Actor physActors[FRACTALITE_COUNT];
+#endif
 private:
     Topl_Scene scene;
 

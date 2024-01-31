@@ -53,9 +53,11 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Actor inputInfoActor = Geo_Actor(&infoBoxMesh); Geo_Actor timerInfoActor = Geo_Actor(&infoBoxMesh);
     Geo_Gridboard layout1 = Geo_Gridboard("gridLayout", 3);
     Geo_Listboard layout2 = Geo_Listboard("vertLayout", 9);
-    Geo_Crossboard layout3 = Geo_Crossboard("horzLayout", 9);
+    Geo_Listboard layout3 = Geo_Listboard("horzLayout", 9);
 
 #ifdef RASTERON_H
+    Img_Base canvasTex;
+
     Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg;
     Img_Base boxTex, pyramidTex, sphereTex, hexTex;
 
@@ -66,8 +68,7 @@ struct Sandbox_Demo : public Topl_Program {
     Rasteron_Queue* checkBtn_queue = loadUI_checkBtn(MENU_XL);
     Img_Base checkBtn_textures[3] = { getFrameAt(checkBtn_queue, 0), getFrameAt(checkBtn_queue, 1), getFrameAt(checkBtn_queue, 2) };
 
-    Img_Base userInput_texture = Img_Base(0xAAFFFF00);
-    Img_Base timerCount_texture = Img_Base(0xAA00FFFF);
+    Img_Base userInput_texture = Img_Base(0xAAFFFF00); Img_Base timerCount_texture = Img_Base(0xAA00FFFF);
 
     // Rasteron_Queue* slider_queues[9] = { loadUI_slider(MENU_XL, 2), loadUI_slider(MENU_XL, 3), loadUI_slider(MENU_XL, 4), loadUI_slider(MENU_XL, 5), loadUI_slider(MENU_XL, 6), loadUI_slider(MENU_XL, 7), loadUI_slider(MENU_XL, 8), loadUI_slider(MENU_XL, 9), loadUI_slider(MENU_XL, 10) };
     Rasteron_Queue* slider_queue = loadUI_slider(MENU_XL, 9);

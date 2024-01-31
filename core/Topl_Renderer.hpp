@@ -118,7 +118,7 @@ public:
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
-    void texturize(const Topl_Scene* scene); // reloads all textures
+    void texturizeScene(const Topl_Scene* scene); // reloads textures from scene
 #ifdef RASTERON_H
     virtual Img_Base frame() = 0;
 	unsigned getPixelAt(float x, float y);

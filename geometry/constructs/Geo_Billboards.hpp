@@ -79,14 +79,14 @@ protected:
 #endif
 };
 
-struct Geo_Listboard : Geo_Billboard {
-    Geo_Listboard(const std::string& prefix, unsigned short rows) : Geo_Billboard(prefix, rows, 1){}
-    Geo_Listboard(const std::string& prefix, unsigned short rows, Topl_Scene* scene) : Geo_Billboard(prefix, rows, 1, scene){}
+struct Geo_Crossboard : Geo_Billboard {
+    Geo_Crossboard(const std::string& prefix, unsigned short rows) : Geo_Billboard(prefix, rows, 1){}
+    Geo_Crossboard(const std::string& prefix, unsigned short rows, Topl_Scene* scene) : Geo_Billboard(prefix, rows, 1, scene){}
 };
 
-struct Geo_Crossboard :  Geo_Billboard {
-    Geo_Crossboard(const std::string& prefix, unsigned short cols) : Geo_Billboard(prefix, 1, cols){}
-    Geo_Crossboard(const std::string& prefix, unsigned short cols, Topl_Scene* scene) : Geo_Billboard(prefix, 1, cols, scene){}
+struct Geo_Listboard :  Geo_Billboard {
+    Geo_Listboard(const std::string& prefix, unsigned short cols) : Geo_Billboard(prefix, 1, cols){}
+    Geo_Listboard(const std::string& prefix, unsigned short cols, Topl_Scene* scene) : Geo_Billboard(prefix, 1, cols, scene){}
 };
 
 struct Geo_Gridboard : Geo_Billboard {

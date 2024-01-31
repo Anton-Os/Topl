@@ -4,7 +4,8 @@
 
 #include "Geo_Mesh.hpp"
 
-#define DEFAULT_IMG_SIZE 256
+#define DEFAULT_IMG_HEIGHT 256
+#define DEFAULT_IMG_WIDTH 256
 
 // Base Image wrapper around Rasteron_Image
 
@@ -20,7 +21,7 @@ struct Img_Base {
 
     void setColorImage(unsigned color){
 		cleanup();
-		image = solidImgOp({ DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, color);
+		image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
@@ -33,7 +34,7 @@ struct Img_Base {
     }
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
-		_invertFont = FONT_INVERT; // make sure font renders correctly
+		// _invertFont = FONT_INVERT; // make sure font renders correctly
 		image = textImgOp(textObj, FONT_SIZE_MED);
     }
     void setImage(ref_image_t refImage){
@@ -60,8 +61,8 @@ private:
 /* enum LAYER_Property { LAYER_Albedo = 0, LAYER_Height = 1, LAYER_Roughness = 2, LAYER_Opacity = 3, LAYER_Enviornment = 4, LAYER_Shadow = 5, LAYER_Illumination = 6, LAYER_Testing = 7, }; */
 
 struct Img_Array {
-	Img_Array(){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, 8); }
-	Img_Array(unsigned short count){ data = alloc_queue("arrayTex", { DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE }, count); }
+	Img_Array(){ data = alloc_queue("arrayTex", { DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, 8); }
+	Img_Array(unsigned short count){ data = alloc_queue("arrayTex", { DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, count); }
 
 	Rasteron_Queue* getQueue() const { return data; }
 private:
@@ -71,7 +72,7 @@ private:
 // Volume based on slices
 
 struct Img_Volume { 
-    Img_Volume() : width(DEFAULT_IMG_SIZE), height(DEFAULT_IMG_SIZE), depth(DEFAULT_IMG_SIZE) {} // Empty Constructor
+    Img_Volume() : width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s) { // Matching Lengths
 		queue = alloc_queue("volumeTex", { width, height }, depth);

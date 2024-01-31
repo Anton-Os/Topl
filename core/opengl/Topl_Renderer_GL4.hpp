@@ -89,11 +89,12 @@ protected:
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot
-	std::vector<Buffer_GL4> _buffers; // active buffers
+	std::map<unsigned long, Buffer_GL4> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
 	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX]; // stores all vertex arrays
 	unsigned _vertexArrayIndex = 0; // increments to indicate next available vertex array slot
-	std::vector<VertexArray_GL4> _vertexArrays; // active vertex arrays
+	std::map<unsigned long, VertexArray_GL4> _vertexArrayMap;
 	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX]; // stores all textures
 	unsigned _textureIndex = 0; // increments to indicate next available texture slot
 	std::vector<Texture_GL4> _textures; // active textures
+	std::map<unsigned long, Texture_GL4> _textureMap; // accomodate array and volumetric textures
 };

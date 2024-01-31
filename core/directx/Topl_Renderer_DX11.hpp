@@ -102,8 +102,9 @@ protected:
 	ID3D11RasterizerState* _rasterizerState;
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
-	std::vector<Buffer_DX11> _buffers;
+	std::map<unsigned long, Buffer_DX11> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
 	std::vector<Texture_DX11> _textures;
+	/* TODO: Change to map */ std::map<unsigned long, Texture_DX11> _textureMap; // accomodate array and volumetric textures
 
 	const UINT _vertexStride = sizeof(Geo_Vertex);
 	const UINT _vertexOffset = 0;
