@@ -63,7 +63,7 @@ public:
 	~Topl_Renderer_GL4();
 
 	void draw(const Geo_Actor* actor) override;
-	void clearView() override;
+	void clear() override;
 	void setViewport(const Topl_Viewport* viewport) override;
 	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;

@@ -114,7 +114,7 @@ public:
     bool drawScene(const Topl_Scene* scene);
 	void present(); // present scene by swapping front and back buffers
     virtual void draw(const Geo_Actor* actor) = 0; // draw call per render target
-    virtual void clearView() = 0; // clears view to predefined background color
+    virtual void clear() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count

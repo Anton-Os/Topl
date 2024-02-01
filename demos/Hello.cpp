@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "HelloTriangle.hpp"
+#include "Hello.hpp"
 
-#define TARGET_BACKEND BACKEND_GL4
+// #define TARGET_BACKEND BACKEND_GL4
 // #define TARGET_BACKEND BACKEND_DX11
-// #define TARGET_BACKEND BACKEND_Vulkan
+#define TARGET_BACKEND BACKEND_Vulkan
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -28,19 +28,19 @@ static Topl_Scene scene = Topl_Scene();
 } */
 
 
-// HelloTriangle Main Loop
+// Hello Main Loop
 
 int main(int argc, char** argv) {
-	Platform platform(argv[0], "HelloTriangle");
+	Platform platform(argv[0], "Hello");
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 
 	// Performance Testing
 
 	Topl_Renderer* renderer = nullptr;
 
-	if (TARGET_BACKEND == BACKEND_GL4) renderer = new HelloTriangle_Renderer_GL4(platform.getParentWindow());
-	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new HelloTriangle_Renderer_DX11(platform.getParentWindow());
-	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new HelloTriangle_Renderer_Vulkan(platform.getParentWindow());
+	if (TARGET_BACKEND == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getParentWindow());
+	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getParentWindow());
+	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new Hello_Renderer_Vulkan(platform.getParentWindow());
 
 	Timer_Persist _ticker;
 	double frameTotal = 0.0;
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 		if(TARGET_BACKEND != BACKEND_Vulkan){
 			// Frame Rate and Render Profiling
 			double f1 = _ticker.getRelMillisecs();
-			renderer->clearView();
+			renderer->clear();
 			double f2 = _ticker.getRelMillisecs();
 			renderer->drawScene(nullptr);
 			double f3 = _ticker.getRelMillisecs();

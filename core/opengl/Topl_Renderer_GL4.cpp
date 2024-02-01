@@ -144,7 +144,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 	glPointSize(3.0f);
 }
 
-void Topl_Renderer_GL4::clearView() {
+void Topl_Renderer_GL4::clear() {
 	glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }

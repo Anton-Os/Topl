@@ -194,12 +194,12 @@ endforeach()
 
 # ------------- Demos and Tests ------------- #
 
-add_executable(HelloTriangle demos/HelloTriangle.cpp)
+add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(Modelview demos/Modelview.cpp)
 add_executable(Fractalite demos/Fractalite.cpp)
 
-list(APPEND demo_targets HelloTriangle Sandbox Modelview Fractalite)
+list(APPEND demo_targets Hello Sandbox Modelview Fractalite)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)

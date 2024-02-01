@@ -52,8 +52,8 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Quad2D infoBoxMesh = Geo_Quad2D(0.15);
     Geo_Actor inputInfoActor = Geo_Actor(&infoBoxMesh); Geo_Actor timerInfoActor = Geo_Actor(&infoBoxMesh);
     Geo_Gridboard layout1 = Geo_Gridboard("gridLayout", 3);
-    Geo_Listboard layout2 = Geo_Listboard("vertLayout", 9);
-    Geo_Listboard layout3 = Geo_Listboard("horzLayout", 9);
+    Geo_Crossboard layout3 = Geo_Crossboard("vertLayout", 9);
+    Geo_Listboard layout2 = Geo_Listboard("horzLayout", 9);
 
 #ifdef RASTERON_H
     Img_Base canvasTex;
@@ -84,9 +84,9 @@ private:
 
     Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline, *effectPipeline;
 
-    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
-    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
-    Beams_VertexShader_DX11 beamVShader; Beams_PixelShader_DX11 beamPShader;
-    Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
+    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
+    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
+    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
+    Effect_VertexShader_GL4 effectVShader; Effect_PixelShader_GL4 effectPShader;
 
 } *_instance; // USE _instance OBJECT FOR DEMO

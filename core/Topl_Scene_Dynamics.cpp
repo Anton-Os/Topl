@@ -17,7 +17,7 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 
 void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if((*actor)->getName() == name){
+		if(name == (*actor)->getName()){
 			_physicsMap.erase(*actor);
 			_physicsMap.insert({ *actor, physActor });
 		}
@@ -152,9 +152,9 @@ void Topl_Scene::resolvePhysics() {
 
 	// Resolve All Forces
 	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _physicsMap.begin(); m != _physicsMap.end(); m++) {
-		Geo_Actor* targetGeo = m->first;
+		Geo_Actor* geoActor = m->first;
 		Phys_Actor* physActor = m->second;
-		
+
 		if (physActor->actingForceCount > 0) 
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
 				physActor->acceleration = physActor->acceleration + (*(physActor->forces + forceIndex)) * (1.0f / physActor->mass);
@@ -166,7 +166,7 @@ void Topl_Scene::resolvePhysics() {
 		physActor->velocity = physActor->velocity * (float)physActor->damping; // velocity damping
 
 		Vec3f updatedPos = (physActor->velocity * (float)elapseSecs) + ((physActor->acceleration * pow(elapseSecs, 2))) * 0.5f;
-		targetGeo->updatePos(updatedPos); // position integration
+		geoActor->updatePos(updatedPos); // position integration
 
 		physActor->acceleration = VEC_3F_ZERO; // resetting acceleration
 	}

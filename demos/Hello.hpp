@@ -8,8 +8,8 @@
 #include "Advance_Shader.hpp"
 
 // OpenGL Test Renderer
-struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
-	HelloTriangle_Renderer_GL4(NATIVE_WINDOW window) 
+struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
+	Hello_Renderer_GL4(NATIVE_WINDOW window) 
 	: Topl_Renderer_GL4(window){ 
 		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
 		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
@@ -18,7 +18,7 @@ struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 	}
 
 	void build(const Topl_Scene* scene) override { 
-		logMessage("HelloTriangle Build (OpenGL)");
+		logMessage("Hello Build (OpenGL)");
 		setDrawMode(DRAW_Triangles);
 		Topl_Renderer_GL4::build(scene); 
 	}
@@ -34,8 +34,8 @@ struct HelloTriangle_Renderer_GL4 : public Topl_Renderer_GL4{
 
 #ifdef _WIN32
 // DirectX Test Renderer
-struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
-	HelloTriangle_Renderer_DX11(NATIVE_WINDOW window) 
+struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
+	Hello_Renderer_DX11(NATIVE_WINDOW window) 
 	: Topl_Renderer_DX11(window){ 
 		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
 		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
@@ -44,7 +44,7 @@ struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
 	}
 
 	void build(const Topl_Scene* scene) override {
-		logMessage("HelloTriangle Build (DirectX11)");
+		logMessage("Hello Build (DirectX11)");
 		setDrawMode(DRAW_Triangles);
 		Topl_Renderer_DX11::build(scene); 
 	}
@@ -61,8 +61,8 @@ struct HelloTriangle_Renderer_DX11 : public Topl_Renderer_DX11 {
 
 #ifdef TOPL_ENABLE_VULKAN
 // Vulkan Test Renderer
-struct HelloTriangle_Renderer_Vulkan : public Topl_Renderer_Vulkan {
-	HelloTriangle_Renderer_Vulkan(NATIVE_WINDOW window)
+struct Hello_Renderer_Vulkan : public Topl_Renderer_Vulkan {
+	Hello_Renderer_Vulkan(NATIVE_WINDOW window)
 	: Topl_Renderer_Vulkan(window){
 		setViewport(&_defaultViewport);
 		setDrawMode(DRAW_Triangles);

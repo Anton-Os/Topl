@@ -14,8 +14,8 @@ void Fractalite_Demo::init(){
         }
         actors[a].setName("actor" + std::to_string(a));
         actors[a].setPos({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f, 0.0 });
-        actors[a].setRot({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), 0.0, });
-        actors[a].setSize({ (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.05F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.05F, 1.0F });
+        actors[a].setRot({ static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX), });
+        actors[a].setSize({ (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.025F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.025F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * 0.025F });
         scene.addGeometry(&actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
         scene.addPhysics("actor" + std::to_string(a), &physActors[a]);
@@ -35,12 +35,19 @@ void Fractalite_Demo::loop(double frameTime){
         actors[a].updateRot({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F, (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) / 10.0F });
 #endif
     }
+
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
+    _renderer->clear();
+
+    for(unsigned a = 0; a < FRACTALITE_COUNT; a++){
+        _renderer->setDrawMode((a % 3 == 0)? DRAW_Strip : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
+        _renderer->draw(&actors[a]);
+    }
 }
 
 int main(int argc, char** argv) {
-    _instance = new Fractalite_Demo(argv[0], BACKEND_GL4);
+    _instance = new Fractalite_Demo(argv[0], BACKEND_DX11);
     _instance->run();
 
     delete(_instance);

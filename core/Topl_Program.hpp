@@ -13,6 +13,7 @@ public:
 	// template<class T> void addSequence(T var, std::pair<millisec_t, T> target); // try to templatize this
 	void addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
 	void addSequence_float(float* var, std::pair<millisec_t, float> target);
+	void addSequence_double(double* var, std::pair<millisec_t, double> target);
 
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
@@ -21,6 +22,7 @@ public:
 private:
 	static std::map<Vec3f*, std::map<millisec_t, Vec3f>> vec3f_map;
 	static std::map<float*, std::map<millisec_t, float>> float_map;
+	static std::map<double*, std::map<millisec_t, double>> double_map;
 };
 
 #define NO_PICKER_OBJ nullptr

@@ -1,5 +1,7 @@
 #include "Topl_Renderer_Vulkan.hpp"
 
+#define ENABLE_DEBUG_LAYERS
+
 namespace Vulkan {
 	VKAPI_ATTR VkBool32 VKAPI_CALL debugReportLogCallback(
 		VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
@@ -74,29 +76,42 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 
 #ifdef ENABLE_DEBUG_LAYERS
 	const unsigned instanceLayerCount = 1;
-	const char* instanceLayers[instanceLayerCount] = { "VK_LAYER_LUNARG_standard_validation" };
+	const char* instanceLayers[instanceLayerCount] = { "VK_LAYER_KHRONOS_validation" };
 #endif
+
+/* #ifdef ENABLE_DEBUG_LAYERS
+	const char* validationLayers[] = { "VK_LAYER_KHRONOS_validation" };
+
+	unsigned instanceLayerCount;
+	vkEnumerateInstanceLayerProperties(&instanceLayerCount, nullptr);
+
+	printf("Validation layer count is: %d\n", instanceLayerCount);
+	VkLayerProperties* instanceLayers = (VkLayerProperties*)malloc(sizeof(VkLayerProperties) * instanceLayerCount);
+	for(unsigned l = 0; l < instanceLayerCount; l++) 
+		printf("Layer name is: %s", (*(instanceLayers + l)).layerName);
+	vkEnumerateInstanceLayerProperties(&instanceLayerCount, instanceLayers);
+#endif */
 
 	VkInstanceCreateInfo instanceInfo = {};
 	instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceInfo.pApplicationInfo = &appInfo;
+	instanceInfo.enabledExtensionCount = instanceExtCount;
+	instanceInfo.ppEnabledExtensionNames = instanceExtensions;
 #ifdef ENABLE_DEBUG_LAYERS
 	instanceInfo.enabledLayerCount = instanceLayerCount;
 	instanceInfo.ppEnabledLayerNames = instanceLayers;
+	// free(instanceLayers);
 #endif
-	instanceInfo.enabledExtensionCount = instanceExtCount;
-	instanceInfo.ppEnabledExtensionNames = instanceExtensions;
 
 	result = vkCreateInstance(&instanceInfo, NULL, &_instance);
 	if(result == VK_SUCCESS) logMessage("Instance creation success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Instance creation failure!\n");
 
-#ifdef ENABLE_DEBUG_LAYERS
+/* #ifdef ENABLE_DEBUG_LAYERS
 	result = Vulkan::createDebugReport(&_instance);
 	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
-#endif
-
+#endif */
 
 	// Physical Device Enumeration
 
@@ -482,7 +497,7 @@ Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {
 	vkDestroyInstance(_instance, nullptr);
 }
 
-void Topl_Renderer_Vulkan::clearView(){
+void Topl_Renderer_Vulkan::clear(){
 	// Implement clearing operation
 }
 

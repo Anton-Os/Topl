@@ -261,7 +261,7 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 	_deviceCtx->RSSetState(_rasterizerState);
 }
 
-void Topl_Renderer_DX11::clearView() {
+void Topl_Renderer_DX11::clear() {
 	const float clearColor[] = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
 	_deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
