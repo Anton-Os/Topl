@@ -22,7 +22,7 @@ void Topl_Timeline::seqCallback(millisec_t m){
 			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog =  ((m - seq_start->first) / MILLISEC_IN_SEC) / (seq_end->first - seq_start->first);
+		double prog =  ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
 
 		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
 		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
@@ -41,7 +41,7 @@ void Topl_Timeline::seqCallback(millisec_t m){
 			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog =  ((m - seq_start->first) / MILLISEC_IN_SEC) / (seq_end->first - seq_start->first);
+		double prog = ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
 
 		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
 		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
@@ -60,7 +60,7 @@ void Topl_Timeline::seqCallback(millisec_t m){
 			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog =  ((m - seq_start->first) / MILLISEC_IN_SEC) / (seq_end->first - seq_start->first);
+		double prog = ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
 
 		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
 		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
@@ -112,8 +112,9 @@ bool Topl_Program::isInputEnabled = false;
 std::string Topl_Program::userInput = "";
 
 #ifdef RASTERON_H
-unsigned Topl_Program::pickerVal_color = NO_COLOR;
-unsigned Topl_Program::pickerVal_coord = NO_COLOR;
+unsigned Topl_Program::pickerColor = NO_COLOR;
+// unsigned Topl_Program::pickerVal_coord = NO_COLOR;
+Vec3f Topl_Program::pickerCoord = { 0.0F, 0.0F, 0.0F };
 const Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
@@ -200,22 +201,23 @@ void Topl_Program::run(){
 
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
-	Topl_Program::pickerVal_color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	if((Topl_Program::pickerVal_color & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
+	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	if((Topl_Program::pickerColor & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
 		Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
-		const Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerVal_color);
+		const Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
 		if(actor != nullptr) Topl_Program::pickerObj = actor; 
 	}
-	return Topl_Program::pickerVal_color;
+	return Topl_Program::pickerColor;
 }
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
-	Topl_Program::pickerVal_coord = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	return Vec3f{
-		((Topl_Program::pickerVal_coord & 0xFF0000) >> 16) / 255.0f,
-		((Topl_Program::pickerVal_coord & 0xFF00) >> 8) / 255.0f, 
-		(Topl_Program::pickerVal_coord & 0xFF) / 255.0f,  
+	unsigned color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
+	Topl_Program::pickerCoord = Vec3f{
+		((color & 0xFF0000) >> 16) / 255.0f,
+		((color & 0xFF00) >> 8) / 255.0f, 
+		(color & 0xFF) / 255.0f,  
 	};
+	return Topl_Program::pickerCoord;
 }
 #endif

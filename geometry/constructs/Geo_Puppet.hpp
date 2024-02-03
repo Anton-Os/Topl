@@ -70,7 +70,7 @@ public:
     void configure(Topl_Scene* scene) override {
         Geo_Puppet::configure(scene);
         for(unsigned p = 0; p < PUPPET_PARTS; p++)
-            scene->addTexture(_geoActors[p].getName(), &spriteImgs[p]);
+           scene->addTexture(_geoActors[p].getName(), &spriteImgs[p]);
     }
 
 protected:

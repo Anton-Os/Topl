@@ -2,9 +2,9 @@
 
 #include "Hello.hpp"
 
-// #define TARGET_BACKEND BACKEND_GL4
+#define TARGET_BACKEND BACKEND_GL4
 // #define TARGET_BACKEND BACKEND_DX11
-#define TARGET_BACKEND BACKEND_Vulkan
+// #define TARGET_BACKEND BACKEND_Vulkan
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20

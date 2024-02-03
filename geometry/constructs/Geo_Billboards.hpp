@@ -52,7 +52,8 @@ public:
 		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			paneImg_map.insert({ &_geoActors.at(p), Img_Base() });
-			paneImg_map.at(&_geoActors.at(p)).setTextImage(&textObj);
+			// paneImg_map.at(&_geoActors.at(p)).setTextImage(&textObj);
+			paneImg_map.at(&_geoActors.at(p)).setColorImage(0xFFEEEEEE);
 
 			paneImgArray_map.insert({ &_geoActors.at(p), Img_Array() });
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){

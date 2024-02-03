@@ -20,7 +20,15 @@ struct Modelview_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    // Geo_Puppet2D puppet = Geo_Puppet2D("puppet2D", { "", "", "", "", "", "" }); // TODO: Test Puppet2D Implementation
+    std::string puppetAssets[PUPPET_PARTS] = {
+        std::string(IMAGES_DIR) + "characters/" + "Ghost-Head.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftArm.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-RightArm.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-Torso.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftLeg.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-RightLeg.png"
+    };
+    Geo_Puppet2D puppet = Geo_Puppet2D("puppet2D", puppetAssets); // TODO: Test Puppet2D Implementation
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
     Geo_Model3D model1 = Geo_Model3D("model1", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));

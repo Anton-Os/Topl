@@ -38,7 +38,7 @@ public:
 	unsigned colorPicker(Topl_Scene* scene); // get solid color to find item
 	Vec3f coordPicker(Topl_Scene* scene); // get relative coordinates within item
 #endif
-	static Vec3f getCamCursorPos(){ return (*cameraObj.getPos() + cursorPos - Vec3f{ 0.0, 0.0, -1.0} ) * (1.0 / *cameraObj.getZoom()); } // TODO: Include roll
+	static Vec3f getCamCursorPos(){ return (*cameraObj.getPos() + cursorPos - Vec3f{ 0.0, 0.0, CAM_DEPTH } ) * (1.0 / *cameraObj.getZoom()); } // TODO: Include roll
 
 	static Topl_Camera cameraObj; // custom camera object
 	static Topl_Timeline timeline;
@@ -47,8 +47,9 @@ public:
 	static bool isInputEnabled;
 	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H
-	static unsigned pickerVal_color; // picker for color
-	static unsigned pickerVal_coord; // picker for coordinates
+	static unsigned pickerColor; // picker for color
+	// static unsigned pickerVal_coord; // picker for coordinates
+	static Vec3f pickerCoord;
 	static const Geo_Actor* pickerObj; // picker for actor
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif

@@ -20,7 +20,8 @@
 
 // Camera
 
-#define DEFAULT_ZOOM 1.0f
+#define CAM_ZOOM 1.0f
+#define CAM_DEPTH -0.99F
 
 class Topl_Camera {
 public:
@@ -47,8 +48,8 @@ public:
 	vec3f_cptr_t getRot() const { return &_rotation; }
 	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
 private:
-	float _zoom = DEFAULT_ZOOM; 
-	Vec3f _pos = Vec3f({ 0.0f, 0.0f, -1.0f }); // in front of scene
+	float _zoom = CAM_ZOOM; 
+	Vec3f _pos = Vec3f({ 0.0f, 0.0f, CAM_DEPTH }); // in front of scene
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
 	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
 };
