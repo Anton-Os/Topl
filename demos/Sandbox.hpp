@@ -31,7 +31,6 @@ struct Sandbox_Demo : public Topl_Program {
     static bool isShaderVariant;
     static unsigned shaderMode;
     static Vec3f texScroll;
-    static Vec3f followVec;
     static std::string fontFilePath;
 
     Geo_Quad2D canvasMesh = Geo_Quad2D(10000.0);
@@ -58,22 +57,15 @@ struct Sandbox_Demo : public Topl_Program {
 #ifdef RASTERON_H
     Img_Base canvasTex;
 
+    Img_Base timerCount_texture = Img_Base(0xFFFFFF00);
     Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg;
     Img_Base boxTex, pyramidTex, sphereTex, hexTex;
 
-    Rasteron_Queue* dialBtn_queues[3] = { loadUI_dial(MENU_XL, 4), loadUI_dial(MENU_XL, 8), loadUI_dial(MENU_XL, 16) };
-    Img_Base dialBtn_textures[3] = { getFrameAt(dialBtn_queues[0], 3), getFrameAt(dialBtn_queues[1], 0), getFrameAt(dialBtn_queues[2], 8) };
-    Rasteron_Queue* iconBtn_queues[3] = { loadUI_iconBtn(MENU_XL, "arrow_back"), loadUI_iconBtn(MENU_XL, "sync"), loadUI_iconBtn(MENU_XL, "arrow_forward") };
-    Img_Base iconBtn_textures[3] = { getFrameAt(iconBtn_queues[0], 0), getFrameAt(iconBtn_queues[1], 1), getFrameAt(iconBtn_queues[2], 2) };
-    Rasteron_Queue* checkBtn_queue = loadUI_checkBtn(MENU_XL);
-    Img_Base checkBtn_textures[3] = { getFrameAt(checkBtn_queue, 0), getFrameAt(checkBtn_queue, 1), getFrameAt(checkBtn_queue, 2) };
+    Img_Button checks[3] = { Img_Button(MENU_XL), Img_Button(MENU_XL), Img_Button(MENU_XL) };
+    Img_Dial dials[3] = { Img_Dial(MENU_XL, 4), Img_Dial(MENU_XL, 8), Img_Dial(MENU_XL, 16) }; 
+    Img_Button icons[3] = { Img_Button(MENU_XL, "arrow_back"), Img_Button(MENU_XL, "sync"), Img_Button(MENU_XL, "arrow_forward") };
 
-    Img_Base userInput_texture = Img_Base(0xAAFFFF00); Img_Base timerCount_texture = Img_Base(0xAAFF00FF);
-
-    Rasteron_Queue* slider_queues[9] = { loadUI_slider(MENU_XL, 2 + 1), loadUI_slider(MENU_XL, 3 + 1), loadUI_slider(MENU_XL, 4 + 1), loadUI_slider(MENU_XL, 5 + 1), loadUI_slider(MENU_XL, 6 + 1), loadUI_slider(MENU_XL, 7 + 1), loadUI_slider(MENU_XL, 8 + 1), loadUI_slider(MENU_XL, 9 + 1), loadUI_slider(MENU_XL, 10 + 1) };
-    // Rasteron_Queue* slider_queue = loadUI_slider(MENU_XL, 9);
-    Img_Base slider_textures[9] = { getFrameAt(slider_queues[0], 0), getFrameAt(slider_queues[1], 0), getFrameAt(slider_queues[2], 0), getFrameAt(slider_queues[3], 0), getFrameAt(slider_queues[4], 0), getFrameAt(slider_queues[5], 0), getFrameAt(slider_queues[6], 0), getFrameAt(slider_queues[7], 0), getFrameAt(slider_queues[8], 0) };
-    // Img_Base slider_textures[9] = { getFrameAt(slider_queue, 0), getFrameAt(slider_queue, 1), getFrameAt(slider_queue, 2), getFrameAt(slider_queue, 3), getFrameAt(slider_queue, 4), getFrameAt(slider_queue, 5), getFrameAt(slider_queue, 6), getFrameAt(slider_queue, 7), getFrameAt(slider_queue, 8) };
+    Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
     Rasteron_Queue* words_queue = alloc_queue("words", { 64, 512 }, 9);
     Img_Base words_textures[9] = { getFrameAt(words_queue, 0), getFrameAt(words_queue, 1), getFrameAt(words_queue, 2), getFrameAt(words_queue, 3), getFrameAt(words_queue, 4), getFrameAt(words_queue, 5), getFrameAt(words_queue, 6), getFrameAt(words_queue, 7), getFrameAt(words_queue, 8) };
 #endif

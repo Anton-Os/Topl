@@ -12,6 +12,7 @@
     #define RASTERON_ENABLE_ANIM // includes animation support
     #define RASTERON_ENABLE_FONT // includes 
     
+    // #include "Toolbox.h"
     #include "Rasteron.h" // includes Rasteron main modules and features
 #endif
 #if 1

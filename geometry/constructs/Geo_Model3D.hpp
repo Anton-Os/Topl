@@ -60,10 +60,10 @@ public:
                 scene->addGeometry(getPrefix() + currentNode->getName(), currentNode);
 #ifdef RASTERON_H
                 _nodeImg_map.insert({ currentNode, Img_Base() });
-                Rasteron_Image* modelImg = mapImgOp({1024, 1024}, linedImg_callback);
-                _nodeImg_map.at(currentNode).setImage(modelImg);
+                // Rasteron_Image* modelImg = mapImgOp({1024, 1024}, linedImg_callback);
+                _nodeImg_map.at(currentNode).setColorImage(RAND_COLOR()); // .setImage(modelImg);
                 scene->addTexture(getPrefix() + currentNode->getName(), &_nodeImg_map.at(currentNode));
-                dealloc_image(modelImg);
+                // dealloc_image(modelImg);
 #endif
             }
         }

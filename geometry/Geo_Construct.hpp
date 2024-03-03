@@ -59,7 +59,7 @@ public:
         }
     }
     void scale(Vec3f scaleVec){
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updateSize(scaleVec);
+        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].setSize(scaleVec);
     }
 
     virtual void configure(Topl_Scene* scene) = 0; // function to pass data into  scene

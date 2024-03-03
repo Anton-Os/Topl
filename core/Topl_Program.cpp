@@ -10,22 +10,22 @@ Topl_Timeline::Topl_Timeline(){
 	// dynamic_ticker.addRecurringEvent(Topl_Timeline::seqCallback);
 }
 
-void Topl_Timeline::seqCallback(millisec_t m){
+void Topl_Timeline::seqCallback(double m){
 	for(auto f = Topl_Timeline::vec3f_map.begin(); f != vec3f_map.end(); f++){
 		std::map<millisec_t, Vec3f>::iterator seq_start = f->second.begin();
 		std::map<millisec_t, Vec3f>::reverse_iterator seq_end = f->second.rbegin();
 
 		if(f->second.size() > 2){ // std::cout << "2+ range detected" << std::endl;
 			auto b = std::next(seq_start);
-			while(b != f->second.end()) if(m / MILLISEC_IN_SEC > b->first){ seq_start = b; b++; } else break;
+			while(b != f->second.end()) if(m > b->first){ seq_start = b; b++; } else break;
 			auto t = std::next(seq_end);
-			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
+			while(t != f->second.rend()) if(m < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog =  ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
+		double prog =  (m - seq_start->first) / (seq_end->first - seq_start->first);
 
-		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
-		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
+		if(m > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
+		else if(m < seq_start->first) *(f->first) = seq_start->second;
 		else *(f->first) = seq_start->second + ((seq_end->second - seq_start->second) * prog);
 		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
 	}
@@ -36,15 +36,15 @@ void Topl_Timeline::seqCallback(millisec_t m){
 
 		if(f->second.size() > 2){ // std::cout << "2+ range detected" << std::endl;
 			auto b = std::next(seq_start);
-			while(b != f->second.end()) if(m / MILLISEC_IN_SEC > b->first){ seq_start = b; b++; } else break;
+			while(b != f->second.end()) if(m > b->first){ seq_start = b; b++; } else break;
 			auto t = std::next(seq_end);
-			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
+			while(t != f->second.rend()) if(m < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog = ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
+		double prog = (m - seq_start->first) / (seq_end->first - seq_start->first);
 
-		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
-		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
+		if(m > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
+		else if(m < seq_start->first) *(f->first) = seq_start->second;
 		else *(f->first) = seq_start->second + ((seq_end->second - seq_start->second) * prog);
 		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
 	}
@@ -55,15 +55,15 @@ void Topl_Timeline::seqCallback(millisec_t m){
 
 		if(f->second.size() > 2){ // std::cout << "2+ range detected" << std::endl;
 			auto b = std::next(seq_start);
-			while(b != f->second.end()) if(m / MILLISEC_IN_SEC > b->first){ seq_start = b; b++; } else break;
+			while(b != f->second.end()) if(m > b->first){ seq_start = b; b++; } else break;
 			auto t = std::next(seq_end);
-			while(t != f->second.rend()) if(m / MILLISEC_IN_SEC < t->first){ seq_end = t; t++; } else break;
+			while(t != f->second.rend()) if(m < t->first){ seq_end = t; t++; } else break;
 		}
 
-		double prog = ((m / MILLISEC_IN_SEC) - seq_start->first) / (seq_end->first - seq_start->first);
+		double prog = (m - seq_start->first) / (seq_end->first - seq_start->first);
 
-		if(m / MILLISEC_IN_SEC > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
-		else if(m / MILLISEC_IN_SEC < seq_start->first) *(f->first) = seq_start->second;
+		if(m > seq_end->first) *(f->first) = seq_end->second; // went over the time limit
+		else if(m < seq_start->first) *(f->first) = seq_start->second;
 		else *(f->first) = seq_start->second + ((seq_end->second - seq_start->second) * prog);
 		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
 	}
@@ -71,7 +71,8 @@ void Topl_Timeline::seqCallback(millisec_t m){
 
 void Topl_Timeline::addSequence_vec3f(Vec3f* var, std::pair<millisec_t, Vec3f> target){
 	auto sequence = std::find_if(Topl_Timeline::vec3f_map.begin(), Topl_Timeline::vec3f_map.end(), [var](const std::pair<Vec3f*, std::map<millisec_t, Vec3f>>& p){ return p.first == var; });
-	
+	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+
 	if(sequence != Topl_Timeline::vec3f_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
 		Topl_Timeline::vec3f_map.insert({ var, std::map<millisec_t, Vec3f>() }); // create object
@@ -82,7 +83,8 @@ void Topl_Timeline::addSequence_vec3f(Vec3f* var, std::pair<millisec_t, Vec3f> t
 
 void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> target){
 	auto sequence = std::find_if(Topl_Timeline::float_map.begin(), Topl_Timeline::float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
-	
+	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+
 	if(sequence != Topl_Timeline::float_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
 		Topl_Timeline::float_map.insert({ var, std::map<millisec_t, float>() }); // create object
@@ -93,7 +95,8 @@ void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> t
 
 void Topl_Timeline::addSequence_double(double* var, std::pair<millisec_t, double> target){
 	auto sequence = std::find_if(Topl_Timeline::double_map.begin(), Topl_Timeline::double_map.end(), [var](const std::pair<double*, std::map<millisec_t, double>>& p){ return p.first == var; });
-	
+	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+
 	if(sequence != Topl_Timeline::double_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
 		Topl_Timeline::double_map.insert({ var, std::map<millisec_t, double>() }); // create object
@@ -107,7 +110,8 @@ void Topl_Timeline::addSequence_double(double* var, std::pair<millisec_t, double
 Topl_Timeline Topl_Program::timeline = Topl_Timeline();
 
 Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
-bool Topl_Program::isCamera_KeyControl = true;
+bool Topl_Program::isCamera_keys = true;
+bool Topl_Program::isCamera_mouse = false;
 bool Topl_Program::isInputEnabled = false;
 std::string Topl_Program::userInput = "";
 
@@ -125,10 +129,10 @@ Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 static void onAnyKey(char k){
 	if(isalnum(k) || isspace(k)){
 		Topl_Program::userInput += k;
-		std::cout << Topl_Program::userInput << std::endl;
+		// std::cout << Topl_Program::userInput << std::endl;
 	}
 
-	if(Topl_Program::isCamera_KeyControl){
+	if(Topl_Program::isCamera_keys){
 		if(toupper(k) == 'W') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
 		else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
 		else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
@@ -137,6 +141,26 @@ static void onAnyKey(char k){
 		else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
 		else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
 		else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
+	}
+}
+
+static void onHover(float x, float y){
+	static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
+
+	if(Platform::mouseControl.getIsMouseDown().second){
+		Topl_Program::cursorPos = { x, y, 0.0F };
+
+		if(Topl_Program::isCamera_mouse){
+			if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
+				if(savedColorVec[0] != Topl_Program::pickerCoord[0] || savedColorVec[1] != Topl_Program::pickerCoord[1])
+					Topl_Program::cameraObj.updatePos({ savedColorVec[0] - Topl_Program::pickerCoord[0], savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0 });
+			} else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
+				if(savedColorVec[0] != Topl_Program::pickerCoord[0])
+					Topl_Program::cameraObj.updateRot({ savedColorVec[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
+				if(savedColorVec[1] != Topl_Program::pickerCoord[1])
+					Topl_Program::cameraObj.updateRot({ savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
+			} 
+		}
 	}
 }
 
@@ -154,6 +178,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
 
+	// Platform::mouseControl.addHoverCallback(onHover);
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
 	// Platform::mouseControl.addHoverCallback(onPress);
@@ -184,7 +209,8 @@ void Topl_Program::run(){
     init();
 
     while (_platform->handleEvents()) {
-		Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsMillisecs());
+		if(!Topl_Program::timeline.dynamic_ticker.isPaused)
+			Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 
 		_renderer->clear(); // clears view to solid color
 		loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating

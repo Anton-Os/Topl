@@ -197,9 +197,9 @@ endforeach()
 add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(Modelview demos/Modelview.cpp)
-add_executable(Fractalite demos/Fractalite.cpp)
+add_executable(Entropy demos/Entropy.cpp)
 
-list(APPEND demo_targets Hello Sandbox Modelview Fractalite)
+list(APPEND demo_targets Hello Sandbox Modelview Entropy)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)
@@ -243,6 +243,7 @@ if(Vulkan_FOUND)
 	message(STATUS "Searching inside ${VULKAN_PATH}/Bin/")
 
     find_file(glslc_exec "glslc" "glslc.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
+    # find_file(glslc_exec "glslangValidator" "glslangValidator.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
 	if(NOT ${glslc_exec} STREQUAL "glslc_exec-NOTFOUND")
 		message("${glslc_exec} executing")
         foreach(shader IN ITEMS ${gl4_shaders})
@@ -252,6 +253,7 @@ if(Vulkan_FOUND)
 			if(NOT isVertexShader EQUAL -1)
 				message("Compiling vertex shader ${shader_name} inside of ${shader}")
 				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+                # exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
                 exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
 			endif()
 			

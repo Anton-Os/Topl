@@ -4,7 +4,8 @@
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
-#define TIMELINE_END 60000.0 // 1 minute will be default end
+#define TIMELINE_AT -1.0
+#define TIMELINE_END 60.0 // 1 minute will be default end
 
 class Topl_Timeline {
 public:
@@ -43,7 +44,7 @@ public:
 	static Topl_Camera cameraObj; // custom camera object
 	static Topl_Timeline timeline;
 	static Vec3f cursorPos;
-	static bool isCamera_KeyControl; // static bool isCamera_MounseControl;
+	static bool isCamera_keys, isCamera_mouse; // static bool isCamera_MounseControl;
 	static bool isInputEnabled;
 	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H

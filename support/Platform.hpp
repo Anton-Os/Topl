@@ -29,6 +29,11 @@ struct Platform {
 
     static Input_KeyControl keyControl;
     static Input_MouseControl mouseControl;
+
+    static char inputStr[1024];
+    static bool isUserInput;
+
+    void (*resizeCallback)(unsigned, unsigned);
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){

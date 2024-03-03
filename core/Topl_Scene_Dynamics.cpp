@@ -6,6 +6,7 @@
 static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, const Vec3f& pos2){
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
 	connector->length = linkDiff.len();
+	// if(connector->restLength < 0.0) connector->restLength = connector->length; // if bad rest length then fix
 	connector->centerPoint = (Vec3f(pos1) + Vec3f(pos2)) * 0.5f;
 	connector->angleVecN1 = Vec3f(pos1) - connector->centerPoint;
 	connector->angleVecN1.normalize();
@@ -40,29 +41,21 @@ void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, co
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
-	if (link1 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name1);
+	if (link1 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate actor to link for object: " + name1);
 
 	const Geo_Actor* link2 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name2 == (*actor)->getName()) link2 = *actor;
-	if (link2 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name2);
+	if (link2 == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate actor to link for object: " + name2);
 
-	if(!connector->getIsPreset()) 
-		connector->preset(*link1->getPos(), *link2->getPos()); // presets link data to defaults
-
-	_linkedItems.push_back({connector, std::make_pair(link1, link2)}); // add new link
+	_linkedItems.push_back({ connector, std::make_pair(link1, link2)}); // add new link
 }
 
 void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos) {
 	const Geo_Actor* targetActor = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) targetActor = *actor;
-	if (targetActor == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate linked actor for object: " + name);
-
-	if(!connector->getIsPreset()){
-		connector->kVal = PHYS_ROD_K;
-		connector->preset(*targetActor->getPos(), *pos);
-	}
+	if (targetActor == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate actor to anchor for object: " + name);
 
 	_anchoredItems.push_back({connector, std::make_pair(targetActor, pos)}); // add new anchor
 }
@@ -81,7 +74,6 @@ void Topl_Scene::remConnector(const std::string& targetName){
 
 void Topl_Scene::resolvePhysics() {
 	double elapseSecs = _ticker.getRelSecs();
-
 	// Resolve Link Connections
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
 		Phys_Connector* connector = link->connector;
@@ -91,7 +83,7 @@ void Topl_Scene::resolvePhysics() {
 		calcConnectorAttrib(connector, *linkItem1->getPos(), *linkItem2->getPos());
 
 		// Forces acting by length displacement
-		if(abs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
+		if(fabs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
 			// determines direction of force for first geometry link
 			Vec3f force1 = (connector->length < connector->restLength)
 				? *linkItem1->getPos() - connector->centerPoint // length is shorter, push outward
@@ -104,7 +96,7 @@ void Topl_Scene::resolvePhysics() {
 				: connector->centerPoint - *linkItem2->getPos(); // length is longer, pull inward
 			force2.normalize(); // normalizing for directional unit vector
 
-			double lengthDiff = abs(connector->length - connector->restLength); // get how much displacement occured
+			double lengthDiff = fabs(connector->length - connector->restLength); // get how much displacement occured
 			const Vec3f forceFinal1 = force1 * ((lengthDiff * connector->kVal) * 0.5f);
 			const Vec3f forceFinal2 = force2 * ((lengthDiff * connector->kVal) * 0.5f);
 
@@ -131,14 +123,14 @@ void Topl_Scene::resolvePhysics() {
 		calcConnectorAttrib(connector, *actor->getPos(), *anchorPos);
 
 		// Forces acting by length displacement
-		if(abs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // no forces act unless threshhold exceeded!
+		if(fabs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // no forces act unless threshhold exceeded!
 			// determines direction of force
 			Vec3f force = (connector->length < connector->restLength)
 				? *actor->getPos() - connector->centerPoint // length is shorter, push outward
 				: connector->centerPoint - *actor->getPos(); // length is longer, pull inward
 			force.normalize(); // normalizing for directional unit vector
 
-			double lengthDiff = abs(connector->length - connector->restLength); // get how much displacement occured
+			double lengthDiff = fabs(connector->length - connector->restLength); // get how much displacement occured
 			const Vec3f forceFinal = force * ((lengthDiff * connector->kVal) * 0.5f);
 
 			addForce(actor->getName(), forceFinal); // adding forces to target actor!

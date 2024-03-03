@@ -7,10 +7,10 @@
 #define PUPPET_PARTS 6
 
 enum PUPPET_Part {
-    PUPPET_Head = 0,
-	PUPPET_LeftArm = 1,
-	PUPPET_RightArm = 2,
-	PUPPET_Body = 3,
+    PUPPET_Body = 0,
+    PUPPET_Head = 1,
+	PUPPET_LeftArm = 2,
+	PUPPET_RightArm = 3,
 	PUPPET_LeftLeg = 4,
 	PUPPET_RightLeg = 5
 };
@@ -30,13 +30,44 @@ struct Geo_Puppet : public Geo_Construct {
     }
 
     void configure(Topl_Scene* scene) override {
-        scene->addGeometry(getPrefix() + "_" + "head", &_geoActors[PUPPET_Head]);
-        scene->addGeometry(getPrefix() + "_" + "leftArm", &_geoActors[PUPPET_LeftArm]);
-        scene->addGeometry(getPrefix() + "_" + "rightArm", &_geoActors[PUPPET_RightArm]);
-        scene->addGeometry(getPrefix() + "_" + "torso", &_geoActors[PUPPET_Body]);
-        scene->addGeometry(getPrefix() + "_" + "leftLeg", &_geoActors[PUPPET_LeftLeg]);
-        scene->addGeometry(getPrefix() + "_" + "rightLeg", &_geoActors[PUPPET_RightLeg]);
+        scene->addGeometry(getPrefix() + "head", &_geoActors[PUPPET_Head]);
+        scene->addGeometry(getPrefix() + "body", &_geoActors[PUPPET_Body]);
+        scene->addGeometry(getPrefix() + "leftArm", &_geoActors[PUPPET_LeftArm]);
+        scene->addGeometry(getPrefix() + "rightArm", &_geoActors[PUPPET_RightArm]);
+        scene->addGeometry(getPrefix() + "leftLeg", &_geoActors[PUPPET_LeftLeg]);
+        scene->addGeometry(getPrefix() + "rightLeg", &_geoActors[PUPPET_RightLeg]);
     }
+
+#ifdef TOPL_ENABLE_PHYSICS
+    void addPhysics(Topl_Scene* scene){
+        // Adding Physics
+        _physActors.resize(PUPPET_PARTS);
+        for(unsigned p = 0; p < PUPPET_PARTS; p++) scene->addPhysics(_geoActors[p].getName(), &_physActors[p]);
+        _links.resize(PUPPET_PARTS + 5);
+        // Star Links
+        _links[PUPPET_Head].preset(*_geoActors[PUPPET_Head].getPos(), *_geoActors[PUPPET_Body].getPos());
+        scene->addLink(&_links[PUPPET_Head], getPrefix() + "head", getPrefix() + "body");
+        _links[PUPPET_LeftArm].preset(*_geoActors[PUPPET_LeftArm].getPos(), *_geoActors[PUPPET_Body].getPos());
+        scene->addLink(&_links[PUPPET_LeftArm], getPrefix() + "leftArm", getPrefix() + "body");
+        _links[PUPPET_RightArm].preset(*_geoActors[PUPPET_RightArm].getPos(), *_geoActors[PUPPET_Body].getPos());
+        scene->addLink(&_links[PUPPET_RightArm], getPrefix() + "rightArm", getPrefix() + "body");
+        _links[PUPPET_LeftLeg].preset(*_geoActors[PUPPET_LeftLeg].getPos(), *_geoActors[PUPPET_Body].getPos());
+        scene->addLink(&_links[PUPPET_LeftLeg], getPrefix() + "leftLeg", getPrefix() + "body");
+        _links[PUPPET_RightLeg].preset(*_geoActors[PUPPET_RightLeg].getPos(), *_geoActors[PUPPET_Body].getPos());
+        scene->addLink(&_links[PUPPET_RightLeg], getPrefix() + "rightLeg", getPrefix() + "body");
+        // Pentagonal Links
+        _links[PUPPET_PARTS].preset(*_geoActors[PUPPET_RightLeg].getPos(), *_geoActors[PUPPET_LeftLeg].getPos());
+        scene->addLink(&_links[PUPPET_PARTS], getPrefix() + "rightLeg", getPrefix() + "leftLeg");
+        _links[PUPPET_PARTS + 1].preset(*_geoActors[PUPPET_RightLeg].getPos(), *_geoActors[PUPPET_RightArm].getPos());
+        scene->addLink(&_links[PUPPET_PARTS + 1], getPrefix() + "rightLeg", getPrefix() + "rightArm");
+        _links[PUPPET_PARTS + 2].preset(*_geoActors[PUPPET_LeftLeg].getPos(), *_geoActors[PUPPET_LeftArm].getPos());
+        scene->addLink(&_links[PUPPET_PARTS + 2], getPrefix() + "leftLeg", getPrefix() + "leftArm");
+        _links[PUPPET_PARTS + 3].preset(*_geoActors[PUPPET_Head].getPos(), *_geoActors[PUPPET_RightArm].getPos());
+        scene->addLink(&_links[PUPPET_PARTS + 3], getPrefix() + "head", getPrefix() + "rightArm");
+        _links[PUPPET_PARTS + 4].preset(*_geoActors[PUPPET_Head].getPos(), *_geoActors[PUPPET_LeftArm].getPos());
+        scene->addLink(&_links[PUPPET_PARTS + 4], getPrefix() + "head", getPrefix() + "leftArm");
+    }
+#endif
 };
 
 #ifdef RASTERON_H
@@ -52,11 +83,16 @@ public:
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
             spriteImgs[p].setFileImage(spriteImgPaths[p].c_str());
             sprites[p] = loadSprite(spriteImgs[p].getImage());
-            quads[p].scale({ // scale to sprite size
-                (float)sprites[p]->bounds.botRight[0] - (float)sprites[p]->bounds.botLeft[0], // x
-                (float)sprites[p]->bounds.topRight[1] - (float)sprites[p]->bounds.botRight[1], // y
-                0.0f
-            });
+            float width = getSpacialWidth(sprites[p]->bounds); float height = getSpacialHeight(sprites[p]->bounds);
+            quads[p].scale({ width, height, 0.0f });
+            switch(p){
+                case PUPPET_Head: _geoActors[p].setPos({ 0.0F, (height / 2.0F) + (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                case PUPPET_LeftArm: _geoActors[p].setPos({ width / -2.0F, height / 2.0F, 0.0F }); break;
+                case PUPPET_RightArm: _geoActors[p].setPos({ width / 2.0F, height / 2.0F, 0.0F }); break;
+                case PUPPET_LeftLeg: _geoActors[p].setPos({ width / -2.0F, (height / -2.0F) - (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                case PUPPET_RightLeg: _geoActors[p].setPos({ width / 2.0F,  (height / -2.0F) - (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                default: _geoActors[p].setPos({ 0.0F, 0.0F, 0.0F }); break;
+            }
             _geoActors[p].setMesh(&quads[p]);
         }
 #endif
@@ -64,13 +100,16 @@ public:
     // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
 
 #ifdef RASTERON_H
-    ~Geo_Puppet2D(){ }
+    ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) dealloc_sprite(sprites[p]); }
 #endif
 
     void configure(Topl_Scene* scene) override {
         Geo_Puppet::configure(scene);
         for(unsigned p = 0; p < PUPPET_PARTS; p++)
-           scene->addTexture(_geoActors[p].getName(), &spriteImgs[p]);
+            scene->addTexture(_geoActors[p].getName(), &spriteImgs[p]);
+#ifdef TOPL_ENABLE_PHYSICS
+        Geo_Puppet::addPhysics(scene);
+#endif
     }
 
 protected:
@@ -117,7 +156,7 @@ public:
         scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "head", actors[PUPPET_Head]);
         scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "leftArm", actors[PUPPET_LeftArm]);
         scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "rightArm", actors[PUPPET_RightArm]);
-        scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "torso", actors[PUPPET_Body]);
+        scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "body", actors[PUPPET_Body]);
         scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "leftLeg", actors[PUPPET_LeftLeg]);
         scene->addGeometry(Geo_Puppet::getPrefix() + "_" + "rightLeg", actors[PUPPET_RightLeg]);
 

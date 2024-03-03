@@ -6,6 +6,9 @@ Input_MouseControl Platform::mouseControl = Input_MouseControl(); // explicit de
 float Platform::xCursorPos = INVALID_CURSOR_POS;
 float Platform::yCursorPos = INVALID_CURSOR_POS;
 
+char Platform::inputStr[1024] = "";
+bool Platform::isUserInput = false;
+
 #ifdef _WIN32
 
 static void addMousePress(enum MOUSE_Button button){
@@ -26,9 +29,22 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	static bool isKeyReady = false;
 
 	switch (message) {
+	case (WM_COMMAND): {
+		switch(LOWORD(wParam)){
+			case IDM_NEW: logMessage("Menu command: New"); break;
+			case IDM_LOAD: logMessage("Menu command: Load\n"); break;
+			case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
+			case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
+			case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
+			default: break;
+			// case IDM_FI_CLOSE: logMessage("File close command"); break;
+		}
+
+		return 0;
+	}
 	case(WM_CREATE): {}
 	case(WM_PAINT): { }
-	case(WM_SIZE): { }
+	// case(WM_SIZE): { printf("Viewport resized to: %d, %d", Platform::getViewportWidth(window), Platform::getViewportHeight(window)); }
 	case(WM_KEYDOWN): { isKeyReady = true; }
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE):{
@@ -36,7 +52,8 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 			Platform::mouseControl.addHover(Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_CHAR): { 
-		if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
+		if(wParam == VK_ESCAPE) Platform::isUserInput = true;
+		else if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
@@ -57,14 +74,14 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 
 void Platform::createWindow(unsigned width, unsigned height){
 	LPTSTR iconResStr = MAKEINTRESOURCE(IDI_ICON);
-	// LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU);
+	LPTSTR menuResStr = MAKEINTRESOURCE(IDC_MENU);
 
     _context.windowClass = { 0 };
 	_context.windowClass.hInstance = GetModuleHandle(NULL);
 	_context.windowClass.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 	_context.windowClass.lpfnWndProc = eventProc;
 	_context.windowClass.lpszClassName = "Topl";
-	// _context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
+	_context.windowClass.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
 	RegisterClass(&_context.windowClass);
 
 	LPCTSTR cursor = IDC_ARROW;
@@ -98,6 +115,12 @@ bool Platform::handleEvents(){
 		if (_context.eventMsg.message == WM_QUIT || _context.eventMsg.message == WM_CLOSE) return false; // Error code?
 	}
 
+	if(Platform::isUserInput){
+		puts("Enter a command: ");
+		scanf("%s", &Platform::inputStr);
+		Platform::isUserInput = false;
+	}
+
 	return true;
 }
 
@@ -117,18 +140,18 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	POINT point;
 	GetCursorPos(&point);
 
-	RECT windowRect;
-	GetWindowRect(_context.window, &windowRect);
+	RECT rect;
+	GetWindowRect(_context.window, &rect);
+	rect.top += 50; // this adjustment fixes issues
 	
-	if (point.x < windowRect.right && point.x > windowRect.left && point.y > windowRect.top && point.y < windowRect.bottom) {
-		long unsigned halfWidth = ((windowRect.right - windowRect.left) / 2);
-		LONG centerX = windowRect.left + halfWidth;
+	if (point.x < rect.right && point.x > rect.left && point.y > rect.top && point.y < rect.bottom) {
+		long unsigned halfWidth = ((rect.right - rect.left) / 2);
+		LONG centerX = rect.left + halfWidth;
 		*xPos = (point.x - centerX) / (float)halfWidth;
 
-		long unsigned halfHeight = ((windowRect.bottom - windowRect.top) / 2);
-		LONG centerY = windowRect.top + halfHeight;
+		long unsigned halfHeight = ((rect.bottom - rect.top) / 2);
+		LONG centerY = rect.top + halfHeight;
 		*yPos = -(point.y - centerY) / (float)halfHeight;
-		if (*yPos > 0.0 && *yPos < 1.0) *yPos *= 1.05;  // positive y position adjusted
 
 		return true;
 	} else return false; // cursor outside the screen space!

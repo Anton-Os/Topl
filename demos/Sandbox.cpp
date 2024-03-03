@@ -5,8 +5,19 @@ int Sandbox_Demo::pipelineIndex = 0;
 bool Sandbox_Demo::isShaderVariant = false;
 unsigned Sandbox_Demo::shaderMode = 0;
 Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
-Vec3f Sandbox_Demo::followVec = { 0.0f, 0.9f, 0.0f};
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
+
+std::string fontPaths[9] = {
+    std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf",
+    std::string(FONTS_DIR) + "Quattrocento-Regular.ttf",
+    std::string(FONTS_DIR) + "MiddleSchooler-Regular.ttf",
+    std::string(FONTS_DIR) + "CutiveMono-Regular.ttf",
+    std::string(FONTS_DIR) + "Pricedown.ttf",
+    std::string(FONTS_DIR) + "Hpunk.ttf",
+    std::string(FONTS_DIR) + "NerkoOne-Regular.ttf",
+    std::string(FONTS_DIR) + "Trirong-Regular.ttf",
+    std::string(FONTS_DIR) + "TW-Cen-MT.ttf",
+}; 
 
 #ifdef RASTERON_H
 unsigned boxImg_callback(double x, double y){ return (sin(x * 20) > 0.5)? 0xFF0000FF : 0xFFFFFF00; }
@@ -16,10 +27,10 @@ unsigned hexImg_callback(double x, double y){ return (x > 0.4 && x < 0.6 && y > 
 #endif
 
 
-static Vec3f boxPos = { 0.5f, 0.5f, 0.0f };
-static Vec3f pyramidPos = { -0.5f, 0.5f, 0.0f };
-static Vec3f spherePos = { -0.5f, -0.5f, 0.0f };
-static Vec3f hexPos = { 0.5f, -0.5f, 0.0f };
+static Vec3f boxRot, boxScale = { 1.0f, 1.0f, 1.0f }, boxPos = { 0.5f, 0.5f, 0.0f };
+static Vec3f pyramidRot, pyramidScale = { 1.0f, 1.0f, 1.0f }, pyramidPos = { -0.5f, 0.5f, 0.0f };
+static Vec3f sphereRot, sphereScale = { 1.0f, 1.0f, 1.0f }, spherePos = { -0.5f, -0.5f, 0.0f };
+static Vec3f hexRot, hexScale = { 1.0f, 1.0f, 1.0f }, hexPos = { 0.5f, -0.5f, 0.0f };
 
 
 static void onAnyKey(char k){ 
@@ -36,7 +47,24 @@ static void onAnyKey(char k){
 }
 
 static void onScroll(bool positive){
-    Topl_Program::cameraObj.setZoom((positive)? *Topl_Program::cameraObj.getZoom() * 1.1 : *Topl_Program::cameraObj.getZoom() * 0.9); 
+    if(Topl_Program::pickerObj != NO_PICKER_OBJ){
+        if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId()){
+            boxScale = (positive)? Vec3f({ boxScale[0] * 1.1f, boxScale[1] * 1.1f, boxScale[2] * 1.1f }) : boxScale = Vec3f({ boxScale[0] * 0.9f, boxScale[1] * 0.9f, boxScale[2] * 0.9f });
+            Topl_Program::timeline.addSequence_vec3f(&boxScale, std::make_pair(TIMELINE_AT, boxScale));
+        } else if(Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()){
+            pyramidScale = (positive)? Vec3f({ pyramidScale[0] * 1.1f, pyramidScale[1] * 1.1f, pyramidScale[2] * 1.1f }) : pyramidScale = Vec3f({ pyramidScale[0] * 0.9f, pyramidScale[1] * 0.9f, pyramidScale[2] * 0.9f });
+            Topl_Program::timeline.addSequence_vec3f(&pyramidScale, std::make_pair(TIMELINE_AT, pyramidScale));
+        }
+        else if(Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()){
+            sphereScale = (positive)? Vec3f({ sphereScale[0] * 1.1f, sphereScale[1] * 1.1f, sphereScale[2] * 1.1f }) : sphereScale = Vec3f({ sphereScale[0] * 0.9f, sphereScale[1] * 0.9f, sphereScale[2] * 0.9f });
+            Topl_Program::timeline.addSequence_vec3f(&sphereScale, std::make_pair(TIMELINE_AT, sphereScale));
+        }
+        else if(Topl_Program::pickerObj->getId() == _instance->hexActor.getId()){
+            hexScale = (positive)? Vec3f({ hexScale[0] * 1.1f, hexScale[1] * 1.1f, hexScale[2] * 1.1f }) : hexScale = Vec3f({ hexScale[0] * 0.9f, hexScale[1] * 0.9f, hexScale[2] * 0.9f });
+            Topl_Program::timeline.addSequence_vec3f(&hexScale, std::make_pair(TIMELINE_AT, hexScale));
+        }
+    }
+    else Topl_Program::cameraObj.setZoom((positive)? *Topl_Program::cameraObj.getZoom() * 1.1 : *Topl_Program::cameraObj.getZoom() * 0.9); 
 }
 
 static void onHover(float x, float y){ 
@@ -47,41 +75,35 @@ static void onHover(float x, float y){
     if(Platform::mouseControl.getIsMouseDown().second) {
         Topl_Program::cursorPos = { x, y, 0.0F }; 
         if(Topl_Program::pickerObj != NO_PICKER_OBJ){
-            std::cout << "Topl_Program picker object: " << Topl_Program::pickerObj->getName() << std::endl;
-
             if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->boxActor.getId())
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                    // ? _instance->boxActor.setPos(Topl_Program::getCamCursorPos())
-                    Topl_Program::timeline.addSequence_vec3f(&boxPos, std::make_pair(Topl_Program::timeline.dynamic_ticker.getAbsSecs(), Topl_Program::getCamCursorPos()));
-                } else { _instance->boxActor.updateRot({ (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 20, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 8, 0.0 }); }
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    Topl_Program::timeline.addSequence_vec3f(&boxPos, std::make_pair(TIMELINE_AT, Topl_Program::getCamCursorPos()));
+                else { 
+                    boxRot = boxRot + Vec3f({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
+                    Topl_Program::timeline.addSequence_vec3f(&boxRot, std::make_pair(TIMELINE_AT, boxRot));
+                }
             else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId())
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                    // ? _instance->pyramidActor.setPos(Topl_Program::getCamCursorPos())
-                    Topl_Program::timeline.addSequence_vec3f(&pyramidPos, std::make_pair(Topl_Program::timeline.dynamic_ticker.getAbsSecs(), Topl_Program::getCamCursorPos()));
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    Topl_Program::timeline.addSequence_vec3f(&pyramidPos, std::make_pair(TIMELINE_AT, Topl_Program::getCamCursorPos()));
+                else { 
+                    pyramidRot = pyramidRot + Vec3f({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
+                    Topl_Program::timeline.addSequence_vec3f(&pyramidRot, std::make_pair(TIMELINE_AT, pyramidRot));
                 }
-                else { _instance->pyramidActor.updateRot({ (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 20, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 8, 0.0 }); }
             else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->sphereActor.getId())
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                    // ? _instance->sphereActor.setPos(Topl_Program::getCamCursorPos())
-                    Topl_Program::timeline.addSequence_vec3f(&spherePos, std::make_pair(Topl_Program::timeline.dynamic_ticker.getAbsSecs(), Topl_Program::getCamCursorPos()));
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    Topl_Program::timeline.addSequence_vec3f(&spherePos, std::make_pair(TIMELINE_AT, Topl_Program::getCamCursorPos()));
+                else { 
+                    sphereRot = sphereRot + Vec3f({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
+                    Topl_Program::timeline.addSequence_vec3f(&sphereRot, std::make_pair(TIMELINE_AT, sphereRot));
                 }
-                else { _instance->sphereActor.updateRot({ (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 20, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 8, 0.0 }); }
             else if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->hexActor.getId())
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                    // ? _instance->hexActor.setPos(Topl_Program::getCamCursorPos())
-                    Topl_Program::timeline.addSequence_vec3f(&hexPos, std::make_pair(Topl_Program::timeline.dynamic_ticker.getAbsSecs(), Topl_Program::getCamCursorPos()));
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                    Topl_Program::timeline.addSequence_vec3f(&hexPos, std::make_pair(TIMELINE_AT, Topl_Program::getCamCursorPos()));
+                else {
+                    hexRot = hexRot + Vec3f({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
+                    Topl_Program::timeline.addSequence_vec3f(&hexRot, std::make_pair(TIMELINE_AT, hexRot));
                 }
-                else { _instance->hexActor.updateRot({ (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 20, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 8, 0.0 }); }
-        } else {
-            /* if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
-                if(savedColorVec[0] != Topl_Program::pickerCoord[0] || savedColorVec[1] != Topl_Program::pickerCoord[1])
-                    Topl_Program::cameraObj.updatePos({ savedColorVec[0] - Topl_Program::pickerCoord[0], savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0 });
-            } else if(isMotionEnable && Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
-                if(savedColorVec[0] != Topl_Program::pickerCoord[0])
-                    Topl_Program::cameraObj.updateRot({ savedColorVec[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
-                if(savedColorVec[1] != Topl_Program::pickerCoord[1])
-                    Topl_Program::cameraObj.updateRot({ savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
-            } */
+                // else _instance->hexActor.updateRot({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
         }
         isMotionEnable = true;
     } else {
@@ -96,8 +118,6 @@ void overlayTexUpdate(){
     unsigned secs = Topl_Program::timeline.dynamic_ticker.getAbsSecs(); // make accessible inside of program timer
     unsigned splitsecs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / 10;
 
-    // Rasteron_Text inputTextObj = { Sandbox_Demo::fontFilePath.c_str(), Topl_Program::userInput.c_str(), 0xAAFF00FF, 0xFF333333 };
-    // (!Topl_Program::userInput.empty())? _instance->userInput_texture.setTextImage(&inputTextObj) : _instance->userInput_texture.setColorImage(0xFFFFFF00);
     std::string timeText = ((secs < 60)? "" : (secs % 60 < 10)? std::to_string(secs / 60) + ":0" : std::to_string(secs / 60) + ":") + std::to_string(secs % 60) + ":00"; //+ std::to_string(splitsecs);
     Rasteron_Text timerTextObj = { Sandbox_Demo::fontFilePath.c_str(), timeText.c_str(), 0xAA00FFFF, 0xFF333333 };
     _instance->timerCount_texture.setTextImage(&timerTextObj);
@@ -106,58 +126,42 @@ void overlayTexUpdate(){
 
 static void default_shadercall(Topl_EntryShader* shader){ }
 
-static void onRelease(float x, float y){ 
-    // double time = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(time, Topl_Program::getCamCursorPos()));
-}
-
 static void gridCell_pickercall(Geo_Actor* actor){
     int c = (char)(actor->getName().back()) - '0';
 
     if(c == 7 || c == 8 || c == 9) // check operations
-        _instance->checkBtn_textures[c - 7].setImage(getFrameAt(_instance->checkBtn_queue, 0));
+        _instance->checks[c - 7].setState((_instance->checks[c - 7].state != MENU_On)? MENU_On : MENU_Off);
     else if(c == 4 || c == 5 || c == 6) // icon operations
-        _instance->iconBtn_textures[c - 4].setImage(
-            getFrameAt(_instance->iconBtn_queues[c - 4], 
-            (_instance->iconBtn_queues[c - 4]->index + 1 < 3)? _instance->iconBtn_queues[c - 4]->index + 1 : 0)
-        );
-    else if(c == 1 || c == 2 || c == 3){ // dial opertions
-        // TODO: Adjust to exact dial position
-        _instance->dialBtn_textures[c - 1].setImage(
-            getFrameAt(_instance->dialBtn_queues[c - 1], 
-            (Topl_Program::pickerCoord[0] > 0.5)? (_instance->dialBtn_queues[c - 1]->index + 1) % _instance->dialBtn_queues[c - 1]->frameCount : (_instance->dialBtn_queues[c - 1]->index - 1) % _instance->dialBtn_queues[c - 1]->frameCount)
-        );
-    }
+        _instance->icons[c - 4].setState((_instance->icons[c - 4].state != MENU_On)? MENU_On : MENU_Off);
+    else if(c == 1 || c == 2 || c == 3) // dial opertions
+        _instance->dials[c - 1].setState(Topl_Program::pickerCoord[0], Topl_Program::pickerCoord[1]);
 }
 
-static void horzCell_pickercall(Geo_Actor* actor){
+static void sliderCell_pickercall(Geo_Actor* actor){
+    int c = (char)(actor->getName().back()) - '0';
+    _instance->sliders[c - 1].setState(Topl_Program::pickerCoord[0]);
+}
+
+static void textCell_pickercall(Geo_Actor* actor){
     int c = (char)(actor->getName().back()) - '0';
 
-    if(Topl_Program::pickerCoord[0] > 0.5 && _instance->slider_queues[c - 1]->index < _instance->slider_queues[c - 1]->frameCount - 1)
-        _instance->slider_textures[c - 1].setImage(getFrameAt(_instance->slider_queues[c - 1], _instance->slider_queues[c - 1]->index + 1));
-    else if(Topl_Program::pickerCoord[0] < 0.5 && _instance->slider_queues[c - 1]->index > 0)
-        _instance->slider_textures[c - 1].setImage(getFrameAt(_instance->slider_queues[c - 1], _instance->slider_queues[c - 1]->index - 1));
-    
-    // TODO: Adjust to exact slider position
-    unsigned index = _instance->slider_queues[c - 1]->index;
-    double sliderPos = (double)index / (double)_instance->slider_queues[c - 1]->frameCount;
-    for(unsigned p = 0; p < _instance->slider_queues[c - 1]->frameCount; p++)
-        // if(fabs(Topl_Program::pickerCoord[0] - ((double)p / (double)_instance->slider_queues[c - 1]->frameCount)) < fabs(Topl_Program::pickerCoord[0] - sliderPos))
-        if(fabs(Topl_Program::pickerCoord[0] - sliderPos) > fabs(Topl_Program::pickerCoord[0] - ((double)(p + 1) / (double)_instance->slider_queues[c - 1]->frameCount)))
-            index = p;
+    for(unsigned s = 0; s < 9; s++){
+        std::string sliderCellText = "select   option   " + std::to_string(s + 1);
+        std::replace(fontPaths[s].begin(), fontPaths[s].end(), '/', '\\');
 
-    if(index != _instance->slider_queues[c - 1]->index) 
-        _instance->slider_textures[c - 1].setImage(getFrameAt(_instance->slider_queues[c - 1], index)); 
+        Rasteron_Text textObj = (s != c - 1)
+            ? Rasteron_Text({ fontPaths[s].c_str(), sliderCellText.c_str(), *getFrameAt(_instance->words_queue, s)->data, 0xEE000000 | (0xEEFFFFFF - *getFrameAt(_instance->words_queue, s)->data)} ) 
+            : Rasteron_Text({ fontPaths[s].c_str(), sliderCellText.c_str(),  0xEEFFFF00, 0xEE00FF00 });
+
+        _instance->words_textures[s].setTextImage(&textObj);
+    }
+
+    // _instance->words_textures[c - 1].setColorImage(0xFF00FF00);
 }
 
 Sandbox_Demo::~Sandbox_Demo(){
 #ifdef RASTERON_H
-    for(unsigned q = 0; q < 3; q++){
-        dealloc_queue(iconBtn_queues[q]);
-        dealloc_queue(dialBtn_queues[q]);
-        dealloc_queue(slider_queues[q]);
-    }
-    dealloc_queue(checkBtn_queue); dealloc_queue(words_queue);
+    dealloc_queue(words_queue);
     dealloc_image(boxImg); dealloc_image(pyramidImg); dealloc_image(sphereImg); dealloc_image(hexImg);
 #endif
 }
@@ -167,19 +171,11 @@ void Sandbox_Demo::init(){
     std::replace(Sandbox_Demo::fontFilePath.begin(), Sandbox_Demo::fontFilePath.end(), '/', '\\'); // make sure font file parsed correctly
 
     Platform::keyControl.addAnyCallback(onAnyKey);
-    // Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onRelease);
-    Platform::mouseControl.addCallback(MOUSE_RightBtn_Up, onRelease);
     Platform::mouseControl.setScrollCallback(onScroll);
     Platform::mouseControl.addHoverCallback(onHover);
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
-
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(5.0, Vec3f({ 0.75F, 0.9F, 0.0F })));
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(15.0, Vec3f({ 0.75F, -0.9F, 0.0F })));
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(25.0, Vec3f({ -0.75F, -0.9F, 0.0F })));
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(35.0, Vec3f({-0.75F, 0.9F, 0.0F })));
-    // Topl_Program::timeline.addSequence_vec3f(&Sandbox_Demo::followVec, std::make_pair(40.0, Vec3f({ 0.0F, 0.9F, 0.0F })));
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
@@ -221,56 +217,49 @@ void Sandbox_Demo::init(){
     scene.addTexture("Hex", &hexTex);
 #endif
 
-    // chain.configure(&scene);
-    // grid.configure(&scene);
-
     Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
     _renderer->buildScene(&scene);
     _renderer->texturizeScene(&scene);
-    // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
-    // _renderer->buildScene(&details);
     
     infoBoxMesh.scale({ 5.0f, 1.0, 1.0f });
-    timerInfoActor.setPos({ 0.0f, 0.9f, 0.0f }); // inputInfoActor.setPos({ 0.0f, -0.9f, 0.0f }); 
+    timerInfoActor.setPos({ 0.0f, 0.75f, 0.0f }); // inputInfoActor.setPos({ 0.0f, -0.9f, 0.0f }); 
 
     layout1.configure(&overlay);
     layout2.configure(&overlay);
     layout2.shift({ 0.55, 0.0, 0.0 });
-    // layout2.scale({ -0.33, 0.0, 0.0 });
     layout3.configure(&overlay);
     layout3.shift({ -0.55, 0.0, 0.0 });
-    // layout3.rotateAll({ 0.0, 0.0, MATH_HALF_PI / 2.0f });
     overlay.addGeometry("timerInfo", &timerInfoActor);
-    // overlay.addGeometry("inputInfo", &inputInfoActor);
 
     Geo_Actor* gridCellActor[9] = { layout1.getGeoActor(0), layout1.getGeoActor(1), layout1.getGeoActor(2), layout1.getGeoActor(3), layout1.getGeoActor(4), layout1.getGeoActor(5), layout1.getGeoActor(6), layout1.getGeoActor(7), layout1.getGeoActor(8), };
     for(unsigned g = 0; g < 9; g++){ gridCellActor[g]->pickerFunc = gridCell_pickercall; }
 
-    Geo_Actor* horzCellActors[9] = { layout3.getGeoActor(0), layout3.getGeoActor(1), layout3.getGeoActor(2), layout3.getGeoActor(3), layout3.getGeoActor(4), layout3.getGeoActor(5), layout3.getGeoActor(6), layout3.getGeoActor(7), layout3.getGeoActor(8) };
-    for(unsigned g = 0; g < 9; g++){ horzCellActors[g]->pickerFunc = horzCell_pickercall; }
+    Geo_Actor* textCellActors[9] = { layout2.getGeoActor(0), layout2.getGeoActor(1), layout2.getGeoActor(2), layout2.getGeoActor(3), layout2.getGeoActor(4), layout2.getGeoActor(5), layout2.getGeoActor(6), layout2.getGeoActor(7), layout2.getGeoActor(8) };
+    for(unsigned g = 0; g < 9; g++){ textCellActors[g]->pickerFunc = textCell_pickercall; }
+
+    Geo_Actor* sliderCellActors[9] = { layout3.getGeoActor(0), layout3.getGeoActor(1), layout3.getGeoActor(2), layout3.getGeoActor(3), layout3.getGeoActor(4), layout3.getGeoActor(5), layout3.getGeoActor(6), layout3.getGeoActor(7), layout3.getGeoActor(8) };
+    for(unsigned g = 0; g < 9; g++){ sliderCellActors[g]->pickerFunc = sliderCell_pickercall; }
 
 
 #ifdef RASTERON_H // adding textures fro overlay
-    overlay.addTexture("gridLayout_cell1", &dialBtn_textures[0]);
-    overlay.addTexture("gridLayout_cell2", &dialBtn_textures[1]);
-    overlay.addTexture("gridLayout_cell3", &dialBtn_textures[2]);
-    overlay.addTexture("gridLayout_cell4", &iconBtn_textures[0]);
-    overlay.addTexture("gridLayout_cell5", &iconBtn_textures[1]);
-    overlay.addTexture("gridLayout_cell6", &iconBtn_textures[2]);
-    overlay.addTexture("gridLayout_cell7", &checkBtn_textures[0]);
-    overlay.addTexture("gridLayout_cell8", &checkBtn_textures[1]);
-    overlay.addTexture("gridLayout_cell9", &checkBtn_textures[2]);
+    overlay.addTexture("gridLayout_cell1", &dials[0].stateImg);
+    overlay.addTexture("gridLayout_cell2", &dials[1].stateImg);
+    overlay.addTexture("gridLayout_cell3", &dials[2].stateImg);
+    overlay.addTexture("gridLayout_cell4", &icons[0].stateImg);
+    overlay.addTexture("gridLayout_cell5", &icons[1].stateImg);
+    overlay.addTexture("gridLayout_cell6", &icons[2].stateImg);
+    overlay.addTexture("gridLayout_cell7", &checks[0].stateImg);
+    overlay.addTexture("gridLayout_cell8", &checks[1].stateImg);
+    overlay.addTexture("gridLayout_cell9", &checks[2].stateImg);
 
     overlay.addTexture("timerInfo", &timerCount_texture);
-    // overlay.addTexture("inputInfo", &userInput_texture);
-    for(unsigned s = 0; s < 9; s++){
-        Rasteron_Image* flipImg = flipImgOp(slider_textures[s].getImage(), FLIP_None); // FLIP_Clock);
-        slider_textures[s].setImage(flipImg); // images need to be flipped vertically
-        overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &slider_textures[s]);
-        dealloc_image(flipImg);
 
-        std::string horzCellText = "option " + std::to_string(s + 1);
-        Rasteron_Text textObj = { Sandbox_Demo::fontFilePath.c_str(), horzCellText.c_str(), *getFrameAt(words_queue, s)->data, RAND_COLOR()};
+    for(unsigned s = 0; s < 9; s++){
+        overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &_instance->sliders[s].stateImg);
+
+        std::string sliderCellText = "select   option   " + std::to_string(s + 1);
+        std::replace(fontPaths[s].begin(), fontPaths[s].end(), '/', '\\');
+        Rasteron_Text textObj = { fontPaths[s].c_str(), sliderCellText.c_str(), *getFrameAt(words_queue, s)->data, 0xEE000000 | (0xEEFFFFFF - *getFrameAt(words_queue, s)->data)};
         words_textures[s].setTextImage(&textObj);
         overlay.addTexture("horzLayout_cell" + std::to_string(s + 1), &words_textures[s]);
     }
@@ -285,17 +274,23 @@ void Sandbox_Demo::loop(double frameTime){
     // Object Updates
 
     _instance->boxActor.setPos(boxPos);
+    _instance->boxActor.setRot(boxRot);
+    _instance->boxActor.setSize(boxScale);
     _instance->pyramidActor.setPos(pyramidPos);
+    _instance->pyramidActor.setRot(pyramidRot);
+    _instance->pyramidActor.setSize(pyramidScale);
     _instance->sphereActor.setPos(spherePos);
+    _instance->sphereActor.setRot(sphereRot);
+    _instance->sphereActor.setSize(sphereScale);
     _instance->hexActor.setPos(hexPos);
-    
-    _instance->timerInfoActor.setPos(Sandbox_Demo::followVec);
+    _instance->hexActor.setRot(hexRot);
+    _instance->hexActor.setSize(hexScale);
 #ifdef RASTERON_H
-    if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
-        _renderer->texturizeScene(&canvas);
-        _renderer->texturizeScene(&scene);
+    // if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
+        // _renderer->texturizeScene(&canvas);
+        // _renderer->texturizeScene(&scene);
         _renderer->texturizeScene(&overlay);
-    }
+    // }
 #endif
 
     // Capture Renders
@@ -347,13 +342,13 @@ void Sandbox_Demo::loop(double frameTime){
 
     // Display Renders
 
-    {  
+    /* {  
         flatVShader.setMode(FLAT_MODE_DIRECTION); effectVShader.setMode(1);
         texVShader.setMode(0);
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
         _renderer->updateScene(&canvas);
         _renderer->drawScene(&canvas);
-    }
+    } */
 
     {
         flatVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode % 3 : 0); 

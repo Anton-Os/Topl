@@ -20,22 +20,31 @@ struct Modelview_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    std::string puppetAssets[PUPPET_PARTS] = {
-        std::string(IMAGES_DIR) + "characters/" + "Ghost-Head.png",
-		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftArm.png",
-		std::string(IMAGES_DIR) + "characters/" + "Ghost-RightArm.png",
-		std::string(IMAGES_DIR) + "characters/" + "Ghost-Torso.png",
-		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftLeg.png",
-		std::string(IMAGES_DIR) + "characters/" + "Ghost-RightLeg.png"
+    std::string ghostPuppetAssets[PUPPET_PARTS] = {
+        std::string(IMAGES_DIR) + "characters/" + "Ghost-Torso.png", std::string(IMAGES_DIR) + "characters/" + "Ghost-Head.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftArm.png", std::string(IMAGES_DIR) + "characters/" + "Ghost-RightArm.png",
+		std::string(IMAGES_DIR) + "characters/" + "Ghost-LeftLeg.png", std::string(IMAGES_DIR) + "characters/" + "Ghost-RightLeg.png"
     };
-    Geo_Puppet2D puppet = Geo_Puppet2D("puppet2D", puppetAssets); // TODO: Test Puppet2D Implementation
+    std::string angelPuppetAssets[PUPPET_PARTS] = {
+        std::string(IMAGES_DIR) + "characters/" + "Angel-Torso.png", std::string(IMAGES_DIR) + "characters/" + "Angel-Head.png",
+		std::string(IMAGES_DIR) + "characters/" + "Angel-LeftWing.png", std::string(IMAGES_DIR) + "characters/" + "Angel-RightWing.png",
+		std::string(IMAGES_DIR) + "characters/" + "Angel-LeftLeg.png", std::string(IMAGES_DIR) + "characters/" + "Angel-RightLeg.png"
+    };
+    std::string demonPuppetAssets[PUPPET_PARTS] = {
+        std::string(IMAGES_DIR) + "characters/" + "Demon-Torso.png", std::string(IMAGES_DIR) + "characters/" + "Demon-Head.png",
+		std::string(IMAGES_DIR) + "characters/" + "Demon-LeftWing.png", std::string(IMAGES_DIR) + "characters/" + "Demon-RightWing.png",
+		std::string(IMAGES_DIR) + "characters/" + "Demon-LeftLeg.png", std::string(IMAGES_DIR) + "characters/" + "Demon-RightLeg.png"
+    };
+    Geo_Puppet2D puppet1 = Geo_Puppet2D("puppet1", ghostPuppetAssets);
+    Geo_Puppet2D puppet2 = Geo_Puppet2D("puppet2", angelPuppetAssets);
+    Geo_Puppet2D puppet3 = Geo_Puppet2D("puppet3", demonPuppetAssets);
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
     Geo_Model3D model1 = Geo_Model3D("model1", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
     Geo_Model3D model2 = Geo_Model3D("model2", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
     Geo_Model3D model3 = Geo_Model3D("model3", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
 private:
-    Topl_Scene scene;
+    Topl_Scene scene2D, scene3D;
 
     Topl_Pipeline *flatPipeline, *texPipeline, *beamsPipeline;
     Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;

@@ -34,7 +34,7 @@ struct Img_Base {
     }
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
-		image = textImgOp(textObj, FONT_SIZE_LARGE);
+		image = textImgOp(textObj, FONT_SIZE_MED);
     }
     void setImage(ref_image_t refImage){
 		cleanup();
@@ -139,3 +139,80 @@ private:
     Rasteron_Heightmap* heightmap = NULL;
 #endif
 }; 
+
+// Object wrappers to handle interaction
+
+struct Img_Button {
+	Img_Button(enum MENU_Size size){ 
+		data = loadUI_checkBtn(size); 
+		stateImg.setImage(getFrameAt(data, MENU_None));
+	}
+
+	Img_Button(enum MENU_Size size, char* iconName){ 
+		data = loadUI_iconBtn(size, iconName);
+		stateImg.setImage(getFrameAt(data, MENU_None));
+	}
+	
+	~Img_Button(){ dealloc_queue(data); }
+
+	void setState(enum MENU_ItemState s){ 
+		state = s; 
+		stateImg.setImage(getFrameAt(data, s));
+	}
+
+	enum MENU_ItemState state = MENU_None;
+	Img_Base stateImg;
+private:
+	Rasteron_Queue* data;
+};
+
+struct Img_Dial {
+	Img_Dial(enum MENU_Size size, unsigned short count){ 
+		data = loadUI_dial(size, count); 
+		stateImg.setImage(getFrameAt(data, 0));
+	}
+	~Img_Dial(){ dealloc_queue(data); }
+
+	void setState(double x, double y){
+		unsigned index = 0;
+		double minDist = 1.0;
+		for(unsigned f = 0; f < data->frameCount; f++){
+			double indicX = 0.5 + sin(f * ((3.141592653 * 2) / data->frameCount)); // x calculation
+            double indicY = 0.5 + cos(f * ((3.141592653 * 2) / data->frameCount)); // y calculation
+			if(sqrt((fabs(indicX - x) * fabs(indicX - x)) + (fabs(indicY - y) * fabs(indicY - y))) < minDist){
+				index = f;
+				minDist = sqrt((fabs(indicX - x) * fabs(indicX - x)) + (fabs(indicY - y) * fabs(indicY - y)));
+			}
+		}
+
+		stateImg.setImage(getFrameAt(data, index));
+	}
+	Img_Base stateImg;
+private:
+	Rasteron_Queue* data;
+};
+
+struct Img_Slider {
+	Img_Slider(enum MENU_Size size, unsigned short count){ 
+		data = loadUI_slider(size, count); 
+		stateImg.setImage(getFrameAt(data, 0));
+	}
+	~Img_Slider(){ dealloc_queue(data); }
+
+	void setState(double x){
+		unsigned index = 0;
+		double minDist = 1.0;
+		for(unsigned f = 0; f < data->frameCount; f++){
+			double sliderX = 0.15 + (((double)0.7 / ((double)data->frameCount - 1)) * f);
+			if(sqrt(fabs(sliderX - x) * fabs(sliderX - x)) < minDist){
+				index = f;
+				minDist = sqrt(fabs(sliderX - x) * fabs(sliderX - x));
+			}
+		}
+
+		stateImg.setImage(getFrameAt(data, index));
+	}
+	Img_Base stateImg;
+private:
+	Rasteron_Queue* data;
+};

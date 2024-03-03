@@ -11,7 +11,7 @@
 
 #include "Geo_Actor.hpp"
 
-// #define TOPL_ENABLE_PHYSICS
+#define TOPL_ENABLE_PHYSICS
 
 #ifdef TOPL_ENABLE_PHYSICS
 #include "Phys_Actor.h"

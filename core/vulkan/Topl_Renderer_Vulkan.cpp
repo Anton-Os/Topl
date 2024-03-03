@@ -267,8 +267,8 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	swapchainCreateInfo.minImageCount = _surfaceCaps.minImageCount + 1;
 	swapchainCreateInfo.imageFormat = VK_FORMAT_B8G8R8A8_UNORM; // preselected
 	swapchainCreateInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR; // preselected
-	swapchainCreateInfo.imageExtent.width = TOPL_WIN_WIDTH;
-	swapchainCreateInfo.imageExtent.height = TOPL_WIN_HEIGHT;
+	swapchainCreateInfo.imageExtent.width = _surfaceCaps.maxImageExtent.width; // TODO: Get the actual width extent
+	swapchainCreateInfo.imageExtent.height = _surfaceCaps.maxImageExtent.height; // TODO: Get the actual height extent
 	swapchainCreateInfo.imageArrayLayers = 1;
 	swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 	swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
