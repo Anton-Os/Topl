@@ -1,6 +1,6 @@
 #ifndef GEO_PUPPET_H
 
-#include "meshes/Geo_Shape2D.hpp"
+#include "meshes/Geo_Surface.hpp"
 
 #include "Geo_Construct.hpp"
 

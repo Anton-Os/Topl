@@ -2,7 +2,7 @@
 
 #include "Topl_Program.hpp"
 
-#include "meshes/Geo_Shape2D.hpp"
+#include "meshes/Geo_Surface.hpp"
 
 #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"

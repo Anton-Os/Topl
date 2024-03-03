@@ -4,14 +4,14 @@
 
 class Geo_Cone : public Geo_Mesh {
 public:
-	Geo_Cone(Shape2D shape)
+	Geo_Cone(Surface shape)
 	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
 		_apex = Vec3f({ 0.0f, 0.0f, shape.radius + DEFAULT_Z }); // default apex
 		genVertices(); genIndices();
 	}
 
-	Geo_Cone(Shape2D shape, Vec3f apex)
+	Geo_Cone(Surface shape, Vec3f apex)
 	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
 		_apex = apex; // custom apex
@@ -25,7 +25,7 @@ private:
 	void genVertices() override;
 	void genIndices() override;
 
-	Shape2D _shape;
+	Surface _shape;
 	Vec3f _apex;
 };
 

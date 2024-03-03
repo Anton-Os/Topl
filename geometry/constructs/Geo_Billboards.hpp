@@ -1,7 +1,7 @@
 
 #ifndef GEO_LAYOUT_H
 
-#include "meshes/Geo_Shape2D.hpp"
+#include "meshes/Geo_Surface.hpp"
 
 #include "Geo_Grid.hpp"
 

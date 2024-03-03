@@ -13,12 +13,12 @@
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
-struct Shape2D {
+struct Surface {
 	float radius;
     unsigned short segments;
 };
 
-struct Shape3D {
+struct Volume {
 	float radius;
 	unsigned short xSegs, ySegs;
 };

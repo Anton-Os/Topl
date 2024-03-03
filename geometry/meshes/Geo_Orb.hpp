@@ -4,9 +4,9 @@
 
 // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 
-class Geo_Sphere : public Geo_Mesh {
+class Geo_Orb : public Geo_Mesh {
 public:
-	Geo_Sphere() : Geo_Mesh(
+	Geo_Orb() : Geo_Mesh(
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
 	){
@@ -14,7 +14,7 @@ public:
 		genVertices(); genIndices();
 	}
 
-	Geo_Sphere(Shape3D shape) : Geo_Mesh(
+	Geo_Orb(Volume shape) : Geo_Mesh(
 		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
 		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count
 	){
@@ -27,7 +27,7 @@ private:
 	void genVertices() override;
 	void genIndices() override;
 
-	Shape3D _shape;
+	Volume _shape;
 };
 
 #define GEO_SPHERE_H

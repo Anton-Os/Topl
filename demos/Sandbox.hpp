@@ -1,7 +1,7 @@
-#include "meshes/Geo_Shape2D.hpp"
-#include "meshes/Geo_Shape3D.hpp"
+#include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Cone.hpp"
-#include "meshes/Geo_Sphere.hpp"
+#include "meshes/Geo_Orb.hpp"
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
@@ -40,7 +40,7 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Actor boxActor = Geo_Actor(&boxMesh);
     Geo_Triangle2D pyramidMesh = Geo_Triangle2D();
     Geo_Actor pyramidActor = Geo_Actor(&pyramidMesh);
-    Geo_Sphere sphereMesh = Geo_Sphere();
+    Geo_Orb sphereMesh = Geo_Orb();
     Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
     Geo_HexCone hexMesh = Geo_HexCone();
     Geo_Actor hexActor = Geo_Actor(&hexMesh);

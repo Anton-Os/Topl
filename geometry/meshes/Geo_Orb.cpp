@@ -1,6 +1,6 @@
-#include "Geo_Sphere.hpp"
+#include "Geo_Orb.hpp"
 
-void Geo_Sphere::genVertices() {
+void Geo_Orb::genVertices() {
 	unsigned v = 0; // target vertex
 
 	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {
@@ -23,7 +23,7 @@ void Geo_Sphere::genVertices() {
 	}
 }
 
-void Geo_Sphere::genIndices() {
+void Geo_Orb::genIndices() {
 	unsigned i = 0;
 
 	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {

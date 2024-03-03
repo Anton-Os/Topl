@@ -196,7 +196,7 @@ void Sandbox_Demo::init(){
     sphereMesh.scale({ 0.25f, 0.25f, 0.25f});
     // sphereActor.setPos({ -0.5f, -0.5f, 0.0f });
     sphereActor.shaderFunc = default_shadercall;
-    scene.addGeometry("Sphere", &sphereActor);
+    scene.addGeometry("Orb", &sphereActor);
     hexMesh.scale({ 0.25f, 0.25f, 0.25f});
     // hexActor.setPos({ 0.5f, -0.5f, 0.0f });
     hexActor.shaderFunc = default_shadercall;
@@ -211,7 +211,7 @@ void Sandbox_Demo::init(){
     scene.addTexture("Pyramid", &pyramidTex);
     sphereImg = mapImgOp({1024, 1024}, sphereImg_callback);
     sphereTex.setImage(sphereImg);
-    scene.addTexture("Sphere", &sphereTex);
+    scene.addTexture("Orb", &sphereTex);
     hexImg = mapImgOp({1024, 1024}, hexImg_callback);
     hexTex.setImage(hexImg);
     scene.addTexture("Hex", &hexTex);

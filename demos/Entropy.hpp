@@ -1,6 +1,6 @@
-#include "meshes/Geo_Shape2D.hpp"
-#include "meshes/Geo_Shape3D.hpp"
-#include "meshes/Geo_Sphere.hpp"
+#include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Volume.hpp"
+#include "meshes/Geo_Orb.hpp"
 
 #include "Flat_Shader.hpp"
 
@@ -21,7 +21,7 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Quad3D quads[ENTROPIC_COUNT / 4];
     Geo_Hex3D hexes[ENTROPIC_COUNT / 4];
     Geo_Circle3D circles[ENTROPIC_COUNT / 4];
-    Geo_Sphere spheres[ENTROPIC_SPAWN]; // for spawning objects
+    Geo_Orb spheres[ENTROPIC_SPAWN]; // for spawning objects
 
     Geo_Actor actors[ENTROPIC_COUNT];
     Geo_Actor spawnActors[ENTROPIC_SPAWN];
