@@ -43,6 +43,7 @@ public:
 	void setRot(const Vec3f& vec){ _rotation = vec; }
 	void updateRot(const Vec3f& vec) { _rotation = _rotation + vec; }
 	void setZoom(float z){ _zoom = z;}
+	void setProjMatrix(Mat4x4 matrix){ _projMatrix = matrix; }
 	const float* getZoom() const { return &_zoom;}
 	vec3f_cptr_t getPos() const { return &_pos; }
 	vec3f_cptr_t getRot() const { return &_rotation; }

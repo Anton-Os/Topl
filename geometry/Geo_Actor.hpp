@@ -15,11 +15,11 @@ typedef void (*shaderCallback)(Topl_EntryShader*);
 
 class Geo_Actor {
 public:
-	Geo_Actor(){ _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255)); }
-	// Geo_Actor(){ _id = colorID(); }
+	// Geo_Actor(){ _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255)); }
+	Geo_Actor(){ _id = colorID(); }
 	Geo_Actor(const Geo_Mesh* mesh) { 
-		_id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255));
-		// _id = colorID();
+		// _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255));
+		_id = colorID();
 		_mesh = mesh; 
 	}
 	Geo_Actor(const Geo_Actor& actor){

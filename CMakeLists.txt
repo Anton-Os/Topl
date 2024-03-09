@@ -37,10 +37,11 @@ list(APPEND support_src
 
 list(APPEND geometry_src
 	# meshes
-    geometry/meshes/Geo_Shape2D.cpp
-    geometry/meshes/Geo_Shape3D.cpp
+    geometry/meshes/Geo_Surface.cpp
+    geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Cone.cpp
-    geometry/meshes/Geo_Sphere.cpp
+    geometry/meshes/Geo_Orb.cpp
+    geometry/meshes/Geo_Parametric.cpp
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
     message("Building 3D Model sources")
@@ -198,8 +199,9 @@ add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(Modelview demos/Modelview.cpp)
 add_executable(Entropy demos/Entropy.cpp)
+add_executable(Insider demos/Insider.cpp)
 
-list(APPEND demo_targets Hello Sandbox Modelview Entropy)
+list(APPEND demo_targets Hello Sandbox Modelview Entropy Insider)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)

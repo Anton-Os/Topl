@@ -7,6 +7,9 @@ unsigned Sandbox_Demo::shaderMode = 0;
 Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 
+Vec3f cameraPos, cameraRot;
+float cameraZoom = 1.0;
+
 std::string fontPaths[9] = {
     std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf",
     std::string(FONTS_DIR) + "Quattrocento-Regular.ttf",
@@ -44,6 +47,17 @@ static void onAnyKey(char k){
     else if(k == 0x28) Topl_Program::timeline.dynamic_ticker.isPaused = true; // Sandbox_Demo::texScroll[1] += 0.05f; // down arrow
     else if(toupper(k) == 'X') { Sandbox_Demo::isShaderVariant = !Sandbox_Demo::isShaderVariant; }
     else if(isspace(k)) (Sandbox_Demo::pipelineIndex < 2)? Sandbox_Demo::pipelineIndex++ : Sandbox_Demo::pipelineIndex = 0;
+    
+    if(toupper(k) == 'W' || toupper(k) == 'S' || toupper(k) == 'A' || toupper(k) == 'D'){
+        cameraPos = *Topl_Program::cameraObj.getPos();
+        Topl_Program::timeline.addSequence_vec3f(&cameraPos, std::make_pair(TIMELINE_AT, cameraPos));
+    } else if(toupper(k) == 'Q' || toupper(k) == 'E'){
+        cameraRot = *Topl_Program::cameraObj.getRot();
+        Topl_Program::timeline.addSequence_vec3f(&cameraRot, std::make_pair(TIMELINE_AT, cameraRot));
+    } else if(toupper(k) == 'Z' || toupper(k) == 'C'){
+        cameraZoom = *Topl_Program::cameraObj.getZoom();
+        Topl_Program::timeline.addSequence_float(&cameraZoom, std::make_pair(TIMELINE_AT, cameraZoom));
+    }
 }
 
 static void onScroll(bool positive){
@@ -113,8 +127,9 @@ static void onHover(float x, float y){
     savedColorVec = Topl_Program::pickerCoord;
 }
 
-void shaderModeCycle(){ (Sandbox_Demo::shaderMode < 8)? Sandbox_Demo::shaderMode++ : Sandbox_Demo::shaderMode = 0; }
-void overlayTexUpdate(){
+static void cameraUpdate(double m){ Topl_Program::cameraObj.setPos(cameraPos); Topl_Program::cameraObj.setRot(cameraRot); Topl_Program::cameraObj.setZoom(cameraZoom); }
+static void shaderModeUpdate(){ (Sandbox_Demo::shaderMode < 8)? Sandbox_Demo::shaderMode++ : Sandbox_Demo::shaderMode = 0; }
+static void overlayTexUpdate(){
     unsigned secs = Topl_Program::timeline.dynamic_ticker.getAbsSecs(); // make accessible inside of program timer
     unsigned splitsecs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / 10;
 
@@ -174,7 +189,8 @@ void Sandbox_Demo::init(){
     Platform::mouseControl.setScrollCallback(onScroll);
     Platform::mouseControl.addHoverCallback(onHover);
 
-    Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeCycle);
+    Topl_Program::timeline.dynamic_ticker.addRecurringEvent(cameraUpdate);
+    Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeUpdate);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, overlayTexUpdate);
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});

@@ -34,6 +34,6 @@ struct Entropy_Demo : public Topl_Program {
 private:
     Topl_Scene scene;
 
-    Topl_Pipeline* flatPipeline; // flatPipeline;
+    Topl_Pipeline* flatPipeline;
     Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
 } *_instance;

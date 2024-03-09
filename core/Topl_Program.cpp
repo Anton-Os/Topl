@@ -137,6 +137,8 @@ static void onAnyKey(char k){
 		else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
 		else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
 		else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
+		else if(toupper(k) == 'X') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, -0.1f });
+		else if(toupper(k) == 'V') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, 0.1f });
 		else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
 		else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
 		else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);

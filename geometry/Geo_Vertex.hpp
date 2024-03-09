@@ -1,5 +1,7 @@
 #ifndef GEO_VERTEX_H
 
+#include "support_def.h"
+
 #include "maths.h"
 
 // Vertices
