@@ -62,6 +62,5 @@ void main() {
 	}
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
-
 	if (color.a < 0.05) discard; // blending fix
 }

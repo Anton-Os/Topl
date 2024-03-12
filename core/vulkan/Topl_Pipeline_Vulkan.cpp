@@ -60,11 +60,24 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 	pipeline->pipelineInfo.pMultisampleState = &_multisampleInfo;
 	pipeline->pipelineInfo.pDepthStencilState = &_depthStencilInfo;
 	pipeline->pipelineInfo.pColorBlendState = &_colorBlendInfo;
+	pipeline->pipelineInfo.pDynamicState = &_dynamicStateInfo;
 	pipeline->pipelineInfo.layout = _pipelineLayout;
 	pipeline->pipelineInfo.renderPass = _renderpass;
 	pipeline->pipelineInfo.subpass = 0;
 	pipeline->pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline->pipelineInfo.basePipelineIndex = 0;
+
+	/* VkPipelineCacheCreateInfo pipelineCacheInfo;
+    pipelineCacheInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+    pipelineCacheInfo.pNext = NULL;
+    pipelineCacheInfo.initialDataSize = 0;
+    pipelineCacheInfo.pInitialData = NULL;
+    pipelineCacheInfo.flags = 0;
+
+	VkPipelineCache pipelineCache;
+    if(vkCreatePipelineCache(info.device, &pipelineCacheInfo, NULL, &pipelineCache) == VK_SUCCESS)
+		logMessage("Pipeline cache creation success\n");
+	else return logMessage("Pipeline cache creation failure"); */
 
 	std::cout << "Pipeline Creation Checkpoint!" << std::endl;
 

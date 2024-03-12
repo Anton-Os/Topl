@@ -1,48 +1,6 @@
 #include "ValueGen.hpp"
 
-// Numeric Operations
-
-/* unsigned genColorID(unsigned renderID) {
-	// unsigned short colorInc = (renderID / COLOR_ID_TYPES) + 1;
-	unsigned short colorInc = ((renderID / COLOR_ID_TYPES) + 1) * 70; // testing for emphasis
-
-	switch (renderID % COLOR_ID_TYPES) {
-	case 0: return 0xFFFFFFFF - ((colorInc << 16) + (colorInc << 8) + colorInc);
-	case 1: return 0xFFFFFFFF - ((colorInc << 8) + colorInc);
-	case 2: return 0xFFFFFFFF - ((colorInc << 16) + colorInc);
-	case 3: return 0xFFFFFFFF - ((colorInc << 16) + (colorInc << 8));
-	case 4: return 0xFFFFFFFF - colorInc;
-	case 5: return 0xFFFFFFFF - (colorInc << 8);
-	case 6: return 0xFFFFFFFF - (colorInc << 16);
-	}
-}
-
-unsigned genRandColor() {
-	uint8_t redBit = rand() % 255;
-	uint8_t greenBit = rand() % 255;
-	uint8_t blueBit = rand() % 255;
-	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
-} */
-
 // Data Operations
-
-SpatialBounds3D::SpatialBounds3D(float scaleFactor) {
-	left *= scaleFactor;
-	right *= scaleFactor;
-	bottom *= scaleFactor;
-	top *= scaleFactor;
-	nearPlane *= scaleFactor;
-	farPlane *= scaleFactor;
-}
-
-SpatialBounds3D::SpatialBounds3D(float l, float r, float b, float t, float n, float f) {
-	left = l;
-	right = r;
-	bottom = b;
-	top = t;
-	nearPlane = n;
-	farPlane = f;
-}
 
 
 void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes){
@@ -67,48 +25,45 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 
 // Transformation Operations
 
-static Mat4x4 genPerspectiveMatrix(SpatialBounds3D bounds){
-	float r = bounds.left; float l = bounds.right; // flipped
-	float t = bounds.bottom; float b = bounds.top; // flipped
-	float n = bounds.nearPlane; float f = bounds.farPlane;
+Projection::Projection(PROJECTION_Type p, float s) {
+	type = p;
+	if(p == PROJECTION_Perspective) s /= -10.0;
 
-    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
-        (2.0f * n) / (r - l), 0.0f, (r + l) / (r - l), 0.0f,
-        0.0f, (2.0f * n) / (t - b), (t + b) / (t - b), 0.0f,
-        0.0f, 0.0f, -((f + n) / (f - n)), -((2.0f * n * f) / (f - n)),
-        0.0f, 0.0f, -1.0f, 0.0f
-    });
-
-    return projMatrix;
+	left *= s; right *= s;
+	bottom *= s; top *= s;
+	nearPlane *= s; farPlane *= s;
 }
 
-static Mat4x4 genOrthoMatrix(SpatialBounds3D bounds){
-	float r = bounds.right / 2; float l = bounds.left / 2;
-	float t = bounds.top / 2; float b = bounds.bottom / 2;
-	float n = bounds.nearPlane / 2; float f = bounds.farPlane / 2;
+Projection::Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f) {
+	type = p;
+	if(p == PROJECTION_Perspective){ 
+		l /= -10.0; r /= -10.0; b /= -10.0; t /= -10.0; n /= -10.0; f /= f; 
+	}
 
-    Mat4x4 projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
-        2.0f / (r - l), 0.0f, 0.0f, (l + r) / (l - r),
-        0.0f, 2.0f / (t - b), 0.0f, (b + t) / (b - t),
-        0.0f, 0.0f, 2.0f / (n - f), (f + n) / (f - n),
-        0.0f, 0.0f, 0.0f, 1.0f });
-    return projMatrix;
+	type = p;
+	left = l; right = r;
+	bottom = b; top = t;
+	nearPlane = n; farPlane = f;
 }
 
-static Mat4x4 genStereoMatrix(SpatialBounds3D bounds){
-    return MAT_4x4_IDENTITY;
-}
+Mat4x4 Projection::genProjMatrix(){
+	Mat4x4 projMatrix = MAT_4x4_IDENTITY;
 
-static Mat4x4 genGnomonicMatrix(SpatialBounds3D bounds){
-    return MAT_4x4_IDENTITY;
-}
+	if(type == PROJECTION_Ortho){
+		projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
+			2.0f / (right - left), 0.0f, 0.0f, (left + right) / (left - right),
+			0.0f, 2.0f / (top - bottom), 0.0f, (bottom + top) / (bottom - top),
+			0.0f, 0.0f, 2.0f / (nearPlane - farPlane), (farPlane + nearPlane) / (farPlane - nearPlane),
+			0.0f, 0.0f, 0.0f, 1.0f 
+		});
+	} else if(type == PROJECTION_Perspective){
+		projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
+			(2.0f * nearPlane) / (right - left), 0.0f, (right + left) / (right - left), 0.0f,
+			0.0f, (2.0f * nearPlane) / (top - bottom), (top + bottom) / (top - bottom), 0.0f,
+			0.0f, 0.0f, -((farPlane + nearPlane) / (farPlane - nearPlane)), -((2.0f * nearPlane * farPlane) / (farPlane - nearPlane)),
+			0.0f, 0.0f, -1.0f, 0.0f
+		});
+	}
 
-Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds){
-    switch(type){
-        case PROJECTION_Perspective: return genPerspectiveMatrix(bounds);
-        case PROJECTION_Ortho: return genOrthoMatrix(bounds);
-        case PROJECTION_Stereo: return genStereoMatrix(bounds);
-        case PROJECTION_Gnomonic: return genGnomonicMatrix(bounds);
-        // case PROJECTION_Test: return MAT_4x4_TEST;
-    }
+	return projMatrix;
 }

@@ -1,6 +1,7 @@
 #ifndef TOPL_PLATFORM_H
 
 #include <bitset>
+#include <limits>
 #include <thread>
 
 #include "native_os_def.h"

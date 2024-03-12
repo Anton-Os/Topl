@@ -522,7 +522,7 @@ void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
 
 	_dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	_dynamicStateInfo.dynamicStateCount = 2;
-	_dynamicStateInfo.pDynamicStates = dynamicStates;
+	_dynamicStateInfo.pDynamicStates = &dynamicStates[0];
 
 	_viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	_viewportStateInfo.viewportCount = 1; // should be adjustable?

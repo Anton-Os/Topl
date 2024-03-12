@@ -25,14 +25,12 @@ struct Entropy_Demo : public Topl_Program {
 
     Geo_Actor actors[ENTROPIC_COUNT];
     Geo_Actor spawnActors[ENTROPIC_SPAWN];
-
-    unsigned short spawnIndex = 0;
-    Topl_Scene spawnScenes[ENTROPIC_SPAWN];
 #ifdef TOPL_ENABLE_PHYSICS
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif
 private:
     Topl_Scene scene;
+    Topl_Scene spawnScene;
 
     Topl_Pipeline* flatPipeline;
     Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;

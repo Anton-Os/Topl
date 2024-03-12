@@ -8,11 +8,10 @@ static unsigned short spawnIdx = 0;
 
 static void spawnPress(float x, float y){
     if(spawnIdx < ENTROPIC_SPAWN){
-        _instance->spawnActors[spawnIdx] = Geo_Actor(&_instance->spheres[spawnIdx]);
+        _instance->spawnActors[spawnIdx].isShown = true;
         _instance->spawnActors[spawnIdx].setPos(Topl_Program::getCamCursorPos());
         _instance->spawnActors[spawnIdx].setRot(VEC_3F_ZERO);
         _instance->spawnActors[spawnIdx].setSize({ 0.025F, 0.025F, 0.025F });
-        _instance->spawnScenes[spawnIdx].addGeometry(&_instance->spawnActors[spawnIdx]);
         spawnIdx++;
     }
 }
@@ -46,14 +45,17 @@ void Entropy_Demo::init(){
 #endif
     }
     _renderer->buildScene(&scene);
+
+    for(unsigned s = 0; s < ENTROPIC_SPAWN; s++){
+        spawnActors[s] = Geo_Actor(&spheres[s]);
+        spawnActors[s].isShown = false;
+
+        spawnScene.addGeometry("Spawn" + std::to_string(s), &spawnActors[s]);
+    }
+    _renderer->buildScene(&spawnScene);
 }
 
 void Entropy_Demo::loop(double frameTime){
-    if(_instance->spawnIndex < spawnIdx){
-        _renderer->buildScene(&_instance->spawnScenes[_instance->spawnIndex]);
-        _instance->spawnIndex++;
-    }
-
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 /* #ifdef TOPL_ENABLE_PHYSICS
         // physActors[a].addForce({(static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f), (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) - 0.5f), 0.0F });
@@ -68,22 +70,21 @@ void Entropy_Demo::loop(double frameTime){
 // #endif
     }
 
-    flatVShader.setMode(FLAT_MODE_SOLID);
+    flatVShader.setMode(-4);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
     _renderer->clear();
 
     if(isAllShown) for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-        _renderer->setDrawMode((a % 3 == 0)? DRAW_Strip : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
+        _renderer->setDrawMode((a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
         _renderer->draw(&actors[a]);
     }
 
-    for(unsigned s = 0; s < _instance->spawnIndex; s++){
-        spawnActors[s].updatePos({ *spawnActors[s].getPos() * ((isInEntropy)? 0.0035F : -0.0035F) });
-
-        _renderer->updateScene(&_instance->spawnScenes[s]);
-        _renderer->setDrawMode((s % 3 == 0)? DRAW_Strip : (s % 3 == 1)? DRAW_Lines : DRAW_Points);
-        _renderer->drawScene(&_instance->spawnScenes[s]);
+    for(unsigned s = 0; s < spawnIdx; s++) spawnActors[s].updatePos({ *spawnActors[s].getPos() * ((isInEntropy)? 0.0035F : -0.0035F) });
+    if(spawnIdx > 0){
+        _renderer->setDrawMode(DRAW_Strip);
+        _renderer->updateScene(&spawnScene);
+        _renderer->drawScene(&spawnScene);
     }
 }
 

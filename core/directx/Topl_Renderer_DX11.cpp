@@ -552,7 +552,7 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
 		}
 	}
-	else if(renderID != SCENE_RENDERID) { // Drawable Target
+	else if(renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
 
 		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()) {

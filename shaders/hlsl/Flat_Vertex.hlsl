@@ -22,6 +22,7 @@ struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	// float4 flatColor : COLOR0;
 	float4 vertex_pos : POSITION0;
+	uint vertex_id : VERTEXID;
 };
 
 // Functions
@@ -70,6 +71,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4x4 cameraMatrix = calcCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.vertex_pos = output.pos;
+	output.vertex_id = vertexID;
 
 	return output;
 }

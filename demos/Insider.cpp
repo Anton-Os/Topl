@@ -2,17 +2,15 @@
 
 static ColorGrid colorGrid;
 static PROJECTION_Type projType = PROJECTION_Perspective;
-static double projFactor = 0.35;
+static double projFactor = 3.5;
 
 static void onAnyKey(char k){
     if(toupper(k) == 'I') projType = (projType == PROJECTION_Perspective)? PROJECTION_Ortho : PROJECTION_Perspective;
     else if(toupper(k) == 'O') projFactor -= 0.05;
     else if(toupper(k) == 'P') projFactor += 0.05;
 
-    if(toupper(k) == 'I' || toupper(k) == 'O' || toupper(k) == 'P'){
-        Topl_Program::cameraObj.setProjMatrix(genProjMatrix(projType, SpatialBounds3D((projType == PROJECTION_Perspective)? -projFactor : projFactor * 10.0)));
-        std::cout << "Projection factor: " << std::to_string(projFactor) << std::endl;
-    }
+    if(toupper(k) == 'I' || toupper(k) == 'O' || toupper(k) == 'P')
+        Topl_Program::cameraObj.setProjMatrix(Projection(projType, projFactor).genProjMatrix());
 }
 
 void Insider_Demo::init(){
@@ -20,7 +18,7 @@ void Insider_Demo::init(){
     Topl_Program::cameraObj.setPos({ 0.0F, 0.5F, CAM_DEPTH });
     Topl_Program::cameraObj.setZoom(1.5);
 
-    floorActor.setPos({ 0.0F, -0.5F, 0.0F });
+   floorActor.setPos({ 0.0F, -0.5F, 0.0F });
     floorActor.setRot({ 0.0F, MATH_HALF_PI + 0.1, 0.0F });
     floorActor.setSize({ 5.0F, 5.0F, 0.0F });
     wallActors[0].setPos({ 0.0F, 0.0F, 1.0F });

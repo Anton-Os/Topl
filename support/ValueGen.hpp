@@ -19,25 +19,32 @@ void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); /
 
 // Transformation Operations
 
+// #define PERSPECTIVE_PROJ_DIV -0.1
+
 enum PROJECTION_Type {
+    PROJECTION_None,
     PROJECTION_Ortho,
     PROJECTION_Perspective,
-    PROJECTION_Stereo,
-    PROJECTION_Gnomonic,
+    // PROJECTION_Stereo,
+    // PROJECTION_Gnomonic,
     // PROJECTION_Test // for shader and computation tests
 };
 
-struct SpatialBounds3D { // Used in Matrix calculations
-    SpatialBounds3D(){}
-    SpatialBounds3D(float scaleFactor);
-    SpatialBounds3D(float l, float r, float b, float t, float n, float f);
-    
+struct Projection { // Used in Matrix calculations
+    Projection(){}
+    Projection(PROJECTION_Type p){ type = p; }
+    Projection(PROJECTION_Type p, float scaleFactor);
+    Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f);
+
+    PROJECTION_Type type = PROJECTION_None;
     float left = -1.0f; float right = 1.0f;
     float bottom = -1.0f; float top = 1.0f;
     float nearPlane = -1.0f; float farPlane = 1.0f;
+
+    Mat4x4 genProjMatrix();
 };
 
-Mat4x4 genProjMatrix(PROJECTION_Type type, const SpatialBounds3D& bounds);
+// Mat4x4 genProjMatrix(const Projection& proj);
 
 #define VALUEGEN_H
 #endif

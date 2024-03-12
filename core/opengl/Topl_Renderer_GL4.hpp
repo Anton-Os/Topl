@@ -2,7 +2,6 @@
 
 // Buffer
 
-#define GL4_BUFFER_MAX 10000
 struct Buffer_GL4 : public Buffer {
 	Buffer_GL4(GLuint b){ buffer = b; }
 	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
@@ -13,7 +12,6 @@ struct Buffer_GL4 : public Buffer {
 
 // Vertex Array Object
 
-#define GL4_VERTEX_ARRAY_MAX 10000
 struct VertexArray_GL4 : public RenderObj {
 	VertexArray_GL4() : RenderObj() {}
 	VertexArray_GL4(unsigned id, GLuint v) : RenderObj(id){ vao = v; }
@@ -23,7 +21,6 @@ struct VertexArray_GL4 : public RenderObj {
 
 // Texture
 
-#define GL4_TEXTURE_BINDINGS_MAX 10000
 struct Texture_GL4 : public Texture {
 	Texture_GL4() : Texture() {}
 	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
@@ -87,13 +84,16 @@ protected:
 	Topl_Pipeline_GL4* _pipeline;
 
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
-	GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
+	// GLuint _bufferSlots[GL4_BUFFER_MAX]; // stores all buffers
+	GLuint* _bufferSlots;
 	unsigned _bufferIndex = 0; // increments to indicate next available buffer slot
 	std::map<unsigned long, Buffer_GL4> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
-	GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX]; // stores all vertex arrays
+	// GLuint _vertexArraySlots[GL4_VERTEX_ARRAY_MAX]; // stores all vertex arrays
+	GLuint* _vertexArraySlots;
 	unsigned _vertexArrayIndex = 0; // increments to indicate next available vertex array slot
 	std::map<unsigned long, VertexArray_GL4> _vertexArrayMap;
-	GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX]; // stores all textures
+	// GLuint _textureSlots[GL4_TEXTURE_BINDINGS_MAX]; // stores all textures
+	GLuint* _textureSlots;
 	unsigned _textureIndex = 0; // increments to indicate next available texture slot
 	std::vector<Texture_GL4> _textures; // active textures
 	std::map<unsigned long, Texture_GL4> _textureMap; // accomodate array and volumetric textures

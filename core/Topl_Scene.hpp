@@ -30,13 +30,13 @@ public:
 		_projMatrix(2, 2) = -1; // flip z axis
 	}
 	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
-		_projMatrix = genProjMatrix(projType, SpatialBounds3D());
+		_projMatrix = Projection(projType).genProjMatrix();
 	}
 	Topl_Camera(enum PROJECTION_Type projType, float scaleFactor){ // Sized Bounds
-		_projMatrix = genProjMatrix(projType, SpatialBounds3D(scaleFactor));
+		_projMatrix = Projection(projType, scaleFactor).genProjMatrix();
 	}
-	Topl_Camera(enum PROJECTION_Type projType, SpatialBounds3D bounds){ // Custom Bounds
-		_projMatrix = genProjMatrix(projType, bounds);
+	Topl_Camera(Projection proj){ // Custom Bounds
+		_projMatrix = proj.genProjMatrix();
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }

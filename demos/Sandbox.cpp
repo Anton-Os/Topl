@@ -90,8 +90,10 @@ static void onHover(float x, float y){
         Topl_Program::cursorPos = { x, y, 0.0F }; 
         if(Topl_Program::pickerObj != NO_PICKER_OBJ){
             if(isMotionEnable && Topl_Program::pickerObj->getId() == _instance->boxActor.getId())
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down)
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
                     Topl_Program::timeline.addSequence_vec3f(&boxPos, std::make_pair(TIMELINE_AT, Topl_Program::getCamCursorPos()));
+                    _instance->boxActor.isShown = false;
+                }
                 else { 
                     boxRot = boxRot + Vec3f({ 0.0, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 5, (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 5 });
                     Topl_Program::timeline.addSequence_vec3f(&boxRot, std::make_pair(TIMELINE_AT, boxRot));
@@ -161,7 +163,7 @@ static void textCell_pickercall(Geo_Actor* actor){
     int c = (char)(actor->getName().back()) - '0';
 
     for(unsigned s = 0; s < 9; s++){
-        std::string sliderCellText = "select   option   " + std::to_string(s + 1);
+        std::string sliderCellText = "choose brush #" + std::to_string(s + 1) + "    ";
         std::replace(fontPaths[s].begin(), fontPaths[s].end(), '/', '\\');
 
         Rasteron_Text textObj = (s != c - 1)
@@ -273,7 +275,7 @@ void Sandbox_Demo::init(){
     for(unsigned s = 0; s < 9; s++){
         overlay.addTexture("vertLayout_cell" + std::to_string(s + 1), &_instance->sliders[s].stateImg);
 
-        std::string sliderCellText = "select   option   " + std::to_string(s + 1);
+        std::string sliderCellText = "choose brush #" + std::to_string(s + 1) + "    ";
         std::replace(fontPaths[s].begin(), fontPaths[s].end(), '/', '\\');
         Rasteron_Text textObj = { fontPaths[s].c_str(), sliderCellText.c_str(), *getFrameAt(words_queue, s)->data, 0xEE000000 | (0xEEFFFFFF - *getFrameAt(words_queue, s)->data)};
         words_textures[s].setTextImage(&textObj);

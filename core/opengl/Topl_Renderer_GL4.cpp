@@ -72,9 +72,9 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext) { glXDes
 #endif
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
-	glDeleteBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
-	glDeleteVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
-	glDeleteTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+	glDeleteBuffers(MAX_RENDERID, _bufferSlots);
+	glDeleteVertexArrays(MAX_RENDERID, _vertexArraySlots);
+	glDeleteTextures(MAX_RENDERID, _textureSlots);
 
 #ifdef _WIN32
 	cleanup_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
@@ -134,9 +134,13 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glGenBuffers(GL4_BUFFER_MAX, &_bufferSlots[0]);
-	glGenVertexArrays(GL4_VERTEX_ARRAY_MAX, &_vertexArraySlots[0]);
-	glGenTextures(GL4_TEXTURE_BINDINGS_MAX, &_textureSlots[0]);
+	_bufferSlots = (GLuint*)malloc(MAX_RENDERID* sizeof(GLuint));
+	_vertexArraySlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+	_textureSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+
+	glGenBuffers(MAX_RENDERID, _bufferSlots);
+	glGenVertexArrays(MAX_RENDERID, _vertexArraySlots);
+	glGenTextures(MAX_RENDERID, _textureSlots);
 
 	// glDisable(GL_CULL_FACE);
 
@@ -178,7 +182,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 	// scene block buffer generation
 	shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
-	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_GL4(_bufferSlots[_bufferIndex]) });
+	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_GL4(*(_bufferSlots + _bufferIndex)) });
 	_bufferIndex++; // increments to next available slot
 	glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
@@ -211,7 +215,7 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		// render block buffer generation
 		shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &shaderBlockData);
-		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, _bufferSlots[(renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex]) });
+		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, *(_bufferSlots + ((renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex))) });
 		if(renderBlockBuffIndex == 0) _bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
@@ -220,8 +224,8 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 
 		// indices generation
 		(mesh->getIndices() != nullptr)
-			? _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], mesh->getIndexCount()) })
-			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, _bufferSlots[(indexBuffIndex != 0)? indexBuffIndex : _bufferIndex], 0) });
+			? _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + ((indexBuffIndex != 0)? indexBuffIndex : _bufferIndex)), mesh->getIndexCount()) })
+			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + ((indexBuffIndex != 0)? indexBuffIndex : _bufferIndex)), 0) });
 		if (mesh->getIndices() != nullptr) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer); // gets the latest buffer
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
@@ -229,13 +233,13 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		if(indexBuffIndex == 0) _bufferIndex++; // increments to next available slot
 
 		// vertices generation
-		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, _bufferSlots[(vertexBuffIndex != 0)? vertexBuffIndex : _bufferIndex], mesh->getVertexCount()) });
+		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, *(_bufferSlots + ((vertexBuffIndex != 0)? vertexBuffIndex : _bufferIndex)), mesh->getVertexCount()) });
 		if(vertexBuffIndex == 0) _bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer); // gets the latest buffer
 		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
-		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, _vertexArraySlots[_vertexArrayIndex]) });
+		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, *(_vertexArraySlots + _vertexArrayIndex)) });
 		_vertexArrayIndex++; // increment to next available slot
 		GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
 	}
@@ -272,7 +276,7 @@ Img_Base Topl_Renderer_GL4::frame() {
 }
 
 void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
-	GLuint textureTarget = _textureSlots[_textureIndex];
+	GLuint textureTarget = *(_textureSlots + _textureIndex);
 	_textureIndex++; // increments to next available slot
 
 	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
@@ -289,12 +293,12 @@ void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned render
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	if (_textureSlots[_textureIndex - 1] == textureTarget)
+	if (*(_textureSlots + _textureIndex - 1) == textureTarget)
 		_textures.push_back(Texture_GL4(renderID, (unsigned short)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
 }
 
 void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
-	GLuint textureTarget = _textureSlots[_textureIndex];
+	GLuint textureTarget = *(_textureSlots + _textureIndex);
 	_textureIndex++; // increments to next available slot
 
 	for (std::vector<Texture_GL4>::iterator tex = _textures.begin(); tex != _textures.end(); tex++) {
@@ -321,7 +325,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	);
 	glGenerateMipmap(GL_TEXTURE_3D);
 
-	if (_textureSlots[_textureIndex - 1] == textureTarget)
+	if (*(_textureSlots + _textureIndex - 1) == textureTarget)
 		_textures.push_back(Texture_GL4(renderID, TEX_3D, _texMode, textureTarget));
 }
 
@@ -371,7 +375,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) // Scene Target
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
-	else if (renderID != SCENE_RENDERID) { // Drawable Target
+	else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
 		
 		if(_vertexArrayMap.find(renderID) != _vertexArrayMap.end()) glBindVertexArray(_vertexArrayMap.at(renderID).vao);

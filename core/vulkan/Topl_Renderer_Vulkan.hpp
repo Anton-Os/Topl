@@ -84,6 +84,7 @@ protected:
 	VkCommandPool _commandPool;
 	std::vector<VkCommandBuffer> _commandBuffers = {};
 	VkPipelineViewportStateCreateInfo _viewportStateInfo = {};
+	// VkDynamicState _dynamicStates[2] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	VkPipelineDynamicStateCreateInfo _dynamicStateInfo = {};
 	VkPipelineVertexInputStateCreateInfo _vertexInputInfo = {};
 	VkPipelineInputAssemblyStateCreateInfo _inputAssemblyInfo = {};

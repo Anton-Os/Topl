@@ -64,8 +64,6 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 struct Hello_Renderer_Vulkan : public Topl_Renderer_Vulkan {
 	Hello_Renderer_Vulkan(NATIVE_WINDOW window)
 	: Topl_Renderer_Vulkan(window){
-		setViewport(&_defaultViewport);
-		setDrawMode(DRAW_Triangles);
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;
