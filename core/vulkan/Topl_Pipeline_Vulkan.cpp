@@ -58,7 +58,7 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 	pipeline->pipelineInfo.pViewportState = &_viewportStateInfo;
 	pipeline->pipelineInfo.pRasterizationState = &_rasterStateInfo;
 	pipeline->pipelineInfo.pMultisampleState = &_multisampleInfo;
-	pipeline->pipelineInfo.pDepthStencilState = &_depthStencilInfo;
+	pipeline->pipelineInfo.pDepthStencilState = nullptr; // &_depthStencilInfo;
 	pipeline->pipelineInfo.pColorBlendState = &_colorBlendInfo;
 	pipeline->pipelineInfo.pDynamicState = &_dynamicStateInfo;
 	pipeline->pipelineInfo.layout = _pipelineLayout;

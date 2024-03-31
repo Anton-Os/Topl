@@ -64,7 +64,7 @@ void Insider_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv){
-    _instance = new Insider_Demo(argv[0], BACKEND_GL4);
+    _instance = new Insider_Demo(argv[0], BACKEND_DX11);
     _instance->run();
 
     delete(_instance);

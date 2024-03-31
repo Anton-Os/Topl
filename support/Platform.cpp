@@ -11,10 +11,10 @@ bool Platform::isUserInput = false;
 
 #ifdef _WIN32
 
-static void addMousePress(enum MOUSE_Button button){
-	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
-		? Platform::mouseControl.addMousePress(button)
-		: Platform::mouseControl.addMousePress(button, Platform::getCursorX(), Platform::getCursorY());
+static void addPress(enum MOUSE_Button button){
+	if(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
+		Platform::mouseControl.addPress(button, Platform::getCursorX(), Platform::getCursorY());
+	else Platform::mouseControl.addPress(button);
 }
 
 struct DropTarget_Win32 : virtual public IDropTarget {
@@ -56,13 +56,13 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 		else if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
-	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addMousePress(MOUSE_LeftBtn_Down); }
-	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addMousePress(MOUSE_LeftBtn_Up); }
-	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addMousePress(MOUSE_RightBtn_Down); }
-	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addMousePress(MOUSE_RightBtn_Up); }
+	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Down); }
+	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addPress(MOUSE_LeftBtn_Up); }
+	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addPress(MOUSE_RightBtn_Down); }
+	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addPress(MOUSE_RightBtn_Up); }
 	case (WM_MOUSEWHEEL): { 
-		if(message == WM_MOUSEWHEEL && Platform::mouseControl.scrollCallback != nullptr) 
-			Platform::mouseControl.scrollCallback(GET_WHEEL_DELTA_WPARAM(wParam) > 0);
+		if(message == WM_MOUSEWHEEL && Platform::mouseControl.onScroll != nullptr) 
+			Platform::mouseControl.onScroll(GET_WHEEL_DELTA_WPARAM(wParam) > 0);
 	}
 	/* case (WM_MBUTTONDOWN): { if(message == WM_MBUTTONDOWN) std::cout << "Scroll Down" << std::endl; }
 	case (WM_MBUTTONUP): { if(message == WM_MBUTTONUP) std::cout << "Scroll Up" << std::endl; } */
@@ -106,7 +106,12 @@ void Platform::createWindow(unsigned width, unsigned height){
 
 bool Platform::handleEvents(){
 	bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
-	(isCursorBound)? Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos) : resetCursor();
+	
+	if(isCursorBound) 
+		(Platform::mouseControl.getIsMouseDown().second)
+			? Platform::mouseControl.addDrag(Platform::xCursorPos, Platform::yCursorPos)
+			: Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos);
+	else resetCursor();
 
     while (PeekMessage(&_context.eventMsg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&_context.eventMsg);

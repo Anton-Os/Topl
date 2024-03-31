@@ -36,7 +36,7 @@ void Input_MouseControl::addCallback(enum MOUSE_Button mb, pressCallback callbac
 	_mouseCallback_map.insert(std::make_pair(mb, callback));
 }
 
-void Input_MouseControl::addMousePress(enum MOUSE_Button mb, float x, float y){
+void Input_MouseControl::addPress(enum MOUSE_Button mb, float x, float y){
 	if(mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down) _isMouseDown = std::make_pair(mb, true);
 	else if(mb == MOUSE_LeftBtn_Up || mb == MOUSE_RightBtn_Up) _isMouseDown = std::make_pair(mb, false);
 	
@@ -51,24 +51,30 @@ void Input_MouseControl::addMousePress(enum MOUSE_Button mb, float x, float y){
 	stampEvent();
 }
 
-void Input_MouseControl::addMousePress(enum MOUSE_Button mb){
-	addMousePress(mb, INVALID_CURSOR_POS, INVALID_CURSOR_POS);
-}
-
-void Input_MouseControl::addHoverCallback(const Input_CursorRange* range, hoverCallback callback) {
-	_hoverCallback_map.insert(std::make_pair(range, callback));
+void Input_MouseControl::addPress(enum MOUSE_Button mb){
+	addPress(mb, INVALID_CURSOR_POS, INVALID_CURSOR_POS);
 }
 
 void Input_MouseControl::addHoverCallback(hoverCallback callback){
-	addHoverCallback(&defaultCursorRange, callback);
+	_hoverCallback_map.insert(std::make_pair(&defaultCursorRange, callback));
 }
 
 void Input_MouseControl::addHover(float x, float y){
 	for(std::map<const Input_CursorRange*, hoverCallback>::const_iterator c = _hoverCallback_map.cbegin(); c != _hoverCallback_map.end(); c++)
 		if(x > c->first->xMin && x < c->first->xMax && y > c->first->yMin && y < c->first->yMax)
 			c->second(x, y);
+}
 
-	if(_isMouseDown.second && x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && !_tracerPaths.empty()){
+void Input_MouseControl::addDragCallback(hoverCallback callback){
+	_dragCallback_map.insert(std::make_pair(&defaultCursorRange, callback));
+}
+
+void Input_MouseControl::addDrag(float x, float y){
+	for(std::map<const Input_CursorRange*, dragCallback>::const_iterator c = _dragCallback_map.cbegin(); c != _dragCallback_map.end(); c++)
+		if(x > c->first->xMin && x < c->first->xMax && y > c->first->yMin && y < c->first->yMax)
+			c->second(x, y);
+
+	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && !_tracerPaths.empty()){
 		_tracerPaths.back().steps[_tracerPaths.back().stepsCount % MAX_PATH_STEPS] = { x, y };
 		_tracerPaths.back().stepsCount++;
 	}

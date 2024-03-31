@@ -1,6 +1,5 @@
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
-#include "meshes/Geo_Parametric.hpp"
 
 #include "Textured_Shader.hpp"
 
@@ -17,11 +16,6 @@ struct Insider_Demo : public Topl_Program {
     Geo_Quad2D floor;
     Geo_Quad2D walls[4];
     Geo_CircleCone cones[4];
-    Geo_ParametricSet meshes[3] = {
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { -1.0f, 1.0f, 0.0f }, }), // basic constructor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { -1.0f, 1.0f, 0.0f }, }, { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, }), // paths constuctor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { -1.0f, 1.0f, 0.0f }, }, 0.8F, 5) // insertion constructor
-    };
 
     Geo_Actor floorActor = Geo_Actor((Geo_Mesh*)&floor);
     Geo_Actor wallActors[4] = { 
@@ -36,11 +30,6 @@ struct Insider_Demo : public Topl_Program {
         Geo_Actor((Geo_Mesh*)&cones[2]), 
         Geo_Actor((Geo_Mesh*)&cones[3]), 
     };
-    Geo_Actor meshActors[3] = {
-        Geo_Actor((Geo_Mesh*)&meshes[0]),
-        Geo_Actor((Geo_Mesh*)&meshes[1]),
-        Geo_Actor((Geo_Mesh*)&meshes[2]),
-    };
 
     Img_Base floorTexture;
     Img_Base wallTextures[4];
@@ -51,5 +40,5 @@ private:
     Topl_Scene objScene;
 
     Topl_Pipeline* texPipeline;
-    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
+    Textured_VertexShader_DX11 texVShader; Textured_PixelShader_DX11 texPShader;
 } *_instance;

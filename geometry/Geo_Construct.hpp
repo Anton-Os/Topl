@@ -7,11 +7,6 @@
 
 #include "Topl_Scene.hpp"
 
-typedef std::pair<std::string, Geo_Actor*> geoName_pair; // MOVE THIS!!!
-typedef std::pair<Vec3f, Vec3f> orientation_pair; // MOVE THIS!!!
-
-#define NO_ORIENTATION std::make_pair(Vec3f(0.0f, 0.0f, 0.0f), Vec3f(0.0f, 0.0f, 0.0f)); // MOVE THIS!!!
-
 // Tree
 
 class Geo_Construct {
@@ -40,6 +35,9 @@ public:
     Geo_Actor* getGeoActor(unsigned short a){ return &_geoActors[a]; }
     void shift(Vec3f vec){ 
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
+    }
+    void toggleShow(){
+        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = !_geoActors[g].isShown;
     }
     void rotateAll(Vec3f angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updateRot(angles);

@@ -82,20 +82,22 @@ typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of
 
 typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
 typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region
-typedef void (*wheelCallback)(bool); // triggers action on wheel in positive or negative direction
+typedef void (*dragCallback)(float, float); // triggers action on a cursor hover over specified region
+typedef void (*scrollCallback)(bool); // triggers action on wheel in positive or negative direction
 
 class Input_MouseControl : public Input_Control {
 public:
     Input_MouseControl() : Input_Control(){}
-    void setScrollCallback(wheelCallback callback){ scrollCallback = callback; }
+    void setOnScroll(scrollCallback callback){ onScroll = callback; }
     void addCallback(enum MOUSE_Button mb, pressCallback callback);
-    void addMousePress(enum MOUSE_Button mb, float cursorX, float cursorY);// mouse press with no cursor
-    void addMousePress(enum MOUSE_Button mb); // mouse press no cursor
-    void addHoverCallback(const Input_CursorRange* range, hoverCallback callback);
+    void addPress(enum MOUSE_Button mb, float x, float y);// mouse press with no cursor
+    void addPress(enum MOUSE_Button mb); // mouse press no cursor
     void addHoverCallback(hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
+    void addDragCallback(dragCallback callback);
+    void addDrag(float x, float y);  // checks for drag events given cursor position
     
-    wheelCallback scrollCallback = nullptr;
+    scrollCallback onScroll = nullptr;
     std::pair<enum MOUSE_Button, bool> getIsMouseDown(){ return _isMouseDown; }
     // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
     const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }
@@ -108,4 +110,5 @@ private:
 
 	std::map<MOUSE_Button, pressCallback> _mouseCallback_map;
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;
+    std::map<const Input_CursorRange*, dragCallback> _dragCallback_map;
 };

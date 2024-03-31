@@ -65,6 +65,14 @@ public:
 		}
 #endif
 	}
+	void scale(Vec3f scaleVec){
+        for(unsigned g = 0; g < _geoActors.size(); g++) {
+			_geoActors[g].setSize(scaleVec);
+			Vec3f offsetVec = *_geoActors[_params.getGridSize()].getPos() - *_geoActors[g].getPos();
+			if(_params.getGridSize() != g)
+				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * 1.5F, offsetVec[1] * scaleVec[1] * 1.5F, 0.0F });
+		}
+    }
 protected:
 	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);
 	// Geo_Actor childActor = Geo_Actor(&childMesh);
@@ -78,6 +86,11 @@ protected:
 	std::map<const Geo_Actor*, Img_Array> paneImgArray_map; // child backgrounds in array
 	// std::vector<Rasteron_Queue*> childStateBg;
 #endif
+};
+
+struct Geo_Paneboard : Geo_Billboard {
+	Geo_Paneboard(const std::string& prefix) : Geo_Billboard(prefix, 1, 1){}
+    Geo_Paneboard(const std::string& prefix, Topl_Scene* scene) : Geo_Billboard(prefix, 1, 1, scene){}
 };
 
 struct Geo_Crossboard : Geo_Billboard {

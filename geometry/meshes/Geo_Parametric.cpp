@@ -22,6 +22,7 @@ Geo_ParametricSet::Geo_ParametricSet(std::initializer_list<Vec3f> pointsSet) : G
     unsigned short v = 0;
     for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
         _vertices[v] = *p;
+        _vertices[v].texcoord = _vertices[v].position;
         _indices[v] = v; // for testing
         v++;
     }
@@ -32,6 +33,7 @@ Geo_ParametricSet::Geo_ParametricSet(std::initializer_list<Vec3f> pointsSet, std
     for(auto p1 = pathsSet.begin(); p1 != pathsSet.end(); p1++)
         for(auto p2 = pointsSet.begin(); p2 != pointsSet.end(); p2++){
             _vertices[v] = *p1 + *p2;
+            _vertices[v].texcoord = _vertices[v].position;
             _indices[v] = v; // for testing
             v++;
         }
@@ -43,6 +45,7 @@ Geo_ParametricSet::Geo_ParametricSet(std::initializer_list<Vec3f> pointsSet, flo
     for(auto i = 0; i < iterations; i++){
         for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
             _vertices[v] = *p * adjScale;
+            _vertices[v].texcoord = _vertices[v].position;
             _indices[v] = v; // for testing
             v++;
         }
