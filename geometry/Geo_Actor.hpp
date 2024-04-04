@@ -50,6 +50,9 @@ public:
 	bool isShown = true;
 	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
 	shaderCallback shaderFunc = nullptr; // invoked during shader render block
+
+	// Add texture object?
+	// Add physics object?
 private:
 	// Data types
 	unsigned _id = DEFAULT_ACTOR_ID; // id used for color picking

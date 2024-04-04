@@ -80,7 +80,7 @@ public:
 	void addVolumeTex(const std::string& name, const Img_Volume* volumeTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
-	const Geo_Actor* getPickActor(unsigned color);
+	Geo_Actor* getPickActor(unsigned color);
 	actor_cptr getGeoActor(unsigned index) const; // access to geometry by index
 	actor_cptr getGeoActor(const std::string& name) const; // access to geometry by name
 	// unsigned getLightCount() const { return _lights.size(); }

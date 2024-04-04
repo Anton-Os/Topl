@@ -5,7 +5,7 @@
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
 
-#include "Topl_Program.hpp"
+#include "program/Topl_Program.hpp"
 
 struct Modelview_Demo : public Topl_Program {
     Modelview_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Modelview", backend){

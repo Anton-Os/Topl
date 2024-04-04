@@ -50,10 +50,11 @@ endif()
 
 
 list(APPEND core_src
-    core/Topl_Program.cpp
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
-    core/Topl_Scene_Statics.cpp
+    core/program/Topl_Program_Runner.cpp
+    core/program/Topl_Program_Timeline
+    core/Topl_Scene_Base.cpp
 )
 
 set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
@@ -122,8 +123,8 @@ endif()
 
 if(WIN32)
     add_library(DX11_ENGINE
-        core/directx/Topl_Pipeline_DX11.cpp
-        core/directx/Topl_Renderer_DX11.cpp
+        core/backends/directx/Topl_Pipeline_DX11.cpp
+        core/backends/directx/Topl_Renderer_DX11.cpp
     )
     target_include_directories(DX11_ENGINE PRIVATE core support physics geometry)
     target_include_directories(DX11_ENGINE INTERFACE
@@ -137,8 +138,8 @@ endif()
 
 if(Vulkan_FOUND)
     add_library(Vulkan_ENGINE
-        core/vulkan/Topl_Pipeline_Vulkan.cpp
-        core/vulkan/Topl_Renderer_Vulkan.cpp
+        core/backends/vulkan/Topl_Pipeline_Vulkan.cpp
+        core/backends/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
     target_include_directories(Vulkan_ENGINE PRIVATE core support physics geometry)
@@ -153,8 +154,8 @@ endif()
 # Building OpenGL Engine
 
 add_library(GL4_ENGINE
-    core/opengl/Topl_Pipeline_GL4.cpp
-    core/opengl/Topl_Renderer_GL4.cpp
+    core/backends/opengl/Topl_Pipeline_GL4.cpp
+    core/backends/opengl/Topl_Renderer_GL4.cpp
 )
 target_include_directories(GL4_ENGINE PRIVATE core support physics geometry)
 target_include_directories(GL4_ENGINE INTERFACE
@@ -199,9 +200,8 @@ add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(Modelview demos/Modelview.cpp)
 add_executable(Entropy demos/Entropy.cpp)
-add_executable(Insider demos/Insider.cpp)
 
-list(APPEND demo_targets Hello Sandbox Modelview Entropy Insider)
+list(APPEND demo_targets Hello Sandbox Modelview Entropy)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support physics geometry shaders)

@@ -16,8 +16,8 @@ void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
 	addGeometry(actor);
 }
 
-const Geo_Actor* Topl_Scene::getPickActor(unsigned color){
-	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+Geo_Actor* Topl_Scene::getPickActor(unsigned color){
+	for(std::vector<Geo_Actor*>::iterator actor = _geoActors.begin(); actor < _geoActors.end(); actor++)
 		if(((*actor)->getId() & 0x000000FF) == (color & 0x000000FF)){
 			if((*actor)->pickerFunc != nullptr) (*actor)->pickerFunc(*actor);
 			return *actor;

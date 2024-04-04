@@ -27,7 +27,7 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 
 Projection::Projection(PROJECTION_Type p, float s) {
 	type = p;
-	if(p == PROJECTION_Perspective) s /= -10.0;
+	// if(p == PROJECTION_Perspective) s /= -10.0;
 
 	left *= s; right *= s;
 	bottom *= s; top *= s;
@@ -36,14 +36,14 @@ Projection::Projection(PROJECTION_Type p, float s) {
 
 Projection::Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f) {
 	type = p;
-	if(p == PROJECTION_Perspective){ 
+	/* if(p == PROJECTION_Perspective){ 
 		l /= -10.0; r /= -10.0; b /= -10.0; t /= -10.0; n /= -10.0; f /= f; 
-	}
+	} */
 
 	type = p;
-	left = l; right = r;
-	bottom = b; top = t;
-	nearPlane = n; farPlane = f;
+	left *= l; right *= r;
+	bottom *= b; top *= t;
+	nearPlane *= n; farPlane *= f;
 }
 
 Mat4x4 Projection::genProjMatrix(){

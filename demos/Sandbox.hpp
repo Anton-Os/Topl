@@ -13,7 +13,7 @@
 #include "Beams_Shader.hpp"
 #include "Effect_Shader.hpp"
 
-#include "Topl_Program.hpp"
+#include "program/Topl_Program.hpp"
 
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
@@ -51,8 +51,16 @@ struct Sandbox_Demo : public Topl_Program {
                            { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
                            { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
         }), // basic constructor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, }, { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.25F, 0.0f }, { 0.0f, -0.25F, 0.0f }, }), // paths constuctor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, }, 0.8F, 5) // insertion constructor
+        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
+                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
+                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
+                           { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
+                        }, { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.25F, 0.0f }, { 0.0f, -0.25F, 0.0f }, }), // paths constuctor
+        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
+                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
+                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
+                           { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
+                        },  0.8F, 5) // insertion constructor
     };
     Geo_Actor paramActors[3] = { Geo_Actor(&paramMeshes[0]), Geo_Actor(&paramMeshes[1]), Geo_Actor(&paramMeshes[2]) };
 

@@ -9,12 +9,12 @@
 
 class Topl_Timeline {
 public:
-	Topl_Timeline();
+	Topl_Timeline(){}
 
 	// template<class T> void addSequence(T var, std::pair<millisec_t, T> target); // try to templatize this
-	void addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
-	void addSequence_float(float* var, std::pair<millisec_t, float> target);
-	void addSequence_double(double* var, std::pair<millisec_t, double> target);
+	Vec3f* addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
+	float* addSequence_float(float* var, std::pair<millisec_t, float> target);
+	double* addSequence_double(double* var, std::pair<millisec_t, double> target);
 
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
@@ -24,6 +24,10 @@ private:
 	static std::map<Vec3f*, std::map<millisec_t, Vec3f>> vec3f_map;
 	static std::map<float*, std::map<millisec_t, float>> float_map;
 	static std::map<double*, std::map<millisec_t, double>> double_map;
+
+	std::vector<Vec3f> vec3f_data;
+	std::vector<float> float_data;
+	std::vector<double> double_data;
 };
 
 #define NO_PICKER_OBJ nullptr
@@ -51,7 +55,7 @@ public:
 	static unsigned pickerColor; // picker for color
 	// static unsigned pickerVal_coord; // picker for coordinates
 	static Vec3f pickerCoord;
-	static const Geo_Actor* pickerObj; // picker for actor
+	static Geo_Actor* pickerObj; // picker for actor
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 protected:

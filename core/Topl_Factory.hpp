@@ -1,9 +1,9 @@
-#include "opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
+#include "backends/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
 #ifdef _WIN32
-#include "directx/Topl_Renderer_DX11.hpp"
+#include "backends/directx/Topl_Renderer_DX11.hpp"
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-#include "vulkan/Topl_Renderer_Vulkan.hpp"
+#include "backends/vulkan/Topl_Renderer_Vulkan.hpp"
 #endif
 
 // Backends List
