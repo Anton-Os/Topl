@@ -32,27 +32,28 @@ Input_CursorRange::Input_CursorRange(std::initializer_list<float> xRange, std::i
 	yMin = (y1 < y2) ? y1 : y2; yMax = (y1 > y2) ? y1 : y2;
 }
 
-void Input_MouseControl::addCallback(enum MOUSE_Button mb, pressCallback callback) {
-	_mouseCallback_map.insert(std::make_pair(mb, callback));
+void Input_MouseControl::addCallback(enum MOUSE_Event event, pressCallback callback) {
+	_pressCallback_map.insert(std::make_pair(event, callback));
 }
 
-void Input_MouseControl::addPress(enum MOUSE_Button mb, float x, float y){
-	if(mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down) _isMouseDown = std::make_pair(mb, true);
-	else if(mb == MOUSE_LeftBtn_Up || mb == MOUSE_RightBtn_Up) _isMouseDown = std::make_pair(mb, false);
+void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
+	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press) _isMouseDown = std::make_pair(event, true);
+	else if(event == MOUSE_LeftBtn_Release || event == MOUSE_RightBtn_Release) _isMouseDown = std::make_pair(event, false);
 	
-	for(std::map<MOUSE_Button, pressCallback>::const_iterator c = _mouseCallback_map.cbegin(); c != _mouseCallback_map.end(); c++)
-		if(mb == c->first) c->second(x, y); // makes callback go off where keys match
+	for(std::map<MOUSE_Event, pressCallback>::const_iterator c = _pressCallback_map.cbegin(); c != _pressCallback_map.end(); c++)
+		if(event == c->first) c->second(x, y); // makes callback go off where keys match
 	
-	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (mb == MOUSE_LeftBtn_Down || mb == MOUSE_RightBtn_Down)){
-		_tracerSteps.push_back({ mb, std::make_pair(x, y)}); // record the step
-		_tracerPaths.push_back(Input_TracerPath(mb)); // record the path
+	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press)){
+		_tracerSteps.push_back({ event, std::make_pair(x, y)}); // record the step
+		_tracerPaths.push_back(Input_TracerPath(event)); // record the path
 	}
 
 	stampEvent();
+
 }
 
-void Input_MouseControl::addPress(enum MOUSE_Button mb){
-	addPress(mb, INVALID_CURSOR_POS, INVALID_CURSOR_POS);
+void Input_MouseControl::addPress(enum MOUSE_Event event){
+	addPress(event, INVALID_CURSOR_POS, INVALID_CURSOR_POS);
 }
 
 void Input_MouseControl::addHoverCallback(hoverCallback callback){

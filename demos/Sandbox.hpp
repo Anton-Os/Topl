@@ -45,24 +45,13 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
     Geo_HexCone hexMesh = Geo_HexCone();
     Geo_Actor hexActor = Geo_Actor(&hexMesh);
-    Geo_ParametricSet paramMeshes[3] = {
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
-                           { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
-        }), // basic constructor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
-                           { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
-                        }, { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.25F, 0.0f }, { 0.0f, -0.25F, 0.0f }, }), // paths constuctor
-        Geo_ParametricSet({{ 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
-                           { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
-                           { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
-                        },  0.8F, 5) // insertion constructor
-    };
-    Geo_Actor paramActors[3] = { Geo_Actor(&paramMeshes[0]), Geo_Actor(&paramMeshes[1]), Geo_Actor(&paramMeshes[2]) };
+    Geo_ParametricSet paramMesh = Geo_ParametricSet({
+        { 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
+        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
+        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
+        { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
+    }); // basic constructor
+    Geo_Actor paramActor = Geo_Actor(&paramMesh);
 
     Geo_Chain chain = Geo_Chain("chain", &sphereMesh, Vec3f({0.0F, 0.1F, 0.0F}), 9);
     Geo_Grid grid = Geo_Grid("grid", &boxMesh, Geo_Grid_Params(std::make_pair(3, 0.25F)));
@@ -71,16 +60,19 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
     Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15);
     Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
+    Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15);
+    Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
     Geo_Listboard modeLayout = Geo_Listboard("modeLayout", 6);
     Geo_Paneboard timelineLayout = Geo_Paneboard("timelineLayout");
     Geo_Gridboard actionsLayout = Geo_Gridboard("actionsLayout", 3);
-    Geo_Crossboard statusLayout = Geo_Crossboard("statusLayout", 6);
-
+    Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
+    Geo_Crossboard scenePropsLayout = Geo_Crossboard("scenePropsLayout", 6);
 #ifdef RASTERON_H
     Img_Base canvasTex;
 
-    Img_Base timerCount_texture = Img_Base(0xFFFFFF00);
-    Img_Base pickerObj_texture = Img_Base(0xFFFFFF00);
+    Img_Base timerInfo_texture = Img_Base(0xFFFFFF00);
+    Img_Base pickerInfo_texture = Img_Base(0xFFFFFF00);
+    Img_Base sceneInfo_texture = Img_Base(0xFFFFFF00);
     Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg, *paramImg;
     Img_Base boxTex, pyramidTex, sphereTex, hexTex, paramTex;
 
@@ -91,15 +83,21 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Slider timelineSlider = Img_Slider(MENU_XL, 60); Img_Base timelineTex = Img_Base(timelineSlider.stateImg.getImage());
     Img_Base modeButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
     Img_Button actionButtons[9] = { 
-        Img_Button(MENU_Small, "zoom_in"), Img_Button(MENU_Small, "arrow_downward"), Img_Button(MENU_Small, "zoom_out"),
-        Img_Button(MENU_Small, "arrow_back"), Img_Button(MENU_Small, "cancel"), Img_Button(MENU_Small, "arrow_forward"),
-        Img_Button(MENU_Small, "rotate_left"), Img_Button(MENU_Small, "arrow_upward"), Img_Button(MENU_Small, "rotate_right"), 
+        Img_Button(MENU_Large, "zoom_in"), Img_Button(MENU_Large, "arrow_downward"), Img_Button(MENU_Large, "zoom_out"),
+        Img_Button(MENU_Large, "arrow_back"), Img_Button(MENU_Large, "cancel"), Img_Button(MENU_Large, "arrow_forward"),
+        Img_Button(MENU_Large, "rotate_left"), Img_Button(MENU_Large, "arrow_upward"), Img_Button(MENU_Large, "rotate_right"), 
     };
-    Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
+    Img_Base propsRoot = Img_Base(0xFF666666);
+    Img_Base propsPane = Img_Base(0xAAEEEEEE);
+    Img_Button propsButtons[6] = {
+        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "build"), Img_Button(MENU_Medium, "code"),
+        Img_Button(MENU_Medium, "cached"), Img_Button(MENU_Medium, "crop_free"), Img_Button(MENU_Medium, "delete"),
+    };
+    // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
 
     Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
-    Rasteron_Queue* words_queue = alloc_queue("words", { 64, 512 }, 9);
-    Img_Base words_textures[9] = { getFrameAt(words_queue, 0), getFrameAt(words_queue, 1), getFrameAt(words_queue, 2), getFrameAt(words_queue, 3), getFrameAt(words_queue, 4), getFrameAt(words_queue, 5), getFrameAt(words_queue, 6), getFrameAt(words_queue, 7), getFrameAt(words_queue, 8) };
+    Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", createImgSize(64, 512), 9);
+    Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
 #endif
 private:
     Topl_Scene canvas; // for backdrop element

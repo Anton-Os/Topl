@@ -83,14 +83,14 @@ public:
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
             spriteImgs[p].setFileImage(spriteImgPaths[p].c_str());
             sprites[p] = loadSprite(spriteImgs[p].getImage());
-            float width = getSpacialWidth(sprites[p]->bounds); float height = getSpacialHeight(sprites[p]->bounds);
+            float width = bounds_getWidth(sprites[p]->bounds); float height = bounds_getHeight(sprites[p]->bounds);
             quads[p].scale({ width, height, 0.0f });
             switch(p){
-                case PUPPET_Head: _geoActors[p].setPos({ 0.0F, (height / 2.0F) + (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                case PUPPET_Head: _geoActors[p].setPos({ 0.0F, (height / 2.0F) + (bounds_getHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
                 case PUPPET_LeftArm: _geoActors[p].setPos({ width / -2.0F, height / 2.0F, 0.0F }); break;
                 case PUPPET_RightArm: _geoActors[p].setPos({ width / 2.0F, height / 2.0F, 0.0F }); break;
-                case PUPPET_LeftLeg: _geoActors[p].setPos({ width / -2.0F, (height / -2.0F) - (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
-                case PUPPET_RightLeg: _geoActors[p].setPos({ width / 2.0F,  (height / -2.0F) - (getSpacialHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                case PUPPET_LeftLeg: _geoActors[p].setPos({ width / -2.0F, (height / -2.0F) - (bounds_getHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
+                case PUPPET_RightLeg: _geoActors[p].setPos({ width / 2.0F,  (height / -2.0F) - (bounds_getHeight(sprites[PUPPET_Body]->bounds) / 4.0F), 0.0F }); break;
                 default: _geoActors[p].setPos({ 0.0F, 0.0F, 0.0F }); break;
             }
             _geoActors[p].setMesh(&quads[p]);
@@ -100,7 +100,7 @@ public:
     // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
 
 #ifdef RASTERON_H
-    ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) dealloc_sprite(sprites[p]); }
+    // ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) RASTERON_SPRITE_DEALLOC(sprites[p]); }
 #endif
 
     void configure(Topl_Scene* scene) override {

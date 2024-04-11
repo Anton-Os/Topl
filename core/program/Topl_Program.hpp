@@ -12,9 +12,12 @@ public:
 	Topl_Timeline(){}
 
 	// template<class T> void addSequence(T var, std::pair<millisec_t, T> target); // try to templatize this
-	Vec3f* addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
-	float* addSequence_float(float* var, std::pair<millisec_t, float> target);
-	double* addSequence_double(double* var, std::pair<millisec_t, double> target);
+	void addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
+	// Vec3f* getSequence_vec3f(std::pair<millisec_t, Vec3f> target);
+	void addSequence_float(float* var, std::pair<millisec_t, float> target);
+	// float* getSequence_float(std::pair<millisec_t, float> target);
+	void addSequence_double(double* var, std::pair<millisec_t, double> target);
+	// double* getSequence_double(std::pair<millisec_t, double> target);
 
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing

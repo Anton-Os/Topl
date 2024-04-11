@@ -1,7 +1,5 @@
 #include "Topl_Scene.hpp"
 
-// Scene Statics
-
 void Topl_Scene::addGeometry(Geo_Actor* actor) {
 	for(unsigned a = 0; a < _geoActors.size(); a++)
 		if(_geoActors[a]->getName() == actor->getName()){

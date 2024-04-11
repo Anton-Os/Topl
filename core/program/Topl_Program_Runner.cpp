@@ -38,17 +38,17 @@ static void onAnyKey(char k){
 	}
 }
 
-static void onHover(float x, float y){
+static void onDrag(float x, float y){
 	static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
 
 	if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
 
 		if(Topl_Program::isCamera_mouse){
-			if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Down){
+			if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
 				if(savedColorVec[0] != Topl_Program::pickerCoord[0] || savedColorVec[1] != Topl_Program::pickerCoord[1])
 					Topl_Program::cameraObj.updatePos({ savedColorVec[0] - Topl_Program::pickerCoord[0], savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0 });
-			} else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Down){
+			} else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
 				if(savedColorVec[0] != Topl_Program::pickerCoord[0])
 					Topl_Program::cameraObj.updateRot({ savedColorVec[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
 				if(savedColorVec[1] != Topl_Program::pickerCoord[1])
@@ -64,7 +64,9 @@ static void onPress(float x, float y){
 }
 
 Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
-    _platform = new Platform(execPath, name);
+    srand(time(NULL));
+	
+	_platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
 	_renderer->setCamera(&Topl_Program::cameraObj);
@@ -72,16 +74,14 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
 
-	// Platform::mouseControl.addHoverCallback(onHover);
-	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Down, onPress);
-    // Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, onPress);
-	// Platform::mouseControl.addHoverCallback(onPress);
+	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
+	// Platform::mouseControl.addDragCallback(onDrag); // for camera
 #ifdef RASTERON_H
 	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
 
 	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
 	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
-	Topl_Program::cachedFrames = alloc_queue("frames", frameSize, CACHED_FRAME_COUNT);
+	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
 #endif
 }
 
@@ -89,10 +89,10 @@ void Topl_Program::cleanup() {
 #ifdef RASTERON_H
 	for(unsigned f = 0; f < Topl_Program::cachedFrames->frameCount; f++){ // exports frames
 		std::string frameName = "frame" + std::to_string(f + 1) + ".bmp";
-		Rasteron_Image* frameImg = getFrameAt(Topl_Program::cachedFrames, f);
+		Rasteron_Image* frameImg = queue_getImg(Topl_Program::cachedFrames, f);
 		writeFileImageRaw(frameName.c_str(), IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
 	}
-	if(Topl_Program::cachedFrames != NULL) dealloc_queue(Topl_Program::cachedFrames);
+	if(Topl_Program::cachedFrames != NULL) RASTERON_QUEUE_DEALLOC(Topl_Program::cachedFrames);
 	cleanupFreeType();
 #endif
 	delete(_renderer);
@@ -100,6 +100,8 @@ void Topl_Program::cleanup() {
 }
 
 void Topl_Program::run(){
+
+
     init();
 
     while (_platform->handleEvents()) {
@@ -111,7 +113,7 @@ void Topl_Program::run(){
 		_renderer->present(); // switches front and back buffers
 #ifdef RASTERON_H
 		Img_Base frameImg = _renderer->frame();
-		addFrameAt(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
+		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
 #endif
 	}
 

@@ -10,7 +10,7 @@
 #endif
 #if 1
     #define RASTERON_ENABLE_ANIM // includes animation support
-    #define RASTERON_ENABLE_FONT // includes 
+    #define RASTERON_ENABLE_FONT // includes font support
     
     // #include "Toolbox.h"
     #include "Rasteron.h" // includes Rasteron main modules and features
@@ -21,6 +21,6 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
 #endif
-#if TRUE
+#if 1
     #define TOPL_ENABLE_PHYSICS
 #endif

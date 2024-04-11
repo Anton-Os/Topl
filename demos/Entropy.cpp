@@ -1,7 +1,5 @@
 #include "Entropy.hpp"
 
-#define TOPL_ENABLE_PHYSICS
-
 static bool isInEntropy = true;
 static bool isAllShown = true;
 static unsigned short spawnIdx = 0;
@@ -20,9 +18,7 @@ void entropyReset(){ isInEntropy = !isInEntropy;  }
 void showAll(){ isAllShown = !isAllShown; }
 
 void Entropy_Demo::init(){
-    srand(time(NULL));
-
-    Platform::mouseControl.addCallback(MOUSE_RightBtn_Down, spawnPress);
+    Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
     Platform::keyControl.addCallback(' ', showAll);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);

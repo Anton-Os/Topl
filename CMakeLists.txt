@@ -16,6 +16,9 @@ endif()
 
 # ------------- Sources ------------- #
 
+set(IS_TRUE 1)
+set(IS_FALSE 0)
+
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/" )
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/" )
 
@@ -48,7 +51,6 @@ if(SUPPORT_MODELS AND Assimp_FOUND)
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
 endif()
 
-
 list(APPEND core_src
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
@@ -57,7 +59,7 @@ list(APPEND core_src
     core/Topl_Scene_Base.cpp
 )
 
-set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
+set(SUPPORT_PHYSICS ${IS_TRUE} CACHE INT "Include physics calculations" FORCE)
 if(SUPPORT_PHYSICS)
     list(APPEND core_src core/Topl_Scene_Dynamics.cpp)
 endif()
@@ -68,7 +70,7 @@ add_library(CORELIB # Core Library
     ${support_src}
     ${core_src}
 )
-target_include_directories(CORELIB PRIVATE core support physics geometry)
+target_include_directories(CORELIB PRIVATE core support geometry)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
     INTERFACE
@@ -84,7 +86,7 @@ elseif(UNIX AND NOT APPLE) # Unix Specific
 endif()
 
 add_library(GEOLIB ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core support physics geometry)
+target_include_directories(GEOLIB PRIVATE core support geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -126,7 +128,7 @@ if(WIN32)
         core/backends/directx/Topl_Pipeline_DX11.cpp
         core/backends/directx/Topl_Renderer_DX11.cpp
     )
-    target_include_directories(DX11_ENGINE PRIVATE core support physics geometry)
+    target_include_directories(DX11_ENGINE PRIVATE core support geometry)
     target_include_directories(DX11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -142,7 +144,7 @@ if(Vulkan_FOUND)
         core/backends/vulkan/Topl_Renderer_Vulkan.cpp
     )
     target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(Vulkan_ENGINE PRIVATE core support physics geometry)
+    target_include_directories(Vulkan_ENGINE PRIVATE core support geometry)
     target_include_directories(Vulkan_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -157,7 +159,7 @@ add_library(GL4_ENGINE
     core/backends/opengl/Topl_Pipeline_GL4.cpp
     core/backends/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PRIVATE core support physics geometry)
+target_include_directories(GL4_ENGINE PRIVATE core support geometry)
 target_include_directories(GL4_ENGINE INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -204,7 +206,7 @@ add_executable(Entropy demos/Entropy.cpp)
 list(APPEND demo_targets Hello Sandbox Modelview Entropy)
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support physics geometry shaders)
+    target_include_directories(${target} PRIVATE core support geometry shaders)
     target_link_libraries(${target} PRIVATE CORELIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
@@ -305,7 +307,6 @@ install(TARGETS CORELIB GEOLIB ${engine_targets}
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
-	${CMAKE_CURRENT_SOURCE_DIR}/physics*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
 )

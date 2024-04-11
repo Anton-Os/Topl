@@ -3,7 +3,6 @@
 #include <map>
 
 #include "support_def.h"
-#include "image_wrapper.h"
 
 #include "IO.hpp"
 #include "Timer.hpp"
@@ -11,11 +10,12 @@
 
 #include "Geo_Actor.hpp"
 
-#define TOPL_ENABLE_PHYSICS
+#include "overlays/Img.h"
+#include "overlays/Img_UI.h"
 
 #ifdef TOPL_ENABLE_PHYSICS
-#include "Phys_Actor.h"
-#include "Phys_Connector.h"
+#include "physics/Phys_Actor.h"
+#include "physics/Phys_Connector.h"
 #endif
 
 // Camera
@@ -112,9 +112,10 @@ private:
 	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
 #endif
 #ifdef RASTERON_H
-	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture
-	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures
-	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture
+	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
+	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
+	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order
+	std::map<const Img*, bool> _refreshMap; // associates each texture to a refresh state during texutizing
 #endif
 	Timer_Persist _ticker; // used for internal updates
 };

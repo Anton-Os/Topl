@@ -64,7 +64,7 @@ void Topl_Timeline::seqCallback(double m){
 	}
 }
 
-Vec3f* Topl_Timeline::addSequence_vec3f(Vec3f* var, std::pair<millisec_t, Vec3f> target){
+void Topl_Timeline::addSequence_vec3f(Vec3f* var, std::pair<millisec_t, Vec3f> target){
 	auto sequence = std::find_if(Topl_Timeline::vec3f_map.begin(), Topl_Timeline::vec3f_map.end(), [var](const std::pair<Vec3f*, std::map<millisec_t, Vec3f>>& p){ return p.first == var; });
 	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
 
@@ -74,11 +74,9 @@ Vec3f* Topl_Timeline::addSequence_vec3f(Vec3f* var, std::pair<millisec_t, Vec3f>
 		if(target.first != 0.0) Topl_Timeline::vec3f_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
 		Topl_Timeline::vec3f_map[var].insert({ target.first, target.second }); // insert updated state at new time
 	}
-
-	return nullptr;
 }
 
-float* Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> target){
+void Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float> target){
 	auto sequence = std::find_if(Topl_Timeline::float_map.begin(), Topl_Timeline::float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
 	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
 
@@ -88,11 +86,9 @@ float* Topl_Timeline::addSequence_float(float* var, std::pair<millisec_t, float>
 		if(target.first != 0.0) Topl_Timeline::float_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
 		Topl_Timeline::float_map[var].insert({ target.first, target.second }); // insert updated state at new time
 	}
-
-	return nullptr;
 }
 
-double* Topl_Timeline::addSequence_double(double* var, std::pair<millisec_t, double> target){
+void Topl_Timeline::addSequence_double(double* var, std::pair<millisec_t, double> target){
 	auto sequence = std::find_if(Topl_Timeline::double_map.begin(), Topl_Timeline::double_map.end(), [var](const std::pair<double*, std::map<millisec_t, double>>& p){ return p.first == var; });
 	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
 
@@ -102,6 +98,4 @@ double* Topl_Timeline::addSequence_double(double* var, std::pair<millisec_t, dou
 		if(target.first != 0.0) Topl_Timeline::double_map[var].insert({ TIMELINE_START, *var }); // create default state at timeline start
 		Topl_Timeline::double_map[var].insert({ target.first, target.second }); // insert updated state at new time
 	}
-
-	return nullptr;
 }

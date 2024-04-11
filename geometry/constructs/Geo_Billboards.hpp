@@ -28,7 +28,7 @@ public:
 
 	~Geo_Billboard(){
 #ifdef RASTERON_H
-	/* dealloc_image(rootBk);
+	/* RASTERON_DEALLOC((rootBk);
 	for(std::vector<Rasteron_Queue*>::iterator q = childStateBg.begin(); q != childStateBg.end(); q++)
 		free_queue(*q); */
 #endif
@@ -59,7 +59,7 @@ public:
 			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
 				textObj.fgColor = RAND_COLOR(); textObj.bkColor = RAND_COLOR();
 				Img_Base image = Img_Base(textObj);
-				addFrameAt(paneImgArray_map.at(&_geoActors.at(p)).getQueue(), image.getImage(), t);
+				queue_addImg(paneImgArray_map.at(&_geoActors.at(p)).getQueue(), image.getImage(), t);
 			}
 			scene->addArrayTex(getCellName(p + 1), &paneImgArray_map.at(&_geoActors.at(p))); 
 		}

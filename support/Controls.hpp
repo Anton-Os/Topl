@@ -43,29 +43,32 @@ private:
 #define MAX_CURSOR_BOUND 1.0f
 #define MIN_CURSOR_BOUND -1.0f
 
-enum MOUSE_Button {
-    MOUSE_LeftBtn_Down,
-    MOUSE_LeftBtn_Up,
-    MOUSE_RightBtn_Down,
-    MOUSE_RightBtn_Up,
-    /* MOUSE_MiddleBtn_Down,
+enum MOUSE_Event {
+    MOUSE_Hover,
+    MOUSE_LeftBtn_Press,
+    MOUSE_LeftBtn_Drag,
+    MOUSE_LeftBtn_Release,
+    MOUSE_RightBtn_Press,
+    MOUSE_RightBtn_Drag,
+    MOUSE_RightBtn_Release,
+    MOUSE_MiddleBtn_Press,
     MOUSE_Scroll_Up,
-    MOUSE_Scroll_Down */
+    MOUSE_Scroll_Down
 };
 
 struct Input_TracerStep {
-    MOUSE_Button button;
+    MOUSE_Event button;
 	std::pair<float, float> step;
 };
 
 #define MAX_PATH_STEPS 4096
 
 struct Input_TracerPath {
-    Input_TracerPath(enum MOUSE_Button b){ button = b; } 
+    Input_TracerPath(enum MOUSE_Event b){ button = b; } 
 
     // std::pair<float, float> getLastPath(unsigned short s){ return (s < stepsCount)? steps[stepsCount - s - 1] : steps[stepsCount - 1]; }
 
-	MOUSE_Button button;
+	MOUSE_Event button;
 	std::pair<float, float> steps[MAX_PATH_STEPS];
 	unsigned stepsCount = 0;
 };
@@ -80,35 +83,37 @@ struct Input_CursorRange {
 
 typedef std::pair<unsigned, unsigned> tracerPath_t; // start and ending index of tracer steps inside of a path
 
-typedef void (*pressCallback)(float, float); // triggers action on a mouse button press
-typedef void (*hoverCallback)(float, float); // triggers action on a cursor hover over specified region
-typedef void (*dragCallback)(float, float); // triggers action on a cursor hover over specified region
-typedef void (*scrollCallback)(bool); // triggers action on wheel in positive or negative direction
+typedef void (*mouseCallback)(enum MOUSE_Event, std::pair<float, float>); // Triggers action on any mouse event
+typedef void (*pressCallback)(float, float); // Triggers action on a mouse button press
+typedef void (*hoverCallback)(float, float); // Triggers action on a cursor hover over specified region
+typedef void (*dragCallback)(float, float); // Triggers action on a cursor hover over specified region
+typedef void (*scrollCallback)(bool); // Triggers action on wheel in positive or negative direction
 
 class Input_MouseControl : public Input_Control {
 public:
     Input_MouseControl() : Input_Control(){}
     void setOnScroll(scrollCallback callback){ onScroll = callback; }
-    void addCallback(enum MOUSE_Button mb, pressCallback callback);
-    void addPress(enum MOUSE_Button mb, float x, float y);// mouse press with no cursor
-    void addPress(enum MOUSE_Button mb); // mouse press no cursor
+    void addCallback(enum MOUSE_Event mb, pressCallback callback);
+    void addPress(enum MOUSE_Event mb, float x, float y);// mouse press with no cursor
+    void addPress(enum MOUSE_Event mb); // mouse press no cursor
     void addHoverCallback(hoverCallback callback);
     void addHover(float x, float y); // checks for hover events given cursor position
     void addDragCallback(dragCallback callback);
     void addDrag(float x, float y);  // checks for drag events given cursor position
     
     scrollCallback onScroll = nullptr;
-    std::pair<enum MOUSE_Button, bool> getIsMouseDown(){ return _isMouseDown; }
+    std::pair<enum MOUSE_Event, bool> getIsMouseDown(){ return _isMouseDown; }
     // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
     const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }
     // const Input_TracerPath* getLastTracerPath(unsigned short steps) const { return (steps < _tracerPaths.size())? &_tracerPaths[_tracerPaths.size() - steps - 1] : &_tracerPaths.back(); }
     const std::vector<Input_TracerPath>* getTracerPaths() const { return &_tracerPaths; }
 private:
-    std::pair<enum MOUSE_Button, bool> _isMouseDown; // tracks state of mouse being held
+    std::pair<enum MOUSE_Event, bool> _isMouseDown; // tracks state of mouse being held
     std::vector<Input_TracerStep> _tracerSteps; // tracks steps whenever mouse event and cursor pos is known 
 	std::vector<Input_TracerPath> _tracerPaths; // tracks paths whenever mouse is held and moving
 
-	std::map<MOUSE_Button, pressCallback> _mouseCallback_map;
+	std::vector<mouseCallback> _mouseCallbacks; // will store any action
+    std::map<MOUSE_Event, pressCallback> _pressCallback_map;
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;
     std::map<const Input_CursorRange*, dragCallback> _dragCallback_map;
 };

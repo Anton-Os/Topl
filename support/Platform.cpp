@@ -11,7 +11,7 @@ bool Platform::isUserInput = false;
 
 #ifdef _WIN32
 
-static void addPress(enum MOUSE_Button button){
+static void addPress(enum MOUSE_Event button){
 	if(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
 		Platform::mouseControl.addPress(button, Platform::getCursorX(), Platform::getCursorY());
 	else Platform::mouseControl.addPress(button);
@@ -56,10 +56,10 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 		else if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
-	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Down); }
-	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addPress(MOUSE_LeftBtn_Up); }
-	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addPress(MOUSE_RightBtn_Down); }
-	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addPress(MOUSE_RightBtn_Up); }
+	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }
+	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addPress(MOUSE_LeftBtn_Release); }
+	case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN) addPress(MOUSE_RightBtn_Press); }
+	case (WM_RBUTTONUP): { if(message == WM_RBUTTONUP) addPress(MOUSE_RightBtn_Release); }
 	case (WM_MOUSEWHEEL): { 
 		if(message == WM_MOUSEWHEEL && Platform::mouseControl.onScroll != nullptr) 
 			Platform::mouseControl.onScroll(GET_WHEEL_DELTA_WPARAM(wParam) > 0);
@@ -147,7 +147,7 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 	RECT rect;
 	GetWindowRect(_context.window, &rect);
-	rect.top += 50; // this adjustment fixes issues
+	rect.top += 45; // this adjustment fixes issues
 	
 	if (point.x < rect.right && point.x > rect.left && point.y > rect.top && point.y < rect.bottom) {
 		long unsigned halfWidth = ((rect.right - rect.left) / 2);

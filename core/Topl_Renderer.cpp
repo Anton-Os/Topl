@@ -81,16 +81,16 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 
 		if(actor != nullptr && renderID != INVALID_RENDERID){
 			const Img_Base* texture = scene->getTexture(actor->getName());
-			if(texture != nullptr) attachTex(texture->getImage(), renderID);
+			if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
 
 			const Img_Array* arrayTex = scene->getArrayTex(actor->getName());
 			if (arrayTex != nullptr)
 				for (unsigned p = 1; p < MAX_TEX_BINDINGS; p++) // begin from 1 not to override first texture
-					attachTexAt(getFrameAt(arrayTex->getQueue(), p), renderID, p);
+					attachTexAt(queue_getImg(arrayTex->getQueue(), p), renderID, p); // TODO: Check for refresh!
 					// attachTexAt(arrayTex->getLayer((unsigned short)p)->getImage(), renderID, p);
 
 			const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
-			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID);
+			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for refresh!
 		} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 	}
 }
@@ -100,7 +100,7 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
     Img_Base image = frame();
-    unsigned offset = pixelPointOffset_cursor(pixPoint, image.getImage());
+    unsigned offset = pixPoint_cursorOffset(pixPoint, image.getImage());
     unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets
 }
