@@ -1,5 +1,7 @@
 #ifndef GEO_ACTOR_H
 
+#include "Controls.hpp"
+
 #include "Geo_Mesh.hpp"
 
 // Actor
@@ -10,8 +12,13 @@
 extern class Geo_Actor;
 extern struct Topl_EntryShader;
 
-typedef void (*pickerCallback)(Geo_Actor*);
+// typedef void (*pickerCallback)(Geo_Actor*);
+// typedef void (*shaderCallback)(Topl_EntryShader*);
+
+typedef void (*pickerCallback)(MOUSE_Event);
 typedef void (*shaderCallback)(Topl_EntryShader*);
+
+// static void defaultShaderCallback(Topl_EntryShader* entryShader){ entryShader->setMode(0); }
 
 class Geo_Actor {
 public:

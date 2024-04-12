@@ -1,3 +1,5 @@
+#ifndef CONTROLS_H
+
 #include <map>
 #include <algorithm>
 #include <cctype>
@@ -117,3 +119,6 @@ private:
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;
     std::map<const Input_CursorRange*, dragCallback> _dragCallback_map;
 };
+
+#define CONTROLS_H
+#endif

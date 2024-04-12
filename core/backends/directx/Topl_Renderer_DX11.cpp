@@ -572,13 +572,13 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 			DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
 			DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
 		}
-		for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
+		/* for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
 			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
 			if (tex2D != _textures.end()){
 				DX11::texSamplers[b] = tex2D->sampler;
 				DX11::texResources[b] = tex2D->resource;
 			}
-		}
+		} */
 		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
 		if(tex3D != _textures.end()){
 			DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;

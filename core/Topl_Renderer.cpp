@@ -83,11 +83,11 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 			const Img_Base* texture = scene->getTexture(actor->getName());
 			if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
 
-			const Img_Array* arrayTex = scene->getArrayTex(actor->getName());
+			/* const Img_Array* arrayTex = scene->getArrayTex(actor->getName());
 			if (arrayTex != nullptr)
 				for (unsigned p = 1; p < MAX_TEX_BINDINGS; p++) // begin from 1 not to override first texture
 					attachTexAt(queue_getImg(arrayTex->getQueue(), p), renderID, p); // TODO: Check for refresh!
-					// attachTexAt(arrayTex->getLayer((unsigned short)p)->getImage(), renderID, p);
+					// attachTexAt(arrayTex->getLayer((unsigned short)p)->getImage(), renderID, p); */
 
 			const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
 			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for refresh!

@@ -128,7 +128,13 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 		Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
 		Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
-		if(actor != nullptr) Topl_Program::pickerObj = actor; 
+		if(actor != nullptr){
+			Topl_Program::pickerObj = actor;
+			if(actor->pickerFunc != nullptr){
+				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
+				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
+			}
+		} 
 	}
 	return Topl_Program::pickerColor;
 }

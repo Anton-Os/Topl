@@ -106,6 +106,7 @@ static void onDrag(float x, float y){
             }
         } else {
             _instance->pickerInfoActor.isShown = false;
+            for(unsigned a = 0; a < 7; a++) _instance->modeLayout.getGeoActor(a)->isShown = false;
             _instance->sceneInfoActor.isShown = true;
         }
     } else Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
@@ -127,38 +128,56 @@ static void timerTextUpdate(){
     _instance->timelineSlider.setState(secs / 60.0);
 }
 
-void actions_onPick(Geo_Actor* actor){
-    int c = (char)(actor->getName().back()) - '0';
-    // for(unsigned a = 0; a < 9; a++)
-    //    (a == c - 1)? _instance->actionButtons[a].setState(MENU_On) : _instance->actionButtons[a].setState(MENU_None);
+void actions_onPick(MOUSE_Event event){
+    if(Topl_Program::pickerObj != nullptr && event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
 
-    switch(c - 1){
-        case 0: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, 0.5F })); break;
-        case 1: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, -0.5F, 0.0F })); break;
-        case 2: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, -0.5F })); break;
-        case 3: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
-        // case 4: Topl_Program::pickerObj->isShown = !Topl_Program::pickerObj->isShown; break;
-        case 5: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
-        case 6: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
-        case 7: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.5F, 0.0F })); break;
-        case 8: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
-        default: break;
+        switch(c - 1){
+            case 0: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, 0.5F })); break;
+            case 1: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, -0.5F, 0.0F })); break;
+            case 2: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, -0.5F })); break;
+            case 3: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
+            // case 4: Topl_Program::pickerObj->isShown = !Topl_Program::pickerObj->isShown; break;
+            case 5: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
+            case 6: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
+            case 7: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.5F, 0.0F })); break;
+            case 8: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
+            default: break;
+        }
     }
 }
 
-void modes_onPick(Geo_Actor* actor){
-    int c = (actor != nullptr)? (char)(actor->getName().back()) - '0' : -1;
-    for(unsigned m = 0; m < 6; m++){
-        std::string modeText = "mode " + std::to_string(m + 1);
-        Rasteron_Text timerTextObj = { 
-            fontPaths[m].c_str(), modeText.c_str(), 
-            (m != c - 1)? 0xFF111111 : 0xFF00FF00, (m != c - 1)? 0xFFEEEEEE : 0xFF111111 
-        };
-        _instance->modeButtons[m].setTextImage(&timerTextObj);
+void modes_onPick(MOUSE_Event event){
+    if(Topl_Program::pickerObj != nullptr && event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
+        for(unsigned m = 0; m < 6; m++){
+            std::string modeText = "mode " + std::to_string(m + 1);
+            Rasteron_Text timerTextObj = { 
+                fontPaths[m].c_str(), modeText.c_str(), 
+                (m != c - 1)? 0xFF111111 : 0xFF00FF00, (m != c - 1)? 0xFFEEEEEE : 0xFF111111 
+            };
+            _instance->modeButtons[m].setTextImage(&timerTextObj);
+        }
     }
 }
 
-static void slider_onPick(Geo_Actor* actor){ 
+void panes_onPick(MOUSE_Event event){
+    if(Topl_Program::pickerObj){
+        if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+            int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
+            _instance->modeLayout.shift(*Topl_Program::pickerObj->getPos() - _instance->modeLayout.getOrigin());
+            _instance->modeLayout.shift({ 0.0F, 0.225F, 0.0F});
+            for(unsigned a = 0; a < 7; a++) _instance->modeLayout.getGeoActor(a)->isShown = true;
+        }
+        for(int b = 0; b < 6; b++) 
+            ((Topl_Program::pickerObj->getId() == _instance->scenePropsLayout.getGeoActor(6 - b - 1)->getId() || Topl_Program::pickerObj->getId() == _instance->pickerPropsLayout.getGeoActor(6 - b - 1)->getId())
+            && (Topl_Program::pickerObj->getId() != _instance->scenePropsLayout.getGeoActor(6)->getId() || Topl_Program::pickerObj->getId() == _instance->pickerPropsLayout.getGeoActor(6)->getId()))
+                ? _instance->propsButtons[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
+                : _instance->propsButtons[b].setState(MENU_None);
+    }
+}
+
+static void slider_onPick(MOUSE_Event event){ 
     _instance->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
     Topl_Program::timeline.dynamic_ticker.isPaused = true;
     Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::pickerCoord[0] * 60.0);
@@ -243,7 +262,9 @@ void Sandbox_Demo::init(){
     pickerPropsLayout.scale({ 1.175F, 0.1F, 1.0F });
     pickerPropsLayout.shift({ 0.673F, -0.9215f, 0.0f });
     overlay.addTexture("pickerPropsLayout_root", &propsRoot);
+    pickerPropsLayout.getGeoActor(6)->pickerFunc = panes_onPick;
     for(unsigned p = 0; p < 6; p++) {
+        pickerPropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
         pickerPropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
         overlay.addTexture(pickerPropsLayout.getGeoActor(p)->getName(), &propsButtons[6 - p - 1].stateImg);
     }
@@ -251,7 +272,9 @@ void Sandbox_Demo::init(){
     scenePropsLayout.scale({ 1.175F, 0.1F, 1.0F });
     scenePropsLayout.shift({ -0.7F, -0.9215f, 0.0f });
     overlay.addTexture("scenePropsLayout_root", &propsRoot);
+    scenePropsLayout.getGeoActor(6)->pickerFunc = panes_onPick;
     for(unsigned p = 0; p < 6; p++) {
+        scenePropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
         scenePropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
         overlay.addTexture(scenePropsLayout.getGeoActor(p)->getName(), &propsButtons[6 - p - 1].stateImg);
     }
@@ -275,7 +298,7 @@ void Sandbox_Demo::init(){
     _instance->sceneInfo_texture.setTextImage(&sceneTextObj);
     overlay.addTexture("timelineLayout_cell1", &timelineSlider.stateImg);
     timelineLayout.getGeoActor(0)->pickerFunc = slider_onPick;
-    modes_onPick(nullptr);
+    // modes_onPick(nullptr);
     for(unsigned m = 0; m < 6; m++){
         modeLayout.getGeoActor(m)->pickerFunc = modes_onPick;
         overlay.addTexture("modeLayout_cell" + std::to_string(m + 1), &_instance->modeButtons[m]);
@@ -313,8 +336,7 @@ void Sandbox_Demo::loop(double frameTime){
 #endif
 
     // Capture Renders
-
-    if(Platform::mouseControl.getIsMouseDown().second) {
+    {
         flatVShader.setMode(FLAT_MODE_SOLID); 
 
         _renderer->setDrawMode(DRAW_Triangles);
@@ -328,10 +350,10 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->setCamera(&fixedCamera);
         _renderer->updateScene(&overlay);
         _renderer->drawScene(&overlay);
-#ifdef RASTERON_H
+    #ifdef RASTERON_H
         colorPicker(&scene);
         colorPicker(&overlay);
-#endif
+    #endif
         _renderer->clear();
     }
 
