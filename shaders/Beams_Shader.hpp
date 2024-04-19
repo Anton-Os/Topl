@@ -33,8 +33,8 @@ struct Beams_VertexShader : public Topl_EntryShader {
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
-		appendLight(&skyLight, bytes);
 		appendLight(&flashLight, bytes);
+		appendLight(&skyLight, bytes);
 		appendLight(&lampLight, bytes);
 	}
 

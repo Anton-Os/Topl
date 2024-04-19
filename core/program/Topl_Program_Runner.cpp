@@ -35,6 +35,13 @@ static void onAnyKey(char k){
 		else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
 		else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
 		else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
+#ifdef RASTERON_H
+		/* else if(k == ';'){
+			Rasteron_Image* frameImg = _renderer->frame();
+			writeFileImageRaw("Output.bmp", IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
+			RASTERON_DEALLOC(frameImg);
+		} */
+#endif
 	}
 }
 
@@ -100,11 +107,9 @@ void Topl_Program::cleanup() {
 }
 
 void Topl_Program::run(){
-
-
     init();
 
-    while (_platform->handleEvents()) {
+    while (true) {
 		if(!Topl_Program::timeline.dynamic_ticker.isPaused)
 			Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 
@@ -115,6 +120,7 @@ void Topl_Program::run(){
 		Img_Base frameImg = _renderer->frame();
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
 #endif
+		_platform->handleEvents();
 	}
 
 	cleanup();

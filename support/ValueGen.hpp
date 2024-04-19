@@ -19,15 +19,15 @@ void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); /
 
 // Transformation Operations
 
-// #define PERSPECTIVE_PROJ_DIV -0.1
+#define PPROJ_A -1.0
+#define PPROJ_Z 5.0
 
 enum PROJECTION_Type {
     PROJECTION_None,
     PROJECTION_Ortho,
     PROJECTION_Perspective,
-    // PROJECTION_Stereo,
-    // PROJECTION_Gnomonic,
-    // PROJECTION_Test // for shader and computation tests
+    PROJECTION_Hyperbolic,
+    PROJECTION_Experimental,
 };
 
 struct Projection { // Used in Matrix calculations

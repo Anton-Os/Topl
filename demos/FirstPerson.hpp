@@ -1,3 +1,5 @@
+
+#include "meshes/Geo_Surface.hpp"
 #include "constructs/Geo_Puppet.hpp"
 #include "constructs/Geo_Model3D.hpp"
 
@@ -7,8 +9,8 @@
 
 #include "program/Topl_Program.hpp"
 
-struct Modelview_Demo : public Topl_Program {
-    Modelview_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Modelview", backend){
+struct FirstPerson_Demo : public Topl_Program {
+    FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
         // flatVShader.setMode(2);
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
         // texVShader.setMode(0);
@@ -40,6 +42,8 @@ struct Modelview_Demo : public Topl_Program {
     Geo_Puppet2D puppet3 = Geo_Puppet2D("puppet3", demonPuppetAssets);
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
+    Geo_Quad2D floorMesh = Geo_Quad2D(100.0F);
+    Geo_Actor floor = Geo_Actor(&floorMesh);
     Geo_Model3D model1 = Geo_Model3D("model1", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
     Geo_Model3D model2 = Geo_Model3D("model2", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
     Geo_Model3D model3 = Geo_Model3D("model3", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));

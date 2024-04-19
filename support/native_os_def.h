@@ -5,12 +5,6 @@
 
 #include "support_def.h"
 
-// OpenGL Specific Inclusions
-
-#define GLEW_STATIC
-#include "GL/glew.h"
-#include <GL/gl.h>
-
 // System Definitions
 
 #ifdef _WIN32

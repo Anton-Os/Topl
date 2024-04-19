@@ -43,6 +43,7 @@ public:
 
 	void run();
 #ifdef RASTERON_H
+	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
 	unsigned colorPicker(Topl_Scene* scene); // get solid color to find item
 	Vec3f coordPicker(Topl_Scene* scene); // get relative coordinates within item
 #endif

@@ -30,6 +30,7 @@ struct Sandbox_Demo : public Topl_Program {
     static int mode;
     static int pipelineIndex;
     static bool isShaderVariant;
+    static bool isDetailsShown;
     static unsigned shaderMode;
     static Vec3f texScroll;
     static std::string fontFilePath;
@@ -53,9 +54,6 @@ struct Sandbox_Demo : public Topl_Program {
     }); // basic constructor
     Geo_Actor paramActor = Geo_Actor(&paramMesh);
 
-    Geo_Chain chain = Geo_Chain("chain", &sphereMesh, Vec3f({0.0F, 0.1F, 0.0F}), 9);
-    Geo_Grid grid = Geo_Grid("grid", &boxMesh, Geo_Grid_Params(std::make_pair(3, 0.25F)));
-    
     Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15);
     Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
     Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15);
@@ -67,6 +65,11 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Gridboard actionsLayout = Geo_Gridboard("actionsLayout", 3);
     Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
     Geo_Crossboard scenePropsLayout = Geo_Crossboard("scenePropsLayout", 6);
+
+    Geo_Quad3D wireframes[100];
+    Geo_TriangleCone arrows[100];
+    Geo_Orb points[100];
+    Geo_Actor detailActors[100 + 100 + 100];
 #ifdef RASTERON_H
     Img_Base canvasTex;
 

@@ -452,7 +452,7 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 
 	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource)); // multi-texture addition
 
-	// texture->Release(); // test deallocation
+	texture->Release();
 }
 
 void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {

@@ -57,7 +57,7 @@ void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, c
 		if (name == (*actor)->getName()) targetActor = *actor;
 	if (targetActor == nullptr) return logMessage(MESSAGE_Exclaim, "Could not locate actor to anchor for object: " + name);
 
-	_anchoredItems.push_back({connector, std::make_pair(targetActor, pos)}); // add new anchor
+	_anchoredItems.push_back({ connector, std::make_pair(targetActor, pos)}); // add new anchor
 }
 
 

@@ -3,12 +3,15 @@
 int Sandbox_Demo::mode = 0;
 int Sandbox_Demo::pipelineIndex = 0;
 bool Sandbox_Demo::isShaderVariant = false;
+bool Sandbox_Demo::isDetailsShown = false;
 unsigned Sandbox_Demo::shaderMode = 0;
 Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 
 Vec3f cameraPos, cameraRot;
 float cameraZoom = 1.0;
+
+std::map<Geo_Actor*, Vec3f> actorPos_map, actorRot_map, actorScale_map;
 
 std::string fontPaths[9] = {
     std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf",
@@ -32,13 +35,6 @@ unsigned paramImg_callback(double x, double y){
     else return (y > 0.5F)? 0xCCFFFF00: 0xCCEEEEEE; 
 }
 #endif
-
-
-static Vec3f boxRot, boxScale = { 1.0f, 1.0f, 1.0f }, boxPos = { 0.5f, 0.5f, 0.0f };
-static Vec3f pyramidRot, pyramidScale = { 1.0f, 1.0f, 1.0f }, pyramidPos = { -0.5f, 0.5f, 0.0f };
-static Vec3f sphereRot, sphereScale = { 1.0f, 1.0f, 1.0f }, spherePos = { -0.5f, -0.5f, 0.0f };
-static Vec3f hexRot, hexScale = { 1.0f, 1.0f, 1.0f }, hexPos = { 0.5f, -0.5f, 0.0f };
-
 
 static void onAnyKey(char k){ 
     if(isdigit(k)){ 
@@ -66,13 +62,12 @@ static void onAnyKey(char k){
 
 static void onScroll(bool positive){
     if(Topl_Program::pickerObj != NO_PICKER_OBJ){
-        if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId() 
-          || Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()
-          || Topl_Program::pickerObj->getId() == _instance->hexActor.getId()
-          || Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()
-          || Topl_Program::pickerObj->getId() == _instance->paramActor.getId()){
-            if(positive) Topl_Program::pickerObj->updateSize({ 0.15F, 0.15F, 0.15F });
-            else Topl_Program::pickerObj->updateSize({ -0.15F, -0.15F, -0.15F });
+        if(_instance->checkPicker(&_instance->boxActor) || _instance->checkPicker(&_instance->pyramidActor) || _instance->checkPicker(&_instance->sphereActor) || _instance->checkPicker(&_instance->hexActor)){
+            auto size = std::find_if(actorScale_map.begin(), actorScale_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& s){ return s.first == Topl_Program::pickerObj; });
+            if(size == actorScale_map.end()) actorScale_map.insert({ Topl_Program::pickerObj, Vec3f({ 1.0F, 1.0F, 1.0F }) });
+
+            actorScale_map[Topl_Program::pickerObj] = actorScale_map[Topl_Program::pickerObj] + ((positive)? Vec3f({ 0.15F, 0.15F, 0.15F }) : Vec3f({ -0.15F, -0.15F, -0.15F }));
+            Topl_Program::timeline.addSequence_vec3f(&actorScale_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorScale_map[Topl_Program::pickerObj]));
         }
     }
     else Topl_Program::cameraObj.setZoom((positive)? *Topl_Program::cameraObj.getZoom() * 1.1 : *Topl_Program::cameraObj.getZoom() * 0.9); 
@@ -91,18 +86,22 @@ static void onDrag(float x, float y){
             _instance->pickerInfoActor.isShown = true;
             _instance->sceneInfoActor.isShown = false;
 
-            if(Topl_Program::pickerObj->getId() == _instance->boxActor.getId() 
-              || Topl_Program::pickerObj->getId() == _instance->pyramidActor.getId()
-              || Topl_Program::pickerObj->getId() == _instance->hexActor.getId()
-              || Topl_Program::pickerObj->getId() == _instance->sphereActor.getId()
-              || Topl_Program::pickerObj->getId() == _instance->paramActor.getId()){
-                (Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press)
-                  ? Topl_Program::pickerObj->setPos(Topl_Program::getCamCursorPos())
-                  : Topl_Program::pickerObj->updateRot({ 
-                        (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 10, 
-                        (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 10, 
-                        0.0 
+            if(_instance->checkPicker(&_instance->boxActor) || _instance->checkPicker(&_instance->pyramidActor) || _instance->checkPicker(&_instance->sphereActor) || _instance->checkPicker(&_instance->hexActor)){
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
+                    auto pos = std::find_if(actorPos_map.begin(), actorPos_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& p){ return p.first == Topl_Program::pickerObj; });
+                    if(pos == actorPos_map.end()) actorPos_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+
+                    actorPos_map[Topl_Program::pickerObj] = Topl_Program::getCamCursorPos();
+                    Topl_Program::timeline.addSequence_vec3f(&actorPos_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorPos_map[Topl_Program::pickerObj]));
+                } else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
+                    auto rot = std::find_if(actorRot_map.begin(), actorRot_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& r){ return r.first == Topl_Program::pickerObj; });
+                    if(rot == actorRot_map.end()) actorRot_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getRot() });
+
+                    actorRot_map[Topl_Program::pickerObj] = actorRot_map[Topl_Program::pickerObj] + Vec3f({ 
+                        (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 10.0F, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 10.0F, 0.0F 
                     });
+                    Topl_Program::timeline.addSequence_vec3f(&actorRot_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorRot_map[Topl_Program::pickerObj]));
+                }
             }
         } else {
             _instance->pickerInfoActor.isShown = false;
@@ -200,7 +199,7 @@ void Sandbox_Demo::init(){
     Topl_Program::timeline.dynamic_ticker.addRecurringEvent(cameraUpdate);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(2500, shaderModeUpdate);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, timerTextUpdate);
-    Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
+    Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
 
     canvasActor.setPos({ 0.0f, 0.0f, -1.0F});
     canvas.addGeometry("Backdrop", &canvasActor);
@@ -310,29 +309,30 @@ void Sandbox_Demo::init(){
 #endif
     _renderer->buildScene(&overlay);
     _renderer->texturizeScene(&overlay);
+
+    for(unsigned d = 0; d < 300; d++){
+        if(d % 3 == 0) detailActors[d] = Geo_Actor((Geo_Mesh*)&wireframes[d / 3]);
+        else if(d % 3 == 1) detailActors[d] = Geo_Actor((Geo_Mesh*)&points[d / 3]);
+        else detailActors[d] = Geo_Actor((Geo_Mesh*)&arrows[d / 3]);
+
+        detailActors[d].setPos({ (d % 3 == 0)? -0.05F : (d % 3 == 1)? 0.05F : 0.0F, -1.0F + ((1.0F / 150.0F) * d), 0.0F });
+        detailActors[d].setSize({ 0.025F, 0.025F, 0.025F });
+        
+        details.addGeometry("detail " + std::to_string(d), &detailActors[d]);
+    }
+
+    _renderer->buildScene(&details);
+    _renderer->texturizeScene(&details);
 }
 
 void Sandbox_Demo::loop(double frameTime){
     // Object Updates
 
-    // _instance->boxActor.setPos(boxPos);
-    // _instance->boxActor.setRot(boxRot);
-    // _instance->boxActor.setSize(boxScale);
-    // _instance->pyramidActor.setPos(pyramidPos);
-    // _instance->pyramidActor.setRot(pyramidRot);
-    // _instance->pyramidActor.setSize(pyramidScale);
-    // _instance->sphereActor.setPos(spherePos);
-    // _instance->sphereActor.setRot(sphereRot);
-    // _instance->sphereActor.setSize(sphereScale);
-    // _instance->hexActor.setPos(hexPos);
-    // _instance->hexActor.setRot(hexRot);
-    // _instance->hexActor.setSize(hexScale);
+    for(auto p = actorPos_map.begin(); p != actorPos_map.end(); p++) p->first->setPos(p->second);
+    for(auto r = actorRot_map.begin(); r != actorRot_map.end(); r++) r->first->setRot(r->second);
+    for(auto s = actorScale_map.begin(); s != actorScale_map.end(); s++) s->first->setSize(s->second);
 #ifdef RASTERON_H
-    // if(_renderer->getFrameCount() % 10 == 0 || Platform::mouseControl.getIsMouseDown().second){
-        // _renderer->texturizeScene(&canvas);
-        // _renderer->texturizeScene(&scene);
-        _renderer->texturizeScene(&overlay);
-    // }
+    _renderer->texturizeScene(&overlay);
 #endif
 
     // Capture Renders
@@ -413,6 +413,9 @@ void Sandbox_Demo::loop(double frameTime){
 
         _renderer->setDrawMode(DRAW_Triangles);
         _renderer->draw(&_instance->paramActor);
+
+        _renderer->setDrawMode(DRAW_Lines);
+        if(Sandbox_Demo::isDetailsShown) _renderer->drawScene(&details);
 
         _renderer->setDrawMode(DRAW_Triangles);
         _renderer->setCamera(&fixedCamera);

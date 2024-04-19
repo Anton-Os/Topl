@@ -191,6 +191,7 @@ foreach(target IN ITEMS ${engine_targets})
     if(WIN32)
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
     endif()
+    target_include_directories(${target} PRIVATE "${CMAKE_INSTALL_PREFIX}/include")
     target_link_libraries(${target} PUBLIC GEOLIB CORELIB) # link both corelib and geolib
 	# target_link_libraries(${target} PUBLIC GEOLIB) # link only geolib
 	target_link_libraries(CORELIB PUBLIC ${target})
@@ -200,10 +201,11 @@ endforeach()
 
 add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
-add_executable(Modelview demos/Modelview.cpp)
+add_executable(FirstPerson demos/FirstPerson.cpp)
+add_executable(MathArt demos/MathArt.cpp)
 add_executable(Entropy demos/Entropy.cpp)
 
-list(APPEND demo_targets Hello Sandbox Modelview Entropy)
+list(APPEND demo_targets Hello Sandbox FirstPerson MathArt Entropy)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)

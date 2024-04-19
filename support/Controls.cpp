@@ -7,7 +7,7 @@ void Input_KeyControl::addKeyPress(char keyCode) {
 	for(std::vector<anyKeyCallback>::iterator m = _anyKeyCallbacks.begin(); m != _anyKeyCallbacks.end(); m++)
 		(*m)(keyCode); // triggers callback
 	for (std::map<char, keyCallback>::const_iterator c = _keyCallback_map.cbegin(); c != _keyCallback_map.cend(); c++)
-		if (keyCode == c->first) c->second(); // triggers callback if match
+		if (tolower(keyCode) == tolower(c->first)) c->second(); // triggers callback if match
 	
 	stampEvent();
 }

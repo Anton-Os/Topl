@@ -6,7 +6,7 @@
 
 // Shape Description
 
-#define CIRCLE_SEGMENTS 32 // 1000 // default segments for a circular object
+#define CIRCLE_SEGMENTS 100 // default segments for a circular object
 #define DEFAULT_Z 0.0f // default depth value for objects
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units

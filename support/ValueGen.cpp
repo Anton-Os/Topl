@@ -27,19 +27,12 @@ void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uin
 
 Projection::Projection(PROJECTION_Type p, float s) {
 	type = p;
-	// if(p == PROJECTION_Perspective) s /= -10.0;
-
 	left *= s; right *= s;
 	bottom *= s; top *= s;
 	nearPlane *= s; farPlane *= s;
 }
 
 Projection::Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f) {
-	type = p;
-	/* if(p == PROJECTION_Perspective){ 
-		l /= -10.0; r /= -10.0; b /= -10.0; t /= -10.0; n /= -10.0; f /= f; 
-	} */
-
 	type = p;
 	left *= l; right *= r;
 	bottom *= b; top *= t;
@@ -50,6 +43,8 @@ Mat4x4 Projection::genProjMatrix(){
 	Mat4x4 projMatrix = MAT_4x4_IDENTITY;
 
 	if(type == PROJECTION_Ortho){
+		nearPlane *= PPROJ_Z; farPlane *= PPROJ_Z;
+		
 		projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
 			2.0f / (right - left), 0.0f, 0.0f, (left + right) / (left - right),
 			0.0f, 2.0f / (top - bottom), 0.0f, (bottom + top) / (bottom - top),
@@ -57,11 +52,22 @@ Mat4x4 Projection::genProjMatrix(){
 			0.0f, 0.0f, 0.0f, 1.0f 
 		});
 	} else if(type == PROJECTION_Perspective){
+		left /= PPROJ_A * -1.0; right /= PPROJ_A * -1.0;
+		bottom /= PPROJ_A * -1.0; top /= PPROJ_A * -1.0;
+		nearPlane /= PPROJ_A / (PPROJ_Z * 0.5F); farPlane /= PPROJ_A / (PPROJ_Z * 0.5F); 
+
 		projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 88
 			(2.0f * nearPlane) / (right - left), 0.0f, (right + left) / (right - left), 0.0f,
 			0.0f, (2.0f * nearPlane) / (top - bottom), (top + bottom) / (top - bottom), 0.0f,
 			0.0f, 0.0f, -((farPlane + nearPlane) / (farPlane - nearPlane)), -((2.0f * nearPlane * farPlane) / (farPlane - nearPlane)),
 			0.0f, 0.0f, -1.0f, 0.0f
+		});
+	} else {
+		projMatrix = Mat4x4({
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
 		});
 	}
 

@@ -11,9 +11,9 @@
 #define MILLISEC_IN_SEC 1000.0
 #define MICROSEC_IN_MILLISEC 1000.0
 
-#define MILILISEC_FPS30 1000.0 / 60.0 // fps in millisecs
-#define MILILISEC_FPS60 1000.0 / 60.0 // fps in millisecs
-#define MILILISEC_FPS120 1000.0 / 60.0 // fps in millisecs
+#define MILILISEC_FirstPerson30 1000.0 / 60.0 // fps in millisecs
+#define MILILISEC_FirstPerson60 1000.0 / 60.0 // fps in millisecs
+#define MILILISEC_FirstPerson120 1000.0 / 60.0 // fps in millisecs
 
 typedef double millisec_t; // timer calculations in milliseconds
 
