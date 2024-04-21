@@ -11,6 +11,7 @@ struct Img_UI {
 		queue->index = index % queue->frameCount;
 		stateImg.setImage(queue_getImg(queue, index % queue->frameCount));
 	}
+	unsigned short getState(){ return queue->index; }
 
 	Img_Base stateImg;
 protected:

@@ -446,27 +446,26 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	_depthStencilInfo.back.depthFailOp = VK_STENCIL_OP_KEEP;
 	_depthStencilInfo.back.writeMask = 0;
 	_depthStencilInfo.minDepthBounds = 0;
-	_depthStencilInfo.maxDepthBounds = 0;
+	_depthStencilInfo.maxDepthBounds = 1.0F; // 0;
 	_depthStencilInfo.stencilTestEnable = VK_FALSE;
 	_depthStencilInfo.front = _depthStencilInfo.back;
 
 	// Color Blending State
 
-	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	colorBlendAttachment.blendEnable = VK_TRUE;
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+	_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	_colorBlendAttachment.blendEnable = VK_TRUE;
+	_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+	_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+	_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+	_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 	_colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	_colorBlendInfo.logicOpEnable = VK_TRUE;
 	_colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;
 	_colorBlendInfo.attachmentCount = 1;
-	_colorBlendInfo.pAttachments = &colorBlendAttachment;
+	_colorBlendInfo.pAttachments = &_colorBlendAttachment;
 	_colorBlendInfo.blendConstants[0] = 0.0f;
 	_colorBlendInfo.blendConstants[1] = 0.0f;
 	_colorBlendInfo.blendConstants[2] = 0.0f;
@@ -502,33 +501,26 @@ void Topl_Renderer_Vulkan::clear(){
 }
 
 void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
-	VkViewport vp = {};
-	vp.x = 0;
-	vp.y = 0;
-	vp.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
-	vp.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
-	vp.minDepth = 0.0f;
-	vp.maxDepth = 1.0f;
+	_viewport.x = 0;
+	_viewport.y = 0;
+	_viewport.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
+	_viewport.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
+	_viewport.minDepth = 0.0f;
+	_viewport.maxDepth = 1.0f;
 
-	VkRect2D scissorRect = {};
-	scissorRect.offset = { 0, 0 };
-	scissorRect.extent.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
-	scissorRect.extent.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
-
-	VkDynamicState dynamicStates[2] = {
-		VK_DYNAMIC_STATE_VIEWPORT,
-		VK_DYNAMIC_STATE_SCISSOR
-	};
+	_scissorRect.offset = { 0, 0 };
+	_scissorRect.extent.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
+	_scissorRect.extent.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
 
 	_dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	_dynamicStateInfo.dynamicStateCount = 2;
-	_dynamicStateInfo.pDynamicStates = &dynamicStates[0];
+	_dynamicStateInfo.pDynamicStates = &_dynamicStates[0];
 
 	_viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	_viewportStateInfo.viewportCount = 1; // should be adjustable?
-	_viewportStateInfo.pViewports = &vp;
+	_viewportStateInfo.pViewports = &_viewport;
 	_viewportStateInfo.scissorCount = 1;
-	_viewportStateInfo.pScissors = &scissorRect;
+	_viewportStateInfo.pScissors = &_scissorRect;
 }
 
 void Topl_Renderer_Vulkan::swapBuffers(double frameTime){ 

@@ -2,8 +2,6 @@
 #include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Orb.hpp"
 
-#include "Flat_Shader.hpp"
-
 #include "program/Topl_Program.hpp"
 
 #define ENTROPIC_SPAWN 100

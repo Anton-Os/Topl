@@ -100,29 +100,43 @@ struct Img_Volume : public Img {
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img() { // Matching Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", createImgSize(height, width), depth);
+		setData();
 	}
     Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img() { // Custom Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", createImgSize(height, width), depth);
+		setData();
 	}
+	// Img_Volume(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
 	
 	void addSlice(ref_image_t refImg, unsigned d){
         setRefresh(true);
 
 		if (refImg->height == height && refImg->width == width)
 			queue_addImg(queue, refImg, d);
-		else return; // error
+		else return logMessage("Slice needs to match width and height"); // error
 
-		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
-		volumeTexImg.setImage(compositeImg); // recreate entire volumeTex image
-		RASTERON_DEALLOC(compositeImg);
+		// Updating data internally
+		unsigned imgOffset = (width * depth) * d;
+		for(unsigned p = 0; p < width * depth; p++) 
+			*(volumeTexImg.getImage()->data + imgOffset + p) = *(refImg->data + p);
     }
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? queue_getImg(queue, d) : nullptr;}
-	const Img_Base* extractVolImage() const { return &volumeTexImg; }
+	const Img_Base* getVolumeImg() const { return &volumeTexImg; }
 
 	unsigned getWidth() const { return width; }
 	unsigned getHeight() const { return height; }
 	unsigned getDepth() const { return depth; }
 private:
+	void setData(){
+		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
+		for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){
+			Rasteron_Image* sliceImg = queue_getImg(queue, p / (width * depth));
+			*(compositeImg->data + p) = *(sliceImg->data + (p % (width * depth)));
+		}
+		volumeTexImg.setImage(compositeImg);
+		RASTERON_DEALLOC(compositeImg);
+	}
+
 	void cleanup() override {
 		if (queue != NULL) {
 			RASTERON_QUEUE_DEALLOC(queue);

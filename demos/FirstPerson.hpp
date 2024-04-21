@@ -1,13 +1,14 @@
 
 #include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Volume.hpp"
+
 #include "constructs/Geo_Puppet.hpp"
 #include "constructs/Geo_Model3D.hpp"
 
-#include "Flat_Shader.hpp"
-#include "Textured_Shader.hpp"
-#include "Beams_Shader.hpp"
-
 #include "program/Topl_Program.hpp"
+
+#define FLOOR_SIZE 100.0F
+#define PILLAR_SIZE 1.0F
 
 struct FirstPerson_Demo : public Topl_Program {
     FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
@@ -42,11 +43,14 @@ struct FirstPerson_Demo : public Topl_Program {
     Geo_Puppet2D puppet3 = Geo_Puppet2D("puppet3", demonPuppetAssets);
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
-    Geo_Quad2D floorMesh = Geo_Quad2D(100.0F);
+    Geo_Quad3D floorMesh = Geo_Quad3D();
     Geo_Actor floor = Geo_Actor(&floorMesh);
-    Geo_Model3D model1 = Geo_Model3D("model1", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
-    Geo_Model3D model2 = Geo_Model3D("model2", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
-    Geo_Model3D model3 = Geo_Model3D("model3", std::string(std::string(MODELS_DIR) + "SpinTop.obj"));
+    Geo_Circle3D pillarMeshes[4] = { Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE) };
+    Geo_Actor pillars[4] = { Geo_Actor(&pillarMeshes[0]), Geo_Actor(&pillarMeshes[1]), Geo_Actor(&pillarMeshes[2]), Geo_Actor(&pillarMeshes[3]) };
+    std::string modelPath = std::string(std::string(MODELS_DIR) + "SpinTop.obj");
+    Geo_Model3D models[5] = {
+        Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath),
+    };
 private:
     Topl_Scene scene2D, scene3D;
 

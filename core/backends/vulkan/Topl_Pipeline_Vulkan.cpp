@@ -32,8 +32,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 	pipeline->vertexSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipeline->vertexSInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	// pipeline->vertexSInfo.pSpecializationInfo = NULL;
-	// pipeline->vertexSInfo.flags = 0;
+	pipeline->vertexSInfo.pNext = 0;
+	pipeline->vertexSInfo.flags = 0;
+	pipeline->vertexSInfo.pSpecializationInfo = nullptr;
 	pipeline->vertexSInfo.module = vertexShaderModule;
 	pipeline->vertexSInfo.pName = "main";
 
@@ -44,8 +45,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 	pipeline->pixelSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipeline->pixelSInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	// pipeline->pixelSInfo.pSpecializationInfo = NULL;
-	// pipeline->pixelSInfo.flags = 0;
+	pipeline->pixelSInfo.pNext = 0;
+	pipeline->pixelSInfo.flags = 0;
+	pipeline->pixelSInfo.pSpecializationInfo = nullptr;
 	pipeline->pixelSInfo.module = pixelShaderModule;
 	pipeline->pixelSInfo.pName = "main";
 
@@ -56,7 +58,7 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 	pipeline->pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipeline->pipelineInfo.stageCount = 2; // TODO: Make configurable
-	pipeline->pipelineInfo.pStages = &shaderStages[0];
+	pipeline->pipelineInfo.pStages = shaderStages;
 	pipeline->pipelineInfo.pVertexInputState = &_vertexInputInfo;
 	pipeline->pipelineInfo.pInputAssemblyState = &_inputAssemblyInfo;
 	pipeline->pipelineInfo.pViewportState = &_viewportStateInfo;
@@ -83,8 +85,6 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 		logMessage("Pipeline cache creation success\n");
 	else return logMessage("Pipeline cache creation failure"); */
 
-	std::cout << "Pipeline Creation Checkpoint!" << std::endl;
-
 	if(vkCreateGraphicsPipelines(_logicDevice, VK_NULL_HANDLE, 1, &pipeline->pipelineInfo, nullptr, &pipeline->pipeline) == VK_SUCCESS)
 		logMessage("Pipeline creation success\n");
 	else return logMessage("Pipeline creation failure!");
@@ -110,6 +110,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 	pipeline->vertexSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipeline->vertexSInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	pipeline->vertexSInfo.pNext = 0;
+	pipeline->vertexSInfo.flags = 0;
+	pipeline->vertexSInfo.pSpecializationInfo = nullptr;
 	pipeline->vertexSInfo.module = vertexShaderModule;
 	pipeline->vertexSInfo.pName = "main";
 	shaderStages[0] = pipeline->vertexSInfo;
@@ -120,6 +123,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 	pipeline->pixelSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	pipeline->pixelSInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	pipeline->pixelSInfo.pNext = 0;
+	pipeline->pixelSInfo.flags = 0;
+	pipeline->pixelSInfo.pSpecializationInfo = nullptr;
 	pipeline->pixelSInfo.module = pixelShaderModule;
 	pipeline->pixelSInfo.pName = "main";
 	shaderStages[1] = pipeline->pixelSInfo;
@@ -134,6 +140,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 		pipeline->geomSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		pipeline->geomSInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+		pipeline->geomSInfo.pNext = 0;
+		pipeline->geomSInfo.flags = 0;
+		pipeline->geomSInfo.pSpecializationInfo = nullptr;
 		pipeline->geomSInfo.module = geomShaderModule;
 		pipeline->geomSInfo.pName = "main";
 		shaderStages[shaderStageCount] = pipeline->geomSInfo;
@@ -149,6 +158,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 		pipeline->tessCtrlSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		pipeline->tessCtrlSInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		pipeline->tessCtrlSInfo.pNext = 0;
+		pipeline->tessCtrlSInfo.flags = 0;
+		pipeline->tessCtrlSInfo.pSpecializationInfo = nullptr;
 		pipeline->tessCtrlSInfo.module = tessCtrlShaderModule;
 		pipeline->tessCtrlSInfo.pName = "main";
 		shaderStages[shaderStageCount] = pipeline->tessCtrlSInfo;
@@ -164,6 +176,9 @@ void Topl_Renderer_Vulkan::genPipeline(Topl_Pipeline_Vulkan* pipeline, entry_sha
 
 		pipeline->tessEvalSInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		pipeline->tessEvalSInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		pipeline->tessEvalSInfo.pNext = 0;
+		pipeline->tessEvalSInfo.flags = 0;
+		pipeline->tessEvalSInfo.pSpecializationInfo = nullptr;
 		pipeline->tessEvalSInfo.module = tessEvalShaderModule;
 		pipeline->tessEvalSInfo.pName = "main";
 		shaderStages[shaderStageCount] = pipeline->tessEvalSInfo;

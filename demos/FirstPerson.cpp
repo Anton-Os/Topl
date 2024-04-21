@@ -18,17 +18,26 @@ void FirstPerson_Demo::init(){
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
 
-    floor.setPos({ 0.0F, -2.75F, 0.0F});
-    floor.setRot({ 0.0F, MATH_HALF_PI + 0.025, 0.0F });
+    floor.setPos({ 0.0F, -3.0F, 0.0F});
+    floor.setSize({ FLOOR_SIZE, 1.0F, FLOOR_SIZE });
+    floor.setRot({ 0.0F, MATH_HALF_PI, 0.0F });
     scene3D.addGeometry("floor", &floor);
-    model1.configure(&scene3D);
-    model1.shift({ -1.25F, -1.75F, 0.0F });
-    model1.rotateAll({ 0.0F, 0.1F, 0.0F });
-    model2.configure(&scene3D);
-    model2.shift({ 0.0F, -1.75F, 0.0F });
-    model3.configure(&scene3D);
-    model3.shift({ 1.5F, -1.75, 0.0F });
-    model3.rotateAll({ 0.0F, -0.1F, 0.0F });
+    for(unsigned short p = 0; p < 4; p++){ 
+        pillars[p].setSize({ 1.0F, 10.0F, 1.0F });
+        pillars[p].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+        scene3D.addGeometry("pillar" + std::to_string(p), &pillars[p]);
+    }
+    pillars[0].setPos({ 10.0F, 2.5F, 10.0F });
+    pillars[1].setPos({ -10.0F, 2.5F, 10.0F });
+    pillars[2].setPos({ 10.0F, 2.5F, -10.0F });
+    pillars[3].setPos({ -10.0F, 2.5F, -10.0F });
+
+    for(unsigned m = 0; m < 5; m++) models[m].configure(&scene3D);
+    models[0].shift({ -1.5F, -1.75F, 1.0F });
+    models[1].shift({ 0.0F, -1.75F, 0.0F });
+    models[2].shift({ 1.5F, -1.75, 1.0F });
+    models[3].shift({ -1.5F, -1.75F, -1.0F });
+    models[4].shift({ 1.5F, -1.75, -1.0F });
 
     _renderer->buildScene(&scene3D);
 
@@ -59,14 +68,16 @@ void FirstPerson_Demo::loop(double frameTime){
         // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (_renderer->getFrameCount() % 60 < 30)? flatPipeline : beamsPipeline);
         // flatVShader.setMode((_renderer->getFrameCount() % 30 < 15)? 0 : 1);
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamsPipeline);
-        beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
+        // beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 
-        model1.rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
-        model2.rotateAll({ 0.0, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
-        model3.rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
+        models[0].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
+        models[1].rotateAll({ 0.0, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
+        models[2].rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
+        models[3].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
+        models[4].rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
 
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
-        _renderer->setDrawMode(DRAW_Strip);
+        _renderer->setDrawMode(DRAW_Triangles);
 
         _renderer->updateScene(&scene3D);
         _renderer->drawScene(&scene3D);

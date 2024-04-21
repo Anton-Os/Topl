@@ -2,6 +2,11 @@
 
 #include "Topl_Factory.hpp"
 
+#include "Flat_Shader.hpp"
+#include "Textured_Shader.hpp"
+#include "Beams_Shader.hpp"
+#include "Effect_Shader.hpp"
+
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0
@@ -11,6 +16,7 @@ class Topl_Timeline {
 public:
 	Topl_Timeline(){}
 
+	template<typename T> void addSequence(T var, std::pair<millisec_t, T> target);
 	// template<class T> void addSequence(T var, std::pair<millisec_t, T> target); // try to templatize this
 	void addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
 	// Vec3f* getSequence_vec3f(std::pair<millisec_t, Vec3f> target);
@@ -22,6 +28,7 @@ public:
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
 
+	template<typename T> void updateSequence(T, millisec_t);
 	static void seqCallback(millisec_t m);
 private:
 	static std::map<Vec3f*, std::map<millisec_t, Vec3f>> vec3f_map;
@@ -57,7 +64,6 @@ public:
 	static std::string userInput; // input is added when characters are pressed
 #ifdef RASTERON_H
 	static unsigned pickerColor; // picker for color
-	// static unsigned pickerVal_coord; // picker for coordinates
 	static Vec3f pickerCoord;
 	static Geo_Actor* pickerObj; // picker for actor
 	static Rasteron_Queue* cachedFrames; // frame capture queue
@@ -72,4 +78,13 @@ protected:
 	const enum BACKEND_Target _backend;
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
+
+	// TODO: Add actors and other data that may be needed
+	Topl_Scene _mainScene, _overlayScene, _extrasScene;
+
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline; // for easy reuse
+	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
+	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
+	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
+	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 };

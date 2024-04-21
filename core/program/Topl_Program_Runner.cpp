@@ -72,6 +72,8 @@ static void onPress(float x, float y){
 
 Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
     srand(time(NULL));
+
+	// Event Handling
 	
 	_platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
@@ -80,9 +82,31 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 	_renderer->setDrawMode(DRAW_Triangles);
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
-
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
 	// Platform::mouseControl.addDragCallback(onDrag); // for camera
+
+	// Preset Pipeline Generation
+
+	if(_backend == BACKEND_GL4){
+		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
+		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
+		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
+		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
+	}
+	else if(_backend == BACKEND_DX11){
+		_texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
+		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
+		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
+		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();	
+	}
+
+	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
+	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
+	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
+
+	// Imaging Initialization
+
 #ifdef RASTERON_H
 	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
 
@@ -119,6 +143,7 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 		Img_Base frameImg = _renderer->frame();
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
+		RASTERON_DEALLOC(frameImg.getImage());
 #endif
 		_platform->handleEvents();
 	}

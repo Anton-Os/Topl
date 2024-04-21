@@ -311,7 +311,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	const Img_Base* volumeTexImage = volumeTex->extractVolImage();
+	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
 	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
 	glTexImage3D(
 		GL_TEXTURE_3D,

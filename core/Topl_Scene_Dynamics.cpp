@@ -75,6 +75,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 void Topl_Scene::resolvePhysics() {
 	double elapseSecs = _ticker.getRelSecs();
 	// Resolve Link Connections
+	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
 		Phys_Connector* connector = link->connector;
 		const Geo_Actor* linkItem1 = link->linkedItems.first;
@@ -115,6 +116,7 @@ void Topl_Scene::resolvePhysics() {
 	}
 
 	// Resolve Anchor Connections
+	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++){
 		Phys_Connector* connector = anchor->connector;
 		const Geo_Actor* actor = anchor->anchoredItems.first;

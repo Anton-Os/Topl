@@ -70,7 +70,7 @@ add_library(CORELIB # Core Library
     ${support_src}
     ${core_src}
 )
-target_include_directories(CORELIB PRIVATE core support geometry)
+target_include_directories(CORELIB PRIVATE core support geometry shaders)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
     INTERFACE

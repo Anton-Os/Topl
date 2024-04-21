@@ -474,7 +474,7 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	const Img_Base* volumeTexImage = volumeTex->extractVolImage();
+	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
 	D3D11_SUBRESOURCE_DATA texData;
 	texData.pSysMem = volumeTexImage->getImage()->data;
 	texData.SysMemPitch = sizeof(uint32_t) * volumeTex->getWidth();

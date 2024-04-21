@@ -4,6 +4,7 @@
 
 #define PHYS_DEFAULT_K 2500.0 // K value by default
 #define PHYS_ROD_K 10000.0 // K value for rod connector
+#define PHYS_CALC_THRESH 0.05 // time threshhold for adding forces
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 // #define CONNECTOR_ANGLE_THRESH Vec3f(0.00005f, 0.00005f, 0.00005f)
 #define CONNECTOR_ANGLE_PRESET Vec3f({ 0.0f, 1.0f, 0.0 });

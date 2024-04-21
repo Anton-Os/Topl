@@ -16,18 +16,6 @@ static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 
 static Topl_Scene scene = Topl_Scene();
 
-/* // Constructor and Destructor Testing
-{
-	Topl_Renderer_GL4 renderer_GL = Topl_Renderer_GL4(platform.getParentWindow());
-#ifdef _WIN32
-	Topl_Renderer_DX11 renderer_Drx = Topl_Renderer_DX11(platform.getParentWindow());
-#endif
-#ifdef TOPL_ENABLE_VULKAN
-	Topl_Renderer_Vulkan renderer_Vk = Topl_Renderer_Vulkan(platform.getParentWindow());
-#endif
-} */
-
-
 // Hello Main Loop
 
 int main(int argc, char** argv) {

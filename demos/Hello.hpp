@@ -11,9 +11,9 @@
 struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 	Hello_Renderer_GL4(NATIVE_WINDOW window) 
 	: Topl_Renderer_GL4(window){ 
-		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
 	}
 
@@ -37,9 +37,9 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 	Hello_Renderer_DX11(NATIVE_WINDOW window) 
 	: Topl_Renderer_DX11(window){ 
-		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
 

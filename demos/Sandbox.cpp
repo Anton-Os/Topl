@@ -168,11 +168,15 @@ void panes_onPick(MOUSE_Event event){
             _instance->modeLayout.shift({ 0.0F, 0.225F, 0.0F});
             for(unsigned a = 0; a < 7; a++) _instance->modeLayout.getGeoActor(a)->isShown = true;
         }
-        for(int b = 0; b < 6; b++) 
-            ((Topl_Program::pickerObj->getId() == _instance->scenePropsLayout.getGeoActor(6 - b - 1)->getId() || Topl_Program::pickerObj->getId() == _instance->pickerPropsLayout.getGeoActor(6 - b - 1)->getId())
-            && (Topl_Program::pickerObj->getId() != _instance->scenePropsLayout.getGeoActor(6)->getId() || Topl_Program::pickerObj->getId() == _instance->pickerPropsLayout.getGeoActor(6)->getId()))
-                ? _instance->propsButtons[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
-                : _instance->propsButtons[b].setState(MENU_None);
+        for(int b = 0; b < 6; b++)
+        (_instance->checkPicker(_instance->scenePropsLayout.getGeoActor(6 - b - 1)) && !_instance->checkPicker(_instance->scenePropsLayout.getGeoActor(6)))
+            ? _instance->scenePropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
+            : _instance->scenePropBtns[b].setState(MENU_None);
+        for(int b = 0; b < 6; b++)
+            if(_instance->pickerPropBtns[b].getState() != MENU_On && _instance->pickerPropBtns[b].getState() != MENU_Off)
+                (_instance->checkPicker(_instance->pickerPropsLayout.getGeoActor(6 - b - 1)) && !_instance->checkPicker(_instance->pickerPropsLayout.getGeoActor(6)))
+                    ? _instance->pickerPropBtns[b].setState((event == MOUSE_LeftBtn_Press)? MENU_On : (event == MOUSE_RightBtn_Press)? MENU_Off : MENU_None)
+                    : _instance->pickerPropBtns[b].setState(MENU_None);
     }
 }
 
@@ -205,7 +209,7 @@ void Sandbox_Demo::init(){
     canvas.addGeometry("Backdrop", &canvasActor);
     // canvasTex.setFileImage("F:\\Design\\Motivation-Build.png"); // placeholder image
     // canvas.addTexture("Backdrop", &canvasTex);
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
     _renderer->buildScene(&canvas);
     _renderer->texturizeScene(&canvas);
 
@@ -240,7 +244,7 @@ void Sandbox_Demo::init(){
     scene.addTexture("Param", &paramTex);
 #endif
 
-    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+    Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _texPipeline);
     _renderer->buildScene(&scene);
     _renderer->texturizeScene(&scene);
     
@@ -265,7 +269,7 @@ void Sandbox_Demo::init(){
     for(unsigned p = 0; p < 6; p++) {
         pickerPropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
         pickerPropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
-        overlay.addTexture(pickerPropsLayout.getGeoActor(p)->getName(), &propsButtons[6 - p - 1].stateImg);
+        overlay.addTexture(pickerPropsLayout.getGeoActor(p)->getName(), &pickerPropBtns[6 - p - 1].stateImg);
     }
     scenePropsLayout.configure(&overlay);
     scenePropsLayout.scale({ 1.175F, 0.1F, 1.0F });
@@ -275,7 +279,7 @@ void Sandbox_Demo::init(){
     for(unsigned p = 0; p < 6; p++) {
         scenePropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
         scenePropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
-        overlay.addTexture(scenePropsLayout.getGeoActor(p)->getName(), &propsButtons[6 - p - 1].stateImg);
+        overlay.addTexture(scenePropsLayout.getGeoActor(p)->getName(), &scenePropBtns[6 - p - 1].stateImg);
     }
     timelineLayout.configure(&overlay);
     timelineLayout.scale({ 1.5F, 0.25F, 1.0F });
@@ -311,14 +315,25 @@ void Sandbox_Demo::init(){
     _renderer->texturizeScene(&overlay);
 
     for(unsigned d = 0; d < 300; d++){
-        if(d % 3 == 0) detailActors[d] = Geo_Actor((Geo_Mesh*)&wireframes[d / 3]);
-        else if(d % 3 == 1) detailActors[d] = Geo_Actor((Geo_Mesh*)&points[d / 3]);
-        else detailActors[d] = Geo_Actor((Geo_Mesh*)&arrows[d / 3]);
+        if(d % 3 == 0){
+            detailActors[d] = Geo_Actor((Geo_Mesh*)&labels[d / 3]);
+            detailActors[d].setPos({ -0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over properties
+            labelsTex[d / 3].setColorImage(0xDD0000FF);
+        }
+        else if(d % 3 == 1){
+            detailActors[d] = Geo_Actor((Geo_Mesh*)&dots[d / 3]);
+            detailActors[d].setPos({ 0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over timeline
+            dotsTex[d / 3].setColorImage(0xDDFF0000);
+        }
+        else {
+            detailActors[d] = Geo_Actor((Geo_Mesh*)&arrows[d / 3]);
+            detailActors[d].setPos({ 0.0F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over elements
+            arrowsTex[d / 3].setColorImage(0xDD00FF00);
+        }
 
-        detailActors[d].setPos({ (d % 3 == 0)? -0.05F : (d % 3 == 1)? 0.05F : 0.0F, -1.0F + ((1.0F / 150.0F) * d), 0.0F });
-        detailActors[d].setSize({ 0.025F, 0.025F, 0.025F });
-        
+        detailActors[d].setSize({ 0.015F, 0.015F, 0.015F });
         details.addGeometry("detail " + std::to_string(d), &detailActors[d]);
+        details.addTexture("detail " + std::to_string(d), (d % 3 == 0)? &labelsTex[d / 3] : (d % 3 == 1)? &dotsTex[d / 3] : &arrowsTex[d / 3]);
     }
 
     _renderer->buildScene(&details);
@@ -337,16 +352,16 @@ void Sandbox_Demo::loop(double frameTime){
 
     // Capture Renders
     {
-        flatVShader.setMode(FLAT_MODE_SOLID); 
+        _flatVShader.setMode(FLAT_MODE_SOLID); 
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->setCamera(&Topl_Program::cameraObj);
         _renderer->updateScene(&scene);
         _renderer->drawScene(&scene);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->setCamera(&fixedCamera);
         _renderer->updateScene(&overlay);
         _renderer->drawScene(&overlay);
@@ -358,22 +373,22 @@ void Sandbox_Demo::loop(double frameTime){
     }
 
     if(Platform::mouseControl.getIsMouseDown().second) {
-        flatVShader.setMode(FLAT_MODE_DIRECTION); // effectVShader.setMode(1);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        _flatVShader.setMode(FLAT_MODE_DIRECTION); // _effectVShader.setMode(1);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->setCamera(&Topl_Program::cameraObj);
         _renderer->updateScene(&canvas);
         _renderer->drawScene(&canvas);
 
-        flatVShader.setMode(FLAT_MODE_COORD); 
+        _flatVShader.setMode(FLAT_MODE_COORD); 
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->setCamera(&Topl_Program::cameraObj);
         _renderer->updateScene(&scene);
         _renderer->drawScene(&scene);
 
-        flatVShader.setMode(FLAT_MODE_COORD);
+        _flatVShader.setMode(FLAT_MODE_COORD);
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->setCamera(&fixedCamera);
         _renderer->updateScene(&overlay);
         _renderer->drawScene(&overlay);
@@ -388,20 +403,20 @@ void Sandbox_Demo::loop(double frameTime){
     // Display Renders
 
     /* {  
-        flatVShader.setMode(FLAT_MODE_DIRECTION); effectVShader.setMode(1);
-        texVShader.setMode(0);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, flatPipeline);
+        _flatVShader.setMode(FLAT_MODE_DIRECTION); effectVShader.setMode(1);
+        _texVShader.setMode(0);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _flatPipeline);
         _renderer->updateScene(&canvas);
         _renderer->drawScene(&canvas);
     } */
 
     {
-        flatVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode % 3 : 0); 
-        beamVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode / 2 : 0); 
-        texVShader.setMode((Sandbox_Demo::isShaderVariant)? -Sandbox_Demo::shaderMode : 0);
-        texVShader.setTexScroll(Sandbox_Demo::texScroll);
+        _flatVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode % 3 : 0); 
+        _beamsVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode / 2 : 0); 
+        _texVShader.setMode((Sandbox_Demo::isShaderVariant)? -Sandbox_Demo::shaderMode : 0);
+        _texVShader.setTexScroll(Sandbox_Demo::texScroll);
 
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (Sandbox_Demo::pipelineIndex == 0)? texPipeline : (Sandbox_Demo::pipelineIndex == 1)? beamPipeline : flatPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (Sandbox_Demo::pipelineIndex == 0)? _texPipeline : (Sandbox_Demo::pipelineIndex == 1)? _beamsPipeline : _flatPipeline);
 
         _renderer->setDrawMode(DRAW_Lines);
         _renderer->setCamera(&Topl_Program::cameraObj);
@@ -410,17 +425,15 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->draw(&_instance->pyramidActor);
         _renderer->draw(&_instance->sphereActor);
         _renderer->draw(&_instance->hexActor);
-
-        _renderer->setDrawMode(DRAW_Triangles);
         _renderer->draw(&_instance->paramActor);
-
-        _renderer->setDrawMode(DRAW_Lines);
-        if(Sandbox_Demo::isDetailsShown) _renderer->drawScene(&details);
 
         _renderer->setDrawMode(DRAW_Triangles);
         _renderer->setCamera(&fixedCamera);
         _renderer->updateScene(&overlay);
         _renderer->drawScene(&overlay);
+
+        _renderer->setDrawMode(DRAW_Triangles);
+        if(Sandbox_Demo::isDetailsShown) _renderer->drawScene(&details);
     }
 }
 

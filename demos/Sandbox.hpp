@@ -8,20 +8,10 @@
 #include "constructs/Geo_Grid.hpp"
 #include "constructs/Geo_Billboards.hpp"
 
-#include "Flat_Shader.hpp"
-#include "Textured_Shader.hpp"
-#include "Beams_Shader.hpp"
-#include "Effect_Shader.hpp"
-
 #include "program/Topl_Program.hpp"
 
 struct Sandbox_Demo : public Topl_Program {
-    Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
-        flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
-        beamPipeline = Topl_Factory::genPipeline(backend, &beamVShader, &beamPShader);
-        effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
-        texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
-    }
+    Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){}
     ~Sandbox_Demo();
 
     void init() override;
@@ -66,9 +56,9 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
     Geo_Crossboard scenePropsLayout = Geo_Crossboard("scenePropsLayout", 6);
 
-    Geo_Quad3D wireframes[100];
-    Geo_TriangleCone arrows[100];
-    Geo_Orb points[100];
+    Geo_Quad2D labels[100]; Img_Base labelsTex[100];
+    Geo_Triangle2D arrows[100]; Img_Base arrowsTex[100];
+    Geo_Circle2D dots[100]; Img_Base dotsTex[100];
     Geo_Actor detailActors[100 + 100 + 100];
 #ifdef RASTERON_H
     Img_Base canvasTex;
@@ -92,9 +82,13 @@ struct Sandbox_Demo : public Topl_Program {
     };
     Img_Base propsRoot = Img_Base(0xFF666666);
     Img_Base propsPane = Img_Base(0xAAEEEEEE);
-    Img_Button propsButtons[6] = {
+    Img_Button scenePropBtns[6] = {
         Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "build"), Img_Button(MENU_Medium, "code"),
         Img_Button(MENU_Medium, "cached"), Img_Button(MENU_Medium, "crop_free"), Img_Button(MENU_Medium, "delete"),
+    };
+    Img_Button pickerPropBtns[6] = {
+        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium),
+        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium),
     };
     // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
 
@@ -109,11 +103,4 @@ private:
     Topl_Scene details; // for details elements
 
     Topl_Camera fixedCamera;
-
-    Topl_Pipeline *flatPipeline, *texPipeline, *beamPipeline, *effectPipeline;
-
-    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
-    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
-    Beams_VertexShader_GL4 beamVShader; Beams_PixelShader_GL4 beamPShader;
-    Effect_VertexShader_GL4 effectVShader; Effect_PixelShader_GL4 effectPShader;
 } *_instance; // USE _instance OBJECT FOR DEMO
