@@ -80,6 +80,18 @@ struct Timer_Dynamic : public Timer_Persist {
 
 	virtual void updateTimer() override;
 
+	double getRelMillisecs(){
+		if(Timer_Persist::getAbsMicrosecs() > range.second * MICROSEC_IN_SEC || Timer_Persist::getAbsMicrosecs() < range.first * MICROSEC_IN_SEC)
+			return 0.0; // if out of bounds return 0 by default
+		else return Timer_Persist::getRelMicrosecs();
+	}
+
+	double getAbsMicrosecs(){
+		if(Timer_Persist::getAbsMicrosecs() > range.second * MICROSEC_IN_SEC) return range.second * MICROSEC_IN_SEC;
+		else if(Timer_Persist::getAbsMicrosecs() < range.first * MICROSEC_IN_SEC) return range.first * MICROSEC_IN_SEC;
+		else return Timer_Persist::getAbsMicrosecs();
+	}
+
 	void setTime(millisec_t time); // set absolute
 	void updateTime(millisec_t time); // increment or decrement time
 	std::pair<double, double> range = std::make_pair(0.0, 60.0);

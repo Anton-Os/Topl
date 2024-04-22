@@ -41,11 +41,11 @@ void FirstPerson_Demo::init(){
 
     _renderer->buildScene(&scene3D);
 
-    puppet1.configure(&_instance->scene2D);
+    puppet1.configure(&_DEMO->scene2D);
     puppet1.shift({ 0.0F, -1.0, -5.0F });
-    puppet2.configure(&_instance->scene2D);
+    puppet2.configure(&_DEMO->scene2D);
     puppet2.shift({ -1.0F, -1.0, -5.0F });
-    puppet3.configure(&_instance->scene2D);
+    puppet3.configure(&_DEMO->scene2D);
     puppet3.shift({ 1.0F, -1.0, -5.0F });
 
     /* Phys_Connector puppet1_anchor, puppet2_anchor, puppet3_anchor;
@@ -102,9 +102,9 @@ void FirstPerson_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _instance = new FirstPerson_Demo(argv[0], BACKEND_GL4);
-    _instance->run();
+    _DEMO = new FirstPerson_Demo(argv[0], BACKEND_GL4);
+    _DEMO->run();
 
-    delete(_instance);
+    delete(_DEMO);
     return 0;
 }

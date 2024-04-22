@@ -35,9 +35,9 @@ void MathArt_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _instance = new MathArt_Demo(argv[0], BACKEND_DX11);
-    _instance->run();
+    _DEMO = new MathArt_Demo(argv[0], BACKEND_DX11);
+    _DEMO->run();
 
-    delete(_instance);
+    delete(_DEMO);
     return 0;
 }

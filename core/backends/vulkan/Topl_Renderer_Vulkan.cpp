@@ -103,12 +103,12 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	// free(instanceLayers);
 #endif
 
-	result = vkCreateInstance(&instanceInfo, NULL, &_instance);
+	result = vkCreateInstance(&instanceInfo, NULL, &_DEMO);
 	if(result == VK_SUCCESS) logMessage("Instance creation success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Instance creation failure!\n");
 
 /* #ifdef ENABLE_DEBUG_LAYERS
-	result = Vulkan::createDebugReport(&_instance);
+	result = Vulkan::createDebugReport(&_DEMO);
 	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
 #endif */
@@ -117,12 +117,12 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 
 	unsigned physDeviceCount = 0;
 
-	result = vkEnumeratePhysicalDevices(_instance, &physDeviceCount, NULL);
+	result = vkEnumeratePhysicalDevices(_DEMO, &physDeviceCount, NULL);
 	if(physDeviceCount > 1) logMessage("Multiple phys devices detected!\n");
 	else if(physDeviceCount == 0) return logMessage(MESSAGE_Exclaim, "No phys devices detected");
 
 	_physicalDevices.resize(physDeviceCount);
-	result = vkEnumeratePhysicalDevices(_instance, &physDeviceCount, _physicalDevices.data());
+	result = vkEnumeratePhysicalDevices(_DEMO, &physDeviceCount, _physicalDevices.data());
 	if(result == VK_SUCCESS) logMessage("Physical device enumeration success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Physical device enumeration failure!\n");
 
@@ -141,7 +141,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	surfaceCreateInfo.hwnd = _platformCtx.window;
 	surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
 
-	result = vkCreateWin32SurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
+	result = vkCreateWin32SurfaceKHR(_DEMO, &surfaceCreateInfo, NULL, &_surface);
 #elif defined(__linux__)
 	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
@@ -150,7 +150,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	surfaceCreateInfo.dpy = _platformCtx.display;
 	surfaceCreateInfo.window = _platformCtx.window;
 
-	result = vkCreateXlibSurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
+	result = vkCreateXlibSurfaceKHR(_DEMO, &surfaceCreateInfo, NULL, &_surface);
 #endif
 	if(result == VK_SUCCESS) logMessage("Surface creation sucess\n");
 	else return logMessage(MESSAGE_Exclaim, "Surface creation failure!\n");
@@ -491,9 +491,9 @@ Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {
 	vkDestroyCommandPool(_logicDevice, _commandPool, nullptr);
 	for(unsigned i = 0; i < _swapchainImageViews.size(); i++) vkDestroyImageView(_logicDevice, _swapchainImageViews[i], NULL);
 	vkDestroySwapchainKHR(_logicDevice, _swapchain, NULL);
-	vkDestroySurfaceKHR(_instance, _surface, nullptr);
+	vkDestroySurfaceKHR(_DEMO, _surface, nullptr);
 	vkDestroyDevice(_logicDevice, nullptr);
-	vkDestroyInstance(_instance, nullptr);
+	vkDestroyInstance(_DEMO, nullptr);
 }
 
 void Topl_Renderer_Vulkan::clear(){

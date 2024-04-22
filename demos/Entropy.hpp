@@ -32,4 +32,4 @@ private:
 
     Topl_Pipeline* flatPipeline;
     Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
-} *_instance;
+} *_DEMO;

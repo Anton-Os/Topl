@@ -58,4 +58,4 @@ private:
     Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
     Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
     Beams_VertexShader_GL4 beamsVShader; Beams_PixelShader_GL4 beamsPShader;
-} *_instance;
+} *_DEMO;

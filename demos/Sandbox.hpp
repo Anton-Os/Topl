@@ -43,14 +43,14 @@ struct Sandbox_Demo : public Topl_Program {
         { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
     }); // basic constructor
     Geo_Actor paramActor = Geo_Actor(&paramMesh);
-
     Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15);
     Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
     Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15);
     Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
     Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15);
     Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
-    Geo_Listboard modeLayout = Geo_Listboard("modeLayout", 6);
+    Geo_Listboard dropMenuLayout = Geo_Listboard("dropMenuLayout", 6);
+    Geo_Listboard expandMenuLayout = Geo_Listboard("expandMenuLayout", 6);
     Geo_Paneboard timelineLayout = Geo_Paneboard("timelineLayout");
     Geo_Gridboard actionsLayout = Geo_Gridboard("actionsLayout", 3);
     Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
@@ -74,12 +74,13 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Button icons[3] = { Img_Button(MENU_XL, "arrow_back"), Img_Button(MENU_XL, "sync"), Img_Button(MENU_XL, "arrow_forward") };
 
     Img_Slider timelineSlider = Img_Slider(MENU_XL, 60); Img_Base timelineTex = Img_Base(timelineSlider.stateImg.getImage());
-    Img_Base modeButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
-    Img_Button actionButtons[9] = { 
+    Img_Base dropMenuBtns[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
+    Img_Base expandMenuBtns[6] = { Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE) };
+    /* Img_Button actionButtons[9] = { 
         Img_Button(MENU_Large, "zoom_in"), Img_Button(MENU_Large, "arrow_downward"), Img_Button(MENU_Large, "zoom_out"),
         Img_Button(MENU_Large, "arrow_back"), Img_Button(MENU_Large, "cancel"), Img_Button(MENU_Large, "arrow_forward"),
         Img_Button(MENU_Large, "rotate_left"), Img_Button(MENU_Large, "arrow_upward"), Img_Button(MENU_Large, "rotate_right"), 
-    };
+    }; */
     Img_Base propsRoot = Img_Base(0xFF666666);
     Img_Base propsPane = Img_Base(0xAAEEEEEE);
     Img_Button scenePropBtns[6] = {
@@ -91,7 +92,6 @@ struct Sandbox_Demo : public Topl_Program {
         Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium),
     };
     // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
-
     Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
     Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", createImgSize(64, 512), 9);
     Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
@@ -103,4 +103,4 @@ private:
     Topl_Scene details; // for details elements
 
     Topl_Camera fixedCamera;
-} *_instance; // USE _instance OBJECT FOR DEMO
+} *_DEMO; // USE _DEMO OBJECT FOR DEMO

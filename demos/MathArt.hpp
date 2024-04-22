@@ -32,4 +32,4 @@ private:
     Textured_VertexShader_DX11 texVShader; Flat_PixelShader_DX11 texPShader;
     Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
     Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
-} *_instance;
+} *_DEMO;

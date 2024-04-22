@@ -6,10 +6,10 @@ static unsigned short spawnIdx = 0;
 
 static void spawnPress(float x, float y){
     if(spawnIdx < ENTROPIC_SPAWN){
-        _instance->spawnActors[spawnIdx].isShown = true;
-        _instance->spawnActors[spawnIdx].setPos(Topl_Program::getCamCursorPos());
-        _instance->spawnActors[spawnIdx].setRot(VEC_3F_ZERO);
-        _instance->spawnActors[spawnIdx].setSize({ 0.025F, 0.025F, 0.025F });
+        _DEMO->spawnActors[spawnIdx].isShown = true;
+        _DEMO->spawnActors[spawnIdx].setPos(Topl_Program::getCamCursorPos());
+        _DEMO->spawnActors[spawnIdx].setRot(VEC_3F_ZERO);
+        _DEMO->spawnActors[spawnIdx].setSize({ 0.025F, 0.025F, 0.025F });
         spawnIdx++;
     }
 }
@@ -85,9 +85,9 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _instance = new Entropy_Demo(argv[0], BACKEND_DX11);
-    _instance->run();
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO->run();
 
-    delete(_instance);
+    delete(_DEMO);
     return 0;
 }

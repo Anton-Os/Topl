@@ -69,7 +69,7 @@ protected:
 	// unsigned _physicalDeviceIdx = 0; // TODO: Make configurable if more than one device
 	std::vector<VkPhysicalDevice> _physicalDevices = {};
 	std::vector<VkQueueFamilyProperties> _queueFamilyProps = {};
-	VkInstance _instance;
+	VkInstance _DEMO;
 	VkDevice _logicDevice;
 	VkQueue _graphicsQueue;
 	VkSurfaceKHR _surface;
