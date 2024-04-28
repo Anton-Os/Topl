@@ -4,7 +4,7 @@
 
 // #define TARGET_BACKEND BACKEND_GL4
 // #define TARGET_BACKEND BACKEND_DX11
-#define TARGET_BACKEND BACKEND_Vulkan
+#define TARGET_BACKEND BACKEND_VK
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -28,13 +28,13 @@ int main(int argc, char** argv) {
 
 	if (TARGET_BACKEND == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getParentWindow());
 	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getParentWindow());
-	else if (TARGET_BACKEND == BACKEND_Vulkan) renderer = new Hello_Renderer_Vulkan(platform.getParentWindow());
+	else if (TARGET_BACKEND == BACKEND_VK) renderer = new Hello_Renderer_VK(platform.getParentWindow());
 
 	Timer_Persist _ticker;
 	double frameTotal = 0.0;
 	double swapTime = 0.0;
 
-	if(TARGET_BACKEND != BACKEND_Vulkan){
+	if(TARGET_BACKEND != BACKEND_VK){
 		scene.addGeometry(&actor);
 		renderer->buildScene(&scene);
 	}
@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 	while(1){
 		platform.handleEvents();
 
-		if(TARGET_BACKEND != BACKEND_Vulkan){
+		if(TARGET_BACKEND != BACKEND_VK){
 			// Frame Rate and Render Profiling
 			double f1 = _ticker.getRelMillisecs();
 			renderer->clear();

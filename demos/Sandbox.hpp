@@ -10,6 +10,17 @@
 
 #include "program/Topl_Program.hpp"
 
+#define SCENEMODE_ADD 0
+#define SCENEMODE_PAN 1
+#define SCENEMODE_SELECT 2
+#define SCENEMODE_PAINT 3
+#define SCENEMODE_DEL 4
+#define SCENEMODE_SETTINGS 5
+
+#define PICKMODE_MOVE 0
+#define PICKMODE_ROTATE 1
+#define PICKMODE_SCALE 2
+
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){}
     ~Sandbox_Demo();
@@ -53,8 +64,9 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Listboard expandMenuLayout = Geo_Listboard("expandMenuLayout", 6);
     Geo_Paneboard timelineLayout = Geo_Paneboard("timelineLayout");
     Geo_Gridboard actionsLayout = Geo_Gridboard("actionsLayout", 3);
-    Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
     Geo_Crossboard scenePropsLayout = Geo_Crossboard("scenePropsLayout", 6);
+    Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
+    Geo_Crossboard timelinePropsLayout = Geo_Crossboard("timelinePropsLayout", 3);
 
     Geo_Quad2D labels[100]; Img_Base labelsTex[100];
     Geo_Triangle2D arrows[100]; Img_Base arrowsTex[100];
@@ -84,17 +96,24 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Base propsRoot = Img_Base(0xFF666666);
     Img_Base propsPane = Img_Base(0xAAEEEEEE);
     Img_Button scenePropBtns[6] = {
-        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "build"), Img_Button(MENU_Medium, "code"),
-        Img_Button(MENU_Medium, "cached"), Img_Button(MENU_Medium, "crop_free"), Img_Button(MENU_Medium, "delete"),
+        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "pan_tool"), Img_Button(MENU_Medium, "gps_fixed"),
+        Img_Button(MENU_Medium, "palette"), Img_Button(MENU_Medium, "highlight_off"), Img_Button(MENU_Medium, "tune"),
     };
     Img_Button pickerPropBtns[6] = {
-        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium),
-        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium),
+        Img_Button(MENU_Medium, "open_with"), Img_Button(MENU_Medium, "loop"), Img_Button(MENU_Medium, "zoom_out_map"),
+        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium)
+    };
+    Img_Button timelineBtns[3] = {
+        Img_Button(MENU_Medium, "fast_forward"), Img_Button(MENU_Medium, "play_circle_outline"), Img_Button(MENU_Medium, "fast_rewind"), 
     };
     // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
     Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
     Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", createImgSize(64, 512), 9);
     Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
+
+    std::string defaultFontPath = std::string(FONTS_DIR) + "TW-Cen-MT.ttf";
+    Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
+    Img_Label labelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
 #endif
 private:
     Topl_Scene canvas; // for backdrop element

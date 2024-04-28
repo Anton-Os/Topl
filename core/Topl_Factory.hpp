@@ -3,7 +3,7 @@
 #include "backends/directx/Topl_Renderer_DX11.hpp"
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-#include "backends/vulkan/Topl_Renderer_Vulkan.hpp"
+#include "backends/vulkan/Topl_Renderer_VK.hpp"
 #endif
 
 // Backends List
@@ -11,7 +11,7 @@
 enum BACKEND_Target {
 	BACKEND_GL4,
 	BACKEND_DX11,
-	BACKEND_Vulkan
+	BACKEND_VK
 };
 
 // Engine Configuration
@@ -31,9 +31,9 @@ struct Engine_Config_DX11 : public Engine_Config {
 #endif
 
 #ifdef TOPL_ENABLE_VULKAN
-struct Engine_Config_Vulkan : public Engine_Config {
-	Topl_Renderer_Vulkan* renderer;
-	Topl_Pipeline_Vulkan** pipelines;
+struct Engine_Config_VK : public Engine_Config {
+	Topl_Renderer_VK* renderer;
+	Topl_Pipeline_VK** pipelines;
 };
 #endif
 
@@ -64,6 +64,6 @@ private:
 	static Engine_Config_DX11 DX11_engine_cfg;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	static Engine_Config_Vulkan Vulkan_engine_cfg;
+	static Engine_Config_VK VK_engine_cfg;
 #endif
 };

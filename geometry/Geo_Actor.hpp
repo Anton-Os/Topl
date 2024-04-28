@@ -12,8 +12,8 @@
 extern class Geo_Actor;
 extern struct Topl_EntryShader;
 
-// typedef void (*pickerCallback)(Geo_Actor*);
-// typedef void (*shaderCallback)(Topl_EntryShader*);
+// typedef void (*pickerCallback)(Geo_Actor*, MOUSE_Event);
+// typedef void (*shaderCallback)(Geo_Actor*, Topl_EntryShader*);
 
 typedef void (*pickerCallback)(MOUSE_Event);
 typedef void (*shaderCallback)(Topl_EntryShader*);

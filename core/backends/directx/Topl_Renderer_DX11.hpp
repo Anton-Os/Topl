@@ -92,6 +92,11 @@ protected:
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	Topl_Pipeline_DX11* _pipeline = nullptr;
 
+	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
+	std::map<unsigned long, Buffer_DX11> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::vector<Texture_DX11> _textures;
+	std::map<unsigned long, Texture_DX11[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+private:
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;
 	ID3D11DeviceContext* _deviceCtx;
@@ -100,11 +105,6 @@ protected:
 	ID3D11DepthStencilView* _dsView;
 	ID3D11BlendState* _blendState;
 	ID3D11RasterizerState* _rasterizerState;
-
-	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
-	std::map<unsigned long, Buffer_DX11> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
-	std::vector<Texture_DX11> _textures;
-	/* TODO: Change to map */ std::map<unsigned long, Texture_DX11[8]> _textureMap; // accomodate array and volumetric textures
 
 	const UINT _vertexStride = sizeof(Geo_Vertex);
 	const UINT _vertexOffset = 0;

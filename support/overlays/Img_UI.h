@@ -35,6 +35,29 @@ struct Img_Button : public Img_UI {
 	void setState(enum MENU_ItemState s){ Img_UI::setState((unsigned short)s); }
 };
 
+struct Img_Label : public Img_UI {
+	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
+		Rasteron_Text textObjs[4] = {
+			textObj,
+			{ textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor },
+			{ textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor },
+			{ textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor }
+		};
+		queue = RASTERON_QUEUE_ALLOC("label", createImgSize(10, 100), 4); // TODO: dynamically compute size
+		for(unsigned short t = 0; t < 4; t++){
+			Rasteron_Image* textImg = textImgOp(&textObjs[t], FONT_SIZE_MED);
+			queue_addImg(queue, textImg, t);
+			RASTERON_DEALLOC(textImg);
+		}
+		Img_UI::setState(0);
+	}
+
+	// TODO: Implement preset labels
+	// TODO: Implement textField labels
+
+	void setState(enum MENU_ItemState s){ Img_UI::setState((unsigned short)s); }
+};
+
 struct Img_Dial : public Img_UI {
 	Img_Dial(enum MENU_Size size, unsigned short count) : Img_UI(size){ 
 		queue = loadUI_dial(size, count); 

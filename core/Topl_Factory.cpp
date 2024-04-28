@@ -5,7 +5,7 @@ Engine_Config_GL4 Topl_Factory::GL4_engine_cfg = Engine_Config_GL4();
 Engine_Config_DX11 Topl_Factory::DX11_engine_cfg = Engine_Config_DX11();
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-Engine_Config_Vulkan Topl_Factory::Vulkan_engine_cfg = Engine_Config_Vulkan();
+Engine_Config_VK Topl_Factory::VK_engine_cfg = Engine_Config_VK();
 #endif
 
 Topl_Factory::~Topl_Factory(){
@@ -15,7 +15,7 @@ Topl_Factory::~Topl_Factory(){
     if(DX11_engine_cfg.renderer != nullptr) delete(DX11_engine_cfg.renderer);
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	if(Vulkan_engine_cfg.renderer != nullptr) delete(Vulkan_engine_cfg.renderer);
+	if(VK_engine_cfg.renderer != nullptr) delete(VK_engine_cfg.renderer);
 #endif
 
 	// Pipeline Cleanup
@@ -30,9 +30,9 @@ Topl_Factory::~Topl_Factory(){
     }
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	if (Vulkan_engine_cfg.pipelines != nullptr) {
-		for (unsigned p = 0; p < Vulkan_engine_cfg.pipeIndex; p++) delete(*(Vulkan_engine_cfg.pipelines + p));
-		free(Vulkan_engine_cfg.pipelines);
+	if (VK_engine_cfg.pipelines != nullptr) {
+		for (unsigned p = 0; p < VK_engine_cfg.pipeIndex; p++) delete(*(VK_engine_cfg.pipelines + p));
+		free(VK_engine_cfg.pipelines);
 	}
 #endif
 }
@@ -52,10 +52,10 @@ Topl_Renderer* Topl_Factory::genRenderer(BACKEND_Target backend, Platform* platf
         return (Topl_Renderer*)DX11_engine_cfg.renderer;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	case BACKEND_Vulkan:
-		if (Vulkan_engine_cfg.renderer == nullptr) 
-			Vulkan_engine_cfg.renderer = new Topl_Renderer_Vulkan(platform->getParentWindow());
-		return (Topl_Renderer*)Vulkan_engine_cfg.renderer;
+	case BACKEND_VK:
+		if (VK_engine_cfg.renderer == nullptr) 
+			VK_engine_cfg.renderer = new Topl_Renderer_VK(platform->getParentWindow());
+		return (Topl_Renderer*)VK_engine_cfg.renderer;
 #endif
 	default: return nullptr; // Error
     }
@@ -71,8 +71,8 @@ void Topl_Factory::configPipelines() {
 		DX11_engine_cfg.pipelines = (Topl_Pipeline_DX11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_DX11*));
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	if (Vulkan_engine_cfg.pipelines == nullptr) 
-		Vulkan_engine_cfg.pipelines = (Topl_Pipeline_Vulkan**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_Vulkan*));
+	if (VK_engine_cfg.pipelines == nullptr) 
+		VK_engine_cfg.pipelines = (Topl_Pipeline_VK**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_VK*));
 #endif
 }
 
@@ -101,13 +101,13 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
         }
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	case BACKEND_Vulkan:
-		if(Vulkan_engine_cfg.renderer == nullptr) return nullptr; // Error
+	case BACKEND_VK:
+		if(VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_Vulkan();
-			Vulkan_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
-			Vulkan_engine_cfg.pipeIndex++;
+			Topl_Pipeline_VK** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_VK();
+			VK_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
+			VK_engine_cfg.pipeIndex++;
 			return *pipeline;
 		}
 #endif
@@ -140,13 +140,13 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 		}
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	case BACKEND_Vulkan:
-		if (Vulkan_engine_cfg.renderer == nullptr) return nullptr; // Error
+	case BACKEND_VK:
+		if (VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_Vulkan** pipeline = Vulkan_engine_cfg.pipelines + Vulkan_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_Vulkan();
-			Vulkan_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
-			Vulkan_engine_cfg.pipeIndex++;
+			Topl_Pipeline_VK** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
+			*pipeline = new Topl_Pipeline_VK();
+			VK_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
+			VK_engine_cfg.pipeIndex++;
 			return *pipeline;
 		}
 #endif
@@ -162,8 +162,8 @@ void Topl_Factory::switchPipeline(BACKEND_Target backend, Topl_Renderer* rendere
 		((Topl_Renderer_DX11*)renderer)->setPipeline((Topl_Pipeline_DX11*)pipeline);
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	else if (backend == BACKEND_Vulkan)
-		((Topl_Renderer_Vulkan*)renderer)->setPipeline((Topl_Pipeline_Vulkan*)pipeline);
+	else if (backend == BACKEND_VK)
+		((Topl_Renderer_VK*)renderer)->setPipeline((Topl_Pipeline_VK*)pipeline);
 #endif
 	else return; // Error
 }

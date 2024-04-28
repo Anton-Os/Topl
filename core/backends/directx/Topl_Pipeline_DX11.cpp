@@ -23,6 +23,61 @@ namespace DX11 {
 		delete shaderFilePath_wchar; // Proper deallocation of the source string
 		return true;
 	}
+
+	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
+		switch (type) {
+		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case SHDR_float_vec3: return DXGI_FORMAT_R32G32B32_FLOAT;
+		case SHDR_float_vec2: return DXGI_FORMAT_R32G32_FLOAT;
+		case SHDR_float: return DXGI_FORMAT_R32_FLOAT;
+		case SHDR_uint_vec4: return DXGI_FORMAT_R32G32B32A32_UINT;
+		case SHDR_uint_vec3: return DXGI_FORMAT_R32G32B32_UINT;
+		case SHDR_uint_vec2: return DXGI_FORMAT_R32G32_UINT;
+		case SHDR_uint: return DXGI_FORMAT_R32_UINT;
+		default:
+			logMessage("DX11 shader input type not supported!");
+			break;
+		}
+
+		DXGI_FORMAT format;
+		return format;
+	}
+
+	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset) {
+		D3D11_INPUT_ELEMENT_DESC vertexElemDesc;
+		vertexElemDesc.SemanticName = input->semantic.c_str();
+		vertexElemDesc.SemanticIndex = 0;
+		vertexElemDesc.Format = DX11::getShaderFormat(input->type);
+		vertexElemDesc.InputSlot = 0;
+		vertexElemDesc.AlignedByteOffset = offset;
+		vertexElemDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		vertexElemDesc.InstanceDataStepRate = 0;
+
+		return vertexElemDesc;
+	}
+
+
+	bool createVertexLayout(ID3D11Device** device, ID3D11DeviceContext** deviceCtx, ID3D11InputLayout** layout, Topl_Pipeline_DX11* pipeline, entry_shader_cptr entryShader){
+		D3D11_INPUT_ELEMENT_DESC* vertexLayout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * entryShader->getInputCount());
+		unsigned vertexElemOffset = 0;
+		for (unsigned inputNum = 0; inputNum < entryShader->getInputCount(); inputNum++) {
+			*(vertexLayout_ptr + inputNum) = getElementDescFromInput(entryShader->getInputAtIndex(inputNum), vertexElemOffset);
+			vertexElemOffset += Topl_Pipeline::getOffset(entryShader->getInputAtIndex(inputNum)->type);
+		}
+
+		(*device)->CreateInputLayout(
+			vertexLayout_ptr, 
+			entryShader->getInputCount(),
+			pipeline->vsBlob->GetBufferPointer(), 
+			pipeline->vsBlob->GetBufferSize(),
+			layout
+		);
+
+		(*deviceCtx)->IASetInputLayout(*layout);
+		free(vertexLayout_ptr); // deallocating vertexLayout_ptr and all associated data
+
+		return true;
+	}
 }
 
 void Topl_Renderer_DX11::setPipeline(Topl_Pipeline_DX11* pipeline) {
@@ -65,6 +120,8 @@ void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
+
+	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->entryShader);
 }
 
 void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
@@ -120,4 +177,6 @@ void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
+
+	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->entryShader);
 }

@@ -4,27 +4,6 @@ namespace DX11 {
 	static ID3D11SamplerState* texSamplers[MAX_TEX_BINDINGS + 1];
 	static ID3D11ShaderResourceView* texResources[MAX_TEX_BINDINGS + 1];
 
-	// Shader Functions
-
-	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
-		switch (type) {
-		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case SHDR_float_vec3: return DXGI_FORMAT_R32G32B32_FLOAT;
-		case SHDR_float_vec2: return DXGI_FORMAT_R32G32_FLOAT;
-		case SHDR_float: return DXGI_FORMAT_R32_FLOAT;
-		case SHDR_uint_vec4: return DXGI_FORMAT_R32G32B32A32_UINT;
-		case SHDR_uint_vec3: return DXGI_FORMAT_R32G32B32_UINT;
-		case SHDR_uint_vec2: return DXGI_FORMAT_R32G32_UINT;
-		case SHDR_uint: return DXGI_FORMAT_R32_UINT;
-		default:
-			logMessage("DX11 shader input type not supported!");
-			break;
-		}
-
-		DXGI_FORMAT format;
-		return format;
-	}
-
 	// Buffer Functions
 
 	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data) {
@@ -73,19 +52,6 @@ namespace DX11 {
 		viewport.MaxDepth = 1.0f;
 
 		return viewport;
-	}
-
-	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset) {
-		D3D11_INPUT_ELEMENT_DESC vertexElemDesc;
-		vertexElemDesc.SemanticName = input->semantic.c_str();
-		vertexElemDesc.SemanticIndex = 0;
-		vertexElemDesc.Format = DX11::getShaderFormat(input->type);
-		vertexElemDesc.InputSlot = 0;
-		vertexElemDesc.AlignedByteOffset = offset;
-		vertexElemDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		vertexElemDesc.InstanceDataStepRate = 0;
-
-		return vertexElemDesc;
 	}
 
 	static D3D11_SAMPLER_DESC genSamplerDesc(enum TEX_Mode mode) {
@@ -278,33 +244,10 @@ void Topl_Renderer_DX11::setViewport(const Topl_Viewport* viewport) {
 void Topl_Renderer_DX11::swapBuffers(double frameTime) { _swapChain->Present(0, 0); }
 
 void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
-	static unsigned buildCount = FIRST_BUILD_CALL;
-	blockBytes_t shaderBlockData;
-
-	// setting vertex input layout
-	if (buildCount == FIRST_BUILD_CALL) { // invoked only once using vertex shader as reference
-		D3D11_INPUT_ELEMENT_DESC* vertexLayout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * _entryShader->getInputCount());
-		unsigned vertexElemOffset = 0;
-		for (unsigned inputNum = 0; inputNum < _entryShader->getInputCount(); inputNum++) {
-			*(vertexLayout_ptr + inputNum) = DX11::getElementDescFromInput(_entryShader->getInputAtIndex(inputNum), vertexElemOffset);
-			vertexElemOffset += Topl_Pipeline::getOffset(_entryShader->getInputAtIndex(inputNum)->type);
-		}
-
-		_device->CreateInputLayout(
-			vertexLayout_ptr, _entryShader->getInputCount(),
-			_pipeline->vsBlob->GetBufferPointer(), 
-			_pipeline->vsBlob->GetBufferSize(),
-			&_vertexDataLayout
-		);
-
-		_deviceCtx->IASetInputLayout(_vertexDataLayout);
-		free(vertexLayout_ptr); // deallocating vertexLayout_ptr and all associated data
-	}
-
 	// scene block buffer generation
-	shaderBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-	_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &shaderBlockData);
+	_shaderBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+	_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_shaderBlockData);
 	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
@@ -312,25 +255,25 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 		unsigned long renderID = getRenderID(actor);
 		
-		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+		if(renderID == INVALID_RENDERID){ // Creating new unique renderID
 			_renderIDs++;
 			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 			renderID = getRenderID(actor);
-		} else { // old data must be replaced
-			/* auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+		} else logMessage(MESSAGE_Exclaim, "Override required!"); /* { // old data must be replaced
+			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
 			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
 			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
 			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
 			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff); */
-		}
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+		} */
 
 		// render block buffer generation
-		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &shaderBlockData);
+		_shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, &_shaderBlockData);
 		ID3D11Buffer* renderBlockBuff = nullptr;
-		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &shaderBlockData);
+		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_shaderBlockData);
 		_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
@@ -350,7 +293,6 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
 
-	buildCount++;
 	_flags[BUILD_BIT] = true;
 }
 
@@ -507,12 +449,12 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 #endif
 
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
-	blockBytes_t shaderBlockData;
+	blockBytes_t _shaderBlockData;
 
 	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
-		shaderBlockData.clear();
-		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData); 
-		DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &shaderBlockData);
+		_shaderBlockData.clear();
+		_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+		DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_shaderBlockData);
 	}
 
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
@@ -520,11 +462,11 @@ void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
 
 		// Shader Render Block
-		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &shaderBlockData);
+		_shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, &_shaderBlockData);
 		
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
-			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &shaderBlockData);
+			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
 		
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
 	}

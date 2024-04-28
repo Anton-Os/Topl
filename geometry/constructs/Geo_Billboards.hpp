@@ -26,13 +26,6 @@ public:
 		configure(scene);
 	}
 
-	~Geo_Billboard(){
-#ifdef RASTERON_H
-	/* RASTERON_DEALLOC((rootBk);
-	for(std::vector<Rasteron_Queue*>::iterator q = childStateBg.begin(); q != childStateBg.end(); q++)
-		free_queue(*q); */
-#endif
-	}
 
 	void configure(Topl_Scene* scene) override {
 		_geoActors.resize(_params.getGridSize() + 1);
@@ -43,26 +36,15 @@ public:
 		childMesh.scale({ 1.0F / _params.x.first, 1.0F / _params.y.first, 0.0F });
 		Geo_Grid::configure(scene);
 
-		scene->addGeometry(getPrefix() + "root", &_geoActors.back());
+		scene->addGeometry(getPrefix() + "root", &_geoActors.back()); 
+		// _geoActors.back().pickerFunc = onPick;
+		// for(unsigned p = 0; p < _params.getGridSize(); p++) _geoActors.at(p).pickerFunc = onPick;
 #ifdef RASTERON_H
-		std::string fontFilePath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
-		Rasteron_Text textObj = { fontFilePath.c_str(), "X", 0xFFEEEEEE, 0xFF000000 };
-
-		rootImg.setColorImage(0xFF333333);
-		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++){
-			paneImg_map.insert({ &_geoActors.at(p), Img_Base() });
-			// paneImg_map.at(&_geoActors.at(p)).setTextImage(&textObj);
-			paneImg_map.at(&_geoActors.at(p)).setColorImage(0xFFEEEEEE);
-
-			paneImgArray_map.insert({ &_geoActors.at(p), Img_Array() });
-			for(unsigned t = 1; t < MAX_TEX_BINDINGS; t++){
-				textObj.fgColor = RAND_COLOR(); textObj.bkColor = RAND_COLOR();
-				Img_Base image = Img_Base(textObj);
-				queue_addImg(paneImgArray_map.at(&_geoActors.at(p)).getQueue(), image.getImage(), t);
-			}
-			scene->addArrayTex(getCellName(p + 1), &paneImgArray_map.at(&_geoActors.at(p))); 
+			paneImg_map.insert({ &_geoActors.at(p), Img_Base(0xFF666666) });
+			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p))); 
 		}
+		scene->addTexture(getPrefix() + "root", &rootImg);
 #endif
 	}
 	void scale(Vec3f scaleVec){
@@ -73,18 +55,25 @@ public:
 				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * 1.5F, offsetVec[1] * scaleVec[1] * 1.5F, 0.0F });
 		}
     }
+
+	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
+
+	void overlay(unsigned paneIndex, Img_UI* element){ getImgAt(paneIndex)->setImage(element->stateImg.getImage()); }
+	/* void overlay(unsigned paneIndex, Img_Button* button){ getImgAt(paneIndex)->setImage(button->stateImg.getImage()); }
+	void overlay(unsigned paneIndex, Img_Label* label){ getImgAt(paneIndex)->setImage(label->stateImg.getImage()); }
+	void overlay(unsigned paneIndex, Img_Dial* dial){ getImgAt(paneIndex)->setImage(dial->stateImg.getImage()); }
+	void overlay(unsigned paneIndex, Img_Slider* slider){ getImgAt(paneIndex)->setImage(slider->stateImg.getImage()); } */
 protected:
 	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);
 	// Geo_Actor childActor = Geo_Actor(&childMesh);
 	float rootBorder = 0.05F;
 	Geo_Quad2D rootMesh = Geo_Quad2D(PANE_SIZE, PANE_Z);
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
-
 #ifdef RASTERON_H
-	Img_Base rootImg; // root background
-	std::map<const Geo_Actor*, Img_Base> paneImg_map; // child backgrounds
-	std::map<const Geo_Actor*, Img_Array> paneImgArray_map; // child backgrounds in array
-	// std::vector<Rasteron_Queue*> childStateBg;
+	Img_Base rootImg = Img_Base(0xFF333333); // root background
+	std::map<const Geo_Actor*, Img_Base> paneImg_map; // for child images
+	// std::map<const Geo_Actor*, Img_UI> paneImgUI_map; // for child UI elements;
+	// std::map<const Geo_Actor*, pickerCallback> panesOnPick_map;
 #endif
 };
 

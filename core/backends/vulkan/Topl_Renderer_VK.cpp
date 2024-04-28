@@ -1,8 +1,10 @@
-#include "Topl_Renderer_Vulkan.hpp"
+#include "Topl_Renderer_VK.hpp"
 
 #define ENABLE_DEBUG_LAYERS
 
-namespace Vulkan {
+namespace VK {
+	VkResult result;
+
 	VKAPI_ATTR VkBool32 VKAPI_CALL debugReportLogCallback(
 		VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
 		uint64_t object, size_t location, int32_t messageCode,
@@ -13,8 +15,6 @@ namespace Vulkan {
 	}
 
 	static VkResult getExtensionProperties(std::vector<VkExtensionProperties>* extensions){
-		VkResult result;
-
 		unsigned extensionCount;
 		result = vkEnumerateInstanceExtensionProperties(NULL, &extensionCount, NULL);
 		if(result != VK_SUCCESS) return result;
@@ -26,8 +26,6 @@ namespace Vulkan {
 	}
 
 	static VkResult createDebugReport(VkInstance* instance){
-		VkResult result;
-
 		PFN_vkCreateDebugReportCallbackEXT createDebugReportCallback = NULL;
 		createDebugReportCallback = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(*instance, "vkCreateDebugReportCallbackEXT"));
 
@@ -43,9 +41,31 @@ namespace Vulkan {
 
 		return result;
 	}
+
+	static VkResult createInstance(VkInstance* instance, VkInstanceCreateInfo* createInfo){ }
+	static VkResult createSurface(VkInstance* instance, VkSurfaceKHR* surface){} // TODO: Win32 and Linux Version Required
+	static VkResult queryPhysicalDevices(VkInstance* instance, VkSurfaceKHR* surface, std::vector<VkPhysicalDevice>& physDevices, std::vector<VkQueueFamilyProperties>& queueProps){ }
+	static VkResult createLogicDevice(VkDevice* device, std::vector<VkPhysicalDevice>& physDevices){}
+
+	static VkResult createBuff(VkPhysicalDevice* physDevice, VkDevice* device, VkBuffer* buffer, VkDeviceMemory* memory, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags props){
+		VkBufferCreateInfo bufferCreateInfo = {};
+		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferCreateInfo.pNext = nullptr;
+		bufferCreateInfo.flags = 0;
+		bufferCreateInfo.size = size;
+		bufferCreateInfo.usage = usage;
+		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		bufferCreateInfo.queueFamilyIndexCount = 0;
+		bufferCreateInfo.pQueueFamilyIndices = nullptr;
+
+		result = vkCreateBuffer(*device, &bufferCreateInfo, nullptr, buffer);
+		if(result != VK_SUCCESS) logMessage("Buffer creation failure!");
+
+		return result;
+	}
 }
 
-void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
+void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 	VkResult result; // error checking variable
 
 	// Instance Creation
@@ -58,7 +78,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
-	result = Vulkan::getExtensionProperties(&_vulkanExtensions);
+	result = VK::getExtensionProperties(&_vulkanExtensions);
 	if(result == VK_SUCCESS) logMessage("Extension loading success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Extension loading failure!\n");
 
@@ -103,36 +123,11 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	// free(instanceLayers);
 #endif
 
-	result = vkCreateInstance(&instanceInfo, NULL, &_DEMO);
+	result = vkCreateInstance(&instanceInfo, NULL, &_instance);
 	if(result == VK_SUCCESS) logMessage("Instance creation success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Instance creation failure!\n");
 
-/* #ifdef ENABLE_DEBUG_LAYERS
-	result = Vulkan::createDebugReport(&_DEMO);
-	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
-	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
-#endif */
-
-	// Physical Device Enumeration
-
-	unsigned physDeviceCount = 0;
-
-	result = vkEnumeratePhysicalDevices(_DEMO, &physDeviceCount, NULL);
-	if(physDeviceCount > 1) logMessage("Multiple phys devices detected!\n");
-	else if(physDeviceCount == 0) return logMessage(MESSAGE_Exclaim, "No phys devices detected");
-
-	_physicalDevices.resize(physDeviceCount);
-	result = vkEnumeratePhysicalDevices(_DEMO, &physDeviceCount, _physicalDevices.data());
-	if(result == VK_SUCCESS) logMessage("Physical device enumeration success!\n");
-	else return logMessage(MESSAGE_Exclaim, "Physical device enumeration failure!\n");
-
-	VkPhysicalDeviceProperties physDeviceProps;
-	vkGetPhysicalDeviceProperties(_physicalDevices[0], &physDeviceProps);
-	VkPhysicalDeviceFeatures physDeviceFeats;
-	vkGetPhysicalDeviceFeatures(_physicalDevices[0], &physDeviceFeats);
-
-
-	// Surface Creation
+		// Surface Creation
 
 #ifdef _WIN32
 	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
@@ -141,7 +136,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	surfaceCreateInfo.hwnd = _platformCtx.window;
 	surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
 
-	result = vkCreateWin32SurfaceKHR(_DEMO, &surfaceCreateInfo, NULL, &_surface);
+	result = vkCreateWin32SurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
 #elif defined(__linux__)
 	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
@@ -150,11 +145,34 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	surfaceCreateInfo.dpy = _platformCtx.display;
 	surfaceCreateInfo.window = _platformCtx.window;
 
-	result = vkCreateXlibSurfaceKHR(_DEMO, &surfaceCreateInfo, NULL, &_surface);
+	result = vkCreateXlibSurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
 #endif
 	if(result == VK_SUCCESS) logMessage("Surface creation sucess\n");
 	else return logMessage(MESSAGE_Exclaim, "Surface creation failure!\n");
 
+/* #ifdef ENABLE_DEBUG_LAYERS
+	result = VK::createDebugReport(&_instance);
+	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
+	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
+#endif */
+
+	// Physical Device Enumeration
+
+	unsigned physDeviceCount = 0;
+
+	result = vkEnumeratePhysicalDevices(_instance, &physDeviceCount, NULL);
+	if(physDeviceCount > 1) logMessage("Multiple phys devices detected!\n");
+	else if(physDeviceCount == 0) return logMessage(MESSAGE_Exclaim, "No phys devices detected");
+
+	_physicalDevices.resize(physDeviceCount);
+	result = vkEnumeratePhysicalDevices(_instance, &physDeviceCount, _physicalDevices.data());
+	if(result == VK_SUCCESS) logMessage("Physical device enumeration success!\n");
+	else return logMessage(MESSAGE_Exclaim, "Physical device enumeration failure!\n");
+
+	VkPhysicalDeviceProperties physDeviceProps;
+	vkGetPhysicalDeviceProperties(_physicalDevices[0], &physDeviceProps);
+	VkPhysicalDeviceFeatures physDeviceFeats;
+	vkGetPhysicalDeviceFeatures(_physicalDevices[0], &physDeviceFeats);
 
 	// Queue Family Enumeration
 
@@ -171,7 +189,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 
 	// Queue Family Selection
 
-	VkDeviceQueueCreateInfo queueInfo = {};
 	float queuePriorities[1] = { 0.0f }; // float queuePriority = 1.0;
 	unsigned gSupportIdx, pSupportIdx; // graphics and presentation support indices
 
@@ -193,14 +210,14 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 		else logMessage("Presentation support not detected for queue family no. " + std::to_string(q) + "\n");
 	}
 
+	// Logical Device Creation
+
+	VkDeviceQueueCreateInfo queueInfo = {};
 	queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueInfo.pNext = NULL;
 	queueInfo.queueFamilyIndex = gSupportIdx;
 	queueInfo.queueCount = 1;
 	queueInfo.pQueuePriorities = queuePriorities; // &queuePriority;
-
-
-	// Logical Device Creation
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	const char* deviceExtensions[1] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
@@ -281,7 +298,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	result = vkCreateSwapchainKHR(_logicDevice, &swapchainCreateInfo, NULL, &_swapchain);
 	if(result == VK_SUCCESS) logMessage("Swapchain creation success\n");
 	else return logMessage(MESSAGE_Exclaim, "Swapchain creation failure!\n");
-
 	
 	// Get Images from Swapchain
 
@@ -313,30 +329,6 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 		else return logMessage(MESSAGE_Exclaim, "Swapchain image view creation failure! \n");
 	}
 
-
-	// Command Pool and Command Buffers creation
-
-	VkCommandPoolCreateInfo commandPoolInfo = {};
-	commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-	commandPoolInfo.flags = 0;
-	commandPoolInfo.queueFamilyIndex = gSupportIdx;
-	
-	result = vkCreateCommandPool(_logicDevice, &commandPoolInfo, nullptr, &_commandPool);
-	if(result == VK_SUCCESS) logMessage("Command pool creation success \n");
-	else return logMessage(MESSAGE_Exclaim, "Command pool creation failure! \n");
-
-	VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
-	commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	commandBufferAllocInfo.pNext = NULL;
-	commandBufferAllocInfo.commandPool = _commandPool;
-	commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	commandBufferAllocInfo.commandBufferCount = imageCount;
-
-	_commandBuffers.resize(imageCount);
-	result = vkAllocateCommandBuffers(_logicDevice, &commandBufferAllocInfo, _commandBuffers.data());
-	if(result == VK_SUCCESS) logMessage("Command buffers creation success \n");
-	else return logMessage(MESSAGE_Exclaim, "Command buffers creation failure! \n");
-
 	// Render Pass Creation
 
 	VkAttachmentDescription colorAttachment = {};
@@ -356,57 +348,41 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	subpassDesc.colorAttachmentCount = 1;
 	subpassDesc.pColorAttachments = &colorAttachmentRef;
 
-	VkRenderPassCreateInfo renderpassCreateInfo = {};
-	renderpassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderpassCreateInfo.attachmentCount = 1;
-	renderpassCreateInfo.pAttachments = &colorAttachment;
-	renderpassCreateInfo.subpassCount = 1;
-	renderpassCreateInfo.pSubpasses = &subpassDesc;
+	VkRenderPassCreateInfo renderPassCreateInfo = {};
+	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassCreateInfo.attachmentCount = 1;
+	renderPassCreateInfo.pAttachments = &colorAttachment;
+	renderPassCreateInfo.subpassCount = 1;
+	renderPassCreateInfo.pSubpasses = &subpassDesc;
 
-	result = vkCreateRenderPass(_logicDevice, &renderpassCreateInfo, nullptr, &_renderpass);
-	if(result == VK_SUCCESS) logMessage("Render pass creation success \n");
-	else return logMessage(MESSAGE_Exclaim, "Render pass creation failure! \n");
+	result = vkCreateRenderPass(_logicDevice, &renderPassCreateInfo, nullptr, &_renderPass);
+	if(result == VK_SUCCESS) logMessage("RenderPass creation success \n");
+	else return logMessage(MESSAGE_Exclaim, "RenderPass creation failure! \n");
 
-	// Command Buffer Execution
+	// Framebuffer Creation
 
-	VkCommandBufferBeginInfo commandBufferInfo = {};
-	commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	commandBufferInfo.pNext = nullptr;
-	commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	commandBufferInfo.pInheritanceInfo = nullptr;
+	_framebuffers.resize(_swapchainImageViews.size());
 
-	for(unsigned c = 0; c < _commandBuffers.size(); c++)
-		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
-	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
-	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
+	for(unsigned short s = 0; s < _swapchainImageViews.size(); s++){
+		VkImageView attachments[] = { _swapchainImageViews[s] };
 
-	/* VkClearValue clearValues[2];
-	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-	VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
-	
-	VkRenderPassBeginInfo renderPassInfo;
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.pNext = nullptr;
-	// renderPassInfo.renderPass = XXXX; // NEED RENDER PASS!!!
-	renderPassInfo.renderArea = screenRect;
-	renderPassInfo.clearValueCount = 2;
-	renderPassInfo.pClearValues = clearValues;
-	for(unsigned c = 0; c < _commandBuffers.size(); c++){
-		// renderPassInfo.framebuffer = XXXX; // NEED FRAMEBUFFERS!!!
-		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
-	} */
+		VkFramebufferCreateInfo framebufferCreateInfo = {};
+		framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCreateInfo.renderPass = _renderPass;
+		framebufferCreateInfo.attachmentCount = 1;
+		framebufferCreateInfo.pAttachments = attachments;
+		framebufferCreateInfo.width = _surfaceCaps.currentExtent.width;
+		framebufferCreateInfo.height = _surfaceCaps.currentExtent.height;
+		framebufferCreateInfo.layers = 1;
 
-	// Vertex Input State
-	
-	_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	_vertexInputInfo.vertexBindingDescriptionCount = 0; // TODO: Add vertex bindings
-	_vertexInputInfo.pVertexBindingDescriptions = nullptr;
-	_vertexInputInfo.vertexAttributeDescriptionCount = 0; // TODO: Add vertex attributes
-	_vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+		result = vkCreateFramebuffer(_logicDevice, &framebufferCreateInfo, nullptr, &_framebuffers[s]);
+		if(result == VK_SUCCESS) logMessage("Framebuffer creation success at no. " + std::to_string(s) + "\n");
+		else return logMessage(MESSAGE_Exclaim, "Framebuffer creation failure! \n");
+	}
 
 	// Rasetrizer State
 
+	VkPipelineRasterizationStateCreateInfo _rasterStateInfo = {};
 	_rasterStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	_rasterStateInfo.depthClampEnable = VK_FALSE;
 	_rasterStateInfo.rasterizerDiscardEnable = VK_FALSE;
@@ -462,7 +438,7 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 	_colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	_colorBlendInfo.logicOpEnable = VK_TRUE;
+	_colorBlendInfo.logicOpEnable = VK_FALSE; // VK_TRUE;
 	_colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;
 	_colorBlendInfo.attachmentCount = 1;
 	_colorBlendInfo.pAttachments = &_colorBlendAttachment;
@@ -471,36 +447,79 @@ void Topl_Renderer_Vulkan::init(NATIVE_WINDOW window) {
 	_colorBlendInfo.blendConstants[2] = 0.0f;
 	_colorBlendInfo.blendConstants[3] = 0.0f;
 
-	// Pipeline Layout Creation
 
-	_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	_pipelineLayoutInfo.setLayoutCount = 0;
-	_pipelineLayoutInfo.pSetLayouts = nullptr;
-	_pipelineLayoutInfo.pushConstantRangeCount = 0;
-	_pipelineLayoutInfo.pPushConstantRanges = nullptr;
+	// Command Pool and Command Buffers creation
 
-	result = vkCreatePipelineLayout(_logicDevice, &_pipelineLayoutInfo, nullptr, &_pipelineLayout);
-	if(result == VK_SUCCESS) logMessage("Pipeline layout creation success\n");
-	else return logMessage(MESSAGE_Exclaim, "Pipeline layout creation failure!\n");
+	VkCommandPoolCreateInfo commandPoolInfo = {};
+	commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+	commandPoolInfo.flags = 0;
+	commandPoolInfo.queueFamilyIndex = gSupportIdx;
+	
+	result = vkCreateCommandPool(_logicDevice, &commandPoolInfo, nullptr, &_commandPool);
+	if(result == VK_SUCCESS) logMessage("Command pool creation success \n");
+	else return logMessage(MESSAGE_Exclaim, "Command pool creation failure! \n");
+
+	VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
+	commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	commandBufferAllocInfo.pNext = NULL;
+	commandBufferAllocInfo.commandPool = _commandPool;
+	commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	commandBufferAllocInfo.commandBufferCount = imageCount;
+
+	_commandBuffers.resize(imageCount);
+	result = vkAllocateCommandBuffers(_logicDevice, &commandBufferAllocInfo, _commandBuffers.data());
+	if(result == VK_SUCCESS) logMessage("Command buffers creation success \n");
+	else return logMessage(MESSAGE_Exclaim, "Command buffers creation failure! \n");
+
+	// Command Buffer Execution
+
+	/* VkCommandBufferBeginInfo commandBufferInfo = {};
+	commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	commandBufferInfo.pNext = nullptr;
+	commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	commandBufferInfo.pInheritanceInfo = nullptr;
+
+	for(unsigned c = 0; c < _commandBuffers.size(); c++)
+		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
+	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
+	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
+
+	VkClearValue clearValues[2];
+	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+	VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
+	
+	VkRenderPassBeginInfo renderPassInfo;
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.pNext = nullptr;
+	// renderPassInfo.renderPass = XXXX; // NEED RENDER PASS!!!
+	renderPassInfo.renderArea = screenRect;
+	renderPassInfo.clearValueCount = 2;
+	renderPassInfo.pClearValues = clearValues;
+	for(unsigned c = 0; c < _commandBuffers.size(); c++){
+		// renderPassInfo.framebuffer = XXXX; // NEED FRAMEBUFFERS!!!
+		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
+	} */
+	
 }
 
-Topl_Renderer_Vulkan::~Topl_Renderer_Vulkan() {
+Topl_Renderer_VK::~Topl_Renderer_VK() {
 	vkDestroyPipelineLayout(_logicDevice, _pipelineLayout, nullptr);
-	vkDestroyRenderPass(_logicDevice, _renderpass, nullptr);
+	vkDestroyRenderPass(_logicDevice, _renderPass, nullptr);
 	vkFreeCommandBuffers(_logicDevice, _commandPool, _commandBuffers.size(), _commandBuffers.data());
 	vkDestroyCommandPool(_logicDevice, _commandPool, nullptr);
 	for(unsigned i = 0; i < _swapchainImageViews.size(); i++) vkDestroyImageView(_logicDevice, _swapchainImageViews[i], NULL);
 	vkDestroySwapchainKHR(_logicDevice, _swapchain, NULL);
-	vkDestroySurfaceKHR(_DEMO, _surface, nullptr);
+	vkDestroySurfaceKHR(_instance, _surface, nullptr);
 	vkDestroyDevice(_logicDevice, nullptr);
-	vkDestroyInstance(_DEMO, nullptr);
+	vkDestroyInstance(_instance, nullptr);
 }
 
-void Topl_Renderer_Vulkan::clear(){
+void Topl_Renderer_VK::clear(){
 	// Implement clearing operation
 }
 
-void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
+void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 	_viewport.x = 0;
 	_viewport.y = 0;
 	_viewport.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
@@ -513,7 +532,7 @@ void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
 	_scissorRect.extent.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
 
 	_dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	_dynamicStateInfo.dynamicStateCount = 2;
+	_dynamicStateInfo.dynamicStateCount = 3;
 	_dynamicStateInfo.pDynamicStates = &_dynamicStates[0];
 
 	_viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -523,38 +542,61 @@ void Topl_Renderer_Vulkan::setViewport(const Topl_Viewport* viewport) {
 	_viewportStateInfo.pScissors = &_scissorRect;
 }
 
-void Topl_Renderer_Vulkan::swapBuffers(double frameTime){ 
+void Topl_Renderer_VK::swapBuffers(double frameTime){ 
 	// Implement swapping buffers
 	_flags[DRAWN_BIT] = true;
 }
 
-void Topl_Renderer_Vulkan::build(const Topl_Scene* scene) {
+void Topl_Renderer_VK::build(const Topl_Scene* scene) {
+	// TODO: Create buffers for scene
+
+	// TODO: Create buffers for render objects
+	for(unsigned g = 0; g < scene->getActorCount(); g++){
+		actor_cptr actor = scene->getGeoActor(g);
+		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		unsigned long renderID = getRenderID(actor);
+
+		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+			_renderIDs++;
+			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
+			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
+			renderID = getRenderID(actor);
+		} else logMessage(MESSAGE_Exclaim, "Override required!"); // TODO: Implement else to override
+		
+		/* VkBuffer* vertexBuff = nullptr;
+		VkDeviceMemory* memory = nullptr; // TODO: Assign data from vertices
+		VkDeviceSize size = 1; // TODO: AAssign size from vertices
+		VkBufferUsageFlags flags = 0;
+		VkMemoryPropertyFlags props = 0;
+		_flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, vertexBuff, memory, size, flags, props); */
+	}
+
 	_flags[BUILD_BIT] = true;
 }
 
 #ifdef RASTERON_H
 
-Img_Base Topl_Renderer_Vulkan::frame() {
+Img_Base Topl_Renderer_VK::frame() {
 	_frameImage = Img_Base();
 	_frameImage.setColorImage(CLEAR_COLOR_CODE);
 	return _frameImage;
 }
 
-void Topl_Renderer_Vulkan::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_VK::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
 	// Implement texture attaching
 }
 
-void Topl_Renderer_Vulkan::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
+void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
 	// Implement Body
 }
 
 #endif
 
-void Topl_Renderer_Vulkan::update(const Topl_Scene* scene){
+void Topl_Renderer_VK::update(const Topl_Scene* scene){
 	// Implement update operations
 }
 
-void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
+void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 	_drawMode = mode;
 
 	_inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -570,12 +612,12 @@ void Topl_Renderer_Vulkan::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-/* void Topl_Renderer_Vulkan::render(const Topl_Scene* scene){
+/* void Topl_Renderer_VK::render(const Topl_Scene* scene){
 	// Implement render operation
 	_isDrawn = true;
 } */
 
-void Topl_Renderer_Vulkan::draw(const Geo_Actor* actor){
+void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	unsigned long renderID = _renderTargetMap[actor];
 	// if(renderID == SCENE_RENDERID) { }
 	// else {}

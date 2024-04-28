@@ -60,16 +60,16 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 #endif
 
 #ifdef TOPL_ENABLE_VULKAN
-// Vulkan Test Renderer
-struct Hello_Renderer_Vulkan : public Topl_Renderer_Vulkan {
-	Hello_Renderer_Vulkan(NATIVE_WINDOW window)
-	: Topl_Renderer_Vulkan(window){
+// VK Test Renderer
+struct Hello_Renderer_VK : public Topl_Renderer_VK {
+	Hello_Renderer_VK(NATIVE_WINDOW window)
+	: Topl_Renderer_VK(window){
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;
 	}
 
-	Topl_Pipeline_Vulkan pipeline;
+	Topl_Pipeline_VK pipeline;
 	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");
 	Idle_PixelShader pixelShader = Idle_PixelShader("spirv/Idle_Frag.glsl.spv");
 };

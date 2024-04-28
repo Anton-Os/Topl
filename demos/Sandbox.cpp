@@ -9,8 +9,11 @@ Vec3f Sandbox_Demo::texScroll = { 0.0, 0.0, 0.0 };
 std::string Sandbox_Demo::fontFilePath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
 
 static Vec3f cameraPos, cameraRot;
-static unsigned short dropMenuIndex = 0, expandMenuIndex = 0;
+static bool isPickerTab = false;
+static unsigned short tabIndex = 0, dropMenuIndex = 0, expandMenuIndex = 0;
 static float cameraZoom = 1.0;
+static std::string dropMenuLabel = "mode ";
+static std::string dropMenuOutputs[6] = { "F", "E", "D", "C", "B", "A" };
 
 static std::map<Geo_Actor*, Vec3f> actorPos_map, actorRot_map, actorScale_map;
 
@@ -47,7 +50,12 @@ static void onAnyKey(char k){
     else if(k == 0x26) Topl_Program::timeline.dynamic_ticker.isPaused = false; // Sandbox_Demo::texScroll[1] -= 0.05f; // up arrow
     else if(k == 0x28) Topl_Program::timeline.dynamic_ticker.isPaused = true; // Sandbox_Demo::texScroll[1] += 0.05f; // down arrow
     else if(toupper(k) == 'X') { Sandbox_Demo::isShaderVariant = !Sandbox_Demo::isShaderVariant; }
-    else if(isspace(k)) (Sandbox_Demo::pipelineIndex < 2)? Sandbox_Demo::pipelineIndex++ : Sandbox_Demo::pipelineIndex = 0;
+    else if(isspace(k)){
+        (Sandbox_Demo::pipelineIndex < 2)? Sandbox_Demo::pipelineIndex++ : Sandbox_Demo::pipelineIndex = 0;
+        std::string sceneLabel = "Scene" + std::to_string(Sandbox_Demo::pipelineIndex + 1);
+        Rasteron_Text sceneTextObj = { fontPaths[3].c_str(), sceneLabel.c_str(), 0xFFEEEEEE, 0xFF333333 };
+        _DEMO->sceneInfo_texture.setTextImage(&sceneTextObj);
+    }
     
     if(toupper(k) == 'W' || toupper(k) == 'S' || toupper(k) == 'A' || toupper(k) == 'D'){
         cameraPos = *Topl_Program::cameraObj.getPos();
@@ -59,78 +67,6 @@ static void onAnyKey(char k){
         cameraZoom = *Topl_Program::cameraObj.getZoom();
         Topl_Program::timeline.addSequence_float(&cameraZoom, std::make_pair(TIMELINE_AT, cameraZoom));
     }
-}
-
-static void onScroll(bool positive){
-    if(Topl_Program::pickerObj != NO_PICKER_OBJ){
-        if(_DEMO->checkPicker(&_DEMO->boxActor) || _DEMO->checkPicker(&_DEMO->pyramidActor) || _DEMO->checkPicker(&_DEMO->sphereActor) || _DEMO->checkPicker(&_DEMO->hexActor)){
-            auto size = std::find_if(actorScale_map.begin(), actorScale_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& s){ return s.first == Topl_Program::pickerObj; });
-            if(size == actorScale_map.end()) actorScale_map.insert({ Topl_Program::pickerObj, Vec3f({ 1.0F, 1.0F, 1.0F }) });
-
-            actorScale_map[Topl_Program::pickerObj] = actorScale_map[Topl_Program::pickerObj] + ((positive)? Vec3f({ 0.15F, 0.15F, 0.15F }) : Vec3f({ -0.15F, -0.15F, -0.15F }));
-            Topl_Program::timeline.addSequence_vec3f(&actorScale_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorScale_map[Topl_Program::pickerObj]));
-        }
-    }
-    else Topl_Program::cameraObj.setZoom((positive)? *Topl_Program::cameraObj.getZoom() * 1.1 : *Topl_Program::cameraObj.getZoom() * 0.9); 
-}
-
-static void onDrag(float x, float y){ 
-    static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
-
-    if(Platform::mouseControl.getIsMouseDown().second) {
-        Topl_Program::cursorPos = { x, y, 0.0F }; 
-        if(Topl_Program::pickerObj != NO_PICKER_OBJ){
-            std::string pickerText = Topl_Program::pickerObj->getName();
-            Rasteron_Text pickerTextObj = { fontPaths[3].c_str(), pickerText.c_str(), 0xFFEEEEEE, 0xFF333333 };
-            _DEMO->pickerInfo_texture.setTextImage(&pickerTextObj);
-            _DEMO->pickerInfoActor.setSize({ 0.185F * (float)pickerText.length(), 1.0F, 1.0F });
-            _DEMO->pickerInfoActor.isShown = true;
-            _DEMO->sceneInfoActor.isShown = false;
-
-            if(_DEMO->checkPicker(&_DEMO->boxActor) || _DEMO->checkPicker(&_DEMO->pyramidActor) || _DEMO->checkPicker(&_DEMO->sphereActor) || _DEMO->checkPicker(&_DEMO->hexActor)){
-                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
-                    auto pos = std::find_if(actorPos_map.begin(), actorPos_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& p){ return p.first == Topl_Program::pickerObj; });
-                    if(pos == actorPos_map.end()) actorPos_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
-
-                    actorPos_map[Topl_Program::pickerObj] = Topl_Program::getCamCursorPos();
-                    Topl_Program::timeline.addSequence_vec3f(&actorPos_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorPos_map[Topl_Program::pickerObj]));
-                } else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
-                    auto rot = std::find_if(actorRot_map.begin(), actorRot_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& r){ return r.first == Topl_Program::pickerObj; });
-                    if(rot == actorRot_map.end()) actorRot_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getRot() });
-
-                    actorRot_map[Topl_Program::pickerObj] = actorRot_map[Topl_Program::pickerObj] + Vec3f({ 
-                        (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 10.0F, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 10.0F, 0.0F 
-                    });
-                    Topl_Program::timeline.addSequence_vec3f(&actorRot_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorRot_map[Topl_Program::pickerObj]));
-                }
-            }
-        } else {
-            _DEMO->pickerInfoActor.isShown = false;
-            for(unsigned a = 0; a < 6 + 1; a++){
-                _DEMO->dropMenuLayout.getGeoActor(a)->isShown = false;
-                _DEMO->expandMenuLayout.getGeoActor(a)->isShown = false;
-            } 
-            _DEMO->sceneInfoActor.isShown = true;
-        }
-    } else Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
-
-    savedColorVec = Topl_Program::pickerCoord;
-}
-
-static void cameraUpdate(double m){ Topl_Program::cameraObj.setPos(cameraPos); Topl_Program::cameraObj.setRot(cameraRot); Topl_Program::cameraObj.setZoom(cameraZoom); }
-
-static void shaderModeUpdate(){ (Sandbox_Demo::shaderMode < 8)? Sandbox_Demo::shaderMode++ : Sandbox_Demo::shaderMode = 0; }
-
-static void timerTextUpdate(){
-    unsigned secs = Topl_Program::timeline.dynamic_ticker.getAbsSecs(); // make accessible inside of program timer
-    unsigned splitsecs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / 10;
-    if(secs > Topl_Program::timeline.dynamic_ticker.range.second) secs = Topl_Program::timeline.dynamic_ticker.range.second; // clamps to maximum value
-
-    std::string timeText = ((secs < 60)? "" : (secs % 60 < 10)? std::to_string(secs / 60) + ":0" : std::to_string(secs / 60) + ":") + std::to_string(secs % 60) + ":00"; //+ std::to_string(splitsecs);
-    Rasteron_Text textObj = { Sandbox_Demo::fontFilePath.c_str(), timeText.c_str(), 0xFF333333, 0xFFEEEEEE };
-    _DEMO->timerInfo_texture.setTextImage(&textObj);
-
-    _DEMO->timelineSlider.setState(secs / 60.0);
 }
 
 /* void actions_onPick(MOUSE_Event event){
@@ -157,24 +93,20 @@ void dropMenu_onPick(MOUSE_Event event){
         int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
         dropMenuIndex = c - 1;
         for(unsigned m = 0; m < 6; m++){
-            std::string modeText = "mode " + std::to_string(m + 1);
-            Rasteron_Text textObj = { 
-                fontPaths[m].c_str(), modeText.c_str(), 
-                (m != dropMenuIndex)? 0xFF111111 : 0xFF00FF00, (m != dropMenuIndex)? 0xFFEEEEEE : 0xFF111111 
-            };
-            _DEMO->dropMenuBtns[m].setTextImage(&textObj);
-            /* std::string optionText = "option " + std::to_string(m + 1);
-            Rasteron_Text textObj2 = {
-                fontPaths[8].c_str(), optionText.c_str(), 0xFFEEEEEE, 0xFF111111
-            };
-            _DEMO->expandMenuBtns[m].setTextImage(&textObj2); */
+            if(!dropMenuLabel.empty() && !dropMenuOutputs[m].empty()){
+                std::string modeText = dropMenuLabel + dropMenuOutputs[m];
+                Rasteron_Text textObj = { 
+                    fontPaths[3].c_str(), modeText.c_str(), 
+                    (m != dropMenuIndex)? 0xFF111111 : 0xFF00FF00, (m != dropMenuIndex)? 0xFFEEEEEE : 0xFF111111 
+                };
+                _DEMO->dropMenuBtns[m].setTextImage(&textObj);
+            } else _DEMO->dropMenuBtns[m].setColorImage(0xFF111111);
         }
-        for(unsigned a = 0; a < 7; a++) _DEMO->expandMenuLayout.getGeoActor(a)->isShown = true;
+        // for(unsigned a = 0; a < 7; a++) _DEMO->expandMenuLayout.getGeoActor(a)->isShown = true;
         _DEMO->expandMenuLayout.shift(_DEMO->dropMenuLayout.getOrigin() - _DEMO->expandMenuLayout.getOrigin());
         _DEMO->expandMenuLayout.shift({ (_DEMO->dropMenuLayout.getOrigin()[0] > 0.5F)? -0.225F : 0.225F, 0.0F, 0.0F });
     }
 }
-
 
 void expandMenu_onPick(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
@@ -191,32 +123,176 @@ void expandMenu_onPick(MOUSE_Event event){
     }
 }
 
-void panes_onPick(MOUSE_Event event){
+void updateScenePanes(MOUSE_Event event){
+    if(!isPickerTab){ 
+        switch(tabIndex){
+            case SCENEMODE_ADD: dropMenuLabel = "add "; break;
+            case SCENEMODE_PAN: dropMenuLabel = "camera "; break;
+            case SCENEMODE_SELECT: dropMenuLabel = "object "; break;
+            case SCENEMODE_PAINT: dropMenuLabel = "paint "; break;
+            case SCENEMODE_DEL: dropMenuLabel = "delete "; break;
+            case SCENEMODE_SETTINGS: dropMenuLabel = "setting "; break;
+        }
+        dropMenuOutputs[0] = "F"; dropMenuOutputs[1] = "E"; dropMenuOutputs[2] = "D";
+        dropMenuOutputs[3] = "C"; dropMenuOutputs[4] = "B"; dropMenuOutputs[5] = "A";
+    }
+}
+
+void updatePickerPanes(MOUSE_Event event){
+    if(isPickerTab){ 
+        switch(tabIndex){
+        case PICKMODE_MOVE: 
+            dropMenuOutputs[5] = std::to_string((*Topl_Program::pickerObj->getPos()).data[0]).substr(0, 5);
+            dropMenuOutputs[4] = std::to_string((*Topl_Program::pickerObj->getPos()).data[1]).substr(0, 5);
+            dropMenuOutputs[3] = std::to_string((*Topl_Program::pickerObj->getPos()).data[2]).substr(0, 5);
+            dropMenuLabel = "pos: "; break;
+        case PICKMODE_ROTATE: 
+            dropMenuOutputs[5] = std::to_string((*Topl_Program::pickerObj->getRot()).data[0]).substr(0, 5);
+            dropMenuOutputs[4] = std::to_string((*Topl_Program::pickerObj->getRot()).data[1]).substr(0, 5);
+            dropMenuOutputs[3] = std::to_string((*Topl_Program::pickerObj->getRot()).data[2]).substr(0, 5);
+            dropMenuLabel = "angle: "; break;
+        case PICKMODE_SCALE: 
+            dropMenuOutputs[5] = std::to_string((*Topl_Program::pickerObj->getSize()).data[0]).substr(0, 5);
+            dropMenuOutputs[4] = std::to_string((*Topl_Program::pickerObj->getSize()).data[1]).substr(0, 5);
+            dropMenuOutputs[3] = std::to_string((*Topl_Program::pickerObj->getSize()).data[2]).substr(0, 5);
+            dropMenuLabel = "scale: "; break;
+        // default: dropMenuLabel = ""; break;
+        }
+        dropMenuOutputs[0] = ""; dropMenuOutputs[1] = ""; dropMenuOutputs[2] = "";
+        // dropMenu_onPick(MOUSE_RightBtn_Press);
+    }
+}
+
+void panesBtn_onPick(MOUSE_Event event){
     if(Topl_Program::pickerObj){
         if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
             int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
             _DEMO->dropMenuLayout.shift(*Topl_Program::pickerObj->getPos() - _DEMO->dropMenuLayout.getOrigin());
-            _DEMO->dropMenuLayout.shift({ 0.0F, 0.225F, 0.0F});
+            _DEMO->dropMenuLayout.shift({ 0.0F, 0.215F, 0.0F});
             for(unsigned a = 0; a < 7; a++) _DEMO->dropMenuLayout.getGeoActor(a)->isShown = true;
             _DEMO->expandMenuLayout.shift(_DEMO->dropMenuLayout.getOrigin() - _DEMO->expandMenuLayout.getOrigin());
             _DEMO->expandMenuLayout.shift({ (_DEMO->dropMenuLayout.getOrigin()[0] > 0.5F)? -0.225F : 0.225F, 0.0F, 0.0F });
         }
-        for(int b = 0; b < 6; b++)
-        (_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6)))
-            ? _DEMO->scenePropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
-            : _DEMO->scenePropBtns[b].setState(MENU_None);
-        for(int b = 0; b < 6; b++)
-            if(_DEMO->pickerPropBtns[b].getState() != MENU_On && _DEMO->pickerPropBtns[b].getState() != MENU_Off)
-                (_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6)))
-                    ? _DEMO->pickerPropBtns[b].setState((event == MOUSE_LeftBtn_Press)? MENU_On : (event == MOUSE_RightBtn_Press)? MENU_Off : MENU_None)
-                    : _DEMO->pickerPropBtns[b].setState(MENU_None);
+        for(unsigned b = 0; b < 6; b++)
+            if(_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6))){
+                isPickerTab = false;
+                tabIndex = b;
+                _DEMO->scenePropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On);
+            }
+            else _DEMO->scenePropBtns[b].setState(MENU_None);
+        updateScenePanes(event);
+        for(unsigned b = 0; b < 6; b++)
+            if(_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6))){
+                isPickerTab = true;
+                tabIndex = b;
+                _DEMO->pickerPropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On);
+            }
+            else _DEMO->pickerPropBtns[b].setState(MENU_None);
+        updatePickerPanes(event);
+        dropMenu_onPick(event);
+    }
+}
+
+void timelineBtn_onPick(MOUSE_Event event){
+    for(unsigned b = 0; b < 3; b++)
+        (_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3 - b - 1)) && !_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3)))
+            ? _DEMO->timelineBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
+            : _DEMO->timelineBtns[b].setState(MENU_None);
+    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
+        if(c - 1 == 0) Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.first);
+        else if(c - 1 == 2) Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.second);
+        else Topl_Program::timeline.dynamic_ticker.isPaused = !Topl_Program::timeline.dynamic_ticker.isPaused;
     }
 }
 
 static void slider_onPick(MOUSE_Event event){ 
-    _DEMO->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
-    Topl_Program::timeline.dynamic_ticker.isPaused = true;
-    Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::pickerCoord[0] * 60.0);
+    if(event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press){
+        _DEMO->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
+        Topl_Program::timeline.dynamic_ticker.isPaused = true;
+        Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::pickerCoord[0] * 60.0);
+    }
+}
+
+static void onScroll(bool positive){
+    if(Topl_Program::pickerObj != NO_PICKER_OBJ){
+        if(_DEMO->checkPicker(&_DEMO->boxActor) || _DEMO->checkPicker(&_DEMO->pyramidActor) || _DEMO->checkPicker(&_DEMO->sphereActor) || _DEMO->checkPicker(&_DEMO->hexActor)){
+            auto size = std::find_if(actorScale_map.begin(), actorScale_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& s){ return s.first == Topl_Program::pickerObj; });
+            if(size == actorScale_map.end()) actorScale_map.insert({ Topl_Program::pickerObj, Vec3f({ 1.0F, 1.0F, 1.0F }) });
+
+            actorScale_map[Topl_Program::pickerObj] = actorScale_map[Topl_Program::pickerObj] + ((positive)? Vec3f({ 0.15F, 0.15F, 0.15F }) : Vec3f({ -0.15F, -0.15F, -0.15F }));
+            Topl_Program::timeline.addSequence_vec3f(&actorScale_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorScale_map[Topl_Program::pickerObj]));
+        }
+
+        tabIndex = PICKMODE_SCALE;
+        updatePickerPanes(MOUSE_RightBtn_Press);
+        dropMenu_onPick(MOUSE_RightBtn_Press);
+    }
+    else Topl_Program::cameraObj.setZoom((positive)? *Topl_Program::cameraObj.getZoom() * 1.1 : *Topl_Program::cameraObj.getZoom() * 0.9); 
+}
+
+static void onDrag(float x, float y){ 
+    static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
+
+    if(Platform::mouseControl.getIsMouseDown().second) {
+        Topl_Program::cursorPos = { x, y, 0.0F }; 
+        if(Topl_Program::pickerObj != NO_PICKER_OBJ){
+            std::string pickerText = Topl_Program::pickerObj->getName();
+            Rasteron_Text pickerTextObj = { fontPaths[3].c_str(), pickerText.c_str(), 0xFFEEEEEE, 0xFF333333 };
+            _DEMO->pickerInfo_texture.setTextImage(&pickerTextObj);
+            _DEMO->pickerInfoActor.setSize({ 0.185F * (float)pickerText.length(), 1.0F, 1.0F });
+            _DEMO->pickerInfoActor.isShown = true;
+            // _DEMO->sceneInfoActor.isShown = false;
+
+            if(_DEMO->checkPicker(&_DEMO->boxActor) || _DEMO->checkPicker(&_DEMO->pyramidActor) || _DEMO->checkPicker(&_DEMO->sphereActor) || _DEMO->checkPicker(&_DEMO->hexActor)){
+                if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
+                    auto pos = std::find_if(actorPos_map.begin(), actorPos_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& p){ return p.first == Topl_Program::pickerObj; });
+                    if(pos == actorPos_map.end()) actorPos_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+
+                    tabIndex = PICKMODE_MOVE;
+                    actorPos_map[Topl_Program::pickerObj] = Topl_Program::getCamCursorPos();
+                    Topl_Program::timeline.addSequence_vec3f(&actorPos_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorPos_map[Topl_Program::pickerObj]));
+                } else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
+                    auto rot = std::find_if(actorRot_map.begin(), actorRot_map.end(), [](const std::pair<Geo_Actor*, Vec3f>& r){ return r.first == Topl_Program::pickerObj; });
+                    if(rot == actorRot_map.end()) actorRot_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getRot() });
+
+                    tabIndex = PICKMODE_ROTATE;
+                    actorRot_map[Topl_Program::pickerObj] = actorRot_map[Topl_Program::pickerObj] + Vec3f({ 
+                        (savedColorVec[0] - Topl_Program::pickerCoord[0]) * 10.0F, (savedColorVec[1] - Topl_Program::pickerCoord[1]) * 10.0F, 0.0F 
+                    });
+                    Topl_Program::timeline.addSequence_vec3f(&actorRot_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorRot_map[Topl_Program::pickerObj]));
+                }
+            }
+
+            updatePickerPanes(Platform::mouseControl.getIsMouseDown().first);
+            dropMenu_onPick(Platform::mouseControl.getIsMouseDown().first);
+        } else {
+            // _DEMO->pickerInfoActor.isShown = false;
+            for(unsigned a = 0; a < 6 + 1; a++){
+                // _DEMO->dropMenuLayout.getGeoActor(a)->isShown = false;
+                _DEMO->expandMenuLayout.getGeoActor(a)->isShown = false;
+            } 
+            // _DEMO->sceneInfoActor.isShown = true;
+        }
+    } else Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
+
+    savedColorVec = Topl_Program::pickerCoord;
+}
+
+static void cameraUpdate(double m){ Topl_Program::cameraObj.setPos(cameraPos); Topl_Program::cameraObj.setRot(cameraRot); Topl_Program::cameraObj.setZoom(cameraZoom); }
+
+static void shaderModeUpdate(){ (Sandbox_Demo::shaderMode < 8)? Sandbox_Demo::shaderMode++ : Sandbox_Demo::shaderMode = 0; }
+
+static void timerTextUpdate(){
+    unsigned secs = Topl_Program::timeline.dynamic_ticker.getAbsSecs(); // make accessible inside of program timer
+    unsigned splitsecs = Topl_Program::timeline.dynamic_ticker.getAbsMillisecs() / 10;
+    if(secs > Topl_Program::timeline.dynamic_ticker.range.second) secs = Topl_Program::timeline.dynamic_ticker.range.second; // clamps to maximum value
+
+    std::string timeText = ((secs < 60)? "" : (secs % 60 < 10)? std::to_string(secs / 60) + ":0" : std::to_string(secs / 60) + ":") + std::to_string(secs % 60) + ":00"; //+ std::to_string(splitsecs);
+    Rasteron_Text textObj = { Sandbox_Demo::fontFilePath.c_str(), timeText.c_str(), 0xFF222222, 0xFFEEEEEE };
+    _DEMO->timerInfo_texture.setTextImage(&textObj);
+
+    _DEMO->timelineSlider.setState(secs / 60.0);
 }
 
 Sandbox_Demo::~Sandbox_Demo(){
@@ -281,8 +357,8 @@ void Sandbox_Demo::init(){
     _renderer->buildScene(&scene);
     _renderer->texturizeScene(&scene);
     
-    timerInfoMesh.scale({ 1.5f, 0.3F, 1.0f });
-    timerInfoActor.setPos({ 0.0f, -0.835f, 0.0f }); // inputInfoActor.setPos({ 0.0f, -0.9f, 0.0f }); 
+    timerInfoMesh.scale({ 1.5f * 0.85F, 0.3F * 0.85F, 1.0f });
+    timerInfoActor.setPos({ 0.0f, -0.883f, 0.0f }); // inputInfoActor.setPos({ 0.0f, -0.9f, 0.0f }); 
     overlay.addGeometry("timerInfo", &timerInfoActor);
     pickerInfoMesh.scale({ 1.0, 0.2, 1.0f });
     pickerInfoActor.setPos({ 0.673f, -0.8415f, 0.0f });
@@ -298,36 +374,45 @@ void Sandbox_Demo::init(){
     pickerPropsLayout.scale({ 1.175F, 0.1F, 1.0F });
     pickerPropsLayout.shift({ 0.673F, -0.9215f, 0.0f });
     overlay.addTexture("pickerPropsLayout_root", &propsRoot);
-    pickerPropsLayout.getGeoActor(6)->pickerFunc = panes_onPick;
+    pickerPropsLayout.getGeoActor(6)->pickerFunc = panesBtn_onPick;
     for(unsigned p = 0; p < 6; p++) {
-        pickerPropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
+        pickerPropsLayout.getGeoActor(p)->pickerFunc = panesBtn_onPick;
         pickerPropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
+        if(p <= 2) pickerPropsLayout.getGeoActor(p)->isShown = false;
+        else pickerPropsLayout.getGeoActor(p)->updatePos({ 0.111F, 0.0F, 0.0F });
         overlay.addTexture(pickerPropsLayout.getGeoActor(p)->getName(), &pickerPropBtns[6 - p - 1].stateImg);
     }
     scenePropsLayout.configure(&overlay);
     scenePropsLayout.scale({ 1.175F, 0.1F, 1.0F });
     scenePropsLayout.shift({ -0.7F, -0.9215f, 0.0f });
     overlay.addTexture("scenePropsLayout_root", &propsRoot);
-    scenePropsLayout.getGeoActor(6)->pickerFunc = panes_onPick;
+    scenePropsLayout.getGeoActor(6)->pickerFunc = panesBtn_onPick;
     for(unsigned p = 0; p < 6; p++) {
-        scenePropsLayout.getGeoActor(p)->pickerFunc = panes_onPick;
+        scenePropsLayout.getGeoActor(p)->pickerFunc = panesBtn_onPick;
         scenePropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
         overlay.addTexture(scenePropsLayout.getGeoActor(p)->getName(), &scenePropBtns[6 - p - 1].stateImg);
+    }
+    timelinePropsLayout.configure(&overlay);
+    timelinePropsLayout.scale({ 0.4, 0.125, 1.0F });
+    timelinePropsLayout.shift({ 0.0, -0.825f, 0.0f });
+    for(unsigned p = 0; p < 3; p++){ 
+        timelinePropsLayout.getGeoActor(p)->pickerFunc = timelineBtn_onPick;
+        overlay.addTexture(timelinePropsLayout.getGeoActor(p)->getName(), &timelineBtns[3 - p - 1].stateImg);
     }
     timelineLayout.configure(&overlay);
     timelineLayout.scale({ 1.5F, 0.25F, 1.0F });
     timelineLayout.getGeoActor(1)->updateSize({ 2.25F, 0.0F, 1.0F });
     timelineLayout.shift({ -0.015f, -0.92f, 0.0f });
     dropMenuLayout.configure(&overlay);
-    dropMenuLayout.shift({ 0.865F, -0.87F, 0.0F });
+    dropMenuLayout.shift({ 0.865F, -0.885F, 0.0F });
     dropMenuLayout.scale({ 0.4F, 0.4F, 1.0F });
     for(unsigned a = 0; a < 7; a++) dropMenuLayout.getGeoActor(a)->isShown = false;
     expandMenuLayout.configure(&overlay);
-    expandMenuLayout.shift({ 0.865F, -0.87F, 0.0F });
+    expandMenuLayout.shift({ 0.865F, -0.885F, 0.0F });
     expandMenuLayout.scale({ 0.4F, 0.4F, 1.0F });
     for(unsigned a = 0; a < 7; a++) expandMenuLayout.getGeoActor(a)->isShown = false;
     /* actionsLayout.configure(&overlay);
-    actionsLayout.shift({ -0.9F, -0.87F, 0.0F });
+    actionsLayout.shift({ -0.9F, -0.885F, 0.0F });
     actionsLayout.scale({ 0.4F, 0.4F, 1.0F });
     for(unsigned a = 0; a < 10; a++) actionsLayout.getGeoActor(a)->isShown = false; */
 #ifdef RASTERON_H // adding textures fro overlay
@@ -453,7 +538,6 @@ void Sandbox_Demo::loop(double frameTime){
     {
         _flatVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode % 3 : 0); 
         _beamsVShader.setMode((Sandbox_Demo::isShaderVariant)? Sandbox_Demo::shaderMode / 2 : 0); 
-        _texVShader.setMode((Sandbox_Demo::isShaderVariant)? -Sandbox_Demo::shaderMode : 0);
         _texVShader.setTexScroll(Sandbox_Demo::texScroll);
 
         Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (Sandbox_Demo::pipelineIndex == 0)? _texPipeline : (Sandbox_Demo::pipelineIndex == 1)? _beamsPipeline : _flatPipeline);
@@ -466,6 +550,8 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->draw(&_DEMO->sphereActor);
         _renderer->draw(&_DEMO->hexActor);
         _renderer->draw(&_DEMO->paramActor);
+
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _texPipeline);
 
         _renderer->setDrawMode(DRAW_Triangles);
         _renderer->setCamera(&fixedCamera);

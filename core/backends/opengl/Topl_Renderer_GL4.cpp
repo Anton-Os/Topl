@@ -177,16 +177,16 @@ void Topl_Renderer_GL4::swapBuffers(double frameTime) {
 }
 
 void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
-	blockBytes_t shaderBlockData;
+	blockBytes_t _shaderBlockData;
 
 	// scene block buffer generation
-	shaderBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
+	_shaderBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData);
 	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_GL4(*(_bufferSlots + _bufferIndex)) });
 	_bufferIndex++; // increments to next available slot
 	glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
-	unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-	glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+	unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
@@ -195,13 +195,13 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 		unsigned long renderID = getRenderID(actor);
 		
 		unsigned vertexBuffIndex = 0, indexBuffIndex = 0, renderBlockBuffIndex = 0;
-		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+		if(renderID == INVALID_RENDERID){ // Creating new unique renderID
 			_renderIDs++;
 			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 			renderID = getRenderID(actor);
-		} else { // old data must be replaced
-			/* auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
+		} else logMessage(MESSAGE_Exclaim, "Override required!"); /* { // TODO: Implement else to override
+			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
 			vertexBuffIndex = (*vertexBuff).buffer;
 			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
 			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
@@ -209,17 +209,17 @@ void Topl_Renderer_GL4::build(const Topl_Scene* scene) {
 			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
 			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_GL4& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
 			renderBlockBuffIndex = (*renderBlockBuff).buffer;
-			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff); */
-		}
+			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
+		} */
 
 		// render block buffer generation
-		shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &shaderBlockData);
+		_shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, &_shaderBlockData);
 		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, *(_bufferSlots + ((renderBlockBuffIndex != 0)? renderBlockBuffIndex : _bufferIndex))) });
 		if(renderBlockBuffIndex == 0) _bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
@@ -332,25 +332,25 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 #endif
 
 void Topl_Renderer_GL4::update(const Topl_Scene* scene) {
-	blockBytes_t shaderBlockData;
+	blockBytes_t _shaderBlockData;
 
 	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
-		shaderBlockData.clear();
-		_entryShader->genSceneBlock(scene, _activeCamera, &shaderBlockData);
+		_shaderBlockData.clear();
+		_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData);
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 	}
 
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
 		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()){ // Shader Render Block
-			shaderBlockData.clear();
-			_entryShader->genRenderBlock(actor, &shaderBlockData);
+			_shaderBlockData.clear();
+			_entryShader->genRenderBlock(actor, &_shaderBlockData);
 			glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
-			unsigned blockSize = sizeof(uint8_t) * shaderBlockData.size();
-			glBufferData(GL_UNIFORM_BUFFER, blockSize, shaderBlockData.data(), GL_STATIC_DRAW);
+			unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+			glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 		}
 	}
 
