@@ -29,7 +29,7 @@ void MathArt_Demo::loop(double frameTime){
 
     // texVShader.setMode(TEX_MODE_VOLUME);
     // _renderer->setPipeline(texPipeline);
-    // _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->setDrawMode(DRAW_Lines);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 }

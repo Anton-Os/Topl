@@ -21,6 +21,8 @@
 #define PICKMODE_ROTATE 1
 #define PICKMODE_SCALE 2
 
+#define DETAIL_COUNT 300
+
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){}
     ~Sandbox_Demo();
@@ -68,10 +70,10 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
     Geo_Crossboard timelinePropsLayout = Geo_Crossboard("timelinePropsLayout", 3);
 
-    Geo_Quad2D labels[100]; Img_Base labelsTex[100];
-    Geo_Triangle2D arrows[100]; Img_Base arrowsTex[100];
-    Geo_Circle2D dots[100]; Img_Base dotsTex[100];
-    Geo_Actor detailActors[100 + 100 + 100];
+    Geo_Quad2D labels[DETAIL_COUNT]; Img_Base labelsTex[DETAIL_COUNT];
+    Geo_Triangle2D arrows[DETAIL_COUNT]; Img_Base arrowsTex[DETAIL_COUNT];
+    Geo_Circle2D dots[DETAIL_COUNT]; Img_Base dotsTex[DETAIL_COUNT];
+    Geo_Actor detailActors[DETAIL_COUNT * 3];
 #ifdef RASTERON_H
     Img_Base canvasTex;
 
@@ -88,11 +90,10 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Slider timelineSlider = Img_Slider(MENU_XL, 60); Img_Base timelineTex = Img_Base(timelineSlider.stateImg.getImage());
     Img_Base dropMenuBtns[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
     Img_Base expandMenuBtns[6] = { Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE) };
-    /* Img_Button actionButtons[9] = { 
-        Img_Button(MENU_Large, "zoom_in"), Img_Button(MENU_Large, "arrow_downward"), Img_Button(MENU_Large, "zoom_out"),
-        Img_Button(MENU_Large, "arrow_back"), Img_Button(MENU_Large, "cancel"), Img_Button(MENU_Large, "arrow_forward"),
-        Img_Button(MENU_Large, "rotate_left"), Img_Button(MENU_Large, "arrow_upward"), Img_Button(MENU_Large, "rotate_right"), 
-    }; */
+    std::string defaultFontPath = std::string(FONTS_DIR) + "TW-Cen-MT.ttf";
+    Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
+    Img_Label dropLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
+    Img_Label expandLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
     Img_Base propsRoot = Img_Base(0xFF666666);
     Img_Base propsPane = Img_Base(0xAAEEEEEE);
     Img_Button scenePropBtns[6] = {
@@ -110,10 +111,6 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
     Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", createImgSize(64, 512), 9);
     Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
-
-    std::string defaultFontPath = std::string(FONTS_DIR) + "TW-Cen-MT.ttf";
-    Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
-    Img_Label labelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
 #endif
 private:
     Topl_Scene canvas; // for backdrop element

@@ -69,43 +69,17 @@ static void onAnyKey(char k){
     }
 }
 
-/* void actions_onPick(MOUSE_Event event){
-    if(Topl_Program::pickerObj != nullptr && event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
-
-        switch(c - 1){
-            case 0: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, 0.5F })); break;
-            case 1: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, -0.5F, 0.0F })); break;
-            case 2: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.0F, -0.5F })); break;
-            case 3: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
-            // case 4: Topl_Program::pickerObj->isShown = !Topl_Program::pickerObj->isShown; break;
-            case 5: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
-            case 6: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ -0.5F, 0.0F, 0.0F })); break;
-            case 7: Topl_Program::cameraObj.setPos(*Topl_Program::cameraObj.getPos() + Vec3f({ 0.0F, 0.5F, 0.0F })); break;
-            case 8: Topl_Program::cameraObj.setRot(*Topl_Program::cameraObj.getRot() + Vec3f({ 0.5F, 0.0F, 0.0F })); break;
-            default: break;
-        }
-    }
-} */
-
 void dropMenu_onPick(MOUSE_Event event){
-    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
-        dropMenuIndex = c - 1;
-        for(unsigned m = 0; m < 6; m++){
-            if(!dropMenuLabel.empty() && !dropMenuOutputs[m].empty()){
-                std::string modeText = dropMenuLabel + dropMenuOutputs[m];
-                Rasteron_Text textObj = { 
-                    fontPaths[3].c_str(), modeText.c_str(), 
-                    (m != dropMenuIndex)? 0xFF111111 : 0xFF00FF00, (m != dropMenuIndex)? 0xFFEEEEEE : 0xFF111111 
-                };
-                _DEMO->dropMenuBtns[m].setTextImage(&textObj);
-            } else _DEMO->dropMenuBtns[m].setColorImage(0xFF111111);
-        }
-        // for(unsigned a = 0; a < 7; a++) _DEMO->expandMenuLayout.getGeoActor(a)->isShown = true;
-        _DEMO->expandMenuLayout.shift(_DEMO->dropMenuLayout.getOrigin() - _DEMO->expandMenuLayout.getOrigin());
-        _DEMO->expandMenuLayout.shift({ (_DEMO->dropMenuLayout.getOrigin()[0] > 0.5F)? -0.225F : 0.225F, 0.0F, 0.0F });
+    int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
+    dropMenuIndex = c - 1;
+    for(unsigned m = 0; m < 6; m++){
+        std::string modeText = dropMenuLabel + dropMenuOutputs[m];
+        Rasteron_Text textObj = { fontPaths[3].c_str(), modeText.c_str(), 0xFF111111, 0xFFEEEEEE };
+        _DEMO->dropLabelBtns[m].setText(textObj);
+        if(_DEMO->checkPicker(_DEMO->dropMenuLayout.getGeoActor(m))) _DEMO->dropMenuLayout.setState(m, event != MOUSE_Hover);
     }
+    // _DEMO->expandMenuLayout.shift(_DEMO->dropMenuLayout.getOrigin() - _DEMO->expandMenuLayout.getOrigin());
+    // _DEMO->expandMenuLayout.shift({ (_DEMO->dropMenuLayout.getOrigin()[0] > 0.5F)? -0.225F : 0.225F, 0.0F, 0.0F });
 }
 
 void expandMenu_onPick(MOUSE_Event event){
@@ -119,6 +93,8 @@ void expandMenu_onPick(MOUSE_Event event){
                 (m != expandMenuIndex)? 0xFFEEEEEE : 0xFF00FF00, (m != expandMenuIndex)? 0xFF111111 : 0xFFEEEEEE
             };
             _DEMO->expandMenuBtns[m].setTextImage(&textObj);
+            _DEMO->expandLabelBtns[m].setText(textObj);
+            if(_DEMO->checkPicker(_DEMO->expandMenuLayout.getGeoActor(m))) _DEMO->dropMenuLayout.setState(m, event != MOUSE_Hover);
         }
     }
 }
@@ -133,6 +109,7 @@ void updateScenePanes(MOUSE_Event event){
             case SCENEMODE_DEL: dropMenuLabel = "delete "; break;
             case SCENEMODE_SETTINGS: dropMenuLabel = "setting "; break;
         }
+        for(unsigned d = 0; d < 3; d++) _DEMO->dropMenuLayout.getGeoActor(d)->isShown = true;
         dropMenuOutputs[0] = "F"; dropMenuOutputs[1] = "E"; dropMenuOutputs[2] = "D";
         dropMenuOutputs[3] = "C"; dropMenuOutputs[4] = "B"; dropMenuOutputs[5] = "A";
     }
@@ -158,8 +135,8 @@ void updatePickerPanes(MOUSE_Event event){
             dropMenuLabel = "scale: "; break;
         // default: dropMenuLabel = ""; break;
         }
-        dropMenuOutputs[0] = ""; dropMenuOutputs[1] = ""; dropMenuOutputs[2] = "";
-        // dropMenu_onPick(MOUSE_RightBtn_Press);
+        for(unsigned d = 0; d < 3; d++) _DEMO->dropMenuLayout.getGeoActor(d)->isShown = false;
+        // dropMenuOutputs[0] = ""; dropMenuOutputs[1] = ""; dropMenuOutputs[2] = "";
     }
 }
 
@@ -177,27 +154,26 @@ void panesBtn_onPick(MOUSE_Event event){
             if(_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->scenePropsLayout.getGeoActor(6))){
                 isPickerTab = false;
                 tabIndex = b;
-                _DEMO->scenePropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On);
+                _DEMO->scenePropsLayout.setState(tabIndex, event != MOUSE_Hover);
+                break;
             }
-            else _DEMO->scenePropBtns[b].setState(MENU_None);
         updateScenePanes(event);
         for(unsigned b = 0; b < 6; b++)
             if(_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6 - b - 1)) && !_DEMO->checkPicker(_DEMO->pickerPropsLayout.getGeoActor(6))){
                 isPickerTab = true;
                 tabIndex = b;
-                _DEMO->pickerPropBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On);
+                _DEMO->pickerPropsLayout.setState(tabIndex, event != MOUSE_Hover);
+                break;
             }
-            else _DEMO->pickerPropBtns[b].setState(MENU_None);
         updatePickerPanes(event);
         dropMenu_onPick(event);
     }
 }
 
 void timelineBtn_onPick(MOUSE_Event event){
-    for(unsigned b = 0; b < 3; b++)
-        (_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3 - b - 1)) && !_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3)))
-            ? _DEMO->timelineBtns[b].setState((event == MOUSE_Hover)? MENU_Pre : MENU_On)
-            : _DEMO->timelineBtns[b].setState(MENU_None);
+    for(unsigned b = 0; b < 3; b++) 
+        if(_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3 - b - 1)) && !_DEMO->checkPicker(_DEMO->timelinePropsLayout.getGeoActor(3)))
+            _DEMO->timelinePropsLayout.setState(b, event != MOUSE_Hover, (double)Topl_Program::pickerCoord.data[0], (double)Topl_Program::pickerCoord.data[1]);
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
         if(c - 1 == 0) Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.first);
@@ -208,7 +184,7 @@ void timelineBtn_onPick(MOUSE_Event event){
 
 static void slider_onPick(MOUSE_Event event){ 
     if(event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press){
-        _DEMO->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
+        _DEMO->timelineLayout.setState(0, event != MOUSE_Hover, (double)Topl_Program::pickerCoord.data[0], (double)Topl_Program::pickerCoord.data[1]); // _DEMO->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
         Topl_Program::timeline.dynamic_ticker.isPaused = true;
         Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::pickerCoord[0] * 60.0);
     }
@@ -223,6 +199,8 @@ static void onScroll(bool positive){
             actorScale_map[Topl_Program::pickerObj] = actorScale_map[Topl_Program::pickerObj] + ((positive)? Vec3f({ 0.15F, 0.15F, 0.15F }) : Vec3f({ -0.15F, -0.15F, -0.15F }));
             Topl_Program::timeline.addSequence_vec3f(&actorScale_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorScale_map[Topl_Program::pickerObj]));
         }
+        // else if(_DEMO->checkPicker(_DEMO->dropMenuLayout.getGeoActor(6)) || _DEMO->checkPicker(_DEMO->expandMenuLayout.getGeoActor(6)))
+        //    std::cout << "Scroll on menu triggered!" << std::endl;
 
         tabIndex = PICKMODE_SCALE;
         updatePickerPanes(MOUSE_RightBtn_Press);
@@ -233,6 +211,7 @@ static void onScroll(bool positive){
 
 static void onDrag(float x, float y){ 
     static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
+    static const Geo_Mesh* targetMesh = nullptr;
 
     if(Platform::mouseControl.getIsMouseDown().second) {
         Topl_Program::cursorPos = { x, y, 0.0F }; 
@@ -262,18 +241,23 @@ static void onDrag(float x, float y){
                     });
                     Topl_Program::timeline.addSequence_vec3f(&actorRot_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, actorRot_map[Topl_Program::pickerObj]));
                 }
+
+                /* Sandbox_Demo::isDetailsShown = true;
+                targetMesh = Topl_Program::pickerObj->getMesh();
+                for(unsigned d = 0; d < DETAIL_COUNT * 3; d++){
+                    _DEMO->detailActors[d].isShown = false;
+                    if(d > targetMesh->getVertexCount()) break;
+                    else {
+                        _DEMO->detailActors[d].isShown = true;
+                        Vec3f pos = (targetMesh->getVertices() + d)->position;
+                        _DEMO->detailActors[d].setPos({ (*Topl_Program::pickerObj->getPos()).data[0] - pos.data[0], (*Topl_Program::pickerObj->getPos()).data[1] - pos.data[1], 0.0F});
+                    }
+                } */
             }
 
             updatePickerPanes(Platform::mouseControl.getIsMouseDown().first);
             dropMenu_onPick(Platform::mouseControl.getIsMouseDown().first);
-        } else {
-            // _DEMO->pickerInfoActor.isShown = false;
-            for(unsigned a = 0; a < 6 + 1; a++){
-                // _DEMO->dropMenuLayout.getGeoActor(a)->isShown = false;
-                _DEMO->expandMenuLayout.getGeoActor(a)->isShown = false;
-            } 
-            // _DEMO->sceneInfoActor.isShown = true;
-        }
+        } else for(unsigned a = 0; a < 6 + 1; a++) _DEMO->expandMenuLayout.getGeoActor(a)->isShown = false;
     } else Topl_Program::pickerObj = NO_PICKER_OBJ; // TODO: Handle Camera Events
 
     savedColorVec = Topl_Program::pickerCoord;
@@ -367,9 +351,6 @@ void Sandbox_Demo::init(){
     sceneInfoMesh.scale({ 1.0, 0.2, 1.0f });
     sceneInfoActor.setPos({ -0.7f, -0.8415f, 0.0f });
     overlay.addGeometry("sceneInfo", &sceneInfoActor);
-    // topBarLayout.configure(&overlay);
-    // topBarLayout.scale({ 3.35F, 0.25F, 1.0F });
-    // topBarLayout.shift({ 0.0F, 0.85f, 0.0f });
     pickerPropsLayout.configure(&overlay);
     pickerPropsLayout.scale({ 1.175F, 0.1F, 1.0F });
     pickerPropsLayout.shift({ 0.673F, -0.9215f, 0.0f });
@@ -380,6 +361,7 @@ void Sandbox_Demo::init(){
         pickerPropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
         if(p <= 2) pickerPropsLayout.getGeoActor(p)->isShown = false;
         else pickerPropsLayout.getGeoActor(p)->updatePos({ 0.111F, 0.0F, 0.0F });
+        pickerPropsLayout.overlay(p, &pickerPropBtns[p]);
         overlay.addTexture(pickerPropsLayout.getGeoActor(p)->getName(), &pickerPropBtns[6 - p - 1].stateImg);
     }
     scenePropsLayout.configure(&overlay);
@@ -390,6 +372,7 @@ void Sandbox_Demo::init(){
     for(unsigned p = 0; p < 6; p++) {
         scenePropsLayout.getGeoActor(p)->pickerFunc = panesBtn_onPick;
         scenePropsLayout.getGeoActor(p)->updateSize({ -0.5F, 0.0F, 0.0F });
+        scenePropsLayout.overlay(p, &scenePropBtns[p]);
         overlay.addTexture(scenePropsLayout.getGeoActor(p)->getName(), &scenePropBtns[6 - p - 1].stateImg);
     }
     timelinePropsLayout.configure(&overlay);
@@ -397,6 +380,7 @@ void Sandbox_Demo::init(){
     timelinePropsLayout.shift({ 0.0, -0.825f, 0.0f });
     for(unsigned p = 0; p < 3; p++){ 
         timelinePropsLayout.getGeoActor(p)->pickerFunc = timelineBtn_onPick;
+        timelinePropsLayout.overlay(p, &timelineBtns[p]);
         overlay.addTexture(timelinePropsLayout.getGeoActor(p)->getName(), &timelineBtns[3 - p - 1].stateImg);
     }
     timelineLayout.configure(&overlay);
@@ -406,15 +390,17 @@ void Sandbox_Demo::init(){
     dropMenuLayout.configure(&overlay);
     dropMenuLayout.shift({ 0.865F, -0.885F, 0.0F });
     dropMenuLayout.scale({ 0.4F, 0.4F, 1.0F });
-    for(unsigned a = 0; a < 7; a++) dropMenuLayout.getGeoActor(a)->isShown = false;
+    for(unsigned a = 0; a < 7; a++){ 
+        dropMenuLayout.getGeoActor(a)->isShown = false;
+        if(a < 6) dropMenuLayout.overlay(a, &dropLabelBtns[a]);
+    }
     expandMenuLayout.configure(&overlay);
     expandMenuLayout.shift({ 0.865F, -0.885F, 0.0F });
     expandMenuLayout.scale({ 0.4F, 0.4F, 1.0F });
-    for(unsigned a = 0; a < 7; a++) expandMenuLayout.getGeoActor(a)->isShown = false;
-    /* actionsLayout.configure(&overlay);
-    actionsLayout.shift({ -0.9F, -0.885F, 0.0F });
-    actionsLayout.scale({ 0.4F, 0.4F, 1.0F });
-    for(unsigned a = 0; a < 10; a++) actionsLayout.getGeoActor(a)->isShown = false; */
+    for(unsigned a = 0; a < 7; a++){ 
+        expandMenuLayout.getGeoActor(a)->isShown = false;
+        if(a < 6) expandMenuLayout.overlay(a, &expandLabelBtns[a]);
+    }
 #ifdef RASTERON_H // adding textures fro overlay
     overlay.addTexture("timerInfo", &timerInfo_texture);
     overlay.addTexture("pickerInfo", &pickerInfo_texture);
@@ -423,18 +409,15 @@ void Sandbox_Demo::init(){
     _DEMO->sceneInfo_texture.setTextImage(&sceneTextObj);
     overlay.addTexture("timelineLayout_cell1", &timelineSlider.stateImg);
     timelineLayout.getGeoActor(0)->pickerFunc = slider_onPick;
+    timelineLayout.overlay(0, &timelineSlider);
     for(unsigned m = 0; m < 6; m++){
         dropMenuLayout.getGeoActor(m)->pickerFunc = dropMenu_onPick;
-        overlay.addTexture("dropMenuLayout_cell" + std::to_string(m + 1), &_DEMO->dropMenuBtns[m]);
+        overlay.addTexture("dropMenuLayout_cell" + std::to_string(m + 1), &_DEMO->dropLabelBtns[m].stateImg);
     }
     for(unsigned m = 0; m < 6; m++){
         expandMenuLayout.getGeoActor(m)->pickerFunc = expandMenu_onPick;
-        overlay.addTexture("expandMenuLayout_cell" + std::to_string(m + 1), &_DEMO->expandMenuBtns[m]);
+        overlay.addTexture("expandMenuLayout_cell" + std::to_string(m + 1), &_DEMO->expandLabelBtns[m].stateImg);
     }
-    /* for(unsigned a = 0; a < 9; a++){
-        actionsLayout.getGeoActor(a)->pickerFunc = actions_onPick;
-        overlay.addTexture("actionsLayout_cell" + std::to_string(a + 1), &actionButtons[a].stateImg);
-    } */
 #endif
     _renderer->buildScene(&overlay);
     _renderer->texturizeScene(&overlay);
@@ -442,17 +425,17 @@ void Sandbox_Demo::init(){
     for(unsigned d = 0; d < 300; d++){
         if(d % 3 == 0){
             detailActors[d] = Geo_Actor((Geo_Mesh*)&labels[d / 3]);
-            detailActors[d].setPos({ -0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over properties
+            // detailActors[d].setPos({ -0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over properties
             labelsTex[d / 3].setColorImage(0xDD0000FF);
         }
         else if(d % 3 == 1){
             detailActors[d] = Geo_Actor((Geo_Mesh*)&dots[d / 3]);
-            detailActors[d].setPos({ 0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over timeline
+            // detailActors[d].setPos({ 0.05F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over timeline
             dotsTex[d / 3].setColorImage(0xDDFF0000);
         }
         else {
             detailActors[d] = Geo_Actor((Geo_Mesh*)&arrows[d / 3]);
-            detailActors[d].setPos({ 0.0F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over elements
+            // detailActors[d].setPos({ 0.0F, -1.0F + ((1.0F / 150.0F) * d), 0.01F });// TODO: Set details over elements
             arrowsTex[d / 3].setColorImage(0xDD00FF00);
         }
 
@@ -559,7 +542,10 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->drawScene(&overlay);
 
         _renderer->setDrawMode(DRAW_Triangles);
-        if(Sandbox_Demo::isDetailsShown) _renderer->drawScene(&details);
+        if(Sandbox_Demo::isDetailsShown){ 
+            _renderer->updateScene(&details);
+            _renderer->drawScene(&details);
+        }
     }
 }
 

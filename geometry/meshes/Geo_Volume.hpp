@@ -4,16 +4,20 @@
 
 class Geo_Volume : public Geo_Mesh {
 public:
-	Geo_Volume(Surface shape)
-	: Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
+	Geo_Volume(Surface shape) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
 		_shape = shape;
 		_depth = shape.radius;
 		genVertices(); genIndices();
 	}
 
-	Geo_Volume(Surface shape, float depth) 
-	: Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
+	Geo_Volume(Surface shape, float depth) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
 		_shape = shape;
+		_depth = depth;
+		genVertices(); genIndices();
+	}
+
+	Geo_Volume(std::initializer_list<Vec3f> pointsSet, float depth) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+		// TODO: Create Geo_Volume from points
 		_depth = depth;
 		genVertices(); genIndices();
 	}

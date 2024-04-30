@@ -7,16 +7,18 @@ struct Img_UI {
 
 	~Img_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
 
-	void setState(unsigned short index){
+	virtual void setState(unsigned short index){
+		assert(queue != nullptr);
 		queue->index = index % queue->frameCount;
 		stateImg.setImage(queue_getImg(queue, index % queue->frameCount));
 	}
+	std::string getName(){ return std::string(queue->prefix); }
 	unsigned short getState(){ return queue->index; }
 
 	Img_Base stateImg;
 protected:
 	MENU_Size size;
-	Rasteron_Queue* queue;
+	Rasteron_Queue* queue = nullptr;
 };
 
 // Implementation of UI elements
@@ -31,31 +33,33 @@ struct Img_Button : public Img_UI {
 		queue = loadUI_iconBtn(size, iconName);
 		Img_UI::setState(0);
 	}
-
-	void setState(enum MENU_ItemState s){ Img_UI::setState((unsigned short)s); }
 };
 
 struct Img_Label : public Img_UI {
 	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
-		Rasteron_Text textObjs[4] = {
-			textObj,
-			{ textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor },
-			{ textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor },
-			{ textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor }
-		};
-		queue = RASTERON_QUEUE_ALLOC("label", createImgSize(10, 100), 4); // TODO: dynamically compute size
-		for(unsigned short t = 0; t < 4; t++){
-			Rasteron_Image* textImg = textImgOp(&textObjs[t], FONT_SIZE_MED);
-			queue_addImg(queue, textImg, t);
-			RASTERON_DEALLOC(textImg);
-		}
-		Img_UI::setState(0);
+		queue = RASTERON_QUEUE_ALLOC("label", createImgSize(10, 100), 4);
+		setText(textObj);
+		// Img_UI::setState(0);
 	}
 
-	// TODO: Implement preset labels
-	// TODO: Implement textField labels
+	void setText(Rasteron_Text textObj){
+		textObjs[0] = textObj;
+		textObjs[1] = { textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor };
+		textObjs[2] = { textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor };
+		textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
 
-	void setState(enum MENU_ItemState s){ Img_UI::setState((unsigned short)s); }
+		Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_MED);
+		for(unsigned short t = 0; t < 4; t++){ 
+			for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
+				if(*(textImg->data + p) != textObj.fgColor) *(textImg->data + p) = textObjs[t].bkColor;
+			queue_addImg(queue, textImg, t);
+		}
+		RASTERON_DEALLOC(textImg);
+
+		Img_UI::setState(0);
+	}
+private:
+	Rasteron_Text textObjs[4];
 };
 
 struct Img_Dial : public Img_UI {

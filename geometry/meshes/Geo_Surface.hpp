@@ -4,16 +4,19 @@
 
 class Geo_Surface : public Geo_Mesh {
 public:
-	Geo_Surface(Surface shape) 
-	: Geo_Mesh(shape.segments + 1, shape.segments * 3) {
+	Geo_Surface(Surface shape) : Geo_Mesh(shape.segments + 1, shape.segments * 3) {
 		_shape = shape;
 		genVertices(); genIndices();
 	}
 
-	Geo_Surface(Surface shape, float z)
-	: Geo_Mesh(shape.segments + 1, shape.segments * 3) {
+	Geo_Surface(Surface shape, float z) : Geo_Mesh(shape.segments + 1, shape.segments * 3) {
 		_shape = shape;
 		_depth = z;
+		genVertices(); genIndices();
+	}
+
+	Geo_Surface(std::initializer_list<Vec3f> pointsSet) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+		// TODO: Create Geo_Surface from points
 		genVertices(); genIndices();
 	}
 

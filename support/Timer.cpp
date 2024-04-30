@@ -53,6 +53,9 @@ void Timer_Persist::updateTimer(){
 }
 
 void Timer_Dynamic::updateTimer(){ 
+    if(_absMicrosElapsed.count() < range.first * MICROSEC_IN_SEC || _absMicrosElapsed.count() > range.second  * MICROSEC_IN_SEC)
+        isPaused = true;
+
     if(!isPaused) Timer_Persist::updateTimer();
     else {
         _endSecs = steady_clock::now(); // gets current time

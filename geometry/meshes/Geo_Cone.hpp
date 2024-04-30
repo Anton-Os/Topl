@@ -4,8 +4,7 @@
 
 class Geo_Cone : public Geo_Mesh {
 public:
-	Geo_Cone(Surface shape)
-	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
+	Geo_Cone(Surface shape) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
 		_apex = Vec3f({ 0.0f, 0.0f, shape.radius + DEFAULT_Z }); // default apex
 		genVertices(); genIndices();
@@ -14,6 +13,12 @@ public:
 	Geo_Cone(Surface shape, Vec3f apex)
 	: Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 		_shape = shape;
+		_apex = apex; // custom apex
+		genVertices(); genIndices();
+	}
+
+	Geo_Cone(std::initializer_list<Vec3f> pointsSet, Vec3f apex) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+		// TODO: Create Geo_Cone from points
 		_apex = apex; // custom apex
 		genVertices(); genIndices();
 	}

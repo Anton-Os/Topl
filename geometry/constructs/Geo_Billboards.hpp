@@ -8,6 +8,8 @@
 #define PANE_SIZE 0.5F
 #define PANE_Z 0.0F
 
+// #include <iostream>
+
 class Geo_Billboard : public Geo_Grid {
 public:
 	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns) 
@@ -26,13 +28,11 @@ public:
 		configure(scene);
 	}
 
-
 	void configure(Topl_Scene* scene) override {
 		_geoActors.resize(_params.getGridSize() + 1);
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 
-		// childMesh.scale({ 1.25F, 1.25F, 1.25F });
 		childMesh.scale({ 1.0F / _params.x.first, 1.0F / _params.y.first, 0.0F });
 		Geo_Grid::configure(scene);
 
@@ -58,11 +58,39 @@ public:
 
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
-	void overlay(unsigned paneIndex, Img_UI* element){ getImgAt(paneIndex)->setImage(element->stateImg.getImage()); }
-	/* void overlay(unsigned paneIndex, Img_Button* button){ getImgAt(paneIndex)->setImage(button->stateImg.getImage()); }
-	void overlay(unsigned paneIndex, Img_Label* label){ getImgAt(paneIndex)->setImage(label->stateImg.getImage()); }
-	void overlay(unsigned paneIndex, Img_Dial* dial){ getImgAt(paneIndex)->setImage(dial->stateImg.getImage()); }
-	void overlay(unsigned paneIndex, Img_Slider* slider){ getImgAt(paneIndex)->setImage(slider->stateImg.getImage()); } */
+	void setState(unsigned paneIndex, bool isSelect, double x, double y){
+		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
+		else for(unsigned p = 0; p < _params.getGridSize(); p++){
+			const Geo_Actor* targetActor = getGeoActor(p);
+			
+			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
+			if(paneItemUI != paneItemUI_map.end()){
+				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
+					(p == paneIndex)
+						? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre)
+						: paneItemUI->second->setState(MENU_None);
+				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)
+					(paneItemUI->second->getState() == MENU_None)
+						? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre)
+						: paneItemUI->second->setState(MENU_None);
+				else if(paneItemUI->second->getName().find("dial") != std::string::npos && p == paneIndex){
+					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*paneItemUI->second));
+					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
+				}
+				else if(paneItemUI->second->getName().find("slider") != std::string::npos && p == paneIndex){
+					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*paneItemUI->second));
+					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
+				}
+			}
+		}
+	}
+
+	void setState(unsigned paneIndex, bool isSelect){ setState(paneIndex, isSelect, 0.5, 0.5); }
+
+	void overlay(unsigned paneIndex, Img_UI* element){ 
+		paneItemUI_map.insert({ getGeoActor(paneIndex), element });
+		getImgAt(paneIndex)->setImage(element->stateImg.getImage()); 
+	}
 protected:
 	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);
 	// Geo_Actor childActor = Geo_Actor(&childMesh);
@@ -72,7 +100,7 @@ protected:
 #ifdef RASTERON_H
 	Img_Base rootImg = Img_Base(0xFF333333); // root background
 	std::map<const Geo_Actor*, Img_Base> paneImg_map; // for child images
-	// std::map<const Geo_Actor*, Img_UI> paneImgUI_map; // for child UI elements;
+	std::map<const Geo_Actor*, Img_UI*> paneItemUI_map; // for child UI elements;
 	// std::map<const Geo_Actor*, pickerCallback> panesOnPick_map;
 #endif
 };
