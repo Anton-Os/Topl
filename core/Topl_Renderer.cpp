@@ -18,7 +18,28 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
         return false; // failure
     }
 
-    build(scene);
+	// Build Scene  
+	_shaderBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+	build(SCENE_RENDERID);
+
+	// Build Render Objects
+	for(unsigned g = 0; g < scene->getActorCount(); g++){
+		actor_cptr actor = scene->getGeoActor(g);
+		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		unsigned long renderID = getRenderID(actor);
+
+		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
+			_renderIDs++;
+			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
+			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
+		} else logMessage(MESSAGE_Exclaim, "Override required!"); // TODO: Implement else to override existing target
+
+		_shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, &_shaderBlockData);
+		build(actor);
+	}
+
     if(scene->getIsTextured()) texturizeScene(scene);
 	return _flags[BUILD_BIT];
 }
@@ -27,6 +48,20 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_flags[PIPELINE_BIT]) logMessage(MESSAGE_Exclaim, "Pipeline not set for update call!");
     if(!_flags[BUILD_BIT]) logMessage(MESSAGE_Exclaim, "Not built for update call!");
     if(!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT]) return false; // failure
+
+	/* // Update Scene 
+	_shaderBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+	update(SCENE_RENDERID);
+
+	// Update Render Objects
+	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
+		_shaderBlockData.clear();
+		_entryShader->genRenderBlock(actor, &_shaderBlockData);
+
+		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
+		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
+	} */
 
     update(scene);
     return _flags[BUILD_BIT];
@@ -38,10 +73,12 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 } */
 
 bool Topl_Renderer::drawScene(const Topl_Scene* scene){
-	if (!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT] || _renderIDs == 0) {
-		logMessage(MESSAGE_Exclaim, "Error rendering! Check pipeline, build, and render targets");
-        return false; // error
-    } else _flags[DRAWN_BIT] = false;
+	if(!_flags[PIPELINE_BIT]) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
+    if(!_flags[BUILD_BIT]) logMessage(MESSAGE_Exclaim, "Not built for draw call!");
+	if(_renderIDs == 0) logMessage(MESSAGE_Exclaim, "renderIDs is 0!");
+
+	if (!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT] || _renderIDs == 0) return false;
+	else _flags[DRAWN_BIT] = false;
 
 	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
 

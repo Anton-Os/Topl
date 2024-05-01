@@ -144,8 +144,10 @@ protected:
 	Img_Base _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
-    virtual void build(const Topl_Scene* scene) = 0;
+    // virtual void build(const Topl_Scene* scene) = 0;
+    virtual void build(const Geo_Actor* actor) = 0;
     virtual void update(const Topl_Scene* scene) = 0;
+    virtual void update(const Geo_Actor* actor) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
 	virtual void attachTex(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding

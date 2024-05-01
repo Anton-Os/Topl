@@ -547,32 +547,15 @@ void Topl_Renderer_VK::swapBuffers(double frameTime){
 	_flags[DRAWN_BIT] = true;
 }
 
-void Topl_Renderer_VK::build(const Topl_Scene* scene) {
-	// TODO: Create buffers for scene
-
-	// TODO: Create buffers for render objects
-	for(unsigned g = 0; g < scene->getActorCount(); g++){
-		actor_cptr actor = scene->getGeoActor(g);
-		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
-		unsigned long renderID = getRenderID(actor);
-
-		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
-			_renderIDs++;
-			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
-			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
-			renderID = getRenderID(actor);
-		} else logMessage(MESSAGE_Exclaim, "Override required!"); // TODO: Implement else to override
-		
-		/* VkBuffer* vertexBuff = nullptr;
-		VkDeviceMemory* memory = nullptr; // TODO: Assign data from vertices
-		VkDeviceSize size = 1; // TODO: AAssign size from vertices
-		VkBufferUsageFlags flags = 0;
-		VkMemoryPropertyFlags props = 0;
-		_flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, vertexBuff, memory, size, flags, props); */
-	}
-
-	_flags[BUILD_BIT] = true;
+void Topl_Renderer_VK::build(const Geo_Actor* actor){
+	/* VkBuffer* vertexBuff = nullptr;
+	VkDeviceMemory* memory = nullptr; // TODO: Assign data from vertices
+	VkDeviceSize size = 1; // TODO: AAssign size from vertices
+	VkBufferUsageFlags flags = 0;
+	VkMemoryPropertyFlags props = 0;
+	_flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, vertexBuff, memory, size, flags, props); */
 }
+
 
 #ifdef RASTERON_H
 
@@ -595,6 +578,11 @@ void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderI
 void Topl_Renderer_VK::update(const Topl_Scene* scene){
 	// Implement update operations
 }
+
+void Topl_Renderer_VK::update(const Geo_Actor* actor){
+	// TODO: Implement this
+}
+
 
 void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 	_drawMode = mode;

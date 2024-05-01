@@ -67,6 +67,15 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
+
+	GLint blockCount;
+	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+	}
 }
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
@@ -115,9 +124,19 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	linkShaders(pipeline, vertexShader, pixelShader, geomShader, tessCtrlShader, tessEvalShader);
 	if(pipeline->isReady == false) return logMessage(MESSAGE_Exclaim, "Error during pipeline generation");
 
+
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;
 	setPipeline(pipeline);
+
+	GLint blockCount;
+	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+	}
 }
 
 void Topl_Renderer_GL4::linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){

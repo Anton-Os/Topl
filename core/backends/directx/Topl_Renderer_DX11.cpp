@@ -7,6 +7,8 @@ namespace DX11 {
 	// Buffer Functions
 
 	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data) {
+		// TODO: Ensure that data and size are valid!!!
+		
 		D3D11_BUFFER_DESC buffDesc;
 		ZeroMemory(&buffDesc, sizeof(buffDesc));
 		buffDesc.Usage = usage;
@@ -243,35 +245,14 @@ void Topl_Renderer_DX11::setViewport(const Topl_Viewport* viewport) {
 
 void Topl_Renderer_DX11::swapBuffers(double frameTime) { _swapChain->Present(0, 0); }
 
-void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
-	// scene block buffer generation
-	_shaderBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
-	_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_shaderBlockData);
-	_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
-
-	for (unsigned g = 0; g < scene->getActorCount(); g++) { // TODO: Detect and rebuild with deleted or added objects
-		actor_cptr actor = scene->getGeoActor(g);
+void Topl_Renderer_DX11::build(const Geo_Actor* actor){
+	if(actor == SCENE_RENDERID){
+		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_shaderBlockData);
+		_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
+	} else {
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 		unsigned long renderID = getRenderID(actor);
-		
-		if(renderID == INVALID_RENDERID){ // Creating new unique renderID
-			_renderIDs++;
-			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
-			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
-			renderID = getRenderID(actor);
-		} else logMessage(MESSAGE_Exclaim, "Override required!"); /* { // old data must be replaced
-			auto vertexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Vertex_Type && b.renderID == renderID; });
-			if(vertexBuff != _buffers.end()) _buffers.erase(vertexBuff);
-			auto indexBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Index_UI && b.renderID == renderID; });
-			if(indexBuff != _buffers.end()) _buffers.erase(indexBuff);
-			auto renderBlockBuff = std::find_if(_buffers.begin(), _buffers.end(), [renderID](const Buffer_DX11& b) { return b.type == BUFF_Render_Block && b.renderID == renderID; });
-			if(renderBlockBuff != _buffers.end()) _buffers.erase(renderBlockBuff);
-		} */
 
-		// render block buffer generation
-		_shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &_shaderBlockData);
 		ID3D11Buffer* renderBlockBuff = nullptr;
 		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_shaderBlockData);
 		_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
@@ -292,8 +273,6 @@ void Topl_Renderer_DX11::build(const Topl_Scene* scene) {
 		_vertexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
-
-	_flags[BUILD_BIT] = true;
 }
 
 #ifdef RASTERON_H
@@ -449,8 +428,6 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 #endif
 
 void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
-	blockBytes_t _shaderBlockData;
-
 	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
 		_shaderBlockData.clear();
 		_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
@@ -472,6 +449,10 @@ void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
 	}
 }
 
+void Topl_Renderer_DX11::update(const Geo_Actor* actor){
+	// TODO: Implement this
+}
+
 void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	_drawMode = mode;
 
@@ -488,7 +469,7 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
 
-	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
+	if(renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
 		if (_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) {
 			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
 			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
