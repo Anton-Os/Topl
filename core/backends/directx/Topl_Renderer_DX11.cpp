@@ -275,6 +275,85 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 	}
 }
 
+void Topl_Renderer_DX11::update(const Geo_Actor* actor){
+	if(actor == SCENE_RENDERID) DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_shaderBlockData);
+	else {
+		unsigned long renderID = getRenderID(actor);
+
+		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
+			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
+	}
+}
+
+void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
+	_drawMode = mode;
+
+	switch (_drawMode) {
+	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
+	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
+	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
+	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
+	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
+	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
+	}
+}
+
+void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
+	unsigned long renderID = _renderTargetMap[actor];
+
+	if(renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
+		if (_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) {
+			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
+			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
+		}
+	}
+	else if(renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
+		// Data & Buffer Updates
+
+		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()) {
+			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
+			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
+		}
+
+		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
+			_deviceCtx->IASetVertexBuffers(0, 1, &_vertexBufferMap.at(renderID).buffer, &_vertexStride, &_vertexOffset);
+		if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
+			_deviceCtx->IASetIndexBuffer(_indexBufferMap.at(renderID).buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		// Texture Updates
+
+		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		if (tex2D != _textures.end()){
+			DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
+			DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
+		}
+		/* for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
+			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
+			if (tex2D != _textures.end()){
+				DX11::texSamplers[b] = tex2D->sampler;
+				DX11::texResources[b] = tex2D->resource;
+			}
+		} */
+		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
+		if(tex3D != _textures.end()){
+			DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;
+			DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
+		}
+
+		_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &DX11::texSamplers[0]);
+		_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
+
+		// Draw Call!
+		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
+			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
+				_deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
+			else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
+		}
+		// TODO: Include instanced draw call
+		else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
+	}
+} 
+
 #ifdef RASTERON_H
 
 Img_Base Topl_Renderer_DX11::frame() {
@@ -425,99 +504,5 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 
 	// texture->Release(); // test deallocation
 }
+
 #endif
-
-void Topl_Renderer_DX11::update(const Topl_Scene* scene) {
-	if (scene != ALL_SCENES && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) {
-		_shaderBlockData.clear();
-		_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
-		DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_shaderBlockData);
-	}
-
-	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
-		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
-		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
-
-		// Shader Render Block
-		_shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &_shaderBlockData);
-		
-		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
-			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
-		
-		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Update call failed"); // Error
-	}
-}
-
-void Topl_Renderer_DX11::update(const Geo_Actor* actor){
-	// TODO: Implement this
-}
-
-void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
-	_drawMode = mode;
-
-	switch (_drawMode) {
-	case DRAW_Points: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); break;
-	case DRAW_Lines: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); break;
-	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
-	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
-	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
-	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
-	}
-}
-
-void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
-	unsigned long renderID = _renderTargetMap[actor];
-
-	if(renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
-		if (_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) {
-			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
-			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
-		}
-	}
-	else if(renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
-		// Data & Buffer Updates
-
-		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()) {
-			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
-			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
-		}
-
-		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
-			_deviceCtx->IASetVertexBuffers(0, 1, &_vertexBufferMap.at(renderID).buffer, &_vertexStride, &_vertexOffset);
-		if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
-			_deviceCtx->IASetIndexBuffer(_indexBufferMap.at(renderID).buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		// Texture Updates
-
-		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
-		if (tex2D != _textures.end()){
-			DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
-			DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
-		}
-		/* for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
-			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
-			if (tex2D != _textures.end()){
-				DX11::texSamplers[b] = tex2D->sampler;
-				DX11::texResources[b] = tex2D->resource;
-			}
-		} */
-		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
-		if(tex3D != _textures.end()){
-			DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;
-			DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
-		}
-
-		_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &DX11::texSamplers[0]);
-		_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
-
-		// Draw Call!
-		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
-				_deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
-			else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
-		}
-		// TODO: Include instanced draw call
-		else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
-	}
-} 

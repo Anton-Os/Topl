@@ -49,21 +49,21 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_flags[BUILD_BIT]) logMessage(MESSAGE_Exclaim, "Not built for update call!");
     if(!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT]) return false; // failure
 
-	/* // Update Scene 
+	// Update Scene 
 	_shaderBlockData.clear();
 	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
 	update(SCENE_RENDERID);
 
 	// Update Render Objects
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
+		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		_shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &_shaderBlockData);
 
-		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
-		unsigned renderID = (scene != ALL_SCENES)? getRenderID(actor) : g;
-	} */
+		update(actor);
+	}
 
-    update(scene);
+    // update(scene);
     return _flags[BUILD_BIT];
 }
 

@@ -17,12 +17,6 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
 	}
 
-	void build(const Topl_Scene* scene) override { 
-		logMessage("Hello Build (OpenGL)");
-		setDrawMode(DRAW_Triangles);
-		Topl_Renderer_GL4::build(scene); 
-	}
-
 	Topl_Pipeline_GL4 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
 
 	Idle_VertexShader_GL4 vertexShader;
@@ -42,13 +36,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
-
-	void build(const Topl_Scene* scene) override {
-		logMessage("Hello Build (DirectX11)");
-		setDrawMode(DRAW_Triangles);
-		Topl_Renderer_DX11::build(scene); 
-	}
-
+	
 	Topl_Pipeline_DX11 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
 
 	Idle_VertexShader_DX11 vertexShader;
@@ -67,6 +55,14 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;
+	}
+
+	void build(const Geo_Actor* actor) {
+		// TODO: Implement drawing for testing purposes
+	}
+
+	void draw(const Geo_Actor* actor) {
+		// TODO: Implement drawing for testing purposes
 	}
 
 	Topl_Pipeline_VK pipeline;

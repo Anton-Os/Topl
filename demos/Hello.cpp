@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
 
 	if(TARGET_BACKEND != BACKEND_VK){
 		scene.addGeometry(&actor);
+		renderer->setDrawMode(DRAW_Triangles);
 		renderer->buildScene(&scene);
 	}
 

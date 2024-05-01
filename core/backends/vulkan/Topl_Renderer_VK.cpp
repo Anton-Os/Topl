@@ -556,29 +556,6 @@ void Topl_Renderer_VK::build(const Geo_Actor* actor){
 	_flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, vertexBuff, memory, size, flags, props); */
 }
 
-
-#ifdef RASTERON_H
-
-Img_Base Topl_Renderer_VK::frame() {
-	_frameImage = Img_Base();
-	_frameImage.setColorImage(CLEAR_COLOR_CODE);
-	return _frameImage;
-}
-
-void Topl_Renderer_VK::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
-	// Implement texture attaching
-}
-
-void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
-	// Implement Body
-}
-
-#endif
-
-void Topl_Renderer_VK::update(const Topl_Scene* scene){
-	// Implement update operations
-}
-
 void Topl_Renderer_VK::update(const Geo_Actor* actor){
 	// TODO: Implement this
 }
@@ -600,13 +577,26 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 	}
 }
 
-/* void Topl_Renderer_VK::render(const Topl_Scene* scene){
-	// Implement render operation
-	_isDrawn = true;
-} */
-
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	unsigned long renderID = _renderTargetMap[actor];
 	// if(renderID == SCENE_RENDERID) { }
 	// else {}
 }
+
+#ifdef RASTERON_H
+
+Img_Base Topl_Renderer_VK::frame() {
+	_frameImage = Img_Base();
+	_frameImage.setColorImage(CLEAR_COLOR_CODE);
+	return _frameImage;
+}
+
+void Topl_Renderer_VK::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+	// Implement texture attaching
+}
+
+void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
+	// Implement Body
+}
+
+#endif

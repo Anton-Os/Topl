@@ -87,7 +87,6 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
-#define FIRST_BUILD_CALL 0
 #define FRAME_RATE_SECS 1.0 / 60.0
 #define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000
 #define INVALID_RENDERID (unsigned long)- 1
@@ -144,9 +143,7 @@ protected:
 	Img_Base _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
-    // virtual void build(const Topl_Scene* scene) = 0;
     virtual void build(const Geo_Actor* actor) = 0;
-    virtual void update(const Topl_Scene* scene) = 0;
     virtual void update(const Geo_Actor* actor) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
