@@ -1,5 +1,17 @@
 #include "Geo_Cone.hpp"
 
+Geo_Cone::Geo_Cone(std::initializer_list<Vec3f> pointsSet, Vec3f apex) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+	_apex = apex; // apex
+	
+	unsigned short v = 0;
+	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
+		_vertices[v] = *p;
+        _vertices[v].texcoord = _vertices[v].position;
+        _indices[v] = v; // for testing
+        v++;
+	}
+}
+
 void Geo_Cone::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }); // origin
 	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex

@@ -188,33 +188,41 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		unsigned long renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
-		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, *(_bufferSlots + _bufferIndex)) });
-		_bufferIndex++; // increments to next available slot
+		if(_blockBufferMap.find(renderID) == _blockBufferMap.end()){
+			_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, *(_bufferSlots + _bufferIndex)) });
+			_bufferIndex++; // increments to next available slot
+		}
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
 		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
-		(mesh->getIndices() != nullptr)
-			? _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), mesh->getIndexCount()) })
-			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), 0) });
+		if(_indexBufferMap.find(renderID) == _indexBufferMap.end()){
+			(mesh->getIndices() != nullptr)
+				? _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), mesh->getIndexCount()) })
+				: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), 0) });
+			_bufferIndex++; // increments to next available slot
+		}
 		if (mesh->getIndices() != nullptr) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer); // gets the latest buffer
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
 		}
-		_bufferIndex++; // increments to next available slot
 
 		// vertices generation
-		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, *(_bufferSlots + _bufferIndex), mesh->getVertexCount()) });
-		_bufferIndex++; // increments to next available slot
+		if(_vertexBufferMap.find(renderID) == _vertexBufferMap.end()){
+			_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, *(_bufferSlots + _bufferIndex), mesh->getVertexCount()) });
+			_bufferIndex++; // increments to next available slot
+		}
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer); // gets the latest buffer
 		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
-		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, *(_vertexArraySlots + _vertexArrayIndex)) });
-		_vertexArrayIndex++; // increment to next available slot
-		GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
+		if(_vertexArrayMap.find(renderID) == _vertexArrayMap.end()){
+			_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, *(_vertexArraySlots + _vertexArrayIndex)) });
+			_vertexArrayIndex++; // increment to next available slot
+			GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
+		}
 
 		_flags[BUILD_BIT] = true;
 	}

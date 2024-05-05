@@ -176,8 +176,14 @@ void timelineBtn_onPick(MOUSE_Event event){
             _DEMO->timelinePropsLayout.setState(b, event != MOUSE_Hover, (double)Topl_Program::pickerCoord.data[0], (double)Topl_Program::pickerCoord.data[1]);
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         int c = (char)(Topl_Program::pickerObj->getName().back()) - '0';
-        if(c - 1 == 0) Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.first);
-        else if(c - 1 == 2) Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.second);
+        if(c - 1 == 0){
+            Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.first);
+            Topl_Program::timeline.seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
+        }
+        else if(c - 1 == 2){ 
+            Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.second);
+            Topl_Program::timeline.seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
+        }
         else Topl_Program::timeline.dynamic_ticker.isPaused = !Topl_Program::timeline.dynamic_ticker.isPaused;
     }
 }
@@ -187,6 +193,7 @@ static void slider_onPick(MOUSE_Event event){
         _DEMO->timelineLayout.setState(0, event != MOUSE_Hover, (double)Topl_Program::pickerCoord.data[0], (double)Topl_Program::pickerCoord.data[1]); // _DEMO->timelineSlider.setState(Topl_Program::pickerCoord[0]); 
         Topl_Program::timeline.dynamic_ticker.isPaused = true;
         Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::pickerCoord[0] * 60.0);
+        Topl_Program::timeline.seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
     }
 }
 

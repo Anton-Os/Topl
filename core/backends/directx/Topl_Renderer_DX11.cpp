@@ -254,13 +254,19 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 		unsigned long renderID = getRenderID(actor);
 
 		ID3D11Buffer* renderBlockBuff = nullptr;
-		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_shaderBlockData);
-		_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
+		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
+		else {
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_shaderBlockData);
+			_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
+		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
-		if (mesh->getIndices() != nullptr) { // checks if index data exists for render object
+		if(_indexBufferMap.find(renderID) != _indexBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createIndexBuff(&_device, &_indexBufferMap.at(renderID).buffer, (DWORD*)mesh->getIndices(), mesh->getIndexCount());
+		else if (mesh->getIndices() != nullptr) { // checks if index data exists for render object
 			_flags[BUILD_BIT] = DX11::createIndexBuff(&_device, &indexBuff, (DWORD*)mesh->getIndices(), mesh->getIndexCount());
 			_indexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, mesh->getIndexCount()) });
 		}
@@ -269,8 +275,12 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 
 		// vertices generation
 		ID3D11Buffer* vertexBuff = nullptr;
-		_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &vertexBuff, mesh->getVertices(), mesh->getVertexCount());
-		_vertexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
+		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &_vertexBufferMap.at(renderID).buffer, mesh->getVertices(), mesh->getVertexCount());
+		else {
+			_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &vertexBuff, mesh->getVertices(), mesh->getVertexCount());
+			_vertexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
+		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
 }
@@ -281,7 +291,7 @@ void Topl_Renderer_DX11::update(const Geo_Actor* actor){
 		unsigned long renderID = getRenderID(actor);
 
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
-			 _flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
 	}
 }
 

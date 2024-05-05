@@ -46,6 +46,12 @@ else()
     find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
 endif()
 
+# set(SUPPORT_SAVES ${IS_FALSE} CACHE INT "Allow saving capabilities in .topl format" FORCE)
+# if(SUPPORT_SAVES)   
+#    message(STATUS, "Saves supported")
+#    # TODO: Add Google Protobuff?
+# endif()
+
 # set(SUPPORT_MEDIA OFF CACHE BOOL "Include audio module" FORCE)
 # if(SUPPORT_MEDIA)
 # ExternalProject_Add(OpenAL # Change to FFMPEG?

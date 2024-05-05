@@ -1,3 +1,5 @@
+#include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
 
 #include "program/Topl_Program.hpp"
@@ -21,9 +23,15 @@ struct MathArt_Demo : public Topl_Program {
     Geo_Quad3D box = Geo_Quad3D(1.25);
     Geo_Actor boxActor = Geo_Actor(&box);
 
+    Geo_Mesh* surfaceMesh = nullptr;
+    Geo_Mesh* coneMesh = nullptr;
+    Geo_Mesh* volumeMesh = nullptr;
+    Geo_Actor targetActor;
+
     Img_Volume volumeImg = Img_Volume(MATHART_SLICES);
 private:
     Topl_Scene scene;
+    Topl_Scene targetScene;
 
     Topl_Pipeline* texPipeline;
     Topl_Pipeline* flatPipeline;

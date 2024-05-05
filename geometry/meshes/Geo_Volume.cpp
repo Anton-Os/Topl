@@ -1,5 +1,17 @@
 #include "Geo_Volume.hpp"
 
+Geo_Volume::Geo_Volume(std::initializer_list<Vec3f> pointsSet, float depth) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+	_depth = depth;
+	
+	unsigned short v = 0;
+	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
+		_vertices[v] = *p;
+        _vertices[v].texcoord = _vertices[v].position;
+        _indices[v] = v; // for testing
+        v++;
+	}
+}
+
 void Geo_Volume::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });
 	for (unsigned v = 1; v < _vertices.size() / 2; v++) { // front face vertices

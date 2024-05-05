@@ -1,5 +1,31 @@
 #include "Geo_Surface.hpp"
 
+Geo_Surface::Geo_Surface(std::initializer_list<Vec3f> pointsSet) : Geo_Mesh(pointsSet.size(), (pointsSet.size() - 2) * 3){
+	unsigned short v = 0;
+	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
+		_vertices[v] = *p;
+        _vertices[v].texcoord = _vertices[v].position;
+        v++; 
+	}
+
+	v = 0; // reset vertex
+	unsigned short i = 0;
+	while(i < _indices.size()){
+		if(i % 2 == 0){
+			_indices[i] = v;
+			_indices[i + 1] = v + 1;
+			_indices[i + 2] = v + 2;
+		} else {
+			_indices[i] = v;
+			_indices[i + 1] = v + 2;
+			_indices[i + 2] = v + 3;
+			v += 3;
+		}
+
+		i += 3;
+	}
+}
+
 void Geo_Surface::genVertices() {
 	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin
 

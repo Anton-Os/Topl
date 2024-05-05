@@ -12,6 +12,9 @@
 #define DISABLE_CURSOR_UPDATE 0
 #define ENABLE_CURSOR_UPDATE 1
 
+typedef void (*resizeCallback)(unsigned, unsigned);
+typedef void (*fileCallback)(bool, const char*);
+
 struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;
@@ -34,7 +37,8 @@ struct Platform {
     static char inputStr[1024];
     static bool isUserInput;
 
-    void (*resizeCallback)(unsigned, unsigned);
+    static resizeCallback onResize;
+    static fileCallback onFileChoose;
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){

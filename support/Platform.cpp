@@ -8,6 +8,8 @@ float Platform::yCursorPos = INVALID_CURSOR_POS;
 
 char Platform::inputStr[1024] = "";
 bool Platform::isUserInput = false;
+resizeCallback Platform::onResize = nullptr;
+fileCallback Platform::onFileChoose = nullptr;
 
 #ifdef _WIN32
 
@@ -17,31 +19,63 @@ static void addPress(enum MOUSE_Event button){
 	else Platform::mouseControl.addPress(button);
 }
 
-struct DropTarget_Win32 : virtual public IDropTarget {
-	// DropTarget_Win32 : IDropTarget(){}
-	HRESULT DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragEnter callback event" << std::endl; }
-	HRESULT DragLeave() override { std::cout << "DragLeave callback event" << std::endl; }
-	HRESULT DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragOver callback event" << std::endl; }
-	HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; }
+struct DropTarget_Win32 : public IDropTarget {
+	DropTarget_Win32() : IDropTarget(){}
+
+	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragEnter callback event" << std::endl; }
+	HRESULT STDMETHODCALLTYPE DragLeave(void) override { std::cout << "DragLeave callback event" << std::endl; }
+	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragOver callback event" << std::endl; }
+	HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; }
 };
+
+void openFileDialog_win32(bool isRead){
+	IFileOpenDialog *fileDialog_win32;	
+
+	if(SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&fileDialog_win32))))
+		if(SUCCEEDED(fileDialog_win32->Show(NULL))){
+			logMessage("Showing FileDialog object success! ");
+
+			IShellItem* shellItem_win32;
+			if(SUCCEEDED(fileDialog_win32->GetResult(&shellItem_win32))){
+				PWSTR filePath_win32;
+				if(SUCCEEDED(shellItem_win32->GetDisplayName(SIGDN_FILESYSPATH, &filePath_win32))){
+					OutputDebugStringW(&(*filePath_win32));
+					CoTaskMemFree(filePath_win32);
+				}
+				shellItem_win32->Release();
+			}
+			fileDialog_win32->Release();
+		}
+
+}
+
+LRESULT handleMenu_win32(WPARAM wParam){
+	switch(LOWORD(wParam)){
+		case IDM_NEW: 
+			openFileDialog_win32(false); // Testing
+			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(false, "../"); // TODO: Include real path
+			logMessage("Menu command: New");
+			break;
+		case IDM_LOAD: 
+			openFileDialog_win32(true); // Testing
+			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
+			logMessage("Menu command: Load\n"); 
+			break;
+		case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
+		case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
+		case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
+		default: break;
+		// case IDM_FI_CLOSE: logMessage("File close command"); break;
+	}
+
+	return 0;
+}
 
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
 	static bool isKeyReady = false;
 
 	switch (message) {
-	case (WM_COMMAND): {
-		switch(LOWORD(wParam)){
-			case IDM_NEW: logMessage("Menu command: New"); break;
-			case IDM_LOAD: logMessage("Menu command: Load\n"); break;
-			case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
-			case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
-			case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
-			default: break;
-			// case IDM_FI_CLOSE: logMessage("File close command"); break;
-		}
-
-		return 0;
-	}
+	case (WM_COMMAND): { return handleMenu_win32(wParam); }
 	case(WM_CREATE): {}
 	case(WM_PAINT): { }
 	// case(WM_SIZE): { printf("Viewport resized to: %d, %d", Platform::getViewportWidth(window), Platform::getViewportHeight(window)); }
@@ -100,8 +134,10 @@ void Platform::createWindow(unsigned width, unsigned height){
 	ShowWindow(_context.window, 1);
 	UpdateWindow(_context.window);
 
-	// DropTarget_Win32 dropTarget; 
+	// DropTarget_Win32 dropTarget = DropTarget_Win32(); 
 	// RegisterDragDrop(_context.window, &dropTarget);
+
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 }
 
 bool Platform::handleEvents(){
