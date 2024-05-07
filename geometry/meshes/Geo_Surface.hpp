@@ -4,17 +4,8 @@
 
 class Geo_Surface : public Geo_Mesh {
 public:
-	Geo_Surface(Shape shape) : Geo_Mesh(shape.segments + 1, shape.segments * 3) {
-		_shape = shape;
-		genVertices(); genIndices();
-	}
-
-	Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, shape.segments * 3) {
-		_shape = shape;
-		_depth = z;
-		genVertices(); genIndices();
-	}
-
+	Geo_Surface(Shape shape);
+	Geo_Surface(Shape shape, float z);
 	Geo_Surface(std::initializer_list<Vec3f> pointsSet);
 
 	float getRadius(){ return _shape.radius; }

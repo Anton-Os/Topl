@@ -18,21 +18,21 @@ static void onPress(float x, float y){
 
 static void surfaceMeshCallback(){
     if(_DEMO->surfaceMesh != nullptr) delete _DEMO->surfaceMesh;
-    _DEMO->surfaceMesh = new Geo_Surface({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3] });
+    _DEMO->surfaceMesh = new Geo_Surface({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3],});
     _DEMO->targetActor = Geo_Actor(_DEMO->surfaceMesh);
     isRebuildReq = true;
 }
 
 static void coneMeshCallback(){
     if(_DEMO->coneMesh != nullptr) delete _DEMO->coneMesh;
-    _DEMO->coneMesh = new Geo_Cone({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3] }, Vec3f({ 0.0, 0.0, 1.0F }));
+    _DEMO->coneMesh = new Geo_Cone({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3], }, Vec3f({ 0.0, 0.0, 1.0F }));
     _DEMO->targetActor = Geo_Actor(_DEMO->coneMesh);
     isRebuildReq = true;
 }
 
 static void volumeMeshCallback(){
     if(_DEMO->volumeMesh != nullptr) delete _DEMO->volumeMesh;
-    _DEMO->volumeMesh = new Geo_Volume({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3] }, 1.0F);
+    _DEMO->volumeMesh = new Geo_Volume({ pointsSet[0], pointsSet[1], pointsSet[2], pointsSet[3], }, 1.0F);
     _DEMO->targetActor = Geo_Actor(_DEMO->volumeMesh);
     isRebuildReq = true;
 }
@@ -59,6 +59,8 @@ void MathArt_Demo::init(){
     scene.addVolumeTex(boxActor.getName(), &volumeImg);
     scene.addVolumeTex(circleActor.getName(), &volumeImg);
 
+    flatVShader.setMode(1);
+
     // _renderer->setPipeline(texPipeline);
     _renderer->buildScene(&scene);
     _renderer->texturizeScene(&scene);
@@ -71,6 +73,8 @@ void MathArt_Demo::loop(double frameTime){
     boxActor.updateRot({ 0.0F, (rand() / (float)RAND_MAX) * rotFactor, 0.0F });
     circleActor.updateRot({ 0.0F, 0.0F, (rand() / (float)RAND_MAX) * rotFactor });
 
+    targetActor.updateRot({ (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor });
+
     if(isRebuildReq){
         targetScene.removeActor("target");
         targetScene.addGeometry("target", &targetActor);
@@ -82,7 +86,7 @@ void MathArt_Demo::loop(double frameTime){
     // _renderer->setPipeline(texPipeline);
 
     if(targetScene.getActorCount() > 0){
-        _renderer->setDrawMode(DRAW_Triangles);
+        _renderer->setDrawMode(DRAW_Strip);
         _renderer->updateScene(&targetScene);
         _renderer->drawScene(&targetScene);
     } else {

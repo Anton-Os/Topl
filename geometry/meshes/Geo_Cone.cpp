@@ -1,15 +1,56 @@
 #include "Geo_Cone.hpp"
 
-Geo_Cone::Geo_Cone(std::initializer_list<Vec3f> pointsSet, Vec3f apex) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
-	_apex = apex; // apex
+Geo_Cone::Geo_Cone(Shape shape) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
+	_shape = shape;
+	_apex = Vec3f({ 0.0f, 0.0f, shape.radius + DEFAULT_Z }); // default apex
+	genVertices();
+	genIndices();
+}
+
+Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
+	_shape = shape;
+	_apex = apex;
+	genVertices(); 
+	genIndices();
+}
+
+Geo_Cone::Geo_Cone(std::initializer_list<Vec3f> pointsSet, Vec3f apex) : Geo_Mesh(pointsSet.size() + 1, (pointsSet.size() + 2) * 3){
+	_apex = apex;
+	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
 	
 	unsigned short v = 0;
 	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
 		_vertices[v] = *p;
         _vertices[v].texcoord = _vertices[v].position;
-        _indices[v] = v; // for testing
-        v++;
+        v++; 
 	}
+
+	v = 0; // reset vertex
+	unsigned short i = 0;
+	while(i < _indices.size() / 3){ // indexing for face
+		if(i % 2 == 0){
+			_indices[i] = v;
+			_indices[i + 1] = v + 1;
+			_indices[i + 2] = v + 2;
+		} else {
+			_indices[i] = v;
+			_indices[i + 1] = v + 2;
+			_indices[i + 2] = v + 3;
+			v += 3;
+		}
+
+		i += 3;
+	}
+
+	v = 0; // reset vertex
+	while(i < _indices.size()){
+		_indices[i] = _vertices.size() - 1; // connect to apex
+		_indices[i + 1] = v;
+		_indices[i + 2] = v + 1;
+		i += 3;
+	}
+
+	// TODO: Indexing connecting to apex
 }
 
 void Geo_Cone::genVertices() {

@@ -1,14 +1,75 @@
 #include "Geo_Volume.hpp"
 
-Geo_Volume::Geo_Volume(std::initializer_list<Vec3f> pointsSet, float depth) : Geo_Mesh(pointsSet.size(), pointsSet.size()){
+Geo_Volume::Geo_Volume(Shape shape) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
+	_shape = shape;
+	_depth = shape.radius;
+	genVertices(); 
+	genIndices();
+}
+
+Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
+	_shape = shape;
 	_depth = depth;
-	
+	genVertices(); genIndices();
+}
+
+Geo_Volume::Geo_Volume(std::initializer_list<Vec3f> pointsSet, float depth) : Geo_Mesh(pointsSet.size() * 2, (pointsSet.size() * 3) * 3){
+	_depth = depth;
+
 	unsigned short v = 0;
 	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
 		_vertices[v] = *p;
+		_vertices[v].position.data[2] += _depth / 2;
         _vertices[v].texcoord = _vertices[v].position;
-        _indices[v] = v; // for testing
-        v++;
+		_vertices[_vertices.size() - 1 - v] = *p;
+		_vertices[_vertices.size() - 1 - v].position.data[2] -= _depth / 2;
+		_vertices[_vertices.size() - 1 - v].texcoord = _vertices[_vertices.size() - 1 - v].position;
+        v++; 
+	}
+
+	v = 0; // reset vertex
+	unsigned short i = 0;
+	while(i < _indices.size() / 6){ // indexing front face
+		if(i % 2 == 0){
+			_indices[i] = v;
+			_indices[i + 1] = v + 1;
+			_indices[i + 2] = v + 2;
+		} else {
+			_indices[i] = v;
+			_indices[i + 1] = v + 2;
+			_indices[i + 2] = v + 3;
+			v += 3;
+		}
+
+		i += 3;
+	}
+
+	v = 0; // reset vertex
+	while(i < (_indices.size() / 6) * 2){ // indexing back face
+		if(i % 2 == 0){
+			_indices[i] = _vertices.size() - 3 - v;
+			_indices[i + 1] = _vertices.size() - 2 - v;
+			_indices[i + 2] = _vertices.size() - 1 - v;
+		} else {
+			_indices[i] = _vertices.size() - 1 - v;
+			_indices[i + 1] = _vertices.size() - 4 - v;
+			_indices[i + 2] = _vertices.size() - 3 - v;
+			v += 3;
+		}
+
+		i += 3;
+	}
+
+	v = 0; // reset vertex
+	while(i < _indices.size()){ // indexing sides
+		_indices[i] = v;
+		_indices[i + 1] = _vertices.size() - 1 - v;
+		_indices[i + 2] = v + 1;
+		_indices[i + 3] = _vertices.size() - 1 - v;
+		_indices[i + 4] = _vertices.size() - 2 - v;
+		_indices[i + 5] = v + 1;
+		v++;
+		i += 6;
 	}
 }
 

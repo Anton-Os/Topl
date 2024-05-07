@@ -1,5 +1,18 @@
 #include "Geo_Surface.hpp"
 
+Geo_Surface::Geo_Surface(Shape shape) : Geo_Mesh(shape.segments + 1, shape.segments * 3) {
+	_shape = shape;
+	genVertices(); 
+	genIndices();
+}
+
+Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, shape.segments * 3){
+	_shape = shape;
+	_depth = z;
+	genVertices(); 
+	genIndices();
+}
+
 Geo_Surface::Geo_Surface(std::initializer_list<Vec3f> pointsSet) : Geo_Mesh(pointsSet.size(), (pointsSet.size() - 2) * 3){
 	unsigned short v = 0;
 	for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
@@ -10,7 +23,7 @@ Geo_Surface::Geo_Surface(std::initializer_list<Vec3f> pointsSet) : Geo_Mesh(poin
 
 	v = 0; // reset vertex
 	unsigned short i = 0;
-	while(i < _indices.size()){
+	while(i < _indices.size()){ // indexing for surface
 		if(i % 2 == 0){
 			_indices[i] = v;
 			_indices[i + 1] = v + 1;

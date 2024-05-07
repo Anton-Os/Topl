@@ -10,7 +10,7 @@ struct MathArt_Demo : public Topl_Program {
     MathArt_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "MathArt", backend){
         texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
         flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
-        effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
+        // effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
     }
 
     void init() override;
