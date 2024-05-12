@@ -11,6 +11,8 @@ bool Platform::isUserInput = false;
 resizeCallback Platform::onResize = nullptr;
 fileCallback Platform::onFileChoose = nullptr;
 
+bool checkFile(std::string fileName){ return (access(fileName.c_str(), F_OK) == 0)? true : false; }
+
 #ifdef _WIN32
 
 static void addPress(enum MOUSE_Event button){
@@ -86,8 +88,8 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 			Platform::mouseControl.addHover(Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_CHAR): { 
-		if(wParam == VK_ESCAPE) Platform::isUserInput = true;
-		else if(wParam != 0 && isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
+		if(wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
+		else if(isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }
@@ -156,11 +158,11 @@ bool Platform::handleEvents(){
 		if (_context.eventMsg.message == WM_QUIT || _context.eventMsg.message == WM_CLOSE) return false; // Error code?
 	}
 
-	if(Platform::isUserInput){
+	/* if(Platform::isUserInput){
 		puts("Enter a command: ");
 		scanf("%s", &Platform::inputStr);
 		Platform::isUserInput = false;
-	}
+	} */
 
 	return true;
 }

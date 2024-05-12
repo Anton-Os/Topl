@@ -48,7 +48,7 @@ public:
 	Topl_Renderer_VK(NATIVE_WINDOW window) : Topl_Renderer(window){ 
 		init(window); 
 
-		setViewport(&_defaultViewport); // viewport creation
+		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_VK();

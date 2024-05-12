@@ -62,7 +62,7 @@ public:
 		_flags[DRAW_ORDER_BIT] = DRAW_INVERSE;
 		init(window);
 		
-		setViewport(&_defaultViewport); // viewport creation
+		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_DX11();

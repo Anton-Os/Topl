@@ -1,6 +1,7 @@
 #ifndef GEO_MESH_H
 
 #include <vector>
+#include <initializer_list>
 
 #include "Geo_Vertex.hpp"
 
@@ -28,10 +29,17 @@ struct Volume {
 class Geo_Mesh {
 public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
-	
-	Geo_Mesh(unsigned v, unsigned i) { // vertex and indices constructor
-		_vertices.resize(v);
-		_indices.resize(i);
+	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
+	Geo_Mesh(std::initializer_list<Vec3f> pointsSet){ // point set constructor
+		_vertices.resize(pointsSet.size()); _indices.resize(pointsSet.size());
+
+		unsigned short v = 0;
+		for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
+			_vertices[v] = *p;
+			_vertices[v].texcoord = _vertices[v].position;
+			_indices[v] = v; // for testing
+			v++;
+		}
 	}
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
@@ -47,8 +55,8 @@ public:
 	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices() const { return _indices.data(); }
 protected:
-	virtual void genVertices() = 0;
-	virtual void genIndices() = 0;
+	virtual void genVertices(){}
+	virtual void genIndices(){}
 
 	static Vec3f getTexCoord(unsigned v, float z) { // default texture coordinate generator
 		float x = ((v - 1) % 4 == 0 || (v - 1) % 4 == 1)? 1.0f : 0.0f;

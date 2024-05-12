@@ -19,26 +19,23 @@ Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
 
 static void onAnyKey(char k){
-	if(isalnum(k) || isspace(k)){
-		Topl_Program::userInput += k;
-		// std::cout << Topl_Program::userInput << std::endl;
-	}
+	if(isalnum(k) || isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
-	if(Topl_Program::isCamera_keys){
-		if(toupper(k) == 'W') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
-		else if(toupper(k) == 'S') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
-		else if(toupper(k) == 'A') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
-		else if(toupper(k) == 'D') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
-		else if(toupper(k) == 'X') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, -0.1f });
-		else if(toupper(k) == 'V') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, 0.1f });
-		else if(toupper(k) == 'Q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
-		else if(toupper(k) == 'E') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
-		else if(toupper(k) == 'Z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
-		else if(toupper(k) == 'C') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
+	if(Topl_Program::isCamera_keys && isalpha(k)){
+		if(tolower(k) == 'w') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });
+		else if(tolower(k) == 's') Topl_Program::cameraObj.updatePos({ 0.0, -0.1F, 0.0 });
+		else if(tolower(k) == 'a') Topl_Program::cameraObj.updatePos({ -0.1F, 0.0, 0.0 });
+		else if(tolower(k) == 'd') Topl_Program::cameraObj.updatePos({ 0.1F, 0.0, 0.0 });
+		else if(tolower(k) == 'x') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, -0.1f });
+		else if(tolower(k) == 'v') Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, 0.1f });
+		else if(tolower(k) == 'q') Topl_Program::cameraObj.updateRot({ -0.1F, 0.0, 0.0 });
+		else if(tolower(k) == 'e') Topl_Program::cameraObj.updateRot({ 0.1F, 0.0, 0.0 });
+		else if(tolower(k) == 'z') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.1);
+		else if(tolower(k) == 'c') Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 0.9);
 #ifdef RASTERON_H
 		/* else if(k == ';'){
 			Rasteron_Image* frameImg = _renderer->frame();
-			writeFileImageRaw("Output.bmp", IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
+			writeFileImageRaw("Output", IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
 			RASTERON_DEALLOC(frameImg);
 		} */
 #endif

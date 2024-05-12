@@ -15,6 +15,10 @@
     // #include <ShellScalingApi.h>
     #include <Ole2.h>
 
+    #include <io.h> // for files
+    #define F_OK 0
+    #define access _access
+
     #include "resource.h"
 
     #define NATIVE_WINDOW HWND
@@ -37,6 +41,8 @@
 #elif defined(__linux__)
     #include<X11/X.h>
     #include<X11/Xlib.h>
+
+    #include <unistd.h> // for files
 
     #include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
 

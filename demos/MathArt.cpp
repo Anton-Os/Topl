@@ -59,7 +59,7 @@ void MathArt_Demo::init(){
     scene.addVolumeTex(boxActor.getName(), &volumeImg);
     scene.addVolumeTex(circleActor.getName(), &volumeImg);
 
-    flatVShader.setMode(1);
+    flatVShader.setMode(FLAT_MODE_COORD);
 
     // _renderer->setPipeline(texPipeline);
     _renderer->buildScene(&scene);

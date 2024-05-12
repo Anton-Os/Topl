@@ -382,7 +382,6 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 
 	// Rasetrizer State
 
-	VkPipelineRasterizationStateCreateInfo _rasterStateInfo = {};
 	_rasterStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	_rasterStateInfo.depthClampEnable = VK_FALSE;
 	_rasterStateInfo.rasterizerDiscardEnable = VK_FALSE;
@@ -447,47 +446,47 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 	_colorBlendInfo.blendConstants[2] = 0.0f;
 	_colorBlendInfo.blendConstants[3] = 0.0f;
 
-
-	// Command Pool and Command Buffers creation
-
+	// Command Pool Creation
+	
 	VkCommandPoolCreateInfo commandPoolInfo = {};
 	commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-	commandPoolInfo.flags = 0;
+	commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // 0;
 	commandPoolInfo.queueFamilyIndex = gSupportIdx;
 	
 	result = vkCreateCommandPool(_logicDevice, &commandPoolInfo, nullptr, &_commandPool);
 	if(result == VK_SUCCESS) logMessage("Command pool creation success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command pool creation failure! \n");
 
+	// Command Buffer Creation
+
 	VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
 	commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	commandBufferAllocInfo.pNext = NULL;
 	commandBufferAllocInfo.commandPool = _commandPool;
 	commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	commandBufferAllocInfo.commandBufferCount = imageCount;
+	commandBufferAllocInfo.commandBufferCount = 1; // imageCount;
 
-	_commandBuffers.resize(imageCount);
+	_commandBuffers.resize(1); // _commandBuffers.resize(imageCount);
 	result = vkAllocateCommandBuffers(_logicDevice, &commandBufferAllocInfo, _commandBuffers.data());
 	if(result == VK_SUCCESS) logMessage("Command buffers creation success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command buffers creation failure! \n");
 
 	// Command Buffer Execution
 
-	/* VkCommandBufferBeginInfo commandBufferInfo = {};
+	VkCommandBufferBeginInfo commandBufferInfo = {};
 	commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	commandBufferInfo.pNext = nullptr;
-	commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	commandBufferInfo.flags = 0; // VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 	commandBufferInfo.pInheritanceInfo = nullptr;
 
-	for(unsigned c = 0; c < _commandBuffers.size(); c++)
-		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
+	result = vkBeginCommandBuffer(_commandBuffers[0], &commandBufferInfo);
 	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
 	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
 
-	VkClearValue clearValues[2];
-	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-	VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
+	/* for(unsigned c = 0; c < _commandBuffers.size(); c++)
+		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
+	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
+	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
 	
 	VkRenderPassBeginInfo renderPassInfo;
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -516,6 +515,11 @@ Topl_Renderer_VK::~Topl_Renderer_VK() {
 }
 
 void Topl_Renderer_VK::clear(){
+	VkClearValue clearValues[2];
+	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+	VkRect2D screenRect = {{0, 0}, { _surfaceCaps.currentExtent.width, _surfaceCaps.currentExtent.height }};
+
 	// Implement clearing operation
 }
 
@@ -526,10 +530,12 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 	_viewport.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
 	_viewport.minDepth = 0.0f;
 	_viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(_commandBuffers[0], 0, 1, &_viewport);
 
 	_scissorRect.offset = { 0, 0 };
 	_scissorRect.extent.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
 	_scissorRect.extent.height = _surfaceCaps.currentExtent.height; // TODO: Adjust to viewport argument
+	vkCmdSetScissor(_commandBuffers[0], 0, 1, &_scissorRect);
 
 	_dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	_dynamicStateInfo.dynamicStateCount = 3;
@@ -578,9 +584,20 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
+	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	// TODO: Draw all relevant data
 	unsigned long renderID = _renderTargetMap[actor];
 	// if(renderID == SCENE_RENDERID) { }
-	// else {}
+	// else { vkCmdDraw(_commandBuffers[0], ...)}
+
+	vkCmdEndRenderPass(_commandBuffers[0]);
+	// TODO: Finish executing command buffer
 }
 
 #ifdef RASTERON_H

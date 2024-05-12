@@ -15,6 +15,8 @@
 typedef void (*resizeCallback)(unsigned, unsigned);
 typedef void (*fileCallback)(bool, const char*);
 
+bool checkFile(std::string fileName);
+
 struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;

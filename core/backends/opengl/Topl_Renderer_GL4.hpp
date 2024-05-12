@@ -58,7 +58,7 @@ public:
 		_flags[DRAW_ORDER_BIT] = DRAW_NORMAL;
 		init(window);
 
-		setViewport(&_defaultViewport); // viewport creation
+		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
 	}
 	~Topl_Renderer_GL4();

@@ -80,6 +80,7 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 	if (!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT] || _renderIDs == 0) return false;
 	else _flags[DRAWN_BIT] = false;
 
+	// setViewport(&_activeViewport);
 	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
 
     draw(SCENE_RENDERID); // render is scene block data

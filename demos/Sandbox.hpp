@@ -2,7 +2,6 @@
 #include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Orb.hpp"
-#include "meshes/Geo_Parametric.hpp"
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
@@ -12,10 +11,10 @@
 
 #define SCENEMODE_ADD 0
 #define SCENEMODE_PAN 1
-#define SCENEMODE_SELECT 2
-#define SCENEMODE_PAINT 3
-#define SCENEMODE_DEL 4
-#define SCENEMODE_SETTINGS 5
+#define SCENEMODE_SETTINGS 2
+#define SCENEMODE_SELECT 3
+#define SCENEMODE_PAINT 4
+#define SCENEMODE_DEL 5
 
 #define PICKMODE_MOVE 0
 #define PICKMODE_ROTATE 1
@@ -38,6 +37,8 @@ struct Sandbox_Demo : public Topl_Program {
     static Vec3f texScroll;
     static std::string fontFilePath;
 
+    Topl_Scene* getScene(){ return &scene; }
+
     Geo_Quad2D canvasMesh = Geo_Quad2D(10000.0);
     Geo_Actor canvasActor = Geo_Actor(&canvasMesh);
 
@@ -49,19 +50,17 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
     Geo_HexCone hexMesh = Geo_HexCone();
     Geo_Actor hexActor = Geo_Actor(&hexMesh);
-    Geo_ParametricSet paramMesh = Geo_ParametricSet({
+    Geo_Mesh paramMesh = Geo_Mesh({
         { 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
         { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
         { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
         { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
-    }); // basic constructor
+    });
     Geo_Actor paramActor = Geo_Actor(&paramMesh);
-    Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15);
-    Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
-    Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15);
-    Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
-    Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15);
-    Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
+    Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15); Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
+    Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15); Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
+    Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15); Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
+    Geo_Quad2D inputInfoMesh = Geo_Quad2D(0.15); Geo_Actor inputInfoActor = Geo_Actor(&inputInfoMesh);
     Geo_Listboard dropMenuLayout = Geo_Listboard("dropMenuLayout", 6);
     Geo_Listboard expandMenuLayout = Geo_Listboard("expandMenuLayout", 6);
     Geo_Paneboard timelineLayout = Geo_Paneboard("timelineLayout");
@@ -80,6 +79,7 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Base timerInfo_texture = Img_Base(0xFFFFFF00);
     Img_Base pickerInfo_texture = Img_Base(0xFFFFFF00);
     Img_Base sceneInfo_texture = Img_Base(0xFFFFFF00);
+    Img_Base inputInfo_texture = Img_Base(0xFFFFFF00);
     Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg, *paramImg;
     Img_Base boxTex, pyramidTex, sphereTex, hexTex, paramTex;
 
@@ -92,13 +92,14 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Base expandMenuBtns[6] = { Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE) };
     std::string defaultFontPath = std::string(FONTS_DIR) + "TW-Cen-MT.ttf";
     Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
+    Rasteron_Text inputTextObj = { defaultFontPath.c_str(), "", 0xFFEEEEEE, 0xFF111111 }; // begins with blank underline
     Img_Label dropLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
     Img_Label expandLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
     Img_Base propsRoot = Img_Base(0xFF666666);
     Img_Base propsPane = Img_Base(0xAAEEEEEE);
     Img_Button scenePropBtns[6] = {
-        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "pan_tool"), Img_Button(MENU_Medium, "gps_fixed"),
-        Img_Button(MENU_Medium, "palette"), Img_Button(MENU_Medium, "highlight_off"), Img_Button(MENU_Medium, "tune"),
+        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "remove_red_eye"), Img_Button(MENU_Medium, "tune"),
+        Img_Button(MENU_Medium, "gps_fixed"), Img_Button(MENU_Medium, "palette"), Img_Button(MENU_Medium, "highlight_off")
     };
     Img_Button pickerPropBtns[6] = {
         Img_Button(MENU_Medium, "open_with"), Img_Button(MENU_Medium, "loop"), Img_Button(MENU_Medium, "zoom_out_map"),

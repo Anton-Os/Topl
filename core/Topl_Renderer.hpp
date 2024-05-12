@@ -138,7 +138,7 @@ protected:
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by userunsigned int numThreads = std::thread::hardware_concurrency();
-    Topl_Viewport _defaultViewport = Topl_Viewport();
+    Topl_Viewport _activeViewport = Topl_Viewport();
 
 	Img_Base _frameImage; // internal frame container
 private:

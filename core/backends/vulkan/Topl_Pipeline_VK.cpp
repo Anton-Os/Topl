@@ -48,6 +48,7 @@ namespace VK {
 void Topl_Renderer_VK::setPipeline(Topl_Pipeline_VK* pipeline){
 	_pipeline = pipeline;
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
+	vkCmdBindPipeline(_commandBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->pipeline);
 }
 
 void Topl_Renderer_VK::genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
