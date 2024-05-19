@@ -11,14 +11,7 @@
 #define PILLAR_SIZE 1.0F
 
 struct FirstPerson_Demo : public Topl_Program {
-    FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
-        // flatVShader.setMode(2);
-        flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
-        // texVShader.setMode(0);
-        texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
-        // beamsVShader.setMode(0);
-        beamsPipeline = Topl_Factory::genPipeline(backend, &beamsVShader, &beamsPShader);
-    }
+    FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){}
 
     void init() override;
     void loop(double frameTime) override;
@@ -53,9 +46,4 @@ struct FirstPerson_Demo : public Topl_Program {
     };
 private:
     Topl_Scene scene2D, scene3D;
-
-    Topl_Pipeline *flatPipeline, *texPipeline, *beamsPipeline;
-    Flat_VertexShader_GL4 flatVShader; Flat_PixelShader_GL4 flatPShader;
-    Textured_VertexShader_GL4 texVShader; Textured_PixelShader_GL4 texPShader;
-    Beams_VertexShader_GL4 beamsVShader; Beams_PixelShader_GL4 beamsPShader;
 } *_DEMO;

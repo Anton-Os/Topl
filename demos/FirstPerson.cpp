@@ -18,6 +18,8 @@ void FirstPerson_Demo::init(){
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
 
+    _renderer->setPipeline(_texPipeline);
+
     floor.setPos({ 0.0F, -3.0F, 0.0F});
     floor.setSize({ FLOOR_SIZE, 1.0F, FLOOR_SIZE });
     floor.setRot({ 0.0F, MATH_HALF_PI, 0.0F });
@@ -65,10 +67,10 @@ void FirstPerson_Demo::init(){
 void FirstPerson_Demo::loop(double frameTime){
     
     {
-        // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (_renderer->getFrameCount() % 60 < 30)? flatPipeline : beamsPipeline);
-        // flatVShader.setMode((_renderer->getFrameCount() % 30 < 15)? 0 : 1);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, beamsPipeline);
-        // beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
+        // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (_renderer->getFrameCount() % 60 < 30)? _flatPipeline : _beamsPipeline);
+        // _flatVShader.setMode((_renderer->getFrameCount() % 30 < 15)? 0 : 1);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _beamsPipeline);
+        // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 
         models[0].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
         models[1].rotateAll({ 0.0, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
@@ -93,7 +95,7 @@ void FirstPerson_Demo::loop(double frameTime){
         scene2D.resolvePhysics();
 #endif
 
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, texPipeline);
+        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _texPipeline);
         _renderer->setDrawMode(DRAW_Triangles);
 
         _renderer->updateScene(&scene2D);

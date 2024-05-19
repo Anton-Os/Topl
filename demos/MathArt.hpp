@@ -7,11 +7,7 @@
 #define MATHART_SLICES 256
 
 struct MathArt_Demo : public Topl_Program {
-    MathArt_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "MathArt", backend){
-        texPipeline = Topl_Factory::genPipeline(backend, &texVShader, &texPShader);
-        flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
-        // effectPipeline = Topl_Factory::genPipeline(backend, &effectVShader, &effectPShader);
-    }
+    MathArt_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "MathArt", backend){}
 
     void init() override;
     void loop(double frameTime) override;
@@ -32,12 +28,4 @@ struct MathArt_Demo : public Topl_Program {
 private:
     Topl_Scene scene;
     Topl_Scene targetScene;
-
-    Topl_Pipeline* texPipeline;
-    Topl_Pipeline* flatPipeline;
-    Topl_Pipeline* effectPipeline;
-
-    Textured_VertexShader_DX11 texVShader; Flat_PixelShader_DX11 texPShader;
-    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
-    Effect_VertexShader_DX11 effectVShader; Effect_PixelShader_DX11 effectPShader;
 } *_DEMO;

@@ -59,9 +59,9 @@ void MathArt_Demo::init(){
     scene.addVolumeTex(boxActor.getName(), &volumeImg);
     scene.addVolumeTex(circleActor.getName(), &volumeImg);
 
-    flatVShader.setMode(FLAT_MODE_COORD);
+    _flatVShader.setMode(FLAT_MODE_COORD);
 
-    // _renderer->setPipeline(texPipeline);
+    _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
     _renderer->texturizeScene(&scene);
 }
@@ -82,7 +82,7 @@ void MathArt_Demo::loop(double frameTime){
         isRebuildReq = false;
     }
 
-    // texVShader.setMode(TEX_MODE_VOLUME);
+    // _texVShader.setMode(TEX_MODE_VOLUME);
     // _renderer->setPipeline(texPipeline);
 
     if(targetScene.getActorCount() > 0){

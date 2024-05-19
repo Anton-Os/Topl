@@ -37,7 +37,7 @@ struct Img_Button : public Img_UI {
 
 struct Img_Label : public Img_UI {
 	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
-		queue = RASTERON_QUEUE_ALLOC("label", createImgSize(10, 100), 4);
+		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(10, 100), 4);
 		setText(textObj);
 		// Img_UI::setState(0);
 	}

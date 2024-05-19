@@ -99,6 +99,7 @@ private:
 	VkRenderPass _renderPass;
 	VkPipelineLayout _pipelineLayout;
 	VkCommandPool _commandPool;
+	VkCommandBufferBeginInfo _commandBufferInfo = {};
 	std::vector<VkCommandBuffer> _commandBuffers = {};
 	VkViewport _viewport;
 	VkPipelineViewportStateCreateInfo _viewportStateInfo = {};

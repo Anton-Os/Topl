@@ -23,6 +23,7 @@ void Entropy_Demo::init(){
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);
 
+    _renderer->setPipeline(_flatPipeline);
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         switch(a % 4){
             case 0: actors[a] = Geo_Actor(&triangles[a / 4]); break;
@@ -48,6 +49,7 @@ void Entropy_Demo::init(){
 
         spawnScene.addGeometry("Spawn" + std::to_string(s), &spawnActors[s]);
     }
+
     _renderer->buildScene(&spawnScene);
 }
 
@@ -66,7 +68,7 @@ void Entropy_Demo::loop(double frameTime){
 // #endif
     }
 
-    flatVShader.setMode(-4);
+    _flatVShader.setMode(-4);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
     _renderer->clear();

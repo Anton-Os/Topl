@@ -41,6 +41,7 @@ public:
 			v++;
 		}
 	}
+	// TODO: Copy constructor
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)

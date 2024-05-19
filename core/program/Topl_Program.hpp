@@ -79,10 +79,14 @@ protected:
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 
-	// TODO: Add actors and other data that may be needed
-	Topl_Scene _mainScene, _overlayScene, _extrasScene;
+	std::map<std::string, Topl_Scene> _scenes_map; // for custom scenes
+	std::map<Geo_Actor*, Vec3f> _positions_map, _rotations_map, _scales_map; // for dynamic orientation changes
+#ifdef RASTERON_H
+	std::map<Img_Base*, std::pair<Rasteron_Queue*, unsigned short>> _images_map; // for dynamic texture changes
+#endif
 
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline; // for easy reuse
+
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;

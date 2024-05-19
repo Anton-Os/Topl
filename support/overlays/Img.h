@@ -41,7 +41,7 @@ struct Img_Base : public Img {
     }
     void setTextImage(Rasteron_Text* textObj){
 		refresh();
-		image = textImgOp(textObj, FONT_SIZE_MED);
+		image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
     }
     void setImage(ref_image_t refImage){
 		refresh();
@@ -62,6 +62,8 @@ private:
 	}
 
     Rasteron_Image* image = NULL; // underlying queue
+
+	unsigned short textPadding[4] = { 0, 0, 0, 0 };
 #endif
 };
 
@@ -76,8 +78,8 @@ struct Img_Array : public Img {
 #ifndef RASTERON_H
 	Img_Array(){}
 #else
-	Img_Array() : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", createImgSize(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), 8); }
-	Img_Array(unsigned short count) : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", createImgSize(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), count); }
+	Img_Array() : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), 8); }
+	Img_Array(unsigned short count) : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), count); }
 
     // void addImg();
 	Rasteron_Queue* getQueue() const { return queue; } // change this?
@@ -99,11 +101,11 @@ struct Img_Volume : public Img {
     Img_Volume() : width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH), Img() {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img() { // Matching Lengths
-		queue = RASTERON_QUEUE_ALLOC("volumeTex", createImgSize(height, width), depth);
+		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
     Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img() { // Custom Lengths
-		queue = RASTERON_QUEUE_ALLOC("volumeTex", createImgSize(height, width), depth);
+		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
 	// Img_Volume(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)

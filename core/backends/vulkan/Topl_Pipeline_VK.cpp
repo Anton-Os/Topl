@@ -48,7 +48,10 @@ namespace VK {
 void Topl_Renderer_VK::setPipeline(Topl_Pipeline_VK* pipeline){
 	_pipeline = pipeline;
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
+
+	if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 	vkCmdBindPipeline(_commandBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->pipeline);
+	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
 void Topl_Renderer_VK::genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){

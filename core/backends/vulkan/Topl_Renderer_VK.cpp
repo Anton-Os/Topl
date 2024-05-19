@@ -473,15 +473,14 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 
 	// Command Buffer Execution
 
-	VkCommandBufferBeginInfo commandBufferInfo = {};
-	commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	commandBufferInfo.pNext = nullptr;
-	commandBufferInfo.flags = 0; // VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	commandBufferInfo.pInheritanceInfo = nullptr;
+	_commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	_commandBufferInfo.pNext = nullptr;
+	_commandBufferInfo.flags = 0; // VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	_commandBufferInfo.pInheritanceInfo = nullptr;
 
-	result = vkBeginCommandBuffer(_commandBuffers[0], &commandBufferInfo);
+	/* result = vkBeginCommandBuffer(_commandBuffers[0], &commandBufferInfo);
 	if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
-	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
+	else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n"); */
 
 	/* for(unsigned c = 0; c < _commandBuffers.size(); c++)
 		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
@@ -524,6 +523,8 @@ void Topl_Renderer_VK::clear(){
 }
 
 void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
+	if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+
 	_viewport.x = 0;
 	_viewport.y = 0;
 	_viewport.width = _surfaceCaps.currentExtent.width; // TODO: Adjust to viewport argument
@@ -546,6 +547,8 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 	_viewportStateInfo.pViewports = &_viewport;
 	_viewportStateInfo.scissorCount = 1;
 	_viewportStateInfo.pScissors = &_scissorRect;
+
+	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
@@ -584,6 +587,8 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+	if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
@@ -598,6 +603,8 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 
 	vkCmdEndRenderPass(_commandBuffers[0]);
 	// TODO: Finish executing command buffer
+
+	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
 #ifdef RASTERON_H

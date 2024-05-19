@@ -112,6 +112,7 @@ private:
 	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
 #endif
 #ifdef RASTERON_H
+	Img_Base _textures[MAX_TEX_BINDINGS] = { Img_Base(0xFF0000FF), Img_Base(0xFF00FF00), Img_Base(0xFFFF0000), Img_Base(0xFF00FFFF), Img_Base(0xFFFF00FF), Img_Base(0xFFFFFF00), Img_Base(0xAAEEEEEE), Img_Base(0xAA333333) };
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order

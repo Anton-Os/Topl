@@ -72,8 +72,12 @@ public:
 	unsigned short getInputCount() const { return _inputs.size(); }
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+		static Timer_Dynamic dynamic_ticker = Timer_Dynamic(0.0);
+		double timeElapse = dynamic_ticker.getAbsSecs();
+
 		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
+		// appendDataToBytes((uint8_t*)&timeElapse, sizeof(double), bytes); // TODO: Uncomment this
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getPos() : &_defaultVec), sizeof(Vec3f), 0, bytes);
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getZoom() : &_defaultScalar), sizeof(float), 0, bytes);
 		appendDataToBytes((uint8_t*)((camera != nullptr)? camera->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
@@ -81,6 +85,7 @@ public:
 	}
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
+		// TODO: Else trigger function to reset actor dependent data
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);

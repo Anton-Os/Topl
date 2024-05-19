@@ -87,20 +87,20 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 	if(_backend == BACKEND_GL4){
 		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
-		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
+		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 	}
 	else if(_backend == BACKEND_DX11){
 		_texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
 		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
-		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
-		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();	
+		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
+		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();	
 	}
 
-	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
 	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
-	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
+	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
+	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
 
 	// Imaging Initialization
 
@@ -151,6 +151,11 @@ void Topl_Program::run(){
 
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
+	/* _flatVShader.setMode(FLAT_MODE_SOLID);
+	_renderer->setCamera(&Topl_Program::cameraObj);
+	_renderer->updateScene(scene);
+	_renderer->drawScene(scene); */
+
 	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	if((Topl_Program::pickerColor & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
 		Topl_Program::pickerObj = nullptr;
@@ -164,16 +169,27 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 			}
 		} 
 	}
+
+	// _renderer->clear();
+
 	return Topl_Program::pickerColor;
 }
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
+	/* _flatVShader.setMode(FLAT_MODE_COORD);
+	_renderer->setCamera(&Topl_Program::cameraObj);
+	_renderer->updateScene(scene);
+	_renderer->drawScene(scene); */
+
 	unsigned color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	Topl_Program::pickerCoord = Vec3f{
 		((color & 0xFF0000) >> 16) / 255.0f,
 		((color & 0xFF00) >> 8) / 255.0f, 
 		(color & 0xFF) / 255.0f,  
 	};
+
+	// _renderer->clear();
+
 	return Topl_Program::pickerCoord;
 }
 #endif

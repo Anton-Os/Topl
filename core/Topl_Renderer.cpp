@@ -117,7 +117,13 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 		actor_cptr actor = scene->getGeoActor(g);
 		unsigned renderID = getRenderID(actor);
 
-		if(actor != nullptr && renderID != INVALID_RENDERID){
+		for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
+			const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
+			if(texture != nullptr) attachTexAt(texture->getImage(), SCENE_RENDERID, t); // TODO: Uncomment this
+		}
+
+
+		if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
 			const Img_Base* texture = scene->getTexture(actor->getName());
 			if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
 

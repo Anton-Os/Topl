@@ -2,6 +2,7 @@
 #include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Orb.hpp"
+#include "meshes/Geo_Iterable.hpp"
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Grid.hpp"
@@ -39,7 +40,7 @@ struct Sandbox_Demo : public Topl_Program {
 
     Topl_Scene* getScene(){ return &scene; }
 
-    Geo_Quad2D canvasMesh = Geo_Quad2D(10000.0);
+    Geo_Quad2D canvasMesh = Geo_Quad2D(2.0);
     Geo_Actor canvasActor = Geo_Actor(&canvasMesh);
 
     Geo_Quad3D boxMesh = Geo_Quad3D();
@@ -53,10 +54,14 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Mesh paramMesh = Geo_Mesh({
         { 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
         { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
-        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f }, 
+        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f },
         { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
     });
+    Geo_TessIter tessMesh = Geo_TessIter(&paramMesh, 1);
+    Geo_DuplexIter duplexMesh = Geo_DuplexIter(&paramMesh);
     Geo_Actor paramActor = Geo_Actor(&paramMesh);
+    Geo_Actor tessActor = Geo_Actor(&tessMesh);
+    Geo_Actor duplexActor = Geo_Actor(&duplexMesh);
     Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15); Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
     Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15); Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
     Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15); Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
@@ -90,7 +95,7 @@ struct Sandbox_Demo : public Topl_Program {
     Img_Slider timelineSlider = Img_Slider(MENU_XL, 60); Img_Base timelineTex = Img_Base(timelineSlider.stateImg.getImage());
     Img_Base dropMenuBtns[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
     Img_Base expandMenuBtns[6] = { Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE) };
-    std::string defaultFontPath = std::string(FONTS_DIR) + "TW-Cen-MT.ttf";
+    std::string defaultFontPath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
     Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
     Rasteron_Text inputTextObj = { defaultFontPath.c_str(), "", 0xFFEEEEEE, 0xFF111111 }; // begins with blank underline
     Img_Label dropLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
@@ -110,7 +115,7 @@ struct Sandbox_Demo : public Topl_Program {
     };
     // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
     Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
-    Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", createImgSize(64, 512), 9);
+    Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", RASTERON_SIZE(64, 512), 9);
     Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
 #endif
 private:
@@ -118,6 +123,9 @@ private:
     Topl_Scene scene; // for main elements
     Topl_Scene overlay; // for gui elements
     Topl_Scene details; // for details elements
+
+    void addSceneGeometry(Geo_Actor* actor);
+    // TODO: Add other functions especially for GUI functionality
 
     Topl_Camera fixedCamera;
 } *_DEMO; // USE _DEMO OBJECT FOR DEMO
