@@ -1,14 +1,11 @@
+#include "Common.hlsl"
+
 // Values
 
 float3 positions[3] = {
     float3(0.0, -0.5, 0.0),
     float3(0.5, 0.5, 0.0),
     float3(-0.5, 0.5, 0.0)
-};
-
-struct VS_INPUT {
-	float4 pos : POSITION;
-	float2 texcoord : TEXCOORD;
 };
 
 struct VS_OUTPUT { float4 pos : SV_POSITION; };

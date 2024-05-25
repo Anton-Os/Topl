@@ -40,18 +40,40 @@ public:
 	Topl_Shader() {} // Blank Constructor
 	Topl_Shader(enum SHDR_Type type,std::string fileSrc) { // Filename Constructor
 		_shaderType = type;
-		_shaderFileSrc = fileSrc;
-		_shaderFileSrc = SHADERS_DIR + fileSrc;
-		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+		_shaderFilePath = fileSrc;
+		_shaderFilePath = SHADERS_DIR + fileSrc;
+		std::replace(_shaderFilePath.begin(), _shaderFilePath.end(), '/', '\\');
 	}
 	enum SHDR_Type getType() const { return _shaderType; }
-	const char* getFilePath() const { return _shaderFileSrc.c_str(); }
+	std::string getFilePath() const { return _shaderFilePath; }
+	std::string getFileSource() const {
+		std::string shaderSrc = readFile(_shaderFilePath.c_str());
+
+		unsigned short startOffset = 0, includeOffset = 0;
+		while(shaderSrc.find("#include", includeOffset) != std::string::npos){
+			startOffset = shaderSrc.find("#include", includeOffset);
+			includeOffset += startOffset + 10; // location of include after the space
+
+			std::string includeFilePath = "";
+			while(shaderSrc[includeOffset] != '\n' && shaderSrc[includeOffset] != '\0'){
+				if(shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != ';') includeFilePath += shaderSrc[includeOffset];
+				includeOffset++;
+			}
+
+			if(includeFilePath.substr(includeFilePath.size() - 4) == "glsl") includeFilePath = SHADERS_DIR + genPrefix_glsl() + includeFilePath;
+			else if(includeFilePath.substr(includeFilePath.size() - 4) == "hlsl") includeFilePath = SHADERS_DIR + genPrefix_hlsl() + includeFilePath;
+
+			std::string includeSrc = readFile(includeFilePath.c_str());
+			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);
+		}
+		return shaderSrc;
+	}
 protected:
 	enum SHDR_Type _shaderType;
-	std::string _shaderFileSrc; // make into const type!
+	std::string _shaderFilePath; // make into const type!
 
-	std::string genPrefix_glsl() { return "glsl/"; }
-	std::string genPrefix_hlsl() { return "hlsl/"; }
+	std::string genPrefix_glsl() const { return "glsl/"; }
+	std::string genPrefix_hlsl() const { return "hlsl/"; }
 };
 
 // Entry shader contains inputs and functionality to pass uniform blocks

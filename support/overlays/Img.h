@@ -48,7 +48,7 @@ struct Img_Base : public Img {
         image = copyImgOp(refImage);
     }
     Rasteron_Image* getImage() const { return image; }
-private:
+protected:
 	void refresh() {
 		cleanup();
 		setRefresh(true);
@@ -62,8 +62,35 @@ private:
 	}
 
     Rasteron_Image* image = NULL; // underlying queue
+#endif
+};
 
-	unsigned short textPadding[4] = { 0, 0, 0, 0 };
+struct Img_Txt : public Img_Base {
+	Img_Txt() : Img_Base(){} // Empty Constructor
+#ifdef RASTERON_H
+	Img_Txt(Rasteron_Text* text) : Img_Base(){
+		textObj = text;
+		image = textImgOp(textObj, size);
+	}
+	/* Img_Txt(Rasteron_Text* text, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
+		textObj = text;
+		leftPad = l; rightPad = r;
+		topPad = t; botPad = b;
+
+		unsigned short paddings[4] = { l, r, t, b };
+		image = textPadImgOp(textObj, size, paddings);
+	} */
+
+	// void setStr(std::string textStr);
+	// void setFontFile(std::string fontStr);
+	// void setColors(unsigned fgColor, unsigned bkColor);
+
+	unsigned short size = FONT_SIZE_MED;
+
+	unsigned short leftPad = 0; unsigned short rightPad = 0;
+	unsigned short topPad = 0; unsigned short botPad = 0;
+protected:
+	Rasteron_Text* textObj;
 #endif
 };
 

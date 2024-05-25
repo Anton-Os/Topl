@@ -49,13 +49,13 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	// Vertex Shader
 
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	std::string vertexShaderSrc = vertexShader->getFileSource();
 	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
-	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
+	std::string fragShaderSrc = pixelShader->getFileSource();
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
@@ -85,20 +85,20 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	// Vertex Shader
 
-	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
+	std::string vertexShaderSrc = vertexShader->getFileSource();
 	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
-	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
+	std::string fragShaderSrc = pixelShader->getFileSource();
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
 	// Geometry Shader
 
 	if (geomShader != nullptr) { // optional stage
-		std::string geomShaderSrc = readFile(geomShader->getFilePath());
+		std::string geomShaderSrc = readFile(geomShader->getFilePath().c_str());
 		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
 		if(pipeline->geomShader == 0) pipeline->isReady = false;
 	}
@@ -106,7 +106,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Tess. Control Shader
 
 	if(tessCtrlShader != nullptr){ // optional stage
-		std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath());
+		std::string tessCtrlShaderSrc = tessCtrlShader->getFileSource();
 		pipeline->tessCtrlShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
 		if(pipeline->tessCtrlShader == 0) pipeline->isReady = false;
 	}
@@ -114,7 +114,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Tess. Evaluation Shader
 
 	if(tessEvalShader != nullptr){ // optional stage
-		std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath());
+		std::string tessEvalShaderSrc = tessEvalShader->getFileSource();
 		pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
 		if(pipeline->tessEvalShader == 0) pipeline->isReady = false;
 	}

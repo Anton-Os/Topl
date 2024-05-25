@@ -155,15 +155,12 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 }
 
 void Topl_Factory::switchPipeline(BACKEND_Target backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline) {
-	if (backend == BACKEND_GL4)
-		((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
+	if (backend == BACKEND_GL4) ((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
 #ifdef _WIN32
-	else if (backend == BACKEND_DX11)
-		((Topl_Renderer_DX11*)renderer)->setPipeline((Topl_Pipeline_DX11*)pipeline);
+	else if (backend == BACKEND_DX11) ((Topl_Renderer_DX11*)renderer)->setPipeline((Topl_Pipeline_DX11*)pipeline);
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	else if (backend == BACKEND_VK)
-		((Topl_Renderer_VK*)renderer)->setPipeline((Topl_Pipeline_VK*)pipeline);
+	else if (backend == BACKEND_VK) ((Topl_Renderer_VK*)renderer)->setPipeline((Topl_Pipeline_VK*)pipeline);
 #endif
-	else return; // Error
+	else return logMessage(MESSAGE_Exclaim, "Invalid Backend"); // Error
 }

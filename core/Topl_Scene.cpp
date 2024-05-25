@@ -57,6 +57,8 @@ void Topl_Scene::removeActor(const std::string& name){
 
 void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 	// if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
+	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+		_textures[(char)name[0] - '0' - 1].setImage(image->getImage());
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_textureMap.erase(*actor);
