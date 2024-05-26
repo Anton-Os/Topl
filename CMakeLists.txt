@@ -7,9 +7,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-set(IS_TRUE 1)
-set(IS_FALSE 0)
-
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/" )
@@ -20,8 +17,8 @@ if(WIN32)
     # set(RESOURCE_ICON "${RESOURCE_DIR}/TOPL.ico" CACHE FILEPATH "Icon (.ico) file")
 endif()
 
-set(SUPPORT_TEXTURES ${IS_TRUE} CACHE INT "Include texturing" FORCE)
-set(SUPPORT_PHYSICS ${IS_TRUE} CACHE INT "Include physics calculations" FORCE)
+set(SUPPORT_TEXTURES TRUE CACHE BOOL "Include texturing" FORCE)
+set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
 set(SUPPORT_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
 # set(SUPPORT_AUDIO ON CAHCE BOOL "Include audio support" FORCE)
 # set(SUPPORT_SAVES ON CACHE BOOL "Include custom saves" FORCE)
@@ -38,6 +35,7 @@ endif()
 include("cmake/internalTargets.cmake") # For building core and geometry libraries
 include("cmake/engineTargets.cmake") # For building engine specific libraries
 include("cmake/shaderTargets.cmake") # For copying and compiling shaders
+include ("cmake/resourceTargets.cmake") # For generating assets compile-time
 include("cmake/installTargets.cmake") # For installation procedures
 
 # ------------- Demos and Tests ------------- #

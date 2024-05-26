@@ -1,3 +1,5 @@
+set(Topl_DIR "${CMAKE_INTALL_PREFIX}/lib/Topl")
+
 install(TARGETS CORELIB GEOLIB ${engine_targets}
     EXPORT Topl
     RUNTIME DESTINATION bin

@@ -5,6 +5,9 @@
 #define RESOURCE_DIR "${ASSETS_DIR}res/"
 #define SHADERS_DIR "${SHADERS_DIR}"
 
+#define TRUE 1
+#define FALSE 0
+
 #if ${Vulkan_FOUND}
     #define TOPL_ENABLE_VULKAN
 #endif

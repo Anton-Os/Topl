@@ -5,6 +5,9 @@
 #define RESOURCE_DIR "F:/Codex/PROJECT/Topl/master/assets/res/"
 #define SHADERS_DIR "F:/Codex/PROJECT/Topl/master/shaders/"
 
+#define TRUE 1
+#define FALSE 0
+
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
@@ -21,6 +24,6 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
 #endif
-#if 1
+#if TRUE
     #define TOPL_ENABLE_PHYSICS
 #endif

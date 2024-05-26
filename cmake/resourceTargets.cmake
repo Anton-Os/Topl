@@ -10,9 +10,9 @@ file(GLOB image_assets ${ASSETS_DIR}/images/*.png ${ASSETS_DIR}/images/*.bmp ${A
 if(Rasteron_FOUND)
     message(STATUS "Performing batch texture and image generation...")
 
-    find_file(texTool_exec "texTool" "texTool.exe" PATHS "${CMAKE_INSTALL_DIR}/bin")
-    find_file(drawTool_exec "drawTool" "drawTool.exe" PATHS "${CMAKE_INSTALL_DIR}/bin")
-    find_file(simTool_exec "simTool" "simTool.exe" PATHS "${CMAKE_INSTALL_DIR}/bin")
+    find_file(texTool_exec "texTool" "texTool.exe" PATHS "${Rasteron_Install_Path}/bin")
+    find_file(drawTool_exec "drawTool" "drawTool.exe" PATHS "${Rasteron_Install_Path}/bin")
+    find_file(simTool_exec "simTool" "simTool.exe" PATHS "${Rasteron_Install_Path}/bin")
 
     # TODO: Dynamically generate textures
 endif()
