@@ -1,16 +1,17 @@
 include(ExternalProject)
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
-if(NOT Rasteron_Install_Path)
-    set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
-endif()
+if(SUPPORT_TEXTURES)
+    if(NOT Rasteron_Install_Path)
+        set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
+    endif()
 
-find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
-if(Rasteron_FOUND)
-    include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
-    message(STATUS "Rasteron loading success!")
-else()
-    message(WARNING "Texturing and Image modules cannot load! Build and install Rasteron submodule and point Rasteron_Install_Path variable to the Rasteron install directory")
+    find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
+    if(Rasteron_FOUND)
+        include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
+        message(STATUS "Rasteron loading success!")
+    else()
+        message(WARNING "Texturing and Image modules cannot load! Build and install Rasteron submodule and point Rasteron_Install_Path variable to the Rasteron install directory")
+    endif()
 endif()
 
 #TODO: Build Rasteron from Submodle or from Git if detected
@@ -27,7 +28,6 @@ ExternalProject_Add(GLEW
 
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
-set(SUPPORT_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
 if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
         GIT_REPOSITORY "https://github.com/assimp/assimp.git"
