@@ -97,7 +97,7 @@ void MathArt_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new MathArt_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new MathArt_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

@@ -133,14 +133,19 @@ void Topl_Program::run(){
     while (true) {
 		if(!Topl_Program::timeline.dynamic_ticker.isPaused)
 			Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
+		{
+			for(auto p = _positions_map.begin(); p != _positions_map.end(); p++) p->first->setPos(p->second);
+			for(auto r = _rotations_map.begin(); r != _rotations_map.end(); r++) r->first->setRot(r->second);
+			for(auto s = _scales_map.begin(); s != _scales_map.end(); s++) s->first->setSize(s->second);
+		}
 
 		_renderer->clear(); // clears view to solid color
 		loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
 		_renderer->present(); // switches front and back buffers
 #ifdef RASTERON_H
-		Img_Base frameImg = _renderer->frame();
+		/* Img_Base frameImg = _renderer->frame();
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
-		RASTERON_DEALLOC(frameImg.getImage());
+		RASTERON_DEALLOC(frameImg.getImage()); */
 #endif
 		_platform->handleEvents();
 	}
@@ -151,10 +156,10 @@ void Topl_Program::run(){
 
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
-	/* _flatVShader.setMode(FLAT_MODE_SOLID);
+	_flatVShader.setMode(FLAT_MODE_SOLID);
 	_renderer->setCamera(&Topl_Program::cameraObj);
 	_renderer->updateScene(scene);
-	_renderer->drawScene(scene); */
+	_renderer->drawScene(scene);
 
 	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	if((Topl_Program::pickerColor & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
@@ -170,16 +175,16 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 		} 
 	}
 
-	// _renderer->clear();
+	_renderer->clear();
 
 	return Topl_Program::pickerColor;
 }
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
-	/* _flatVShader.setMode(FLAT_MODE_COORD);
+ 	_flatVShader.setMode(FLAT_MODE_COORD);
 	_renderer->setCamera(&Topl_Program::cameraObj);
 	_renderer->updateScene(scene);
-	_renderer->drawScene(scene); */
+	_renderer->drawScene(scene);
 
 	unsigned color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	Topl_Program::pickerCoord = Vec3f{
@@ -188,7 +193,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 		(color & 0xFF) / 255.0f,  
 	};
 
-	// _renderer->clear();
+	_renderer->clear();
 
 	return Topl_Program::pickerCoord;
 }

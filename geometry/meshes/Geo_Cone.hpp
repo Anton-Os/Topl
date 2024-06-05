@@ -19,10 +19,10 @@ private:
 	Vec3f _apex;
 };
 
-struct Geo_TriangleCone : public Geo_Cone {
-	Geo_TriangleCone() : Geo_Cone({ 1.0, 3 }) {}
-	Geo_TriangleCone(float radius) : Geo_Cone({ radius, 3 }) {}
-	Geo_TriangleCone(float radius, Vec3f apex) : Geo_Cone({ radius, 3 }, apex) {}
+struct Geo_TrigCone : public Geo_Cone {
+	Geo_TrigCone() : Geo_Cone({ 1.0, 3 }) {}
+	Geo_TrigCone(float radius) : Geo_Cone({ radius, 3 }) {}
+	Geo_TrigCone(float radius, Vec3f apex) : Geo_Cone({ radius, 3 }, apex) {}
 };
 
 struct Geo_QuadCone : public Geo_Cone { // Pyramid

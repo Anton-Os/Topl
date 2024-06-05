@@ -69,7 +69,7 @@ void FirstPerson_Demo::loop(double frameTime){
     {
         // Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, (_renderer->getFrameCount() % 60 < 30)? _flatPipeline : _beamsPipeline);
         // _flatVShader.setMode((_renderer->getFrameCount() % 30 < 15)? 0 : 1);
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _beamsPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, _beamsPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 
         models[0].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
@@ -95,7 +95,7 @@ void FirstPerson_Demo::loop(double frameTime){
         scene2D.resolvePhysics();
 #endif
 
-        Topl_Factory::switchPipeline(BACKEND_GL4, _renderer, _texPipeline);
+        Topl_Factory::switchPipeline(BACKEND_DX11, _renderer, _texPipeline);
         _renderer->setDrawMode(DRAW_Triangles);
 
         _renderer->updateScene(&scene2D);
@@ -104,7 +104,7 @@ void FirstPerson_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new FirstPerson_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new FirstPerson_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

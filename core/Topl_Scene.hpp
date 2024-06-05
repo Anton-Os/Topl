@@ -10,8 +10,8 @@
 
 #include "Geo_Actor.hpp"
 
-#include "overlays/Img.h"
-#include "overlays/Img_UI.h"
+#include "images/Img.h"
+#include "images/Img_UI.h"
 
 #ifdef TOPL_ENABLE_PHYSICS
 #include "physics/Phys_Actor.h"

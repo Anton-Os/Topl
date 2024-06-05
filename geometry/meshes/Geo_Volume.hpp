@@ -19,10 +19,10 @@ private:
 	float _depth = DEFAULT_Z;
 };
 
-struct Geo_Triangle3D : public Geo_Volume {
-	Geo_Triangle3D() : Geo_Volume({ 1.0, 3 }) {}
-	Geo_Triangle3D(float radius) : Geo_Volume({ radius, 3 }) {}
-	Geo_Triangle3D(float radius, float depth) : Geo_Volume({ radius, 3 }, depth) {}
+struct Geo_Trig3D : public Geo_Volume {
+	Geo_Trig3D() : Geo_Volume({ 1.0, 3 }) {}
+	Geo_Trig3D(float radius) : Geo_Volume({ radius, 3 }) {}
+	Geo_Trig3D(float radius, float depth) : Geo_Volume({ radius, 3 }, depth) {}
 };
 
 struct Geo_Quad3D : public Geo_Volume {

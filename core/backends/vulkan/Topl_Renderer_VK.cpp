@@ -499,9 +499,27 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 		result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
 	} */
 	
+	// Synchronization Object Creation
+
+	VkSemaphoreCreateInfo semaphoreInfo = {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	result = vkCreateSemaphore(_logicDevice, &semaphoreInfo, nullptr, &_imageReadySemaphore);
+	result = vkCreateSemaphore(_logicDevice, &semaphoreInfo, nullptr, &_renderFinishSemaphore);
+
+	VkFenceCreateInfo fenceInfo = {};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	result = vkCreateFence(_logicDevice, &fenceInfo, nullptr, &_inFlightFence);
+	if(result == VK_SUCCESS) logMessage("Sync object creation success \n");
+	else return logMessage(MESSAGE_Exclaim, "Sync object creation failure! \n");
 }
 
 Topl_Renderer_VK::~Topl_Renderer_VK() {
+	vkDestroySemaphore(_logicDevice, _imageReadySemaphore, nullptr);
+	vkDestroySemaphore(_logicDevice, _renderFinishSemaphore, nullptr);
+	vkDestroyFence(_logicDevice, _inFlightFence, nullptr);
 	vkDestroyPipelineLayout(_logicDevice, _pipelineLayout, nullptr);
 	vkDestroyRenderPass(_logicDevice, _renderPass, nullptr);
 	vkFreeCommandBuffers(_logicDevice, _commandPool, _commandBuffers.size(), _commandBuffers.data());
@@ -587,6 +605,16 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+	vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(_logicDevice, 1, &_inFlightFence);
+
+	uint32_t swapchainImgIdx;
+	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &swapchainImgIdx) != VK_SUCCESS)
+		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
+
+	// Recording
+
+	vkResetCommandBuffer(_commandBuffers[0], 0);
 	if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
 	VkRenderPassBeginInfo renderPassInfo = {};
@@ -602,9 +630,41 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	// else { vkCmdDraw(_commandBuffers[0], ...)}
 
 	vkCmdEndRenderPass(_commandBuffers[0]);
-	// TODO: Finish executing command buffer
 
 	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
+
+	// Submitting
+
+	VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
+	VkSemaphore signalSemaphores[] = { _renderFinishSemaphore };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT }; // { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = _commandBuffers.data();
+
+	if(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue submission failure!\n");
+
+	// Presentation
+
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapchains[] = { _swapchain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapchains;
+	presentInfo.pImageIndices = &swapchainImgIdx;
+	presentInfo.pResults = nullptr;
+
+	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
 }
 
 #ifdef RASTERON_H

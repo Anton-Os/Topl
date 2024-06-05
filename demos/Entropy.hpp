@@ -13,7 +13,7 @@ struct Entropy_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    Geo_Triangle2D triangles[ENTROPIC_COUNT / 4];
+    Geo_Trig2D triangles[ENTROPIC_COUNT / 4];
     Geo_Quad2D quads[ENTROPIC_COUNT / 4];
     Geo_Hex2D hexes[ENTROPIC_COUNT / 4];
     Geo_Circle2D circles[ENTROPIC_COUNT / 4];

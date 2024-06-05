@@ -11,8 +11,8 @@
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
     #include <windowsx.h>
-    #include <shobjidl.h> 
-    // #include <ShellScalingApi.h>
+    #include <shellapi.h>
+    #include <shobjidl.h>
     #include <Ole2.h>
 
     #include <io.h> // for files

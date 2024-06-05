@@ -24,11 +24,19 @@ static void addPress(enum MOUSE_Event button){
 struct DropTarget_Win32 : public IDropTarget {
 	DropTarget_Win32() : IDropTarget(){}
 
-	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragEnter callback event" << std::endl; }
-	HRESULT STDMETHODCALLTYPE DragLeave(void) override { std::cout << "DragLeave callback event" << std::endl; }
-	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragOver callback event" << std::endl; }
-	HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; }
-};
+	ULONG AddRef()  { return 1; }
+	ULONG Release() { return 0; }
+
+	HRESULT QueryInterface(REFIID riid, void **ppvObject){
+		if (riid == IID_IDropTarget) std::cout << "IDropTarget id detected";
+		return S_OK; 
+	}
+
+	HRESULT DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragEnter callback event" << std::endl; return S_OK; }
+	HRESULT DragLeave(void) override { std::cout << "DragLeave callback event" << std::endl; return S_OK; }
+	HRESULT DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "DragOver callback event" << std::endl; return S_OK; }
+	HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; return S_OK; }
+} dropTarget;
 
 void openFileDialog_win32(bool isRead){
 	IFileOpenDialog *fileDialog_win32;	
@@ -100,6 +108,10 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 		if(message == WM_MOUSEWHEEL && Platform::mouseControl.onScroll != nullptr) 
 			Platform::mouseControl.onScroll(GET_WHEEL_DELTA_WPARAM(wParam) > 0);
 	}
+	case (WM_DROPFILES): {
+		if(message == WM_DROPFILES) std::cout << "Files dropped triggered" << std::endl;
+		// if(Platform::onFileChoose != nullptr) Platform::onFileChoose()
+	} 
 	/* case (WM_MBUTTONDOWN): { if(message == WM_MBUTTONDOWN) std::cout << "Scroll Down" << std::endl; }
 	case (WM_MBUTTONUP): { if(message == WM_MBUTTONUP) std::cout << "Scroll Up" << std::endl; } */
 	default:
@@ -136,8 +148,8 @@ void Platform::createWindow(unsigned width, unsigned height){
 	ShowWindow(_context.window, 1);
 	UpdateWindow(_context.window);
 
-	// DropTarget_Win32 dropTarget = DropTarget_Win32(); 
-	// RegisterDragDrop(_context.window, &dropTarget);
+	DragAcceptFiles(_context.window, TRUE);
+	RegisterDragDrop(_context.window, &dropTarget);
 
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 }

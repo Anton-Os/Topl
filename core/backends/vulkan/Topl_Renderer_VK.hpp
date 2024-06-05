@@ -113,4 +113,7 @@ private:
 	VkPipelineColorBlendAttachmentState _colorBlendAttachment = {};
 	VkPipelineColorBlendStateCreateInfo _colorBlendInfo = {};
 	VkPipelineLayoutCreateInfo _pipelineLayoutInfo = {};
+	VkSemaphore _imageReadySemaphore = {};
+	VkSemaphore _renderFinishSemaphore = {};
+	VkFence _inFlightFence;
 };

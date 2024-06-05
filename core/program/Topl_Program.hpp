@@ -79,7 +79,7 @@ protected:
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 
-	std::map<std::string, Topl_Scene> _scenes_map; // for custom scenes
+	// std::map<std::string, Topl_Scene> _scenes_map; // for custom scenes
 	std::map<Geo_Actor*, Vec3f> _positions_map, _rotations_map, _scales_map; // for dynamic orientation changes
 #ifdef RASTERON_H
 	std::map<Img_Base*, std::pair<Rasteron_Queue*, unsigned short>> _images_map; // for dynamic texture changes

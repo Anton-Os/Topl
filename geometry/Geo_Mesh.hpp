@@ -26,10 +26,14 @@ struct Volume {
 
 // Mesh Object
 
+#include <iostream>
+#include <string>
+
 class Geo_Mesh {
 public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
 	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
+
 	Geo_Mesh(std::initializer_list<Vec3f> pointsSet){ // point set constructor
 		_vertices.resize(pointsSet.size()); _indices.resize(pointsSet.size());
 
@@ -41,7 +45,11 @@ public:
 			v++;
 		}
 	}
-	// TODO: Copy constructor
+	
+	Geo_Mesh(Geo_Mesh& refMesh){
+		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
+		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
+	}
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)

@@ -27,13 +27,14 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 	for(unsigned g = 0; g < scene->getActorCount(); g++){
 		actor_cptr actor = scene->getGeoActor(g);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		if(mesh->getVertexCount() == 0) logMessage(MESSAGE_Exclaim, "No vertex mesh detected");
 		unsigned long renderID = getRenderID(actor);
 
 		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
 			_renderIDs++;
 			_renderObjMap.insert({ _renderIDs, scene->getGeoActor(g) });
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
-		} else logMessage(MESSAGE_Exclaim, "Override required!"); // TODO: Implement else to override existing target
+		} // else logMessage(MESSAGE_Exclaim, "Override required!");
 
 		_shaderBlockData.clear();
 		_entryShader->genRenderBlock(actor, &_shaderBlockData);

@@ -48,7 +48,7 @@ struct Img_Label : public Img_UI {
 		textObjs[2] = { textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor };
 		textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
 
-		Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_MED);
+		Rasteron_Image* textImg = textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
 		for(unsigned short t = 0; t < 4; t++){ 
 			for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
 				if(*(textImg->data + p) != textObj.fgColor) *(textImg->data + p) = textObjs[t].bkColor;
@@ -58,8 +58,21 @@ struct Img_Label : public Img_UI {
 
 		Img_UI::setState(0);
 	}
+
+	void setText(Rasteron_Text textObj, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
+		paddings[0] = l;
+		paddings[1] = r;
+		paddings[2] = t;
+		paddings[3] = b;
+
+		setText(textObj);
+	}
+
+	// void setMessage(Rasteron_Message message){} // TODO: Enable multi-line functionality
 private:
-	Rasteron_Text textObjs[4];
+	Rasteron_Text textObjs[4]; // Default, On, Off, and Preselct States
+
+	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
 };
 
 struct Img_Dial : public Img_UI {

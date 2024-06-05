@@ -14,7 +14,7 @@ struct MathArt_Demo : public Topl_Program {
 
     Geo_Circle3D circle = Geo_Circle3D(1.25);
     Geo_Actor circleActor = Geo_Actor(&circle);
-    Geo_Triangle3D triangle = Geo_Triangle3D(1.25);
+    Geo_Trig3D triangle = Geo_Trig3D(1.25);
     Geo_Actor triangleActor = Geo_Actor(&triangle);
     Geo_Quad3D box = Geo_Quad3D(1.25);
     Geo_Actor boxActor = Geo_Actor(&box);

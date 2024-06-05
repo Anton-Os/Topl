@@ -13,7 +13,7 @@ list(APPEND support_src
 list(APPEND core_src
     core/Topl_Factory.cpp
     core/Topl_Renderer.cpp
-    core/program/Topl_Program_Runner.cpp
+    core/program/Topl_Program.cpp
     core/program/Topl_Program_Timeline.cpp
     core/Topl_Scene.cpp
 )

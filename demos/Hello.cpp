@@ -11,7 +11,7 @@
 
 #define ACTOR_COUNT 1
 
-static Geo_Triangle2D triangle = Geo_Triangle2D();
+static Geo_Trig2D triangle = Geo_Trig2D();
 static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 
 static Topl_Scene scene = Topl_Scene();

@@ -18,10 +18,10 @@ private:
 	float _depth = DEFAULT_Z;
 };
 
-struct Geo_Triangle2D : public Geo_Surface {
-	Geo_Triangle2D() : Geo_Surface({ 1.0, 3 }) {}
-	Geo_Triangle2D(float radius) : Geo_Surface({ radius, 3 }) {}
-	Geo_Triangle2D(float radius, float z) : Geo_Surface({ radius, 3 }, z) {}
+struct Geo_Trig2D : public Geo_Surface {
+	Geo_Trig2D() : Geo_Surface({ 1.0, 3 }) {}
+	Geo_Trig2D(float radius) : Geo_Surface({ radius, 3 }) {}
+	Geo_Trig2D(float radius, float z) : Geo_Surface({ radius, 3 }, z) {}
 };
 
 struct Geo_Quad2D : public Geo_Surface {

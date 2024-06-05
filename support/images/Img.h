@@ -24,7 +24,10 @@ struct Img_Base : public Img {
     Img_Base(unsigned color) : Img(){ setColorImage(color); } // Solid Constructor
     Img_Base(const std::string& filePath) : Img(){ setFileImage(filePath); } // File Constructor
     Img_Base(Rasteron_Text textObj) : Img(){ setTextImage( &textObj); } // Text Constructor
-    Img_Base(Rasteron_Image* refImage) : Img(){ setImage(refImage); } // Custom Constructor
+    Img_Base(Rasteron_Image* refImage) : Img(){ 
+		setImage(refImage);
+		RASTERON_DEALLOC(refImage);
+	} // Custom Constructor
 
     void setColorImage(unsigned color){
 		refresh();
@@ -65,21 +68,21 @@ protected:
 #endif
 };
 
-struct Img_Txt : public Img_Base {
+/* struct Img_Txt : public Img_Base {
 	Img_Txt() : Img_Base(){} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Txt(Rasteron_Text* text) : Img_Base(){
 		textObj = text;
 		image = textImgOp(textObj, size);
 	}
-	/* Img_Txt(Rasteron_Text* text, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
-		textObj = text;
-		leftPad = l; rightPad = r;
-		topPad = t; botPad = b;
+	// Img_Txt(Rasteron_Text* text, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
+	// 	textObj = text;
+	//	leftPad = l; rightPad = r;
+	//	topPad = t; botPad = b;
 
-		unsigned short paddings[4] = { l, r, t, b };
-		image = textPadImgOp(textObj, size, paddings);
-	} */
+	//	unsigned short paddings[4] = { l, r, t, b };
+	//	image = textPadImgOp(textObj, size, paddings);
+	// }
 
 	// void setStr(std::string textStr);
 	// void setFontFile(std::string fontStr);
@@ -92,7 +95,7 @@ struct Img_Txt : public Img_Base {
 protected:
 	Rasteron_Text* textObj;
 #endif
-};
+}; */
 
 // Array texture based on multiple layers
 
