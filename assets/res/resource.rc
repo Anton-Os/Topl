@@ -1,0 +1,20 @@
+#include "resource.h"
+
+// IDI_ICON ICON DISCARDABLE "TOPL.ico"
+IDI_ICON ICON "TOPL.ico"
+// IDI_ICON ICON "C:\AntonDocs\Codex\Ao-Project\Topl\master\assets\res\TOPL.ico" // hard-code test
+
+IDC_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New", IDM_NEW
+        MENUITEM "&Load", IDM_LOAD
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Timeline", IDM_TIME, CHECKED
+        MENUITEM "&Objects", IDM_OBJS, CHECKED
+        MENUITEM "&Properties", IDM_PROPS, CHECKED
+    END
+END

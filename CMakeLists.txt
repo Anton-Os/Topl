@@ -1,246 +1,325 @@
-cmake_minimum_required(VERSION 3.6)
-project(ToplSkeleton DESCRIPTION "A skeleton for Topl")
+cmake_minimum_required(VERSION 3.7)
+project(Topl DESCRIPTION "Topl Graphics Engine")
+
+set (CMAKE_CXX_STANDARD 11)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
+    message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
+endif()
+
+message("Cmake prefix path is ${CMAKE_PREFIX_PATH}")
 
 # Extrenal Libraries
+include("cmake/externalTargets.cmake")
+include("cmake/findVulkan.cmake")
 
-if(NOT Rasteron_Install_Path)
-    set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
-    # set(Rasteron_Projects_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron external projects directory")
+if(UNIX AND NOT APPLE) # Unix Specific
+    include(FindX11)
 endif()
 
-find_package(Rasteron PATHS ${Rasteron_Install_Path}/lib/Rasteron)
-if(Rasteron_FOUND)
-    include(${Rasteron_Install_Path}/lib/Rasteron/findDepends.cmake)
-    message(STATUS "Rasteron loading success!")
+# ------------- Sources ------------- #
+
+set(IS_TRUE 1)
+set(IS_FALSE 0)
+
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/" )
+set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/" )
+
+if(WIN32)
+    set(RESOURCE_DIR "${ASSETS_DIR}/res" CACHE PATH "Path to directory with resource.h file")
+    set(RESOURCE_FILE "${RESOURCE_DIR}/resource.rc" CACHE FILEPATH "Resource (.rc) file")
+    # set(RESOURCE_ICON "${RESOURCE_DIR}/TOPL.ico" CACHE FILEPATH "Icon (.ico) file")
+endif()
+
+list(APPEND support_src
+    support/ValueGen.cpp
+    support/IO.cpp
+    support/Controls.cpp
+    support/Timer.cpp
+    support/Platform.cpp
+    # core/File3D.cpp
+)
+
+list(APPEND geometry_src
+	# meshes
+    geometry/meshes/Geo_Surface.cpp
+    geometry/meshes/Geo_Volume.cpp
+    geometry/meshes/Geo_Cone.cpp
+    geometry/meshes/Geo_Orb.cpp
+    geometry/meshes/Geo_Parametric.cpp
+)
+if(SUPPORT_MODELS AND Assimp_FOUND)
+    message("Building 3D Model sources")
+    list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
+endif()
+
+list(APPEND core_src
+    core/Topl_Factory.cpp
+    core/Topl_Renderer.cpp
+    core/program/Topl_Program_Runner.cpp
+    core/program/Topl_Program_Timeline.cpp
+    core/Topl_Scene_Base.cpp
+)
+
+set(SUPPORT_PHYSICS ${IS_TRUE} CACHE INT "Include physics calculations" FORCE)
+if(SUPPORT_PHYSICS)
+    list(APPEND core_src core/Topl_Scene_Dynamics.cpp)
+endif()
+
+# -------------- Core and Geometry Libraries ------------- #
+
+add_library(CORELIB # Core Library
+    ${support_src}
+    ${core_src}
+)
+target_include_directories(CORELIB PRIVATE core support geometry shaders "${CMAKE_INSTALL_PREFIX}/include")
+set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+target_include_directories(CORELIB
+    INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
+
+if(WIN32)
+    target_include_directories(CORELIB PRIVATE "${RESOURCE_DIR}") # resource file header
+    target_sources(CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
+elseif(UNIX AND NOT APPLE) # Unix Specific
+    target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})
+endif()
+
+add_library(GEOLIB ${geometry_src}) # Geometry Library
+target_include_directories(GEOLIB PRIVATE core support geometry)
+target_include_directories(GEOLIB INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
+
+if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
+   # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
+   target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+   if(WIN32)
+        set(irrXML_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXML.lib") # locating release lib
+        set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib") # locating debug lib
+        set(zlib_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstatic.lib") # locating release lib
+        set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib") # locating debug lib
+        # message("Assimp libraries zlib set to ${zlib_lib}, irrXML set to ${irrXML_lib}")
+        message("Assimp libraries zlib set to ${zlibd_lib}, irrXML set to ${irrXMLd_lib}")
+    
+        # target_link_libraries(GEOLIB PUBLIC ${irrXML_lib} ${zlib_lib}) # for release build
+        target_link_libraries(GEOLIB PUBLIC ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+    elseif(UNIX AND NOT APPLE) # Unix Specific
+        find_package(ZLIB)
+        find_library(irrXML_lib NAMES "irrXML" "IrrXML" PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+        message("Assimp libraries zlib set to ${ZLIB_LIBRARIES}, irrXML set to ${irrXML_lib}")
+
+        target_link_libraries(GEOLIB PUBLIC ${ZLIB_LIBRARIES} ${irrXML_lib})
+    endif()
+endif()
+
+if(Rasteron_FOUND) # linking targets to Rasteron
+    target_link_libraries(CORELIB PUBLIC Rasteron)
+    target_link_libraries(GEOLIB PUBLIC Rasteron)
+endif()
+
+# -------------- Building Engines ------------- #
+
+# Building DirectX Engine
+
+if(WIN32)
+    add_library(DX11_ENGINE
+        core/backends/directx/Topl_Pipeline_DX11.cpp
+        core/backends/directx/Topl_Renderer_DX11.cpp
+    )
+    target_include_directories(DX11_ENGINE PRIVATE core support geometry)
+    target_include_directories(DX11_ENGINE INTERFACE
+        $<BUILD_INTERFACE:${interfaceHeaders}>
+        $<INSTALL_INTERFACE:include/Topl>
+    )
+    set_target_properties(DX11_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+endif()
+
+# Building Vulkan Engine
+
+if(Vulkan_FOUND)
+    set(SUPPORT_VULKAN ${IS_TRUE} CACHE INT "Include Vulkan support" FORCE)
+
+    add_library(Vulkan_ENGINE
+        core/backends/vulkan/Topl_Pipeline_VK.cpp
+        core/backends/vulkan/Topl_Renderer_VK.cpp
+    )
+    target_include_directories(Vulkan_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
+    target_include_directories(Vulkan_ENGINE PRIVATE core support geometry)
+    target_include_directories(Vulkan_ENGINE INTERFACE
+        $<BUILD_INTERFACE:${interfaceHeaders}>
+        $<INSTALL_INTERFACE:include/Topl>
+    )
+    target_link_libraries(Vulkan_ENGINE PUBLIC ${Vulkan_LIBRARIES})
+    # set_target_properties(Vulkan_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 else()
-    message(WARNING "Texturing and image modules cannot load, build Rasteron project and point Rasteron_Install_Path to its install directory")
+    set(SUPPORT_VULKAN ${IS_FALSE} CACHE INT "Include vulkan support" FORCE)
 endif()
 
+# Building OpenGL Engine
 
-include(ExternalProject)
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
+add_library(GL4_ENGINE
+    core/backends/opengl/Topl_Pipeline_GL4.cpp
+    core/backends/opengl/Topl_Renderer_GL4.cpp
+)
+target_include_directories(GL4_ENGINE PRIVATE core support geometry)
+target_include_directories(GL4_ENGINE INTERFACE
+    $<BUILD_INTERFACE:${interfaceHeaders}>
+    $<INSTALL_INTERFACE:include/Topl>
+)
+target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
+# set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
-ExternalProject_Add(DXSDK
-        GIT_REPOSITORY "https://github.com/Anton-Os/dxsdk.git"
-        GIT_TAG "5fbd5e1158db72421bc32709136131451e6c8c37"
+if(UNIX AND NOT APPLE) # Unix Specific
+    add_dependencies(GL4_ENGINE GLEW)
 
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/dxsdk
-        # SOURCE_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
-        # BINARY_DIR ${EXTERNAL_PROJ_DIR}/dxsdk
-        # STAMP_DIR ${EXTERNAL_PROJ_DIR}/dxsdk/stamp
-    )
-
-ExternalProject_Add(GLEW
-        GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
-        GIT_TAG "6de325e4393213d703483e3acd52e8890fd4b191"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
-    )
-
-
-ExternalProject_Add(Eigen
-        GIT_REPOSITORY "https://github.com/eigenteam/eigen-git-mirror.git"
-        GIT_TAG "36b95962756c1fce8e29b1f8bc45967f30773c00"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/Eigen
-        # SOURCE_DIR ${EXTERNAL_PROJ_DIR}/Eigen
-        # BINARY_DIR ${EXTERNAL_PROJ_DIR}/Eigen
-        # STAMP_DIR ${EXTERNAL_PROJ_DIR}/Eigen
-    )
-
-
-find_package(dxsdk_interface PATHS ${CMAKE_INSTALL_PREFIX}/lib/dxsdk)
-find_package(Eigen3 PATHS ${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake)
-find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
-
-if(Rasteron_FOUND)
-    add_executable(Img demos/Demo_Img.cpp)
-    target_link_libraries(Img RasteronLib) # finding Rasteron but not tiff
+    set(OpenGL_GL_PREFERENCE GLVND)
+    find_package(OpenGL REQUIRED)
+    if(OpenGL_FOUND)
+        message("OpenGL libraries found: ${OPENGL_opengl_LIBRARY} and ${OPENGL_glx_LIBRARY}")
+        target_link_libraries(GL4_ENGINE PUBLIC ${OPENGL_opengl_LIBRARY})
+        target_link_libraries(GL4_ENGINE PUBLIC ${OPENGL_glx_LIBRARY})
+    endif()
 endif()
 
-
-list(APPEND common_Sources
-   core/FileIO.cpp
-   core/Input.cpp
-   core/Timer.cpp
-   core/Platform.cpp
-)
-
-list(APPEND geo_Sources
-    geo/primitives/Geo_Rect2D.cpp
-    geo/primitives/Geo_Box3D.cpp
-    geo/primitives/Geo_NGon2D.cpp
-)
-
-list(APPEND scene_Sources
-    scene/Topl_Scene_Builder.cpp
-    scene/Topl_Scene_Physics.cpp
-)
-
-# Common Feature Demos
-
-add_executable(TickTick
-    ${common_Sources}
-    demos/Demo_TickTick.cpp
-)
-target_include_directories(TickTick PUBLIC core helper geo)
-if(UNIX)
-    target_link_libraries(TickTick PUBLIC X11 GL) # Links UNIX OS libs
-endif()
-
-add_executable(Presser
-    ${common_Sources}
-    demos/Demo_Presser.cpp
-)
-target_include_directories(Presser PUBLIC core helper geo)
-if(UNIX)
-    target_link_libraries(Presser PUBLIC X11 GL) # Links UNIX OS libs
-endif()
-
-add_executable(Cursor
-    ${common_Sources}
-    demos/Demo_Cursor.cpp
-)
-target_include_directories(Cursor PUBLIC core helper geo)
-if(UNIX)
-    target_link_libraries(Cursor PUBLIC X11 GL) # Links UNIX OS libs
-endif()
-
-add_executable(ParseFBX
-    ${common_Sources}
-    demos/Demo_ParseFBX.cpp
-)
-target_include_directories(ParseFBX PUBLIC core helper geo)
-
+list(APPEND engine_targets GL4_ENGINE) # OpenGL available cross-platform
 if(WIN32)
-
-    # DirectX Rendering Engine
-
-    add_library(Drx11_Engine
-        ${common_Sources}
-		${geo_Sources}
-        ${scene_Sources}
-        core/ValueGen.cpp
-
-        core/Topl_Renderer_Drx11.cpp
-    )
-    target_include_directories(Drx11_Engine PUBLIC core geo scene)
-    target_include_directories(Drx11_Engine PUBLIC
-        ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-        ${CMAKE_INSTALL_PREFIX}/include/eigen3
-    )
-    target_link_libraries(Drx11_Engine PUBLIC RasteronLib)
-    set_target_properties(Drx11_Engine
-        PROPERTIES
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS ON
-    )
-    add_dependencies(Drx11_Engine DXSDK Eigen) # Build external projects before engine
-
-    # DirectX Rendering Demos
-
-    add_executable(Drx11_MovingSprite
-        geo/composites/Humanoid.cpp
-
-        demos/Drx11_MovingSprite.cpp
-    )
-    target_include_directories(Drx11_MovingSprite PRIVATE demos)
-    target_link_libraries(Drx11_MovingSprite PRIVATE Drx11_Engine)
-
-	add_executable(Drx11_SimpleShapes
-		geo/composites/Chain.cpp
-		geo/composites/Grid.cpp
-
-		demos/Drx11_SimpleShapes.cpp
-	)
-	target_link_libraries(Drx11_SimpleShapes PRIVATE Drx11_Engine)
-
-  # add_dependencies(Drx11_Engine DXSDK GLEW Eigen)
+    list(APPEND engine_targets DX11_ENGINE) # DirectX available on windows
+endif()
+if(Vulkan_FOUND)
+    list(APPEND engine_targets Vulkan_ENGINE) # Vulkan available with library
 endif()
 
-# OpenGL Rendering Engine
-
-add_library(GL4_Engine
-    ${common_Sources}
-    ${geo_Sources}
-    ${scene_Sources}
-    core/ValueGen.cpp
-
-    core/Topl_Renderer_GL4.cpp
-)
-target_include_directories(GL4_Engine PUBLIC core geo scene)
-target_include_directories(GL4_Engine PUBLIC
-    # ${CMAKE_INSTALL_PREFIX}/include/dxsdk
-    ${CMAKE_INSTALL_PREFIX}/include/eigen3
-)
-target_link_libraries(GL4_Engine PUBLIC RasteronLib GLEW_lib)
-set_target_properties(GL4_Engine
-    PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS ON
-)
-if(NOT WIN32) # decreases Windows build time
-    add_dependencies(GL4_Engine GLEW Eigen)
-endif()
-if(UNIX)
-    target_link_libraries(GL4_Engine PUBLIC X11 GL libgl1-mesa-dev libglu1-mesa-dev) # Links UNIX OS libs
-endif()
-
-add_executable(GL4_MovingSprite
-    geo/composites/Humanoid.cpp
-
-    demos/GL4_MovingSprite.cpp
-)
-target_include_directories(GL4_MovingSprite PRIVATE demos)
-target_link_libraries(GL4_MovingSprite PRIVATE GL4_Engine)
-
-add_executable(GL4_SimpleShapes
-	geo/composites/Chain.cpp
-    geo/composites/Grid.cpp
-
-    demos/GL4_SimpleShapes.cpp
-)
-target_link_libraries(GL4_SimpleShapes PRIVATE GL4_Engine)
-
-
-# Copying and managing implemented here with custom targets
-
-file(GLOB drx11_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.hlsl)
-file(GLOB gl4_Shaders ${CMAKE_SOURCE_DIR}/shaders/*.glsl)
-add_custom_target(ShaderCopy
-                  SOURCES ${drx11_Shaders} ${gl4_Shaders})
-                  # Add GLSL shaders too
-if(WIN32)
-    foreach(file IN ITEMS ${drx11_Shaders})
-        add_custom_command(TARGET Drx11_Engine PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
-    endforeach()
-endif()
-
-foreach(file IN ITEMS ${gl4_Shaders})
-    add_custom_command(TARGET GL4_Engine PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
+foreach(target IN ITEMS ${engine_targets})
+    if(WIN32)
+        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
+    endif()
+    target_include_directories(${target} PRIVATE "${CMAKE_INSTALL_PREFIX}/include")
+    target_link_libraries(${target} PUBLIC GEOLIB CORELIB) # link both corelib and geolib
+	# target_link_libraries(${target} PUBLIC GEOLIB) # link only geolib
+	target_link_libraries(CORELIB PUBLIC ${target})
 endforeach()
 
-add_dependencies(ShaderCopy GL4_Engine)
+# ------------- Demos and Tests ------------- #
+
+add_executable(Hello demos/Hello.cpp)
+# add_executable(Sandbox demos/Sandbox.cpp)
+# add_executable(FirstPerson demos/FirstPerson.cpp)
+# add_executable(MathArt demos/MathArt.cpp)
+# add_executable(Entropy demos/Entropy.cpp)
+
+list(APPEND demo_targets Hello) #Sandbox FirstPerson MathArt Entropy)
+
+foreach(target IN ITEMS ${demo_targets})
+    target_include_directories(${target} PRIVATE core support geometry shaders)
+    target_link_libraries(${target} PRIVATE CORELIB)
+    if(WIN32) # adding resource file to demos
+        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
+        target_sources(${target} PRIVATE "${RESOURCE_FILE}")
+    elseif(UNIX AND NOT APPLE)
+        target_link_libraries(${target} PRIVATE ${OPENGL_glx_LIBRARY})
+    endif()
+endforeach()
+
+# -------------- Custom Targets ------------- #
+# Copying and managing implemented here with custom targets
+
+file(GLOB gl4_shaders ${SHADERS_DIR}/glsl/*.glsl)
+add_custom_target(GL4_ShaderEdit SOURCES ${gl4_shaders})
+add_dependencies(GL4_ShaderEdit GL4_ENGINE)
+
 if(WIN32)
-  add_dependencies(ShaderCopy Drx11_Engine)
+	file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
+	add_custom_target(DX11_ShaderEdit SOURCES ${drx11_shaders})
+	add_dependencies(DX11_ShaderEdit DX11_ENGINE)
 endif()
 
-file(GLOB res_images
-    ${CMAKE_SOURCE_DIR}/res/images/*.png # Rasteron Supported
-    ${CMAKE_SOURCE_DIR}/res/images/*.tiff # Rasteron Supported
-    ${CMAKE_SOURCE_DIR}/res/images/*.bmp # Rasteron Supported
+if(Vulkan_FOUND)
+	# function(compileShader shaderFile shaderType)
+	#	get_filename_component(shader_name ${shaderFile} NAME)
+	#	message(STATUS "Compiling ${shaderType} shader ${shader_name}")
+
+	#	string(FIND ${shader_name} shaderType isShaderType)
+	#	message("${isShaderType}")
+	#	if(NOT isShaderType EQUAL -1)
+	#		message("Compiling ${shaderType} shader ${shaderFile}")
+	#		exec_program(
+	#			${glslc_exec} 
+	#			${CMAKE_BINARY_DIR} 
+	#			ARGS "-fshader-stage=vertex ${shaderFile} -o ${shader_name}.spv"
+	#		)
+	#	endif()
+	# endfunction()
+
+	message(STATUS "Searching inside ${VULKAN_PATH}/Bin/")
+
+    find_file(glslc_exec "glslc" "glslc.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
+    # find_file(glslc_exec "glslangValidator" "glslangValidator.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
+	if(NOT ${glslc_exec} STREQUAL "glslc_exec-NOTFOUND")
+		message("${glslc_exec} executing")
+        foreach(shader IN ITEMS ${gl4_shaders})
+			get_filename_component(shader_name ${shader} NAME)
+
+			string(FIND ${shader_name} "Vert" isVertexShader)
+			if(NOT isVertexShader EQUAL -1)
+				message("Compiling vertex shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+                # exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=vertex ${shader} -o ${shader_name}.spv")
+			endif()
+			
+			string(FIND ${shader_name} "Frag" isFragShader)
+			if(NOT isFragShader EQUAL -1)
+				message("Compiling fragment shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=frag ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=frag ${shader} -o ${shader_name}.spv")
+			endif()
+
+            string(FIND ${shader_name} "Geo" isGeomShader)
+			if(NOT isGeomShader EQUAL -1)
+				message("Compiling geometry shader ${shader_name} inside of ${shader}")
+				# exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=geom ${shader} -o ${shader_name}.spv")
+                exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=geom ${shader} -o ${shader_name}.spv")
+			endif()
+
+            string(FIND ${shader_name} "Tess" isTessShader)
+			if(NOT isTessShader EQUAL -1)
+				string(FIND ${shader_name} "Eval" isTessEvalShader)
+                if(NOT isTessEvalShader EQUAL -1)
+                    message("Compiling tesselation evaluation shader ${shader_name} inside of ${shader}")
+                    # exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=tesseval ${shader} -o ${shader_name}.spv")
+                    exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=tesseval ${shader} -o ${shader_name}.spv")
+                else()
+                    message("Compiling tesselation control shader ${shader_name} inside of ${shader}")
+                    # exec_program(${glslc_exec} ${CMAKE_CURRENT_BINARY_DIR} ARGS "-fshader-stage=tesscontrol ${shader} -o ${shader_name}.spv")
+                    exec_program(${glslc_exec} ${SHADERS_DIR}/spirv ARGS "-fshader-stage=tesscontrol ${shader} -o ${shader_name}.spv")
+                endif()
+			endif()
+        endforeach()
+    endif()
+endif()
+
+configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
+
+# Install Procedures
+
+install(TARGETS CORELIB GEOLIB ${engine_targets}
+    EXPORT Topl
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
 )
 
-file(COPY ${res_images} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/") # Copies all Image Resources
+file(GLOB_RECURSE interfaceHeaders 
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*h
+)
+
+install(FILES ${interfaceHeaders} DESTINATION include/Topl)
+install(EXPORT Topl DESTINATION lib/Topl FILE ToplConfig.cmake)
