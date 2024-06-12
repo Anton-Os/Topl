@@ -47,6 +47,8 @@ public:
 	}
 	
 	Geo_Mesh(Geo_Mesh& refMesh){
+		if(refMesh.getVertexCount() == 0) std::cerr << "Mesh with no vertices detected" << std::endl;
+		// else std::cout << "Copy constructor invoked" << std::endl;
 		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
 		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
 	}

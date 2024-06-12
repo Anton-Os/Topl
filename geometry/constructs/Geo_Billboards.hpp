@@ -12,47 +12,45 @@
 
 class Geo_Billboard : public Geo_Grid {
 public:
-	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns) 
-	: Geo_Grid(prefix, &childMesh, Geo_Grid_Params(
+	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns) : Geo_Grid(prefix, &childMesh, Geo_Grid_Params(
 		std::make_pair(rows, PANE_SIZE / rows), 
 		std::make_pair(columns, PANE_SIZE / columns), 
 		std::make_pair(1, 0.0F))
-	){ }
+	){ init(); }
 
-	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns, Topl_Scene* scene)
-	: Geo_Grid(prefix, &childMesh, Geo_Grid_Params(
+	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns, Topl_Scene* scene) : Geo_Grid(prefix, &childMesh, Geo_Grid_Params(
 		std::make_pair(rows, PANE_SIZE / rows), 
 		std::make_pair(columns, PANE_SIZE / columns), 
 		std::make_pair(1, 0.0F))
 	){
+		init();
 		configure(scene);
 	}
 
-	void configure(Topl_Scene* scene) override {
+	void init(){
 		_geoActors.resize(_params.getGridSize() + 1);
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
+		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 10.0F), (1.0F / _params.y.first) - (rootBorder / 10.0F), 0.0F });
+		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(0xFF666666) });
+	}
 
-		childMesh.scale({ 1.0F / _params.x.first, 1.0F / _params.y.first, 0.0F });
+	void configure(Topl_Scene* scene) override {
 		Geo_Grid::configure(scene);
 
 		scene->addGeometry(getPrefix() + "root", &_geoActors.back()); 
-		// _geoActors.back().pickerFunc = onPick;
-		// for(unsigned p = 0; p < _params.getGridSize(); p++) _geoActors.at(p).pickerFunc = onPick;
 #ifdef RASTERON_H
-		for(unsigned p = 0; p < _params.getGridSize(); p++){
-			paneImg_map.insert({ &_geoActors.at(p), Img_Base(0xFF666666) });
-			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p))); 
-		}
 		scene->addTexture(getPrefix() + "root", &rootImg);
+		for(unsigned p = 0; p < _params.getGridSize(); p++)
+			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p))); 
 #endif
 	}
 	void scale(Vec3f scaleVec){
-        for(unsigned g = 0; g < _geoActors.size(); g++) {
+    	for(unsigned g = 0; g < _geoActors.size(); g++) {
 			_geoActors[g].setSize(scaleVec);
 			Vec3f offsetVec = *_geoActors[_params.getGridSize()].getPos() - *_geoActors[g].getPos();
 			if(_params.getGridSize() != g)
-				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * 1.5F, offsetVec[1] * scaleVec[1] * 1.5F, 0.0F });
+				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * 1.375F, offsetVec[1] * scaleVec[1] * 1.375F, 0.0F });
 		}
     }
 
@@ -66,13 +64,9 @@ public:
 			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
 			if(paneItemUI != paneItemUI_map.end()){
 				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
-					(p == paneIndex)
-						? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre)
-						: paneItemUI->second->setState(MENU_None);
+					(p == paneIndex) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)
-					(paneItemUI->second->getState() == MENU_None)
-						? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre)
-						: paneItemUI->second->setState(MENU_None);
+					(paneItemUI->second->getState() == MENU_None) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if(paneItemUI->second->getName().find("dial") != std::string::npos && p == paneIndex){
 					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*paneItemUI->second));
 					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;

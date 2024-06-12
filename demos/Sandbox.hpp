@@ -8,124 +8,83 @@
 #include "constructs/Geo_Grid.hpp"
 #include "constructs/Geo_Billboards.hpp"
 
+#include "physics/Phys_Actor.h"
+#include "physics/Phys_Connector.h"
+
 #include "program/Topl_Program.hpp"
 
-#define SCENEMODE_ADD 0
-#define SCENEMODE_PAN 1
-#define SCENEMODE_SETTINGS 2
-#define SCENEMODE_SELECT 3
-#define SCENEMODE_PAINT 4
-#define SCENEMODE_DEL 5
-
-#define PICKMODE_MOVE 0
-#define PICKMODE_ROTATE 1
-#define PICKMODE_SCALE 2
-
-#define DETAIL_COUNT 300
+#define SANDBOX_MESH_SCALE 0.3
+#define SANDBOX_MESH_COUNT 12
 
 struct Sandbox_Demo : public Topl_Program {
-    Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){}
-    ~Sandbox_Demo();
+    Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
+        _surfaces.push_back(new Geo_Quad2D(SANDBOX_MESH_SCALE * 10.0));
+        backdropActor = Geo_Actor(_surfaces[0]); // for backdrop
+
+        for(unsigned short s = 0; s < SANDBOX_MESH_COUNT; s++){
+            switch(s % 4){
+                // case 0: _surfaces.push_back(new Geo_Hex2D(SANDBOX_MESH_SCALE)); break;
+                // case 1: _surfaces.push_back(new Geo_Quad2D(SANDBOX_MESH_SCALE)); break;
+                // case 2: _surfaces.push_back(new Geo_Circle2D(SANDBOX_MESH_SCALE)); break;
+                default: _surfaces.push_back(new Geo_Quad2D(SANDBOX_MESH_SCALE)); break;
+            }
+            surfaceActors[s] = Geo_Actor(_surfaces[s]);
+#ifdef RASTERON_H
+            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
+                // _images.push_back(new Img_Base(0xFF000000 | ((rand() * 10) % 0xFFFFFF)));
+#endif
+        }
+
+        _billboards.push_back(new Geo_Paneboard("bottom_board")); // Timeline
+        _billboards.back()->scale({ 3.85F, -0.3F, 1.0F });
+        _billboards.back()->shift({ 0.0F, -0.925F, 0.0F });
+        _billboards.push_back(new Geo_Crossboard("top_board", 12)); // Properties
+        _billboards.back()->scale({ 3.66F, -0.3F, 1.0F });
+        _billboards.back()->shift({ 0.0F, 0.925F, 0.0F });
+        _billboards.push_back(new Geo_Listboard("left_board", 20)); // Shapes
+        _billboards.back()->scale({ -0.25F, 3.215F, 1.0F });
+        _billboards.back()->shift({ -0.95F, 0.0F, 0.0F });
+        _billboards.push_back(new Geo_Listboard("right_board", 20)); // Overlays
+        _billboards.back()->scale({ -0.25F, 3.215F, 1.0F });
+        _billboards.back()->shift({ 0.95F, 0.0F, 0.0F });
+    }
 
     void init() override;
     void loop(double frameTime) override;
 
-    static int mode;
-    static int pipelineIndex;
-    static bool isShaderVariant;
-    static bool isDetailsShown;
-    static unsigned shaderMode;
-    static Vec3f texScroll;
-    static std::string fontFilePath;
+    Topl_Camera camera, fixedCamera;
+    Topl_Scene mainScene, overlayScene, backdropScene;
 
-    Topl_Scene* getScene(){ return &scene; }
+    Geo_Actor backdropActor;
+    Geo_Actor surfaceActors[SANDBOX_MESH_COUNT];
+    // Geo_Actor trigActors[SANDBOX_MESH_COUNT], quadActors[SANDBOX_MESH_COUNT], circleActors[SANDBOX_MESH_COUNT];
+protected:
+    std::vector<Geo_Mesh*> _meshes;
+    std::vector<Geo_Surface*> _surfaces;
+    std::vector<Geo_Cone*> _cones;
+    std::vector<Geo_Volume*> _volumes;
+    std::vector<Geo_Orb*> _orbs;
+    std::vector<Geo_Iter*> _iterables;
 
-    Geo_Quad2D canvasMesh = Geo_Quad2D(2.0);
-    Geo_Actor canvasActor = Geo_Actor(&canvasMesh);
-
-    Geo_Quad3D boxMesh = Geo_Quad3D();
-    Geo_Actor boxActor = Geo_Actor(&boxMesh);
-    Geo_Triangle3D pyramidMesh = Geo_Triangle3D();
-    Geo_Actor pyramidActor = Geo_Actor(&pyramidMesh);
-    Geo_Orb sphereMesh = Geo_Orb();
-    Geo_Actor sphereActor = Geo_Actor(&sphereMesh);
-    Geo_HexCone hexMesh = Geo_HexCone();
-    Geo_Actor hexActor = Geo_Actor(&hexMesh);
-    Geo_Mesh paramMesh = Geo_Mesh({
-        { 0.0f, 0.0f, 0.0f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }, 
-        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
-        { -0.25F, -0.25F, 0.0f }, { 0.25F, -0.25F, 0.0f }, { 0.0f, 0.35f, 0.35f },
-        { 0.0f, -0.35f, 0.35f }, { 0.25F, 0.25F, 0.0f }, { -0.25F, 0.25F, 0.0f }
-    });
-    Geo_TessIter tessMesh = Geo_TessIter(&paramMesh, 1);
-    Geo_DuplexIter duplexMesh = Geo_DuplexIter(&paramMesh);
-    Geo_Actor paramActor = Geo_Actor(&paramMesh);
-    Geo_Actor tessActor = Geo_Actor(&tessMesh);
-    Geo_Actor duplexActor = Geo_Actor(&duplexMesh);
-    Geo_Quad2D timerInfoMesh = Geo_Quad2D(0.15); Geo_Actor timerInfoActor = Geo_Actor(&timerInfoMesh);
-    Geo_Quad2D pickerInfoMesh = Geo_Quad2D(0.15); Geo_Actor pickerInfoActor = Geo_Actor(&pickerInfoMesh);
-    Geo_Quad2D sceneInfoMesh = Geo_Quad2D(0.15); Geo_Actor sceneInfoActor = Geo_Actor(&pickerInfoMesh);
-    Geo_Quad2D inputInfoMesh = Geo_Quad2D(0.15); Geo_Actor inputInfoActor = Geo_Actor(&inputInfoMesh);
-    Geo_Listboard dropMenuLayout = Geo_Listboard("dropMenuLayout", 6);
-    Geo_Listboard expandMenuLayout = Geo_Listboard("expandMenuLayout", 6);
-    Geo_Paneboard timelineLayout = Geo_Paneboard("timelineLayout");
-    Geo_Gridboard actionsLayout = Geo_Gridboard("actionsLayout", 3);
-    Geo_Crossboard scenePropsLayout = Geo_Crossboard("scenePropsLayout", 6);
-    Geo_Crossboard pickerPropsLayout = Geo_Crossboard("pickerPropsLayout", 6);
-    Geo_Crossboard timelinePropsLayout = Geo_Crossboard("timelinePropsLayout", 3);
-
-    Geo_Quad2D labels[DETAIL_COUNT]; Img_Base labelsTex[DETAIL_COUNT];
-    Geo_Triangle2D arrows[DETAIL_COUNT]; Img_Base arrowsTex[DETAIL_COUNT];
-    Geo_Circle2D dots[DETAIL_COUNT]; Img_Base dotsTex[DETAIL_COUNT];
-    Geo_Actor detailActors[DETAIL_COUNT * 3];
-#ifdef RASTERON_H
-    Img_Base canvasTex;
-
-    Img_Base timerInfo_texture = Img_Base(0xFFFFFF00);
-    Img_Base pickerInfo_texture = Img_Base(0xFFFFFF00);
-    Img_Base sceneInfo_texture = Img_Base(0xFFFFFF00);
-    Img_Base inputInfo_texture = Img_Base(0xFFFFFF00);
-    Rasteron_Image *boxImg, *pyramidImg, *sphereImg, *hexImg, *paramImg;
-    Img_Base boxTex, pyramidTex, sphereTex, hexTex, paramTex;
-
-    Img_Button checks[3] = { Img_Button(MENU_XL), Img_Button(MENU_XL), Img_Button(MENU_XL) };
-    Img_Dial dials[3] = { Img_Dial(MENU_XL, 4), Img_Dial(MENU_XL, 8), Img_Dial(MENU_XL, 16) }; 
-    Img_Button icons[3] = { Img_Button(MENU_XL, "arrow_back"), Img_Button(MENU_XL, "sync"), Img_Button(MENU_XL, "arrow_forward") };
-
-    Img_Slider timelineSlider = Img_Slider(MENU_XL, 60); Img_Base timelineTex = Img_Base(timelineSlider.stateImg.getImage());
-    Img_Base dropMenuBtns[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
-    Img_Base expandMenuBtns[6] = { Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE), Img_Base(0xFFEEEEEE) };
-    std::string defaultFontPath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
-    Rasteron_Text textObj = { defaultFontPath.c_str(), "Test", 0xFF111111, 0xFFEEEEEE };
-    Rasteron_Text inputTextObj = { defaultFontPath.c_str(), "", 0xFFEEEEEE, 0xFF111111 }; // begins with blank underline
-    Img_Label dropLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
-    Img_Label expandLabelBtns[6] = { Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj), Img_Label(MENU_Medium, textObj) };
-    Img_Base propsRoot = Img_Base(0xFF666666);
-    Img_Base propsPane = Img_Base(0xAAEEEEEE);
-    Img_Button scenePropBtns[6] = {
-        Img_Button(MENU_Medium, "add"), Img_Button(MENU_Medium, "remove_red_eye"), Img_Button(MENU_Medium, "tune"),
-        Img_Button(MENU_Medium, "gps_fixed"), Img_Button(MENU_Medium, "palette"), Img_Button(MENU_Medium, "highlight_off")
-    };
-    Img_Button pickerPropBtns[6] = {
-        Img_Button(MENU_Medium, "open_with"), Img_Button(MENU_Medium, "loop"), Img_Button(MENU_Medium, "zoom_out_map"),
-        Img_Button(MENU_Medium), Img_Button(MENU_Medium), Img_Button(MENU_Medium)
-    };
-    Img_Button timelineBtns[3] = {
-        Img_Button(MENU_Medium, "fast_forward"), Img_Button(MENU_Medium, "play_circle_outline"), Img_Button(MENU_Medium, "fast_rewind"), 
-    };
-    // Img_Base statusButtons[6] = { Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111), Img_Base(0xFF111111) };
-    Img_Slider sliders[9] = { Img_Slider(MENU_XL, 2), Img_Slider(MENU_XL, 3), Img_Slider(MENU_XL, 4), Img_Slider(MENU_XL, 5), Img_Slider(MENU_XL, 6), Img_Slider(MENU_XL, 7), Img_Slider(MENU_XL, 8), Img_Slider(MENU_XL, 9), Img_Slider(MENU_XL, 10) };
-    Rasteron_Queue* words_queue = RASTERON_QUEUE_ALLOC("words", RASTERON_SIZE(64, 512), 9);
-    Img_Base words_textures[9] = { queue_getImg(words_queue, 0), queue_getImg(words_queue, 1), queue_getImg(words_queue, 2), queue_getImg(words_queue, 3), queue_getImg(words_queue, 4), queue_getImg(words_queue, 5), queue_getImg(words_queue, 6), queue_getImg(words_queue, 7), queue_getImg(words_queue, 8) };
+    std::vector<Geo_Actor> _actors;
+#ifdef TOPL_ENABLE_PHYSICS
+    std::vector<Phys_Actor> _physics; // std::vector<Phys_Connector> _connectors;
 #endif
-private:
-    Topl_Scene canvas; // for backdrop element
-    Topl_Scene scene; // for main elements
-    Topl_Scene overlay; // for gui elements
-    Topl_Scene details; // for details elements
-
-    void addSceneGeometry(Geo_Actor* actor);
-    // TODO: Add other functions especially for GUI functionality
-
-    Topl_Camera fixedCamera;
-} *_DEMO; // USE _DEMO OBJECT FOR DEMO
+#ifdef RASTERON_H
+    std::vector<Img_Base*> _images;
+    // std::vector<Img_Array> _imgArrays; 
+    // std::vector<Img_Volume> _imgVolumes; 
+#endif
+    std::vector<Geo_Grid*> _grids;
+    std::vector<Geo_Chain*> _chains;
+    std::vector<Geo_Billboard*> _billboards;
+#ifdef RASTERON_H
+    std::vector<Img_Button*> _buttons; 
+    std::vector<Img_Label*> _labels; 
+    std::vector<Img_Dial*> _dials; 
+    std::vector<Img_Slider*> _sliders;
+#endif
+#ifdef TOPL_ENABLE_MODELS
+    // Geo_Model> _models;
+#endif
+} *_DEMO;

@@ -14,6 +14,7 @@ public:
 			(_direction.data[1] * count) * -0.5f,
 			(_direction.data[2] * count) * -0.5f
         });
+        init();
     }
 
     Geo_Chain(const std::string& prefix, Topl_Scene* scene, const Geo_Mesh* mesh, Vec3f direction, unsigned count)
@@ -24,17 +25,21 @@ public:
 			(_direction.data[1] * count) * -0.5f,
 			(_direction.data[2] * count) * -0.5f
         });
+        init();
         configure(scene);
     }
 
     std::string getLinkName(unsigned num){ return getPrefix() + "link" + std::to_string(num); }
 
-    void configure(Topl_Scene* scene) override {
+    void init(){
+        for(unsigned c = 0; c < _geoActors.size(); c++) _geoActors[c].updatePos(_origin + (_direction * c));
 #ifdef TOPL_ENABLE_PHYSICS
-    _links.resize(_geoActors.size() - 1);
+        _links.resize(_geoActors.size() - 1);
 #endif
+    }
+
+    void configure(Topl_Scene* scene) override {
         for(unsigned c = 0; c < _geoActors.size(); c++){
-            _geoActors[c].updatePos(_origin + (_direction * c));
             scene->addGeometry(getLinkName(c + 1), &_geoActors[c]);
 #ifdef TOPL_ENABLE_PHYSICS
             scene->addPhysics(getLinkName(c + 1), &_physActors.at(c));

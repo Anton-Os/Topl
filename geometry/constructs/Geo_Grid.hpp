@@ -36,6 +36,7 @@ public:
 			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
 			DEFAULT_Z
 		});
+		init();
     }
 
     Geo_Grid(const std::string& prefix, Topl_Scene* scene, const Geo_Mesh* mesh, const Geo_Grid_Params& params) 
@@ -46,13 +47,14 @@ public:
 			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
 			DEFAULT_Z
 		});
+		init();
 		configure(scene);
     }
 	
 	std::string getCellName(unsigned num){ return getPrefix() + "cell" + std::to_string(num); }
 	const Geo_Grid_Params* getParams(){ return &_params; }
 
-	void configure(Topl_Scene* scene) override {
+	void init(){
 		Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
 
 		const unsigned short width = _params.x.first;
@@ -70,10 +72,18 @@ public:
 			});
 
 			_geoActors[c].updatePos(_origin + offset);
-			scene->addGeometry(getCellName(c + 1), &_geoActors[c]);
-			// scene->addPhysics(getPrefix() + getCellName(c + 1), &_physActors.at(c));
 		}
 	}
+
+	void configure(Topl_Scene* scene) override {
+		for(unsigned c = 0; c < _params.getGridSize(); c++){
+			scene->addGeometry(getCellName(c + 1), &_geoActors[c]);
+#ifdef TOPL_ENABLE_PHYSICS
+			scene->addPhysics(getCellName(c + 1), &_physActors.at(c));
+#endif
+		}
+	}
+
 protected:
     Geo_Grid_Params _params;
 };
