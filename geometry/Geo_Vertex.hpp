@@ -12,9 +12,16 @@ enum AXIS_Target { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
 
 struct Geo_Vertex {
 	Geo_Vertex() {} // empty constructor
-	Geo_Vertex(Vec3f p){ position = p; } // position constructor
+	Geo_Vertex(Vec3f p){ 
+		position = p;
+
+		double length = (p[0] > p[1])? p[0] : p[1]; // sqrt(pow(p[0], 2) + pow(p[1], 2));
+		texcoord = Vec3f({ (float)((p[0] / length) + 1.0F) * 0.5F, (float)((p[1] / length) + 1.0F) * 0.5F, 0.0F });
+	} // position constructor
 	Geo_Vertex(Vec3f p, /* Vec3f n, */ Vec3f t) { // full constructor
-		position = p; /* normal = n; */ texcoord = t;
+		position = p; 
+		/* normal = n; */ 
+		texcoord = t;
 	}
 
 	Vec3f position = Vec3f({ 0.0, 0.0, 0.0 });

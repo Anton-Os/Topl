@@ -14,12 +14,12 @@
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
-struct Shape {
+struct Shape {  // TODO: Change to Shape2D
 	float radius;
     unsigned short segments;
 };
 
-struct Volume {
+struct Volume { // TODO: Change to Shape3D
 	float radius;
 	unsigned short xSegs, ySegs;
 };
@@ -69,7 +69,7 @@ protected:
 	virtual void genVertices(){}
 	virtual void genIndices(){}
 
-	static Vec3f getTexCoord(unsigned v, float z) { // default texture coordinate generator
+	Vec3f getTexCoord(unsigned v, float z) { // default texture coordinate generator
 		float x = ((v - 1) % 4 == 0 || (v - 1) % 4 == 1)? 1.0f : 0.0f;
 		float y = ((v - 1) % 4 == 1 || (v - 1) % 4 == 2) ? 1.0f : 0.0f;
 		return Vec3f({ x, y, z });

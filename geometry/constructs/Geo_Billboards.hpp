@@ -31,7 +31,7 @@ public:
 		_geoActors.resize(_params.getGridSize() + 1);
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
-		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 10.0F), (1.0F / _params.y.first) - (rootBorder / 10.0F), 0.0F });
+		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
 		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(0xFF666666) });
 	}
 
@@ -46,11 +46,13 @@ public:
 #endif
 	}
 	void scale(Vec3f scaleVec){
+		const float scaleX = 1.335; // 1.8F - (0.02125F * _params.x.first);
+		const float scaleY = 1.335; // 1.8F - (0.02125F * _params.y.first);
     	for(unsigned g = 0; g < _geoActors.size(); g++) {
 			_geoActors[g].setSize(scaleVec);
 			Vec3f offsetVec = *_geoActors[_params.getGridSize()].getPos() - *_geoActors[g].getPos();
 			if(_params.getGridSize() != g)
-				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * 1.375F, offsetVec[1] * scaleVec[1] * 1.375F, 0.0F });
+				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * scaleX, offsetVec[1] * scaleVec[1] * scaleY, 0.0F });
 		}
     }
 
@@ -63,6 +65,7 @@ public:
 			
 			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
 			if(paneItemUI != paneItemUI_map.end()){
+				std::cout << "Setting state" << std::endl;
 				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
 					(p == paneIndex) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)

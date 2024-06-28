@@ -36,8 +36,8 @@ public:
     void shift(Vec3f vec){ 
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
     }
-    void toggleShow(){
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = !_geoActors[g].isShown;
+    void toggleShow(bool isShown){
+        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = isShown;
     }
     void rotateAll(Vec3f angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updateRot(angles);

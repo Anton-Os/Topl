@@ -1,3 +1,5 @@
+#include <typeinfo>
+
 #include "backends/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
 #ifdef _WIN32
 #include "backends/directx/Topl_Renderer_DX11.hpp"
@@ -53,7 +55,7 @@ public:
 		shader_cptr geomSource
 	);
 
-	static void switchPipeline(BACKEND_Target backend, Topl_Renderer* renderer, Topl_Pipeline* pipeline);
+	static void switchPipeline(Topl_Renderer* renderer, Topl_Pipeline* pipeline);
 private:
 	static void configPipelines(); // config helper function
 

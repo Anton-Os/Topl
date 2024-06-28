@@ -49,6 +49,13 @@ public:
 
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }
+	std::string getNameExt() const {
+		std::string ext = "";
+		for(unsigned short e = _name.length() - 1; e > 0 && isdigit(_name[e]); e--)
+			ext += _name[e];
+		std::reverse(ext.begin(), ext.end());
+		return (ext.length() > 0)? ext : "0";
+	}
 	const Geo_Mesh* getMesh() const { return _mesh; }
 	vec3f_cptr_t getPos() const { return &_position; }
 	vec3f_cptr_t getRot() const { return &_rotation; }

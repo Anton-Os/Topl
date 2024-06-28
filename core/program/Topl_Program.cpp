@@ -130,7 +130,7 @@ void Topl_Program::cleanup() {
 void Topl_Program::run(){
     init();
 
-    while (true) {
+    while (_platform->handleEvents()) {
 		if(!Topl_Program::timeline.dynamic_ticker.isPaused)
 			Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 		{
@@ -140,6 +140,7 @@ void Topl_Program::run(){
 		}
 
 		_renderer->clear(); // clears view to solid color
+		Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Remove Backend component
 		loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
 		_renderer->present(); // switches front and back buffers
 #ifdef RASTERON_H
@@ -147,7 +148,6 @@ void Topl_Program::run(){
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
 		RASTERON_DEALLOC(frameImg.getImage()); */
 #endif
-		_platform->handleEvents();
 	}
 
 	cleanup();
@@ -172,7 +172,8 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
 				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
 			}
-		} 
+			std::cout << "Color picker triggered with " << Topl_Program::pickerObj->getName() << " and color " << std::to_string(Topl_Program::pickerColor) << std::endl;
+		} else std::cout << "Color picker triggered with no value" << std::endl;
 	}
 
 	_renderer->clear();
@@ -192,6 +193,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 		((color & 0xFF00) >> 8) / 255.0f, 
 		(color & 0xFF) / 255.0f,  
 	};
+	std::cout << "Coord picker triggered with color " << std::to_string(Topl_Program::pickerColor) << std::endl;
 
 	_renderer->clear();
 

@@ -54,7 +54,9 @@ public:
 	unsigned colorPicker(Topl_Scene* scene); // get solid color to find item
 	Vec3f coordPicker(Topl_Scene* scene); // get relative coordinates within item
 #endif
-	static Vec3f getCamCursorPos(){ return (*cameraObj.getPos() + cursorPos - Vec3f{ 0.0, 0.0, CAM_DEPTH } ) * (1.0 / *cameraObj.getZoom()); } // TODO: Include roll
+	static Vec3f getCamCursorPos(){ 
+		return (*cameraObj.getPos() + Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0 }) - Vec3f{ 0.0, 0.0, CAM_DEPTH } ) * (1.0 / *cameraObj.getZoom());  // TODO: Include roll
+	}
 
 	static Topl_Camera cameraObj; // custom camera object
 	static Topl_Timeline timeline;
