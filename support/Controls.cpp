@@ -52,7 +52,6 @@ void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	}
 
 	stampEvent();
-
 }
 
 void Input_MouseControl::addPress(enum MOUSE_Event event){

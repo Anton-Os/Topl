@@ -45,7 +45,7 @@ struct Sandbox_Demo : public Topl_Program {
             coneActors[s] = Geo_Actor(_cones[s]);
             volumeActors[s] = Geo_Actor(_volumes[s]);
 #ifdef RASTERON_H
-            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base(RAND_COLOR()));
+            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
             // _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
 #endif
         }
@@ -61,11 +61,11 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.back()->shift({ 0.0F, 0.95F, 0.0F });
         _billboards.push_back(new Geo_Listboard("sculpt_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ -0.25F, 3.0F, 1.0F });
-        _billboards.back()->shift({ -0.95F, 0.0F, 0.0F });
+        _billboards.back()->shift({ -0.935F, 0.0F, 0.0F });
         _billboards.push_back(new Geo_Listboard("paint_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ -0.25F, 3.0F, 1.0F });
-        _billboards.back()->shift({ 0.95F, 0.0F, 0.0F });
-        _billboards.push_back(new Geo_Crossboard("props_board", 2));
+        _billboards.back()->shift({ 0.935F, 0.0F, 0.0F });
+        _billboards.push_back(new Geo_Crossboard("props_board", 3));
         _billboards.back()->scale({ 1.0F, -0.15F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.866F, 0.0F });
 #ifdef RASTERON_H

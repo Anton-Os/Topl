@@ -45,7 +45,7 @@ static void onAnyKey(char k){
 static void onDrag(float x, float y){
 	static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
 
-	if(Platform::mouseControl.getIsMouseDown().second){
+	/* if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
 
 		if(Topl_Program::isCamera_mouse){
@@ -59,7 +59,7 @@ static void onDrag(float x, float y){
 					Topl_Program::cameraObj.updateRot({ savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
 			} 
 		}
-	}
+	} */
 }
 
 static void onPress(float x, float y){ 
@@ -157,7 +157,7 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_MODE_SOLID);
-	_renderer->setCamera(&Topl_Program::cameraObj);
+	_renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
 
@@ -169,6 +169,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 		if(actor != nullptr){
 			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
+				std::cout << "Picker callback firing inside Program!" << std::endl;
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
 				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
 			}
@@ -183,7 +184,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_MODE_COORD);
-	_renderer->setCamera(&Topl_Program::cameraObj);
+	_renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
 

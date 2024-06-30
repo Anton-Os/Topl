@@ -53,7 +53,7 @@ void Sandbox_Demo::onObjectPick(MOUSE_Event event){
     if(event == MOUSE_RightBtn_Press){
         // _billboards.back()->toggleShow(true);
         // TODO: Show properties and labels
-    } else if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press){
+    } else if(Platform::mouseControl.getIsMouseDown().second){
         std::cout << "_action is " << std::to_string(_action) << std::endl;
         switch(_action){
             case SANDBOX_Move: 
@@ -189,7 +189,7 @@ void Sandbox_Demo::loop(double frameTime){
             colorPick = colorPicker(&mainScene);
             coordPick = coordPicker(&mainScene);
         }
-        _renderer->texturizeScene(&mainScene);
+        // _renderer->texturizeScene(&mainScene);
 
         // check against backdrop for match?
         if(Topl_Program::pickerObj == nullptr){
@@ -200,13 +200,13 @@ void Sandbox_Demo::loop(double frameTime){
 
     _renderer->setDrawMode(DRAW_Triangles);
 
-    Topl_Factory::switchPipeline( _renderer, _effectPipeline);
-    _renderer->updateScene(&backdropScene);
-    _renderer->drawScene(&backdropScene);
+    // Topl_Factory::switchPipeline( _renderer, _effectPipeline);
+    // _renderer->updateScene(&backdropScene);
+    // _renderer->drawScene(&backdropScene);
 
     // _flatVShader.setMode(FLAT_MODE_COORD);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
-    // _renderer->setCamera(&camera);
+    _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->updateScene(&mainScene);
     _renderer->drawScene(&mainScene);
 

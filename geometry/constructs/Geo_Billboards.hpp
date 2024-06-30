@@ -46,8 +46,8 @@ public:
 #endif
 	}
 	void scale(Vec3f scaleVec){
-		const float scaleX = 1.335; // 1.8F - (0.02125F * _params.x.first);
-		const float scaleY = 1.335; // 1.8F - (0.02125F * _params.y.first);
+		const float scaleX = 2.0F - ((_params.x.first - 2) * 0.055F);
+		const float scaleY = 2.0F - ((_params.y.first - 2) * 0.055F);
     	for(unsigned g = 0; g < _geoActors.size(); g++) {
 			_geoActors[g].setSize(scaleVec);
 			Vec3f offsetVec = *_geoActors[_params.getGridSize()].getPos() - *_geoActors[g].getPos();
