@@ -44,6 +44,8 @@ static void onAnyKey(char k){
 }
 
 static void onDrag(float x, float y){
+	std::cout << "Coord vec diff is " << std::to_string(Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0]) << ", " << std::to_string(Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1]) << std::endl;
+
 	/* if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
 
@@ -61,7 +63,9 @@ static void onDrag(float x, float y){
 	} */
 }
 
-static void onPress(float x, float y){ 
+static void onPress(float x, float y){
+	std::cout << "On press triggered" << std::endl;
+
 	if(!Topl_Program::isInputEnabled) Topl_Program::userInput.clear();
 	Topl_Program::cursorPos = { x, y, 0.0F }; 
 
@@ -82,7 +86,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
-	// Platform::mouseControl.addDragCallback(onDrag); // for camera
+	Platform::mouseControl.addDragCallback(onDrag);
 
 	// Preset Pipeline Generation
 

@@ -54,6 +54,7 @@ struct Sandbox_Demo : public Topl_Program {
                 _images.push_back(new Img_Base(noiseImgOp_tiled({1024, 1024}, { (unsigned)pow(2, i + 1), (unsigned)pow(2, i + 1), RAND_COLOR(), RAND_COLOR() })));
                 mainScene.addTexture(std::to_string(i + 1), _images.back());
             }
+            _imgVolumes.push_back(new Img_Volume(16)); _imgVolumes.push_back(new Img_Volume(32)); _imgVolumes.push_back(new Img_Volume(64));
             // _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
 #endif
         }
@@ -103,6 +104,7 @@ struct Sandbox_Demo : public Topl_Program {
     static void onMenuPick(MOUSE_Event event);
 
     static SANDBOX_Action _action;
+    static unsigned short _mode;
 
     std::vector<Geo_Mesh*> _meshes;
     std::vector<Geo_Surface*> _surfaces;
@@ -111,9 +113,9 @@ struct Sandbox_Demo : public Topl_Program {
     std::vector<Geo_Orb*> _orbs;
     std::vector<Geo_Iter*> _iterables;
 
-    std::vector<Geo_Actor> _actors;
+    std::vector<Geo_Actor*> _actors;
 #ifdef TOPL_ENABLE_PHYSICS
-    std::vector<Phys_Actor> _physics; // std::vector<Phys_Connector> _connectors;
+    std::vector<Phys_Actor*> _physics; // std::vector<Phys_Connector> _connectors;
 #endif
 #ifdef RASTERON_H
     std::vector<Img_Base*> _images;

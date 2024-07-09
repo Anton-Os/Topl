@@ -129,6 +129,7 @@ protected:
     unsigned long _frameIDs = 0; // increments with each frame drawn
     std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
     std::map<const Geo_Actor*, unsigned long> _renderTargetMap; // maps each object to renderID
+    std::map<const Img*, bool> _texRefreshMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
 	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific context

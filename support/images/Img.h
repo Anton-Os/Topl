@@ -6,7 +6,7 @@
 #define DEFAULT_IMG_HEIGHT 256
 #define DEFAULT_IMG_WIDTH 256
 
-struct Img {
+struct Img { // Refresh State
 	void setRefresh(bool value){ if(isRefresh != nullptr) *isRefresh = value; }
 	bool* isRefresh; // this updates whenever refresh is required 
 protected:
@@ -143,8 +143,7 @@ struct Img_Volume : public Img {
 	void addSlice(ref_image_t refImg, unsigned d){
         setRefresh(true);
 
-		if (refImg->height == height && refImg->width == width)
-			queue_addImg(queue, refImg, d);
+		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
 		else return logMessage("Slice needs to match width and height"); // error
 
 		// Updating data internally
