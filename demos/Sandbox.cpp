@@ -2,6 +2,9 @@
 
 SANDBOX_Action Sandbox_Demo::_action = SANDBOX_Move;
 
+static Vec3f pointsSet[4] = { Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }) };
+static Img_Base paintImg = Img_Base(checkerImgOp({ 1024, 1024 }, { 2, 2, 0xFF0000FF, 0xFFFF0000 }));
+
 static void onSpace(){
     // logMessage("onSpace() triggered");
 }
@@ -10,12 +13,24 @@ static void onAnyKey(char k){
     // logMessage("onAnyKey() triggered");
 }
 
+static void onPress(float x, float y){
+    static unsigned short pressCount = 0;
+    pointsSet[pressCount % 4] = Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
+    pressCount++;
+}
+
 static void onDrag(float x, float y){
     // logMessage("onDrag() triggered");
 }
 
 static void onScroll(bool isZoom){
-    // logMessage("onScroll() triggered");
+    if(Topl_Program::pickerObj != nullptr){
+        switch(Sandbox_Demo::_action){
+            case SANDBOX_Move: Topl_Program::pickerObj->updatePos({ 0.0F, 0.0F, (isZoom)? 0.05F : -0.05F }); break;
+            case SANDBOX_Rotate: Topl_Program::pickerObj->updateRot({ 0.0F, 0.0F, (isZoom)? 0.05F : -0.05F }); break;
+            case SANDBOX_Scale: Topl_Program::pickerObj->updateSize({ 0.0F, 0.0F, (isZoom)? 0.05F : -0.05F }); break;
+        }
+    }
 }
 
 static void timeAdjEvent(double m){
@@ -31,21 +46,35 @@ void Sandbox_Demo::onBackdropPick(MOUSE_Event event){
 
     if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press){
         switch(_action){
-            case SANDBOX_Pan: 
-                std::cout << "move camera!" << std::endl;
-                Topl_Program::cameraObj.updatePos({ 0.1F, 0.0F, 0.0F });
+            case SANDBOX_Pan:
+                Topl_Program::cameraObj.updatePos({ (Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0]) / 20.0F, (Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1]) / 20.0F, 0.0F });
                 break;
-            case SANDBOX_Pivot: 
-                std::cout << "rotate camera!" << std::endl; 
-                Topl_Program::cameraObj.updateRot(Topl_Program::getCamCursorPos());
+            case SANDBOX_Pivot:
+                Topl_Program::cameraObj.updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
                 break;
-            case SANDBOX_Zoom: 
-                std::cout << "scale camera!" << std::endl; 
-                Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * 1.05);
+            case SANDBOX_Zoom:
+                Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + (Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0]) + ( Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1]));
+                break;
+            case SANDBOX_Sculpt:
+                _DEMO->_meshes.push_back(new Geo_Mesh({ pointsSet[0], pointsSet[1], pointsSet[2] }));
+                _DEMO->_actors.push_back(Geo_Actor(_DEMO->_meshes.back()));
+                _DEMO->_actors.back().setPos({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
+                // _DEMO->mainScene.addGeometry(&_DEMO->_actors.back());
+                // TODO: Rebuild scene to dislay
                 break;
         }
     }
 }
+
+/* void Sandbox_Demo::updateAnim(){
+    // _positions_map[Topl_Program::pickerObj] = Topl_Program::pickerObj->getPos();
+    // Topl_Program::timeline.addSequence_vec3f(&_positions_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, _positions_map[Topl_Program::pickerObj]));
+    // _rotations_map[Topl_Program::pickerObj] = Topl_Program::pickerObj->getRot();
+    // Topl_Program::timeline.addSequence_vec3f(&_positions_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, _rotations_map[Topl_Program::pickerObj]));
+    // _scales_map[Topl_Program::pickerObj] = Topl_Program::pickerObj->getSize();
+    // Topl_Program::timeline.addSequence_vec3f(&_scales_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, _scales_map[Topl_Program::pickerObj]));
+} */
+
 
 void Sandbox_Demo::onObjectPick(MOUSE_Event event){
     std::cout << "onObjectPick() triggered with " << Topl_Program::pickerObj->getName() << " and extension " << Topl_Program::pickerObj->getNameExt() << std::endl;
@@ -55,18 +84,24 @@ void Sandbox_Demo::onObjectPick(MOUSE_Event event){
         // TODO: Show properties and labels
     } else if(Platform::mouseControl.getIsMouseDown().second){
         std::cout << "_action is " << std::to_string(_action) << std::endl;
+        std::cout << "Coord vec is: " << std::to_string(Topl_Program::pickerCoord[0]) << ", " << std::to_string(Topl_Program::pickerCoord[1]) << ", " << std::to_string(Topl_Program::pickerCoord[2]) << ", " << std::endl;
+        std::cout << "Last Coord vec is: " << std::to_string(Topl_Program::lastPickerCoord[0]) << ", " << std::to_string(Topl_Program::lastPickerCoord[1]) << ", " << std::to_string(Topl_Program::lastPickerCoord[2]) << ", " << std::endl;
         switch(_action){
-            case SANDBOX_Move: 
-                std::cout << "move object!" << std::endl;
-                Topl_Program::pickerObj->setPos(Topl_Program::getCamCursorPos());
+            case SANDBOX_Move: Topl_Program::pickerObj->setPos(Topl_Program::getCamRelPos(nullptr)); break;
+            case SANDBOX_Rotate:
+                // Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
+                Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
                 break;
-            case SANDBOX_Rotate: 
-                std::cout << "rotate object!" << std::endl;
-                Topl_Program::pickerObj->updateRot(Topl_Program::getCamCursorPos());
+            case SANDBOX_Scale:
+                Topl_Program::pickerObj->updateSize({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
                 break;
-            case SANDBOX_Scale: 
-                std::cout << "scale object!" << std::endl; 
-                Topl_Program::pickerObj->updateSize(Topl_Program::getCamCursorPos());
+            case SANDBOX_Paint:
+                std::cout << "special paint triggered!" << std::endl;
+                Rasteron_Image* stageImage = copyImgOp(paintImg.getImage());
+                // TODO: Implement painting algorithm
+                paintImg.setImage(stageImage);
+                // TODO: Update cooresponding picker object and texturize scene
+                RASTERON_DEALLOC(stageImage);
                 break;
         }
     }
@@ -76,29 +111,33 @@ void Sandbox_Demo::onMenuPick(MOUSE_Event event){
     std::cout << "onMenuPick() triggered with " << Topl_Program::pickerObj->getName() << " and extension " << Topl_Program::pickerObj->getNameExt() << std::endl;
 
     unsigned short ext = std::stoi(Topl_Program::pickerObj->getNameExt());
-    if(event == MOUSE_LeftBtn_Press){
-        // TODO: Change the current action
-        if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos){
-            _action = (SANDBOX_Action)ext;
-            std::cout << "actions_board pressed! _action is " << std::to_string(_action) << std::endl;
-            _DEMO->_billboards.at(2)->setState(ext, Platform::mouseControl.getIsMouseDown().second);
-        } 
-        else if(Topl_Program::pickerObj->getName().find("objs_board") != std::string::npos) std::cout << "objs_board pressed!" << std::endl;
-        else if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos){ 
-            _action = SANDBOX_Sculpt;
-            std::cout << "sculpt_board pressed!" << std::endl;
-        }
-        else if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos){ 
-            _action = SANDBOX_Paint;
-            std::cout << "sculpt_board pressed!" << std::endl;
-        }
+    // if(event == MOUSE_LeftBtn_Press){
+    // TODO: Change the current action
+    if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos){
+        _action = (SANDBOX_Action)ext;
+        _DEMO->_billboards.at(SANDBOX_ACTION)->resetState();
+        _DEMO->_billboards.at(SANDBOX_ACTION)->setState(ext - 1, Platform::mouseControl.getIsMouseDown().second);
+    } 
+    else if(Topl_Program::pickerObj->getName().find("objs_board") != std::string::npos)
+        _DEMO->_billboards.at(SANDBOX_PICKER)->setState(ext - 1, Platform::mouseControl.getIsMouseDown().second);
+    else if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos){ 
+        _action = SANDBOX_Sculpt;
+        _DEMO->_billboards.at(SANDBOX_ACTION)->resetState();
+        _DEMO->_billboards.at(SANDBOX_SCULPT)->setState(ext - 1, Platform::mouseControl.getIsMouseDown().second);
     }
+    else if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos){ 
+        _action = SANDBOX_Paint;
+        _DEMO->_billboards.at(SANDBOX_ACTION)->resetState();
+        _DEMO->_billboards.at(SANDBOX_PAINT)->setState(ext - 1, Platform::mouseControl.getIsMouseDown().second);
+    }
+    // }
 }
 
 
 void Sandbox_Demo::init(){
     Platform::keyControl.addCallback(' ', onSpace);
     Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, onPress);
     Platform::mouseControl.addDragCallback(onDrag);
     Platform::mouseControl.setOnScroll(onScroll);
 
@@ -180,15 +219,19 @@ void Sandbox_Demo::loop(double frameTime){
     if(Platform::mouseControl.getIsMouseDown().second){
         // check overlay for match first
         if(Topl_Program::pickerObj == nullptr) {
+            _renderer->setCamera(&fixedCamera);
             colorPick = colorPicker(&overlayScene);
             coordPick = coordPicker(&overlayScene);
+            _renderer->texturizeScene(&overlayScene); // Optimize this!
         }
 
         // check main scene for match
-        if(Topl_Program::pickerObj == nullptr) {
+        // if(Topl_Program::pickerObj == nullptr){
+            _renderer->setCamera(&Topl_Program::cameraObj);
             colorPick = colorPicker(&mainScene);
             coordPick = coordPicker(&mainScene);
-        }
+            _renderer->texturizeScene(&mainScene); // Optimize this!
+        // }
         // _renderer->texturizeScene(&mainScene);
 
         // check against backdrop for match?
@@ -198,6 +241,11 @@ void Sandbox_Demo::loop(double frameTime){
         }
     } else Topl_Program::pickerObj = nullptr; // resets
 
+    /* if(_renderer->getFrameCount() % 60 == 0){ // TODO: Move to separate thread
+        for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images[i]->setColorImage(RAND_COLOR());
+        _renderer->texturizeScene(&mainScene);
+    } */
+
     _renderer->setDrawMode(DRAW_Triangles);
 
     // Topl_Factory::switchPipeline( _renderer, _effectPipeline);
@@ -206,21 +254,25 @@ void Sandbox_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(FLAT_MODE_COORD);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    _texVShader.setMode((_renderer->getFrameCount() / 80) % 8);
     _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->updateScene(&mainScene);
     _renderer->drawScene(&mainScene);
 
     // _flatVShader.setMode(FLAT_MODE_SOLID);
-    // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    _texVShader.setMode(0);
     _renderer->setCamera(&fixedCamera);
     _renderer->updateScene(&overlayScene);
     _renderer->drawScene(&overlayScene);
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
 
+    // std::thread texturizeThread; // update textures
     _DEMO->run();
+    // texturizeThread.join();
     delete(_DEMO);
     return 0;
 }

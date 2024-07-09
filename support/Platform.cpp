@@ -97,7 +97,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	case (WM_CHAR): { 
 		if(wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
-		else if(isKeyReady) Platform::keyControl.addKeyPress((char)wParam);
+		else if(isKeyReady && (isalnum(wParam) || isspace(wParam))) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }

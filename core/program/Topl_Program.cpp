@@ -9,8 +9,9 @@ std::string Topl_Program::userInput = "";
 
 #ifdef RASTERON_H
 unsigned Topl_Program::pickerColor = NO_COLOR;
-// unsigned Topl_Program::pickerVal_coord = NO_COLOR;
+unsigned Topl_Program::lastPickerColor = NO_COLOR;
 Vec3f Topl_Program::pickerCoord = { 0.0F, 0.0F, 0.0F };
+Vec3f Topl_Program::lastPickerCoord = { 0.0F, 0.0F, 0.0F };
 Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
@@ -43,20 +44,18 @@ static void onAnyKey(char k){
 }
 
 static void onDrag(float x, float y){
-	static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
-
 	/* if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
 
 		if(Topl_Program::isCamera_mouse){
 			if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
-				if(savedColorVec[0] != Topl_Program::pickerCoord[0] || savedColorVec[1] != Topl_Program::pickerCoord[1])
-					Topl_Program::cameraObj.updatePos({ savedColorVec[0] - Topl_Program::pickerCoord[0], savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0 });
+				if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] || Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
+					Topl_Program::cameraObj.updatePos({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0 });
 			} else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
-				if(savedColorVec[0] != Topl_Program::pickerCoord[0])
-					Topl_Program::cameraObj.updateRot({ savedColorVec[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
-				if(savedColorVec[1] != Topl_Program::pickerCoord[1])
-					Topl_Program::cameraObj.updateRot({ savedColorVec[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
+				if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0])
+					Topl_Program::cameraObj.updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
+				if(Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
+					Topl_Program::cameraObj.updateRot({ Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
 			} 
 		}
 	} */
@@ -65,6 +64,9 @@ static void onDrag(float x, float y){
 static void onPress(float x, float y){ 
 	if(!Topl_Program::isInputEnabled) Topl_Program::userInput.clear();
 	Topl_Program::cursorPos = { x, y, 0.0F }; 
+
+	if(Topl_Program::pickerObj != nullptr) Topl_Program::lastPickerColor = Topl_Program::pickerColor;
+	Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
 }
 
 Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
@@ -148,6 +150,10 @@ void Topl_Program::run(){
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
 		RASTERON_DEALLOC(frameImg.getImage()); */
 #endif
+		/* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1]){
+			std::cout << "Setting last picker coordinate" << std::endl;
+			Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
+		} */
 	}
 
 	cleanup();
@@ -157,7 +163,7 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_MODE_SOLID);
-	_renderer->setCamera(&Topl_Program::cameraObj); // remove this?
+	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
 
@@ -184,7 +190,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_MODE_COORD);
-	_renderer->setCamera(&Topl_Program::cameraObj); // remove this?
+	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
 

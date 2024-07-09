@@ -12,6 +12,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 	mat4 projMatrix;
 }; */
 
+uniform vec4 controlPoints[64];
+uniform vec4 nearestVertex[1024];
+
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
 
@@ -19,8 +22,8 @@ layout(location = 1) in vec3 texcoord;
 
 mat3 getRotMatrix(vec3 angles) {
 	mat3 zRotMatrix = mat3( // Roll
-		cos(angles.x), -sin(angles.x), 0,
-		sin(angles.x), cos(angles.x), 0,
+		cos(angles.x), sin(angles.x), 0,
+		-sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	);
 

@@ -11,6 +11,11 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4x4 projMatrix;
 } */
 
+cbuffer CONST_ENV_BLOCK : register(b2) {
+	float4 controlPoints[64];
+	float4 nearestVertex[1024];
+}
+
 struct VS_INPUT {
 	float4 pos : POSITION;
 	float3 texcoord : TEXCOORD;

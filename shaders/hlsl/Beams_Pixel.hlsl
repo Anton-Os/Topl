@@ -53,5 +53,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		float depth = sqrt(pow(input.vertex_pos.x, 2) + pow(input.vertex_pos.y, 2) + pow(input.vertex_pos.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 	}
+	else if(mode == 5) return float4(input.light_val, 1.0); // light value
+	// else if(mode == 6) return input.light_val / distance; // light distance value
 	else return float4(ambient + diffuse + specular, 1.0); // all lighting
 }

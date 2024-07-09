@@ -3,13 +3,13 @@
 // Values
 
 layout(binding = 0) uniform sampler2D baseTex;
-layout(binding = 1) uniform sampler2D tex1; // height?
-layout(binding = 2) uniform sampler2D tex2; // roughness?
-layout(binding = 3) uniform sampler2D tex3; // opacity?
-layout(binding = 4) uniform sampler2D tex4; // enviornment?
-layout(binding = 5) uniform sampler2D tex5; // shadow?
-layout(binding = 6) uniform sampler2D tex6; // illumination?
-layout(binding = 7) uniform sampler2D tex7; // testing?
+layout(binding = 1) uniform sampler2D tex1;
+layout(binding = 2) uniform sampler2D tex2;
+layout(binding = 3) uniform sampler2D tex3;
+layout(binding = 4) uniform sampler2D tex4;
+layout(binding = 5) uniform sampler2D tex5;
+layout(binding = 6) uniform sampler2D tex6;
+layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
 
 layout(location = 0) in vec3 texcoord;
@@ -34,7 +34,7 @@ vec4 color_correct(vec4 color){ // switch red and blue color values
 
 void main() {
 	if(mode == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
-	else if(mode > 0 && mode < 8){
+	else if(mode > 0 && mode < 8){ // select texture
 		if(mode == 1) color = color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
 		else if(mode == 2) color = color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));
 		else if(mode == 3) color = color_correct(texture(tex3, vec2(texcoord.x, texcoord.y)));

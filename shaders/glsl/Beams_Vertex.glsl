@@ -23,6 +23,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
+// layout(location = 1) out float light_dist_out;
 layout(location = 1) out vec3 light_pos_out;
 layout(location = 2) out vec3 light_val_out;
 

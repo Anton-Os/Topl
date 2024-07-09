@@ -58,18 +58,21 @@ public:
 
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
+	void resetState(){ for(auto pane = paneItemUI_map.begin(); pane != paneItemUI_map.end(); pane++) pane->second->setState(MENU_Off); }
+
 	void setState(unsigned paneIndex, bool isSelect, double x, double y){
 		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
 		else for(unsigned p = 0; p < _params.getGridSize(); p++){
 			const Geo_Actor* targetActor = getGeoActor(p);
-			
 			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
 			if(paneItemUI != paneItemUI_map.end()){
-				std::cout << "Setting state" << std::endl;
+				std::cout << "Setting state for index" << std::to_string(paneIndex) << " with name " << paneItemUI->second->getName() << std::endl;
+
 				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
 					(p == paneIndex) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)
-					(paneItemUI->second->getState() == MENU_None) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
+					paneItemUI->second->setState(MENU_On); // for testing
+				// 	(paneItemUI->second->getState() == MENU_None)? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if(paneItemUI->second->getName().find("dial") != std::string::npos && p == paneIndex){
 					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*paneItemUI->second));
 					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
@@ -78,7 +81,9 @@ public:
 					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*paneItemUI->second));
 					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
 				}
-			}
+				// else std::cerr << "State setting unsupported for name" << paneItemUI->second->getName() << std::endl;
+				getImgAt(paneIndex)->setImage(paneItemUI->second->stateImg.getImage()); // syncronize state with pane image
+			} else std::cerr << "State setting not found" << std::endl;
 		}
 	}
 
@@ -86,7 +91,7 @@ public:
 
 	void overlay(unsigned paneIndex, Img_UI* element){ 
 		paneItemUI_map.insert({ getGeoActor(paneIndex), element });
-		getImgAt(paneIndex)->setImage(element->stateImg.getImage()); 
+		getImgAt(paneIndex)->setImage(element->stateImg.getImage());
 	}
 protected:
 	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);

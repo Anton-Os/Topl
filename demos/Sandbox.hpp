@@ -14,10 +14,13 @@
 #include "program/Topl_Program.hpp"
 
 #define SANDBOX_MESH_SCALE 0.1
-#define SANDBOX_MESH_COUNT 40
+#define SANDBOX_MESH_COUNT 10
 #define SANDBOX_PANE_COUNT 14
 
-// #define RAND_POINT() ((rand() / RAND_MAX) - 0.5 * SANDBOX_MESH_SCALE)
+#define SANDBOX_PICKER 1
+#define SANDBOX_ACTION 2
+#define SANDBOX_SCULPT 3
+#define SANDBOX_PAINT 4
 
 enum SANDBOX_Action {
     SANDBOX_Move = 1, SANDBOX_Rotate = 2, SANDBOX_Scale = 3,
@@ -38,14 +41,19 @@ struct Sandbox_Demo : public Topl_Program {
                 default: _surfaces.push_back(new Geo_Quad2D(SANDBOX_MESH_SCALE)); _cones.push_back(new Geo_QuadCone(SANDBOX_MESH_SCALE)); _volumes.push_back(new Geo_Quad3D(SANDBOX_MESH_SCALE)); break;
             }
             _orbs.push_back(new Geo_Orb(Volume({ (float)(SANDBOX_MESH_SCALE / SANDBOX_MESH_COUNT) * (s + 1) })));
-            /* _meshes.push_back(new Geo_Mesh({ 
-                randVec(), randVec(), randVec(), randVec(), randVec(), randVec(), randVec(), randVec(), randVec()
-            })); */
+            // for(unsigned v = 3; v < s + 2; v++) _meshes.push_back(new Geo_Mesh(/* number of random vertices matching the original */)); // TODO: create meshes with randomized vertices
+            // _iterables.push_back(new Geo_Iter(_meshes[s])); // TODO: create iterables based on previous meshes
+
             surfaceActors[s] = Geo_Actor(_surfaces[s]);
             coneActors[s] = Geo_Actor(_cones[s]);
             volumeActors[s] = Geo_Actor(_volumes[s]);
 #ifdef RASTERON_H
-            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
+            // for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
+            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base(RAND_COLOR()));
+            for(unsigned short i = 0; i < 8; i++){ // unbound textures
+                _images.push_back(new Img_Base(noiseImgOp_tiled({1024, 1024}, { (unsigned)pow(2, i + 1), (unsigned)pow(2, i + 1), RAND_COLOR(), RAND_COLOR() })));
+                mainScene.addTexture(std::to_string(i + 1), _images.back());
+            }
             // _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
 #endif
         }
@@ -67,7 +75,7 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.back()->shift({ 0.935F, 0.0F, 0.0F });
         _billboards.push_back(new Geo_Crossboard("props_board", 3));
         _billboards.back()->scale({ 1.0F, -0.15F, 1.0F });
-        _billboards.back()->shift({ 0.0F, 0.866F, 0.0F });
+        _billboards.back()->shift({ 0.0F, 0.867F, 0.0F });
 #ifdef RASTERON_H
         for(unsigned short l = 0; l < 20; l++){
             std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
@@ -110,7 +118,7 @@ struct Sandbox_Demo : public Topl_Program {
 #ifdef RASTERON_H
     std::vector<Img_Base*> _images;
     // std::vector<Img_Array> _imgArrays; 
-    // std::vector<Img_Volume> _imgVolumes; 
+    std::vector<Img_Volume*> _imgVolumes; 
 #endif
     std::vector<Geo_Grid*> _grids;
     std::vector<Geo_Chain*> _chains;

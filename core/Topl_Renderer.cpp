@@ -81,7 +81,7 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 	if (!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT] || _renderIDs == 0) return false;
 	else _flags[DRAWN_BIT] = false;
 
-	// setViewport(&_activeViewport);
+	setViewport(&_activeViewport);
 	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
 
     draw(SCENE_RENDERID); // render is scene block data
@@ -114,30 +114,24 @@ void Topl_Renderer::present() {
 #ifdef RASTERON_H
 
 void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
-	for(unsigned g = 0; g < scene->getActorCount(); g++) {
-		actor_cptr actor = scene->getGeoActor(g);
-		unsigned renderID = getRenderID(actor);
+	if(scene->getIsTextured()) 
+		for(unsigned g = 0; g < scene->getActorCount(); g++) {
+			actor_cptr actor = scene->getGeoActor(g);
+			unsigned renderID = getRenderID(actor);
 
-		for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
-			const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
-			if(texture != nullptr) attachTexAt(texture->getImage(), SCENE_RENDERID, t); // TODO: Uncomment this
+			for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
+				const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
+				if(texture != nullptr) attachTexAt(texture->getImage(), SCENE_RENDERID, t); // TODO: Uncomment this
+			}
+
+			if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
+				const Img_Base* texture = scene->getTexture(actor->getName());
+				if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
+				
+				const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
+				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for refresh!
+			} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 		}
-
-
-		if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
-			const Img_Base* texture = scene->getTexture(actor->getName());
-			if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
-
-			/* const Img_Array* arrayTex = scene->getArrayTex(actor->getName());
-			if (arrayTex != nullptr)
-				for (unsigned p = 1; p < MAX_TEX_BINDINGS; p++) // begin from 1 not to override first texture
-					attachTexAt(queue_getImg(arrayTex->getQueue(), p), renderID, p); // TODO: Check for refresh!
-					// attachTexAt(arrayTex->getLayer((unsigned short)p)->getImage(), renderID, p); */
-
-			const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
-			if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for refresh!
-		} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
-	}
 }
 
 

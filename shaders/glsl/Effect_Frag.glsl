@@ -14,8 +14,9 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	mat4 projMatrix;
 	
-	ivec2 screenRes;
+	ivec2 screenRes; // resolution
 	vec2 cursorPos;
+	vec2 trailsPos[8];
 };
 
 layout(location = 0) out vec4 color;

@@ -66,7 +66,7 @@ public:
 		
 		for(unsigned c = 0; c < _params.getGridSize(); c++){
 			offset = Vec3f({
-				((c % width) * x),
+				(c % width) * x,
 				((c % (height * width)) / width) * y,
 				(c / (height * width)) * z
 			});

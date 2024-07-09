@@ -18,6 +18,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes;
 	vec2 cursorPos;
+	vec2 trailsPos[8];
 };
 
 // Main

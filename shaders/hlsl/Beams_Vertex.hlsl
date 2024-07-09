@@ -23,6 +23,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	float3 vertex_pos : POSITION; // vertex position
+	// float light_dist : LIGHT1 // light distance
 	float3 light_pos : LIGHT1; // light position
 	float3 light_val: LIGHT2; // light value
 };

@@ -47,6 +47,8 @@ void main() {
 	else if(mode == 4){ // depth mode
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation
 		color = vec4(depth, depth, depth, 1.0f);
-	} 
+	}
+	else if(mode == 5) color = vec4(light_val, 1.0); // light value
+	// else if(mode == 6) color = light_val / distance; // light distance value
 	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

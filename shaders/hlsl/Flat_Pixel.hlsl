@@ -22,7 +22,7 @@ struct PS_INPUT {
 
 // Main
 
-float4 main(PS_INPUT input) : SV_TARGET {
+float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	if(mode == 1) // view coordinate mode
 		return float4((input.vertex_pos.x / 2) + 0.5, (input.vertex_pos.y/ 2) + 0.5, (input.vertex_pos.z / 2) + 0.5, 1.0f);
 	else if (mode == 2) // actor coordinate mode

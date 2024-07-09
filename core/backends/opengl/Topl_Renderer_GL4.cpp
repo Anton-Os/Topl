@@ -154,11 +154,11 @@ void Topl_Renderer_GL4::clear() {
 }
 
 void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
-	unsigned x = viewport->xOffset;
-	unsigned y = -viewport->yOffset - viewport->height + Platform::getViewportHeight(_platformCtx.window);
+	// TODO: Scale to viewport
+	unsigned width = Platform::getViewportWidth(_platformCtx.window);
+	unsigned height = Platform::getViewportHeight(_platformCtx.window);
 
-	if (viewport != nullptr)
-		glViewport(x, y, viewport->width, viewport->height);
+	if (viewport != nullptr) glViewport(viewport->xOffset, viewport->yOffset, height, width);
 	else _flags[BUILD_BIT] = false; // Error
 }
 
@@ -260,8 +260,16 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
-	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) // Scene Target
+	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID){ // Scene Target
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
+		for(unsigned b = 0; b < MAX_TEX_BINDINGS - 1; b++){
+			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b + 1; });
+			if (tex2D != _textures.end()){
+				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
+				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
+			}
+		}
+	}
 	else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
 		
@@ -278,13 +286,6 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
 			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
 		}
-		/* for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
-			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
-			if (tex2D != _textures.end()){
-				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
-				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
-			}
-		} */
 		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
 		if(tex3D != _textures.end()){
 			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);

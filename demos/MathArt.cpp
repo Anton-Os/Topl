@@ -71,29 +71,22 @@ void MathArt_Demo::loop(double frameTime){
 
     triangleActor.updateRot({ (rand() / (float)RAND_MAX) * rotFactor, 0.0F, 0.0F });
     boxActor.updateRot({ 0.0F, (rand() / (float)RAND_MAX) * rotFactor, 0.0F });
-    circleActor.updateRot({ 0.0F, 0.0F, (rand() / (float)RAND_MAX) * rotFactor });
-
-    targetActor.updateRot({ (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor });
+    circleActor.updateRot({ (rand() / (float)RAND_MAX) * rotFactor, 0.0F, 0.0F });
+    /* targetActor.updateRot({ (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor, (rand() / (float)RAND_MAX) * rotFactor });
 
     if(isRebuildReq){
         targetScene.removeActor("target");
         targetScene.addGeometry("target", &targetActor);
         _renderer->buildScene(&targetScene);
         isRebuildReq = false;
-    }
+    } */
 
     // _texVShader.setMode(TEX_MODE_VOLUME);
     // _renderer->setPipeline(texPipeline);
 
-    if(targetScene.getActorCount() > 0){
-        _renderer->setDrawMode(DRAW_Strip);
-        _renderer->updateScene(&targetScene);
-        _renderer->drawScene(&targetScene);
-    } else {
-        _renderer->setDrawMode(DRAW_Lines);
-        _renderer->updateScene(&scene);
-        _renderer->drawScene(&scene);
-    }
+    _renderer->setDrawMode(DRAW_Lines);
+    _renderer->updateScene(&scene);
+    _renderer->drawScene(&scene);
 }
 
 int main(int argc, char** argv) {

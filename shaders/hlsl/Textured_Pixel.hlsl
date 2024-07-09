@@ -3,13 +3,13 @@
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
 
-Texture2D tex1 : register(t1); SamplerState sampler1 : register(s1); // height?
-Texture2D tex2 : register(t2); SamplerState sampler2 : register(s2); // roughness?
-Texture2D tex3 : register(t3); SamplerState sampler3 : register(s3); // opacity?
-Texture2D tex4 : register(t4); SamplerState sampler4 : register(s4); // enviornment?
-Texture2D tex5 : register(t5); SamplerState sampler5 : register(s5); // shadow?
-Texture2D tex6 : register(t6); SamplerState sampler6 : register(s6); // illumination?
-Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7); // testing?
+Texture2D tex1 : register(t1); SamplerState sampler1 : register(s1);
+Texture2D tex2 : register(t2); SamplerState sampler2 : register(s2);
+Texture2D tex3 : register(t3); SamplerState sampler3 : register(s3);
+Texture2D tex4 : register(t4); SamplerState sampler4 : register(s4);
+Texture2D tex5 : register(t5); SamplerState sampler5 : register(s5);
+Texture2D tex6 : register(t6); SamplerState sampler6 : register(s6);
+Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
 
 Texture3D areaTex : register(t8);
 SamplerState areaSampler : register(s8);
@@ -37,9 +37,7 @@ struct PS_INPUT {
 
 // Functions
 
-float4 color_blend(float4 color1, float4 color2){
-	return (color1 + color2) / 2;
-}
+float4 color_blend(float4 color1, float4 color2){ return (color1 + color2) / 2; }
 
 float4 color_correct(float4 color){ // switch red and blue color values
 	float t = color[0];

@@ -7,7 +7,7 @@ static unsigned short spawnIdx = 0;
 static void spawnPress(float x, float y){
     if(spawnIdx < ENTROPIC_SPAWN){
         _DEMO->spawnActors[spawnIdx].isShown = true;
-        _DEMO->spawnActors[spawnIdx].setPos(Topl_Program::getCamCursorPos());
+        _DEMO->spawnActors[spawnIdx].setPos(Topl_Program::getCamRelPos(nullptr));
         _DEMO->spawnActors[spawnIdx].setRot(VEC_3F_ZERO);
         _DEMO->spawnActors[spawnIdx].setSize({ 0.025F, 0.025F, 0.025F });
         spawnIdx++;

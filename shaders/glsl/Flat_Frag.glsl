@@ -23,15 +23,16 @@ layout(location = 0) out vec4 outColor;
 
 // Main
 
-void main() { 
+void main() {
+	int primID = gl_PrimitiveID;
+
 	if (mode == 1) // directional
 		outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, color.a);
 	else if (mode == 2) // coordinate mode
 		outColor = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
 	else if(mode < 0){
 		// int remainder = id - ((-mode) * int(floor(float(id) / float(-mode))));
-		float factor = 3.0;
-		float fraction = float(id) / float(-mode);
+		float fraction = float(primID) / float(-mode);
 
 		if(fraction - floor(fraction) < 0.25) outColor = vec4(1.0, 0.0, 0.0, 1.0);
 		else if(fraction - floor(fraction) < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0);

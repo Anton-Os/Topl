@@ -8,6 +8,8 @@ struct Img_UI {
 	~Img_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
 
 	virtual void setState(unsigned short index){
+		std::cout << "Set state triggered with index " << std::to_string(index) << std::endl;
+
 		assert(queue != nullptr);
 		queue->index = index % queue->frameCount;
 		stateImg.setImage(queue_getImg(queue, index % queue->frameCount));
@@ -26,12 +28,12 @@ protected:
 struct Img_Button : public Img_UI {
 	Img_Button(enum MENU_Size size) : Img_UI(size){ 
 		queue = loadUI_checkBtn(size); 
-		Img_UI::setState(0);
+		Img_UI::setState(MENU_None);
 	}
 
 	Img_Button(enum MENU_Size size, char* iconName) : Img_UI(size){ 
 		queue = loadUI_iconBtn(size, iconName);
-		Img_UI::setState(0);
+		Img_UI::setState(MENU_None);
 	}
 };
 
@@ -56,7 +58,7 @@ struct Img_Label : public Img_UI {
 		}
 		RASTERON_DEALLOC(textImg);
 
-		Img_UI::setState(0);
+		Img_UI::setState(MENU_None);
 	}
 
 	void setText(Rasteron_Text textObj, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
@@ -74,6 +76,33 @@ private:
 
 	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
 };
+
+struct Img_Item : public Img_UI {
+	Img_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Img_UI(size){ 
+		Rasteron_Image* textImg = textImgOp(&text, (unsigned)size); // TODO: Get from menu size
+		Rasteron_Image* backgroundImg;
+		Rasteron_Image* insertImgs[2];
+		if(side != SIDE_Left && side != SIDE_Right){
+			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + textImg->height + image->height, (unsigned)size + image->width ), 4);
+			backgroundImg = solidImgOp({ (unsigned)size + textImg->height + image->height, (unsigned)size + image->width }, bkColor);
+			insertImgs[0] = insertImgOp(image, backgroundImg, 0.0, 0.0);
+			insertImgs[1] = insertImgOp(textImg, insertImgs[0], 0.0, (side == SIDE_Top)? 0.9 : -0.9);
+		} else {
+			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + image->height, (unsigned)size + textImg->width + image->width ), 4);
+			backgroundImg = solidImgOp({ (unsigned)size + image->height, (unsigned)size + textImg->width + image->width }, bkColor);
+			insertImgs[0] = insertImgOp(image, backgroundImg, (side == SIDE_Left)? 0.9 : -0.9, 0.0);
+			insertImgs[1] = insertImgOp(textImg, insertImgs[0], (side == SIDE_Left)? -0.9 : 0.9, 0.0);
+		}
+		for(unsigned b = 0; b < 4; b++) queue_addImg(queue, insertImgs[1], b);
+		// TODO: Modify images to correspond to 4 menu states
+		Img_UI::setState(MENU_None);
+
+		RASTERON_DEALLOC(backgroundImg);
+		RASTERON_DEALLOC(textImg);
+		RASTERON_DEALLOC(insertImgs[0]); RASTERON_DEALLOC(insertImgs[1]);
+	}
+};
+
 
 struct Img_Dial : public Img_UI {
 	Img_Dial(enum MENU_Size size, unsigned short count) : Img_UI(size){ 
@@ -113,32 +142,6 @@ struct Img_Slider : public Img_UI {
 			}
 		}
 		Img_UI::setState(index);
-	}
-};
-
-struct Img_Item : public Img_UI {
-	Img_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Img_UI(size){ 
-		Rasteron_Image* textImg = textImgOp(&text, (unsigned)size); // TODO: Get from menu size
-		Rasteron_Image* backgroundImg;
-		Rasteron_Image* insertImgs[2];
-		if(side != SIDE_Left && side != SIDE_Right){
-			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + textImg->height + image->height, (unsigned)size + image->width ), 4);
-			backgroundImg = solidImgOp({ (unsigned)size + textImg->height + image->height, (unsigned)size + image->width }, bkColor);
-			insertImgs[0] = insertImgOp(image, backgroundImg, 0.0, 0.0);
-			insertImgs[1] = insertImgOp(textImg, insertImgs[0], 0.0, (side == SIDE_Top)? 0.9 : -0.9);
-		} else {
-			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + image->height, (unsigned)size + textImg->width + image->width ), 4);
-			backgroundImg = solidImgOp({ (unsigned)size + image->height, (unsigned)size + textImg->width + image->width }, bkColor);
-			insertImgs[0] = insertImgOp(image, backgroundImg, (side == SIDE_Left)? 0.9 : -0.9, 0.0);
-			insertImgs[1] = insertImgOp(textImg, insertImgs[0], (side == SIDE_Left)? -0.9 : 0.9, 0.0);
-		}
-		for(unsigned b = 0; b < 4; b++) queue_addImg(queue, insertImgs[1], b);
-		// TODO: Modify images to correspond to 4 menu states
-		Img_UI::setState(0);
-
-		RASTERON_DEALLOC(backgroundImg);
-		RASTERON_DEALLOC(textImg);
-		RASTERON_DEALLOC(insertImgs[0]); RASTERON_DEALLOC(insertImgs[1]);
 	}
 };
 
