@@ -15,7 +15,7 @@
 
 #define SANDBOX_MESH_SCALE 0.1
 #define SANDBOX_MESH_COUNT 10
-#define SANDBOX_PANE_COUNT 14
+#define SANDBOX_PANE_COUNT 12
 
 #define SANDBOX_PICKER 1
 #define SANDBOX_ACTION 2
@@ -47,17 +47,23 @@ struct Sandbox_Demo : public Topl_Program {
             surfaceActors[s] = Geo_Actor(_surfaces[s]);
             coneActors[s] = Geo_Actor(_cones[s]);
             volumeActors[s] = Geo_Actor(_volumes[s]);
-#ifdef RASTERON_H
-            // for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
-            for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base(RAND_COLOR()));
-            for(unsigned short i = 0; i < 8; i++){ // unbound textures
-                _images.push_back(new Img_Base(noiseImgOp_tiled({1024, 1024}, { (unsigned)pow(2, i + 1), (unsigned)pow(2, i + 1), RAND_COLOR(), RAND_COLOR() })));
-                mainScene.addTexture(std::to_string(i + 1), _images.back());
-            }
-            _imgVolumes.push_back(new Img_Volume(16)); _imgVolumes.push_back(new Img_Volume(32)); _imgVolumes.push_back(new Img_Volume(64));
-            // _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
-#endif
         }
+#ifdef RASTERON_H
+        // for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
+        for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++){ 
+            _images.push_back(new Img_Base(RAND_COLOR()));
+            std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
+            std::string labelText = std::to_string(i);
+            // Rasteron_Text textObjRasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })
+            // _imgTexts.push_back(new Img_Base());
+        }
+        for(unsigned short i = 0; i < 8; i++){ // unbound textures
+            _images.push_back(new Img_Base(noiseImgOp_tiled({1024, 1024}, { (unsigned)pow(2, i + 1), (unsigned)pow(2, i + 1), RAND_COLOR(), RAND_COLOR() })));
+            mainScene.addTexture(std::to_string(i + 1), _images.back());
+        }
+        _imgVolumes.push_back(new Img_Volume(16)); _imgVolumes.push_back(new Img_Volume(32)); _imgVolumes.push_back(new Img_Volume(64));
+        // _images.push_back(new Img_Base(std::string(IMAGES_DIR) + "/placeholders/Box-SM.png"));
+#endif
 
         _billboards.push_back(new Geo_Paneboard("sequence_board"));
         _billboards.back()->scale({ 2.0F, -0.2F, 1.0F });
@@ -74,14 +80,15 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.push_back(new Geo_Listboard("paint_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ -0.25F, 3.0F, 1.0F });
         _billboards.back()->shift({ 0.935F, 0.0F, 0.0F });
-        _billboards.push_back(new Geo_Crossboard("props_board", 3));
-        _billboards.back()->scale({ 1.0F, -0.15F, 1.0F });
+        _billboards.push_back(new Geo_Paneboard("mode_board"));
+        _billboards.back()->scale({ 0.85F, -0.15F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.867F, 0.0F });
+        _billboards.push_back(new Geo_Billboard("props_board", 2, 3));
+        _billboards.back()->scale({ 0.66F, 0.45F, 1.0F });
+        _billboards.back()->shift({ 0.0F, 0.5F, 0.0F });
 #ifdef RASTERON_H
         for(unsigned short l = 0; l < 20; l++){
-            std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
-            std::string labelText = std::to_string(l);
-            _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
+            // _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })));
             _buttons.push_back(new Img_Button(MENU_Small));
             _dials.push_back(new Img_Dial(MENU_Small, 2));
             _sliders.push_back(new Img_Slider(MENU_Small, 2));
@@ -119,19 +126,19 @@ struct Sandbox_Demo : public Topl_Program {
 #endif
 #ifdef RASTERON_H
     std::vector<Img_Base*> _images;
-    // std::vector<Img_Array> _imgArrays; 
+    std::vector<Img_Base*> _imgTexts; // std::vector<Img_Txt*> _imgTexts;
     std::vector<Img_Volume*> _imgVolumes; 
 #endif
     std::vector<Geo_Grid*> _grids;
     std::vector<Geo_Chain*> _chains;
     std::vector<Geo_Billboard*> _billboards;
 #ifdef RASTERON_H
-    std::vector<Img_Button*> _buttons; 
-    std::vector<Img_Label*> _labels; 
+    std::vector<Img_Button*> _buttons;
+    // std::vector<Img_Label*> _labels;
     std::vector<Img_Dial*> _dials; 
     std::vector<Img_Slider*> _sliders;
 #endif
 #ifdef TOPL_ENABLE_MODELS
-    // Geo_Model> _models;
+    // std::vector<Geo_Model> _models;
 #endif
 } *_DEMO;

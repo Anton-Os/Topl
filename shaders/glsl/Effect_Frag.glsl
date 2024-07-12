@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes; // resolution
 	vec2 cursorPos;
-	vec2 trailsPos[8];
+	vec2 tracerPos[8];
 };
 
 layout(location = 0) out vec4 color;
@@ -52,7 +52,7 @@ vec3 mandlebrotSet(uvec2 screenRes, vec2 coord){
 // Main
 
 void main() {
-	vec2 cursorPosAdj = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
+	vec2 cursorPosAdj = (tracerPos[0] * 0.5f) + 0.5f; // adjusted cursor
 	vec2 coordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
 	if (mode == 1) color = vec4(cursorTarget(cursorPosAdj, coordsAdj), 1.0f); // cursor track mode

@@ -46,19 +46,26 @@ public:
 #endif
 	}
 	void scale(Vec3f scaleVec){
-		const float scaleX = 2.0F - ((_params.x.first - 2) * 0.055F);
-		const float scaleY = 2.0F - ((_params.y.first - 2) * 0.055F);
     	for(unsigned g = 0; g < _geoActors.size(); g++) {
 			_geoActors[g].setSize(scaleVec);
 			Vec3f offsetVec = *_geoActors[_params.getGridSize()].getPos() - *_geoActors[g].getPos();
 			if(_params.getGridSize() != g)
-				_geoActors[g].updatePos({ offsetVec[0] * scaleVec[0] * scaleX, offsetVec[1] * scaleVec[1] * scaleY, 0.0F });
+				_geoActors[g].updatePos({ offsetVec[0] * (2.0F + (scaleVec[0] - 1.0F)), offsetVec[1] *  (2.0F + (scaleVec[1] - 1.0F)), 0.0F });
 		}
     }
 
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
-	void resetState(){ for(auto pane = paneItemUI_map.begin(); pane != paneItemUI_map.end(); pane++) pane->second->setState(MENU_Off); }
+	void resetState(){
+		/* for(unsigned p = 0; p < _params.getGridSize(); p++){
+			const Geo_Actor* targetActor = getGeoActor(p);
+			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
+			if(paneItemUI != paneItemUI_map.end()){
+				paneItemUI->second->setState(MENU_None);
+				getImgAt(p)->setImage(paneItemUI->second->stateImg.getImage());
+			}
+		} */
+	}
 
 	void setState(unsigned paneIndex, bool isSelect, double x, double y){
 		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;

@@ -68,12 +68,12 @@ protected:
 #endif
 };
 
-/* struct Img_Txt : public Img_Base {
+struct Img_Txt : public Img_Base {
 	Img_Txt() : Img_Base(){} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Txt(Rasteron_Text* text) : Img_Base(){
+	Img_Txt(Rasteron_Text text) : Img_Base(){
 		textObj = text;
-		image = textImgOp(textObj, size);
+		image = textImgOp(&textObj, size);
 	}
 	// Img_Txt(Rasteron_Text* text, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
 	// 	textObj = text;
@@ -93,9 +93,9 @@ protected:
 	unsigned short leftPad = 0; unsigned short rightPad = 0;
 	unsigned short topPad = 0; unsigned short botPad = 0;
 protected:
-	Rasteron_Text* textObj;
+	Rasteron_Text textObj;
 #endif
-}; */
+};
 
 // Array texture based on multiple layers
 

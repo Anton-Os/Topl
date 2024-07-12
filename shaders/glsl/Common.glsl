@@ -20,6 +20,15 @@ layout(location = 1) in vec3 texcoord;
 
 // Functions
 
+/* uvec4 getModes(uint mode){
+	return uvec4(
+		mode % 10, // 1st place
+		(mode - (mode % 10)) / 10, // 10ths place
+		(mode - (mode % 100)) / 100, // 100ths place
+		(mode - (mode % 1000)) / 1000 // 1000ths place
+	);
+} */
+
 mat3 getRotMatrix(vec3 angles) {
 	mat3 zRotMatrix = mat3( // Roll
 		cos(angles.x), sin(angles.x), 0,

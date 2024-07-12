@@ -19,6 +19,15 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+
+		static Vec2f tracerPos[8];
+		for(unsigned short t = 0; t < 8; t++) // tracerPos[t] = (t == 0)? Vec2f({ Platform::getCursorX(), Platform::getCursorY() }) : Vec2f({ -1.0F + (2.0F / 8) * t, -1.0F + (2.0F / 8) * t  }); // Test points
+			if(t < Platform::mouseControl.getTracerSteps()->size()){
+				Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - t - 1];
+				tracerPos[t] = Vec2f({ tracerStep.step.first, tracerStep.step.second });
+			}
+			else tracerPos[t] = Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
+		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(Vec2f) * 8, NO_PADDING, bytes);
 	}
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
@@ -28,7 +37,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	void setWidth(int w) { if(w > 0) width = w; }
 	void setHeight(int h) { if(h > 0) height = h; }
 protected:
-	unsigned _mode = EFFECT_MODE_FRACTALS;
+	unsigned _mode = EFFECT_MODE_CURSORY;
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
 };

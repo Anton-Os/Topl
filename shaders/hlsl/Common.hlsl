@@ -23,6 +23,15 @@ struct VS_INPUT {
 
 // Functions
 
+/* uint4 getModes(uint mode){
+	return uint4(
+		mode % 10, // 1st place
+		(mode - (mode % 10)) / 10, // 10ths place
+		(mode - (mode % 100)) / 100, // 100ths place
+		(mode - (mode % 1000)) / 1000 // 1000ths place
+	);
+} */
+
 float3x3 getRotMatrix(float3 angles) {
 	float3x3 zRotMatrix = { // Roll
 		cos(angles.x), sin(angles.x), 0,

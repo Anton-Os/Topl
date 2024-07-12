@@ -16,7 +16,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	float2 trailsPos[8];
+	float2 tracerPos[8];
 }
 
 struct VS_OUTPUT { float4 pos : SV_POSITION; };

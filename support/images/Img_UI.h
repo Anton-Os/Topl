@@ -37,11 +37,11 @@ struct Img_Button : public Img_UI {
 	}
 };
 
-struct Img_Label : public Img_UI {
+/* struct Img_Label : public Img_UI {
 	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
-		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(10, 100), 4);
+		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(100, 100), 4);
 		setText(textObj);
-		// Img_UI::setState(0);
+		Img_UI::setState(MENU_On);
 	}
 
 	void setText(Rasteron_Text textObj){
@@ -75,7 +75,7 @@ private:
 	Rasteron_Text textObjs[4]; // Default, On, Off, and Preselct States
 
 	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
-};
+}; */
 
 struct Img_Item : public Img_UI {
 	Img_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Img_UI(size){ 

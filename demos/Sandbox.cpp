@@ -87,23 +87,28 @@ void Sandbox_Demo::onObjectPick(MOUSE_Event event){
         // _billboards.back()->toggleShow(true);
         // TODO: Show properties and labels
     } else if(Platform::mouseControl.getIsMouseDown().second){
-        switch(_action){
-            case SANDBOX_Move: Topl_Program::pickerObj->setPos(Topl_Program::getCamRelPos(nullptr)); break;
-            case SANDBOX_Rotate:
-                // Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
-                Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
-                break;
-            case SANDBOX_Scale:
-                Topl_Program::pickerObj->updateSize({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
-                break;
-            case SANDBOX_Paint:
-                std::cout << "special paint triggered!" << std::endl;
-                Rasteron_Image* stageImage = copyImgOp(paintImg.getImage());
-                switch(Sandbox_Demo::_mode){ }// TODO: Implement painting algorithm
-                paintImg.setImage(stageImage);
-                // TODO: Update cooresponding picker object and texturize scene
-                RASTERON_DEALLOC(stageImage);
-                break;
+        if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Drag)
+            switch(_action){
+                case SANDBOX_Move: Topl_Program::pickerObj->setPos(Topl_Program::getCamRelPos(nullptr)); break;
+                case SANDBOX_Rotate:
+                    // Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
+                    Topl_Program::pickerObj->updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
+                    break;
+                case SANDBOX_Scale:
+                    Topl_Program::pickerObj->updateSize({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
+                    break;
+                case SANDBOX_Paint:
+                    std::cout << "special paint triggered!" << std::endl;
+                    Rasteron_Image* stageImage = copyImgOp(paintImg.getImage());
+                    switch(Sandbox_Demo::_mode){ }// TODO: Implement painting algorithm
+                    paintImg.setImage(stageImage);
+                    // TODO: Update cooresponding picker object and texturize scene
+                    RASTERON_DEALLOC(stageImage);
+                    break;
+            }
+        else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Drag){
+            std::cout << "Right button event triggered!" << std::endl;
+            _DEMO->_billboards.back()->toggleShow(true);
         }
     }
 }
@@ -170,7 +175,7 @@ void Sandbox_Demo::init(){
 
     for(auto b = _billboards.begin(); b != _billboards.end(); b++){ 
         (*b)->configure(&overlayScene);
-        Rasteron_Image* gradientImg = gradientImgOp({ 1024, 1024 }, SIDE_Bottom, 0xFF333333, 0xFFEEEEEE);
+        Rasteron_Image* gradientImg = gradientImgOp({ 1024, 1024 }, SIDE_Bottom, 0xFF333333, 0xFF00EE00);
         for(unsigned short paneIndex = 0; paneIndex < (*b)->getParams()->getGridSize(); paneIndex++){
             (*b)->getGeoActor(paneIndex)->pickerFunc = &Sandbox_Demo::onMenuPick;
             (*b)->getImgAt(paneIndex)->setImage(gradientImg);
@@ -197,6 +202,8 @@ void Sandbox_Demo::init(){
                 if((paneIndex == 0 || paneIndex == SANDBOX_PANE_COUNT - 1)) (*b)->getGeoActor(paneIndex)->isShown = false;
                 else (*b)->overlay(paneIndex, _buttons[paneIndex]);
             }
+            // else if((*b)->getPrefix() == "mode_board_") (*b)->getImgAt(0)->setImage(_imgTexts.front()->getImage());
+            else if((*b)->getPrefix() == "props_board_") (*b)->overlay(paneIndex, _buttons[paneIndex]); // (*b)->toggleShow(false);
             else (*b)->overlay(paneIndex, _buttons[paneIndex]);
         }
         RASTERON_DEALLOC(gradientImg);
@@ -251,7 +258,8 @@ void Sandbox_Demo::loop(double frameTime){
     // _renderer->drawScene(&backdropScene);
 
     // _flatVShader.setMode(FLAT_MODE_COORD);
-    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+    _effectVShader.setMode(EFFECT_MODE_CURSORY);
     _texVShader.setMode((_renderer->getFrameCount() / 80) % 8);
     _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->updateScene(&mainScene);
