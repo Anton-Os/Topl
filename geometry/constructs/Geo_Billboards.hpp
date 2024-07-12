@@ -54,6 +54,9 @@ public:
 		}
     }
 
+	void scaleRow(unsigned short row){}
+	void scaleCol(unsigned short col){}
+
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
 	void resetState(){

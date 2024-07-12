@@ -179,12 +179,12 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 		if(actor != nullptr){
 			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
-				std::cout << "Picker callback firing inside Program!" << std::endl;
+				if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Drag)
+					std::cout << "Right button called inside program!" << std::endl;
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
 				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
 			}
-			std::cout << "Color picker triggered with " << Topl_Program::pickerObj->getName() << " and color " << std::to_string(Topl_Program::pickerColor) << std::endl;
-		} else std::cout << "Color picker triggered with no value" << std::endl;
+		}
 	}
 
 	_renderer->clear();

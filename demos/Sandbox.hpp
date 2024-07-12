@@ -50,13 +50,7 @@ struct Sandbox_Demo : public Topl_Program {
         }
 #ifdef RASTERON_H
         // for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base((i % 3 == 0)? 0xAAFF0000 : (i % 3 == 1)? 0xAA00FF00 : 0xAA0000FF));
-        for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++){ 
-            _images.push_back(new Img_Base(RAND_COLOR()));
-            std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
-            std::string labelText = std::to_string(i);
-            // Rasteron_Text textObjRasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })
-            // _imgTexts.push_back(new Img_Base());
-        }
+        for(unsigned short i = 0; i < SANDBOX_MESH_COUNT; i++) _images.push_back(new Img_Base(RAND_COLOR()));
         for(unsigned short i = 0; i < 8; i++){ // unbound textures
             _images.push_back(new Img_Base(noiseImgOp_tiled({1024, 1024}, { (unsigned)pow(2, i + 1), (unsigned)pow(2, i + 1), RAND_COLOR(), RAND_COLOR() })));
             mainScene.addTexture(std::to_string(i + 1), _images.back());
@@ -71,9 +65,11 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.push_back(new Geo_Crossboard("objs_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ 3.66F, -0.2F, 1.0F });
         _billboards.back()->shift({ 0.0F, -0.95F, 0.0F });
+        // _billboards.back()->rotateAll({ 0.0F, MATH_HALF_PI, 0.0F });
         _billboards.push_back(new Geo_Crossboard("actions_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ 3.66F, -0.2F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.95F, 0.0F });
+        // _billboards.back()->rotateAll({ 0.0F, MATH_HALF_PI, 0.0F });
         _billboards.push_back(new Geo_Listboard("sculpt_board", SANDBOX_PANE_COUNT));
         _billboards.back()->scale({ -0.25F, 3.0F, 1.0F });
         _billboards.back()->shift({ -0.935F, 0.0F, 0.0F });
@@ -84,15 +80,31 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.back()->scale({ 0.85F, -0.15F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.867F, 0.0F });
         _billboards.push_back(new Geo_Billboard("props_board", 2, 3));
-        _billboards.back()->scale({ 0.66F, 0.45F, 1.0F });
+        _billboards.back()->scale({ 0.5F, 0.3F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.5F, 0.0F });
 #ifdef RASTERON_H
-        for(unsigned short l = 0; l < 20; l++){
-            // _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })));
+        std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
+        for(unsigned short l = 0; l < SANDBOX_PANE_COUNT * 2; l++){
+            std::string labelText = std::to_string(l);
+            // Rasteron_Text textObjRasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })
+            _imgTexts.push_back(new Img_Base(Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
+            _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
             _buttons.push_back(new Img_Button(MENU_Small));
             _dials.push_back(new Img_Dial(MENU_Small, 2));
             _sliders.push_back(new Img_Slider(MENU_Small, 2));
         }
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "X", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "Y", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "Z", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
+        _buttons.push_back(new Img_Button(MENU_Small, "control_camera"));
+        _buttons.push_back(new Img_Button(MENU_Small, "flip_camera_android"));
+        _buttons.push_back(new Img_Button(MENU_Small, "crop_Free"));
+        _buttons.push_back(new Img_Button(MENU_Small, "zoom_in"));
+        _buttons.push_back(new Img_Button(MENU_Small, "vignette"));
+        _buttons.push_back(new Img_Button(MENU_Small, "remove_red_eye"));
 #endif
     }
 
@@ -134,7 +146,7 @@ struct Sandbox_Demo : public Topl_Program {
     std::vector<Geo_Billboard*> _billboards;
 #ifdef RASTERON_H
     std::vector<Img_Button*> _buttons;
-    // std::vector<Img_Label*> _labels;
+    std::vector<Img_Label*> _labels;
     std::vector<Img_Dial*> _dials; 
     std::vector<Img_Slider*> _sliders;
 #endif

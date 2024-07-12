@@ -83,11 +83,8 @@ void Sandbox_Demo::onBackdropPick(MOUSE_Event event){
 
 
 void Sandbox_Demo::onObjectPick(MOUSE_Event event){
-    if(event == MOUSE_RightBtn_Press){
-        // _billboards.back()->toggleShow(true);
-        // TODO: Show properties and labels
-    } else if(Platform::mouseControl.getIsMouseDown().second){
-        if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Drag)
+    if(Platform::mouseControl.getIsMouseDown().second){
+        if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Drag){
             switch(_action){
                 case SANDBOX_Move: Topl_Program::pickerObj->setPos(Topl_Program::getCamRelPos(nullptr)); break;
                 case SANDBOX_Rotate:
@@ -106,8 +103,10 @@ void Sandbox_Demo::onObjectPick(MOUSE_Event event){
                     RASTERON_DEALLOC(stageImage);
                     break;
             }
+            _DEMO->_billboards.back()->toggleShow(false);
+        }
         else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Drag){
-            std::cout << "Right button event triggered!" << std::endl;
+            _DEMO->_billboards.back()->shift(*Topl_Program::pickerObj->getPos() - _DEMO->_billboards.back()->getOrigin() + Vec3f({ 0.0F, 0.1F, 0.0F }));
             _DEMO->_billboards.back()->toggleShow(true);
         }
     }
@@ -182,13 +181,13 @@ void Sandbox_Demo::init(){
 
             if((*b)->getPrefix() == "actions_board_"){
                if(paneIndex > 2 && paneIndex < SANDBOX_PANE_COUNT - 3) (*b)->getGeoActor(paneIndex)->isShown = false;
-               /* else if(paneIndex == 0) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Camera-Zoom.png");
-               else if(paneIndex == 1) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Camera-Pivot.png");
-               else if(paneIndex == 2) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Camera-Pan.png");
-               else if(paneIndex == SANDBOX_PANE_COUNT - 3) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Actor-Size.png");
-               else if(paneIndex == SANDBOX_PANE_COUNT - 2) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Actor-Rot.png");
-               else if(paneIndex == SANDBOX_PANE_COUNT - 1) (*b)->getImgAt(paneIndex)->setFileImage(std::string(IMAGES_DIR) + "/containers/Actor-Pos.png"); */
-               else (*b)->overlay(paneIndex, _buttons[paneIndex]);
+               else if(paneIndex == 0) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 6]);
+               else if(paneIndex == 1) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 5]);
+               else if(paneIndex == 2) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 4]);
+               else if(paneIndex == SANDBOX_PANE_COUNT - 3) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 3]);
+               else if(paneIndex == SANDBOX_PANE_COUNT - 2) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 2]);
+               else if(paneIndex == SANDBOX_PANE_COUNT - 1) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 1]);
+               // else (*b)->overlay(paneIndex, _buttons[paneIndex]);
             }
             else if((*b)->getPrefix() == "sculpt_board_"){
                 if(paneIndex > 2 && paneIndex < SANDBOX_PANE_COUNT - 1) (*b)->getGeoActor(paneIndex)->isShown = false;
@@ -200,10 +199,13 @@ void Sandbox_Demo::init(){
             }
             else if((*b)->getPrefix() == "objs_board_"){
                 if((paneIndex == 0 || paneIndex == SANDBOX_PANE_COUNT - 1)) (*b)->getGeoActor(paneIndex)->isShown = false;
-                else (*b)->overlay(paneIndex, _buttons[paneIndex]);
+                else (*b)->overlay(paneIndex, _labels[paneIndex]);
+                // else (*b)->overlay(paneIndex, _buttons[paneIndex]);
             }
-            // else if((*b)->getPrefix() == "mode_board_") (*b)->getImgAt(0)->setImage(_imgTexts.front()->getImage());
-            else if((*b)->getPrefix() == "props_board_") (*b)->overlay(paneIndex, _buttons[paneIndex]); // (*b)->toggleShow(false);
+            else if((*b)->getPrefix() == "props_board_"){ 
+                (*b)->toggleShow(false);
+                (*b)->overlay(paneIndex, _labels[_labels.size() - 1 - paneIndex]);
+            }
             else (*b)->overlay(paneIndex, _buttons[paneIndex]);
         }
         RASTERON_DEALLOC(gradientImg);

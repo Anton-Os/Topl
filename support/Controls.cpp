@@ -42,6 +42,8 @@ void Input_MouseControl::addCallback(enum MOUSE_Event event, pressCallback callb
 void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press) _isMouseDown = std::make_pair(event, true);
 	else if(event == MOUSE_LeftBtn_Release || event == MOUSE_RightBtn_Release) _isMouseDown = std::make_pair(event, false);
+
+	if(event == MOUSE_RightBtn_Press) std::cout << "Right button press event!" << std::endl;
 	
 	for(std::map<MOUSE_Event, pressCallback>::const_iterator c = _pressCallback_map.cbegin(); c != _pressCallback_map.end(); c++)
 		if(event == c->first) c->second(x, y); // makes callback go off where keys match

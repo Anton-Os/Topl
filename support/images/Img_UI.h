@@ -37,11 +37,11 @@ struct Img_Button : public Img_UI {
 	}
 };
 
-/* struct Img_Label : public Img_UI {
+struct Img_Label : public Img_UI {
 	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
 		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(100, 100), 4);
 		setText(textObj);
-		Img_UI::setState(MENU_On);
+		Img_UI::setState(MENU_None);
 	}
 
 	void setText(Rasteron_Text textObj){
@@ -51,10 +51,12 @@ struct Img_Button : public Img_UI {
 		textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
 
 		Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_MED); // textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
-		for(unsigned short t = 0; t < 4; t++){ 
+		for(unsigned short t = 0; t < 4; t++){
+			Rasteron_Image* tempImg = copyImgOp(textImg);
 			for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
-				if(*(textImg->data + p) != textObj.fgColor) *(textImg->data + p) = textObjs[t].bkColor;
-			queue_addImg(queue, textImg, t);
+				if(*(tempImg->data + p) != textObj.fgColor) *(tempImg->data + p) = textObjs[t].bkColor;
+			queue_addImg(queue, tempImg, t);
+			RASTERON_DEALLOC(tempImg);
 		}
 		RASTERON_DEALLOC(textImg);
 
@@ -75,7 +77,7 @@ private:
 	Rasteron_Text textObjs[4]; // Default, On, Off, and Preselct States
 
 	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
-}; */
+};
 
 struct Img_Item : public Img_UI {
 	Img_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Img_UI(size){ 

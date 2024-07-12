@@ -1,7 +1,12 @@
 #include "MathArt.hpp"
 
 void MathArt::init(){
-    // TODO: Add init logic
+    for(unsigned s = 0; s < MATHART_SLICES; s++){
+        scene.addGeometry("circle" + std::to_string(s), circleActors[s]);
+        // TODO: Add texture?
+    }
+
+    _renderer.buildScene(&scene);
 }
 
 void MathArt::loop(double frameTime){
