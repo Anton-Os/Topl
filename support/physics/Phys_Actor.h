@@ -34,7 +34,7 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
 	}
 
 	bool isGravityEnabled = false;
-	const double damping = PHYS_DEFAULT_DAMPING;
+	double damping = PHYS_DEFAULT_DAMPING;
 	double mass = PHYS_DEFAULT_MASS;
 
 	Vec3f velocity = VEC_3F_ZERO;

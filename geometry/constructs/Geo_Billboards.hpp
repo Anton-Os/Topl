@@ -60,14 +60,14 @@ public:
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
 	void resetState(){
-		/* for(unsigned p = 0; p < _params.getGridSize(); p++){
+		for(unsigned p = 0; p < _params.getGridSize(); p++){
 			const Geo_Actor* targetActor = getGeoActor(p);
 			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
 			if(paneItemUI != paneItemUI_map.end()){
 				paneItemUI->second->setState(MENU_None);
 				getImgAt(p)->setImage(paneItemUI->second->stateImg.getImage());
 			}
-		} */
+		}
 	}
 
 	void setState(unsigned paneIndex, bool isSelect, double x, double y){

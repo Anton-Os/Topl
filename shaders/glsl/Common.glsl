@@ -1,33 +1,56 @@
-/*layout(std140, binding = 0) uniform Block {
+#ifdef INCLUDE_BLOCK
+layout(std140, binding = 0) uniform Block {
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
+	// uint vertexCount;
 };
+#endif
 
+#ifdef INCLUDE_SCENEBLOCK
 layout(std140, binding = 1) uniform SceneBlock{
 	int mode;
-    double time;
 	vec4 cam_pos;
 	vec3 look_pos;
 	mat4 projMatrix;
-}; */
+};
+#endif
 
-uniform vec4 controlPoints[64];
-uniform vec4 nearestVertex[1024];
+// uniform vec4 controlPoints[64];
+// uniform vec4 nearestVertex[1024];
 
+#ifndef IGNORE_INPUTS
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
+#endif
 
 // Functions
 
-/* uvec4 getModes(uint mode){
-	return uvec4(
-		mode % 10, // 1st place
-		(mode - (mode % 10)) / 10, // 10ths place
-		(mode - (mode % 100)) / 100, // 100ths place
-		(mode - (mode % 1000)) / 1000 // 1000ths place
-	);
-} */
+uvec4 getModes(uint mode){
+	return uvec4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
+}
+
+vec4 getRandColor(vec4 seedColor){
+	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 1.0);
+
+	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);
+	while(randColor.y > 1.0) randColor.g -= pow(randColor.y, 0.5);
+	while(randColor.z > 1.0) randColor.b -= pow(randColor.z, 0.5);
+
+	return randColor;
+}
+
+vec4 getUniqueColor(uint index){
+	float attenuation = floor(index / 6.0) * 0.025;
+
+	if(index % 6 == 0) return vec4(1.0 - attenuation, 0.0, 0.0, 1.0); // red
+	else if (index % 6 == 1) return vec4(0.0, 1.0 - attenuation, 0.0, 1.0); // green
+	else if (index % 6 == 2) return vec4(0.0, 0.0, 1.0 - attenuation, 1.0); // blue
+	else if (index % 6 == 3) return vec4(1.0 - attenuation, 1.0 - attenuation, 0.0, 1.0); // yellow
+	else if (index % 6 == 4) return vec4(0.0, 1.0 - attenuation, 1.0 - attenuation, 1.0); // cyan
+	else if (index % 6 == 5) return vec4(1.0 - attenuation, 0.0, 1.0 - attenuation, 1.0); // magenta
+	else return vec4(1.0 - attenuation, 1.0 - attenuation, 1.0 - attenuation, 1.0); // white
+}
 
 mat3 getRotMatrix(vec3 angles) {
 	mat3 zRotMatrix = mat3( // Roll

@@ -66,8 +66,8 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.back()->scale({ 3.66F, -0.2F, 1.0F });
         _billboards.back()->shift({ 0.0F, -0.95F, 0.0F });
         // _billboards.back()->rotateAll({ 0.0F, MATH_HALF_PI, 0.0F });
-        _billboards.push_back(new Geo_Crossboard("actions_board", SANDBOX_PANE_COUNT));
-        _billboards.back()->scale({ 3.66F, -0.2F, 1.0F });
+        _billboards.push_back(new Geo_Billboard("actions_board", SANDBOX_PANE_COUNT, 2));
+        _billboards.back()->scale({ 3.0F, -0.2F, 1.0F });
         _billboards.back()->shift({ 0.0F, 0.95F, 0.0F });
         // _billboards.back()->rotateAll({ 0.0F, MATH_HALF_PI, 0.0F });
         _billboards.push_back(new Geo_Listboard("sculpt_board", SANDBOX_PANE_COUNT));
@@ -89,22 +89,23 @@ struct Sandbox_Demo : public Topl_Program {
             // Rasteron_Text textObjRasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })
             _imgTexts.push_back(new Img_Base(Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
             _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
+            _labels.back()->setPadding(10, 10, 10, 10);
             _buttons.push_back(new Img_Button(MENU_Small));
             _dials.push_back(new Img_Dial(MENU_Small, 2));
             _sliders.push_back(new Img_Slider(MENU_Small, 2));
         }
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "X", 0xFF333333, 0xFFEEEEEE })));
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "Y", 0xFF333333, 0xFFEEEEEE })));
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "Z", 0xFF333333, 0xFFEEEEEE })));
-        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "0.00", 0xFF333333, 0xFFEEEEEE })));
-        _buttons.push_back(new Img_Button(MENU_Small, "control_camera"));
-        _buttons.push_back(new Img_Button(MENU_Small, "flip_camera_android"));
-        _buttons.push_back(new Img_Button(MENU_Small, "crop_Free"));
-        _buttons.push_back(new Img_Button(MENU_Small, "zoom_in"));
-        _buttons.push_back(new Img_Button(MENU_Small, "vignette"));
-        _buttons.push_back(new Img_Button(MENU_Small, "remove_red_eye"));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "|0.00|", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "| Y |", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "|0.00|", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "| Z |", 0xFF333333, 0xFFEEEEEE })));
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "|0.00|", 0xFF333333, 0xFFEEEEEE })));
+        _buttons.push_back(new Img_Button(MENU_Large, "control_camera"));
+        _buttons.push_back(new Img_Button(MENU_Large, "flip_camera_android"));
+        _buttons.push_back(new Img_Button(MENU_Large, "crop_Free"));
+        _buttons.push_back(new Img_Button(MENU_Large, "zoom_in"));
+        _buttons.push_back(new Img_Button(MENU_Large, "vignette"));
+        _buttons.push_back(new Img_Button(MENU_Large, "remove_red_eye"));
 #endif
     }
 
@@ -112,7 +113,7 @@ struct Sandbox_Demo : public Topl_Program {
     void loop(double frameTime) override;
 
     Topl_Camera camera, fixedCamera;
-    Topl_Scene mainScene, overlayScene, backdropScene;
+    Topl_Scene mainScene, overlayScene, backdropScene, editsScene;
 
     Geo_Actor backdropActor;
     Geo_Actor surfaceActors[SANDBOX_MESH_COUNT], coneActors[SANDBOX_MESH_COUNT], volumeActors[SANDBOX_MESH_COUNT];

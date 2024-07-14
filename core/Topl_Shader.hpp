@@ -105,12 +105,18 @@ public:
 		appendDataToBytes((uint8_t*)((camera != nullptr)? camera->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getProjMatrix() : &_defaultMat), sizeof(Mat4x4), 0, bytes);
 	}
+
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
 		// TODO: Else trigger function to reset actor dependent data
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);
+		// appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getMesh()->getVertexCount() : &_defaultScalar), sizeof(unsigned), bytes);
+	}
+
+	virtual void reset(){
+		_mode = DEFAULT_SHADER_MODE;
 	}
 
 	void setMode(int m){ _mode = m; }

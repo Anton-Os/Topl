@@ -24,6 +24,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		for(unsigned short t = 0; t < 8; t++) // tracerPos[t] = (t == 0)? Vec2f({ Platform::getCursorX(), Platform::getCursorY() }) : Vec2f({ -1.0F + (2.0F / 8) * t, -1.0F + (2.0F / 8) * t  }); // Test points
 			if(t < Platform::mouseControl.getTracerSteps()->size()){
 				Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - t - 1];
+				std::cout << "Tracer step is " << std::to_string(tracerStep.step.first) << ", " << std::to_string(tracerStep.step.second) << std::endl; 
 				tracerPos[t] = Vec2f({ tracerStep.step.first, tracerStep.step.second });
 			}
 			else tracerPos[t] = Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });

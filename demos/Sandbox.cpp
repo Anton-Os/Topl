@@ -180,13 +180,14 @@ void Sandbox_Demo::init(){
             (*b)->getImgAt(paneIndex)->setImage(gradientImg);
 
             if((*b)->getPrefix() == "actions_board_"){
-               if(paneIndex > 2 && paneIndex < SANDBOX_PANE_COUNT - 3) (*b)->getGeoActor(paneIndex)->isShown = false;
+               if((paneIndex > 2 && paneIndex < SANDBOX_PANE_COUNT - 3) || (paneIndex > SANDBOX_PANE_COUNT + 2 && paneIndex < (SANDBOX_PANE_COUNT * 2) - 3)) (*b)->getGeoActor(paneIndex)->isShown = false;
                else if(paneIndex == 0) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 6]);
                else if(paneIndex == 1) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 5]);
                else if(paneIndex == 2) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 4]);
                else if(paneIndex == SANDBOX_PANE_COUNT - 3) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 3]);
                else if(paneIndex == SANDBOX_PANE_COUNT - 2) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 2]);
                else if(paneIndex == SANDBOX_PANE_COUNT - 1) (*b)->overlay(paneIndex, _buttons[_buttons.size() - 1]);
+               // (*b)->getGeoActor(paneIndex)->updateSize({ -0.33F, -0.1F, 0.0F});
                // else (*b)->overlay(paneIndex, _buttons[paneIndex]);
             }
             else if((*b)->getPrefix() == "sculpt_board_"){
@@ -199,7 +200,11 @@ void Sandbox_Demo::init(){
             }
             else if((*b)->getPrefix() == "objs_board_"){
                 if((paneIndex == 0 || paneIndex == SANDBOX_PANE_COUNT - 1)) (*b)->getGeoActor(paneIndex)->isShown = false;
-                else (*b)->overlay(paneIndex, _labels[paneIndex]);
+                else {
+                    (*b)->overlay(paneIndex, _labels[paneIndex]);
+                    (*b)->getGeoActor(paneIndex)->updateSize({ -0.75F, 0.1F, 0.0F});
+                    // (*b)->getGeoActor(paneIndex)->setRot({ -0.33F, 0.0F, 0.0F});
+                }
                 // else (*b)->overlay(paneIndex, _buttons[paneIndex]);
             }
             else if((*b)->getPrefix() == "props_board_"){ 
@@ -260,8 +265,8 @@ void Sandbox_Demo::loop(double frameTime){
     // _renderer->drawScene(&backdropScene);
 
     // _flatVShader.setMode(FLAT_MODE_COORD);
-    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
-    _effectVShader.setMode(EFFECT_MODE_CURSORY);
+    Topl_Factory::switchPipeline(_renderer, _Pipeline);
+    _effectVShader.setMode(EFFECT_MODE_FRACTALS);
     _texVShader.setMode((_renderer->getFrameCount() / 80) % 8);
     _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->updateScene(&mainScene);

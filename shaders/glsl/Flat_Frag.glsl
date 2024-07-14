@@ -1,5 +1,10 @@
 #version 440
 
+#define IGNORE_INPUTS
+#define INCLUDE_SCENEBLOCK
+
+#include "Common.glsl"
+
 // Values
 
 layout(std140, binding = 0) uniform Block{
@@ -9,35 +14,42 @@ layout(std140, binding = 0) uniform Block{
 	vec3 scale;
 };
 
-layout(std140, binding = 1) uniform SceneBlock{
-	int mode;
-	vec4 cam_pos;
-	vec3 look_pos;
-	mat4 projMatrix;
-};
-
 layout(location = 0) in vec3 pos;
 layout(location = 1) flat in int id;
+layout(location = 2) in vec4 vert_color;
 
 layout(location = 0) out vec4 outColor;
 
 // Main
 
 void main() {
-	int primID = gl_PrimitiveID;
+	uint primID = gl_PrimitiveID;
 
-	if (mode == 1) // directional
+	if (mode == 1) // directional mode
 		outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, color.a);
 	else if (mode == 2) // coordinate mode
 		outColor = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
-	else if(mode < 0){
-		// int remainder = id - ((-mode) * int(floor(float(id) / float(-mode))));
+	else if (mode == 3) // random color mode
+		outColor = getRandColor(color);
+	// else if (mode == 4) // vertex mode
+	//	outColor = vert_color;
+	else if(mode == -1) // indexing mode
+		outColor = getUniqueColor(primID);
+	else if(mode < -1){
 		float fraction = float(primID) / float(-mode);
+		float level = 1.0 / float(-mode);
 
-		if(fraction - floor(fraction) < 0.25) outColor = vec4(1.0, 0.0, 0.0, 1.0);
-		else if(fraction - floor(fraction) < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0);
-		else if(fraction - floor(fraction) < 0.75) outColor = vec4(0.0, 0.0, 1.0, 1.0);
-		else outColor = vec4(1.0, 1.0, 1.0, 1.0);
+		/* uint i = 0;
+		for(float s = 0; s < 1.0; s += level){
+			if(fraction - floor(fraction) < s) outColor = getUniqueColor(i);
+			else break;
+			i++;
+		} */
+
+		if(fraction - floor(fraction) < 0.25) outColor = vec4(1.0, 0.0, 0.0, 0.8);
+		else if(fraction - floor(fraction) < 0.5) outColor = vec4(0.0, 1.0, 0.0, 0.8);
+		else if(fraction - floor(fraction) < 0.75) outColor = vec4(0.0, 0.0, 1.0, 0.8);
+		else outColor = vec4(1.0, 1.0, 1.0, 0.8);
 	}
 	else outColor = color; // solid mode // default
 }

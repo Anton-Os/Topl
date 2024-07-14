@@ -1,6 +1,7 @@
 #version 440
 
-#define LOOK_RADIUS 2
+#define INCLUDE_INPUTS
+#define INCLUDE_SCENEBLOCK
 
 #include "Common.glsl"
 
@@ -13,15 +14,9 @@ layout(std140, binding = 0) uniform Block {
 	vec3 scale;
 };
 
-layout(std140, binding = 1) uniform SceneBlock {
-	int mode;
-	vec4 cam_pos;
-	vec3 look_pos;
-	mat4 projMatrix;
-};
-
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out int id_out;
+layout(location = 1) flat out int id_out;
+layout(location = 2) out vec4 color_out;
 
 // Main
 
@@ -34,4 +29,5 @@ void main() {
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;
+	color_out = color - (color / (gl_VertexID + 1)); // getUniqueColor(gl_VertexID);
 }

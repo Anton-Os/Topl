@@ -44,8 +44,6 @@ static void onAnyKey(char k){
 }
 
 static void onDrag(float x, float y){
-	std::cout << "Coord vec diff is " << std::to_string(Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0]) << ", " << std::to_string(Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1]) << std::endl;
-
 	/* if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
 
@@ -179,8 +177,6 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 		if(actor != nullptr){
 			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
-				if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press || Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Drag)
-					std::cout << "Right button called inside program!" << std::endl;
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
 				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
 			}

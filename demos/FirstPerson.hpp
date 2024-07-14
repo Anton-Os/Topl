@@ -1,5 +1,6 @@
 
 #include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
 
 #include "constructs/Geo_Puppet.hpp"
@@ -38,12 +39,16 @@ struct FirstPerson_Demo : public Topl_Program {
 
     Geo_Quad3D floorMesh = Geo_Quad3D();
     Geo_Actor floor = Geo_Actor(&floorMesh);
+    Geo_QuadCone roofMesh = Geo_QuadCone();
+    Geo_Actor roof = Geo_Actor(&roofMesh);
     Geo_Circle3D pillarMeshes[4] = { Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE) };
     Geo_Actor pillars[4] = { Geo_Actor(&pillarMeshes[0]), Geo_Actor(&pillarMeshes[1]), Geo_Actor(&pillarMeshes[2]), Geo_Actor(&pillarMeshes[3]) };
     std::string modelPath = std::string(std::string(MODELS_DIR) + "SpinTop.obj");
-    Geo_Model3D models[5] = {
-        Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath),
-    };
+    Geo_Model3D models[5] = { Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath) };
+#ifdef RASTERON_H
+    Img_Base floorTex, pillarTex, roofTex;
+    Img_Base modelTexs[5];
+#endif
 private:
     Topl_Scene scene2D, scene3D;
 } *_DEMO;

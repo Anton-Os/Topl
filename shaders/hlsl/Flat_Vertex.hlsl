@@ -1,6 +1,6 @@
-#include "Common.hlsl"
+#define INCLUDE_SCENEBLOCK
 
-#define LOOK_RADIUS 2
+#include "Common.hlsl"
 
 // Values
 
@@ -11,18 +11,11 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 scale;
 }
 
-cbuffer CONST_SCENE_BLOCK : register(b1) {
-	int mode;
-	float4 cam_pos;
-	float4 look_pos;
-	float4x4 projMatrix;
-}
-
 struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
-	// float4 flatColor : COLOR0;
 	float4 vertex_pos : POSITION0;
 	uint vertex_id : VERTEXID;
+	float4 vertex_color : COLOR0;
 };
 
 // Main
@@ -37,6 +30,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.vertex_pos = output.pos;
 	output.vertex_id = vertexID;
+	output.vertex_color = color - (color / (float)(vertexID + 1)); // getUniqueColor(vertexID);
 
 	return output;
 }

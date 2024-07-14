@@ -4,14 +4,31 @@
 
 static Vec3f puppet1_forceVec = VEC_3F_ZERO, puppet2_forceVec = VEC_3F_ZERO, puppet3_forceVec = VEC_3F_ZERO;
 
-void projCallback(){
+void camPivotY1(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.01F, 0.0F }); }
+void camPivotY2(){ Topl_Program::cameraObj.updateRot({ 0.0F, -0.01F, 0.0F }); }
+void camPivotZ1(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, 0.01F }); }
+void camPivotZ2(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, -0.01F }); }
+void camProjId(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+void camProjOrtho(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0F).genProjMatrix()); }
+void camProjPerspective(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+void camProjExperimental(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+
+/* void projCallback(){
     static unsigned invocation = 0;
     Topl_Program::cameraObj.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Ortho : PROJECTION_Perspective, 1.0F).genProjMatrix());
     invocation++;
-}
+} */
 
 void FirstPerson_Demo::init(){
-    Platform::keyControl.addCallback('p', projCallback);
+    // Platform::keyControl.addCallback('p', projCallback);
+    Platform::keyControl.addCallback('l', camPivotY1);
+    Platform::keyControl.addCallback('k', camPivotY2);
+    Platform::keyControl.addCallback('m', camPivotZ1);
+    Platform::keyControl.addCallback('n', camPivotZ2);
+    Platform::keyControl.addCallback('u', camProjExperimental);
+    Platform::keyControl.addCallback('i', camProjId);
+    Platform::keyControl.addCallback('o', camProjOrtho);
+    Platform::keyControl.addCallback('p', camProjPerspective);
 
     Topl_Program::cameraObj.setZoom(0.5F);
     Topl_Program::cameraObj.setPos({ 0.0F, -0.5F, DEFAULT_Z });
