@@ -13,12 +13,17 @@ fileCallback Platform::onFileChoose = nullptr;
 
 bool checkFile(std::string fileName){ return (access(fileName.c_str(), F_OK) == 0)? true : false; }
 
+static bool checkKey(char key){
+	return isalnum(key) || isspace(key) || key == '\r' || // handles most usecases
+	key == (char)0x25 || key == (char)0x26 || key == (char)0x27 || key == (char)0x28; // handles arrows
+}
+
 #ifdef _WIN32
 
 static void addPress(enum MOUSE_Event button){
-	if(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
-		Platform::mouseControl.addPress(button, Platform::getCursorX(), Platform::getCursorY());
-	else Platform::mouseControl.addPress(button);
+	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
+		? Platform::mouseControl.addPress(button)
+		: Platform::mouseControl.addPress(button, Platform::getCursorX(), Platform::getCursorY());
 }
 
 struct DropTarget_Win32 : public IDropTarget {
@@ -97,7 +102,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	case (WM_CHAR): { 
 		if(wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
-		else if(isKeyReady && (isalnum(wParam) || isspace(wParam))) Platform::keyControl.addKeyPress((char)wParam);
+		else if(isKeyReady && checkKey(wParam)) Platform::keyControl.addKeyPress((char)wParam);
 		isKeyReady = false;
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }
@@ -202,11 +207,11 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	if (point.x < rect.right && point.x > rect.left && point.y > rect.top && point.y < rect.bottom) {
 		long unsigned halfWidth = ((rect.right - rect.left) / 2);
 		LONG centerX = rect.left + halfWidth;
-		*xPos = (point.x - centerX) / (float)halfWidth;
+		if(xPos != nullptr) *xPos = (point.x - centerX) / (float)halfWidth;
 
 		long unsigned halfHeight = ((rect.bottom - rect.top) / 2);
 		LONG centerY = rect.top + halfHeight;
-		*yPos = -(point.y - centerY) / (float)halfHeight;
+		if(yPos != nullptr) *yPos = -(point.y - centerY) / (float)halfHeight;
 
 		return true;
 	} else return false; // cursor outside the screen space!

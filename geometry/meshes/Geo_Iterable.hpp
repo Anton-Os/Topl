@@ -19,13 +19,11 @@ protected:
     const Geo_Mesh* refMesh;
 };
 
-class Geo_TessIter : public Geo_Iter { // Breaks shape into subsections
-public:
+struct Geo_TessIter : public Geo_Iter { // Breaks shape into subsections
     Geo_TessIter(const Geo_Mesh* mesh, unsigned short iters); 
 };
 
-class Geo_DuplexIter : public Geo_Iter { // Expands shape into supersets
-public:
+struct Geo_DuplexIter : public Geo_Iter { // Expands shape into supersets
     Geo_DuplexIter(const Geo_Mesh* mesh); // copies geometry at every vertex
     // Geo_DuplexIter(const Geo_Surface* surface, unsigned short iters); // duplex geometry creating grid based on edges
     // Geo_DuplexIter(const Geo_Cone* cone, Vec3f direction); // duplex geometry creating a hub based on direction

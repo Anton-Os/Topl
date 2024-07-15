@@ -112,12 +112,13 @@ public:
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);
-		// appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getMesh()->getVertexCount() : &_defaultScalar), sizeof(unsigned), bytes);
+
+		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->getVertexCount() : &_defaultScalar), sizeof(unsigned), bytes); // vertex count
+		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->get0rigin() : &_defaultVec), sizeof(Vec3f), bytes); // origin
+		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 	}
 
-	virtual void reset(){
-		_mode = DEFAULT_SHADER_MODE;
-	}
+	virtual void reset(){ _mode = DEFAULT_SHADER_MODE; }
 
 	void setMode(int m){ _mode = m; }
 protected:

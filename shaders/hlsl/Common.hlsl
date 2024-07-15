@@ -15,6 +15,22 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 }
 #endif
 
+#ifdef INCLUDE_TEXTURES
+Texture2D baseTex : register(t0);
+SamplerState baseSampler : register(s0);
+
+Texture2D tex1 : register(t1); SamplerState sampler1 : register(s1);
+Texture2D tex2 : register(t2); SamplerState sampler2 : register(s2);
+Texture2D tex3 : register(t3); SamplerState sampler3 : register(s3);
+Texture2D tex4 : register(t4); SamplerState sampler4 : register(s4);
+Texture2D tex5 : register(t5); SamplerState sampler5 : register(s5);
+Texture2D tex6 : register(t6); SamplerState sampler6 : register(s6);
+Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
+
+Texture3D areaTex : register(t8);
+SamplerState areaSampler : register(s8);
+#endif
+
 /* cbuffer CONST_ENV_BLOCK : register(b2) {
 	float4 controlPoints[64];
 	float4 nearestVertex[1024];

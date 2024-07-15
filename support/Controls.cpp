@@ -39,6 +39,8 @@ void Input_MouseControl::addCallback(enum MOUSE_Event event, pressCallback callb
 	_pressCallback_map.insert(std::make_pair(event, callback));
 }
 
+#include <string>
+
 void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press) _isMouseDown = std::make_pair(event, true);
 	else if(event == MOUSE_LeftBtn_Release || event == MOUSE_RightBtn_Release) _isMouseDown = std::make_pair(event, false);
@@ -48,8 +50,10 @@ void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	for(std::map<MOUSE_Event, pressCallback>::const_iterator c = _pressCallback_map.cbegin(); c != _pressCallback_map.end(); c++)
 		if(event == c->first) c->second(x, y); // makes callback go off where keys match
 	
-	if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press)){
+	// if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press)){
+	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
 		_tracerSteps.push_back({ event, std::make_pair(x, y)}); // record the step
+		std::cout << "Tracer steps size is " << std::to_string(_tracerSteps.size()) << std::endl;
 		_tracerPaths.push_back(Input_TracerPath(event)); // record the path
 	}
 

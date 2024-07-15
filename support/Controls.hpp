@@ -63,7 +63,7 @@ struct Input_TracerStep {
 	std::pair<float, float> step;
 };
 
-#define MAX_PATH_STEPS 4096
+#define MAX_PATH_STEPS 32
 
 struct Input_TracerPath {
     Input_TracerPath(enum MOUSE_Event b){ button = b; } 

@@ -4,7 +4,7 @@ SANDBOX_Action Sandbox_Demo::_action = SANDBOX_Move;
 unsigned short Sandbox_Demo::_mode = 0;
 
 static Vec3f pointsSet[4] = { Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 0.0F, 0.0F, 0.0F }) };
-static Img_Base paintImg = Img_Base(checkerImgOp({ 1024, 1024 }, { 2, 2, 0xFF0000FF, 0xFFFF0000 }));
+static Img_Base paintImg = Img_Base(std::string(IMAGES_DIR) + "Zero+.bmp"); // Img_Base(solidImgOp({ 1024, 1024 }, RAND_COLOR()));
 
 static void onSpace(){
     // logMessage("onSpace() triggered");
@@ -95,12 +95,12 @@ void Sandbox_Demo::onObjectPick(MOUSE_Event event){
                     Topl_Program::pickerObj->updateSize({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0F });
                     break;
                 case SANDBOX_Paint:
-                    std::cout << "special paint triggered!" << std::endl;
+                    /* std::cout << "special paint triggered!" << std::endl;
                     Rasteron_Image* stageImage = copyImgOp(paintImg.getImage());
                     switch(Sandbox_Demo::_mode){ }// TODO: Implement painting algorithm
                     paintImg.setImage(stageImage);
                     // TODO: Update cooresponding picker object and texturize scene
-                    RASTERON_DEALLOC(stageImage);
+                    RASTERON_DEALLOC(stageImage); */
                     break;
             }
             _DEMO->_billboards.back()->toggleShow(false);
@@ -132,7 +132,6 @@ void Sandbox_Demo::onMenuPick(MOUSE_Event event){
         _DEMO->_billboards.at(SANDBOX_ACTION)->resetState();
         _DEMO->_billboards.at(SANDBOX_PAINT)->setState(_mode - 1, Platform::mouseControl.getIsMouseDown().second);
     }
-    // }
 }
 
 
@@ -149,6 +148,7 @@ void Sandbox_Demo::init(){
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
 
     backdropScene.addGeometry("Backdrop", &backdropActor);
+    backdropScene.addTexture("Backdrop", &paintImg);
     backdropActor.pickerFunc = onBackdropPick;
     _renderer->buildScene(&backdropScene);
     _renderer->texturizeScene(&backdropScene);
@@ -201,7 +201,7 @@ void Sandbox_Demo::init(){
             else if((*b)->getPrefix() == "objs_board_"){
                 if((paneIndex == 0 || paneIndex == SANDBOX_PANE_COUNT - 1)) (*b)->getGeoActor(paneIndex)->isShown = false;
                 else {
-                    (*b)->overlay(paneIndex, _labels[paneIndex]);
+                    (*b)->overlay(paneIndex, _labels[paneIndex + 1]);
                     (*b)->getGeoActor(paneIndex)->updateSize({ -0.75F, 0.1F, 0.0F});
                     // (*b)->getGeoActor(paneIndex)->setRot({ -0.33F, 0.0F, 0.0F});
                 }
@@ -211,7 +211,9 @@ void Sandbox_Demo::init(){
                 (*b)->toggleShow(false);
                 (*b)->overlay(paneIndex, _labels[_labels.size() - 1 - paneIndex]);
             }
-            else (*b)->overlay(paneIndex, _buttons[paneIndex]);
+            else if((*b)->getPrefix() == "sequence_board_") (*b)->overlay(0, _sliders.front());
+            else if((*b)->getPrefix() == "mode_board_") (*b)->overlay(0, _labels.front());
+            // else (*b)->overlay(paneIndex, _buttons[paneIndex]);
         }
         RASTERON_DEALLOC(gradientImg);
     }
@@ -251,6 +253,8 @@ void Sandbox_Demo::loop(double frameTime){
             colorPick = colorPicker(&backdropScene);
             coordPick = coordPicker(&backdropScene);
         }
+
+        _renderer->clear();
     } else Topl_Program::pickerObj = nullptr; // resets
 
     /* if(_renderer->getFrameCount() % 60 == 0){ // TODO: Move to separate thread
@@ -260,28 +264,28 @@ void Sandbox_Demo::loop(double frameTime){
 
     _renderer->setDrawMode(DRAW_Triangles);
 
-    // Topl_Factory::switchPipeline( _renderer, _effectPipeline);
-    // _renderer->updateScene(&backdropScene);
-    // _renderer->drawScene(&backdropScene);
+    _renderer->setCamera(&fixedCamera);
+    _texVShader.setMode(TEX_MODE_LAYER1);
+    Topl_Factory::switchPipeline( _renderer, _texPipeline);
+    _renderer->updateScene(&backdropScene);
+    _renderer->drawScene(&backdropScene);
 
-    // _flatVShader.setMode(FLAT_MODE_COORD);
-    Topl_Factory::switchPipeline(_renderer, _Pipeline);
-    _effectVShader.setMode(EFFECT_MODE_FRACTALS);
-    _texVShader.setMode((_renderer->getFrameCount() / 80) % 8);
+    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+    // _texVShader.setMode((_renderer->getFrameCount() / 80) % 8);
     _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->updateScene(&mainScene);
     _renderer->drawScene(&mainScene);
 
     // _flatVShader.setMode(FLAT_MODE_SOLID);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
-    _texVShader.setMode(0);
+    _texVShader.setMode(TEX_MODE_BASE);
     _renderer->setCamera(&fixedCamera);
     _renderer->updateScene(&overlayScene);
     _renderer->drawScene(&overlayScene);
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
 
     // std::thread texturizeThread; // update textures
     _DEMO->run();

@@ -30,7 +30,7 @@ enum SANDBOX_Action {
 
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
-        _surfaces.push_back(new Geo_Quad2D(1000.0));
+        _surfaces.push_back(new Geo_Quad2D(10.0));
         backdropActor = Geo_Actor(_surfaces[0]); // for backdrop
 
         for(unsigned short s = 0; s < SANDBOX_MESH_COUNT; s++){
@@ -84,6 +84,7 @@ struct Sandbox_Demo : public Topl_Program {
         _billboards.back()->shift({ 0.0F, 0.5F, 0.0F });
 #ifdef RASTERON_H
         std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
+        _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "Default", 0xFF333333, 0xFFEEEEEE })));
         for(unsigned short l = 0; l < SANDBOX_PANE_COUNT * 2; l++){
             std::string labelText = std::to_string(l);
             // Rasteron_Text textObjRasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFF00FF00 })
@@ -91,8 +92,8 @@ struct Sandbox_Demo : public Topl_Program {
             _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), labelText.c_str(), 0xFF333333, 0xFFEEEEEE })));
             _labels.back()->setPadding(10, 10, 10, 10);
             _buttons.push_back(new Img_Button(MENU_Small));
-            _dials.push_back(new Img_Dial(MENU_Small, 2));
-            _sliders.push_back(new Img_Slider(MENU_Small, 2));
+            _dials.push_back(new Img_Dial(MENU_Small, 2 + l));
+            _sliders.push_back(new Img_Slider(MENU_Small, 2 + l));
         }
         _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE })));
         _labels.push_back(new Img_Label(MENU_Medium, Rasteron_Text({ fontPath.c_str(), "|0.00|", 0xFF333333, 0xFFEEEEEE })));

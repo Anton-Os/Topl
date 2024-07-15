@@ -61,6 +61,8 @@ public:
 	// void rotate(Vec3f angles) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
 
+	Vec3f getOrigin(){ return Vec3f({ 0.0F, 0.0F, 0.0F }); } // TODO: Compute origin
+	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
 	size_t getVertexCount() const { return _vertices.size(); }
 	vertex_cptr_t getVertices() const { return _vertices.data(); }
 	size_t getIndexCount() const { return _indices.size(); }

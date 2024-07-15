@@ -45,30 +45,34 @@ struct Img_Label : public Img_UI {
 	}
 
 	void setText(Rasteron_Text textObj){
-		textObjs[0] = textObj;
-		textObjs[1] = { textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor };
-		textObjs[2] = { textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor };
-		textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
+		if(textObj.fontFile != "" && textObj.text != ""){
+			textObjs[0] = textObj;
+			textObjs[1] = { textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor };
+			textObjs[2] = { textObj.fontFile, textObj.text, UI_COLOR_OFF, textObj.fgColor };
+			textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
 
-		Rasteron_Image* textImg = textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
-		for(unsigned short t = 0; t < 4; t++){
-			Rasteron_Image* tempImg = copyImgOp(textImg);
-			for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
-				if(*(tempImg->data + p) != textObj.fgColor) *(tempImg->data + p) = textObjs[t].bkColor;
-			queue_addImg(queue, tempImg, t);
-			RASTERON_DEALLOC(tempImg);
+			Rasteron_Image* textImg = textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
+			for(unsigned short t = 0; t < 4; t++){
+				Rasteron_Image* tempImg = copyImgOp(textImg);
+				for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
+					if(*(tempImg->data + p) != textObj.fgColor) *(tempImg->data + p) = textObjs[t].bkColor;
+				queue_addImg(queue, tempImg, t);
+				RASTERON_DEALLOC(tempImg);
+			}
+			RASTERON_DEALLOC(textImg);
+
+			Img_UI::setState(MENU_None);
 		}
-		RASTERON_DEALLOC(textImg);
-
-		Img_UI::setState(MENU_None);
 	}
 
 	void setPadding(unsigned short l, unsigned short r, unsigned short t, unsigned short b){
-		/* paddings[0] = l;
-		paddings[1] = r;
-		paddings[2] = t;
-		paddings[3] = b;
-		setText(textObjs[0]); */
+		// paddings[0] = l;paddings[1] = r;paddings[2] = t;paddings[3] = b;
+		// setText(textObjs[0]);
+	}
+	
+	void setString(const std::string& str){
+		// textObjs[0].text = str.c_str();
+		// setText(textObjs[0]);
 	}
 
 	// void setMessage(Rasteron_Message message){} // TODO: Enable multi-line functionality

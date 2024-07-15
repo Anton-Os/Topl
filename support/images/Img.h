@@ -41,6 +41,7 @@ struct Img_Base : public Img {
 		replaceFwdSlash(&newFilePath[0]);
 #endif
         image = loadImgOp(&newFilePath[0]);
+		std::cout << "Image loaded, height is " << std::to_string(image->height) << ", width is " << std::to_string(image->width) << std::endl;
     }
     void setTextImage(Rasteron_Text* textObj){
 		refresh();
@@ -68,7 +69,7 @@ protected:
 #endif
 };
 
-struct Img_Txt : public Img_Base {
+/* struct Img_Txt : public Img_Base {
 	Img_Txt() : Img_Base(){} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Txt(Rasteron_Text text) : Img_Base(){
@@ -95,7 +96,7 @@ struct Img_Txt : public Img_Base {
 protected:
 	Rasteron_Text textObj;
 #endif
-};
+}; */
 
 // Array texture based on multiple layers
 

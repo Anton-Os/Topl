@@ -76,8 +76,7 @@ public:
 			const Geo_Actor* targetActor = getGeoActor(p);
 			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
 			if(paneItemUI != paneItemUI_map.end()){
-				std::cout << "Setting state for index" << std::to_string(paneIndex) << " with name " << paneItemUI->second->getName() << std::endl;
-
+				// std::cout << "Setting state for index" << std::to_string(paneIndex) << " with name " << paneItemUI->second->getName() << std::endl;
 				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
 					(p == paneIndex) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
 				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)

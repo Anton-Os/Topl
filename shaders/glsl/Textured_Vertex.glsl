@@ -11,7 +11,7 @@ layout(std140, binding = 0) uniform Block {
 	vec3 texScroll; // texture coordinate scrolling
 };
 
-layout(std140, binding = 1) uniform SceneBlock{
+layout(std140, binding = 1) uniform SceneBlock {
 	int mode;
 	vec4 cam_pos;
 	vec3 look_pos;
