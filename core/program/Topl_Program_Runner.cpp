@@ -72,6 +72,7 @@ static void onPress(float x, float y){
 }
 
 Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
+    logMessage("Topl_Program constructor invoked!");
     srand(time(NULL));
 
 	// Event Handling
@@ -79,16 +80,17 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 	_platform = new Platform(execPath, name);
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
-	_renderer->setCamera(&Topl_Program::cameraObj);
-	_renderer->setDrawMode(DRAW_Triangles);
+    _renderer->setCamera(&Topl_Program::cameraObj);
+    _renderer->setDrawMode(DRAW_Triangles);
 
-	Platform::keyControl.addAnyCallback(onAnyKey);
-	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
+    /* Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress); */
 	// Platform::mouseControl.addDragCallback(onDrag); // for camera
 
 	// Preset Pipeline Generation
 
-	if(_backend == BACKEND_GL4){
+    if(_backend == BACKEND_GL4){
+        _idleVShader = Idle_VertexShader_GL4(); _idlePShader = Idle_PixelShader_GL4();
 		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
@@ -101,16 +103,17 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();	
 	}
 
-	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
-	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
+    _idlePipeline = Topl_Factory::genPipeline(_backend, &_idleVShader, &_idlePShader);
+    _flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+    _beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
 	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
-	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
+    _texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
+
+    Topl_Factory::switchPipeline(_backend, _renderer, _flatPipeline);
 
 	// Imaging Initialization
 
 #ifdef RASTERON_H
-	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
-
 	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
 	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
 	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);

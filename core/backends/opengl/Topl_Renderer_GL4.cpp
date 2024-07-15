@@ -190,7 +190,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	} else {
 		unsigned long renderID = getRenderID(actor);
@@ -200,7 +200,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
@@ -209,7 +209,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), 0) });
 		if (mesh->getIndices() != nullptr) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer); // gets the latest buffer
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
 		}
 		_bufferIndex++; // increments to next available slot
 
@@ -217,7 +217,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, *(_bufferSlots + _bufferIndex), mesh->getVertexCount()) });
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer); // gets the latest buffer
-		glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
 
 		// setting vertex input layout
 		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, *(_vertexArraySlots + _vertexArrayIndex)) });
@@ -230,15 +230,18 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 
 void Topl_Renderer_GL4::update(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
-		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
+        // glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
+        glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 	} else {
 		unsigned renderID = getRenderID(actor);
 		
-		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
+        // glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
+        glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        printf("Block size is %d", blockSize);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -264,12 +267,16 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
 	else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
+
+        // glUniform3f(2, actor->getPos()->data[0], actor->getPos()->data[1], actor->getPos()->data[2] );
+        glUniform3f(2, 0.0, 1.0, 0.0 ); // uniforms test
 		
 		if(_vertexArrayMap.find(renderID) != _vertexArrayMap.end()) glBindVertexArray(_vertexArrayMap.at(renderID).vao);
 
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer);
 		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
-		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
+        // if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
+        if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
 
 		// Texture Updates 
 	
@@ -277,14 +284,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		if (tex2D != _textures.end()){
 			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
 			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
-		}
-		/* for(unsigned b = 1; b < MAX_TEX_BINDINGS; b++){
-			tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b; });
-			if (tex2D != _textures.end()){
-				glActiveTexture(GL_TEXTURE0 + tex2D->binding);
-				glBindTexture(GL_TEXTURE_2D, tex2D->texture);
-			}
-		} */
+        }
 		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_GL4& t){ return t.renderID == renderID && t.format == TEX_3D; });
 		if(tex3D != _textures.end()){
 			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);

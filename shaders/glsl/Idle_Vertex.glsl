@@ -13,8 +13,6 @@ vec3 positions[3] = vec3[](
 layout(location = 0) in vec3 pos;
 // layout(location = 1) in vec3 texcoord;
 
-out gl_PerVertex { vec4 gl_Position; };
-
 // Main
 
 void main() { gl_Position = vec4(pos, 1.0f); }

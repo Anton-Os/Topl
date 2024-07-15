@@ -66,26 +66,26 @@ void Entropy_Demo::loop(double frameTime){
 // #endif
     }
 
-    flatVShader.setMode(-4);
+    _flatVShader.setMode(FLAT_MODE_COORD);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
-    _renderer->clear();
+    // _renderer->clear();
 
     if(isAllShown) for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-        _renderer->setDrawMode((a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
+        // _renderer->setDrawMode((a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
         _renderer->draw(&actors[a]);
     }
 
     for(unsigned s = 0; s < spawnIdx; s++) spawnActors[s].updatePos({ *spawnActors[s].getPos() * ((isInEntropy)? 0.0035F : -0.0035F) });
     if(spawnIdx > 0){
-        _renderer->setDrawMode(DRAW_Strip);
+        // _renderer->setDrawMode(DRAW_Strip);
         _renderer->updateScene(&spawnScene);
         _renderer->drawScene(&spawnScene);
     }
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

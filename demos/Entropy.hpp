@@ -9,7 +9,7 @@
 
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
-        flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
+        // flatPipeline = Topl_Factory::genPipeline(backend, &flatVShader, &flatPShader);
     }
 
     void init() override;
@@ -29,7 +29,4 @@ struct Entropy_Demo : public Topl_Program {
 private:
     Topl_Scene scene;
     Topl_Scene spawnScene;
-
-    Topl_Pipeline* flatPipeline;
-    Flat_VertexShader_DX11 flatVShader; Flat_PixelShader_DX11 flatPShader;
 } *_DEMO;

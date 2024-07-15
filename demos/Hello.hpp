@@ -4,7 +4,7 @@
 
 #include "meshes/Geo_Surface.hpp"
 
-#include "Idle_Shader.hpp"
+// #include "Idle_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 // OpenGL Test Renderer
@@ -12,8 +12,10 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
     Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
         genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
         genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+        genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
+
+        setPipeline(&tessOnlyPipeline);
 	}
 
 	Topl_Pipeline_GL4 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;

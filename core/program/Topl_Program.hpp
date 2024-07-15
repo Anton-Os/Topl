@@ -2,6 +2,7 @@
 
 #include "Topl_Factory.hpp"
 
+#include "Idle_Shader.hpp"
 #include "Flat_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
@@ -82,7 +83,8 @@ protected:
 	// TODO: Add actors and other data that may be needed
 	Topl_Scene _mainScene, _overlayScene, _extrasScene;
 
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline; // for easy reuse
+    Topl_Pipeline *_idlePipeline, *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline; // for easy reuse
+    Idle_VertexShader _idleVShader; Idle_PixelShader _idlePShader;
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;

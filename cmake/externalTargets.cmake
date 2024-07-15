@@ -27,7 +27,7 @@ ExternalProject_Add(GLEW
 
 find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
-set(SUPPORT_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
+set(SUPPORT_MODELS OFF CACHE BOOL "Include 3D model loading" FORCE)
 if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
         GIT_REPOSITORY "https://github.com/assimp/assimp.git"

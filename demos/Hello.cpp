@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     std::cout << "Scene building" << std::endl;
 	if(TARGET_BACKEND != BACKEND_VK){
 		scene.addGeometry(&actor);
-		renderer->setDrawMode(DRAW_Triangles);
+        renderer->setDrawMode(DRAW_Points);
 		renderer->buildScene(&scene);
 	}
 

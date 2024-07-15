@@ -207,11 +207,11 @@ endforeach()
 
 add_executable(Hello demos/Hello.cpp)
 # add_executable(Sandbox demos/Sandbox.cpp)
-# add_executable(FirstPerson demos/FirstPerson.cpp)
+add_executable(FirstPerson demos/FirstPerson.cpp)
 # add_executable(MathArt demos/MathArt.cpp)
-# add_executable(Entropy demos/Entropy.cpp)
+add_executable(Entropy demos/Entropy.cpp)
 
-list(APPEND demo_targets Hello) #Sandbox FirstPerson MathArt Entropy)
+list(APPEND demo_targets Hello FirstPerson Entropy) #Sandbox MathArt )
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)

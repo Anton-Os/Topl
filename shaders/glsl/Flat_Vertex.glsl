@@ -5,6 +5,7 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
+// uniform Block {
 	vec4 color;
 	vec3 offset;
 	vec3 rotation;
@@ -17,6 +18,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	mat4 projMatrix;
 };
+
+layout(location = 2) uniform vec3 posTest;
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
@@ -60,12 +63,14 @@ mat4 calcCamMatrix(vec4 cPos, vec3 angles) { // Custom Function
 // Main
 
 void main() {
-	vec3 angles = calcRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
+	/* if(offset != vec3(0.0, 0.0, 0.0)){
+		vec3 angles = calcRotMatrix(rotation) * pos;
+		vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
+		gl_Position = (final_pos + vec4(offset, 0.0f)); // * projMatrix;
+	}
+	else*/ gl_Position = vec4(pos + offset, 1.0); // (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
+	pos_out = pos; // vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;
 }
