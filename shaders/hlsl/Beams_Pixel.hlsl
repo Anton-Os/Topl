@@ -1,10 +1,9 @@
-// Values
+#define INCLUDE_BLOCK
+#define IGNORE_INPUTS
 
-cbuffer CONST_BLOCK : register(b0) {
-	float3 offset;
-	float3 rotation;
-	float3 scale;
-}
+#include "Common.hlsl"
+
+// Values
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;

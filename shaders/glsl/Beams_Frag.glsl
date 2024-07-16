@@ -1,5 +1,10 @@
 #version 440
 
+#define INCLUDE_BLOCK
+#define IGNORE_INPUTS
+
+#include "Common.glsl"
+
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock{
@@ -12,7 +17,6 @@ layout(std140, binding = 1) uniform SceneBlock{
 	vec3 flashLight_pos; vec3 flashLight_value;
 	vec3 lampLight_pos; vec3 lampLight_value;
 };
-
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 light_pos;

@@ -1,5 +1,7 @@
 #version 440
 
+#define INCLUDE_SCENEBLOCK
+
 #include "Common.glsl"
 
 // Values
@@ -11,15 +13,8 @@ layout(std140, binding = 0) uniform Block {
 	vec3 texScroll; // texture coordinate scrolling
 };
 
-layout(std140, binding = 1) uniform SceneBlock {
-	int mode;
-	vec4 cam_pos;
-	vec3 look_pos;
-	mat4 projMatrix;
-};
-
 layout(location = 0) out vec3 texcoord_out;
-layout(location = 1) out int mode_out;
+// layout(location = 1) out int mode_out;
 
 // Main
 
@@ -31,5 +26,5 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 	
 	texcoord_out = texcoord + texScroll;
-	mode_out = mode;
+	// mode_out = mode;
 }

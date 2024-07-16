@@ -8,7 +8,7 @@ struct Img_UI {
 	~Img_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
 
 	virtual void setState(unsigned short index){
-		std::cout << "Set state triggered with index " << std::to_string(index) << std::endl;
+		// std::cout << "Set state triggered with index " << std::to_string(index) << std::endl;
 
 		assert(queue != nullptr);
 		queue->index = index % queue->frameCount;
@@ -26,7 +26,7 @@ protected:
 // Implementation of UI elements
 
 struct Img_Button : public Img_UI {
-	Img_Button(enum MENU_Size size) : Img_UI(size){ 
+	Img_Button(enum MENU_Size size) : Img_UI(size){
 		queue = loadUI_checkBtn(size); 
 		Img_UI::setState(MENU_None);
 	}
@@ -66,7 +66,7 @@ struct Img_Label : public Img_UI {
 	}
 
 	void setPadding(unsigned short l, unsigned short r, unsigned short t, unsigned short b){
-		// paddings[0] = l;paddings[1] = r;paddings[2] = t;paddings[3] = b;
+		// paddings[0] = l; paddings[1] = r;paddings[2] = t;paddings[3] = b;
 		// setText(textObjs[0]);
 	}
 	

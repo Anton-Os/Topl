@@ -9,7 +9,7 @@
 #define PHYS_FORCE_UNIT 0.05 // Easy unit to work in screen coordinates
 // #define PHYS_DEFAULT_DAMPING 1 // 1 For testing, no slow down
 #define PHYS_DEFAULT_DAMPING 0.98
-#define PHYS_DEFAULT_MASS 15.0 // default mass of entities
+#define PHYS_DEFAULT_MASS 10.0 // default mass of entities
 #define MAX_PHYS_FORCES 64
 
 struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor object

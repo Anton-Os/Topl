@@ -165,6 +165,7 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_MODE_SOLID);
+	_renderer->setDrawMode(DRAW_Triangles);
 	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
@@ -190,6 +191,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_MODE_COORD);
+	_renderer->setDrawMode(DRAW_Triangles);
 	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);

@@ -1,3 +1,5 @@
+#define INCLUDE_SCENEBLOCK
+
 #include "Common.hlsl"
 
 // Values
@@ -7,14 +9,6 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 rotation;
 	float3 scale;
 	float3 texScroll; // texture coordinate scrolling
-}
-
-cbuffer CONST_SCENE_BLOCK : register(b1) {
-	int mode;
-	// float zoom;
-	float4 cam_pos;
-	float4 look_pos;
-	float4x4 projMatrix;
 }
 
 struct VS_OUTPUT {

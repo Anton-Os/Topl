@@ -9,6 +9,7 @@ cbuffer CONST_BLOCK : register(b0) {
 	float4 color;
 	float3 offset;
 	float3 rotation;
+	float3 scale;
 }
 
 struct PS_INPUT {

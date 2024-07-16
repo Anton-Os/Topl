@@ -1,19 +1,22 @@
 #version 440
 
+#define INCLUDE_TEXTURES
+#define INCLUDE_SCENEBLOCK
+#define IGNORE_INPUTS
+
+#include "Common.glsl"
+
 // Values
 
-layout(binding = 0) uniform sampler2D baseTex;
-layout(binding = 1) uniform sampler2D tex1;
-layout(binding = 2) uniform sampler2D tex2;
-layout(binding = 3) uniform sampler2D tex3;
-layout(binding = 4) uniform sampler2D tex4;
-layout(binding = 5) uniform sampler2D tex5;
-layout(binding = 6) uniform sampler2D tex6;
-layout(binding = 7) uniform sampler2D tex7;
-layout(binding = 8) uniform sampler3D volumeTex;
+layout(std140, binding = 0) uniform Block {
+	vec3 offset;
+	vec3 rotation;
+	vec3 scale;
+	vec3 texScroll; // texture coordinate scrolling
+};
 
 layout(location = 0) in vec3 texcoord;
-layout(location = 1) flat in int mode;
+// layout(location = 1) flat in int mode;
 
 layout(location = 0) out vec4 color;
 
@@ -60,6 +63,7 @@ void main() {
 		if(mode <= -7 && texture(tex7, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex7, vec2(texcoord.x, texcoord.y));
 	}
+	else if(mode == 9) color = vec4(0.0, 0.0, 1.0, 1.0); // test
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
 	if (color.a < 0.05) discard; // blending fix

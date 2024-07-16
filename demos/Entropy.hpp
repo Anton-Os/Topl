@@ -7,7 +7,8 @@
 #define ENTROPIC_SPAWN 100
 #define ENTROPIC_COUNT 200
 #define ENTROPIC_PROB 0.05
-#define ENTROPIC_FORCE 300000.0F
+#define ENTROPIC_SIZE 0.045
+#define ENTROPIC_FORCE 50000.0F
 
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
@@ -22,7 +23,8 @@ struct Entropy_Demo : public Topl_Program {
             actors[a].setName("actor" + std::to_string(a));
             actors[a].setPos({ (float)rand() / (float)RAND_MAX - 0.5f, (float)rand() / (float)RAND_MAX - 0.5f, 0.0 });
             actors[a].setRot({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, });
-            actors[a].setSize({ ((float)rand() / (float)RAND_MAX) * 0.05F, ((float)rand() / (float)RAND_MAX) * 0.05F, ((float)rand() / (float)RAND_MAX) * 0.05F });
+            float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
+            actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
 
             // TODO: Create meshes
             // TODO: Create tesselated meshes

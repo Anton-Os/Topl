@@ -19,6 +19,10 @@ struct FirstPerson_Demo : public Topl_Program {
         puppet2.shift({ -1.0F, -1.0, -5.0F });
         puppet3.shift({ 1.0F, -1.0, -5.0F });
 
+        anchorPos1 = { 0.0F, -1.0, 0.0F };
+        anchorPos2 = { -1.0F, -1.0, 0.0F };
+        anchorPos3 = { 1.0F, -1.0, 0.0F };
+
         // 3D Objects
         
         floor.setPos({ 0.0F, -3.0F, 0.0F});
@@ -68,6 +72,11 @@ struct FirstPerson_Demo : public Topl_Program {
     Geo_Puppet2D puppet3 = Geo_Puppet2D("puppet3", demonPuppetAssets);
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
+#ifdef TOPL_ENABLE_PHYSICS
+    Phys_Connector anchor1, anchor2, anchor3;
+    Vec3f anchorPos1 = VEC_3F_ZERO, anchorPos2 = VEC_3F_ZERO, anchorPos3 = VEC_3F_ZERO;
+#endif
+
     Geo_Quad3D floorMesh = Geo_Quad3D();
     Geo_Actor floor = Geo_Actor(&floorMesh);
     Geo_QuadCone roofMesh = Geo_QuadCone();
@@ -77,9 +86,14 @@ struct FirstPerson_Demo : public Topl_Program {
     std::string modelPath = std::string(std::string(MODELS_DIR) + "SpinTop.obj");
     Geo_Model3D models[5] = { Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath) };
 #ifdef RASTERON_H
-    Img_Base floorTex = Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xFF333333, 0xFF00EEEE));
-    Img_Base roofTex = Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Bottom, 0xFF333333, 0xFFEEEE00)); 
-    Img_Base pillarTex[4] = { Img_Base(0xAAFF0000), Img_Base(0xAA00FF00), Img_Base(0xAA0000FF), Img_Base(0xAAEEEEEE) };
+    Img_Base floorTex = Img_Base(checkeredImgOp({ 1024, 1024 }, { 20, 20, 0xAAEE3333, 0xAA3333EE }));
+    Img_Base roofTex =  Img_Base(linedImgOp({ 1024, 1024 }, 0xAAFFFF00, color_invert(0xAA00FF00), 10, 0.0));
+    Img_Base pillarTex[4] = { 
+        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAFF0000, color_invert(0xAAFF0000))),
+        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA00FF00, color_invert(0xAA00FF00))),
+        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA0000FF, color_invert(0xAA0000FF))),
+        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAEEEEEE, color_invert(0xAAEEEEEE)))
+    };
     // Img_Base modelTexs[5];
 #endif
 private:

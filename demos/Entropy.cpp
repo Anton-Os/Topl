@@ -27,8 +27,8 @@ void Entropy_Demo::init(){
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         scene.addGeometry("actor" + std::to_string(a), &actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
-        // physActors[a].damping = 0.995;
-        // physActors[a] = Phys_Actor(Vec3f({ 0.0F, -0.1F, 0.0F }));
+        physActors[a].damping = 0.995;
+        physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
         scene.addPhysics("actor" + std::to_string(a), &physActors[a]);
 #endif
     }
@@ -43,16 +43,14 @@ void Entropy_Demo::loop(double frameTime){
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
-        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInEntropy)
+        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB)
             scene.addForce("actor" + std::to_string(a), {
-                ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE, 
-                ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE, 
+                ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (actors[a].getPos()->data[0] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
+                ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (actors[a].getPos()->data[1] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 0.0F 
             });
-        else if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && !isInEntropy)
-            actors[a].updateRot({((float)rand() / (float)RAND_MAX), ((float)rand() / (float)RAND_MAX), ((float)rand() / (float)RAND_MAX) });
-        // else if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && !isInEntropy)
-        //    actors[a].updateRot({(float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX), (float)rand() / (float)RAND_MAX });
+        if(physActors[a].actingForceCount > 0) actors[a].updateRot(*(physActors[a].forces));
+        // Set size and mass based on distance
         scene.resolvePhysics();
 #else
         actors[a].updatePos({((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, 0.0F });

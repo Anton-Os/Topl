@@ -1,14 +1,10 @@
 #version 440
 
+#define INCLUDE_BLOCK
+
 #include "Common.glsl"
 
 // Values
-
-layout(std140, binding = 0) uniform Block {
-	vec3 offset;
-	vec3 rotation;
-	vec3 scale;
-};
 
 layout(std140, binding = 1) uniform SceneBlock {
 	int mode;

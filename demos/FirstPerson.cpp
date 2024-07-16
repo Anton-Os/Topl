@@ -62,11 +62,11 @@ void FirstPerson_Demo::init(){
     puppet2.configure(&_DEMO->scene2D);
     puppet3.configure(&_DEMO->scene2D);
 
-    /* Phys_Connector puppet1_anchor, puppet2_anchor, puppet3_anchor;
-    Vec3f anchorPos1 = Vec3f({0.0F, 0.5F, 0.0F}); Vec3f anchorPos2 = Vec3f({-1.0F, 0.75F, 0.0F}); Vec3f anchorPos3 = Vec3f({1.0F, 0.75F, 0.0F});
-    scene2D.addAnchor(&puppet1_anchor, puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorPos1);
-    scene2D.addAnchor(&puppet2_anchor, puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorPos2);
-    scene2D.addAnchor(&puppet3_anchor, puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorPos3); */
+#ifdef TOPL_ENABLE_PHYSICS
+    scene2D.addAnchor(&anchor1, puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorPos1);
+    scene2D.addAnchor(&anchor2, puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorPos2);
+    scene2D.addAnchor(&anchor3, puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorPos3);
+#endif
 
     Topl_Program::timeline.addSequence_vec3f(&puppet1_forceVec, std::make_pair(60.0, Vec3f({ 0.0F, 50.0F, 0.0F })));
     Topl_Program::timeline.addSequence_vec3f(&puppet2_forceVec, std::make_pair(60.0, Vec3f({ -50.0F, 0.0F, 0.0F })));
@@ -79,7 +79,7 @@ void FirstPerson_Demo::init(){
 void FirstPerson_Demo::loop(double frameTime){
     {
 #ifdef TOPL_ENABLE_PHYSICS
-        if(_renderer->getFrameCount() % 10 == 0){
+        if(_renderer->getFrameCount() % 10 == 0 && Topl_Program::timeline.persist_ticker.getAbsSecs() > 10.0){
             scene2D.addForce(puppet1.getGeoActor(rand() % 6)->getName(), puppet1_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
             scene2D.addForce(puppet2.getGeoActor(rand() % 6)->getName(), puppet2_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
             scene2D.addForce(puppet3.getGeoActor(rand() % 6)->getName(), puppet3_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
