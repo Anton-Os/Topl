@@ -77,7 +77,7 @@ const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
 	return (texture_it != _textureMap.end())? texture_it->second : nullptr;
 }
 
-void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* arrayTex) {
+void Topl_Scene::addArrayTex(const std::string& name, const Img_Sequence* arrayTex) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_arrayTexMap.erase(*actor);
@@ -85,11 +85,11 @@ void Topl_Scene::addArrayTex(const std::string& name, const Img_Array* arrayTex)
 		}
 }
 
-const Img_Array* Topl_Scene::getArrayTex(const std::string& name) const {
+const Img_Sequence* Topl_Scene::getArrayTex(const std::string& name) const {
 	if(_arrayTexMap.empty()) return nullptr; // no textures available
 	auto arrayTex_it = std::find_if(
 		_arrayTexMap.begin(), _arrayTexMap.end(),
-		[name](const std::pair<Geo_Actor*, const Img_Array*>& p){ return p.first->getName() == name; }
+		[name](const std::pair<Geo_Actor*, const Img_Sequence*>& p){ return p.first->getName() == name; }
 	);
 	return (arrayTex_it != _arrayTexMap.end())? arrayTex_it->second : nullptr;
 }

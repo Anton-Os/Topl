@@ -54,49 +54,50 @@ public:
 		}
     }
 
-	void scaleRow(unsigned short row){}
-	void scaleCol(unsigned short col){}
-
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
-	void resetState(){
-		for(unsigned p = 0; p < _params.getGridSize(); p++){
-			const Geo_Actor* targetActor = getGeoActor(p);
-			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
-			if(paneItemUI != paneItemUI_map.end()){
-				paneItemUI->second->setState(MENU_None);
-				getImgAt(p)->setImage(paneItemUI->second->stateImg.getImage());
-			}
+	void resetState(){ // abstract the loop
+		unsigned i = 0;
+
+		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
+			p->second->setState(MENU_None);
+			getImgAt(i)->setImage(p->second->stateImg.getImage());
+			i++;
 		}
 	}
 
-	void setState(unsigned paneIndex, bool isSelect, double x, double y){
+	void setState(unsigned paneIndex, double x, double y){ // abstract the loop
+		unsigned i = 0;
+
 		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
-		else for(unsigned p = 0; p < _params.getGridSize(); p++){
-			const Geo_Actor* targetActor = getGeoActor(p);
-			auto paneItemUI = std::find_if(paneItemUI_map.begin(), paneItemUI_map.end(), [targetActor](const std::pair<const Geo_Actor*, Img_UI*>& i){ return i.first == targetActor; });
-			if(paneItemUI != paneItemUI_map.end()){
-				// std::cout << "Setting state for index" << std::to_string(paneIndex) << " with name " << paneItemUI->second->getName() << std::endl;
-				if((paneItemUI->second->getName().find("button") != std::string::npos) && paneItemUI->second->getState() != MENU_Off)
-					(p == paneIndex) ? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
-				else if((paneItemUI->second->getName().find("check") != std::string::npos || paneItemUI->second->getName().find("label") != std::string::npos) && p == paneIndex && paneItemUI->second->getState() != MENU_Off)
-					paneItemUI->second->setState(MENU_On); // for testing
-				// 	(paneItemUI->second->getState() == MENU_None)? paneItemUI->second->setState((isSelect)? MENU_On : MENU_Pre) : paneItemUI->second->setState(MENU_None);
-				else if(paneItemUI->second->getName().find("dial") != std::string::npos && p == paneIndex){
-					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*paneItemUI->second));
+		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
+			if(paneIndex == i){
+				if(p->second->getName().find("dial") != std::string::npos){
+					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*p->second));
 					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
 				}
-				else if(paneItemUI->second->getName().find("slider") != std::string::npos && p == paneIndex){
-					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*paneItemUI->second));
+				else if(p->second->getName().find("slider") != std::string::npos){
+					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
 					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
 				}
-				// else std::cerr << "State setting unsupported for name" << paneItemUI->second->getName() << std::endl;
-				getImgAt(paneIndex)->setImage(paneItemUI->second->stateImg.getImage()); // syncronize state with pane image
-			} else std::cerr << "State setting not found" << std::endl;
+				// set state for buttons should only apply
+			}
+			i++;
 		}
 	}
 
-	void setState(unsigned paneIndex, bool isSelect){ setState(paneIndex, isSelect, 0.5, 0.5); }
+	void setState(unsigned paneIndex, bool isSelect){ // abstract the loop
+		unsigned i = 0;
+
+		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
+		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
+			if(paneIndex == i) p->second->setState((isSelect)? MENU_On : MENU_Pre); // This applies to buttons only
+			else p->second->setState(MENU_None);
+
+			getImgAt(i)->setImage(p->second->stateImg.getImage());
+			i++;
+		}
+	}
 
 	void overlay(unsigned paneIndex, Img_UI* element){ 
 		paneItemUI_map.insert({ getGeoActor(paneIndex), element });

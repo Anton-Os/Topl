@@ -84,6 +84,10 @@ public:
 		}
 	}
 
+	void scaleRow(unsigned short row, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling rows with " << std::to_string(c) << ", "; }
+	void scaleCol(unsigned short col, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling cols with " << std::to_string(c) << ", "; }
+	void scaleLen(unsigned short len, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling lens with " << std::to_string(c) << ", "; }
+
 protected:
     Geo_Grid_Params _params;
 };

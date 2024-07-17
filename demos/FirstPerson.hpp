@@ -19,9 +19,9 @@ struct FirstPerson_Demo : public Topl_Program {
         puppet2.shift({ -1.0F, -1.0, -5.0F });
         puppet3.shift({ 1.0F, -1.0, -5.0F });
 
-        anchorPos1 = { 0.0F, -1.0, 0.0F };
-        anchorPos2 = { -1.0F, -1.0, 0.0F };
-        anchorPos3 = { 1.0F, -1.0, 0.0F };
+        anchorOffs[0] = { 0.0F, -1.0, 0.0F };
+        anchorOffs[1] = { -1.0F, -1.0, 0.0F };
+        anchorOffs[2] = { 1.0F, -1.0, 0.0F };
 
         // 3D Objects
         
@@ -73,8 +73,8 @@ struct FirstPerson_Demo : public Topl_Program {
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
 #ifdef TOPL_ENABLE_PHYSICS
-    Phys_Connector anchor1, anchor2, anchor3;
-    Vec3f anchorPos1 = VEC_3F_ZERO, anchorPos2 = VEC_3F_ZERO, anchorPos3 = VEC_3F_ZERO;
+    Phys_Connector anchors[3]; // Phys_Connector anchor1, anchor2, anchor3;
+    Vec3f anchorOffs[3]; // Vec3f anchorOffs[0] = VEC_3F_ZERO, anchorOffs[1] = VEC_3F_ZERO, anchorOffs[2] = VEC_3F_ZERO;
 #endif
 
     Geo_Quad3D floorMesh = Geo_Quad3D();

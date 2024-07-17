@@ -54,8 +54,14 @@ struct Img_Label : public Img_UI {
 			Rasteron_Image* textImg = textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
 			for(unsigned short t = 0; t < 4; t++){
 				Rasteron_Image* tempImg = copyImgOp(textImg);
-				for(unsigned p = 0; p < textImg->width * textImg->height; p++) 
-					if(*(tempImg->data + p) != textObj.fgColor) *(tempImg->data + p) = textObjs[t].bkColor;
+				for(unsigned p = 0; p < textImg->width * textImg->height && t != MENU_None; p++){
+					if(t == MENU_Pre && *(tempImg->data + p) != textObj.fgColor) *(tempImg->data + p) = textObjs[t].bkColor;
+					else {
+						double x = (1.0 / (double)tempImg->width) * (p % tempImg->width);
+						double y = (1.0 / (double)tempImg->height) * (p / tempImg->width);
+						if(x < 0.035 || x > 0.965 || y < 0.035 || y > 0.965) *(tempImg->data + p) = textObjs[t].bkColor;
+					}
+				}
 				queue_addImg(queue, tempImg, t);
 				RASTERON_DEALLOC(tempImg);
 			}

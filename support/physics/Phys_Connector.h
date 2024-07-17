@@ -2,18 +2,13 @@
 
 #include "Geo_Actor.hpp"
 
-#define PHYS_DEFAULT_K 2500.0 // K value by default
+#define PHYS_DEFAULT_K 5000.0 // K value by default
 #define PHYS_ROD_K 10000.0 // K value for rod connector
 #define PHYS_CALC_THRESH 0.05 // time threshhold for adding forces
 #define CONNECTOR_LEN_THRESH 0.00005 // Threshold value for spring oscillations
 // #define CONNECTOR_ANGLE_THRESH Vec3f(0.00005f, 0.00005f, 0.00005f)
 #define CONNECTOR_ANGLE_PRESET Vec3f({ 0.0f, 1.0f, 0.0 });
 #define CONNECTOR_ANGLE_SCALE 20.0f
-
-enum CONNECT_Type {
-    CONNECT_Spring, // Oscillating force both ways
-    CONNECT_Rod, // Fixed distance apart
-};
 
 struct Phys_Connector {
     Phys_Connector(){ } // Empty Constructor
@@ -42,6 +37,9 @@ struct Phys_Connector {
     double restLength = 1.0; // tries to reach this rest length
 	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
 };
+
+// struct Phys_Spring : Phys_Connector {} // loose
+// struct Phys_Rod : Phys_Connector {} // rigid
 
 // Links and Anchors
 

@@ -2,11 +2,43 @@
 
 
 unsigned short Playground_Demo::mode = 0;
-unsigned short Playground_Demo::category = 0;
+unsigned short Playground_Demo::option = 0;
 
 void onAnyKey(char key){
     if(isdigit(key)){ 
         Playground_Demo::mode = key - '0';
+    }
+}
+
+void onActionPanePress(MOUSE_Event event){
+    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        Playground_Demo::mode = PLAYGROUND_ACTION_MENU;
+        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        std::cout << "Action operation!" << std::endl;
+    }
+}
+
+void onObjectPanePress(MOUSE_Event event){
+    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        Playground_Demo::mode = PLAYGROUND_OBJECT_MENU;
+        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        std::cout << "Object operation!" << std::endl;
+    }
+}
+
+void onSculptPanePress(MOUSE_Event event){
+    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        Playground_Demo::mode = PLAYGROUND_SCULPT_MENU;
+        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        std::cout << "Sculpt operation!" << std::endl;
+    }
+}
+
+void onPaintPanePress(MOUSE_Event event){
+    if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
+        Playground_Demo::mode = PLAYGROUND_PAINT_MENU;
+        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        std::cout << "Paint operation!" << std::endl;
     }
 }
 
@@ -28,18 +60,22 @@ void Playground_Demo::init(){
         std::string numberText = "[" + std::to_string(p + 1) + "]";
         _labels.push_back(new Img_Label(MENU_Medium, { fontPath.c_str(), numberText.c_str(), 0xFF333333, 0xFFEEEEEE }));
         objectsBillboard.overlay(p, _labels.back());
+        objectsBillboard.getGeoActor(p)->pickerFunc = onObjectPanePress;
     }
     for(unsigned p = 0; p < actionsBillboard.getParams()->getGridSize(); p++){
         _buttons.push_back(new Img_Button(MENU_Medium, "sort"));
         actionsBillboard.overlay(p, _buttons.back());
+        actionsBillboard.getGeoActor(p)->pickerFunc = onActionPanePress;
     }
     for(unsigned p = 0; p < sculptBillboard.getParams()->getGridSize(); p++){
         _buttons.push_back(new Img_Button(MENU_Medium, "sort"));
         sculptBillboard.overlay(p, _buttons.back());
+        sculptBillboard.getGeoActor(p)->pickerFunc = onSculptPanePress;
     }
     for(unsigned p = 0; p < paintBillboard.getParams()->getGridSize(); p++){
         _buttons.push_back(new Img_Button(MENU_Medium, "sort"));
         paintBillboard.overlay(p, _buttons.back());
+        paintBillboard.getGeoActor(p)->pickerFunc = onPaintPanePress;
     }
     for(unsigned p = 0; p < propsBillboard.getParams()->getGridSize(); p++){
         _dials.push_back(new Img_Dial(MENU_Medium, 4));
@@ -55,9 +91,7 @@ void Playground_Demo::init(){
 }
 
 void Playground_Demo::loop(double frameTime){
-    if(Platform::mouseControl.getIsMouseDown().second){ 
-        colorPicker(&overlayScene);
-    }
+    updateOverlay();
 
     _renderer->setCamera(&fixedCamera);
     _renderer->setDrawMode(DRAW_Triangles);
@@ -72,6 +106,32 @@ void Playground_Demo::loop(double frameTime){
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&overlayScene);
     _renderer->drawScene(&overlayScene);
+}
+
+void Playground_Demo::updateOverlay(){
+    static bool texturizeReq = false;
+
+    colorPicker(&overlayScene);
+
+    if(Topl_Program::pickerObj != nullptr){
+        unsigned short index = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+
+        if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos)
+            actionsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+        if(Topl_Program::pickerObj->getName().find("objects_board") != std::string::npos)
+            objectsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+        if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos)
+            sculptBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+        if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos)
+            paintBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+
+        _renderer->texturizeScene(&overlayScene);
+    } else {
+        actionsBillboard.resetState(); 
+        objectsBillboard.resetState();
+        sculptBillboard.resetState(); 
+        paintBillboard.resetState();
+    }
 }
 
 int main(int argc, char** argv) {

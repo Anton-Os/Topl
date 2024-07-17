@@ -12,10 +12,10 @@ void projCamId(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_No
 void projCamOrtho(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0F).genProjMatrix()); }
 void projCamPerspective(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
 void projCamExperimental(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
-void movePuppetsRight(){ std::cout << "Puppet right action" << std::endl; }
-void movePuppetsLeft(){ std::cout << "Puppet left action" << std::endl; }
-void movePuppetsUp(){ std::cout << "Puppet up action" << std::endl; }
-void movePuppetsDown(){ std::cout << "Puppet down action" << std::endl; }
+void movePuppetsRight(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] += 0.1F; }
+void movePuppetsLeft(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] -= 0.1F; }
+void movePuppetsUp(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] += 0.1F;  }
+void movePuppetsDown(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] -= 0.1F; }
 
 /* void projCallback(){
     static unsigned invocation = 0;
@@ -63,9 +63,9 @@ void FirstPerson_Demo::init(){
     puppet3.configure(&_DEMO->scene2D);
 
 #ifdef TOPL_ENABLE_PHYSICS
-    scene2D.addAnchor(&anchor1, puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorPos1);
-    scene2D.addAnchor(&anchor2, puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorPos2);
-    scene2D.addAnchor(&anchor3, puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorPos3);
+    scene2D.addAnchor(&anchors[0], puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[0]);
+    scene2D.addAnchor(&anchors[1], puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[1]);
+    scene2D.addAnchor(&anchors[2], puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[2]);
 #endif
 
     Topl_Program::timeline.addSequence_vec3f(&puppet1_forceVec, std::make_pair(60.0, Vec3f({ 0.0F, 50.0F, 0.0F })));
@@ -80,9 +80,9 @@ void FirstPerson_Demo::loop(double frameTime){
     {
 #ifdef TOPL_ENABLE_PHYSICS
         if(_renderer->getFrameCount() % 10 == 0 && Topl_Program::timeline.persist_ticker.getAbsSecs() > 10.0){
-            scene2D.addForce(puppet1.getGeoActor(rand() % 6)->getName(), puppet1_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
-            scene2D.addForce(puppet2.getGeoActor(rand() % 6)->getName(), puppet2_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
-            scene2D.addForce(puppet3.getGeoActor(rand() % 6)->getName(), puppet3_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
+            // scene2D.addForce(puppet1.getGeoActor(rand() % 6)->getName(), puppet1_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
+            // scene2D.addForce(puppet2.getGeoActor(rand() % 6)->getName(), puppet2_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
+            // scene2D.addForce(puppet3.getGeoActor(rand() % 6)->getName(), puppet3_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
         }
         scene2D.resolvePhysics();
 #endif

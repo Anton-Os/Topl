@@ -2,7 +2,6 @@
 
 #include "support_def.h"
 
-
 #define DEFAULT_IMG_HEIGHT 256
 #define DEFAULT_IMG_WIDTH 256
 
@@ -47,6 +46,8 @@ struct Img_Base : public Img {
 		refresh();
 		image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
     }
+	// void setBlendImg(Rasteron_Image* image1, Rasteron_Image* image2)
+	// void setNoiseImg(ImageSize size, ColorGrid grid)
     void setImage(ref_image_t refImage){
 		refresh();
         image = copyImgOp(refImage);
@@ -69,35 +70,6 @@ protected:
 #endif
 };
 
-/* struct Img_Txt : public Img_Base {
-	Img_Txt() : Img_Base(){} // Empty Constructor
-#ifdef RASTERON_H
-	Img_Txt(Rasteron_Text text) : Img_Base(){
-		textObj = text;
-		image = textImgOp(&textObj, size);
-	}
-	// Img_Txt(Rasteron_Text* text, unsigned short l, unsigned short r, unsigned short t, unsigned short b){
-	// 	textObj = text;
-	//	leftPad = l; rightPad = r;
-	//	topPad = t; botPad = b;
-
-	//	unsigned short paddings[4] = { l, r, t, b };
-	//	image = textPadImgOp(textObj, size, paddings);
-	// }
-
-	// void setStr(std::string textStr);
-	// void setFontFile(std::string fontStr);
-	// void setColors(unsigned fgColor, unsigned bkColor);
-
-	unsigned short size = FONT_SIZE_MED;
-
-	unsigned short leftPad = 0; unsigned short rightPad = 0;
-	unsigned short topPad = 0; unsigned short botPad = 0;
-protected:
-	Rasteron_Text textObj;
-#endif
-}; */
-
 // Array texture based on multiple layers
 
 #define DEFAULT_TEX_BINDING 0 // for base texture
@@ -105,14 +77,22 @@ protected:
 
 /* enum LAYER_Property { LAYER_Albedo = 0, LAYER_Height = 1, LAYER_Roughness = 2, LAYER_Opacity = 3, LAYER_Enviornment = 4, LAYER_Shadow = 5, LAYER_Illumination = 6, LAYER_Testing = 7, }; */
 
-struct Img_Array : public Img {
+struct Img_Sequence : public Img_Base {
 #ifndef RASTERON_H
-	Img_Array(){}
+	Img_Sequence() : Img_Base(){}
 #else
-	Img_Array() : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), 8); }
-	Img_Array(unsigned short count) : Img(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), count); }
+	Img_Sequence() : Img_Base(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), 8); }
+	Img_Sequence(unsigned short count) : Img_Base(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), count); }
 
-    // void addImg();
+	Rasteron_Image* getImage() const {
+		RASTERON_DEALLOC(image);
+		// image = copyImgOp(queue_getImg(queue, floor(sequence * queue->frameCount)));
+		return image;
+	}
+
+    void setSeq(double s){ sequence = s; }
+	void addFrame(ref_image_t refImg, unsigned f){ queue_addImg(queue, refImg, f); }
+
 	Rasteron_Queue* getQueue() const { return queue; } // change this?
 private:
 	void cleanup() override {
@@ -122,6 +102,7 @@ private:
 		}
 	}
 
+	double sequence = 0.0;
 	Rasteron_Queue* queue;
 #endif
 };
