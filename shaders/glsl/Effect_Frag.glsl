@@ -5,6 +5,9 @@
 
 #include "Common.glsl"
 
+#define FRACTAL_SIZE 3.0 // max fractal size
+#define FRACTAL_ITER 1000 // max fractal iteratons
+
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock {
@@ -17,6 +20,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec2 cursorPos;
 
 	vec2 tracerSteps[8];
+	vec2 tracerPaths[8];
 };
 
 layout(location = 0) out vec4 color;
@@ -29,9 +33,6 @@ vec3 cursorTarget(vec2 cursorPos, vec2 coord){
 	float blue = 1 / distance(cursorPos, coord); // gradient
 	return vec3(red, green, blue);
 }
-
-#define FRACTAL_SIZE 3.0 // max fractal size
-#define FRACTAL_ITER 1000 // max fractal iteratons
 
 // mandlebrotSet Set
 vec3 mandlebrotSet(uvec2 screenRes, vec2 coord){

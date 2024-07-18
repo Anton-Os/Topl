@@ -51,6 +51,11 @@ void Playground_Demo::init(){
     paintBillboard.configure(&overlayScene);
     propsBillboard.configure(&overlayScene);
 
+    for(unsigned i = 1; i < 8; i++){ 
+        _images.push_back(new Img_Base(RAND_COLOR()));
+        backdropScene.addTexture(std::to_string(i), _images.back());
+    }
+
     std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
     _labels.push_back(new Img_Label(MENU_Medium, { fontPath.c_str(), "Default", 0xFF333333, 0xFFEEEEEE }));
     modeBillboard.overlay(0, _labels.back());

@@ -12,7 +12,9 @@ layout(std140, binding = 0) uniform Block {
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
+
 	vec3 texScroll; // texture coordinate scrolling
+	// vec3 texScale; // texture coordinate scaling
 };
 
 layout(location = 0) in vec3 texcoord;

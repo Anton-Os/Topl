@@ -12,8 +12,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	
-	float2 tracerSteps[8];
+	float4 tracerSteps[4]; // TODO: This needs to be packed
+	float4 tracerPaths[4]; // TODO: This needs to be packed
 }
 
 struct VS_OUTPUT { float4 pos : SV_POSITION; };

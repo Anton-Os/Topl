@@ -12,7 +12,7 @@
 
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
-        // backdropActor.setPos({ 0.0F, 0.0F, 0.1F });
+        backdropActor.setPos({ 0.0F, 0.0F, -0.1F });
         for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
                 case 0: actors[a] = Geo_Actor(&triangles[a / 4]); break;

@@ -21,6 +21,7 @@ layout(std140, binding = 1) uniform SceneBlock{
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 light_pos;
 layout(location = 2) in vec3 light_val;
+layout(location = 3) in float light_dist;
 
 layout(location = 0) out vec4 color;
 
@@ -53,6 +54,12 @@ void main() {
 		color = vec4(depth, depth, depth, 1.0f);
 	}
 	else if(mode == 5) color = vec4(light_val, 1.0); // light value
-	// else if(mode == 6) color = light_val / distance; // light distance value
+	// else if(mode == 6) color = // TODO: Implement this
+	// else if(mode == 7) color = // TODO: Implement this
+	// else if(mode == 8) color = // TODO: Implement this
+	else if(mode < 0 && mode > -8){
+		vec3 illumin = light_val * abs(mode) * (1.0 - light_dist) * 0.1;
+		color = vec4(illumin, 1.0f);
+	}
 	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

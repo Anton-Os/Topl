@@ -18,9 +18,9 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
-// layout(location = 1) out float light_dist_out;
 layout(location = 1) out vec3 light_pos_out;
 layout(location = 2) out vec3 light_val_out;
+layout(location = 3) out float light_dist_out;
 
 // Main
 
@@ -32,6 +32,8 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
+
 	light_pos_out = skyLight_pos; // vec3(vec4(skyLight_pos, 1.0) * getCamMatrix(cam_pos, look_pos) * projMatrix);
-	light_val_out = skyLight_value;
+	light_dist_out = pow(pow(offset.x - light_pos_out.x, 2) + pow(offset.y - light_pos_out.y, 2) + pow(offset.z - light_pos_out.z, 2), 0.5);
+	light_val_out = skyLight_value; // attenuate?
 }

@@ -51,6 +51,7 @@ private:
     Topl_Scene overlayScene, backdropScene;
     Topl_Camera fixedCamera;
 
+    std::vector<Img_Base*> _images;
     std::vector<Img_Button*> _buttons;
     std::vector<Img_Label*> _labels;
     std::vector<Img_Dial*> _dials;

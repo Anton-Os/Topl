@@ -33,9 +33,9 @@ struct Beams_VertexShader : public Topl_EntryShader {
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
-		sendLightData(&lampLight, bytes);
 		sendLightData(&skyLight, bytes);
 		sendLightData(&flashLight, bytes);
+		sendLightData(&lampLight, bytes);
 	}
 
 	void setLight(LIGHT_Type type, const Topl_Light& light) {
@@ -47,9 +47,9 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		}
 	}
 protected:
-	Topl_Light skyLight = Topl_Light({ 0.0, 1.0f, 0.0 });
-	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, -1.0 });
-	Topl_Light lampLight = Topl_Light({ 0.0, 0.0f, 1.0 });
+	Topl_Light skyLight = Topl_Light({ 0.0, 1.0f, 0.0 }, { 1.0, 1.0, 0.0 });
+	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, -1.0 }, { 1.0, 0.0, 1.0 });
+	Topl_Light lampLight = Topl_Light({ 0.0, 0.0f, 1.0 }, { 0.0, 1.0, 1.0 });
 private:
 	static void sendLightData(const Topl_Light* light, blockBytes_t* bytes) {
 		appendDataToBytes((uint8_t*)&light->pos, sizeof(Vec3f), bytes);

@@ -2,7 +2,13 @@
 
 #include "Common.hlsl"
 
+#define FRACTAL_SIZE 3.0 // max fractal size
+#define FRACTAL_ITER 1000 // max fractal iteratons
+#define C float2(cursorPos.x, cursorPos.y) // c value for julia set
+
 // Values
+
+float4 packedBuffer[4];
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;
@@ -12,24 +18,20 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	
-	float2 tracerSteps[8];
+	float4 tracerSteps[4]; // TODO: This needs to be packed
+	float4 tracerPaths[4]; // TODO: This needs to be packed
 }
 
 struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Functions
 
-float3 cursorTarget(float2 cursorPos, float2 coord){
-	float red = (distance(cursorPos, coord) < 0.01) ? 1.0 : 0.0; // accute center
-	float green = pow(1.0 - abs(cursorPos.x - coord.x), 5) - distance(cursorPos, coord); // x gradient
-	float blue = pow(1.0 - abs(cursorPos.y - coord.y), 5) - distance(cursorPos, coord); // y gradient
+float3 cursorTarget(float2 pos, float2 coord){
+	float red = (distance(pos, coord) < 0.01) ? 1.0 : 0.0; // accute center
+	float green = pow(1.0 - abs(pos.x - coord.x), 5) - distance(pos, coord); // x gradient
+	float blue = pow(1.0 - abs(pos.y - coord.y), 5) - distance(pos, coord); // y gradient
 	return float3(red, green, blue);
 }
-
-#define FRACTAL_SIZE 3.0 // max fractal size
-#define FRACTAL_ITER 1000 // max fractal iteratons
-#define C float2(cursorPos.x, cursorPos.y) // c value for julia set
 
 // Julia set
 float3 juliaSet(float2 coord){
@@ -49,7 +51,7 @@ float3 juliaSet(float2 coord){
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
+	float2 cursorPosAdj = ((float2(tracerPaths[3][2], tracerPaths[3][3]) * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coordsAdj = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
 	if (mode == 1) return float4(cursorTarget(cursorPosAdj, coordsAdj), 1.0f); // cursor track mode

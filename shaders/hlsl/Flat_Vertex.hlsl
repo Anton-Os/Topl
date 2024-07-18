@@ -30,7 +30,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.vertex_pos = output.pos;
 	output.vertex_id = vertexID;
-	output.vertex_color = color - (color / (float)(vertexID + 1)); // getUniqueColor(vertexID);
+	output.vertex_color = getRandColor(color) - (color / (float)(vertexID + 1)); // getUniqueColor(vertexID);
 
 	return output;
 }

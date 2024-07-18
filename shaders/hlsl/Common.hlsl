@@ -50,13 +50,9 @@ uint4 getModes(uint mode){
 }
 
 float4 getRandColor(float4 seedColor){
-	float4 randColor = seedColor * float4(999.82, 111.15, 454.55, 1.0);
+	float4 randColor = (seedColor + float4(0.569, 0.853, 0.265, 1.0)) * float4(881.225, 111.159, 454.823, 1.0);
 
-	while(randColor.x > 1.0) randColor.r -= 0.5; // pow(randColor.x, 0.1);
-	while(randColor.y > 1.0) randColor.g -= 0.5; // pow(randColor.y, 0.1);
-	while(randColor.z > 1.0) randColor.b -= 0.5; // pow(randColor.z, 0.1);
-
-	return randColor;
+	return float4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), 1.0);
 }
 
 float4 getUniqueColor(int id){

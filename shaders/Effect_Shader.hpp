@@ -47,8 +47,7 @@ protected:
 			for(unsigned short t = 0; t < tracerPath.stepsCount && t < MAX_PATH_STEPS; t++)
 				paths[t] = Vec2f({ tracerPath.steps[t].first, tracerPath.steps[t].second });
 		}
-			
-		// alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 
+		alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 
 	}
 
 	unsigned _mode = EFFECT_MODE_CURSORY;
