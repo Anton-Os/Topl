@@ -4,6 +4,8 @@
 #include "Geo_Cone.hpp"
 #include "Geo_Volume.hpp"
 
+#define MAX_ITERS 1000
+
 class Geo_Iter : public Geo_Mesh {
 public:
     Geo_Iter(const Geo_Mesh* mesh, unsigned short vCount, unsigned short iCount) : Geo_Mesh(vCount, iCount){

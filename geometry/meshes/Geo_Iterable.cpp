@@ -5,8 +5,9 @@ Geo_TessIter::Geo_TessIter(const Geo_Mesh* mesh, unsigned short iters) : Geo_Ite
 
     unsigned v = 0;
     unsigned t = 0;
+    unsigned i = 0;
     for(v = 0; v < mesh->getVertexCount(); v++) _vertices[v] = *(mesh->getVertices() + v);
-    while(v < _vertices.size()){
+    /* while(v < _vertices.size()){
        Geo_Vertex v1 = *(mesh->getVertices() + (*(mesh->getIndices() + t) % mesh->getIndexCount()));
        Geo_Vertex v2 = *(mesh->getVertices() + (*(mesh->getIndices() + t + 1) % mesh->getIndexCount()));
        Geo_Vertex v3 = *(mesh->getVertices() + (*(mesh->getIndices() + t + 2) % mesh->getIndexCount()));
@@ -18,17 +19,20 @@ Geo_TessIter::Geo_TessIter(const Geo_Mesh* mesh, unsigned short iters) : Geo_Ite
        
         v++;
         t+= 3;
-    }
+    } */
     
-    unsigned i = 0;
     for(i = 0; i < mesh->getIndexCount(); i++) _indices[i] = *(mesh->getIndices() + i); // TODO: Replace with real indices
-    while(i < _indices.size()){
+    /* while(i < _indices.size()){
         // _indices[i] = 0; // TODO: Replace with real indices
         _indices[i] = mesh->getVertexCount() + i;
         _indices[i + 1] = mesh->getVertexCount() + i + 1;
         _indices[i + 2] = mesh->getVertexCount() + i + 2;
         i += 3;
-    }
+    } */
+
+
+    while(v < _vertices.size()){ _vertices[v] = Vec3f({ 0.0F, 0.0F, 0.0F }); v++; } // test
+    while(i < _indices.size()){ _indices[i] = 0; i++; } // test
 }
 
 Geo_DuplexIter::Geo_DuplexIter(const Geo_Mesh* mesh) : Geo_Iter(mesh, mesh->getVertexCount() * mesh->getVertexCount(), mesh->getIndexCount() * mesh->getVertexCount()){
@@ -37,7 +41,7 @@ Geo_DuplexIter::Geo_DuplexIter(const Geo_Mesh* mesh) : Geo_Iter(mesh, mesh->getV
     for(unsigned g = 0; g < mesh->getVertexCount(); g++){
         Geo_Vertex refVertex = *(mesh->getVertices() + g);
 
-        for(unsigned l = 0; l < mesh->getVertexCount(); l++){
+        for(unsigned l = 0; l < mesh->getVertexCount() && l + (g * mesh->getVertexCount()) < MAX_ITERS; l++){
             _vertices[v] = Geo_Vertex(// refVertex + *(mesh->getVertices() + g);
                 Vec3f(refVertex.position + (mesh->getVertices() + l)->position),
                 Vec3f(refVertex.texcoord + (mesh->getVertices() + l)->texcoord)
@@ -46,10 +50,13 @@ Geo_DuplexIter::Geo_DuplexIter(const Geo_Mesh* mesh) : Geo_Iter(mesh, mesh->getV
         }
 
         for(unsigned o = 0; o < mesh->getIndexCount(); o++){
-            _indices[i] = *(mesh->getIndices() + (o * g));
+            _indices[i] = *(mesh->getIndices() + o) + (g * mesh->getIndexCount());
             i++;
         }
     }
+
+    while(v < _vertices.size()){ _vertices[v] = Vec3f({ 0.0F, 0.0F, 0.0F }); v++; } // test
+    while(i < _indices.size()){ _indices[i] = 0; i++; } // test
 }
 
 /* Geo_DuplexIter::Geo_DuplexIter(const Geo_Mesh* mesh) : Geo_Iter(mesh, 1){

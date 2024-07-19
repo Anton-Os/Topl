@@ -26,9 +26,21 @@ struct Entropy_Demo : public Topl_Program {
             float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
             actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
 
-            // TODO: Create meshes
-            // TODO: Create tesselated meshes
-            // TODO: Create duplex meshes
+            switch(a % 4){
+                case 0: duplexMeshes.push_back(Geo_DuplexIter(&triangles[a / 4])); tessMeshes.push_back(Geo_TessIter(&triangles[a / 4], 1)); break;
+                case 1: duplexMeshes.push_back(Geo_DuplexIter(&quads[a / 4]));  tessMeshes.push_back(Geo_TessIter(&quads[a / 4], 1)); break;
+                case 2: duplexMeshes.push_back(Geo_DuplexIter(&hexes[a / 4])); tessMeshes.push_back(Geo_TessIter(&hexes[a / 4], 1)); break;
+                case 3: duplexMeshes.push_back(Geo_DuplexIter(&circles[a / 4])); tessMeshes.push_back(Geo_TessIter(&circles[a / 4], 1)); break;
+            } 
+
+            tessActors[a] = Geo_Actor(&tessMeshes.back());
+            tessActors[a].setPos(*actors[a].getPos());
+            tessActors[a].setRot(*actors[a].getRot());
+            tessActors[a].setSize(*actors[a].getSize());
+            duplexActors[a] = Geo_Actor(&duplexMeshes.back());
+            duplexActors[a].setPos(*actors[a].getPos());
+            duplexActors[a].setRot(*actors[a].getRot());
+            duplexActors[a].setSize(*actors[a].getSize());
         }
     }
 
@@ -41,19 +53,21 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Trig3D triangles[ENTROPIC_COUNT / 4];
     Geo_Quad3D quads[ENTROPIC_COUNT / 4];
     Geo_Hex3D hexes[ENTROPIC_COUNT / 4];
-    Geo_Circle3D circles[ENTROPIC_COUNT / 4];
+    Geo_Circle2D circles[ENTROPIC_COUNT / 4];
     // Geo_Orb spheres[ENTROPIC_SPAWN]; // for spawning objects
 
-    std::vector<Geo_Mesh> meshes;
+    // std::vector<Geo_Mesh> meshes;
     std::vector<Geo_TessIter> tessMeshes;
     std::vector<Geo_DuplexIter> duplexMeshes;
 
     Geo_Actor actors[ENTROPIC_COUNT];
+    Geo_Actor tessActors[ENTROPIC_COUNT];
+    Geo_Actor duplexActors[ENTROPIC_COUNT];
 #ifdef TOPL_ENABLE_PHYSICS
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif
 private:
-    Topl_Scene scene;
+    Topl_Scene scene1, scene2, scene3;
     Topl_Scene backdropScene;
     // Topl_Scene spawnScene;
 } *_DEMO;

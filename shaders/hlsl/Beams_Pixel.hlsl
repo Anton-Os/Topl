@@ -11,9 +11,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 look_pos;
 	float4x4 projMatrix;
 
-	float3 skyLight_pos; float3 skyLight_value;
-	float3 flashLight_pos; float3 flashLight_value;
-	float3 lampLight_pos; float3 lampLight_value;
+	float3 skyLight[2]; // position and value
+	float3 flashLight[2]; // position and value
+	float3 lampLight[2]; // position and value
 }
 
 struct PS_INPUT {
@@ -53,6 +53,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		return float4(depth, depth, depth, 1.0f);
 	}
 	else if(mode == 5) return float4(input.light_val, 1.0); // light value
-	// else if(mode == 6) return input.light_val / distance; // light distance value
+	else if(mode == 6) return float4(diffuse / specular, 1.0); // division
+	else if(mode == 7) return float4(ambient + pow(diffuse, 1.0 / specular), 1.0); // power
+	else if(mode == 8) return float4(float3(1.0, 1.0, 1.0) - diffuse - specular, 1.0); // inverse
 	else return float4(ambient + diffuse + specular, 1.0); // all lighting
 }

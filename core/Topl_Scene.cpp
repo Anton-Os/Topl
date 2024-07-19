@@ -57,18 +57,24 @@ void Topl_Scene::removeActor(const std::string& name){
 
 void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 	// if (image->data == nullptr || image->height == 0 || image->width == 0) return; // Error
-	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7"){
 		_textures[(char)name[0] - '0' - 1].setImage(image->getImage());
+		puts("Adding numeric texture");
+	}
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_textureMap.erase(*actor);
 			_textureMap.insert({ *actor, image });
 		}
+	_isTextured = true;
 }
 
 const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
-	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7"){
 		return &_textures[(char)name[0] - '0' - 1]; // unbound texture
+		puts("Getting numeric texture");
+		std::cout << "Getting texture at " << name << std::endl;
+	}
 	else if(_textureMap.empty()) return nullptr; // no textures available
 	auto texture_it = std::find_if(
 		_textureMap.begin(), _textureMap.end(),
@@ -83,6 +89,7 @@ void Topl_Scene::addArrayTex(const std::string& name, const Img_Sequence* arrayT
 			_arrayTexMap.erase(*actor);
 			_arrayTexMap.insert({ *actor, arrayTex });
 		}
+	_isTextured = true;
 }
 
 const Img_Sequence* Topl_Scene::getArrayTex(const std::string& name) const {
@@ -100,6 +107,7 @@ void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeT
 			_volumeTexMap.erase(*actor);
 			_volumeTexMap.insert({ *actor, volumeTexTex });
 		}
+	_isTextured = true;
 }
 
 const Img_Volume* Topl_Scene::getVolumeTex(const std::string& name) const {

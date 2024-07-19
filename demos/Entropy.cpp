@@ -25,18 +25,22 @@ void Entropy_Demo::init(){
     _renderer->buildScene(&backdropScene);
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-        scene.addGeometry("actor" + std::to_string(a), &actors[a]);
+        scene1.addGeometry("actor" + std::to_string(a), &actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
         physActors[a].damping = 0.995;
         physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
-        scene.addPhysics("actor" + std::to_string(a), &physActors[a]);
+        scene1.addPhysics("actor" + std::to_string(a), &physActors[a]);
 #endif
+        scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
+        scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]);
     }
-    _renderer->buildScene(&scene);
+    _renderer->buildScene(&scene1);
+    // _renderer->buildScene(&scene2);
+    // _renderer->buildScene(&scene3);
 }
 
 void Entropy_Demo::loop(double frameTime){
-    _effectVShader.setMode(EFFECT_MODE_CURSORY);
+    _effectVShader.setMode(2);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
@@ -44,14 +48,14 @@ void Entropy_Demo::loop(double frameTime){
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
         if((rand() / (float)RAND_MAX) < ENTROPIC_PROB)
-            scene.addForce("actor" + std::to_string(a), {
+            scene1.addForce("actor" + std::to_string(a), {
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (actors[a].getPos()->data[0] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (actors[a].getPos()->data[1] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 0.0F 
             });
         if(physActors[a].actingForceCount > 0) actors[a].updateRot(*(physActors[a].forces));
         // Set size and mass based on distance
-        scene.resolvePhysics();
+        scene1.resolvePhysics();
 #else
         actors[a].updatePos({((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, 0.0F });
         actors[a].updatePos({ *actors[a].getPos() * ((isInEntropy)? 0.0035F : -0.0035F) });
@@ -64,8 +68,8 @@ void Entropy_Demo::loop(double frameTime){
     // _flatVShader.setMode(flatMode);
     _beamsVShader.setMode(beamMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
-    _renderer->updateScene(&scene);
-    _renderer->drawScene(&scene);
+    _renderer->updateScene(&scene1);
+    _renderer->drawScene(&scene1);
     // _renderer->clear();
 
     /* if(isAllShown) for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
@@ -75,7 +79,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

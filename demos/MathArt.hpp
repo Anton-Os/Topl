@@ -6,15 +6,15 @@
 #define MATHART_SLICES 256 
 
 struct MathArt_Construct : public Geo_Construct {
-    MathArt_Construct() : Geo_Construct("Top"){ init(); }
+    MathArt_Construct() : Geo_Construct("Top" + std::to_string(rand() % 100)){ init(); }
 
-    MathArt_Construct(unsigned short div) : Geo_Construct("Top"){
+    MathArt_Construct(unsigned short div) : Geo_Construct("Top" + std::to_string(rand() % 100)){
         minDivs = div;
         maxDivs = div;
         init();
     }
 
-    MathArt_Construct(unsigned short div1, unsigned short div2) : Geo_Construct("Top"){
+    MathArt_Construct(unsigned short div1, unsigned short div2) : Geo_Construct("Top" + std::to_string(rand() % 100)){
         minDivs = (div1 < div2)? div1 : div2;
         maxDivs = (div1 < div2)? div2 : div1;
         init();
@@ -32,7 +32,7 @@ struct MathArt_Construct : public Geo_Construct {
     }
 
     void configure(Topl_Scene* scene){
-        for(unsigned s = 0; s < MATHART_SLICES; s++) scene->addGeometry("circle" + std::to_string(s), &_geoActors[s]);
+        for(unsigned s = 0; s < MATHART_SLICES; s++) scene->addGeometry(getPrefix() +"circle" + std::to_string(s), &_geoActors[s]);
     }
 
     float getSpinFactor(unsigned short index){ return (index < MATHART_SLICES)? spinFactors[index] : 0.0F; }
@@ -47,12 +47,23 @@ private:
 struct MathArt_Demo : public Topl_Program {
     MathArt_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "MathArt", backend){
         // construct1.scale({ 1.25F, 1.25F, 1.25F });
-        construct2.shift({ 0.75F, 0.0F, 0.0F });
-        construct3.shift({ -0.75F, 0.0F, 0.0F });
+        // construct2.shift({ 0.75F, 0.0F, 0.0F });
+        // construct3.shift({ -0.75F, 0.0F, 0.0F });
     }
 
     void init() override;
     void loop(double frameTime) override;
+
+    static unsigned short mode ;
+
+    MathArt_Construct* getConstruct(){
+        switch(mode % 3){
+            case 0: return &construct1;
+            case 1: return &construct2;
+            case 2: return &construct3;
+            default: return nullptr; 
+        }
+    }
 
     MathArt_Construct construct1 = MathArt_Construct(6, 32);
     MathArt_Construct construct2 = MathArt_Construct(4);

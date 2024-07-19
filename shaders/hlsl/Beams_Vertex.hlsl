@@ -10,9 +10,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 look_pos;
 	float4x4 projMatrix;
 
-	float3 skyLight_pos; float3 skyLight_value;
-	float3 flashLight_pos; float3 flashLight_value;
-	float3 lampLight_pos; float3 lampLight_value;
+	float3 skyLight[2]; // position and value
+	float3 flashLight[2]; // position and value
+	float3 lampLight[2]; // position and value
 }
 
 struct VS_OUTPUT {
@@ -34,8 +34,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
-	output.light_pos = mul(transpose(projMatrix), mul(cameraMatrix, skyLight_pos));
-	output.light_val = skyLight_value;
+	output.light_pos = mul(transpose(projMatrix), mul(cameraMatrix, skyLight[0]));
+	output.light_val = skyLight[1];
 
 	return output;
 }

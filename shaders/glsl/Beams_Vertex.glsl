@@ -12,9 +12,9 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	mat4 projMatrix;
 
-	vec3 skyLight_pos; vec3 skyLight_value;
-	vec3 flashLight_pos; vec3 flashLight_value;
-	vec3 lampLight_pos; vec3 lampLight_value;
+	vec3 skyLight[2]; // position and value
+	vec3 flashLight[2]; // position and value
+	vec3 lampLight[2]; // position and value
 };
 
 layout(location = 0) out vec3 pos_out;
@@ -33,7 +33,7 @@ void main() {
 
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 
-	light_pos_out = skyLight_pos; // vec3(vec4(skyLight_pos, 1.0) * getCamMatrix(cam_pos, look_pos) * projMatrix);
+	light_pos_out = skyLight[0]; // vec3(vec4(skyLight[0], 1.0) * getCamMatrix(cam_pos, look_pos) * projMatrix);
 	light_dist_out = pow(pow(offset.x - light_pos_out.x, 2) + pow(offset.y - light_pos_out.y, 2) + pow(offset.z - light_pos_out.z, 2), 0.5);
-	light_val_out = skyLight_value; // attenuate?
+	light_val_out = skyLight[1]; // attenuate?
 }

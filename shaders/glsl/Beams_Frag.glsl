@@ -13,9 +13,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 	vec3 look_pos;
 	mat4 projMatrix;
 
-	vec3 skyLight_pos; vec3 skyLight_value;
-	vec3 flashLight_pos; vec3 flashLight_value;
-	vec3 lampLight_pos; vec3 lampLight_value;
+	vec3 skyLight[2]; // position and value
+	vec3 flashLight[2]; // position and value
+	vec3 lampLight[2]; // position and value
 };
 
 layout(location = 0) in vec3 pos;
@@ -29,7 +29,7 @@ layout(location = 0) out vec4 color;
 
 float calcSpec(vec3 light, vec3 vertex) {
 	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
-	return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), 3), 0);
+	return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), 3), 0) * 1.0;
 }
 
 float calcDiffuse(vec3 light, vec3 vertex) {

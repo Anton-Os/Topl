@@ -1,5 +1,6 @@
 #include "MathArt.hpp"
 
+unsigned short MathArt_Demo::mode = 2;
 
 static DRAW_Mode drawMode = DRAW_Triangles;
 
@@ -9,23 +10,26 @@ static void onAnyKey(char key){
             case 2: drawMode = DRAW_Lines; break;
             case 3: drawMode = DRAW_Points; break;
             case 4: drawMode = DRAW_Strip; break;
-            case 5: _DEMO->construct1.rotate({ 0.1F, 0.0F, 0.0F }); break;
-            case 6: _DEMO->construct1.rotate({ -0.1F, 0.0F, 0.0F }); break;
-            case 7: _DEMO->construct1.rotate({ 0.0F, 0.1F, 0.0F }); break;
-            case 8: _DEMO->construct1.rotate({ 0.0F, -0.1F, 0.0F }); break;
-            case 9: _DEMO->construct1.rotate({ 0.0F, 0.0F, 0.1F }); break;
-            case 0: _DEMO->construct1.rotate({ 0.0F, 0.0F, -0.1F }); break;
+            case 5: _DEMO->getConstruct()->rotate({ 0.1F, 0.0F, 0.0F }); break;
+            case 6: _DEMO->getConstruct()->rotate({ -0.1F, 0.0F, 0.0F }); break;
+            case 7: _DEMO->getConstruct()->rotate({ 0.0F, 0.1F, 0.0F }); break;
+            case 8: _DEMO->getConstruct()->rotate({ 0.0F, -0.1F, 0.0F }); break;
+            case 9: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, 0.1F }); break;
+            case 0: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, -0.1F }); break;
             default: drawMode = DRAW_Triangles; break;
         }
     }
+    else if(key == 'g') MathArt_Demo::mode = 0;
+    else if(key == 'h') MathArt_Demo::mode = 1;
+    else if(key == 'j') MathArt_Demo::mode = 2;
 }
 
 void MathArt_Demo::init(){
     Platform::keyControl.addAnyCallback(onAnyKey);
 
     construct1.configure(&scene);
-    // construct2.configure(&scene);
-    // construct3.configure(&scene);
+    construct2.configure(&scene);
+    construct3.configure(&scene);
 
     _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
@@ -44,6 +48,10 @@ void MathArt_Demo::loop(double frameTime){
     
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
+    _renderer->clear();
+    if(getConstruct() != nullptr)
+        for(unsigned a = 0; a < getConstruct()->getActorCount(); a++)
+            _renderer->draw(getConstruct()->getGeoActor(a));
 }
 
 int main(int argc, char** argv) {

@@ -18,9 +18,12 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	float4 tracerSteps[4]; // TODO: This needs to be packed
-	float4 tracerPaths[4]; // TODO: This needs to be packed
+	float4 steps[4];
+	float4 paths[4];
 }
+
+static const float2 tracerSteps[8] = (float2[8])steps;
+static const float2 tracerPaths[8] = (float2[8])paths;
 
 struct PS_INPUT { float4 pos : SV_POSITION; };
 
@@ -48,12 +51,17 @@ float3 juliaSet(float2 coord){
 	return float3(0, 0, 0); // black color within set
 }
 
+float3 drawableSet(float2 coord1, float2 coord2){
+	return float3(coord1 - coord2, coord1.x / coord1.y);
+}
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	float2 cursorPosAdj = ((float2(tracerPaths[3][2], tracerPaths[3][3]) * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
+	float2 cursorPosAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coordsAdj = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
 	if (mode == 1) return float4(cursorTarget(cursorPosAdj, coordsAdj), 1.0f); // cursor track mode
+	else if(mode == 2) return float4(drawableSet(tracerSteps[0], coordsAdj), 1.0f);
 	else return float4(juliaSet((coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
 }

@@ -86,7 +86,7 @@ public:
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 #ifdef RASTERON_H
-	bool getIsTextured() const { return _textureMap.size() > 1 || _arrayTexMap.size() > 1 || _volumeTexMap.size() > 1; }
+	bool getIsTextured() const { return _isTextured; }
 	const Img_Base* getTexture(const std::string& name) const;
 	const Img_Sequence* getArrayTex(const std::string& name) const;
 	const Img_Volume* getVolumeTex(const std::string& name) const;
@@ -112,6 +112,7 @@ private:
 	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
 #endif
 #ifdef RASTERON_H
+	bool _isTextured; // sets to true on texture operations
 	Img_Base _textures[MAX_TEX_BINDINGS] = { Img_Base(0xAA0000FF), Img_Base(0xAA00FF00), Img_Base(0xAAFF0000), Img_Base(0xAA00FFFF), Img_Base(0xAAFF00FF), Img_Base(0xAAFFFF00), Img_Base(0xAAEEEEEE), Img_Base(0xAA333333) };
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

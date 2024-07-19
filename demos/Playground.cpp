@@ -51,14 +51,10 @@ void Playground_Demo::init(){
     paintBillboard.configure(&overlayScene);
     propsBillboard.configure(&overlayScene);
 
-    for(unsigned i = 1; i < 8; i++){ 
-        _images.push_back(new Img_Base(RAND_COLOR()));
-        backdropScene.addTexture(std::to_string(i), _images.back());
-    }
-
     std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
     _labels.push_back(new Img_Label(MENU_Medium, { fontPath.c_str(), "Default", 0xFF333333, 0xFFEEEEEE }));
     modeBillboard.overlay(0, _labels.back());
+    modeBillboard.toggleShow(false);
     _sliders.push_back(new Img_Slider(MENU_Medium, 2));
     timeBillboard.overlay(0, _sliders.back());
     for(unsigned p = 0; p < objectsBillboard.getParams()->getGridSize(); p++){
@@ -93,21 +89,26 @@ void Playground_Demo::init(){
 
     backdropScene.addGeometry(&backdropActor);
     _renderer->buildScene(&backdropScene);
+
+    for(unsigned i = 1; i < 8; i++){ 
+        _images.push_back(new Img_Base(checkeredImgOp({ 1024, 1024 }, { i * 2, i * 2, RAND_COLOR(), RAND_COLOR() })));
+        backdropScene.addTexture(std::to_string(i), _images.back());
+    }
 }
 
 void Playground_Demo::loop(double frameTime){
     updateOverlay();
 
     _renderer->setCamera(&fixedCamera);
-    _renderer->setDrawMode(DRAW_Triangles);
 
-    _effectVShader.setMode(EFFECT_MODE_FRACTALS);
-    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+    _texVShader.setMode(Playground_Demo::mode + 1);
+    _renderer->setDrawMode(DRAW_Triangles);
+    Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
 
-    // _flatVShader.setMode(2);
-    // _texVShader.setMode(9);
+    _renderer->setDrawMode(DRAW_Triangles);
+    _texVShader.setMode(0);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&overlayScene);
     _renderer->drawScene(&overlayScene);
@@ -131,6 +132,7 @@ void Playground_Demo::updateOverlay(){
             paintBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
 
         _renderer->texturizeScene(&overlayScene);
+        _renderer->texturizeScene(&backdropScene);
     } else {
         actionsBillboard.resetState(); 
         objectsBillboard.resetState();

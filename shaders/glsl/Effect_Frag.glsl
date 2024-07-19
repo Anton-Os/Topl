@@ -18,7 +18,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes; // resolution
 	vec2 cursorPos;
-
 	vec2 tracerSteps[8];
 	vec2 tracerPaths[8];
 };
@@ -35,7 +34,7 @@ vec3 cursorTarget(vec2 cursorPos, vec2 coord){
 }
 
 // mandlebrotSet Set
-vec3 mandlebrotSet(uvec2 screenRes, vec2 coord){
+vec3 mandlebrotSet(vec2 coord){
 	double x = 0; double y = 0;
 	uint i = 0; // iteration count
 
@@ -50,6 +49,20 @@ vec3 mandlebrotSet(uvec2 screenRes, vec2 coord){
 	else return vec3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
+vec3 trialSet(vec2 coord1, vec2 coord2){
+	uint i = 0; // iteration count
+
+	vec3 target = vec3(0.5, 0.5, 0.5);
+	while((1.0 / coord1.x) * (1.0 / coord1.y) > abs(coord2.x * coord2.y) && i < 100){
+		coord1.x += coord2.y * i;
+		coord1.y += coord2.x * i;
+		target = vec3(1.0 / coord1.x, 1.0 / coord1.y, coord1.x * coord2.y);
+		i++;
+	}
+
+	return target;
+}
+
 // Main
 
 void main() {
@@ -57,5 +70,6 @@ void main() {
 	vec2 coordsAdj = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
 	if (mode == 1) color = vec4(cursorTarget(cursorPosAdj, coordsAdj), 1.0f); // cursor track mode
-	else color = vec4(mandlebrotSet(screenRes, (coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
+	else if(mode == 2) color = vec4(trialSet(tracerSteps[0], coordsAdj), 1.0f); // test set
+	else color = vec4(mandlebrotSet((coordsAdj - cursorPosAdj) * FRACTAL_SIZE), 1.0f); // fractal mode
 }
