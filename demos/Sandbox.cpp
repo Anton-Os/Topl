@@ -1,48 +1,63 @@
-#include "Playground.hpp"
+#include "Sandbox.hpp"
 
+unsigned short Sandbox_Demo::mode = 0;
+unsigned short Sandbox_Demo::option = 0;
 
-unsigned short Playground_Demo::mode = 0;
-unsigned short Playground_Demo::option = 0;
+static std::vector<Vec3f> sculptPoints;
+static Img_Canvas canvasImg = Img_Canvas(RAND_COLOR());
 
 void onAnyKey(char key){
     if(isdigit(key)){ 
-        Playground_Demo::mode = key - '0';
+        Sandbox_Demo::mode = key - '0';
     }
 }
 
 void onActionPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        Playground_Demo::mode = PLAYGROUND_ACTION_MENU;
-        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
-        std::cout << "Action operation!" << std::endl;
+        Sandbox_Demo::mode = SANDBOX_ACTION_MENU;
+        Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
 void onObjectPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        Playground_Demo::mode = PLAYGROUND_OBJECT_MENU;
-        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
-        std::cout << "Object operation!" << std::endl;
+        Sandbox_Demo::mode = SANDBOX_OBJECT_MENU;
+        Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
 void onSculptPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        Playground_Demo::mode = PLAYGROUND_SCULPT_MENU;
-        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
-        std::cout << "Sculpt operation!" << std::endl;
+        Sandbox_Demo::mode = SANDBOX_SCULPT_MENU;
+        Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
 void onPaintPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        Playground_Demo::mode = PLAYGROUND_PAINT_MENU;
-        Playground_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
-        std::cout << "Paint operation!" << std::endl;
+        Sandbox_Demo::mode = SANDBOX_PAINT_MENU;
+        Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
-void Playground_Demo::init(){
+void onEditAction(float x, float y){
+    switch(Sandbox_Demo::mode){
+        case SANDBOX_ACTION_MENU: std::cout << "Action operation!" << std::endl; break;
+        case SANDBOX_OBJECT_MENU: std::cout << "Objects operation!" << std::endl; break;
+        case SANDBOX_SCULPT_MENU:
+            sculptPoints.push_back({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
+            std::cout << "Sculpt operation!" << std::endl; break;
+        case SANDBOX_PAINT_MENU: 
+            canvasImg.background = RAND_COLOR();
+            std::cout << "Paint operation!" << std::endl; break;
+        default: std::cout << "Unknown operation" << std::endl;
+    }
+}
+
+void Sandbox_Demo::init(){
+    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::mouseControl.addCallback(MOUSE_LeftBtn_Release, onEditAction);
+
     modeBillboard.configure(&overlayScene);
     timeBillboard.configure(&overlayScene);
     actionsBillboard.configure(&overlayScene);
@@ -62,6 +77,7 @@ void Playground_Demo::init(){
         _labels.push_back(new Img_Label(MENU_Medium, { fontPath.c_str(), numberText.c_str(), 0xFF333333, 0xFFEEEEEE }));
         objectsBillboard.overlay(p, _labels.back());
         objectsBillboard.getGeoActor(p)->pickerFunc = onObjectPanePress;
+        objectsBillboard.getGeoActor(p)->updateSize({ -0.25F, -0.05F, 0.0F });
     }
     for(unsigned p = 0; p < actionsBillboard.getParams()->getGridSize(); p++){
         _buttons.push_back(new Img_Button(MENU_Medium, "sort"));
@@ -83,6 +99,9 @@ void Playground_Demo::init(){
         propsBillboard.overlay(p, _dials.back());
     }
 
+    editorChain.configure(&editsScene);
+    editorGrid.configure(&editsScene);
+
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->buildScene(&overlayScene);
     _renderer->texturizeScene(&overlayScene);
@@ -94,16 +113,19 @@ void Playground_Demo::init(){
         _images.push_back(new Img_Base(checkeredImgOp({ 1024, 1024 }, { i * 2, i * 2, RAND_COLOR(), RAND_COLOR() })));
         backdropScene.addTexture(std::to_string(i), _images.back());
     }
+
+    _renderer->buildScene(&editsScene);
 }
 
-void Playground_Demo::loop(double frameTime){
+void Sandbox_Demo::loop(double frameTime){
     updateOverlay();
 
     _renderer->setCamera(&fixedCamera);
 
-    _texVShader.setMode(Playground_Demo::mode + 1);
+    _texVShader.setMode(Sandbox_Demo::mode + 1);
+    _effectVShader.setMode(Sandbox_Demo::mode);
     _renderer->setDrawMode(DRAW_Triangles);
-    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
 
@@ -112,9 +134,13 @@ void Playground_Demo::loop(double frameTime){
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&overlayScene);
     _renderer->drawScene(&overlayScene);
+
+    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    _renderer->updateScene(&editsScene);
+    _renderer->drawScene(&editsScene);
 }
 
-void Playground_Demo::updateOverlay(){
+void Sandbox_Demo::updateOverlay(){
     static bool texturizeReq = false;
 
     colorPicker(&overlayScene);
@@ -142,7 +168,7 @@ void Playground_Demo::updateOverlay(){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Playground_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

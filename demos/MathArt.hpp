@@ -54,9 +54,10 @@ struct MathArt_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    static unsigned short mode ;
+    static unsigned short mode;
 
     MathArt_Construct* getConstruct(){
+        // std::cout << "Mode is " << std::to_string(mode) << std::endl;
         switch(mode % 3){
             case 0: return &construct1;
             case 1: return &construct2;

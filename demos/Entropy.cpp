@@ -1,23 +1,23 @@
 #include "Entropy.hpp"
 
+unsigned short Entropy_Demo::mode = 0;
+
 static bool isInEntropy = true;
-static bool isAllShown = true;
-// static short flatMode = -1;
+static short lightMode = 10;
 static short beamMode = BEAMS_MODE_LIGHT;
-static unsigned short spawnIdx = 0;
 
 static void onAnyKey(char key){
-    // if(isdigit(key)) flatMode = -(key - '0');
-    if(isdigit(key)) beamMode = key - '0';
+    if(tolower(key) == 'h') lightMode = 10;
+    else if(tolower(key) == 'g') lightMode = 20;
+    else if(tolower(key) == 'j') lightMode = 30;
+    else if(isdigit(key)) beamMode = key - '0';
 }
 
 void entropyReset(){ isInEntropy = !isInEntropy;  }
-void showAll(){ isAllShown = !isAllShown; }
 
 void Entropy_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
     Platform::keyControl.addAnyCallback(onAnyKey);
-    Platform::keyControl.addCallback(' ', showAll);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);
 
@@ -40,8 +40,8 @@ void Entropy_Demo::init(){
 }
 
 void Entropy_Demo::loop(double frameTime){
-    _effectVShader.setMode(2);
-    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+    _beamsVShader.setMode(beamMode);
+    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
 
@@ -66,20 +66,15 @@ void Entropy_Demo::loop(double frameTime){
     }
 
     // _flatVShader.setMode(flatMode);
-    _beamsVShader.setMode(beamMode);
+    _beamsVShader.setMode(beamMode + lightMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
-    _renderer->updateScene(&scene1);
-    _renderer->drawScene(&scene1);
+    _renderer->updateScene(getScene());
+    _renderer->drawScene(getScene());
     // _renderer->clear();
-
-    /* if(isAllShown) for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-        _renderer->setDrawMode((a % 3 == 0)? DRAW_Strip : (a % 3 == 1)? DRAW_Lines : DRAW_Points);
-        _renderer->draw(&actors[a]);
-    } */
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

@@ -47,6 +47,16 @@ struct Entropy_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
+    static unsigned short mode;
+
+    Topl_Scene* getScene(){
+        switch(mode % 3){
+            case 0: return &scene1;
+            case 1: return &scene2;
+            case 2: return &scene3;
+        }
+    }
+
     Geo_Quad2D backdropMesh = Geo_Quad2D(100.0);
     Geo_Actor backdropActor = Geo_Actor(&backdropMesh);
 

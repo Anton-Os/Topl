@@ -28,8 +28,9 @@ layout(location = 0) out vec4 color;
 // Functions
 
 float calcSpec(vec3 light, vec3 vertex) {
+    float intensity = 3.0;
 	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
-	return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), 3), 0) * 1.0;
+	return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), intensity), 0);
 }
 
 float calcDiffuse(vec3 light, vec3 vertex) {
@@ -42,23 +43,23 @@ float calcDiffuse(vec3 light, vec3 vertex) {
 // Main
 
 void main() {
-	vec3 ambient = light_val * 0.2;
+	vec3 ambient = light_val * 0.3;
 	vec3 diffuse = light_val * calcDiffuse(light_pos, pos) * 0.5;
 	vec3 specular = light_val * calcSpec(light_pos, pos);
 
-	if(mode == 1) color = vec4(ambient, 1.0f);
-	else if(mode == 2) color = vec4(diffuse, 1.0f);
-	else if(mode == 3) color = vec4(specular, 1.0f);
+	if(mode == 1) color = vec4(ambient, 1.0f); // ambient mode
+	else if(mode == 2) color = vec4(diffuse, 1.0f); // diffuse mode
+	else if(mode == 3) color = vec4(specular, 1.0f); // specular mode
 	else if(mode == 4){ // depth mode
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation
 		color = vec4(depth, depth, depth, 1.0f);
 	}
-	else if(mode == 5) color = vec4(light_val, 1.0); // light value
-	// else if(mode == 6) color = // TODO: Implement this
-	// else if(mode == 7) color = // TODO: Implement this
-	// else if(mode == 8) color = // TODO: Implement this
+	else if(mode == 5) color = vec4(light_val, 1.0); // reference mode
+	else if(mode == 6) color = vec4(light_val * tan(dot(normalize(light_pos), normalize(pos))), 1.0); // trig mode
+	else if(mode == 7) color = vec4(light_val * (specular / diffuse) + ambient, 1.0);
+	else if(mode == 8) color = vec4(light_val * dot(normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(pos)), 1.0);
 	else if(mode < 0 && mode > -8){
-		vec3 illumin = light_val * abs(mode) * (1.0 - light_dist) * 0.1;
+		vec3 illumin = light_val * abs(mode) * (1.0 - light_dist); // * 0.1;
 		color = vec4(illumin, 1.0f);
 	}
 	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting

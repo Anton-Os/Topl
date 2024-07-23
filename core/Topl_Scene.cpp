@@ -70,11 +70,8 @@ void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 }
 
 const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
-	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7"){
+	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
 		return &_textures[(char)name[0] - '0' - 1]; // unbound texture
-		puts("Getting numeric texture");
-		std::cout << "Getting texture at " << name << std::endl;
-	}
 	else if(_textureMap.empty()) return nullptr; // no textures available
 	auto texture_it = std::find_if(
 		_textureMap.begin(), _textureMap.end(),

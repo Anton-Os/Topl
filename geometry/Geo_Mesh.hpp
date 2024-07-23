@@ -34,15 +34,14 @@ public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
 	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
 
-	Geo_Mesh(std::initializer_list<Vec3f> pointsSet){ // point set constructor
-		_vertices.resize(pointsSet.size()); _indices.resize(pointsSet.size());
+	Geo_Mesh(Vec3f* points, unsigned short pointCount){ // point set constructor
+		_vertices.resize(pointCount); 
+		_indices.resize(pointCount);
 
-		unsigned short v = 0;
-		for(auto p = pointsSet.begin(); p != pointsSet.end(); p++){
-			_vertices[v] = *p;
-			_vertices[v].texcoord = _vertices[v].position;
-			_indices[v] = v; // for testing
-			v++;
+		for(auto p = 0; p < pointCount; p++){
+			_vertices[p] = *(points + p);
+			_vertices[p].texcoord = _vertices[p].position;
+			_indices[p] = p; // for testing
 		}
 	}
 	

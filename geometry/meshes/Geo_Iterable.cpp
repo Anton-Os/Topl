@@ -3,9 +3,7 @@
 Geo_TessIter::Geo_TessIter(const Geo_Mesh* mesh, unsigned short iters) : Geo_Iter(mesh, iters){
     // TODO: Do this recursively
 
-    unsigned v = 0;
-    unsigned t = 0;
-    unsigned i = 0;
+    unsigned v = 0, t = 0, i = 0;
     for(v = 0; v < mesh->getVertexCount(); v++) _vertices[v] = *(mesh->getVertices() + v);
     /* while(v < _vertices.size()){
        Geo_Vertex v1 = *(mesh->getVertices() + (*(mesh->getIndices() + t) % mesh->getIndexCount()));
@@ -23,7 +21,6 @@ Geo_TessIter::Geo_TessIter(const Geo_Mesh* mesh, unsigned short iters) : Geo_Ite
     
     for(i = 0; i < mesh->getIndexCount(); i++) _indices[i] = *(mesh->getIndices() + i); // TODO: Replace with real indices
     /* while(i < _indices.size()){
-        // _indices[i] = 0; // TODO: Replace with real indices
         _indices[i] = mesh->getVertexCount() + i;
         _indices[i + 1] = mesh->getVertexCount() + i + 1;
         _indices[i + 2] = mesh->getVertexCount() + i + 2;

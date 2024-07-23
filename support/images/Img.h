@@ -5,59 +5,52 @@
 #define DEFAULT_IMG_HEIGHT 256
 #define DEFAULT_IMG_WIDTH 256
 
-struct Img { // Refresh State
-	void setRefresh(bool value){ if(isRefresh != nullptr) *isRefresh = value; }
-	bool* isRefresh; // this updates whenever refresh is required 
+struct TaggedImg { // Refresh State
+	char** tag; // must update when out of date
 protected:
 #ifdef RASTERON_H
-	~Img(){ cleanup(); }
+	~TaggedImg(){ cleanup(); }
 	virtual void cleanup(){ /* puts("Img destroyed"); */ }
 #endif
 };
 
 // Base Image wrapper around Rasteron_Image
 
-struct Img_Base : public Img {
-    Img_Base() : Img(){} // Empty Constructor
+struct Img_Base : public TaggedImg {
+    Img_Base() : TaggedImg(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-    Img_Base(unsigned color) : Img(){ setColorImage(color); } // Solid Constructor
-    Img_Base(const std::string& filePath) : Img(){ setFileImage(filePath); } // File Constructor
-    Img_Base(Rasteron_Text textObj) : Img(){ setTextImage( &textObj); } // Text Constructor
-    Img_Base(Rasteron_Image* refImage) : Img(){ 
+    Img_Base(unsigned color) : TaggedImg(){ setColorImage(color); } // Solid Constructor
+    Img_Base(const std::string& filePath) : TaggedImg(){ setFileImage(filePath); } // File Constructor
+    Img_Base(Rasteron_Text textObj) : TaggedImg(){ setTextImage( &textObj); } // Text Constructor
+    Img_Base(Rasteron_Image* refImage) : TaggedImg(){ 
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
 
     void setColorImage(unsigned color){
-		refresh();
+		cleanup();
 		image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
+		tag = &image->name;
     }
     void setFileImage(const std::string& filePath){
-		refresh();
-		char newFilePath[1024];
-		strcpy(&newFilePath[0], filePath.c_str());
-#ifdef _WIN32
-		replaceFwdSlash(&newFilePath[0]);
-#endif
-        image = loadImgOp(&newFilePath[0]);
-		std::cout << "Image loaded, height is " << std::to_string(image->height) << ", width is " << std::to_string(image->width) << std::endl;
+		cleanup();
+        image = loadImgOp(filePath.c_str()); // TODO: This may screw up image loading
+		tag = &image->name;
     }
     void setTextImage(Rasteron_Text* textObj){
-		refresh();
+		cleanup();
 		image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
+		tag = &image->name;
     }
-	// void setBlendImg(Rasteron_Image* image1, Rasteron_Image* image2)
-	// void setNoiseImg(ImageSize size, ColorGrid grid)
     void setImage(ref_image_t refImage){
-		refresh();
+		cleanup();
         image = copyImgOp(refImage);
+		tag = &image->name;
     }
+	// TODO: Set other image types?
+
     Rasteron_Image* getImage() const { return image; }
 protected:
-	void refresh() {
-		cleanup();
-		setRefresh(true);
-	}
 	void cleanup() override {
 		// puts("Img_Base destroyed");
 		if (image != NULL) {
@@ -109,22 +102,20 @@ private:
 
 // Volume based on slices
 
-struct Img_Volume : public Img { 
-    Img_Volume() : width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH), Img() {} // Empty Constructor
+struct Img_Volume : public TaggedImg { 
+    Img_Volume() : width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH), TaggedImg() {} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img() { // Matching Lengths
+	Img_Volume(unsigned s) : width(s), height(s), depth(s), TaggedImg() { // Matching Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
-    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img() { // Custom Lengths
+    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), TaggedImg() { // Custom Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
 	// Img_Volume(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
 	
 	void addSlice(ref_image_t refImg, unsigned d){
-        setRefresh(true);
-
 		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
 		else return logMessage("Slice needs to match width and height"); // error
 

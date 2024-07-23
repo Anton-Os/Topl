@@ -14,6 +14,14 @@ public:
 		genVertices(); genIndices();
 	}
 
+	Geo_Orb(float size) : Geo_Mesh(
+		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
+		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
+	){
+		_shape = { size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
+		genVertices(); genIndices();
+	}
+
 	Geo_Orb(Volume shape) : Geo_Mesh(
 		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
 		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count

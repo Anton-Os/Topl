@@ -121,20 +121,19 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 
 			for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
 				const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
-				if(texture != nullptr) attachTexAt(texture->getImage(), SCENE_RENDERID, t); // TODO: Check for refresh!
-				/* if(texture != nullptr){
-					if(_texRefreshMap.find(texture) == _texRefreshMap.end()) _texRefreshMap.insert({ texture, true });
-					if(_texRefreshMap.at(texture)) attachTexAt(texture->getImage(), SCENE_RENDERID, t); // checks for refresh?
-					_texRefreshMap.at(texture) = false;
-				} */
+				if(texture != nullptr){
+					// if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
+					// else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
+					attachTexAt(texture->getImage(), SCENE_RENDERID, t);
+				}
 			}
 
 			if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
 				const Img_Base* texture = scene->getTexture(actor->getName());
-				if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for refresh!
+				if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for tags!
 
 				const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
-				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for refresh!
+				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for tags!
 			} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 		}
 }

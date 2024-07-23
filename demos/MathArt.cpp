@@ -19,13 +19,19 @@ static void onAnyKey(char key){
             default: drawMode = DRAW_Triangles; break;
         }
     }
-    else if(key == 'g') MathArt_Demo::mode = 0;
-    else if(key == 'h') MathArt_Demo::mode = 1;
-    else if(key == 'j') MathArt_Demo::mode = 2;
 }
+
+void setConstruct1(){ MathArt_Demo::mode = 0; }
+
+void setConstruct2(){ MathArt_Demo::mode = 1; }
+
+void setConstruct3(){ MathArt_Demo::mode = 2; }
 
 void MathArt_Demo::init(){
     Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addCallback('g', setConstruct1);
+    Platform::keyControl.addCallback('h', setConstruct2);
+    Platform::keyControl.addCallback('j', setConstruct3);
 
     construct1.configure(&scene);
     construct2.configure(&scene);
