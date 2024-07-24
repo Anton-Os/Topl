@@ -15,8 +15,8 @@ layout(std140, binding = 0) uniform Block{
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) flat in int id;
-layout(location = 2) in vec4 vert_color;
+layout(location = 1) in vec4 vertex_color;
+layout(location = 2) flat in int id;
 
 layout(location = 0) out vec4 outColor;
 
@@ -31,8 +31,12 @@ void main() {
 		outColor = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
 	else if (mode == 3) // random color mode
 		outColor = getRandColor(color);
-	// else if (mode == 4) // vertex mode
-	//	outColor = vert_color;
+	else if (mode == 4) // vertex mode
+    	outColor = vertex_color;
+    // else if (mode == 5)
+    //	outColor = vec4(abs(scale.x - offset.x) - pos.x, abs(scale.y - offset.y) - pos.y, abs(scale.z - offset.z) - pos.z, color.a);
+    // else if (mode == 6)
+    //    outColor = vec4((color.r * id) - floor(color.r * id), (color.g * id) - floor(color.g * id), (color.b * id) - floor(color.b * id), color.a);
 	else if(mode == -1) // indexing mode
 		outColor = getUniqueColor(primID);
 	else if(mode < -1){

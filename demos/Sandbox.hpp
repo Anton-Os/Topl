@@ -16,8 +16,15 @@
 struct Img_Canvas : public Img_Base {
     Img_Canvas(unsigned bk) : Img_Base(bk){ background = bk; }
 
-    // void drawDot(float radius, Vec2f pos, unsigned color); // TODO: Implement
-    // void drawPath(float radius, Vec2f start, Vec2f end, unsigned color); // TODO: Implement
+    void draw(float radius, Vec2f pos, unsigned color){ // TODO: Handle path and object draw cases
+        for(unsigned p = 0; p < image->height * image->width; p++){
+            double x = (1.0 / (double)image->width) * (p % image->width);
+            double y = (1.0 / (double)image->height) * (p / image->width);
+            double dist = sqrt(pow(x - pos.data[0], 2.0) + pow(y - pos.data[1], 2.0));
+
+            if(dist < radius) *(image->data + p) = color;
+        }
+    }
 
     unsigned background;
 };
@@ -48,7 +55,10 @@ struct Sandbox_Demo : public Topl_Program {
     static unsigned short mode;
     static unsigned short option;
 
-    std::vector<std::pair<Geo_Mesh, Geo_Actor>> objects;
+    std::vector<Geo_Mesh*> objectMeshes;
+    std::vector<Img_Base*> objectTextures;
+    std::vector<Phys_Actor*> objectPhysics;
+    std::vector<Geo_Actor> objectActors;
 
     Geo_Quad2D backdropMesh = Geo_Quad2D(1.5F);
     Geo_Actor backdropActor = Geo_Actor(&backdropMesh);

@@ -3,7 +3,7 @@
 
 #include "program/Topl_Program.hpp"
 
-#define MATHART_SLICES 256 
+#define MATHART_SLICES 256 / 4
 
 struct MathArt_Construct : public Geo_Construct {
     MathArt_Construct() : Geo_Construct("Top" + std::to_string(rand() % 100)){ init(); }

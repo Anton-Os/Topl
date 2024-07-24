@@ -9,9 +9,11 @@
 class Geo_Iter : public Geo_Mesh {
 public:
     Geo_Iter(const Geo_Mesh* mesh, unsigned short vCount, unsigned short iCount) : Geo_Mesh(vCount, iCount){
+        // (mesh->getVertexCount() > 0)? std::cout << "Input mesh with " << std::to_string(mesh->getVertexCount()) << "vertices, " : std::cerr << "No vertices detected!" << std::endl;
         refMesh = mesh;
     }
     Geo_Iter(const Geo_Mesh* mesh, unsigned short iters) : Geo_Mesh(mesh->getVertexCount() + ((mesh->getIndexCount()) * iters), mesh->getIndexCount() * 3 * iters){
+        // (mesh->getVertexCount() > 0)? std::cout << "Input mesh with " << std::to_string(mesh->getVertexCount()) << "vertices, " : std::cerr << "No vertices detected!" << std::endl;
         refMesh = mesh;
     }
 

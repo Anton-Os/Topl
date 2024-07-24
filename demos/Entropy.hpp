@@ -1,4 +1,5 @@
 #include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Iterable.hpp"
 
@@ -27,17 +28,17 @@ struct Entropy_Demo : public Topl_Program {
             actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
 
             switch(a % 4){
-                case 0: duplexMeshes.push_back(Geo_DuplexIter(&triangles[a / 4])); tessMeshes.push_back(Geo_TessIter(&triangles[a / 4], 1)); break;
-                case 1: duplexMeshes.push_back(Geo_DuplexIter(&quads[a / 4]));  tessMeshes.push_back(Geo_TessIter(&quads[a / 4], 1)); break;
-                case 2: duplexMeshes.push_back(Geo_DuplexIter(&hexes[a / 4])); tessMeshes.push_back(Geo_TessIter(&hexes[a / 4], 1)); break;
-                case 3: duplexMeshes.push_back(Geo_DuplexIter(&circles[a / 4])); tessMeshes.push_back(Geo_TessIter(&circles[a / 4], 1)); break;
+                case 0: duplexMeshes.push_back(new Geo_DuplexIter(&triangles[a / 4])); tessMeshes.push_back(new Geo_TessIter(&triangles[a / 4], 1)); break;
+                case 1: duplexMeshes.push_back(new Geo_DuplexIter(&quads[a / 4]));  tessMeshes.push_back(new Geo_TessIter(&quads[a / 4], 1)); break;
+                case 2: duplexMeshes.push_back(new Geo_DuplexIter(&hexes[a / 4])); tessMeshes.push_back(new Geo_TessIter(&hexes[a / 4], 1)); break;
+                case 3: duplexMeshes.push_back(new Geo_DuplexIter(&circles[a / 4])); tessMeshes.push_back(new Geo_TessIter(&circles[a / 4], 1)); break;
             } 
 
-            tessActors[a] = Geo_Actor(&tessMeshes.back());
+            tessActors[a] = Geo_Actor(tessMeshes.back());
             tessActors[a].setPos(*actors[a].getPos());
             tessActors[a].setRot(*actors[a].getRot());
             tessActors[a].setSize(*actors[a].getSize());
-            duplexActors[a] = Geo_Actor(&duplexMeshes.back());
+            duplexActors[a] = Geo_Actor(duplexMeshes.back());
             duplexActors[a].setPos(*actors[a].getPos());
             duplexActors[a].setRot(*actors[a].getRot());
             duplexActors[a].setSize(*actors[a].getSize());
@@ -67,8 +68,8 @@ struct Entropy_Demo : public Topl_Program {
     // Geo_Orb spheres[ENTROPIC_SPAWN]; // for spawning objects
 
     // std::vector<Geo_Mesh> meshes;
-    std::vector<Geo_TessIter> tessMeshes;
-    std::vector<Geo_DuplexIter> duplexMeshes;
+    std::vector<Geo_TessIter*> tessMeshes;
+    std::vector<Geo_DuplexIter*> duplexMeshes;
 
     Geo_Actor actors[ENTROPIC_COUNT];
     Geo_Actor tessActors[ENTROPIC_COUNT];

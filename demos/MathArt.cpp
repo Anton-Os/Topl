@@ -22,9 +22,7 @@ static void onAnyKey(char key){
 }
 
 void setConstruct1(){ MathArt_Demo::mode = 0; }
-
 void setConstruct2(){ MathArt_Demo::mode = 1; }
-
 void setConstruct3(){ MathArt_Demo::mode = 2; }
 
 void MathArt_Demo::init(){
@@ -61,7 +59,7 @@ void MathArt_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new MathArt_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new MathArt_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

@@ -41,14 +41,24 @@ float4 main(PS_INPUT input) : SV_TARGET{
     uint4 modes = getModes(mode);
 	
     float3 lights[3][2];
-    if(modes[1] % 3 == 1) lights[0] = flashLight;
-    else if(modes[1] % 3 == 2) lights[0] = lampLight;
-    else lights[0] = skyLight;
+    if(modes[1] % 3 == 1){ lights[0] = flashLight; lights[1] = lampLight; lights[2] = skyLight; }
+    else if(modes[1] % 3 == 2){ lights[0] = lampLight; lights[1] = skyLight; lights[2] = flashLight; }
+    else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
 
-    // TODO: Combine multiple light sources and divide by total
 	float3 ambient = lights[0][1] * 0.3;
 	float3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], input.vertex_pos - offset) * 0.5;
 	float3 specular = lights[0][1] * calcSpec(cam_pos, input.vertex_pos);
+
+    if(modes[1] >= 3){
+        uint count = 2;
+        if(modes[1] >= 6) count = 3;
+        for(uint l = 1; l < count; l++){
+            ambient += lights[l][1] * 0.3;
+            diffuse += lights[l][1] * calcDiffuse(lights[l][0], input.vertex_pos - offset) * 0.5;
+            specular += lights[l][1] * calcSpec(cam_pos, input.vertex_pos);
+        }
+        ambient *= 1.0 / count; diffuse *= 1.0 / count; specular *= 1.0 / count;
+    }
 
 	if(modes[0] == 1) return float4(ambient, 1.0f); // ambient mode
 	else if(modes[0] == 2) return float4(diffuse, 1.0f); // diffuse mode

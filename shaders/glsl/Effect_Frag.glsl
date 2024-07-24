@@ -63,7 +63,7 @@ vec3 bubbleSet(vec2 coord1, vec2 coord2){
 	return target;
 }
 
-vec3 trialSet1(vec2 coord){
+vec3 expandSet(vec2 coord){
 	float centerDist = sqrt(pow((0.5 - coord.x), 2) + pow((0.5 - coord.y), 2));
 
 	float a = sin(centerDist) * (3.0 * cos(coord.x / coord.y));
@@ -74,7 +74,7 @@ vec3 trialSet1(vec2 coord){
 	// return vec3(pow(a, b), pow(b, c), pow(c, a));
 }
 
-vec3 trialSet2(vec2 coord1, vec2 coord2){
+vec3 wingsSet(vec2 coord1, vec2 coord2){
 	uint i = 0;
 
 	vec3 target = vec3(coord1.x * coord2.x, coord1.y * coord2.y, sqrt(coord1.x + coord1.y) - sqrt(coord2.x - coord2.y));
@@ -120,8 +120,8 @@ void main() {
 
 	if (mode == 1) color = vec4(cursorSet(cursor, coords), 1.0f); // cursor track mode
 	else if(mode == 2) color = vec4(bubbleSet(tracerSteps[0] - tracerSteps[1], coords), 1.0f); // test set
-	else if(mode == 3) color = vec4(trialSet1(coords - cursor), 1.0);
-	else if(mode == 4) color = vec4(trialSet2(tracerSteps[0], coords - cursor), 1.0);
+	else if(mode == 3) color = vec4(expandSet(coords - cursor), 1.0);
+	else if(mode == 4) color = vec4(wingsSet(tracerSteps[0], coords - cursor), 1.0);
 	else if(mode == 5) color = vec4(trialSet3(coords - cursor), 1.0);
 	else if(mode == 6) color = vec4(trialSet4(tracerSteps[0], coords - cursor), 1.0);
 	else color = vec4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f); // fractal mode

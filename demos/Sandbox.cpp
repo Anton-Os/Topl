@@ -3,13 +3,13 @@
 unsigned short Sandbox_Demo::mode = 0;
 unsigned short Sandbox_Demo::option = 0;
 
+static bool isRebuildReq = false;
 static std::vector<Vec3f> sculptPoints;
+static bool isRepaintReq = false;
 static Img_Canvas canvasImg = Img_Canvas(RAND_COLOR());
 
 void onAnyKey(char key){
-    if(isdigit(key)){ 
-        Sandbox_Demo::mode = key - '0';
-    }
+    if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
 }
 
 void onActionPanePress(MOUSE_Event event){
@@ -48,14 +48,35 @@ void onEditAction(float x, float y){
             sculptPoints.push_back({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
             std::cout << "Sculpt operation!" << std::endl; break;
         case SANDBOX_PAINT_MENU: 
-            canvasImg.background = RAND_COLOR();
+            canvasImg.draw(0.1F, { Platform::getCursorX(), Platform::getCursorY() }, RAND_COLOR());
             std::cout << "Paint operation!" << std::endl; break;
         default: std::cout << "Unknown operation" << std::endl;
     }
 }
 
+void sculptFinish(){
+    if(!sculptPoints.empty()) {
+        _DEMO->objectMeshes.push_back(new Geo_Mesh(sculptPoints.data(), sculptPoints.size()));
+        _DEMO->objectTextures.push_back(nullptr); // non-textured object
+        _DEMO->objectPhysics.push_back(nullptr); // non-dynamic object
+        _DEMO->objectActors.push_back(Geo_Actor(_DEMO->objectMeshes.back()));
+        isRebuildReq = true;
+    }
+}
+
+void paintFinish(){
+    if(Topl_Program::pickerObj != nullptr && !_DEMO->objectTextures.empty()){
+        unsigned short index = 0; // TODO: Get coorect index
+        if(_DEMO->objectTextures[index] == nullptr) _DEMO->objectTextures[index] = new Img_Base(RAND_COLOR());
+        _DEMO->objectTextures[index]->setImage(canvasImg.getImage());
+        isRepaintReq = true;
+    }
+}
+
 void Sandbox_Demo::init(){
     Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addCallback('g', sculptFinish);
+    Platform::keyControl.addCallback('h', paintFinish);
     Platform::mouseControl.addCallback(MOUSE_LeftBtn_Release, onEditAction);
 
     modeBillboard.configure(&overlayScene);
@@ -138,6 +159,25 @@ void Sandbox_Demo::loop(double frameTime){
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     _renderer->updateScene(&editsScene);
     _renderer->drawScene(&editsScene);
+
+    if(isRebuildReq){
+        for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++) // Add physics
+            mainScene.addGeometry("object" + std::to_string(g), &objectActors[g]);
+
+        if(mainScene.getActorCount() > 0) _renderer->buildScene(&mainScene);
+        isRebuildReq = false;
+    }
+
+    if(isRepaintReq){
+        for(unsigned short i = 0; i < objectTextures.size(); i++)
+            if(objectTextures[i] != nullptr) mainScene.addTexture("object" + std::to_string(i), objectTextures[i]);
+
+        if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
+        isRepaintReq = false;
+    }
+
+    // _renderer->updateScene(&mainScene);
+    // _renderer->drawScene(&mainScene);
 }
 
 void Sandbox_Demo::updateOverlay(){
@@ -168,7 +208,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);
