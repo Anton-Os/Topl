@@ -69,6 +69,7 @@ public:
 	static Geo_Actor* pickerObj; // picker for actor
 	static unsigned pickerColor, lastPickerColor; // picker for color
 	static Vec3f pickerCoord, lastPickerCoord;
+	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 protected:

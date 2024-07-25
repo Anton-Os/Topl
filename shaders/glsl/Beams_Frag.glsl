@@ -19,9 +19,6 @@ layout(std140, binding = 1) uniform SceneBlock{
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec3 light_pos;
-layout(location = 2) in vec3 light_val;
-layout(location = 3) in float light_dist;
 
 layout(location = 0) out vec4 color;
 
@@ -43,24 +40,32 @@ float calcDiffuse(vec3 light, vec3 vertex) {
 // Main
 
 void main() {
-	vec3 ambient = light_val * 0.3;
-	vec3 diffuse = light_val * calcDiffuse(light_pos, pos) * 0.5;
-	vec3 specular = light_val * calcSpec(light_pos, pos);
+	uvec4 modes = getModes(mode);
 
-	if(mode == 1) color = vec4(ambient, 1.0f); // ambient mode
-	else if(mode == 2) color = vec4(diffuse, 1.0f); // diffuse mode
-	else if(mode == 3) color = vec4(specular, 1.0f); // specular mode
-	else if(mode == 4){ // depth mode
+	vec3 lights[3][2];
+    if(modes[1] % 3 == 1){ lights[0] = flashLight; lights[1] = lampLight; lights[2] = skyLight; }
+    else if(modes[1] % 3 == 2){ lights[0] = lampLight; lights[1] = skyLight; lights[2] = flashLight; }
+    else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
+
+	vec3 ambient = lights[0][1] * 0.3;
+	vec3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], pos) * 0.5;
+	vec3 specular = lights[0][1] * calcSpec(lights[0][0], pos);
+
+	if(mode < 0){ // distance mode
+		float light_dist = length(lights[0][1] - (pos - offset));
+		vec3 illumin = lights[0][1] * abs(mode) * (1.0 - light_dist); // * 0.1;
+		color = vec4(illumin, 1.0f);
+	}
+	else if(modes[0]== 1) color = vec4(ambient, 1.0f); // ambient mode
+	else if(modes[0]== 2) color = vec4(diffuse, 1.0f); // diffuse mode
+	else if(modes[0]== 3) color = vec4(specular, 1.0f); // specular mode
+	else if(modes[0]== 4){ // depth mode
 		float depth = sqrt(pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2)); // depth calculation
 		color = vec4(depth, depth, depth, 1.0f);
 	}
-	else if(mode == 5) color = vec4(light_val, 1.0); // reference mode
-	else if(mode == 6) color = vec4(light_val * tan(dot(normalize(light_pos), normalize(pos))), 1.0); // trig mode
-	else if(mode == 7) color = vec4(light_val * (specular / diffuse) + ambient, 1.0);
-	else if(mode == 8) color = vec4(light_val * dot(normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(pos)), 1.0);
-	else if(mode < 0 && mode > -8){
-		vec3 illumin = light_val * abs(mode) * (1.0 - light_dist); // * 0.1;
-		color = vec4(illumin, 1.0f);
-	}
+	else if(modes[0]== 5) color = vec4(lights[0][1], 1.0); // reference mode
+	else if(modes[0]== 6) color = vec4(lights[0][1] * tan(dot(normalize(lights[0][0]), normalize(pos))), 1.0); // trig mode
+	else if(modes[0]== 7) color = vec4(lights[0][1] * (specular / diffuse) + ambient, 1.0);
+	else if(modes[0]== 8) color = vec4(lights[0][1] * dot(normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(pos)), 1.0);
 	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

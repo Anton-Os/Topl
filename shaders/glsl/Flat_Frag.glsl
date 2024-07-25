@@ -33,27 +33,20 @@ void main() {
 		outColor = getRandColor(color);
 	else if (mode == 4) // vertex mode
     	outColor = vertex_color;
-    // else if (mode == 5)
-    //	outColor = vec4(abs(scale.x - offset.x) - pos.x, abs(scale.y - offset.y) - pos.y, abs(scale.z - offset.z) - pos.z, color.a);
-    // else if (mode == 6)
-    //    outColor = vec4((color.r * id) - floor(color.r * id), (color.g * id) - floor(color.g * id), (color.b * id) - floor(color.b * id), color.a);
+	else if (mode == 5) // scale mode
+	 	outColor = color * vec4(scale.x / (pos.x - offset.x), scale.y / (pos.y - offset.y), scale.z / (pos.z - offset.z), 1.0);
+	else if(mode == 6) // id mode
+		outColor = vec4(((id + 1) / 3.0) - floor((id + 1) / 3.0), ((id + 1) / 6.0) - floor((id + 1) / 6.0), ((id + 1) / 9.0) - floor((id + 1) / 9.0), 1.0);
+	else if(mode == 7) // camera mode
+		outColor = vec4(abs(cam_pos.x - offset.x), abs(cam_pos.y - offset.y), abs(cam_pos.z - offset.z), 1.0);
+	else if(mode == 8) // dope mode
+		outColor = vec4(sin(vertex_color.r * id), cos(color.g * primID), tan(color.b * vertex_color.b * id * primID), 1.0);
 	else if(mode == -1) // indexing mode
 		outColor = getUniqueColor(primID);
 	else if(mode < -1){
-		float fraction = float(primID) / float(-mode);
-		float level = 1.0 / float(-mode);
-
-		/* uint i = 0;
-		for(float s = 0; s < 1.0; s += level){
-			if(fraction - floor(fraction) < s) outColor = getUniqueColor(i);
-			else break;
-			i++;
-		} */
-
-		if(fraction - floor(fraction) < 0.25) outColor = vec4(1.0, 0.0, 0.0, 0.8);
-		else if(fraction - floor(fraction) < 0.5) outColor = vec4(0.0, 1.0, 0.0, 0.8);
-		else if(fraction - floor(fraction) < 0.75) outColor = vec4(0.0, 0.0, 1.0, 0.8);
-		else outColor = vec4(1.0, 1.0, 1.0, 0.8);
+		uint target = id;
+		while(target > mode * -1) target -= mode * -1;
+		outColor = getUniqueColor(target);
 	}
 	else outColor = color; // solid mode // default
 }

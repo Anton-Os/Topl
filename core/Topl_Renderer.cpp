@@ -114,28 +114,33 @@ void Topl_Renderer::present() {
 #ifdef RASTERON_H
 
 void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
-	if(scene->getIsTextured()) 
+	if(scene->getIsTextured()){
+		for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
+			const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
+			if(texture != nullptr){
+				if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
+				else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
+				attachTexAt(texture->getImage(), SCENE_RENDERID, t);
+			}
+		}
+		
 		for(unsigned g = 0; g < scene->getActorCount(); g++) {
 			actor_cptr actor = scene->getGeoActor(g);
 			unsigned renderID = getRenderID(actor);
 
-			for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
-				const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
-				if(texture != nullptr){
-					// if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
-					// else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
-					attachTexAt(texture->getImage(), SCENE_RENDERID, t);
-				}
-			}
-
 			if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
 				const Img_Base* texture = scene->getTexture(actor->getName());
-				if(texture != nullptr) attachTex(texture->getImage(), renderID); // TODO: Check for tags!
+				if(texture != nullptr){
+					if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
+					else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
+					attachTex(texture->getImage(), renderID);
+				}
 
 				const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
 				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for tags!
 			} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 		}
+	}
 }
 
 

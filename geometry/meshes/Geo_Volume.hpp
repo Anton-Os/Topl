@@ -4,42 +4,38 @@
 
 class Geo_Volume : public Geo_Mesh {
 public:
-	Geo_Volume(Shape shape);
 	Geo_Volume(Shape shape, float depth);
-	Geo_Volume(std::initializer_list<Vec3f> pointsSet, float depth);
+	Geo_Volume(Vec3f* points, unsigned short pointCount, float depth);
 
 	float getRadius(){ return _shape.radius; }
 	float getSegments(){ return _shape.segments; }
 	float getDepth(){ return _depth; }
 private:
-	void genVertices() override;
-	void genIndices() override;
-
 	Shape _shape;
-	float _depth = DEFAULT_Z;
+	float _depth = 1.0F;
 };
 
 struct Geo_Trig3D : public Geo_Volume {
-	Geo_Trig3D() : Geo_Volume({ 1.0, 3 }) {}
-	Geo_Trig3D(float radius) : Geo_Volume({ radius, 3 }) {}
+	Geo_Trig3D() : Geo_Volume({ 1.0, 3 }, 1.0F) {}
+	Geo_Trig3D(float radius) : Geo_Volume({ radius, 3 }, 1.0F) {}
 	Geo_Trig3D(float radius, float depth) : Geo_Volume({ radius, 3 }, depth) {}
 };
 
 struct Geo_Quad3D : public Geo_Volume {
-	Geo_Quad3D() : Geo_Volume({ 1.0, 4 }) {}
-	Geo_Quad3D(float radius) : Geo_Volume({ radius, 4 }) {}
+	Geo_Quad3D() : Geo_Volume({ 1.0, 4 }, 1.0F) {}
+	Geo_Quad3D(float radius) : Geo_Volume({ radius, 4 }, 1.0F) {}
 	Geo_Quad3D(float radius, float depth) : Geo_Volume({ radius, 4 }, depth) {}
 };
 
 struct Geo_Hex3D : public Geo_Volume {
-	Geo_Hex3D() : Geo_Volume({ 1.0, 6 }) {}
-	Geo_Hex3D(float radius) : Geo_Volume({ radius, 6 }) {}
+	Geo_Hex3D() : Geo_Volume({ 1.0, 6 }, 1.0F) {}
+	Geo_Hex3D(float radius) : Geo_Volume({ radius, 6 }, 1.0F) {}
 	Geo_Hex3D(float radius, float depth) : Geo_Volume({ radius, 6 }, depth) {}
 };
 
 struct Geo_Circle3D : public Geo_Volume {
-	Geo_Circle3D() : Geo_Volume({ 1.0, CIRCLE_SEGMENTS }) {}
-	Geo_Circle3D(float radius) : Geo_Volume({ radius, CIRCLE_SEGMENTS }) {}
+	Geo_Circle3D() : Geo_Volume({ 1.0, CIRCLE_SEGMENTS }, 1.0F) {}
+	Geo_Circle3D(float radius) : Geo_Volume({ radius, CIRCLE_SEGMENTS }, 1.0F) {}
 	Geo_Circle3D(float radius, float depth) : Geo_Volume({ radius, CIRCLE_SEGMENTS }, depth) {}
 };
 

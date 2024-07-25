@@ -1,20 +1,27 @@
 #include "program/Topl_Program.hpp"
 
+#include "meshes/Geo_Cone.hpp"
+#include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Orb.hpp"
 
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Billboards.hpp"
 
-#define SANDBOX_ACTION_MENU 1
-#define SANDBOX_OBJECT_MENU 2
-#define SANDBOX_SCULPT_MENU 3
-#define SANDBOX_PAINT_MENU 4
+#define SANDBOX_TIME 0
+#define SANDBOX_ACTION 1
+// #define SANDBOX_OBJECT 2
+#define SANDBOX_SCULPT 2
+#define SANDBOX_PAINT 3
 
-#define SANDBOX_PANE_COUNT 12
-#define SANDBOX_EDITS_COUNT 10
+#define SANDBOX_CANVAS 1.5F
+#define SANDBOX_PANES 12
+#define SANDBOX_EDIT 15
 
 struct Img_Canvas : public Img_Base {
-    Img_Canvas(unsigned bk) : Img_Base(bk){ background = bk; }
+    Img_Canvas(unsigned bk) : Img_Base(bk){ 
+        tag = &refreshTag;
+        background = bk;
+    }
 
     void draw(float radius, Vec2f pos, unsigned color){ // TODO: Handle path and object draw cases
         for(unsigned p = 0; p < image->height * image->width; p++){
@@ -22,19 +29,29 @@ struct Img_Canvas : public Img_Base {
             double y = (1.0 / (double)image->height) * (p / image->width);
             double dist = sqrt(pow(x - pos.data[0], 2.0) + pow(y - pos.data[1], 2.0));
 
-            if(dist < radius) *(image->data + p) = color;
+            if(dist < radius) *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? 0.5F : 0.0F);
         }
+
+        refreshTag = (refreshTag == "canvas")? "canvas1" : "canvas";
     }
 
+    char* refreshTag = "canvas";
     unsigned background;
 };
 
 struct Sandbox_Demo : public Topl_Program {
     Sandbox_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Sandbox", backend){
         timeBillboard.scale({ 1.55F, -0.2F, 1.0F });
-        timeBillboard.shift({ 0.0F, -0.844F, 0.0F });
+        timeBillboard.shift({ 0.0F, -0.95F, 0.0F });
+        timeBillboard.getGeoActor(1)->updateSize({ 0.25F, 0.0F, 0.0F });
+        timeTextBillboard.scale({ 0.5F, 0.2F, 1.0F });
+        timeTextBillboard.shift({ 0.6F, -0.95F, 0.01F });
+        timeTextBillboard.getGeoActor(0)->updateSize({ 0.0F, -0.1F, 0.0F });
+        timeCtrlBillboard.scale({ 0.5F, -0.2F, 1.0F });
+        timeCtrlBillboard.shift({ -0.6F, -0.95F, 0.01F });
         objectsBillboard.scale({ 3.0F, 0.2F, 1.0F });
         objectsBillboard.shift({ 0.0F, -0.95F, 0.0F });
+        objectsBillboard.toggleShow(false);
         actionsBillboard.scale({ 3.0F, -0.2F, 1.0F });
         actionsBillboard.shift({ 0.0F, 0.95F, 0.0F });
         sculptBillboard.scale({ -0.25F, 3.0F, 1.0F });
@@ -58,27 +75,32 @@ struct Sandbox_Demo : public Topl_Program {
     std::vector<Geo_Mesh*> objectMeshes;
     std::vector<Img_Base*> objectTextures;
     std::vector<Phys_Actor*> objectPhysics;
-    std::vector<Geo_Actor> objectActors;
+    std::vector<Geo_Actor*> objectActors;
 
     Geo_Quad2D backdropMesh = Geo_Quad2D(1.5F);
     Geo_Actor backdropActor = Geo_Actor(&backdropMesh);
 
     Geo_Paneboard modeBillboard = Geo_Paneboard("mode_board");
     Geo_Paneboard timeBillboard = Geo_Paneboard("time_board");
-    Geo_Crossboard actionsBillboard = Geo_Crossboard("actions_board", SANDBOX_PANE_COUNT);
-    Geo_Billboard objectsBillboard = Geo_Billboard("objects_board", SANDBOX_PANE_COUNT, 2);
-    Geo_Listboard sculptBillboard = Geo_Listboard("sculpt_board", SANDBOX_PANE_COUNT);
-    Geo_Listboard paintBillboard = Geo_Listboard("paint_board", SANDBOX_PANE_COUNT);
+    Geo_Paneboard timeTextBillboard = Geo_Paneboard("time_text_board");
+    Geo_Crossboard timeCtrlBillboard = Geo_Crossboard("time_ctrl_board", 3);
+    Geo_Crossboard actionsBillboard = Geo_Crossboard("actions_board", SANDBOX_PANES);
+    Geo_Billboard objectsBillboard = Geo_Billboard("objects_board", SANDBOX_PANES, 2);
+    Geo_Listboard sculptBillboard = Geo_Listboard("sculpt_board", SANDBOX_PANES);
+    Geo_Listboard paintBillboard = Geo_Listboard("paint_board", SANDBOX_PANES);
     Geo_Gridboard propsBillboard = Geo_Gridboard("props_board", 3);
 
     Geo_Orb editorOrb = Geo_Orb(0.025F);
-    Geo_Grid editorGrid = Geo_Grid("editor_grid", &editorOrb, Geo_Grid_Params(std::make_pair(SANDBOX_EDITS_COUNT, (1.5F * 2) / (float)SANDBOX_EDITS_COUNT)));
-    Geo_Chain editorChain = Geo_Chain("editor_chain", &editorOrb, Vec3f({ 0.0F, (1.5F * 2) / (float)SANDBOX_EDITS_COUNT, 0.0F }), SANDBOX_EDITS_COUNT);
+    Geo_Grid editorGrid = Geo_Grid("editor_grid", &editorOrb, Geo_Grid_Params(
+        std::make_pair(SANDBOX_EDIT, SANDBOX_CANVAS / (float)SANDBOX_EDIT), 
+        std::make_pair(SANDBOX_EDIT, SANDBOX_CANVAS / (float)SANDBOX_EDIT)
+    ));
+    Geo_Chain editorChain = Geo_Chain("editor_chain", &editorOrb, Vec3f({ 0.0F, (SANDBOX_CANVAS * 2) / (float)SANDBOX_EDIT, 0.0F }), SANDBOX_EDIT);
 private:
     void updateOverlay();
 
     Topl_Scene mainScene, editsScene;
-    Topl_Scene overlayScene, backdropScene;
+    Topl_Scene overlayScene, canvasScene;
     Topl_Camera fixedCamera;
 
     std::vector<Img_Base*> _images;

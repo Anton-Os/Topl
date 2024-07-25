@@ -58,10 +58,11 @@ struct MathArt_Demo : public Topl_Program {
 
     MathArt_Construct* getConstruct(){
         // std::cout << "Mode is " << std::to_string(mode) << std::endl;
-        switch(mode % 3){
+        switch(mode % 4){
             case 0: return &construct1;
             case 1: return &construct2;
             case 2: return &construct3;
+            case 4: return &construct4;
             default: return nullptr; 
         }
     }
@@ -69,6 +70,7 @@ struct MathArt_Demo : public Topl_Program {
     MathArt_Construct construct1 = MathArt_Construct(6, 32);
     MathArt_Construct construct2 = MathArt_Construct(4);
     MathArt_Construct construct3 = MathArt_Construct(CIRCLE_SEGMENTS);
+    MathArt_Construct construct4 = MathArt_Construct(3);
 
     Img_Volume volumeImg = Img_Volume(MATHART_SLICES);
 private:

@@ -62,8 +62,6 @@ static void onDrag(float x, float y){
 }
 
 static void onPress(float x, float y){
-	std::cout << "On press triggered" << std::endl;
-
 	if(!Topl_Program::isInputEnabled) Topl_Program::userInput.clear();
 	Topl_Program::cursorPos = { x, y, 0.0F }; 
 

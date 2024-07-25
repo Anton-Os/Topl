@@ -18,9 +18,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out vec3 light_pos_out;
-layout(location = 2) out vec3 light_val_out;
-layout(location = 3) out float light_dist_out;
 
 // Main
 
@@ -33,8 +30,6 @@ void main() {
 
 	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 
-	light_pos_out = lampLight[0]; // vec3(vec4(lampLight[0], 1.0) * getCamMatrix(cam_pos, look_pos) * projMatrix);
 	// light_dist_out = pow(pow(offset.x - light_pos_out.x, 2) + pow(offset.y - light_pos_out.y, 2) + pow(offset.z - light_pos_out.z, 2), 0.5);
-	light_dist_out = pow(pow(light_pos_out.x - (offset.x + pos_out.x), 2) + pow(light_pos_out.y - (offset.y + pos_out.y), 2) + pow(light_pos_out.z - (offset.z + pos_out.z), 2), 0.5);
-	light_val_out = lampLight[1]; // attenuate?
+	// light_dist_out = pow(pow(light_pos_out.x - (offset.x + pos_out.x), 2) + pow(light_pos_out.y - (offset.y + pos_out.y), 2) + pow(light_pos_out.z - (offset.z + pos_out.z), 2), 0.5);
 }
