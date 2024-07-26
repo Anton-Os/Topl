@@ -1,6 +1,6 @@
-#include "MathArt.hpp"
+#include "Kaleidoscope.hpp"
 
-unsigned short MathArt_Demo::mode = 2;
+unsigned short Kaleidoscope_Demo::mode = 2;
 
 static DRAW_Mode drawMode = DRAW_Triangles;
 
@@ -21,12 +21,12 @@ static void onAnyKey(char key){
     }
 }
 
-void setConstruct1(){ MathArt_Demo::mode = 0; }
-void setConstruct2(){ MathArt_Demo::mode = 1; }
-void setConstruct3(){ MathArt_Demo::mode = 2; }
-void setConstruct4(){ MathArt_Demo::mode = 4; }
+void setConstruct1(){ Kaleidoscope_Demo::mode = 0; }
+void setConstruct2(){ Kaleidoscope_Demo::mode = 1; }
+void setConstruct3(){ Kaleidoscope_Demo::mode = 2; }
+void setConstruct4(){ Kaleidoscope_Demo::mode = 4; }
 
-void MathArt_Demo::init(){
+void Kaleidoscope_Demo::init(){
     Platform::keyControl.addAnyCallback(onAnyKey);
     Platform::keyControl.addCallback('g', setConstruct1);
     Platform::keyControl.addCallback('h', setConstruct2);
@@ -42,16 +42,16 @@ void MathArt_Demo::init(){
     _renderer->buildScene(&scene);
 }
 
-void MathArt_Demo::loop(double frameTime){
+void Kaleidoscope_Demo::loop(double frameTime){
     for(unsigned s = 0; s < construct1.getActorCount(); s++){
         construct1.getGeoActor(s)->updateRot(Vec3f({ construct1.getSpinFactor(s), 0.0F, 0.0F }));
         construct2.getGeoActor(s)->updateRot(Vec3f({ construct2.getSpinFactor(s), 0.0F, 0.0F }));
         construct3.getGeoActor(s)->updateRot(Vec3f({ construct3.getSpinFactor(s), 0.0F, 0.0F }));
-        construct4.getGeoActor(s)->updateRot(Vec3f({ construct3.getSpinFactor(s), 0.0F, 0.0F }));
+        construct4.getGeoActor(s)->updateRot(Vec3f({ construct4.getSpinFactor(s), 0.0F, 0.0F }));
     }
 
     _renderer->setDrawMode(drawMode);
-    _flatVShader.setMode(8);// _effectVShader.setMode(EFFECT_MODE_FRACTALS);
+    _flatVShader.setMode(4);// _effectVShader.setMode(EFFECT_MODE_FRACTALS);
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     
     _renderer->updateScene(&scene);
@@ -63,7 +63,7 @@ void MathArt_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new MathArt_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

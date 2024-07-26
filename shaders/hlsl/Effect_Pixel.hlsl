@@ -71,7 +71,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-	if (mode == 1) return float4(cursorSet(cursor, coords), 1.0f); // cursor track mode
-	else if(mode == 2) return float4(bubbleSet(tracerSteps[0], coords), 1.0f);
-	else return float4(juliaSet((coords - cursor) * FRACTAL_SIZE), 1.0f); // fractal mode
+	if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f); // fractal mode
+	else return float4(cursorSet(cursor, coords), 1.0f);
 }

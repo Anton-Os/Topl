@@ -62,7 +62,9 @@ public:
 
     unsigned getActorCount() const { return _geoNodes.size(); }
     Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
-	void shift(Vec3f vec) { // replace Geo_Construct shift()
+	Img_Base* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeImg_map[(Geo_NodeActor*)getGeoActor(i)] : nullptr; }
+    
+    void shift(Vec3f vec) { // replace Geo_Construct shift()
 		for (std::vector<Geo_NodeActor*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
 			(*n)->updatePos({ vec });
 	}

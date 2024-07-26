@@ -2,8 +2,8 @@
 
 #include "support_def.h"
 
-#define DEFAULT_IMG_HEIGHT 256 * 2
-#define DEFAULT_IMG_WIDTH 256 * 2
+#define DEFAULT_IMG_HEIGHT 256 * 4
+#define DEFAULT_IMG_WIDTH 256 * 4
 
 struct TaggedImg { // Refresh State
 	char** tag; // must update when out of date

@@ -77,10 +77,11 @@ public:
 					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
 				}
 				else if(p->second->getName().find("slider") != std::string::npos){
+					std::cout << "Slider found!";
 					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
 					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
 				}
-				// set state for buttons should only apply
+				getImgAt(i)->setImage(p->second->stateImg.getImage());
 			}
 			i++;
 		}

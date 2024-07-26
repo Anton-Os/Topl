@@ -54,7 +54,21 @@ void FirstPerson_Demo::init(){
         scene3D.addGeometry("pillar" + std::to_string(p), &pillars[p]);
         scene3D.addTexture("pillar" + std::to_string(p), &pillarTex[p]);
     }
-    for(unsigned m = 0; m < 5; m++) models[m].configure(&scene3D);
+    for(unsigned m = 0; m < 5; m++){ 
+        models[m].configure(&scene3D);
+        for(unsigned n = 0; n < models[m].getActorCount(); n++){
+            Rasteron_Image* image;
+            switch(m){
+                case 0: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF8822EE, 0xFF2288AA }, 4); break;
+                case 1: image = noiseImgOp_low({ 1024, 1024 }, { 8, 8, 0xFF00EE55, 0xFF555533 }, 4); break;
+                case 2: image = noiseImgOp_hi({ 1024, 1024 }, { 8, 8, 0xFF44AACC, 0xFFAA44AA }, 4); break;
+                case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFFBBBB88, 0xFF880044 }, 4); break;
+                default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, RAND_COLOR(), RAND_COLOR() }); break;
+            }
+            models[m].getImgAt(n)->setImage(image);
+            RASTERON_DEALLOC(image);
+        }
+    }
 
     _renderer->buildScene(&scene3D);
 

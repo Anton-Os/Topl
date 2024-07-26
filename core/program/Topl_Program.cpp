@@ -43,24 +43,6 @@ static void onAnyKey(char k){
 	}
 }
 
-static void onDrag(float x, float y){
-	/* if(Platform::mouseControl.getIsMouseDown().second){
-		Topl_Program::cursorPos = { x, y, 0.0F };
-
-		if(Topl_Program::isCamera_mouse){
-			if(Platform::mouseControl.getIsMouseDown().first == MOUSE_LeftBtn_Press){
-				if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] || Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
-					Topl_Program::cameraObj.updatePos({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0 });
-			} else if(Platform::mouseControl.getIsMouseDown().first == MOUSE_RightBtn_Press){
-				if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0])
-					Topl_Program::cameraObj.updateRot({ Topl_Program::lastPickerCoord[0] - Topl_Program::pickerCoord[0], 0.0, 0.0 });
-				if(Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
-					Topl_Program::cameraObj.updateRot({ Topl_Program::lastPickerCoord[1] - Topl_Program::pickerCoord[1], 0.0, 0.0 });
-			} 
-		}
-	} */
-}
-
 static void onPress(float x, float y){
 	if(!Topl_Program::isInputEnabled) Topl_Program::userInput.clear();
 	Topl_Program::cursorPos = { x, y, 0.0F }; 
@@ -82,7 +64,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
-	Platform::mouseControl.addDragCallback(onDrag);
+	// Platform::mouseControl.addDragCallback(onDrag);
 
 	// Preset Pipeline Generation
 
@@ -200,8 +182,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 		((color & 0xFF00) >> 8) / 255.0f, 
 		(color & 0xFF) / 255.0f,  
 	};
-	std::cout << "Coord picker triggered with color " << std::to_string(Topl_Program::pickerColor) << std::endl;
-
+	
 	_renderer->clear();
 
 	return Topl_Program::pickerCoord;

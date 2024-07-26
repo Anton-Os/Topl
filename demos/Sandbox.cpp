@@ -6,7 +6,8 @@ unsigned short Sandbox_Demo::option = 0;
 static bool isRebuildReq = false;
 static std::vector<Vec3f> sculptPoints;
 static bool isRepaintReq = false;
-static Img_Canvas canvasImg = Img_Canvas(RAND_COLOR());
+static Img_Canvas canvasImg = Img_Canvas(0xFFFF | 0x22000000);
+static bool isTick = false;
 
 void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
@@ -40,36 +41,60 @@ void onPaintPanePress(MOUSE_Event event){
     }
 }
 
+void onTick(){
+    std::cout << "Dynamic ticker value is" << std::to_string(floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs())) << ", ";
+    isTick = true;
+}
+
 void onEditAction(float x, float y){
     switch(Sandbox_Demo::mode){
-        case SANDBOX_ACTION:
-            std::cout << "Action with option is " << std::to_string(Sandbox_Demo::option) << std::endl;
-            if(Topl_Program::pickerObj != nullptr){
-                if(Sandbox_Demo::option == 0) Topl_Program::pickerObj->updatePos(Topl_Program::getCoordDiff());
-                else if(Sandbox_Demo::option == 1) Topl_Program::pickerObj->updateRot(Topl_Program::getCoordDiff());
-                else if(Sandbox_Demo::option == 2) Topl_Program::pickerObj->updateSize(Topl_Program::getCoordDiff());
-                // (Topl_Program::getCoordDiff()[0] - 0.25F) / 20.0F, (Topl_Program::getCoordDiff()[1] - 0.25F) / 20.0F, 0.0F
+        case SANDBOX_SCULPT: 
+            {
+                Vec3f pointVec = Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
+                Vec3f nearestVec = Vec3f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS, 0.0F });
+                Geo_Actor* nearestNode = nullptr;
+                for(unsigned n = 0; n < _DEMO->editorGrid.getActorCount(); n++){
+                    Vec3f oldVec = pointVec - nearestVec;
+                    Vec3f diffVec = pointVec - *(_DEMO->editorGrid.getGeoActor(n)->getPos());
+                    if(diffVec.len() < oldVec.len()){ 
+                        nearestVec = *(_DEMO->editorGrid.getGeoActor(n)->getPos()); // calculate nearest point
+                        nearestNode = _DEMO->editorGrid.getGeoActor(n);
+                    }
+                }
+                if(nearestNode != nullptr) nearestNode->setSize(Vec3f({1.5F, 1.5F, 1.5F }));
+                sculptPoints.push_back(nearestVec);
             }
-            if(Sandbox_Demo::option == SANDBOX_PANES - 1) Topl_Program::cameraObj.updatePos({ (Topl_Program::getCoordDiff()[0] - 0.25F) / 20.0F, (Topl_Program::getCoordDiff()[1] - 0.25F) / 20.0F, 0.0F });
-            // else if(Sandbox_Demo::option == SANDBOX_PANES - 2) Topl_Program::cameraObj.updateRot({ Topl_Program::getCoordDiff()[0], 0.0F 0.0F });
-            else if(Sandbox_Demo::option == SANDBOX_PANES - 3) Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + Topl_Program::getCoordDiff()[1]);
             break;
-        case SANDBOX_SCULPT:
-            Vec3f pointVec = Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0F });
-            Vec3f nearestVec = Vec3f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS, 0.0F });
-            for(unsigned n = 0; n < _DEMO->editorGrid.getActorCount(); n++){
-                Vec3f oldVec = pointVec - nearestVec;
-                Vec3f diffVec = pointVec - *(_DEMO->editorGrid.getGeoActor(n)->getPos());
-                if(diffVec.len() < oldVec.len()) nearestVec = *(_DEMO->editorGrid.getGeoActor(n)->getPos()); // calculate nearest point
-                // _DEMO->editorGrid.getGeoActor(n)->setSize(Vec3f({ 1.25F, 1.25F, 1.25F }));
+        case SANDBOX_PAINT:
+            Input_TracerStep lastStep = Platform::mouseControl.getTracerSteps()->at(Platform::mouseControl.getTracerSteps()->size() - 2);
+            if(Sandbox_Demo::option == 1) canvasImg.drawPath(0.1F, { lastStep.step.first + 0.5F, 1.0F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+            else if(Sandbox_Demo::option == 2) canvasImg.drawBox({ lastStep.step.first + 0.5F, 1.0F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+            else canvasImg.drawDot(0.1F, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+            isRepaintReq = true; // set for immediate updates
+            break;
+    }
+}
+
+void onChangeAction(float x, float y){
+    if(Sandbox_Demo::mode == SANDBOX_ACTION){
+        Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
+        Vec2f diffVec = Vec2f({ 0.0F, 0.0F });
+        if(lastPath.stepsCount % MAX_PATH_STEPS > 2){ 
+            unsigned short steps = lastPath.stepsCount % MAX_PATH_STEPS;
+            diffVec = Vec2f({ lastPath.steps[steps - 1].first - lastPath.steps[steps - 2].first, lastPath.steps[steps - 1].second - lastPath.steps[steps - 2].second  });
+        }
+
+        if(Topl_Program::pickerObj != nullptr)
+            switch(Sandbox_Demo::option){
+                case 0: Topl_Program::pickerObj->updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 1.25F); break;
+                case 1: Topl_Program::pickerObj->updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0F); break;
+                case 2: Topl_Program::pickerObj->updateSize(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0f); break;
             }
-            sculptPoints.push_back(nearestVec);
-            std::cout << "Sculpt operation!" << std::endl; 
-            break;
-        case SANDBOX_PAINT: 
-            canvasImg.draw(0.1F, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
-            std::cout << "Paint operation!" << std::endl; break;
-        default: std::cout << "Unknown operation" << std::endl;
+        switch(Sandbox_Demo::option){
+            case SANDBOX_PANES - 1: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_PANES - 2: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_PANES - 3: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
+        }
     }
 }
 
@@ -96,6 +121,7 @@ void paintFinish(){
     if(!_DEMO->objectTextures.empty()){
         if(_DEMO->objectTextures.back() == nullptr) _DEMO->objectTextures.back() = new Img_Base(RAND_COLOR());
         _DEMO->objectTextures.back()->setImage(canvasImg.getImage());
+        canvasImg.setBackground(0x0000FFFF);
         isRepaintReq = true;
     } else std::cerr << "Texture is empty!" << std::endl;
 }
@@ -113,6 +139,10 @@ void Sandbox_Demo::init(){
     Platform::keyControl.addAnyCallback(onAnyKey);
     Platform::mouseControl.addCallback(MOUSE_RightBtn_Release, onEditAction);
     Platform::mouseControl.addCallback(MOUSE_LeftBtn_Release, onConfirmAction);
+    Platform::mouseControl.addDragCallback(onChangeAction);
+
+    Topl_Program::timeline.dynamic_ticker.addPeriodicEvent(1000, onTick);
+    Topl_Program::timeline.dynamic_ticker.reset();
 
     modeBillboard.configure(&overlayScene);
     timeBillboard.configure(&overlayScene);
@@ -181,6 +211,15 @@ void Sandbox_Demo::loop(double frameTime){
     updateOverlay();
 
     if(Sandbox_Demo::mode == SANDBOX_PAINT || Sandbox_Demo::mode == SANDBOX_TIME){
+        if(isRepaintReq){
+            for(unsigned short i = 0; i < objectTextures.size(); i++)
+                if(objectTextures[i] != nullptr) mainScene.addTexture("object" + std::to_string(i), objectTextures[i]);
+
+            if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
+            if(canvasScene.getIsTextured()) _renderer->texturizeScene(&canvasScene);
+            isRepaintReq = false;
+        }
+        
         _renderer->setCamera(&fixedCamera);
         _texVShader.setMode(0); // (Sandbox_Demo::mode + 1);
         _effectVShader.setMode(Sandbox_Demo::mode);
@@ -188,6 +227,12 @@ void Sandbox_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
+        backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
+        // TODO: Set effect mode depending on draw option
+        Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+        _renderer->updateScene(&canvasScene);
+        // _renderer->drawScene(&canvasScene);
+        backdropActor.updatePos({ 0.0F, 0.0F, -0.01F });
     }
     else if(Sandbox_Demo::mode == SANDBOX_SCULPT){
         _effectVShader.setMode(EFFECT_MODE_CURSORY);
@@ -196,24 +241,11 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->drawScene(&editsScene);
     } else {
         if(isRebuildReq){
-            for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++){
-                std::cout << "Adding geometry for object" << std::to_string(g) << std::endl;
+            for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++)
                 mainScene.addGeometry("object" + std::to_string(g), objectActors[g]);
-            }
 
             if(mainScene.getActorCount() > 0) _renderer->buildScene(&mainScene);
             isRebuildReq = false;
-        }
-
-        if(isRepaintReq){
-            for(unsigned short i = 0; i < objectTextures.size(); i++){
-                std::cout << "Adding texture for object" << std::to_string(i) << std::endl;
-                if(objectTextures[i] != nullptr) mainScene.addTexture("object" + std::to_string(i), objectTextures[i]);
-            }
-
-            if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
-            if(canvasScene.getIsTextured()) _renderer->texturizeScene(&canvasScene);
-            isRepaintReq = false;
         }
 
         if(mainScene.getActorCount() > 0 && objectActors.size() > 0){
@@ -223,13 +255,24 @@ void Sandbox_Demo::loop(double frameTime){
             }
             _texVShader.setMode(0);
             _flatVShader.setMode((_renderer->getFrameCount() / 300) % 8);
+
             Topl_Factory::switchPipeline(_renderer, _texPipeline);
+            _renderer->setCamera(&Topl_Program::cameraObj);
             _renderer->updateScene(&mainScene);
             _renderer->drawScene(&mainScene);
+            /* if(Topl_Program::pickerObj != nullptr){
+                Topl_Program::pickerObj->updateSize({ 0.1F, 0.1F, 0.1F });
+                _flatVShader.setMode(0);
+                // _renderer->setDrawMode(DRAW_Lines);
+                Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+                _renderer->updateScene(&mainScene);
+                _renderer->drawScene(&mainScene);
+                Topl_Program::pickerObj->updateSize({ -0.1F, -0.1F, -0.1F });
+            } */
         }
     }
 
-     _renderer->setCamera(&fixedCamera);
+    _renderer->setCamera(&fixedCamera);
     _renderer->setDrawMode(DRAW_Triangles);
     _texVShader.setMode(0);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
@@ -241,14 +284,25 @@ void Sandbox_Demo::updateOverlay(){
     static bool texturizeReq = false;
 
     colorPicker(&overlayScene);
+    Vec3f coordColor = coordPicker(&overlayScene);
+
+    /* if(isTick){
+        std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
+        std::string timeText = "[ " + std::to_string(floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs())) + ":00 ]";
+        _labels[1]->setText({ fontPath.c_str(), timeText.c_str(), 0xFF111111, 0xFFEEEEEE });
+        _renderer->texturizeScene(&overlayScene);
+        isTick = false;
+    } */
 
     if(Topl_Program::pickerObj != nullptr){
         unsigned short index = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
 
+        if(Topl_Program::pickerObj->getName().find("time_board") != std::string::npos && Platform::mouseControl.getIsMouseDown().second){
+            std::cout << "Coord pick with values " << std::to_string(coordColor[0]) << ", " << std::to_string(coordColor[1]) << std::endl;
+            timeBillboard.setState(0, coordColor[0], coordColor[1]);
+        }
         if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos)
             actionsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
-        //if(Topl_Program::pickerObj->getName().find("objects_board") != std::string::npos)
-        //    objectsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
         if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos)
             sculptBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
         if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos)
@@ -265,7 +319,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

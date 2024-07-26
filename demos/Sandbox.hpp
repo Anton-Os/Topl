@@ -23,19 +23,63 @@ struct Img_Canvas : public Img_Base {
         background = bk;
     }
 
-    void draw(float radius, Vec2f pos, unsigned color){ // TODO: Handle path and object draw cases
+    void refresh(){
+        char tag[32];
+        sprintf(tag, "%s-%d", "canvas", rand() % 9999); // randomize image tag
+        refreshTag = tag;
+    }
+
+    void setBackground(unsigned bk){
+        for(unsigned p = 0; p < image->height * image->width; p++)
+            if(*(image->data + p) == background) *(image->data + p) = bk;
+        background = bk;
+        for(unsigned p = 0; p < image->height * image->width; p++) *(image->data + p) = background;
+        refresh();
+    }
+
+    void drawDot(float radius, Vec2f pos, unsigned color){ // TODO: Handle path and object draw cases
         for(unsigned p = 0; p < image->height * image->width; p++){
             double x = (1.0 / (double)image->width) * (p % image->width);
             double y = (1.0 / (double)image->height) * (p / image->width);
+
             double dist = sqrt(pow(x - pos.data[0], 2.0) + pow(y - pos.data[1], 2.0));
-
-            if(dist < radius) *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? 0.5F : 0.0F);
+            if(dist < radius) *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
         }
+        refresh();
+    }
 
-        refreshTag = (refreshTag == "canvas")? "canvas1" : "canvas";
+    void drawPath(float radius, Vec2f pos1, Vec2f pos2, unsigned color){
+        for(unsigned p = 0; p < image->height * image->width; p++){
+            double x = (1.0 / (double)image->width) * (p % image->width);
+            double y = (1.0 / (double)image->height) * (p / image->width);
+
+            float dist = Vec2f(pos2 - pos1).len();
+            double xDiff = (x - pos2[0]) / (pos1[0] - pos2[0]); double yDiff = (y - pos2[1]) / (pos1[1] - pos2[1]);
+            double xRang = fabs(x - pos2[0]) + fabs(x - pos1[0]); double yRang = fabs(y - pos2[1]) + fabs(y - pos1[1]);
+            Vec2f midpoint = (pos1 + pos2) * 0.5F;
+
+            // if(xDiff > yDiff - (radius * (1.0 / dist) * (xDiff + yDiff)) && xDiff < yDiff + (radius * (1.0 / dist) * (xDiff + yDiff))) 
+            if(xDiff > yDiff - (radius * (radius / (xRang * yRang))) && xDiff < yDiff + (radius * (radius / (xRang * yRang))) && Vec2f({ (float)x - midpoint[0], (float)y - midpoint[1] }).len() < dist * 0.5F)
+                *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
+        }
+        refresh();
+    }
+
+    void drawBox(Vec2f pos1, Vec2f pos2, unsigned color){
+        for(unsigned p = 0; p < image->height * image->width; p++){
+            double x = (1.0 / (double)image->width) * (p % image->width);
+            double y = (1.0 / (double)image->height) * (p / image->width);
+
+            float xRanges[2] = { (pos1[0] > pos2[0])? pos2[0] : pos1[0], (pos1[0] > pos2[0])? pos1[0] : pos2[0] };
+            float yRanges[2] = { (pos1[1] > pos2[1])? pos2[1] : pos1[1], (pos1[1] > pos2[1])? pos1[1] : pos2[1] };
+
+            if(x > xRanges[0] && x < xRanges[1] && y > yRanges[0] && y < yRanges[1])
+                *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
+        }
     }
 
     char* refreshTag = "canvas";
+    float blend = 0.5F;
     unsigned background;
 };
 
