@@ -72,6 +72,7 @@ public:
 	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
+	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
 protected:
     virtual void init() = 0;
     virtual void loop(millisec_t frameTime) = 0;
@@ -83,8 +84,7 @@ protected:
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 
-	// std::map<std::string, Topl_Scene> _scenes_map; // for custom scenes
-	std::map<Geo_Actor*, Vec3f> _positions_map, _rotations_map, _scales_map; // for dynamic orientation changes
+	// std::map<std::string, Topl_Scene> _scenes_map; // for custom scene
 #ifdef RASTERON_H
 	std::map<Img_Base*, std::pair<Rasteron_Queue*, unsigned short>> _images_map; // for dynamic texture changes
 #endif

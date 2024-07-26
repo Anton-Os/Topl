@@ -40,8 +40,8 @@ void Entropy_Demo::init(){
         physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
         scene1.addPhysics("actor" + std::to_string(a), &physActors[a]);
 #endif
-        scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
-        scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]);
+        // scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
+        // scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]);
     }
     _renderer->buildScene(&scene1);
     // _renderer->buildScene(&scene2);
@@ -90,7 +90,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

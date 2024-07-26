@@ -2,8 +2,9 @@
 
 #include "Common.hlsl"
 
+#define CURSOR_SIZE 0.05
 #define FRACTAL_SIZE 3.0 // max fractal size
-#define FRACTAL_ITER 100 // max fractal iteratons
+#define FRACTAL_ITER 50 // max fractal iteratons
 #define C float2(cursorPos.x, cursorPos.y) // c value for julia set
 
 // Values
@@ -29,11 +30,28 @@ struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Functions
 
-float3 cursorSet(float2 pos, float2 coord){
+/* float3 cursorSet(float2 pos, float2 coord){
 	float red = (distance(pos, coord) < 0.01) ? 1.0 : 0.0; // accute center
 	float green = pow(1.0 - abs(pos.x - coord.x), 5) - distance(pos, coord); // x gradient
 	float blue = pow(1.0 - abs(pos.y - coord.y), 5) - distance(pos, coord); // y gradient
 	return float3(red, green, blue);
+} */
+
+float4 cursorDot(float2 pos, float2 coord, float radius, float4 color){
+    if (distance(pos, coord) < radius) return color;
+    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+}
+
+float4 cursorHalo(float2 pos, float2 coord, float radius, float4 color){
+    if (distance(pos, coord) > radius * 0.75 && distance(pos, coord) < radius * 1.25) return color;
+    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+}
+
+float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
+    if((abs(coord.x - pos.x) < radius * 0.5 && abs(coord.y - pos.y) < radius * 0.1)
+        || (abs(coord.y - pos.y) < radius * 0.5 && abs(coord.x - pos.x) < radius * 0.1))
+        return color;
+    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
 }
 
 // Julia set
@@ -51,26 +69,15 @@ float3 juliaSet(float2 coord){
 	return float3(0, 0, 0); // black color within set
 }
 
-float3 bubbleSet(float2 coord1, float2 coord2){
-    uint i = 0; // iteration count
-
-    float3 target = float3(0.5, 0.5, 0.5);
-    while(((1.0 / coord1.x) * (1.0 / coord1.y) > pow(coord2.x * coord2.y, 1.0) || target.b == 0.5) && i < 100){
-        coord1.x += pow(coord2.y, i);
-        coord1.y += pow(coord2.x, i);
-        target = float3(1.0 / coord1.x, 1.0 / coord1.y, pow(coord1.x * coord1.y, coord2.x * coord2.y));
-        i++;
-    }
-
-    return target;
-}
-
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-	if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f); // fractal mode
-	else return float4(cursorSet(cursor, coords), 1.0f);
+    /* if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f);
+    else*/ if(mode == 1) return cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+    else if(mode == 2) return cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+    else return cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+    // else return float4(cursorSet(cursor, coords), 1.0f);
 }

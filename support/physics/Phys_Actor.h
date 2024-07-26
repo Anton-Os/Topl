@@ -16,12 +16,16 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
 	Phys_Actor() { // Freeform constructor
 		forces = (Vec3f*)malloc(MAX_PHYS_FORCES * sizeof(Vec3f));
 	}
-	Phys_Actor(Vec3f gravityVec) { // Gravity constructor
+    Phys_Actor(double m){
+        mass = m;
+        forces = (Vec3f*)malloc(MAX_PHYS_FORCES * sizeof(Vec3f));
+    }
+	/* Phys_Actor(Vec3f gravityVec) { // Gravity constructor
 		forces = (Vec3f*)malloc(MAX_PHYS_FORCES * sizeof(Vec3f));
 
 		addForce(gravityVec);
 		isGravityEnabled = true;
-	}
+	} */
 	~Phys_Actor() { if (forces != nullptr) free(forces); }
 
 	bool addForce(Vec3f force) {

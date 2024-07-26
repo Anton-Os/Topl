@@ -27,7 +27,7 @@ struct Entropy_Demo : public Topl_Program {
             float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
             actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
 
-            switch(a % 4){
+            /* switch(a % 4){
                 case 0: duplexMeshes.push_back(new Geo_DuplexIter(&triangles[a / 4])); tessMeshes.push_back(new Geo_TessIter(&triangles[a / 4], 1)); break;
                 case 1: duplexMeshes.push_back(new Geo_DuplexIter(&quads[a / 4]));  tessMeshes.push_back(new Geo_TessIter(&quads[a / 4], 1)); break;
                 case 2: duplexMeshes.push_back(new Geo_DuplexIter(&hexes[a / 4])); tessMeshes.push_back(new Geo_TessIter(&hexes[a / 4], 1)); break;
@@ -41,7 +41,7 @@ struct Entropy_Demo : public Topl_Program {
             duplexActors[a] = Geo_Actor(duplexMeshes.back());
             duplexActors[a].setPos(*actors[a].getPos());
             duplexActors[a].setRot(*actors[a].getRot());
-            duplexActors[a].setSize(*actors[a].getSize());
+            duplexActors[a].setSize(*actors[a].getSize()); */
         }
     }
 
@@ -64,7 +64,7 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Trig3D triangles[ENTROPIC_COUNT / 4];
     Geo_Quad3D quads[ENTROPIC_COUNT / 4];
     Geo_Hex3D hexes[ENTROPIC_COUNT / 4];
-    Geo_Circle2D circles[ENTROPIC_COUNT / 4];
+    Geo_Circle3D circles[ENTROPIC_COUNT / 4];
     // Geo_Orb spheres[ENTROPIC_SPAWN]; // for spawning objects
 
     // std::vector<Geo_Mesh> meshes;

@@ -7,15 +7,15 @@
 #include "constructs/Geo_Chain.hpp"
 #include "constructs/Geo_Billboards.hpp"
 
-#define SANDBOX_TIME 0
-#define SANDBOX_ACTION 1
+#define SANDBOX_ACTION 0
+#define SANDBOX_TIME 1
 // #define SANDBOX_OBJECT 2
 #define SANDBOX_SCULPT 2
 #define SANDBOX_PAINT 3
 
 #define SANDBOX_CANVAS 1.5F
 #define SANDBOX_PANES 12
-#define SANDBOX_EDIT 15
+#define SANDBOX_EDIT 5
 
 struct Img_Canvas : public Img_Base {
     Img_Canvas(unsigned bk) : Img_Base(bk){ 

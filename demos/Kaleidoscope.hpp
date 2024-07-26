@@ -7,15 +7,15 @@
 #define KALEIDOSCOPE_SLICES 256 / 4
 
 struct Kaleidoscope_Construct : public Geo_Construct {
-    Kaleidoscope_Construct() : Geo_Construct("Top" + std::to_string(rand() % 100)){ init(); }
+    Kaleidoscope_Construct() : Geo_Construct("Top" + std::to_string(rand() % 999)){ init(); }
 
-    Kaleidoscope_Construct(unsigned short div) : Geo_Construct("Top" + std::to_string(rand() % 100)){
+    Kaleidoscope_Construct(unsigned short div) : Geo_Construct("Top" + std::to_string(rand() % 999)){
         minDivs = div;
         maxDivs = div;
         init();
     }
 
-    Kaleidoscope_Construct(unsigned short div1, unsigned short div2) : Geo_Construct("Top" + std::to_string(rand() % 100)){
+    Kaleidoscope_Construct(unsigned short div1, unsigned short div2) : Geo_Construct("Top" + std::to_string(rand() % 999)){
         minDivs = (div1 < div2)? div1 : div2;
         maxDivs = (div1 < div2)? div2 : div1;
         init();

@@ -86,9 +86,21 @@ void onChangeAction(float x, float y){
 
         if(Topl_Program::pickerObj != nullptr)
             switch(Sandbox_Demo::option){
-                case 0: Topl_Program::pickerObj->updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 1.25F); break;
-                case 1: Topl_Program::pickerObj->updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0F); break;
-                case 2: Topl_Program::pickerObj->updateSize(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0f); break;
+                case 0:
+                    Topl_Program::pickerObj->updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 1.25F);
+                    // if(_DEMO->positions_map.find(Topl_Program::pickerObj) == _DEMO->positions_map.end()) _DEMO->positions_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->positions_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getPos()));
+                    break;
+                case 1:
+                    Topl_Program::pickerObj->updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0F);
+                    // if(_DEMO->rotations_map.find(Topl_Program::pickerObj) == _DEMO->rotations_map.end()) _DEMO->rotations_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->rotations_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getRot()));
+                    break;
+                case 2:
+                    Topl_Program::pickerObj->updateSize(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0f);
+                    // if(_DEMO->scales_map.find(Topl_Program::pickerObj) == _DEMO->scales_map.end()) _DEMO->scales_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->scales_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getSize()));
+                    break;
             }
         switch(Sandbox_Demo::option){
             case SANDBOX_PANES - 1: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
@@ -142,11 +154,10 @@ void Sandbox_Demo::init(){
     Platform::mouseControl.addDragCallback(onChangeAction);
 
     Topl_Program::timeline.dynamic_ticker.addPeriodicEvent(1000, onTick);
-    Topl_Program::timeline.dynamic_ticker.reset();
 
     modeBillboard.configure(&overlayScene);
-    timeBillboard.configure(&overlayScene);
     actionsBillboard.configure(&overlayScene);
+    timeBillboard.configure(&overlayScene);
     // objectsBillboard.configure(&overlayScene);
     sculptBillboard.configure(&overlayScene);
     paintBillboard.configure(&overlayScene);
@@ -231,11 +242,11 @@ void Sandbox_Demo::loop(double frameTime){
         // TODO: Set effect mode depending on draw option
         Topl_Factory::switchPipeline(_renderer, _effectPipeline);
         _renderer->updateScene(&canvasScene);
-        // _renderer->drawScene(&canvasScene);
+        _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, -0.01F });
     }
     else if(Sandbox_Demo::mode == SANDBOX_SCULPT){
-        _effectVShader.setMode(EFFECT_MODE_CURSORY);
+        _effectVShader.setMode(2);
         Topl_Factory::switchPipeline(_renderer, _effectPipeline);
         _renderer->updateScene(&editsScene);
         _renderer->drawScene(&editsScene);
@@ -254,9 +265,10 @@ void Sandbox_Demo::loop(double frameTime){
                 if(Topl_Program::pickerObj != nullptr) coordPicker(&mainScene);
             }
             _texVShader.setMode(0);
-            _flatVShader.setMode((_renderer->getFrameCount() / 300) % 8);
+            // _flatVShader.setMode((_renderer->getFrameCount() / 300) % 8);
+            _flatVShader.setMode(-8);
 
-            Topl_Factory::switchPipeline(_renderer, _texPipeline);
+            Topl_Factory::switchPipeline(_renderer, _flatPipeline);
             _renderer->setCamera(&Topl_Program::cameraObj);
             _renderer->updateScene(&mainScene);
             _renderer->drawScene(&mainScene);
@@ -286,27 +298,36 @@ void Sandbox_Demo::updateOverlay(){
     colorPicker(&overlayScene);
     Vec3f coordColor = coordPicker(&overlayScene);
 
-    /* if(isTick){
+    if(isTick){
         std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
-        std::string timeText = "[ " + std::to_string(floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs())) + ":00 ]";
+        std::string timeText = "[ " + std::to_string((unsigned)floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs())) + ":00 ]";
         _labels[1]->setText({ fontPath.c_str(), timeText.c_str(), 0xFF111111, 0xFFEEEEEE });
+        timeTextBillboard.setState(0, Topl_Program::timeline.dynamic_ticker.isPaused);
         _renderer->texturizeScene(&overlayScene);
         isTick = false;
-    } */
+    }
 
     if(Topl_Program::pickerObj != nullptr){
         unsigned short index = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
 
-        if(Topl_Program::pickerObj->getName().find("time_board") != std::string::npos && Platform::mouseControl.getIsMouseDown().second){
-            std::cout << "Coord pick with values " << std::to_string(coordColor[0]) << ", " << std::to_string(coordColor[1]) << std::endl;
+        if(Topl_Program::pickerObj->getName().find("time_board") != std::string::npos && Platform::mouseControl.getIsMouseDown().second)
             timeBillboard.setState(0, coordColor[0], coordColor[1]);
-        }
-        if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos)
+        else if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos)
             actionsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
-        if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos)
+        else if(Topl_Program::pickerObj->getName().find("sculpt_board") != std::string::npos)
             sculptBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
-        if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos)
+        else if(Topl_Program::pickerObj->getName().find("paint_board") != std::string::npos)
             paintBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+        else if(Topl_Program::pickerObj->getName().find("time_ctrl_board") != std::string::npos){
+            if(Platform::mouseControl.getIsMouseDown().second){
+                switch(index){
+                    case 2: Topl_Program::timeline.dynamic_ticker.reset(); break;
+                    case 1: Topl_Program::timeline.dynamic_ticker.isPaused = !Topl_Program::timeline.dynamic_ticker.isPaused; break; // toggle pause
+                    case 0: Topl_Program::timeline.dynamic_ticker.setTime(Topl_Program::timeline.dynamic_ticker.range.second);
+                }
+            }
+            timeCtrlBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
+        }
 
         _renderer->texturizeScene(&overlayScene);
         _renderer->texturizeScene(&canvasScene);

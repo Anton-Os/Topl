@@ -18,7 +18,6 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 
 Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
-
 static void onAnyKey(char k){
 	if(isalnum(k) || isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
@@ -112,15 +111,16 @@ void Topl_Program::cleanup() {
 }
 
 void Topl_Program::run(){
+    Topl_Program::timeline.dynamic_ticker.reset();
     init();
 
     while (_platform->handleEvents()) {
 		if(!Topl_Program::timeline.dynamic_ticker.isPaused)
 			Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 		{
-			for(auto p = _positions_map.begin(); p != _positions_map.end(); p++) p->first->setPos(p->second);
-			for(auto r = _rotations_map.begin(); r != _rotations_map.end(); r++) r->first->setRot(r->second);
-			for(auto s = _scales_map.begin(); s != _scales_map.end(); s++) s->first->setSize(s->second);
+			for(auto p = positions_map.begin(); p != positions_map.end(); p++) p->first->setPos(p->second);
+			for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) r->first->setRot(r->second);
+			for(auto s = scales_map.begin(); s != scales_map.end(); s++) s->first->setSize(s->second);
 		}
 
 		_renderer->clear(); // clears view to solid color
