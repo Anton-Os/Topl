@@ -9,9 +9,12 @@
 
 #define SANDBOX_ACTION 0
 #define SANDBOX_TIME 1
-// #define SANDBOX_OBJECT 2
 #define SANDBOX_SCULPT 2
 #define SANDBOX_PAINT 3
+
+#define SANDBOX_MOVE 0
+#define SANDBOX_ROTATE 1
+#define SANDBOX_SIZE 2
 
 #define SANDBOX_CANVAS 1.5F
 #define SANDBOX_PANES 12

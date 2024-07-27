@@ -49,18 +49,23 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], input.vertex_pos - offset) * 0.5;
 	float3 specular = lights[0][1] * calcSpec(cam_pos, input.vertex_pos);
 
-    if(modes[1] >= 3){
+    if(modes[1] >= 3){ // combining lights
         uint count = 2;
         if(modes[1] >= 6) count = 3;
         for(uint l = 1; l < count; l++){
-            ambient += lights[l][1] * 0.3;
-            diffuse += lights[l][1] * calcDiffuse(lights[l][0], input.vertex_pos - offset) * 0.5;
-            specular += lights[l][1] * calcSpec(cam_pos, input.vertex_pos);
+            ambient += (lights[l][1] * 0.3) * (1.0 / count);
+            diffuse += (lights[l][1] * calcDiffuse(lights[l][0], input.vertex_pos - offset) * 0.5) * (1.0 / count);
+            specular += (lights[l][1] * calcSpec(cam_pos, input.vertex_pos)) * (1.0 / count);
         }
-        ambient *= 1.0 / count; diffuse *= 1.0 / count; specular *= 1.0 / count;
     }
 
-	if(modes[0] == 1) return float4(ambient, 1.0f); // ambient mode
+	if(mode < 0){
+		float3 distVec = lights[0][0] - input.vertex_pos - offset;
+		float dist = sqrt(pow(distVec.x, 2) + pow(distVec.y, 2) + pow(distVec.z, 2));
+		return float4(lights[0][1] * (1.0 - (dist * (1.0 / pow(abs(mode), 0.5)))), 1.0 - (dist * (1.0 / pow(abs(mode), 0.5))));
+		// return float4(lights[0][1] * (1.0 - dist) * (1.0 / abs(mode)), (1.0 - dist) * (1.0 / abs(mode)));
+	}
+	else if(modes[0] == 1) return float4(ambient, 1.0f); // ambient mode
 	else if(modes[0] == 2) return float4(diffuse, 1.0f); // diffuse mode
 	else if(modes[0] == 3) return float4(specular, 1.0f); // specular mode
 	else if(modes[0] == 4){ // depth mode

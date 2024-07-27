@@ -1,6 +1,7 @@
 #version 440
 
 #define INCLUDE_SCENEBLOCK
+#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -26,6 +27,10 @@ void main() {
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	if(mode < 0){
+		vec4 heightCoord = texture(baseTex, vec2(texcoord.x, texcoord.y)); 
+		gl_Position.y += heightCoord.r * abs(mode);
+	}
 	
 	texcoord_out = texcoord + texScroll;
 	// texcoord_out = (texcoord + texScroll) * texScale;

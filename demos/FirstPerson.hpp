@@ -8,16 +8,17 @@
 
 #include "program/Topl_Program.hpp"
 
-#define FLOOR_SIZE 100.0F
+#define FLOOR_SIZE 50.0F
 #define PILLAR_SIZE 1.0F
+#define PUPPET_DIST -5.0F
 
 struct FirstPerson_Demo : public Topl_Program {
     FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
         // 2D Objects
 
-        puppet1.shift({ 0.0F, -1.0, -5.0F });
-        puppet2.shift({ -1.0F, -1.0, -5.0F });
-        puppet3.shift({ 1.0F, -1.0, -5.0F });
+        puppet1.shift({ 0.0F, -1.0, PUPPET_DIST });
+        puppet2.shift({ -1.0F, -1.0, PUPPET_DIST });
+        puppet3.shift({ 1.0F, -1.0, PUPPET_DIST });
 
         anchorOffs[0] = { 0.0F, -1.0, 0.0F };
         anchorOffs[1] = { -1.0F, -1.0, 0.0F };

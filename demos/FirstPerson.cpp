@@ -71,6 +71,7 @@ void FirstPerson_Demo::init(){
     }
 
     _renderer->buildScene(&scene3D);
+    _renderer->texturizeScene(&scene3D);
 
     puppet1.configure(&_DEMO->scene2D);
     puppet2.configure(&_DEMO->scene2D);
@@ -100,7 +101,7 @@ void FirstPerson_Demo::loop(double frameTime){
         }
         scene2D.resolvePhysics();
 #endif
-
+        _texVShader.setMode(0);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         _renderer->setDrawMode(DRAW_Triangles);
 
@@ -121,6 +122,7 @@ void FirstPerson_Demo::loop(double frameTime){
         models[4].rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
 
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
+        _texVShader.setMode(-8);
         _renderer->setDrawMode(DRAW_Triangles);
 
         _renderer->updateScene(&scene3D);

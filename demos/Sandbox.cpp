@@ -86,26 +86,26 @@ void onChangeAction(float x, float y){
 
         if(Topl_Program::pickerObj != nullptr)
             switch(Sandbox_Demo::option){
-                case 0:
+                case SANDBOX_MOVE:
                     Topl_Program::pickerObj->updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 1.25F);
-                    // if(_DEMO->positions_map.find(Topl_Program::pickerObj) == _DEMO->positions_map.end()) _DEMO->positions_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
-                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->positions_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getPos()));
+                    if(_DEMO->positions_map.find(Topl_Program::pickerObj) == _DEMO->positions_map.end()) _DEMO->positions_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
+                    Topl_Program::timeline.addSequence_vec3f(&_DEMO->positions_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getPos()));
                     break;
-                case 1:
+                case SANDBOX_ROTATE:
                     Topl_Program::pickerObj->updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0F);
-                    // if(_DEMO->rotations_map.find(Topl_Program::pickerObj) == _DEMO->rotations_map.end()) _DEMO->rotations_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
-                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->rotations_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getRot()));
+                    if(_DEMO->rotations_map.find(Topl_Program::pickerObj) == _DEMO->rotations_map.end()) _DEMO->rotations_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getRot() });
+                    Topl_Program::timeline.addSequence_vec3f(&_DEMO->rotations_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getRot()));
                     break;
-                case 2:
+                case SANDBOX_SIZE:
                     Topl_Program::pickerObj->updateSize(Vec3f({ diffVec[0], diffVec[1], 0.0F }) * 2.0f);
-                    // if(_DEMO->scales_map.find(Topl_Program::pickerObj) == _DEMO->scales_map.end()) _DEMO->scales_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getPos() });
-                    // Topl_Program::timeline.addSequence_vec3f(&_DEMO->scales_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getSize()));
+                    if(_DEMO->scales_map.find(Topl_Program::pickerObj) == _DEMO->scales_map.end()) _DEMO->scales_map.insert({ Topl_Program::pickerObj, *Topl_Program::pickerObj->getSize() });
+                    Topl_Program::timeline.addSequence_vec3f(&_DEMO->scales_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getSize()));
                     break;
             }
-        switch(Sandbox_Demo::option){
-            case SANDBOX_PANES - 1: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_PANES - 2: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_PANES - 3: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
+        switch(Sandbox_Demo::option - 1){
+            case SANDBOX_PANES - SANDBOX_MOVE: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_PANES - SANDBOX_ROTATE: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_PANES - SANDBOX_SIZE: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
         }
     }
 }
@@ -153,7 +153,7 @@ void Sandbox_Demo::init(){
     Platform::mouseControl.addCallback(MOUSE_LeftBtn_Release, onConfirmAction);
     Platform::mouseControl.addDragCallback(onChangeAction);
 
-    Topl_Program::timeline.dynamic_ticker.addPeriodicEvent(1000, onTick);
+    Topl_Program::timeline.persist_ticker.addPeriodicEvent(1000, onTick);
 
     modeBillboard.configure(&overlayScene);
     actionsBillboard.configure(&overlayScene);
@@ -265,22 +265,13 @@ void Sandbox_Demo::loop(double frameTime){
                 if(Topl_Program::pickerObj != nullptr) coordPicker(&mainScene);
             }
             _texVShader.setMode(0);
-            // _flatVShader.setMode((_renderer->getFrameCount() / 300) % 8);
-            _flatVShader.setMode(-8);
+            _flatVShader.setMode(Sandbox_Demo::option);
+            _renderer->setDrawMode(DRAW_Triangles);
 
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
             _renderer->setCamera(&Topl_Program::cameraObj);
             _renderer->updateScene(&mainScene);
             _renderer->drawScene(&mainScene);
-            /* if(Topl_Program::pickerObj != nullptr){
-                Topl_Program::pickerObj->updateSize({ 0.1F, 0.1F, 0.1F });
-                _flatVShader.setMode(0);
-                // _renderer->setDrawMode(DRAW_Lines);
-                Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-                _renderer->updateScene(&mainScene);
-                _renderer->drawScene(&mainScene);
-                Topl_Program::pickerObj->updateSize({ -0.1F, -0.1F, -0.1F });
-            } */
         }
     }
 
@@ -300,9 +291,10 @@ void Sandbox_Demo::updateOverlay(){
 
     if(isTick){
         std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
-        std::string timeText = "[ " + std::to_string((unsigned)floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs())) + ":00 ]";
+        unsigned secs = (unsigned)floor(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
+        std::string timeText = "[ " + ((secs > 60)? std::to_string(secs / 60) + ":" : "") + std::to_string(secs % 60) + ":00 ]";
         _labels[1]->setText({ fontPath.c_str(), timeText.c_str(), 0xFF111111, 0xFFEEEEEE });
-        timeTextBillboard.setState(0, Topl_Program::timeline.dynamic_ticker.isPaused);
+        timeTextBillboard.setState(0, !Topl_Program::timeline.dynamic_ticker.isPaused);
         _renderer->texturizeScene(&overlayScene);
         isTick = false;
     }
@@ -340,7 +332,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

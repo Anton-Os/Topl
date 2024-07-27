@@ -63,10 +63,8 @@ void Timer_Dynamic::updateTimer(){
     }
 
     // clamping timer to preset range
-    if(_absMicrosElapsed.count() < range.first * MICROSEC_IN_SEC) 
-        _absMicrosElapsed = std::chrono::duration<double>((double)range.first * MICROSEC_IN_SEC);
-    else if(_absMicrosElapsed.count() > range.second  * MICROSEC_IN_SEC) 
-        _absMicrosElapsed = std::chrono::duration<double>((double)range.second * MICROSEC_IN_SEC);
+    if(_absMicrosElapsed.count() < range.first * MICROSEC_IN_SEC) _absMicrosElapsed = std::chrono::duration<double>(range.first);
+    else if(_absMicrosElapsed.count() > range.second  * MICROSEC_IN_SEC) _absMicrosElapsed = std::chrono::duration<double>(range.second);
 }
 
 void Timer_Dynamic::setTime(millisec_t millisecs){

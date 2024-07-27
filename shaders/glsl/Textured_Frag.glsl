@@ -49,7 +49,7 @@ void main() {
 		else if(mode == 7) color = color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
 		else color = vec4(1.0, 0.0, 0.0, 1.0); // error
 	}
-	else if(mode < 0 && mode > -8){ // Alpha Values go to top
+	/* else if(mode < 0 && mode > -8){ // Alpha Values go to top
 		if(mode <= -1 && texture(tex1, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex1, vec2(texcoord.x, texcoord.y));
 		if(mode <= -2 && texture(tex2, vec2(texcoord.x, texcoord.y)).a >= color.a) 
@@ -64,7 +64,7 @@ void main() {
 			color = texture(tex6, vec2(texcoord.x, texcoord.y));
 		if(mode <= -7 && texture(tex7, vec2(texcoord.x, texcoord.y)).a >= color.a) 
 			color = texture(tex7, vec2(texcoord.x, texcoord.y));
-	}
+	} */
 	else if(mode == 9) color = vec4(0.0, 0.0, 1.0, 1.0); // test
 	else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
