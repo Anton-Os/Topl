@@ -117,9 +117,9 @@ void Topl_Program::run(){
     while (_platform->handleEvents()) {
 		if(!Topl_Program::timeline.dynamic_ticker.isPaused) Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 		
-		for(auto p = positions_map.begin(); p != positions_map.end(); p++) if(p->first != pickerObj) p->first->setPos(p->second);
-		for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj) r->first->setRot(r->second);
-		for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj) s->first->setSize(s->second);
+		for(auto p = positions_map.begin(); p != positions_map.end(); p++) if(p->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) p->first->setPos(p->second);
+		for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
+		for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
 		_renderer->clear(); // clears view to solid color
 		Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Remove Backend component

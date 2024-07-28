@@ -22,6 +22,13 @@ struct PS_INPUT {
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
+	uint id = input.vertex_id;
+
+	if(mode < -1){
+		uint target = input.vertex_id;
+		while(target > uint(mode * -1)) target -= uint(mode * -1);
+		return getUniqueColor(target);
+	}
 	if(mode == 1) // directional mode
 		return float4((input.vertex_pos.x / 2) + 0.5, (input.vertex_pos.y/ 2) + 0.5, (input.vertex_pos.z / 2) + 0.5, 1.0f);
 	else if (mode == 2) // coordinate mode
@@ -30,25 +37,15 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 		return getRandColor(color);
 	else if (mode == 4) // vertex mode
 		return input.vertex_color;
+	else if (mode == 5) // scale mode
+	 	return color * float4(scale.x / (input.vertex_pos.x - offset.x), scale.y / (input.vertex_pos.y - offset.y), scale.z / (input.vertex_pos.z - offset.z), 1.0);
+	else if(mode == 6) // id mode
+		return float4(((id + 1) / 3.0) - floor((id + 1) / 3.0), ((id + 1) / 6.0) - floor((id + 1) / 6.0), ((id + 1) / 9.0) - floor((id + 1) / 9.0), 1.0);
+	else if(mode == 7) // camera mode
+		return float4(abs(cam_pos.x - offset.x), abs(cam_pos.y - offset.y), abs(cam_pos.z - offset.z), 1.0);
+	else if(mode == 8) // dope mode
+		return float4(sin(input.vertex_color.r * id), cos(color.g * primID), tan(color.b * input.vertex_color.b * id * primID), 1.0);
 	else if (mode == -1) // indexing mode
 		return getUniqueColor(input.vertex_id);
-	else if(mode < -1){
-		float fraction = float(input.vertex_id) / float(-mode);
-		float level = 1.0 / float(-mode);
-
-		/* uint i = 0;
-		float4 outColor = float4(0.0, 0.0, 0.0, 0.0);
-		for(float s = 0; s < 1.0; s += level){
-			if(fraction - floor(fraction) < s) outColor = getUniqueColor(i);
-			// else break;
-			i++;
-		} */
-		// return outColor;
-
-		if(fraction - floor(fraction) < 0.25) return float4(1.0, 1.0, 0.0, 0.8);
-		if(fraction - floor(fraction) < 0.5) return float4(1.0, 0.0, 1.0, 0.8);
-		if(fraction - floor(fraction) < 0.75) return float4(0.0, 1.0, 1.0, 0.8);
-		else return float4(1.0, 1.0, 1.0, 0.8); // outColor;
-	}
 	else return color; // solid mode // default
 }

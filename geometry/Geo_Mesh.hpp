@@ -76,6 +76,12 @@ protected:
 		return Vec3f({ x, y, z });
 	}
 
+	Vec3f getTexCoord(Vec3f vertex){
+		Vec3f normVec = vertex * (1.0F / vertex.len());
+		// return Vec3f({ (normVec[0] + 1.0F) / 2.0F, (normVec[1] + 1.0F) / 2.0F, (normVec[2] + 1.0F) / 2.0F });
+		return Vec3f({ (normVec[0] + 1.0F) / 2.0F, (normVec[1] + 1.0F) / 2.0F, 0.0F });
+	}
+
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 };

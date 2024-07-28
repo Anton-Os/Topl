@@ -51,10 +51,21 @@ void main() {
 	vec3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], pos) * 0.5;
 	vec3 specular = lights[0][1] * calcSpec(lights[0][0], pos);
 
-	if(mode < 0){ // distance mode
-		float light_dist = length(lights[0][1] - (pos - offset));
-		vec3 illumin = lights[0][1] * abs(mode) * (1.0 - light_dist); // * 0.1;
-		color = vec4(illumin, 1.0f);
+	if(modes[1] >= 3){ // combining lights
+        uint count = 2;
+        if(modes[1] >= 6) count = 3;
+        for(uint l = 1; l < count; l++){
+            ambient += (lights[l][1] * 0.3) * (1.0 / count);
+            diffuse += (lights[l][1] * calcDiffuse(lights[l][0], pos - offset) * 0.5) * (1.0 / count);
+            specular += (lights[l][1] * calcSpec(vec3(cam_pos.x, cam_pos.y, cam_pos.z), pos)) * (1.0 / count);
+        }
+    }
+
+	if(mode < 0){
+		vec3 distVec = lights[0][0] - pos - offset;
+		float dist = sqrt(pow(distVec.x, 2) + pow(distVec.y, 2) + pow(distVec.z, 2));
+		color = vec4(lights[0][1] * (1.0 - (dist * (1.0 / pow(abs(mode), 0.5)))), 1.0 - (dist * (1.0 / pow(abs(mode), 0.5))));
+		// color = vec4(lights[0][1] * (1.0 - dist) * (1.0 / abs(mode)), (1.0 - dist) * (1.0 / abs(mode)));
 	}
 	else if(modes[0]== 1) color = vec4(ambient, 1.0f); // ambient mode
 	else if(modes[0]== 2) color = vec4(diffuse, 1.0f); // diffuse mode

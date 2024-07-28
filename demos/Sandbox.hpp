@@ -137,12 +137,12 @@ struct Sandbox_Demo : public Topl_Program {
     Geo_Listboard paintBillboard = Geo_Listboard("paint_board", SANDBOX_PANES);
     Geo_Gridboard propsBillboard = Geo_Gridboard("props_board", 3);
 
-    Geo_Orb editorOrb = Geo_Orb(0.025F);
-    Geo_Grid editorGrid = Geo_Grid("editor_grid", &editorOrb, Geo_Grid_Params(
+    Geo_Orb plotOrb = Geo_Orb(0.025F);
+    Geo_Grid plotGrid = Geo_Grid("plot_grid", &plotOrb, Geo_Grid_Params(
         std::make_pair(SANDBOX_EDIT, SANDBOX_CANVAS / (float)SANDBOX_EDIT), 
         std::make_pair(SANDBOX_EDIT, SANDBOX_CANVAS / (float)SANDBOX_EDIT)
     ));
-    Geo_Chain editorChain = Geo_Chain("editor_chain", &editorOrb, Vec3f({ 0.0F, (SANDBOX_CANVAS * 2) / (float)SANDBOX_EDIT, 0.0F }), SANDBOX_EDIT);
+    Geo_Chain plotChain = Geo_Chain("plot_chain", &plotOrb, Vec3f({ 0.0F, (SANDBOX_CANVAS * 2) / (float)SANDBOX_EDIT, 0.0F }), SANDBOX_EDIT);
 private:
     void updateOverlay();
 

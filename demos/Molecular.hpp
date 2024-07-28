@@ -3,7 +3,7 @@
 
 #include "program/Topl_Program.hpp"
 
-#define MOLECULAR_CONSTRUCTS 3
+#define MOLECULAR_CONSTRUCTS 6
 #define MOLECULAR_SIZE 0.25F
 
 struct Molecular_Construct : Geo_Construct {
@@ -23,17 +23,19 @@ struct Molecular_Construct : Geo_Construct {
 
     void configure(Topl_Scene* scene){
         _physActors.resize(_orbs.size() + 1);
-        _links.resize(_orbs.size() + 1);
+        _links.resize(_orbs.size());
+        std::cout << "Hub name is " << getPrefix() + "hub" << std::endl;
         scene->addGeometry(getPrefix() + "hub", &_geoActors[0]);
         scene->addPhysics(getPrefix() + "hub", &_physActors[0]);
-        _links[0] = Phys_Connector();
-        scene->addAnchor(&_links[0], getPrefix() + "hub", &_anchor);
+        // _links[0] = Phys_Connector();
+        // scene->addAnchor(&_links[0], getPrefix() + "hub", &_anchor);
         for(unsigned m = 1; m < _orbs.size() + 1; m++) {
+            std::cout << "Node name is " << getPrefix() + "node" + std::to_string(m) << " and orbs size is " << std::to_string(_orbs.size()) << std::endl;
             scene->addGeometry(getPrefix() + "node" + std::to_string(m), &_geoActors[m]);
-            _physActors[m] = Phys_Actor(PHYS_DEFAULT_MASS / _orbs.size());
+            _physActors[m] = Phys_Actor();
             scene->addPhysics(getPrefix() + "node" + std::to_string(m), &_physActors[m]);
-            _links[m] = Phys_Connector(*_geoActors.front().getPos(), *_geoActors[m].getPos());
-            scene->addLink(&_links[m], getPrefix() + "hub", getPrefix() + "node" + std::to_string(m));
+            _links[m - 1] = Phys_Connector();
+            scene->addLink(&_links[m - 1], getPrefix() + "hub", getPrefix() + "node" + std::to_string(m));
         }
     }
 
@@ -53,9 +55,9 @@ struct Molecular_Demo : public Topl_Program {
        Molecular_Construct(3),
        Molecular_Construct(5),
        Molecular_Construct(8),
-       /* Molecular_Construct(12),
+       Molecular_Construct(12),
        Molecular_Construct(16),
-       Molecular_Construct(20) */
+       Molecular_Construct(20)
     };
 
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];

@@ -25,7 +25,12 @@ layout(location = 0) out vec4 outColor;
 void main() {
 	uint primID = gl_PrimitiveID;
 
-	if (mode == 1) // directional mode
+	if(mode < -1){
+		uint target = id;
+		while(target > mode * -1) target -= mode * -1;
+		outColor = getUniqueColor(target);
+	}
+	else if (mode == 1) // directional mode
 		outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, color.a);
 	else if (mode == 2) // coordinate mode
 		outColor = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
@@ -43,10 +48,5 @@ void main() {
 		outColor = vec4(sin(vertex_color.r * id), cos(color.g * primID), tan(color.b * vertex_color.b * id * primID), 1.0);
 	else if(mode == -1) // indexing mode
 		outColor = getUniqueColor(primID);
-	else if(mode < -1){
-		uint target = id;
-		while(target > mode * -1) target -= mode * -1;
-		outColor = getUniqueColor(target);
-	}
 	else outColor = color; // solid mode // default
 }

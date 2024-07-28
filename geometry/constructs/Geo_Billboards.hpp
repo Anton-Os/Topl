@@ -69,7 +69,7 @@ public:
 	void setState(unsigned paneIndex, double x, double y){ // abstract the loop
 		unsigned i = 0;
 
-		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
+		if(paneIndex >= _params.getGridSize() + 1) std::cout << "Grid arg out of range" << std::endl;
 		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i){
 				if(p->second->getName().find("dial") != std::string::npos){
@@ -77,7 +77,6 @@ public:
 					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
 				}
 				else if(p->second->getName().find("slider") != std::string::npos){
-					std::cout << "Slider found!";
 					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
 					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
 				}
@@ -90,7 +89,7 @@ public:
 	void setState(unsigned paneIndex, bool isSelect){ // abstract the loop
 		unsigned i = 0;
 
-		if(paneIndex >= _params.getGridSize()) std::cout << "Grid arg out of range" << std::endl;
+		if(paneIndex >= _params.getGridSize() + 1) std::cout << "Grid arg out of range" << std::endl;
 		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i) p->second->setState((isSelect)? MENU_On : MENU_Pre); // This applies to buttons only
 			else p->second->setState(MENU_None);
