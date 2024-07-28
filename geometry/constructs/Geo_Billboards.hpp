@@ -69,8 +69,7 @@ public:
 	void setState(unsigned paneIndex, double x, double y){ // abstract the loop
 		unsigned i = 0;
 
-		if(paneIndex >= _params.getGridSize() + 1) std::cout << "Grid arg out of range" << std::endl;
-		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
+		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i){
 				if(p->second->getName().find("dial") != std::string::npos){
 					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*p->second));
@@ -89,8 +88,7 @@ public:
 	void setState(unsigned paneIndex, bool isSelect){ // abstract the loop
 		unsigned i = 0;
 
-		if(paneIndex >= _params.getGridSize() + 1) std::cout << "Grid arg out of range" << std::endl;
-		else for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
+		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i) p->second->setState((isSelect)? MENU_On : MENU_Pre); // This applies to buttons only
 			else p->second->setState(MENU_None);
 

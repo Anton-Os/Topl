@@ -51,7 +51,6 @@ void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	// if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press)){
 	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
 		_tracerSteps.push_back({ event, std::make_pair(x, y)}); // record the step
-		std::cout << "Tracer steps size is " << std::to_string(_tracerSteps.size()) << std::endl;
 		_tracerPaths.push_back(Input_TracerPath(event)); // record the path
 	}
 

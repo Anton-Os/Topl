@@ -92,10 +92,10 @@ void onChangeAction(float x, float y){
                     Topl_Program::timeline.addSequence_vec3f(&_DEMO->scales_map[Topl_Program::pickerObj], std::make_pair(TIMELINE_AT, *Topl_Program::pickerObj->getSize()));
                 break;
                 }
-        switch(Sandbox_Demo::option - 1){
-            case SANDBOX_PANES - SANDBOX_MOVE: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_PANES - SANDBOX_ROTATE: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_PANES - SANDBOX_SIZE: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
+        switch(SANDBOX_PANES - Sandbox_Demo::option - 1){
+            case SANDBOX_MOVE: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_ROTATE: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_SIZE: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
         }
     }
 }
