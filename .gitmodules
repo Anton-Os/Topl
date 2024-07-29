@@ -1,3 +1,6 @@
 [submodule "Rasteron"]
 	path = Rasteron
 	url = https://github.com/Anton-Os/Rasteron.git
+[submodule "Droidl"]
+	path = Droidl
+	url = https://github.com/Anton-Os/Droidl.git
