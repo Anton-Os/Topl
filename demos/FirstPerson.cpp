@@ -39,7 +39,7 @@ void FirstPerson_Demo::init(){
     Platform::keyControl.addCallback((char)0x28, movePuppetsDown);
 
     Topl_Program::cameraObj.setZoom(0.5F);
-    Topl_Program::cameraObj.setPos({ 0.0F, -0.5F, DEFAULT_Z });
+    Topl_Program::cameraObj.setPos({ 0.0F, -0.5F, 10.0F });
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
     projCamPerspective();
@@ -56,18 +56,23 @@ void FirstPerson_Demo::init(){
     }
     for(unsigned m = 0; m < 5; m++){ 
         models[m].configure(&scene3D);
-        for(unsigned n = 0; n < models[m].getActorCount(); n++){
-            Rasteron_Image* image;
-            switch(m){
-                case 0: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF8822EE, 0xFF2288AA }, 4); break;
-                case 1: image = noiseImgOp_low({ 1024, 1024 }, { 8, 8, 0xFF00EE55, 0xFF555533 }, 4); break;
-                case 2: image = noiseImgOp_hi({ 1024, 1024 }, { 8, 8, 0xFF44AACC, 0xFFAA44AA }, 4); break;
-                case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFFBBBB88, 0xFF880044 }, 4); break;
-                default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, RAND_COLOR(), RAND_COLOR() }); break;
-            }
-            models[m].getImgAt(n)->setImage(image);
-            RASTERON_DEALLOC(image);
+
+        Rasteron_Image* image;
+        switch(m){
+            case 0: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF8822EE, 0xFF2288AA }, 4); break;
+            case 1: image = noiseImgOp_low({ 1024, 1024 }, { 8, 8, 0xFF00EE55, 0xFF555533 }, 4); break;
+            case 2: image = noiseImgOp_hi({ 1024, 1024 }, { 8, 8, 0xFF44AACC, 0xFFAA44AA }, 4); break;
+            case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFFBBBB88, 0xFF880044 }, 4); break;
+            default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, RAND_COLOR(), RAND_COLOR() }); break;
         }
+        modelTexs[m].setImage(image);
+        for(unsigned n = 0; n < models[m].getActorCount(); n++){ 
+            models[m].getImgAt(n)->setImage(image);
+            std::string name = models[n].getGeoActor(n)->getName();
+            scene3D.addTexture(name, &modelTexs[m]);
+        }
+        scene3D.addTexture(std::to_string(m + 1), &modelTexs[m]);
+        RASTERON_DEALLOC(image);
     }
 
     _renderer->buildScene(&scene3D);
@@ -115,24 +120,29 @@ void FirstPerson_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 
-        models[0].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
-        models[1].rotateAll({ 0.0, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
-        models[2].rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
-        models[3].rotateAll({ 0.0, 0.0F, (float)frameTime / -500.0F });
-        models[4].rotateAll({ 0.0, 0.0F, (float)frameTime / 500.0F });
+        models[0].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
+        models[1].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / -500.0F });
+        models[2].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / 500.0F });
+        models[3].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / -500.0F });
+        models[4].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / 500.0F });
+        for(unsigned m = 0; m < 5; m++)
+            models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
 
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
-        _texVShader.setMode(-8);
+        _texVShader.setMode(0);
         _renderer->setDrawMode(DRAW_Triangles);
 
         _renderer->updateScene(&scene3D);
+        _renderer->drawScene(&scene3D);
         /* _renderer->draw(&_DEMO->floor);
         _renderer->draw(&_DEMO->roof);
-        for(unsigned p = 0; p < 4; p++) _renderer->draw(&_DEMO->pillars[p]);
+        for(unsigned p = 0; p < 4; p++) _renderer->draw(&_DEMO->pillars[p]); */
         for(unsigned m = 0; m < 5; m++) 
-            for(unsigned s = 0; s < _DEMO->models[m].getActorCount(); s++)
-                _renderer->draw(_DEMO->models[m].getGeoActor(s)); */
-        _renderer->drawScene(&scene3D);
+            for(unsigned s = 0; s < _DEMO->models[m].getActorCount(); s++){
+                _texVShader.setMode(m + 1);
+                _renderer->updateScene(&scene3D);
+                _renderer->draw(_DEMO->models[m].getGeoActor(s));
+            }
     }
 }
 

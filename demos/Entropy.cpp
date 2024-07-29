@@ -50,7 +50,8 @@ void Entropy_Demo::init(){
 
 void Entropy_Demo::loop(double frameTime){
     _beamsVShader.setMode((shaderMode + lightMode) * -1);
-    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+    _effectVShader.setMode(-1);
+    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
 

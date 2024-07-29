@@ -15,9 +15,8 @@ Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, sh
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
-		Vec3f texcoord = getTexCoord(v, 0.0f);
-		// Vec3f texcoord = getTexCoord(_vertices[v].position);
-
+		// Vec3f texcoord = getTexCoord(v, 0.0f);
+		Vec3f texcoord = getTexCoord(pos);
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
 
@@ -39,7 +38,7 @@ Geo_Surface::Geo_Surface(Vec3f* points, unsigned short pointCount) : Geo_Mesh(po
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
-        _vertices[v].texcoord = _vertices[v].position;
+        _vertices[v].texcoord = getTexCoord(_vertices[v].position);
         v++; 
 	}
 

@@ -53,15 +53,15 @@ public:
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
 #ifdef RASTERON_H
-                _nodeImg_map.insert({ currentNode, Img_Base() });
-                _nodeImg_map.at(currentNode).setColorImage(RAND_COLOR()); // .setImage(modelImg);
+                _nodeImg_map.insert({ _geoNodes[n], Img_Base() });
+                _nodeImg_map.at(_geoNodes[n]).setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
             }
         }
     }
 
     unsigned getActorCount() const { return _geoNodes.size(); }
-    Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
+    // Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
 	Img_Base* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeImg_map[(Geo_NodeActor*)getGeoActor(i)] : nullptr; }
     
     void shift(Vec3f vec) { // replace Geo_Construct shift()
@@ -74,9 +74,9 @@ public:
     
     void configure(Topl_Scene* scene) override {
         for (unsigned n = 0; n < _geoNodes.size(); n++) {
-                scene->addGeometry(getPrefix() + _geoNodes[n]->getName(), _geoNodes[n]);
+                scene->addGeometry(getPrefix() + _geoActors[n].getName(), _geoNodes[n]);
 #ifdef RASTERON_H
-                scene->addTexture(getPrefix() + _geoNodes[n]->getName(), &_nodeImg_map.at(_geoNodes[n]));
+                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeImg_map.at(_geoNodes[n]));
 #endif
         }
     }

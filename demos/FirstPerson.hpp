@@ -8,21 +8,21 @@
 
 #include "program/Topl_Program.hpp"
 
-#define FLOOR_SIZE 50.0F
+#define FLOOR_SIZE 50.0F / 2
 #define PILLAR_SIZE 1.0F
-#define PUPPET_DIST -5.0F
+#define PUPPET_DIST 5.0F
 
 struct FirstPerson_Demo : public Topl_Program {
     FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
         // 2D Objects
 
         puppet1.shift({ 0.0F, -1.0, PUPPET_DIST });
-        puppet2.shift({ -1.0F, -1.0, PUPPET_DIST });
-        puppet3.shift({ 1.0F, -1.0, PUPPET_DIST });
+        puppet2.shift({ -3.0F, -1.0, PUPPET_DIST });
+        puppet3.shift({ 3.0F, -1.0, PUPPET_DIST });
 
         anchorOffs[0] = { 0.0F, -1.0, 0.0F };
-        anchorOffs[1] = { -1.0F, -1.0, 0.0F };
-        anchorOffs[2] = { 1.0F, -1.0, 0.0F };
+        anchorOffs[1] = { -3.0F, -1.0, 0.0F };
+        anchorOffs[2] = { 3.0F, -1.0, 0.0F };
 
         // 3D Objects
         
@@ -43,8 +43,8 @@ struct FirstPerson_Demo : public Topl_Program {
         roof.setPos({ 0.0F, 7.5F, 0.0F });
         roof.setSize({ 30.0, 3.0F, 30.0 });
 
-        models[0].shift({ -1.5F, -1.75F, 1.0F });
-        models[1].shift({ 0.0F, -1.75F, 0.0F });
+        models[0].shift({ 0.0F, -1.75F, 0.0F });
+        models[1].shift({ -1.5F, -1.75F, 1.0F });
         models[2].shift({ 1.5F, -1.75, 1.0F });
         models[3].shift({ -1.5F, -1.75F, -1.0F });
         models[4].shift({ 1.5F, -1.75, -1.0F });
@@ -95,7 +95,7 @@ struct FirstPerson_Demo : public Topl_Program {
         Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA0000FF, color_invert(0xAA0000FF))),
         Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAEEEEEE, color_invert(0xAAEEEEEE)))
     };
-    // Img_Base modelTexs[5];
+    Img_Base modelTexs[5];
 #endif
 private:
     Topl_Scene scene2D, scene3D;

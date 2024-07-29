@@ -16,7 +16,7 @@ Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
-		Vec3f texcoord = getTexCoord(v, 0.0f);
+		Vec3f texcoord = getTexCoord(pos);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
@@ -64,7 +64,7 @@ Geo_Cone::Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex) : Geo_M
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
-        _vertices[v].texcoord = _vertices[v].position;
+        _vertices[v].texcoord = getTexCoord(_vertices[v].position);
         v++; 
 	}
 

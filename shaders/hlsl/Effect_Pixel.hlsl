@@ -75,8 +75,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-    /* if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f);
-    else*/ if(mode == 1) return cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+    if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f);
+    else if(mode == 1) return cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
     else if(mode == 2) return cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
     else return cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
     // else return float4(cursorSet(cursor, coords), 1.0f);

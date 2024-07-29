@@ -28,8 +28,10 @@ void main() {
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 	if(mode < 0){
-		vec4 heightCoord = texture(baseTex, vec2(texcoord.x, texcoord.y)); 
+		vec4 heightCoord = texture(baseTex, vec2(texcoord.x, texcoord.y));
+		gl_Position.x += heightCoord.g * abs(mode);
 		gl_Position.y += heightCoord.r * abs(mode);
+		gl_Position.z += heightCoord.b * abs(mode);
 	}
 	
 	texcoord_out = texcoord + texScroll;

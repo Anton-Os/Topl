@@ -14,25 +14,30 @@ void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
 }
 
+void onTimePanePress(MOUSE_Event evemt){
+    isModal = Sandbox_Demo::mode != SANDBOX_TIME;
+    Sandbox_Demo::mode = SANDBOX_TIME;
+}
+
 void onActionPanePress(MOUSE_Event event){
+    isModal = Sandbox_Demo::mode != SANDBOX_ACTION || Sandbox_Demo::option != std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        isModal = Sandbox_Demo::mode == SANDBOX_ACTION;
         Sandbox_Demo::mode = SANDBOX_ACTION;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
 void onSculptPanePress(MOUSE_Event event){
+    isModal = Sandbox_Demo::mode != SANDBOX_SCULPT;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        isModal = Sandbox_Demo::mode == SANDBOX_SCULPT;
         Sandbox_Demo::mode = SANDBOX_SCULPT;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
 }
 
 void onPaintPanePress(MOUSE_Event event){
+    isModal = Sandbox_Demo::mode != SANDBOX_PAINT;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
-        isModal = Sandbox_Demo::mode == SANDBOX_PAINT;
         Sandbox_Demo::mode = SANDBOX_PAINT;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     }
@@ -109,7 +114,7 @@ void onConfirmAction(float x, float y){
                 case 2: _DEMO->objectMeshes.push_back(new Geo_Volume(sculptPoints.data(), sculptPoints.size(), 1.0F)); break;
                 default: _DEMO->objectMeshes.push_back(new Geo_Mesh(sculptPoints.data(), sculptPoints.size())); 
             }
-            _DEMO->objectTextures.push_back(nullptr); // non-textured object
+            _DEMO->objectTextures.push_back(new Img_Base(RAND_COLOR())); // non-textured object
             _DEMO->objectPhysics.push_back(nullptr); // non-dynamic object
             _DEMO->objectActors.push_back(new Geo_Actor(_DEMO->objectMeshes.back()));
             for(unsigned n = 0; n < _DEMO->plotGrid.getActorCount(); n++) _DEMO->plotGrid.getGeoActor(n)->setSize(Vec3f({ 1.0F, 1.0F, 1.0F }));
@@ -118,7 +123,8 @@ void onConfirmAction(float x, float y){
         }
         else std::cerr << "Not enough sculpt points!" << std::endl;
     } else if(Sandbox_Demo::mode == SANDBOX_PAINT){
-        std::cout << "Handle paint confirm action..." << std::endl;
+        isRepaintReq = true;
+        if(!_DEMO->objectTextures.empty()) _DEMO->objectTextures.back() = new Img_Base(RAND_COLOR());
     }
 }
 
@@ -141,9 +147,9 @@ void Sandbox_Demo::init(){
     timeCtrlBillboard.configure(&overlayScene);
 
     std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
-    _labels.push_back(new Img_Label(MENU_XL, { fontPath.c_str(), "Blank", 0xFF111111, 0xFFEEEEEE }));
+    _labels.push_back(new Img_Label(MENU_XL, { fontPath.c_str(), "[ New Project ]", 0xFF111111, 0xFFEEEEEE }));
     modeBillboard.overlay(0, _labels.back());
-    modeBillboard.toggleShow(false);
+    // modeBillboard.toggleShow(false);
     _labels.push_back(new Img_Label(MENU_Large, { fontPath.c_str(), "[ 0:00 ]", 0xFF111111, 0xFFEEEEEE }));
     timeTextBillboard.overlay(0, _labels.back());
     _buttons.push_back(new Img_Button(MENU_XL, "fast_forward"));
@@ -152,8 +158,9 @@ void Sandbox_Demo::init(){
     timeCtrlBillboard.overlay(1, _buttons.back());
     _buttons.push_back(new Img_Button(MENU_XL, "fast_rewind"));
     timeCtrlBillboard.overlay(2, _buttons.back());
-    _sliders.push_back(new Img_Slider(MENU_XL, 60));
+    _sliders.push_back(new Img_Slider(MENU_XL, (unsigned)SANDBOX_SEQUENCE));
     timeBillboard.overlay(0, _sliders.back());
+    timeBillboard.getGeoActor(0)->pickerFunc = onTimePanePress;
     for(unsigned p = 0; p < actionsBillboard.getParams()->getGridSize(); p++){
         switch(p){
             case SANDBOX_MOVE: _buttons.push_back(new Img_Button(MENU_XL, "control_camera")); break;
@@ -203,6 +210,7 @@ void Sandbox_Demo::init(){
         canvasScene.addTexture(std::to_string(i), _images.back());
     }
     canvasScene.addTexture("canvas", &canvasImg);
+    sequence_map.insert({ &backdropActor, Img_Sequence((unsigned)SANDBOX_SEQUENCE) });
 
     _renderer->buildScene(&editsScene);
 }
@@ -210,16 +218,7 @@ void Sandbox_Demo::init(){
 void Sandbox_Demo::loop(double frameTime){
     updateOverlay();
     
-    if(Sandbox_Demo::mode == SANDBOX_PAINT || Sandbox_Demo::mode == SANDBOX_TIME){
-        /* if(isRepaintReq){
-            for(unsigned short i = 0; i < objectTextures.size(); i++)
-                if(objectTextures[i] != nullptr) mainScene.addTexture("object" + std::to_string(i), objectTextures[i]);
-
-            if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
-            if(canvasScene.getIsTextured()) _renderer->texturizeScene(&canvasScene);
-            isRepaintReq = false;
-        } */
-        
+    if(Sandbox_Demo::mode == SANDBOX_PAINT){
         _renderer->setCamera(&fixedCamera);
         _renderer->texturizeScene(&canvasScene);
         _renderer->setDrawMode(DRAW_Triangles);
@@ -251,6 +250,14 @@ void Sandbox_Demo::loop(double frameTime){
             isRebuildReq = false;
         }
 
+        if(isRepaintReq){
+            if(!objectTextures.empty()) mainScene.addTexture("object" + std::to_string(objectTextures.size() - 1), objectTextures.back());
+            else std::cerr << "Null texture detected" << std::endl;
+
+            if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
+            isRepaintReq = false;
+        }
+
         if(mainScene.getActorCount() > 0 && objectActors.size() > 0){
             if(Platform::mouseControl.getIsMouseDown().second && Topl_Program::pickerObj == nullptr){ 
                 colorPicker(&mainScene);
@@ -259,10 +266,17 @@ void Sandbox_Demo::loop(double frameTime){
             _texVShader.setMode(0);
             _renderer->setDrawMode(DRAW_Triangles);
 
-            Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
             _renderer->setCamera(&Topl_Program::cameraObj);
+            Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
             _renderer->updateScene(&mainScene);
             _renderer->drawScene(&mainScene);
+            _renderer->clear();
+            Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+            for(unsigned o = 0; o < mainScene.getActorCount(); o++){
+                _beamsVShader.setMode(0 + (10 * ((o % 3) + 1)));
+                _renderer->updateScene(&mainScene);
+                _renderer->draw(mainScene.getGeoActor(o));
+            }
         }
     }
 
@@ -285,9 +299,30 @@ void Sandbox_Demo::updateOverlay(){
         std::string timeText = "[ " + ((secs >= 60)? std::to_string(secs / 60) + ":" + ((secs % 10 == 0)? "0" : "") : "") + std::to_string(secs % 60) + ":00 ]";
         _labels[1]->setText({ fontPath.c_str(), timeText.c_str(), 0xFF111111, 0xFFEEEEEE });
         timeTextBillboard.setState(0, !Topl_Program::timeline.dynamic_ticker.isPaused);
-        timeBillboard.setState(0, secs / 60.0, 0.0F);
+        timeBillboard.setState(0, secs / SANDBOX_SEQUENCE, 0.0F);
         _renderer->texturizeScene(&overlayScene);
         isTick = false;
+    }
+
+    if(isModal){
+        std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
+        std::string modeTxt = "[ New Project ]";
+        switch(Sandbox_Demo::mode){
+            case SANDBOX_TIME: modeTxt = "[ Animate ]"; fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf"; break;
+            case SANDBOX_ACTION: // modeTxt = (Sandbox_Demo::option < SANDBOX_PANES / 2)? "[ " + Topl_Program::pickerObj->getName() + " ]" : "[ Scene ]"; break;
+                if(Sandbox_Demo::option == SANDBOX_MOVE) modeTxt = "[ Move Object ]";
+                else if(Sandbox_Demo::option == SANDBOX_ROTATE) modeTxt = "[ Rotate Object ]";
+                else if(Sandbox_Demo::option == SANDBOX_SIZE) modeTxt = "[ Scale Object ]";
+                else if(Sandbox_Demo::option == SANDBOX_PANES - SANDBOX_MOVE - 1) modeTxt = "[ Move Scene ]";
+                else if(Sandbox_Demo::option == SANDBOX_PANES - SANDBOX_ROTATE - 1) modeTxt = "[ Rotate Scene ]";
+                else if(Sandbox_Demo::option == SANDBOX_PANES - SANDBOX_SIZE - 1) modeTxt = "[ Scale Scene ]";
+            break;
+            case SANDBOX_SCULPT: modeTxt = "[ Sculpt ]"; fontPath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf"; break;
+            case SANDBOX_PAINT: modeTxt = "[ Paint ]"; fontPath = std::string(FONTS_DIR) + "Pricedown.ttf"; break;
+        }
+        _labels[0]->setText({ fontPath.c_str(), modeTxt.c_str(), 0xFF111111, 0xFFEEEEEE });
+        modeBillboard.setState(0, true);
+        isModal = false;
     }
 
     if(Topl_Program::pickerObj != nullptr)
@@ -296,7 +331,7 @@ void Sandbox_Demo::updateOverlay(){
 
             if(Topl_Program::pickerObj->getName().find("time_board") != std::string::npos && Platform::mouseControl.getIsMouseDown().second){
                 timeBillboard.setState(0, coordColor[0], coordColor[1]);
-                Topl_Program::timeline.dynamic_ticker.setTime(coordColor[0] * 60.0); // convert from coordinates to secs
+                Topl_Program::timeline.dynamic_ticker.setTime(coordColor[0] * SANDBOX_SEQUENCE); // convert from coordinates to secs
             }
             else if(Topl_Program::pickerObj->getName().find("actions_board") != std::string::npos)
                 actionsBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
@@ -314,20 +349,6 @@ void Sandbox_Demo::updateOverlay(){
                 }
                 timeCtrlBillboard.setState(index, Platform::mouseControl.getIsMouseDown().second);
             }
-
-            /* if(isModal){
-                std::string fontPath = std::string(FONTS_DIR) + "Gupis.ttf";
-                std::string contentTxt = "Default";
-                switch(Sandbox_Demo::mode){
-                    case SANDBOX_TIME: contentTxt = "Time";
-                    case SANDBOX_ACTION: contentTxt = (Sandbox_Demo::option < SANDBOX_PANES / 2)? Topl_Program::pickerObj->getName() : "Camera"; break;
-                    case SANDBOX_SCULPT: contentTxt = "Sculpt"; break;
-                    case SANDBOX_PAINT: contentTxt = "Paint"; break;
-                }
-                _labels[0]->setText({ fontPath.c_str(), contentTxt.c_str(), 0xFF0000FF, 0xFF885588 });
-                modeBillboard.setState(0, true);
-                isModal = false;
-            } */
 
             _renderer->texturizeScene(&overlayScene);
             // _renderer->texturizeScene(&canvasScene);

@@ -155,7 +155,7 @@ void Topl_Scene::resolvePhysics() {
 				*(physActor->forces + forceIndex) = VEC_3F_ZERO; // removing current resolved force
 			}
 		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
-		
+
 		physActor->velocity = physActor->velocity + (physActor->acceleration * elapseSecs); // velocity integration
 		physActor->velocity = physActor->velocity * (float)physActor->damping; // velocity damping
 

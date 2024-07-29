@@ -65,7 +65,7 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Quad3D quads[ENTROPIC_COUNT / 4];
     Geo_Hex3D hexes[ENTROPIC_COUNT / 4];
     Geo_Circle3D circles[ENTROPIC_COUNT / 4];
-    // Geo_Orb spheres[ENTROPIC_SPAWN]; // for spawning objects
+    // Geo_Orb orbs[ENTROPIC_COUNT / 4];
 
     // std::vector<Geo_Mesh> meshes;
     std::vector<Geo_TessIter*> tessMeshes;

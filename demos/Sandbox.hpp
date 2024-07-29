@@ -19,6 +19,7 @@
 #define SANDBOX_CANVAS 1.5F
 #define SANDBOX_PANES 12
 #define SANDBOX_EDIT 5
+#define SANDBOX_SEQUENCE 60.0
 
 struct Img_Canvas : public Img_Base {
     Img_Canvas(unsigned bk) : Img_Base(bk){ 
@@ -106,8 +107,8 @@ struct Sandbox_Demo : public Topl_Program {
         paintBillboard.scale({ -0.25F, 3.0F, 1.0F });
         paintBillboard.shift({ 0.935F, 0.0F, 0.0F });
         // modeBillboard.rotateAll({ 0.3F, 0.0F, 0.0F });
-        modeBillboard.scale({ 0.5F, 0.085F, 1.0F });
-        modeBillboard.shift({ 0.0F, 0.88F, 0.0F });
+        modeBillboard.scale({ 0.65F, 0.085F, 1.0F });
+        modeBillboard.shift({ 0.0F, 0.95F, 0.0F });
         propsBillboard.scale({ 0.5F, 0.5F, 1.0F });
         propsBillboard.toggleShow(false);
         // propsBillboard.shift({ 0.0F, 0.5F, 0.0F });

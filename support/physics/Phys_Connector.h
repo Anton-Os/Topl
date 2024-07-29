@@ -38,8 +38,8 @@ struct Phys_Connector {
 	double kVal = PHYS_DEFAULT_K; // spring stiffness known as k constant
 };
 
-// struct Phys_Spring : Phys_Connector {} // loose
-// struct Phys_Rod : Phys_Connector {} // rigid
+struct Phys_Spring : Phys_Connector { Phys_Spring() : Phys_Connector(){ kVal = 1000.0; } }; // loose
+struct Phys_Rod : Phys_Connector {}; // rigid
 
 // Links and Anchors
 

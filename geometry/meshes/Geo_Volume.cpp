@@ -15,7 +15,8 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
-		Vec3f texcoord = getTexCoord(v, 0.0f);
+		// Vec3f texcoord = getTexCoord(v, 0.0f);
+		Vec3f texcoord = getTexCoord(pos);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
@@ -29,7 +30,8 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 		});
 
 		Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
-		Vec3f texcoord = getTexCoord(v, 1.0f);
+		// Vec3f texcoord = getTexCoord(v, 0.0f);
+		Vec3f texcoord = getTexCoord(pos);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}
@@ -98,10 +100,10 @@ Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : 
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
 		_vertices[v].position.data[2] += _depth / 2;
-        _vertices[v].texcoord = _vertices[v].position;
+        _vertices[v].texcoord = getTexCoord(_vertices[v].position);
 		_vertices[_vertices.size() - 1 - v] = *(points + p);
 		_vertices[_vertices.size() - 1 - v].position.data[2] -= _depth / 2;
-		_vertices[_vertices.size() - 1 - v].texcoord = _vertices[_vertices.size() - 1 - v].position;
+		_vertices[_vertices.size() - 1 - v].texcoord = getTexCoord(_vertices[_vertices.size() - 1 - v].position);
         v++; 
 	}
 

@@ -73,6 +73,9 @@ public:
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
+#ifdef RASTERON_H
+	std::map<Geo_Actor*, Img_Sequence> sequence_map; // for dynamically changing textures
+#endif
 protected:
     virtual void init() = 0;
     virtual void loop(millisec_t frameTime) = 0;
@@ -83,11 +86,6 @@ protected:
 	const enum BACKEND_Target _backend;
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
-
-	// std::map<std::string, Topl_Scene> _scenes_map; // for custom scene
-#ifdef RASTERON_H
-	std::map<Img_Base*, std::pair<Rasteron_Queue*, unsigned short>> _images_map; // for dynamic texture changes
-#endif
 
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline; // for easy reuse
 

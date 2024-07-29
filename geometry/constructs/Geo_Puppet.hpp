@@ -44,6 +44,7 @@ struct Geo_Puppet : public Geo_Construct {
         _physActors.resize(PUPPET_PARTS);
         for(unsigned p = 0; p < PUPPET_PARTS; p++) scene->addPhysics(_geoActors[p].getName(), &_physActors[p]);
         _links.resize(PUPPET_PARTS + 5);
+        // for(unsigned l = 0; l < PUPPET_PARTS + 5; l++) _links[l].kVal = PHYS_ROD_K * 5;
         // Star Links
         _links[PUPPET_Head].preset(*_geoActors[PUPPET_Head].getPos(), *_geoActors[PUPPET_Body].getPos());
         scene->addLink(&_links[PUPPET_Head], getPrefix() + "head", getPrefix() + "body");
