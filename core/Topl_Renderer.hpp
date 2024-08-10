@@ -83,7 +83,7 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
 
 #define ALL_SCENES nullptr // works for updating everything
-#define MAX_RENDERID 256 * 256 * 256
+#define MAX_RENDERID 256 * 256 // * 256
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
@@ -104,7 +104,7 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 
 class Topl_Renderer {
 public:
-	Topl_Renderer(NATIVE_WINDOW window) { _platformCtx.window = window; }
+	Topl_Renderer(NATIVE_PLATFORM_CONTEXT* context){ _platformCtx = context; }
 
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
@@ -132,7 +132,7 @@ protected:
     std::map<const TaggedImg*, std::string> _texTagMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
-	NATIVE_PLATFORM_CONTEXT _platformCtx; // system specific context
+	NATIVE_PLATFORM_CONTEXT* _platformCtx; // system specific context
     entry_shader_cptr _entryShader; // entry shader specifies vertex layout and uniforms passed to shader
     blockBytes_t _shaderBlockData; // shader block data contains bytes passed to GPU
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects

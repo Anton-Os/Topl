@@ -43,18 +43,18 @@ Topl_Renderer* Topl_Factory::genRenderer(BACKEND_Target backend, Platform* platf
     switch(backend){
     case BACKEND_GL4:
         if(GL4_engine_cfg.renderer == nullptr) 
-			GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getParentWindow());
+			GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getContext());
         return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
 	case BACKEND_DX11:
         if(DX11_engine_cfg.renderer == nullptr) 
-			DX11_engine_cfg.renderer = new Topl_Renderer_DX11(platform->getParentWindow());
+			DX11_engine_cfg.renderer = new Topl_Renderer_DX11(platform->getContext());
         return (Topl_Renderer*)DX11_engine_cfg.renderer;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
 	case BACKEND_VK:
 		if (VK_engine_cfg.renderer == nullptr) 
-			VK_engine_cfg.renderer = new Topl_Renderer_VK(platform->getParentWindow());
+			VK_engine_cfg.renderer = new Topl_Renderer_VK(platform->getContext());
 		return (Topl_Renderer*)VK_engine_cfg.renderer;
 #endif
 	default: return nullptr; // Error

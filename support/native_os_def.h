@@ -7,6 +7,14 @@
 
 // System Definitions
 
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include <GL/gl.h>
+
+#ifdef __linux__
+#include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
+#endif
+
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
@@ -42,9 +50,7 @@
     #include<X11/X.h>
     #include<X11/Xlib.h>
 
-    #include <unistd.h> // for files
-
-    #include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
+    #include <dlfcn.h>
 
     #define NATIVE_WINDOW Window
     #define NATIVE_GL_CONTEXT GLXContext
@@ -56,13 +62,14 @@
 
     struct Linux_Platform_Context {
         Display* display;
-        // XVisualInfo* visualInfo;
+        XVisualInfo* visualInfo;
         NATIVE_WINDOW window;
         NATIVE_GL_CONTEXT oglCtx;
         Cursor_Pos cursorPos;
     };
 
     #define NATIVE_PLATFORM_CONTEXT Linux_Platform_Context
+    // #elif defined(__ANDROID__) // TODO: Check Android Implementation
 #else // No Support
     typedef struct Dummy { };
 

@@ -15,6 +15,18 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 }
 #endif
 
+#ifdef INCLUDE_PERFBLOCK
+
+#define CONTROL_POINT_COUNT 12
+// #define MESH_POINT_COUNT 1024
+#define INSTANCE_TFORMS_COUNT 256
+
+cbuffer CONST_PERF_BLOCK : register(b2) {
+	float3 ctrlPoints[CONTROL_POINT_COUNT]; // controls for tesselation
+	float3 instTforms[INSTANCE_TFORMS_COUNT][3]; // transforms per instance
+}
+#endif
+
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
@@ -30,11 +42,6 @@ Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
 Texture3D areaTex : register(t8);
 SamplerState areaSampler : register(s8);
 #endif
-
-/* cbuffer CONST_ENV_BLOCK : register(b2) {
-	float4 controlPoints[64];
-	float4 nearestVertex[1024];
-} */
 
 #ifndef IGNORE_INPUTS
 struct VS_INPUT {

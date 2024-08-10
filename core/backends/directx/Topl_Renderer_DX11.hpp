@@ -58,10 +58,10 @@ struct Topl_Pipeline_DX11 : public Topl_Pipeline {
 
 class Topl_Renderer_DX11 : public Topl_Renderer {
 public:
-	Topl_Renderer_DX11(HWND window) : Topl_Renderer(window){
+	Topl_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context){
 		_flags[DRAW_ORDER_BIT] = DRAW_INVERSE;
-		init(window);
-		
+		init(context->window);
+
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
 	}

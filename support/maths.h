@@ -8,39 +8,39 @@
 #define MATH_HALF_PI 1.57079633
 
 template <unsigned short n>
-struct VectorXF { 
+struct VectorXF {
     float data[n];
 
     float& operator [](unsigned short i) { return data[i]; }
     bool operator == (const VectorXF& inputVec) const {
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
-        return true;
+            return true;
     }
     bool operator != (const VectorXF& inputVec) const {
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
-        return false;
+            return false;
     }
     VectorXF operator +(const VectorXF& inputVec) const {
         VectorXF vec = {};
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] + inputVec.data[e];
         return vec;
     }
-    VectorXF operator -(const VectorXF& inputVec) const { 
+    VectorXF operator -(const VectorXF& inputVec) const {
         VectorXF vec = {};
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] - inputVec.data[e];
         return vec;
     }
-    VectorXF operator *(const VectorXF& inputVec) const { 
+    VectorXF operator *(const VectorXF& inputVec) const {
         VectorXF vec = {};
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * inputVec.data[e];
         return vec;
     }
-    VectorXF operator *(float scalar) const { 
-       VectorXF vec = {};
-       for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
-       return vec;
+    VectorXF operator *(float scalar) const {
+        VectorXF vec = {};
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
+        return vec;
     }
     float len() const {
         float length = 0.0;
@@ -48,7 +48,7 @@ struct VectorXF {
         return sqrt(length); // pythagorean theorem
     }
     void normalize() {
-        float length = len() * 0.75F;
+        float length = len();
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
     }
     void randomize() { // randomizes between 0 and 1
@@ -67,31 +67,31 @@ struct VectorXF {
 };
 
 template <unsigned short n>
-struct VectorXI { 
+struct VectorXI {
     int data[n];
 
     int& operator [](unsigned short i) const { return data[i]; }
     bool operator == (const VectorXI& inputVec) const {
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
-        return true;
+            return true;
     }
     bool operator != (const VectorXI& inputVec) const {
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) 
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
-        return false;
+            return false;
     }
     VectorXI operator +(const VectorXI& inputVec) const {
         VectorXI vec;
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] + inputVec.data[e];
         return vec;
     }
-    VectorXI operator -(const VectorXI& inputVec) const { 
+    VectorXI operator -(const VectorXI& inputVec) const {
         VectorXI vec;
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] - inputVec.data[e];
         return vec;
     }
-    VectorXI operator *(const VectorXI& inputVec) const { 
+    VectorXI operator *(const VectorXI& inputVec) const {
         VectorXI vec;
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] * inputVec.data[e];
         return vec;
@@ -110,11 +110,11 @@ struct VectorXI {
 
 template <unsigned short r, unsigned short c>
 struct Matrix {
-	float data[r][c];
+    float data[r][c];
 
-	float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
+    // float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
 
-	Matrix operator* (const Matrix& input) { return {}; } // TODO: implement multiplication
+    Matrix operator* (const Matrix& input) { return {}; } // TODO: implement multiplication
 };
 
 typedef const unsigned* const ui_cptr_t;

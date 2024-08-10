@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cctype>
 
-#include "Timer.hpp";
+#include "Timer.hpp"
 
 // Control
 

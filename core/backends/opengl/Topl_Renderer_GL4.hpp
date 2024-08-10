@@ -1,9 +1,5 @@
 #include "Topl_Renderer.hpp"
 
-#define GLEW_STATIC
-#include "GL/glew.h"
-#include <GL/gl.h>
-
 // Buffer
 
 struct Buffer_GL4 : public Buffer {
@@ -54,10 +50,9 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
-	Topl_Renderer_GL4(NATIVE_WINDOW window) : Topl_Renderer(window) { 
+	Topl_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context) {
 		_flags[DRAW_ORDER_BIT] = DRAW_NORMAL;
-		init(window);
-
+		init(context->window);
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
 	}

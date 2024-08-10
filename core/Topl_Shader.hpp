@@ -42,7 +42,9 @@ public:
 		_shaderType = type;
 		_shaderFilePath = fileSrc;
 		_shaderFilePath = SHADERS_DIR + fileSrc;
-		std::replace(_shaderFilePath.begin(), _shaderFilePath.end(), '/', '\\');
+#ifdef _WIN32
+		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+#endif
 	}
 	enum SHDR_Type getType() const { return _shaderType; }
 	std::string getFilePath() const { return _shaderFilePath; }
@@ -107,7 +109,7 @@ public:
 	}
 
 	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc((Topl_EntryShader*)this);
+		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc();
 		// TODO: Else trigger function to reset actor dependent data
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);

@@ -77,9 +77,9 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	glDeleteTextures(MAX_RENDERID, _textureSlots);
 
 #ifdef _WIN32
-	cleanup_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
+	cleanup_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
 #elif defined(__linux__)
-	cleanup_linux(_platformCtx.display, _platformCtx.oglCtx);
+	cleanup_linux(_platformCtx->display, _platformCtx->oglCtx);
 #endif
 }
 
@@ -108,22 +108,27 @@ static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc) {
 	wglMakeCurrent(*windowDC, *hglrc);
 }
 #elif defined(__linux__)
-static void init_linux(GLXContext graphicsContext, Display* display, Window* window) {
-	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs);
+static void init_linux(Display* display, Window* window, XVisualInfo* visualInfo, GLXContext* oglCtx) {
+	int major, minor;
+	if(glXQueryVersion(display, &major, &minor)) std::cout << "GLX Version is " << std::to_string(major) << "." << std::to_string(minor) << std::endl;
+	else logMessage(MESSAGE_Exclaim, "Issue with GLX Version query");
 
-	graphicsContext = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
-	glXMakeCurrent(display, *window, graphicsContext);
+	/* GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	 *   XVisualInfo* visualInfo = glXChooseVisual(display, 0, visualInfoAttribs);
+	 *   if(visualInfo == nullptr) return logMessage(MESSAGE_Exclaim, "Issue with GLX Visual"); */
+
+	*oglCtx = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
+	glXMakeCurrent(display, *window, *oglCtx);
 }
 #endif
 
 void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
-	_platformCtx.window = window;
+	_platformCtx->window = window;
 
 #ifdef _WIN32
-	init_win(&_platformCtx.window, &_platformCtx.deviceCtx, &_platformCtx.oglCtx);
+    init_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
 #elif defined(__linux__)
-	init_linux(_platformCtx.oglCtx, _platformCtx.display, &_platformCtx.window);
+    init_linux(_platformCtx->display, &_platformCtx->window, _platformCtx->visualInfo, &_platformCtx->oglCtx);
 #endif
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -155,24 +160,18 @@ void Topl_Renderer_GL4::clear() {
 
 void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 	// TODO: Scale to viewport
-	unsigned width = Platform::getViewportWidth(_platformCtx.window);
-	unsigned height = Platform::getViewportHeight(_platformCtx.window);
+	unsigned width = Platform::getViewportWidth(_platformCtx->window);
+	unsigned height = Platform::getViewportHeight(_platformCtx->window);
 
 	if (viewport != nullptr) glViewport(viewport->xOffset, viewport->yOffset, height, width);
 	else _flags[BUILD_BIT] = false; // Error
 }
 
-#ifdef _WIN32
-static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
-#elif defined(__linux__)
-static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
-#endif
-
 void Topl_Renderer_GL4::swapBuffers(double frameTime) {
 #ifdef _WIN32
-		swapBuffers_win(&_platformCtx.deviceCtx);
+		SwapBuffers(_platformCtx->deviceCtx);
 #elif defined(__linux__)
-		swapBuffers_linux(_platformCtx.display, &_platformCtx.window);
+		glXSwapBuffers(_platformCtx->display, _platformCtx->window);
 #endif
 }
 
@@ -294,10 +293,10 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
-				glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-			else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
-		} 
+			if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
+				glDrawElements((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+				else glDrawArrays((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+		}
 		// TODO: Include instanced draw call
 		else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
 
@@ -311,8 +310,8 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 #ifdef RASTERON_H
 
 Img_Base Topl_Renderer_GL4::frame() {
-	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx.window);
-	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx.window);
+	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx->window);
+	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx->window);
 
 	Rasteron_Image* stageImage = RASTERON_ALLOC("frame", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);

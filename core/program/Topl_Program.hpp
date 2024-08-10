@@ -65,11 +65,12 @@ public:
 	static bool isCamera_keys, isCamera_mouse; // static bool isCamera_MounseControl;
 	static bool isInputEnabled;
 	static std::string userInput; // input is added when characters are pressed
-#ifdef RASTERON_H
+
 	static Geo_Actor* pickerObj; // picker for actor
 	static unsigned pickerColor, lastPickerColor; // picker for color
 	static Vec3f pickerCoord, lastPickerCoord;
 	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
+#ifdef RASTERON_H
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes

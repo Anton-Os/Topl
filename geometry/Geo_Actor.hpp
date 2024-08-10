@@ -9,25 +9,27 @@
 #define DEFAULT_ACTOR_ID 0xFFFFFFFF
 #define DEFAULT_ACTOR_NAME "actor"
 
-extern class Geo_Actor;
-extern struct Topl_EntryShader;
+// extern class Geo_Actor;
+// extern struct Topl_EntryShader;
+
+typedef void (*pickerCallback)(MOUSE_Event);
+typedef void (*shaderCallback)(void);
 
 // typedef void (*pickerCallback)(Geo_Actor*, MOUSE_Event);
 // typedef void (*shaderCallback)(Geo_Actor*, Topl_EntryShader*);
 
-typedef void (*pickerCallback)(MOUSE_Event);
-typedef void (*shaderCallback)(Topl_EntryShader*);
-
-// static void defaultShaderCallback(Topl_EntryShader* entryShader){ entryShader->setMode(0); }
-
 class Geo_Actor {
 public:
-	// Geo_Actor(){ _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255)); }
-	Geo_Actor(){ _id = color_unique(); }
-	Geo_Actor(const Geo_Mesh* mesh) { 
-		// _id = (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255));
+	Geo_Actor(){
+#ifdef RASTERON_H
 		_id = color_unique();
-		_mesh = mesh; 
+#endif
+	}
+	Geo_Actor(const Geo_Mesh* mesh) {
+#ifdef RASTERON_H
+		_id = color_unique();
+#endif
+		_mesh = mesh;
 	}
 	Geo_Actor(const Geo_Actor& actor){
 		_id = actor.getId();

@@ -66,6 +66,9 @@ public:
 	vertex_cptr_t getVertices() const { return _vertices.data(); }
 	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices() const { return _indices.data(); }
+
+	bool instanceCount = 0;
+	bool isTesselated = false;
 protected:
 	virtual void genVertices(){}
 	virtual void genIndices(){}

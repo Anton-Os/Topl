@@ -9,12 +9,13 @@
 
 // OpenGL Test Renderer
 struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
-	Hello_Renderer_GL4(NATIVE_WINDOW window) 
-	: Topl_Renderer_GL4(window){ 
-		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
-		genPipeline(&basePipeline, &vertexShader, &pixelShader); 
+	Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
+		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&basePipeline, &vertexShader, &pixelShader);
+
+		setPipeline(&tessOnlyPipeline);
 	}
 
 	Topl_Pipeline_GL4 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
@@ -29,14 +30,14 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 #ifdef _WIN32
 // DirectX Test Renderer
 struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
-	Hello_Renderer_DX11(NATIVE_WINDOW window) 
-	: Topl_Renderer_DX11(window){ 
+	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context)
+	: Topl_Renderer_DX11(context){
 		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
 		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
 		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
-	
+
 	Topl_Pipeline_DX11 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
 
 	Idle_VertexShader_DX11 vertexShader;
@@ -50,8 +51,8 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 #ifdef TOPL_ENABLE_VULKAN
 // VK Test Renderer
 struct Hello_Renderer_VK : public Topl_Renderer_VK {
-	Hello_Renderer_VK(NATIVE_WINDOW window)
-	: Topl_Renderer_VK(window){
+	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context)
+	: Topl_Renderer_VK(context){
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;

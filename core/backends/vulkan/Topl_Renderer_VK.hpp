@@ -2,9 +2,11 @@
 #undef ENABLE_DEBUG_LAYERS
 
 #define VK_PROTOTYPES
-#ifdef _WIN32
-	#define VK_USE_PLATFORM_WIN32_KHR
-#endif 
+	#ifdef _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(__linux__)
+	#define VK_USE_PLATFORM_XLIB_KHR
+#endif
 
 #include <vulkan/vk_platform.h>
 #include <vulkan/vulkan.h>
@@ -45,8 +47,8 @@ struct Topl_Pipeline_VK : public Topl_Pipeline {
 
 class Topl_Renderer_VK : public Topl_Renderer {
 public:
-	Topl_Renderer_VK(NATIVE_WINDOW window) : Topl_Renderer(window){ 
-		init(window); 
+	Topl_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context){
+		init(context->window);
 
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);

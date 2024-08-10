@@ -127,35 +127,6 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 	if(result == VK_SUCCESS) logMessage("Instance creation success!\n");
 	else return logMessage(MESSAGE_Exclaim, "Instance creation failure!\n");
 
-		// Surface Creation
-
-#ifdef _WIN32
-	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = NULL;
-	surfaceCreateInfo.hwnd = _platformCtx.window;
-	surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
-
-	result = vkCreateWin32SurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
-#elif defined(__linux__)
-	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = NULL;
-	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.dpy = _platformCtx.display;
-	surfaceCreateInfo.window = _platformCtx.window;
-
-	result = vkCreateXlibSurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
-#endif
-	if(result == VK_SUCCESS) logMessage("Surface creation sucess\n");
-	else return logMessage(MESSAGE_Exclaim, "Surface creation failure!\n");
-
-/* #ifdef ENABLE_DEBUG_LAYERS
-	result = VK::createDebugReport(&_instance);
-	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
-	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
-#endif */
-
 	// Physical Device Enumeration
 
 	unsigned physDeviceCount = 0;
@@ -173,6 +144,35 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 	vkGetPhysicalDeviceProperties(_physicalDevices[0], &physDeviceProps);
 	VkPhysicalDeviceFeatures physDeviceFeats;
 	vkGetPhysicalDeviceFeatures(_physicalDevices[0], &physDeviceFeats);
+
+	// Surface Creation
+
+#ifdef _WIN32
+	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = NULL;
+	surfaceCreateInfo.hwnd = _platformCtx->window;
+	surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
+
+	result = vkCreateWin32SurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
+#elif defined(__linux__)
+	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = NULL;
+	surfaceCreateInfo.flags = 0;
+	surfaceCreateInfo.dpy = _platformCtx->display;
+	surfaceCreateInfo.window = _platformCtx->window;
+
+	result = vkCreateXlibSurfaceKHR(_instance, &surfaceCreateInfo, NULL, &_surface);
+#endif
+	if(result == VK_SUCCESS) logMessage("Surface creation sucess\n");
+	else return logMessage(MESSAGE_Exclaim, "Surface creation failure!\n");
+
+/* #ifdef ENABLE_DEBUG_LAYERS
+	result = VK::createDebugReport(&_instance);
+	if(result == VK_SUCCESS) logMessage("Debug report success!\n");
+	else return logMessage(MESSAGE_Exclaim, "Debug report failure!\n");
+#endif */
 
 	// Queue Family Enumeration
 

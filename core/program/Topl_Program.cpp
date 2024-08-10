@@ -7,12 +7,12 @@ bool Topl_Program::isCamera_mouse = false;
 bool Topl_Program::isInputEnabled = false;
 std::string Topl_Program::userInput = "";
 
-#ifdef RASTERON_H
-unsigned Topl_Program::pickerColor = NO_COLOR;
-unsigned Topl_Program::lastPickerColor = NO_COLOR;
+unsigned Topl_Program::pickerColor = 0;
+unsigned Topl_Program::lastPickerColor = 0;
 Vec3f Topl_Program::pickerCoord = { 0.0F, 0.0F, 0.0F };
 Vec3f Topl_Program::lastPickerCoord = { 0.0F, 0.0F, 0.0F };
 Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
+#ifdef RASTERON_H
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
 

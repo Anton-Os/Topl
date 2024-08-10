@@ -76,10 +76,10 @@ void Topl_Timeline::seqCallback(double m){
 
 template<typename T>
 void Topl_Timeline::addSequence(T var, std::pair<millisec_t, T> target){
-	if(std::is_same(var, Vec3f)) logMessage("vec3f sequence detected");
+	/* if(std::is_same(var, Vec3f)) logMessage("vec3f sequence detected");
 	if(std::is_same(var, float)) logMessage("float sequence detected");
 	if(std::is_same(var, double)) logMessage("double sequence detected");
-	if(std::is_same(var, int)) logMessage("int sequence detected");
+	if(std::is_same(var, int)) logMessage("int sequence detected"); */
 	// TODO: Implement body
 }
 

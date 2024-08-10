@@ -6,8 +6,8 @@
 
 #include "native_os_def.h"
 
-#include "IO.hpp";
-#include "Controls.hpp";
+#include "IO.hpp"
+#include "Controls.hpp"
 
 #define DISABLE_CURSOR_UPDATE 0
 #define ENABLE_CURSOR_UPDATE 1
@@ -27,6 +27,7 @@ struct Platform {
     void createWindow(unsigned width, unsigned height);
     bool handleEvents(); // handles platform specific events until end is reached
 
+    NATIVE_PLATFORM_CONTEXT* getContext(){ return &_context; }
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
     static unsigned getViewportWidth(NATIVE_WINDOW window);
     static unsigned getViewportHeight(NATIVE_WINDOW window);

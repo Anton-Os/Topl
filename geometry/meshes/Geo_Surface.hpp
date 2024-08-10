@@ -11,7 +11,7 @@ public:
 	float getSegments(){ return _shape.segments; }
 private:
 
-	Shape _shape;
+	Shape _shape = { 0.0F, 0 };
 	float _depth = DEFAULT_Z;
 };
 
