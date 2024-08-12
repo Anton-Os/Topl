@@ -43,7 +43,29 @@ struct DropTarget_Win32 : public IDropTarget {
 	HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override { std::cout << "Drop callback event" << std::endl; return S_OK; }
 } dropTarget;
 
-void openFileDialog_win32(bool isRead){
+LRESULT handleMenu_win32(WPARAM wParam){
+	switch(LOWORD(wParam)){
+		case IDM_NEW: 
+			Platform::openFileDialog(false); // Testing
+			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(false, "../"); // TODO: Include real path
+			logMessage("Menu command: New");
+			break;
+		case IDM_LOAD: 
+			Platform::openFileDialog(true); // Testing
+			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
+			logMessage("Menu command: Load\n"); 
+			break;
+		case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
+		case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
+		case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
+		default: break;
+		// case IDM_FI_CLOSE: logMessage("File close command"); break;
+	}
+
+	return 0;
+}
+
+void Platform::openFileDialog(bool isRead){
 	IFileOpenDialog *fileDialog_win32;	
 
 	if(SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&fileDialog_win32))))
@@ -64,33 +86,11 @@ void openFileDialog_win32(bool isRead){
 
 }
 
-LRESULT handleMenu_win32(WPARAM wParam){
-	switch(LOWORD(wParam)){
-		case IDM_NEW: 
-			openFileDialog_win32(false); // Testing
-			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(false, "../"); // TODO: Include real path
-			logMessage("Menu command: New");
-			break;
-		case IDM_LOAD: 
-			openFileDialog_win32(true); // Testing
-			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
-			logMessage("Menu command: Load\n"); 
-			break;
-		case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
-		case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
-		case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
-		default: break;
-		// case IDM_FI_CLOSE: logMessage("File close command"); break;
-	}
-
-	return 0;
-}
-
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
 	static bool isKeyReady = false;
 
 	switch (message) {
-	case (WM_COMMAND): { return handleMenu_win32(wParam); }
+	case(WM_COMMAND): { return handleMenu_win32(wParam); }
 	case(WM_CREATE): {}
 	case(WM_PAINT): { }
 	// case(WM_SIZE): { printf("Viewport resized to: %d, %d", Platform::getViewportWidth(window), Platform::getViewportHeight(window)); }
@@ -218,6 +218,8 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 }
 
 #elif defined(__linux__)
+
+void Platform::openFileDialog(bool isRead){ /* TODO: Handle opening file dialog */ }
 
 void Platform::createWindow(unsigned width, unsigned height){
 	XInitThreads();

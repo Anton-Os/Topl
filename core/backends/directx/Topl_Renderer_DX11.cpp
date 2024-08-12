@@ -126,7 +126,7 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	// swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferCount = 2; // bgfx dxgi.cpp line 398
-	swapChainDesc.OutputWindow = _platformCtx.window;
+	swapChainDesc.OutputWindow = _platformCtx->window;
 	swapChainDesc.Windowed = TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 

@@ -66,11 +66,7 @@ void FirstPerson_Demo::init(){
             default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, RAND_COLOR(), RAND_COLOR() }); break;
         }
         modelTexs[m].setImage(image);
-        for(unsigned n = 0; n < models[m].getActorCount(); n++){ 
-            models[m].getImgAt(n)->setImage(image);
-            std::string name = models[n].getGeoActor(n)->getName();
-            scene3D.addTexture(name, &modelTexs[m]);
-        }
+        for(unsigned n = 0; n < models[m].getActorCount(); n++) models[m].getImgAt(n)->setImage(image);
         scene3D.addTexture(std::to_string(m + 1), &modelTexs[m]);
         RASTERON_DEALLOC(image);
     }

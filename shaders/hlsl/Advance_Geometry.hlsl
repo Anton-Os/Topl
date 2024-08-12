@@ -1,3 +1,8 @@
+#define IGNORE_INPUTS
+#define INCLUDE_EXTBLOCK
+
+#include "Common.hlsl"
+
 struct VS_OUTPUT { float4 pos : SV_POSITION; }; // must match previous stage
 
 [maxvertexcount(3)]

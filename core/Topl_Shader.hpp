@@ -43,7 +43,7 @@ public:
 		_shaderFilePath = fileSrc;
 		_shaderFilePath = SHADERS_DIR + fileSrc;
 #ifdef _WIN32
-		std::replace(_shaderFileSrc.begin(), _shaderFileSrc.end(), '/', '\\');
+		std::replace(_shaderFilePath.begin(), _shaderFilePath.end(), '/', '\\');
 #endif
 	}
 	enum SHDR_Type getType() const { return _shaderType; }

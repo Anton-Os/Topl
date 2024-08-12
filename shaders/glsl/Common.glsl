@@ -16,13 +16,12 @@ layout(std140, binding = 1) uniform SceneBlock{
 };
 #endif
 
-#ifdef INCLUDE_PERFBLOCK
+#ifdef INCLUDE_EXTBLOCK
 
 #define CONTROL_POINT_COUNT 12
-// #define MESH_POINT_COUNT 1024
 #define INSTANCE_TFORMS_COUNT 256
 
-layout(std140, binding = 2) uniform PerfBlock {
+layout(std140, binding = 2) uniform ExtBlock {
 	vec3 ctrlPoints[CONTROL_POINT_COUNT]; // control for tesselation
 	vec3 instTforms[INSTANCE_TFORMS_COUNT][3]; // transforms per instance
 }

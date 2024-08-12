@@ -1,9 +1,10 @@
+#include "Advance_Shader.hpp"
 #include "Geo_Construct.hpp"
 #include "meshes/Geo_Surface.hpp"
 
 #include "program/Topl_Program.hpp"
 
-#define KALEIDOSCOPE_Z -0.5F
+#define KALEIDOSCOPE_Z 0.5F
 #define KALEIDOSCOPE_SLICES 256 / 4
 
 struct Kaleidoscope_Construct : public Geo_Construct {
@@ -47,9 +48,11 @@ private:
 
 struct Kaleidoscope_Demo : public Topl_Program {
     Kaleidoscope_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Kaleidoscope", backend){
-        // construct1.scale({ 1.25F, 1.25F, 1.25F });
-        // construct2.shift({ 0.75F, 0.0F, 0.0F });
-        // construct3.shift({ -0.75F, 0.0F, 0.0F });
+        /* vertexShader = (backend == BACKEND_GL4)? Flat_VertexShader_GL4() : Flat_VertexShader_DX11();
+        pixelShader = (backend == BACKEND_GL4)? Flat_PixelShader_GL4() : Flat_PixelShader_DX11();
+        tessCtrlShader = (backend == BACKEND_GL4)? Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader_DX11();
+        tessEvalShader = (backend == BACKEND_GL4)? Advance_TessEvalShader_GL4() : Advance_TessEvalShader_DX11(); */
+        // tessPipeline = Topl_Factory::genPipeline(backend, &_flatVShader, &_flatPShader, &tessCtrlShader, &tessEvalShader, nullptr);
     }
 
     void init() override;
@@ -77,4 +80,9 @@ struct Kaleidoscope_Demo : public Topl_Program {
 private:
     Topl_Scene scene;
     // Topl_Scene targetScene;
+
+    Flat_VertexShader vertexShader; Flat_PixelShader pixelShader;
+    Advance_TessCtrlShader tessCtrlShader;
+    Advance_TessEvalShader tessEvalShader;
+    Topl_Pipeline* tessPipeline;
 } *_DEMO;

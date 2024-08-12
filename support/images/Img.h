@@ -34,6 +34,7 @@ struct Img_Base : public TaggedImg {
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
+		printf("Loading image for %s", filePath.c_str());
         image = loadImgOp(filePath.c_str()); // TODO: This may screw up image loading
 		tag = &image->name;
     }

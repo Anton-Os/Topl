@@ -15,13 +15,13 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 }
 #endif
 
-#ifdef INCLUDE_PERFBLOCK
+#ifdef INCLUDE_EXTBLOCK
 
 #define CONTROL_POINT_COUNT 12
 // #define MESH_POINT_COUNT 1024
 #define INSTANCE_TFORMS_COUNT 256
 
-cbuffer CONST_PERF_BLOCK : register(b2) {
+cbuffer CONST_EXT_BLOCK : register(b2) {
 	float3 ctrlPoints[CONTROL_POINT_COUNT]; // controls for tesselation
 	float3 instTforms[INSTANCE_TFORMS_COUNT][3]; // transforms per instance
 }

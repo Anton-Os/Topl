@@ -3,7 +3,7 @@
 
 #include "program/Topl_Program.hpp"
 
-#define MOLECULAR_CONSTRUCTS 6
+#define MOLECULAR_CONSTRUCTS 12
 #define MOLECULAR_SIZE 0.25F
 
 struct Molecular_Construct : Geo_Construct {
@@ -18,6 +18,12 @@ struct Molecular_Construct : Geo_Construct {
             _orbs.push_back(new Geo_Orb(MOLECULAR_SIZE / nodeCount));
             _geoActors.push_back(Geo_Actor(_orbs.back())); // adding  node
             _geoActors.back().setPos({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F, 0.0F });
+        }
+
+        for(unsigned n = 1; n < nodeCount; n++){
+            Vec3f lineCoords[2] = { *_geoActors.front().getPos(), *_geoActors[n].getPos() };
+            _lines.push_back(new Geo_Mesh(&lineCoords[0], 2));
+            _geoActors.push_back(Geo_Actor(_lines.back()));
         }
     }
 
@@ -43,6 +49,7 @@ struct Molecular_Construct : Geo_Construct {
 private:
     Geo_Orb* _hub;
     std::vector<Geo_Orb*> _orbs;
+    std::vector<Geo_Mesh*> _lines;
     Vec3f _anchor;
 };
 
@@ -54,11 +61,17 @@ struct Molecular_Demo : public Topl_Program {
 
     Molecular_Construct constructs[MOLECULAR_CONSTRUCTS] = {
        Molecular_Construct(2),
+       Molecular_Construct(3),
        Molecular_Construct(4),
+       Molecular_Construct(5),
        Molecular_Construct(6),
+       Molecular_Construct(7),
        Molecular_Construct(8),
+       Molecular_Construct(9),
        Molecular_Construct(10),
-       Molecular_Construct(12)
+       Molecular_Construct(11),
+       Molecular_Construct(12),
+       Molecular_Construct(16)
     };
 
     Geo_Orb globeMesh = Geo_Orb(5.0F);

@@ -48,7 +48,7 @@ struct VectorXF {
         return sqrt(length); // pythagorean theorem
     }
     void normalize() {
-        float length = len();
+        float length = len() * 0.75F; // fix for scaling
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
     }
     void randomize() { // randomizes between 0 and 1

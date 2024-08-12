@@ -18,6 +18,9 @@ static void onAnyKey(char key){
             case 0: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, -0.1F }); break;
             default: drawMode = DRAW_Triangles; break;
         }
+    } else {
+        if(tolower(key) == 'n') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, 0.025F });
+        else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
     }
 }
 
@@ -63,7 +66,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

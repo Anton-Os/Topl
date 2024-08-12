@@ -2,7 +2,7 @@
 
 void Molecular_Demo::init(){
     for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
-        constructs[c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, ((1.0F / MOLECULAR_CONSTRUCTS) * 4 * c ) - (MOLECULAR_CONSTRUCTS / 2), 0.0F }));
+        constructs[c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F, 0.0F }));
         constructs[c].configure(&scene);
         if(c < MOLECULAR_CONSTRUCTS - 1){
             construct_links[c].preset(constructs[c].getOrigin(), constructs[c + 1].getOrigin());
@@ -34,16 +34,24 @@ void Molecular_Demo::loop(double frameTime){
     scene.resolvePhysics();
 
     // _beamsVShader.setMode(-3);
-    _flatVShader.setMode(8);
+    /* _flatVShader.setMode(8);
     _renderer->setDrawMode(DRAW_Points);
     _renderer->setPipeline(_flatPipeline);
     _renderer->updateScene(&globeScene);
-    _renderer->drawScene(&globeScene);
+    _renderer->drawScene(&globeScene); */
 
-    _flatVShader.setMode(7);// _effectVShader.setMode(EFFECT_MODE_FRACTALS);
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-    _renderer->setDrawMode(DRAW_Triangles);
+    _flatVShader.setMode(7);
     _renderer->updateScene(&scene);
+    _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->drawScene(&scene);
+    _flatVShader.setMode(5);
+    _renderer->updateScene(&scene);
+    _renderer->setDrawMode(DRAW_Lines);
+    _renderer->drawScene(&scene);
+    _flatVShader.setMode(6);
+    _renderer->updateScene(&scene);
+    _renderer->setDrawMode(DRAW_Points);
     _renderer->drawScene(&scene);
 }
 

@@ -1,5 +1,10 @@
 #version 440
 
+#define IGNORE_INPUTS
+#define INCLUDE_EXTBLOCK
+
+#include "Common.glsl"
+
 // Values
 
 layout(triangles, equal_spacing, ccw) in;

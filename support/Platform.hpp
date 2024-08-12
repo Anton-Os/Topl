@@ -33,6 +33,7 @@ struct Platform {
     static unsigned getViewportHeight(NATIVE_WINDOW window);
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
+    static void openFileDialog(bool isRead); // opens file dialog
 
     static Input_KeyControl keyControl;
     static Input_MouseControl mouseControl;

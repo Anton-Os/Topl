@@ -1,3 +1,4 @@
+
 #include "Sandbox.hpp"
 
 unsigned short Sandbox_Demo::mode = 0;
@@ -32,6 +33,7 @@ void onSculptPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_SCULPT;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        if(Sandbox_Demo::option == SANDBOX_PANES - 1) Platform::openFileDialog(true);
     }
 }
 
@@ -40,6 +42,7 @@ void onPaintPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_PAINT;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        if(Sandbox_Demo::option == SANDBOX_PANES - 1) Platform::openFileDialog(true);
     }
 }
 

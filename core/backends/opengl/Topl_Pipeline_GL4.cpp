@@ -71,10 +71,10 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
 	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
 	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
-		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING);
 	}
 }
 
@@ -98,7 +98,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Geometry Shader
 
 	if (geomShader != nullptr) { // optional stage
-		std::string geomShaderSrc = readFile(geomShader->getFilePath().c_str());
+		std::string geomShaderSrc = geomShader->getFileSource();
 		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
 		if(pipeline->geomShader == 0) pipeline->isReady = false;
 	}
@@ -132,10 +132,10 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
 	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
 	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
-		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_INDEX, SCENE_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
+		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING);
 	}
 }
 
