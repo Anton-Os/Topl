@@ -93,6 +93,11 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 	}
 }
 
+Geo_Iter3D::Geo_Iter3D(Shape shape, float depth, unsigned short iters) : Geo_Volume(shape, depth){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
+}
+
 Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : Geo_Mesh(pointCount * 2, (pointCount * 3) * 3){
 	_depth = depth;
 
@@ -151,4 +156,9 @@ Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : 
 		v++;
 		i += 6;
 	}
+}
+
+Geo_Iter3D::Geo_Iter3D(Vec3f* points, unsigned short pointCount, float depth, unsigned short iters) : Geo_Volume(points, pointCount, depth){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
 }

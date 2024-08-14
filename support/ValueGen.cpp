@@ -42,7 +42,7 @@ Projection::Projection(PROJECTION_Type p, float l, float r, float b, float t, fl
 Mat4x4 Projection::genProjMatrix(){
 	Mat4x4 projMatrix = MAT_4x4_IDENTITY;
 
-	if(type == PROJECTION_Ortho){
+	if(type == PROJECTION_Orthographic){
 		nearPlane *= PPROJ_Z; farPlane *= PPROJ_Z;
 		
 		projMatrix = Mat4x4({ // From OpenGL SuperBible starting page 89
@@ -62,14 +62,20 @@ Mat4x4 Projection::genProjMatrix(){
 			0.0f, 0.0f, -((farPlane + nearPlane) / (farPlane - nearPlane)), -((2.0f * nearPlane * farPlane) / (farPlane - nearPlane)),
 			0.0f, 0.0f, -1.0f, 0.0f
 		});
-	} else {
+	} else if(type == PROJECTION_Experimental)
 		projMatrix = Mat4x4({
-			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
+			(nearPlane - farPlane) / (right - left), 0.0f, 0.0f, 0.0f,
+			0.0f, (nearPlane - farPlane) / (top - bottom), 0.0f, 0.0f,
+			0.0f, 0.0f, farPlane - nearPlane,  0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f
 		});
-	}
+	else projMatrix = Mat4x4({
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	});
+
 
 	return projMatrix;
 }

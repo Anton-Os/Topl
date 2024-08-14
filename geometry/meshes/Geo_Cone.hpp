@@ -39,5 +39,12 @@ struct Geo_CircleCone : public Geo_Cone { // Cone
 	Geo_CircleCone(float radius, Vec3f apex) : Geo_Cone({ radius, CIRCLE_SEGMENTS }, apex) {}
 };
 
+struct Geo_IterCone : public Geo_Cone { // expands base into repeating portions
+	Geo_IterCone(Shape shape, Vec3f apex, unsigned short iters);
+	Geo_IterCone(Vec3f* points, unsigned short pointCount, Vec3f apex, unsigned short iters);
+
+	unsigned short _iters;
+};
+
 #define GEO_CONIC_H
 #endif

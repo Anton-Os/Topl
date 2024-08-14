@@ -34,6 +34,11 @@ Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, sh
 	_indices[_indices.size() - 1] = 1;
 }
 
+Geo_Iter2D::Geo_Iter2D(Shape shape, float z, unsigned short iters) : Geo_Surface(shape, z){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
+}
+
 Geo_Surface::Geo_Surface(Vec3f* points, unsigned short pointCount) : Geo_Mesh(pointCount, (pointCount - 2) * 3){
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
@@ -58,4 +63,9 @@ Geo_Surface::Geo_Surface(Vec3f* points, unsigned short pointCount) : Geo_Mesh(po
 
 		i += 3;
 	}
+}
+
+Geo_Iter2D::Geo_Iter2D(Vec3f* points, unsigned short pointCount, unsigned short iters) : Geo_Surface(points, pointCount){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
 }

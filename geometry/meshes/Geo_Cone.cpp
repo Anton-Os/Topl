@@ -57,6 +57,11 @@ Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape
 	}
 }
 
+Geo_IterCone::Geo_IterCone(Shape shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
+}
+
 Geo_Cone::Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
 	_apex = apex;
 	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
@@ -95,4 +100,9 @@ Geo_Cone::Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex) : Geo_M
 	}
 
 	// TODO: Indexing connecting to apex
+}
+
+Geo_IterCone::Geo_IterCone(Vec3f* points, unsigned short pointCount, Vec3f apex, unsigned short iters) : Geo_Cone(points, pointCount, apex){
+	_iters = iters;
+	// TODO: Add iterated vertices and indices
 }

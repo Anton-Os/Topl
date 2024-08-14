@@ -13,6 +13,10 @@ static bool isModal = false;
 
 void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
+    else if(tolower(key) == 't'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'y'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'u'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'i'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
 }
 
 void onTimePanePress(MOUSE_Event evemt){

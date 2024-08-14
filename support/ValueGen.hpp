@@ -24,7 +24,7 @@ void appendDataToBytes(bytes_cptr data, size_t dataSize, blockBytes_t* bytes); /
 
 enum PROJECTION_Type {
     PROJECTION_None,
-    PROJECTION_Ortho,
+    PROJECTION_Orthographic,
     PROJECTION_Perspective,
     PROJECTION_Hyperbolic,
     PROJECTION_Experimental,

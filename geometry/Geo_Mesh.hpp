@@ -47,7 +47,6 @@ public:
 	
 	Geo_Mesh(Geo_Mesh& refMesh){
 		if(refMesh.getVertexCount() == 0) std::cerr << "Mesh with no vertices detected" << std::endl;
-		// else std::cout << "Copy constructor invoked" << std::endl;
 		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
 		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
 	}
@@ -82,7 +81,7 @@ protected:
 	Vec3f getTexCoord(Vec3f vertex){
 		Vec3f normVec = vertex;
 		normVec.normalize();
-		return Vec3f({ (normVec[0] + 1.0F) / 2.0F, 1.0F - ((normVec[1] + 1.0F) / 2.0F), 0.0F });
+		return Vec3f({ (normVec[0] + 1.0F) / 2.0F, 1.0F - ((normVec[1] + 1.0F) / 2.0F), (normVec[2] + 1.0F) / 2.0F });
 	}
 
 	std::vector<Geo_Vertex> _vertices;

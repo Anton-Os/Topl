@@ -9,7 +9,7 @@ void pivotCamY2(){ Topl_Program::cameraObj.updateRot({ 0.0F, -0.01F, 0.0F }); }
 void pivotCamZ1(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, 0.01F }); }
 void pivotCamZ2(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, -0.01F }); }
 void projCamId(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-void projCamOrtho(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0F).genProjMatrix()); }
+void projCamOrtho(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
 void projCamPerspective(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
 void projCamExperimental(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
 void movePuppetsRight(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] += 0.1F; }
@@ -19,7 +19,7 @@ void movePuppetsDown(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].dat
 
 /* void projCallback(){
     static unsigned invocation = 0;
-    Topl_Program::cameraObj.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Ortho : PROJECTION_Perspective, 1.0F).genProjMatrix());
+    Topl_Program::cameraObj.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Orthographic : PROJECTION_Perspective, 1.0F).genProjMatrix());
     invocation++;
 } */
 
@@ -40,7 +40,7 @@ void FirstPerson_Demo::init(){
 
     Topl_Program::cameraObj.setZoom(0.5F);
     Topl_Program::cameraObj.setPos({ 0.0F, -0.5F, 10.0F });
-    // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Ortho, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
+    // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
     projCamPerspective();
 
@@ -59,11 +59,11 @@ void FirstPerson_Demo::init(){
 
         Rasteron_Image* image;
         switch(m){
-            case 0: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF8822EE, 0xFF2288AA }, 4); break;
-            case 1: image = noiseImgOp_low({ 1024, 1024 }, { 8, 8, 0xFF00EE55, 0xFF555533 }, 4); break;
-            case 2: image = noiseImgOp_hi({ 1024, 1024 }, { 8, 8, 0xFF44AACC, 0xFFAA44AA }, 4); break;
-            case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFFBBBB88, 0xFF880044 }, 4); break;
-            default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, RAND_COLOR(), RAND_COLOR() }); break;
+            case 0: image = noiseImgOp_scratch({ 1024, 1024 }, { 16, 16, 0xFF00EE55, 0xFF555533 }); break;
+            case 1: image = noiseImgOp_tiled({ 1024, 1024 }, { 16, 16, 0xFF44AACC, 0xFFAA44AA }); break;
+            case 2: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF5500EE, 0xFF22AAAA }, 4); break;
+            case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFF00FF00, 0xFF880088 }, 4); break;
+            default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, 0xFFD9A233, 0xFFEE7392 }); break;
         }
         modelTexs[m].setImage(image);
         for(unsigned n = 0; n < models[m].getActorCount(); n++) models[m].getImgAt(n)->setImage(image);
@@ -100,7 +100,7 @@ void FirstPerson_Demo::loop(double frameTime){
             // scene2D.addForce(puppet2.getGeoActor(rand() % 6)->getName(), puppet2_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
             // scene2D.addForce(puppet3.getGeoActor(rand() % 6)->getName(), puppet3_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
         }
-        scene2D.resolvePhysics();
+        if(_renderer->getFrameCount() > 60) scene2D.resolvePhysics();
 #endif
         _texVShader.setMode(0);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
