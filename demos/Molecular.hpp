@@ -38,12 +38,14 @@ struct Molecular_Construct : Geo_Construct {
         // scene->addAnchor(&_links[0], getPrefix() + "hub", &_anchor);
         for(unsigned m = 1; m < _orbs.size() + 1; m++) {
             scene->addGeometry(getPrefix() + "node" + std::to_string(m), &_geoActors[m]);
-            // _physActors[m] = Phys_Actor();
             _physActors[m].addForce({ 10.0F, 10.0F, 10.0F });
             scene->addPhysics(getPrefix() + "node" + std::to_string(m), &_physActors[m]);
             _links[m - 1] = Phys_Connector(*_geoActors[m].getPos(), *_geoActors.front().getPos());
             scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub");
         }
+
+        for(unsigned l = _orbs.size() + 1; l < _geoActors.size(); l++)
+            scene->addGeometry(getPrefix() + "line" + std::to_string(l), &_geoActors[l]);
     }
 
 private:

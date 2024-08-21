@@ -31,7 +31,7 @@ void Molecular_Demo::loop(double frameTime){
             constructs[constructIndex].getGeoActor(m)->updatePos({ 0.0F, 0.1F, 0.0F });
         }
     }
-    scene.resolvePhysics();
+    // scene.resolvePhysics();
 
     // _beamsVShader.setMode(-3);
     /* _flatVShader.setMode(8);
@@ -41,18 +41,18 @@ void Molecular_Demo::loop(double frameTime){
     _renderer->drawScene(&globeScene); */
 
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-    _flatVShader.setMode(7);
-    _renderer->updateScene(&scene);
-    _renderer->setDrawMode(DRAW_Triangles);
-    _renderer->drawScene(&scene);
     _flatVShader.setMode(5);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
-    _flatVShader.setMode(6);
+    _flatVShader.setMode(7);
+    _renderer->updateScene(&scene);
+    _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->drawScene(&scene);
+    /* _flatVShader.setMode(6);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Points);
-    _renderer->drawScene(&scene);
+    _renderer->drawScene(&scene); */
 }
 
 int main(int argc, char** argv) {
