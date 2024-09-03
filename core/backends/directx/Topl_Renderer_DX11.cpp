@@ -247,7 +247,7 @@ void Topl_Renderer_DX11::swapBuffers(double frameTime) { _swapChain->Present(0, 
 
 void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
-		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_shaderBlockData);
+		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_actorBlockData);
 		_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
 	} else {
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
@@ -255,9 +255,9 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 
 		ID3D11Buffer* renderBlockBuff = nullptr;
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
-			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_actorBlockData);
 		else {
-			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_shaderBlockData);
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_actorBlockData);
 			_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
 		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
@@ -286,12 +286,12 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 }
 
 void Topl_Renderer_DX11::update(const Geo_Actor* actor){
-	if(actor == SCENE_RENDERID) DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_shaderBlockData);
+	if(actor == SCENE_RENDERID) DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_actorBlockData);
 	else {
 		unsigned long renderID = getRenderID(actor);
 
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
-			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_shaderBlockData);
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_actorBlockData);
 	}
 }
 

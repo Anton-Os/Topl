@@ -13,10 +13,10 @@ struct Flat_VertexShader : public Topl_EntryShader {
 	Flat_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Flat_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		Vec4f color = getColor(actor);
 		alignDataToBytes((uint8_t*)&color, sizeof(Vec4f), NO_PADDING, bytes);
-		Topl_EntryShader::genRenderBlock(actor, bytes);
+		Topl_EntryShader::genActorBlock(actor, bytes);
 	}
 
 	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {

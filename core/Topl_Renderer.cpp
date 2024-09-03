@@ -19,8 +19,8 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
 	// Build Scene  
-	_shaderBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+	_actorBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_actorBlockData); 
 	build(SCENE_RENDERID);
 
 	// Build Render Objects
@@ -36,8 +36,10 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 		} // else logMessage(MESSAGE_Exclaim, "Override required!");
 
-		_shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &_shaderBlockData);
+		_sceneBlockData.clear();
+		_entryShader->genActorBlock(actor, &_sceneBlockData);
+		// _meshBlockData.clear();
+		// _entryShader->genMeshBlock(mesh, &_meshBlockData);
 		build(actor);
 	}
 
@@ -51,16 +53,17 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT]) return false; // failure
 
 	// Update Scene 
-	_shaderBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData); 
+	_sceneBlockData.clear();
+	_entryShader->genSceneBlock(scene, _activeCamera, &_sceneBlockData); 
 	update(SCENE_RENDERID);
 
 	// Update Render Objects
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
-		_shaderBlockData.clear();
-		_entryShader->genRenderBlock(actor, &_shaderBlockData);
-
+		_actorBlockData.clear();
+		_entryShader->genActorBlock(actor, &_actorBlockData); // TODO: Include mesh updates
+		// _meshBlockData.clear();
+		// _entryShader->genMeshBlock(mesh, &_meshBlockData);
 		update(actor);
 	}
 

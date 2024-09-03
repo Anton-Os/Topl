@@ -133,7 +133,7 @@ protected:
     std::bitset<4> _flags; // tracks important states within renderer
 	NATIVE_PLATFORM_CONTEXT* _platformCtx; // system specific context
     entry_shader_cptr _entryShader; // entry shader specifies vertex layout and uniforms passed to shader
-    blockBytes_t _shaderBlockData; // shader block data contains bytes passed to GPU
+    blockBytes_t _sceneBlockData, _actorBlockData, _meshBlockData; // shader block data contains bytes passed to GPU
     enum DRAW_Mode _drawMode = DRAW_Triangles; // mode used to draw standard scene objects
     enum TEX_Mode _texMode = TEX_Wrap; // switching texturing mode switches way textures are drawn
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation

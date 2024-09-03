@@ -23,13 +23,13 @@ void Molecular_Demo::loop(double frameTime){
             constructs[constructIndex].getPrefix() + "hub", 
             Vec3f({ ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, 0.0F })
         ); */
-        for(unsigned m = 1; m < constructs[constructIndex].getActorCount(); m++){
+        /* for(unsigned m = 1; m < constructs[constructIndex].getActorCount(); m++){
             scene.addForce(
                 constructs[constructIndex].getPrefix() + "node" + std::to_string(m),
                 Vec3f({ ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, 0.0F })
             );
             constructs[constructIndex].getGeoActor(m)->updatePos({ 0.0F, 0.1F, 0.0F });
-        }
+        } */
     }
     // scene.resolvePhysics();
 

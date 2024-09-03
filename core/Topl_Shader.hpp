@@ -108,7 +108,7 @@ public:
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getProjMatrix() : &_defaultMat), sizeof(Mat4x4), 0, bytes);
 	}
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
+	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc();
 		// TODO: Else trigger function to reset actor dependent data
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
@@ -118,6 +118,13 @@ public:
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->getVertexCount() : &_defaultScalar), sizeof(unsigned), bytes); // vertex count
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->get0rigin() : &_defaultVec), sizeof(Vec3f), bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &actor->getMesh()->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
+	}
+
+	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? mesh->getVertexCount() : 1), sizeof(unsigned), 0, bytes);
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? mesh->instanceCount : 1), sizeof(unsigned), 0, bytes);
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? 1 : 1), sizeof(unsigned), 0, bytes); // TODO: Refine this
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? 1 : 1), sizeof(unsigned), 0, bytes); // TODO: Refine this
 	}
 
 	virtual void reset(){ _mode = DEFAULT_SHADER_MODE; }

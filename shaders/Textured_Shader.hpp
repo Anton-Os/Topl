@@ -18,8 +18,8 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	Textured_VertexShader() : Topl_EntryShader(){}
 	Textured_VertexShader(std::string name) : Topl_EntryShader(name) {  }
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		Topl_EntryShader::genRenderBlock(actor, bytes);
+	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+		Topl_EntryShader::genActorBlock(actor, bytes);
 		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 	}
 

@@ -23,8 +23,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		sendTracerData(bytes);
 	}
 
-	virtual void genRenderBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		Topl_EntryShader::genRenderBlock(actor, bytes);
+	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+		Topl_EntryShader::genActorBlock(actor, bytes);
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }

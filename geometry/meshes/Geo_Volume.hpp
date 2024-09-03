@@ -39,9 +39,9 @@ struct Geo_Circle3D : public Geo_Volume {
 	Geo_Circle3D(float radius, float depth) : Geo_Volume({ radius, CIRCLE_SEGMENTS }, depth) {}
 };
 
-struct Geo_Iter3D : public Geo_Volume { // expands depthwise into segments
-	Geo_Iter3D(Shape shape, float depth, unsigned short iters);
-	Geo_Iter3D(Vec3f* points, unsigned short pointCount, float depth, unsigned short iters);
+struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
+	Geo_Ext3D(Shape shape, float depth, unsigned short iters);
+	Geo_Ext3D(Vec3f* points, unsigned short pointCount, float depth, unsigned short iters);
 
 	unsigned short _iters;
 };

@@ -39,9 +39,9 @@ struct Geo_Circle2D : public Geo_Surface {
 	Geo_Circle2D(float radius, float z) : Geo_Surface({ radius, CIRCLE_SEGMENTS }, z) {}
 };
 
-struct Geo_Iter2D : public Geo_Surface { // expands surface into subdivided portions
-	Geo_Iter2D(Shape shape, float z, unsigned short iters);
-	Geo_Iter2D(Vec3f* points, unsigned short pointCount, unsigned short iters);
+struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided portions
+	Geo_Ext2D(Shape shape, float z, unsigned short iters);
+	Geo_Ext2D(Vec3f* points, unsigned short pointCount, unsigned short iters);
 
 	unsigned short _iters;
 };
