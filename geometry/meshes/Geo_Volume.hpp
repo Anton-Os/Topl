@@ -8,7 +8,7 @@ public:
 	Geo_Volume(Vec3f* points, unsigned short pointCount, float depth);
 
 	float getRadius(){ return _shape.radius; }
-	float getSegments(){ return _shape.segments; }
+	unsigned short getSegments(){ return _shape.segments; }
 	float getDepth(){ return _depth; }
 private:
 	Shape _shape;

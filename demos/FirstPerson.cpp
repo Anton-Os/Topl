@@ -93,6 +93,9 @@ void FirstPerson_Demo::init(){
 }
 
 void FirstPerson_Demo::loop(double frameTime){
+    scene2D.camera = Topl_Program::cameraObj;
+    scene3D.camera = Topl_Program::cameraObj;
+
     {
 #ifdef TOPL_ENABLE_PHYSICS
         if(_renderer->getFrameCount() % 10 == 0 && Topl_Program::timeline.persist_ticker.getAbsSecs() > 10.0){
@@ -128,6 +131,7 @@ void FirstPerson_Demo::loop(double frameTime){
         _texVShader.setMode(0);
         _renderer->setDrawMode(DRAW_Triangles);
 
+        _texVShader.setTexScroll({ 0.0F, _renderer->getFrameCount() * 0.01F, 0.0F });
         _renderer->updateScene(&scene3D);
         _renderer->drawScene(&scene3D);
         /* _renderer->draw(&_DEMO->floor);
@@ -139,6 +143,8 @@ void FirstPerson_Demo::loop(double frameTime){
                 _renderer->updateScene(&scene3D);
                 _renderer->draw(_DEMO->models[m].getGeoActor(s));
             }
+
+        _texVShader.setTexScroll({ 0.0F, 0.0F, 0.0F });
     }
 }
 

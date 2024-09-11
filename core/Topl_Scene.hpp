@@ -102,6 +102,7 @@ public:
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
 #endif
+	Topl_Camera camera;
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	// std::vector<const Topl_Light*> _lights; // stores all light sources

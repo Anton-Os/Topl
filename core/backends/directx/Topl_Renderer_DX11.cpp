@@ -247,7 +247,7 @@ void Topl_Renderer_DX11::swapBuffers(double frameTime) { _swapChain->Present(0, 
 
 void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
-		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_actorBlockData);
+		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_sceneBlockData);
 		_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
 	} else {
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
@@ -286,7 +286,7 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 }
 
 void Topl_Renderer_DX11::update(const Geo_Actor* actor){
-	if(actor == SCENE_RENDERID) DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_actorBlockData);
+	if(actor == SCENE_RENDERID) DX11::createBlockBuff(&_device, &_blockBufferMap.at(SCENE_RENDERID).buffer, &_sceneBlockData);
 	else {
 		unsigned long renderID = getRenderID(actor);
 

@@ -57,11 +57,12 @@ uvec4 getModes(uint mode){
 }
 
 vec4 getRandColor(vec4 seedColor){
-	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 1.0);
+	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 56.34);
 
 	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);
 	while(randColor.y > 1.0) randColor.g -= pow(randColor.y, 0.5);
 	while(randColor.z > 1.0) randColor.b -= pow(randColor.z, 0.5);
+	while(randColor.a > 1.0) randColor.a -= pow(randColor.a, 0.5);
 
 	return randColor;
 }

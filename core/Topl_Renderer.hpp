@@ -131,6 +131,7 @@ protected:
     std::map<const TaggedImg*, std::string> _texTagMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
+    std::thread _threads[4]; // worker threads for allowing concurrent operations
 	NATIVE_PLATFORM_CONTEXT* _platformCtx; // system specific context
     entry_shader_cptr _entryShader; // entry shader specifies vertex layout and uniforms passed to shader
     blockBytes_t _sceneBlockData, _actorBlockData, _meshBlockData; // shader block data contains bytes passed to GPU

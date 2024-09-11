@@ -20,7 +20,7 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 
 	// Build Scene  
 	_actorBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &_actorBlockData); 
+	_entryShader->genSceneBlock(scene, &scene->camera, &_actorBlockData); 
 	build(SCENE_RENDERID);
 
 	// Build Render Objects
@@ -43,6 +43,8 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 		build(actor);
 	}
 
+	// _threads[0] = std::thread(&Topl_Renderer::buildScene, scene);
+
     if(scene->getIsTextured()) texturizeScene(scene);
 	return _flags[BUILD_BIT];
 }
@@ -54,7 +56,7 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 
 	// Update Scene 
 	_sceneBlockData.clear();
-	_entryShader->genSceneBlock(scene, _activeCamera, &_sceneBlockData); 
+	_entryShader->genSceneBlock(scene, &scene->camera, &_sceneBlockData); 
 	update(SCENE_RENDERID);
 
 	// Update Render Objects
@@ -67,6 +69,8 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 		update(actor);
 	}
 
+	// _threads[1] = std::thread(&Topl_Renderer::updateScene, scene);
+
     // update(scene);
     return _flags[BUILD_BIT];
 }
@@ -77,6 +81,8 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 } */
 
 bool Topl_Renderer::drawScene(const Topl_Scene* scene){
+	// TODO: Join worker threads?
+
 	if(!_flags[PIPELINE_BIT]) logMessage(MESSAGE_Exclaim, "Pipeline not set for draw call!");
     if(!_flags[BUILD_BIT]) logMessage(MESSAGE_Exclaim, "Not built for draw call!");
 	if(_renderIDs == 0) logMessage(MESSAGE_Exclaim, "renderIDs is 0!");
@@ -85,7 +91,6 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 	else _flags[DRAWN_BIT] = false;
 
 	setViewport(&_activeViewport);
-	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
 
     draw(SCENE_RENDERID); // render is scene block data
 	if(scene != ALL_SCENES){ // Scene Targets
@@ -102,10 +107,14 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 			for (unsigned r = _renderIDs; r > 0; r--) draw(_renderObjMap[r]);
 	}
 
+	// _threads[3] = std::thread(&Topl_Renderer::drawScene, scene);
+
     return true;
 }
 
 void Topl_Renderer::present() {
+	// TODO: Join draw thread?
+
 	static Timer_Persist ticker;
 	_frameIDs++;
 	if (!_flags[DRAWN_BIT]) { 
@@ -143,6 +152,8 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for tags!
 			} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 		}
+
+		// _threads[2] = std::thread(&Topl_Renderer::updateScene, scene);
 	}
 }
 

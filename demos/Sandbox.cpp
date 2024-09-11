@@ -224,6 +224,7 @@ void Sandbox_Demo::init(){
 
 void Sandbox_Demo::loop(double frameTime){
     updateOverlay();
+    mainScene.camera = Sandbox_Demo::cameraObj;
     
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
         _renderer->setCamera(&fixedCamera);

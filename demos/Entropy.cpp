@@ -40,15 +40,17 @@ void Entropy_Demo::init(){
         physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
         scene1.addPhysics("actor" + std::to_string(a), &physActors[a]);
 #endif
-        scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
-        scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]);
+        /* scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
+        scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]); */
     }
     _renderer->buildScene(&scene1);
-    _renderer->buildScene(&scene2);
-    _renderer->buildScene(&scene3);
+    // _renderer->buildScene(&scene2);
+    // _renderer->buildScene(&scene3);
 }
 
 void Entropy_Demo::loop(double frameTime){
+    scene1.camera = Topl_Program::cameraObj;
+
     _beamsVShader.setMode((shaderMode + lightMode) * -1);
     _effectVShader.setMode(-1);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
@@ -73,12 +75,12 @@ void Entropy_Demo::loop(double frameTime){
         actors[a].updateSize({ ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), 0.0 });
         actors[a].updateRot({((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F });
 #endif
-        tessActors[a].setPos(*actors[a].getPos());
+        /* tessActors[a].setPos(*actors[a].getPos());
         tessActors[a].setRot(*actors[a].getRot());
         tessActors[a].setSize(*actors[a].getSize());
         duplexActors[a].setPos(*actors[a].getPos());
         duplexActors[a].setRot(*actors[a].getRot());
-        duplexActors[a].setSize(*actors[a].getSize());
+        duplexActors[a].setSize(*actors[a].getSize()); */
     }
 
     // _flatVShader.setMode(flatMode);

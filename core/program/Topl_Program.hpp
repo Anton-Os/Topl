@@ -80,6 +80,13 @@ protected:
 
 	void cleanup();
 
+	void build_thread(const Topl_Scene* scene);
+	void update_thread(const Topl_Scene* scene);
+	void texturize_thread(const Topl_Scene* scene);
+	void draw_thread(const Topl_Scene* scene);
+
+	std::thread _threads[4]; // worker threads for allowing concurrent operations
+
 	// Rendering
 	const enum BACKEND_Target _backend;
 	Platform* _platform = nullptr;

@@ -96,12 +96,28 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 Geo_Ext3D::Geo_Ext3D(Shape shape, float depth, unsigned short iters) : Geo_Volume(shape, depth){
 	_iters = iters;
 
-	for(unsigned i = 0; i < iters; i++){
-		for(unsigned s = 0; s < shape.segments; s++){
-			// TODO: Perform vertex generation
-			// TODO: Perform indexing
+	unsigned short svCount = getVertexCount(); // start vertex count
+	unsigned short siCount = getIndexCount(); // start index count
+
+	for(unsigned l = 0; l < iters; l++)
+		for(unsigned p = 0; p < shape.segments; p++){
+			Geo_Vertex newVertex = _vertices[p];
+			newVertex.position.data[2] += depth * (l + 1);
+			_vertices.push_back(newVertex);
+
+			// TODO: Index face?
+
+			unsigned v = p + svCount;
+			for(unsigned i = _indices.size(); i < _indices.size() + (shape.segments * 6); i += 6){ // indexing sides
+				_indices.push_back(v);
+				_indices.push_back(_vertices.size() - 1 - v);
+				_indices.push_back(v + 1);
+				_indices.push_back(_vertices.size() - 1 - v);
+				_indices.push_back(_vertices.size() - 2 - v);
+				_indices.push_back(v + 1);
+				v++;
+			}
 		}
-	}
 }
 
 Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : Geo_Mesh(pointCount * 2, (pointCount * 3) * 3){

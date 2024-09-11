@@ -11,18 +11,6 @@
 #define ENTROPIC_SIZE 0.045
 #define ENTROPIC_FORCE 50000.0F
 
-struct Entropy_Mesh : public Geo_Mesh {
-    // Entropy_Mesh(){}
-
-    Entropy_Mesh(Geo_Mesh& refMesh) : Geo_Mesh(refMesh){
-        // TODO: Include new vertices
-    }
-
-    Entropy_Mesh(Geo_Mesh& refMesh, unsigned short count) : Geo_Mesh(refMesh){
-        // TODO: Include new vertices
-    }
-};
-
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
         backdropActor.setPos({ 0.0F, 0.0F, -0.1F });
@@ -38,22 +26,20 @@ struct Entropy_Demo : public Topl_Program {
             actors[a].setRot({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, });
             float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
             actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
-
+            
+            /* 
+            for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
-                case 0: duplexMeshes.push_back(new Entropy_Mesh(triangles[a / 4])); tessMeshes.push_back(new Entropy_Mesh(triangles[a / 4], 1)); break;
-                case 1: duplexMeshes.push_back(new Entropy_Mesh(quads[a / 4]));  tessMeshes.push_back(new Entropy_Mesh(quads[a / 4], 1)); break;
-                case 2: duplexMeshes.push_back(new Entropy_Mesh(hexes[a / 4])); tessMeshes.push_back(new Entropy_Mesh(hexes[a / 4], 1)); break;
-                case 3: duplexMeshes.push_back(new Entropy_Mesh(circles[a / 4])); tessMeshes.push_back(new Entropy_Mesh(circles[a / 4], 1)); break;
-            } 
-
-            tessActors[a] = Geo_Actor(tessMeshes.back());
-            tessActors[a].setPos(*actors[a].getPos());
-            tessActors[a].setRot(*actors[a].getRot());
-            tessActors[a].setSize(*actors[a].getSize());
-            duplexActors[a] = Geo_Actor(duplexMeshes.back());
-            duplexActors[a].setPos(*actors[a].getPos());
-            duplexActors[a].setRot(*actors[a].getRot());
-            duplexActors[a].setSize(*actors[a].getSize());
+                case 0: volumeMeshes.push_back(new Geo_Ext3D({ triangles[a / 4].getRadius(), triangles[a / 4].getSegments() }, triangles[a / 4].getDepth(), 1)); break;
+                case 1: volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads[a / 4].getDepth(), 1)); break;
+                case 2: volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes[a / 4].getDepth(), 1)); break;
+                case 3: volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles[a / 4].getDepth(), 1)); break;
+            }
+            
+            extActors[a] = Geo_Actor(volumeMeshes.back());
+            extActors[a].setPos(*actors[a].getPos());
+            extActors[a].setRot(*actors[a].getRot());
+            extActors[a].setSize(*actors[a].getSize()); */
         }
     }
 
@@ -79,13 +65,15 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Circle3D circles[ENTROPIC_COUNT / 4];
     // Geo_Orb orbs[ENTROPIC_COUNT / 4];
 
+    std::vector<Geo_Ext3D*> volumeMeshes;
     // std::vector<Geo_Mesh> meshes;
-    std::vector<Entropy_Mesh*> tessMeshes;
-    std::vector<Entropy_Mesh*> duplexMeshes;
+    // std::vector<Entropy_Mesh*> tessMeshes;
+    // std::vector<Entropy_Mesh*> duplexMeshes;
 
     Geo_Actor actors[ENTROPIC_COUNT];
-    Geo_Actor tessActors[ENTROPIC_COUNT];
-    Geo_Actor duplexActors[ENTROPIC_COUNT];
+    Geo_Actor extActors[ENTROPIC_COUNT];
+    /* Geo_Actor tessActors[ENTROPIC_COUNT];
+    Geo_Actor duplexActors[ENTROPIC_COUNT]; */
 #ifdef TOPL_ENABLE_PHYSICS
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif

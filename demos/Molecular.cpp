@@ -17,6 +17,8 @@ void Molecular_Demo::init(){
 }
 
 void Molecular_Demo::loop(double frameTime){
+    scene.camera = Topl_Program::cameraObj;
+
     if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
         unsigned short constructIndex = rand() % MOLECULAR_CONSTRUCTS;
         /* scene.addForce(
@@ -40,7 +42,7 @@ void Molecular_Demo::loop(double frameTime){
     _renderer->updateScene(&globeScene);
     _renderer->drawScene(&globeScene); */
 
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _flatVShader.setMode(5);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
@@ -56,7 +58,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

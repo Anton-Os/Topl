@@ -186,3 +186,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 	return Topl_Program::pickerCoord;
 }
 #endif
+
+/* void Topl_Program::build_thread(const Topl_Scene* scene){
+	_threads[0] = std::thread(&_renderer->buildScene, scene);
+} */
