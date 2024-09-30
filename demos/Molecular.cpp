@@ -1,14 +1,15 @@
 #include "Molecular.hpp"
 
 void Molecular_Demo::init(){
-    for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
-        constructs[c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F, 0.0F }));
-        constructs[c].configure(&scene);
-        if(c < MOLECULAR_CONSTRUCTS - 1){
-            construct_links[c].preset(constructs[c].getOrigin(), constructs[c + 1].getOrigin());
-            scene.addLink(&construct_links[c], constructs[c].getPrefix() + "hub",  constructs[c + 1].getPrefix() + "hub");
+    for(unsigned m = 0; m < 3; m++)
+        for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
+            constructs[m][c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F - (m * 0.5F + 1.0F), 0.0F }));
+            constructs[m][c].configure(&scene);
+            if(c < MOLECULAR_CONSTRUCTS - 1){
+                construct_links[c].preset(constructs[m][c].getOrigin(), constructs[m][c + 1].getOrigin());
+                scene.addLink(&construct_links[c], constructs[m][c].getPrefix() + "hub",  constructs[m][c + 1].getPrefix() + "hub");
+            }
         }
-    }
 
     _renderer->buildScene(&scene);
 
@@ -19,8 +20,15 @@ void Molecular_Demo::init(){
 void Molecular_Demo::loop(double frameTime){
     scene.camera = Topl_Program::cameraObj;
 
-    if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
-        unsigned short constructIndex = rand() % MOLECULAR_CONSTRUCTS;
+    for(unsigned m = 0; m < 3; m++)
+        for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
+            constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
+
+     if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
+        unsigned short setIndex = rand() % MOLECULAR_CONSTRUCTS;
+        for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
+            constructs[setIndex][c].scale({ 0.999F, 0.999F, 0.999F });
+            
         /* scene.addForce(
             constructs[constructIndex].getPrefix() + "hub", 
             Vec3f({ ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, 0.0F })
@@ -33,28 +41,25 @@ void Molecular_Demo::loop(double frameTime){
             constructs[constructIndex].getGeoActor(m)->updatePos({ 0.0F, 0.1F, 0.0F });
         } */
     }
-    // scene.resolvePhysics();
 
-    // _beamsVShader.setMode(-3);
-    /* _flatVShader.setMode(8);
-    _renderer->setDrawMode(DRAW_Points);
-    _renderer->setPipeline(_flatPipeline);
-    _renderer->updateScene(&globeScene);
-    _renderer->drawScene(&globeScene); */
 
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
-    _flatVShader.setMode(5);
+    // _beamsVShader.setMode(3);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
-    _flatVShader.setMode(7);
-    _renderer->updateScene(&scene);
+
+    // _flatVShader.setMode(7);
+    // _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Triangles);
-    _renderer->drawScene(&scene);
-    /* _flatVShader.setMode(6);
-    _renderer->updateScene(&scene);
-    _renderer->setDrawMode(DRAW_Points);
-    _renderer->drawScene(&scene); */
+    // _renderer->drawScene(&scene);
+    for(unsigned m = 0; m < 3; m++){
+        _beamsVShader.setMode(m * 10);
+        _renderer->updateScene(&scene);
+        for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
+            for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)
+                _renderer->draw(constructs[m][c].getGeoActor(o));
+    }
 }
 
 int main(int argc, char** argv) {

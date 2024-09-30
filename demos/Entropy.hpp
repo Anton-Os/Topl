@@ -16,10 +16,10 @@ struct Entropy_Demo : public Topl_Program {
         backdropActor.setPos({ 0.0F, 0.0F, -0.1F });
         for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
-                case 0: actors[a] = Geo_Actor(&triangles[a / 4]); break;
-                case 1: actors[a] = Geo_Actor(&quads[a / 4]); break;
-                case 2: actors[a] = Geo_Actor(&hexes[a / 4]); break;
-                case 3: actors[a] = Geo_Actor(&circles[a / 4]); break;
+                case 0: actors[a] = Geo_Actor(&trigs3D[a / 4]); break;
+                case 1: actors[a] = Geo_Actor(&quads3D[a / 4]); break;
+                case 2: actors[a] = Geo_Actor(&hexes3D[a / 4]); break;
+                case 3: actors[a] = Geo_Actor(&circles3D[a / 4]); break;
             }
             actors[a].setName("actor" + std::to_string(a));
             actors[a].setPos({ (float)rand() / (float)RAND_MAX - 0.5f, (float)rand() / (float)RAND_MAX - 0.5f, 0.0 });
@@ -30,10 +30,10 @@ struct Entropy_Demo : public Topl_Program {
             /* 
             for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
-                case 0: volumeMeshes.push_back(new Geo_Ext3D({ triangles[a / 4].getRadius(), triangles[a / 4].getSegments() }, triangles[a / 4].getDepth(), 1)); break;
-                case 1: volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads[a / 4].getDepth(), 1)); break;
-                case 2: volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes[a / 4].getDepth(), 1)); break;
-                case 3: volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles[a / 4].getDepth(), 1)); break;
+                case 0: volumeMeshes.push_back(new Geo_Ext3D({ trigs3D[a / 4].getRadius(), trigs3D[a / 4].getSegments() }, trigs3D[a / 4].getDepth(), 1)); break;
+                case 1: volumeMeshes.push_back(new Geo_Ext3D({ quads3D[a / 4].getRadius(), quads3D[a / 4].getSegments() }, quads3D[a / 4].getDepth(), 1)); break;
+                case 2: volumeMeshes.push_back(new Geo_Ext3D({ hexes3D[a / 4].getRadius(), hexes3D[a / 4].getSegments() }, hexes3D[a / 4].getDepth(), 1)); break;
+                case 3: volumeMeshes.push_back(new Geo_Ext3D({ circles3D[a / 4].getRadius(), circles3D[a / 4].getSegments() }, circles3D[a / 4].getDepth(), 1)); break;
             }
             
             extActors[a] = Geo_Actor(volumeMeshes.back());
@@ -59,16 +59,12 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Quad2D backdropMesh = Geo_Quad2D(100.0);
     Geo_Actor backdropActor = Geo_Actor(&backdropMesh);
 
-    Geo_Trig3D triangles[ENTROPIC_COUNT / 4];
-    Geo_Quad3D quads[ENTROPIC_COUNT / 4];
-    Geo_Hex3D hexes[ENTROPIC_COUNT / 4];
-    Geo_Circle3D circles[ENTROPIC_COUNT / 4];
-    // Geo_Orb orbs[ENTROPIC_COUNT / 4];
+    Geo_Trig2D trigs[ENTROPIC_COUNT / 4]; Geo_TrigCone trigsCones[ENTROPIC_COUNT / 4]; Geo_Trig3D trigs3D[ENTROPIC_COUNT / 4];
+    Geo_Quad2D quads[ENTROPIC_COUNT / 4]; Geo_QuadCone quadsCones[ENTROPIC_COUNT / 4]; Geo_Quad3D quads3D[ENTROPIC_COUNT / 4];
+    Geo_Hex2D hexes[ENTROPIC_COUNT / 4]; Geo_Hex3D hexesCones[ENTROPIC_COUNT / 4]; Geo_Hex3D hexes3D[ENTROPIC_COUNT / 4];
+    Geo_Circle2D circles[ENTROPIC_COUNT / 4]; Geo_CircleCone circlesCones[ENTROPIC_COUNT / 4]; Geo_Circle3D circles3D[ENTROPIC_COUNT / 4];
 
-    std::vector<Geo_Ext3D*> volumeMeshes;
-    // std::vector<Geo_Mesh> meshes;
-    // std::vector<Entropy_Mesh*> tessMeshes;
-    // std::vector<Entropy_Mesh*> duplexMeshes;
+    std::vector<Geo_Ext2D*> surfaceMeshes; std::vector<Geo_ExtCone*> coneMeshes; std::vector<Geo_Ext3D*> volumeMeshes;
 
     Geo_Actor actors[ENTROPIC_COUNT];
     Geo_Actor extActors[ENTROPIC_COUNT];
