@@ -45,9 +45,6 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 
 // Renderer
 
-#define RENDER_BLOCK_SUPPORT 1 // render block support only
-#define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
-
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
 	Topl_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context) {

@@ -147,6 +147,8 @@ struct Sandbox_Demo : public Topl_Program {
 private:
     void updateOverlay();
 
+    std::thread overlayThread;
+
     Topl_Scene mainScene, editsScene;
     Topl_Scene overlayScene, canvasScene;
     Topl_Camera fixedCamera;

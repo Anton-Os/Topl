@@ -113,8 +113,6 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 }
 
 void Topl_Renderer::present() {
-	// TODO: Join draw thread?
-
 	static Timer_Persist ticker;
 	_frameIDs++;
 	if (!_flags[DRAWN_BIT]) { 

@@ -187,6 +187,25 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 }
 #endif
 
-/* void Topl_Program::build_thread(const Topl_Scene* scene){
-	_threads[0] = std::thread(&_renderer->buildScene, scene);
-} */
+void Topl_Program::build_run(const Topl_Scene* scene){
+	_threads[0] = std::thread([this](const Topl_Scene* s){ _renderer->buildScene(s); }, scene);
+	_threads[0].join();
+}
+
+void Topl_Program::update_run(const Topl_Scene* scene){
+	_threads[1] = std::thread([this](const Topl_Scene* s){ _renderer->updateScene(s); }, scene);
+	_threads[1].join();
+}
+
+void Topl_Program::texturize_run(const Topl_Scene* scene){
+	_threads[2] = std::thread([this](const Topl_Scene* s){ _renderer->texturizeScene(s); }, scene);
+	_threads[2].join();
+}
+
+void Topl_Program::draw_run(const Topl_Scene* scene){
+	// for(unsigned t = 0; t < 3; t++) 
+	//	if(_threads[t].joinable()) _threads[t].join();
+
+	_threads[3] = std::thread([this](const Topl_Scene* s){ _renderer->drawScene(s); }, scene);
+	_threads[3].join();
+}

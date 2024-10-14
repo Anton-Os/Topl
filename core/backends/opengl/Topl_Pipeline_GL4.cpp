@@ -70,12 +70,10 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
-	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
-	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
-		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING);
-	}
+
+	if(blockCount > 0) glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING); // enables render block
+	if(blockCount > 1) glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING); // enables scene block
+	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, EXT_BLOCK_BINDING, EXT_BLOCK_BINDING); // enables extended block
 }
 
 void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
@@ -131,12 +129,10 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
-	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
-	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
-		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING);
-		glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING);
-	}
+	
+	if(blockCount > 0) glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING); // enables render block
+	if(blockCount > 1) glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING); // enables scene block
+	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, EXT_BLOCK_BINDING, EXT_BLOCK_BINDING); // enables extended block
 }
 
 void Topl_Renderer_GL4::linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){

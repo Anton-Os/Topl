@@ -24,6 +24,7 @@ enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
     BUFF_Index_UI = 1, // index buffer type
     BUFF_Render_Block = 2, // render block buffer type
+    // BUFF_Ext_Block = 3, // extended block buffer type
 };
 
 struct Buffer : public RenderObj {

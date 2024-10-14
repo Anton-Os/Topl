@@ -220,9 +220,15 @@ void Sandbox_Demo::init(){
     sequence_map.insert({ &backdropActor, Img_Sequence((unsigned)SANDBOX_SEQUENCE) });
 
     _renderer->buildScene(&editsScene);
+
+    overlayThread = std::thread([this](){ updateOverlay(); });
 }
 
 void Sandbox_Demo::loop(double frameTime){
+    /* if(!overlayThread.joinable()){
+        overlayThread.join();
+        overlayThread = std::thread([this](){ updateOverlay(); }); // rerun thread
+    } */
     updateOverlay();
     mainScene.camera = Sandbox_Demo::cameraObj;
     
