@@ -11,7 +11,7 @@ void Geo_Cone::genVertices() {
 			(float)DEFAULT_Z
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
 		Vec3f texcoord = getTexCoord(v, 0.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);

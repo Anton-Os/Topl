@@ -65,7 +65,7 @@ void logMessage(std::string message){
 
 void cleanupNumStr(std::string* str){
     for(std::string::iterator c = str->begin(); c != str->end(); c++)
-        if(isalpha((int)*c) || *c == '\/' || *c == '\n') *c = ' '; // replace unwanted characters with whitespace
+        if(isalpha((int)*c) || *c == '/' || *c == '\n') *c = ' '; // replace unwanted characters with whitespace
     /* std::unique_copy(str->begin(), str->end(), std::back_insert_iterator<std::string>(*str),
         [](char a,char b){ return isspace(a) && isspace(b);});  */
 }
@@ -89,12 +89,12 @@ unsigned getValsCountFromStr(const std::string& source, unsigned short div){
 
 float getFloatFromStr(const std::string& source, size_t startOffset){
     if(!isdigit(source.at(startOffset)) && source.at(startOffset) != '-'){ // minus symbol is permitted 
-        fprintf(stderr, "Invalid offset provided obtaining float value. Location: %d", startOffset);
+        fprintf(stderr, "Invalid offset provided obtaining float value. Location: %d", (int)startOffset);
         return FLT_MAX;
     }
 
     std::string currentStrVal;
-    while(isdigit(source.at(startOffset)) || source.at(startOffset) == '.' || source.at(startOffset) == '-'){ // minus and dot symbol permitted
+    while(isdigit(source.at(startOffset)) || source.at(startOffset) == '.' || source.at((int)startOffset) == '-'){ // minus and dot symbol permitted
         currentStrVal += source.at(startOffset);
         startOffset++;
     }
@@ -104,13 +104,13 @@ float getFloatFromStr(const std::string& source, size_t startOffset){
 
 int getIntFromStr(const std::string& source, size_t startOffset){
     if(!isdigit(source.at(startOffset)) && source.at(startOffset) != '-'){ // minus symbol is permitted 
-        fprintf(stderr, "Invalid offset provided obtaining float value. Location: %d", startOffset);
+        fprintf(stderr, "Invalid offset provided obtaining float value. Location: %d", (int)startOffset);
 		return INT_MAX;
         // return FLT_MAX;
     }
 
     std::string currentStrVal;
-    while(isdigit(source.at(startOffset)) || source.at(startOffset) == '-'){ // minus and permitted
+    while(isdigit(source.at(startOffset)) || source.at((int)startOffset) == '-'){ // minus and permitted
         currentStrVal += source.at(startOffset);
         startOffset++;
     }

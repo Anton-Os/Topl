@@ -28,7 +28,7 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 	// Build Render Objects
 	for(unsigned g = 0; g < scene->getActorCount(); g++){
 		actor_cptr actor = scene->getGeoActor(g);
-		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+		// Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 		unsigned long renderID = getRenderID(actor);
 
 		if(renderID == INVALID_RENDERID){ // Actor will not be duplicated
@@ -86,7 +86,10 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 
 	// std::thread thread(&Topl_Renderer::draw, this, SCENE_RENDERID);
 
+    _shaderBlockData.clear();
+    _entryShader->genSceneBlock(scene, _activeCamera, &_shaderBlockData);
     draw(SCENE_RENDERID); // render is scene block data
+
 	if(scene != ALL_SCENES){ // Scene Targets
 		if (_flags[DRAW_ORDER_BIT] == DRAW_NORMAL) // draw in regular order
 			for (unsigned a = 0; a < scene->getActorCount(); a++)

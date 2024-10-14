@@ -12,7 +12,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const override {
 		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 	

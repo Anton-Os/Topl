@@ -18,7 +18,7 @@ struct Idle_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genRenderBlock(actor, bytes);
 	}
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}
 };

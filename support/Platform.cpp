@@ -162,6 +162,22 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	} else return false; // cursor outside the screen space!
 }
 
+#elif defined(__ANDROID__)
+
+void Platform::createWindow(unsigned width, unsigned height){ }
+
+bool Platform::handleEvents(){ return false; }
+
+bool Platform::getCursorCoords(float* xPos, float* yPos) const { return false; }
+
+unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+    return TOPL_WIN_HEIGHT; // TODO: get height here
+}
+
+unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+    return TOPL_WIN_WIDTH; // TODO: get width here
+}
+
 #elif defined(__linux__)
 
 void Platform::createWindow(unsigned width, unsigned height){
@@ -267,13 +283,5 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
 
 	return true; // check if cursor is in client area!
 }
-
-#else // No Support
-
-void Platform::createWindow(){ }
-
-void Platform::handleEvents(bool isCursorUpdate){ }
-
-bool Platform::getCursorCoords(float* xPos, float* yPos) const {}
 
 #endif

@@ -3,19 +3,19 @@
 namespace GL4 {
 	// Shader Functions
 
-	static GLenum getShaderFormat(enum SHDR_ValueType type) {
+    GLenum getShaderFormat(enum SHDR_ValueType type) {
 		switch (type) {
 		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float:
 			return GL_FLOAT;
 		case SHDR_uint_vec4: case SHDR_uint_vec3: case SHDR_uint_vec2: case SHDR_uint:
 			return GL_UNSIGNED_INT;
 		default:
-			logMessage(MESSAGE_Exclaim, "GL4 Shader Input Type Not Supported!");
+			logMessage(MESSAGE_Exclaim, "GLES Shader Input Type Not Supported!");
 			return 0; // error
 		}
 	}
 
-	static void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader) {
+    void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader) {
 		glBindVertexArray(VAO->vao);
 
 		GLsizei inputElementOffset = 0;
@@ -29,7 +29,7 @@ namespace GL4 {
 				getShaderFormat(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
-				(inputElementOffset != 0) ? (void*)(inputElementOffset) : NULL
+				(inputElementOffset != 0) ? &inputElementOffset : NULL
 			);
 
 			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
@@ -40,7 +40,7 @@ namespace GL4 {
 
 	// Additional Funtions
 
-	static void setTextureProperties(GLenum type, TEX_Mode m) {
+    void setTextureProperties(GLenum type, TEX_Mode m) {
 		switch (m) {
 		case TEX_Wrap:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -67,7 +67,7 @@ static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc) {
 
 	ReleaseDC(*window, *windowDC);
 }
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 static void cleanup_linux(Display* display, GLXContext graphicsContext) { glXDestroyContext(display, graphicsContext); }
 #endif
 
@@ -78,7 +78,7 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 
 #ifdef _WIN32
     cleanup_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     cleanup_linux(_platformCtx->display, _platformCtx->oglCtx);
 #endif
 }
@@ -107,7 +107,7 @@ static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc) {
 	*hglrc = wglCreateContext(*windowDC);
 	wglMakeCurrent(*windowDC, *hglrc);
 }
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 static void init_linux(Display* display, Window* window, XVisualInfo* visualInfo, GLXContext* oglCtx) {
     int major, minor;
     if(glXQueryVersion(display, &major, &minor)) std::cout << "GLX Version is " << std::to_string(major) << "." << std::to_string(minor) << std::endl;
@@ -128,32 +128,34 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 
 #ifdef _WIN32
     init_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     init_linux(_platformCtx->display, &_platformCtx->window, _platformCtx->visualInfo, &_platformCtx->oglCtx);
 #endif
-	glewExperimental = GL_TRUE;
+#ifndef __ANDROID__
+    glewExperimental = GL_TRUE;
 	glewInit();
+#endif
 
 	glEnable(GL_DEPTH_TEST); // make these customizable
 	glDepthFunc(GL_LESS); // make these customizable
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    std::cout << "Allocating buffers" << std::endl;
 	_bufferSlots = (GLuint*)malloc(MAX_RENDERID* sizeof(GLuint));
 	_vertexArraySlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
 	_textureSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
 
-    std::cout << "Generating buffers" << std::endl;
 	glGenBuffers(MAX_RENDERID, _bufferSlots);
 	glGenVertexArrays(MAX_RENDERID, _vertexArraySlots);
 	glGenTextures(MAX_RENDERID, _textureSlots);
-
-	// glDisable(GL_CULL_FACE);
+#ifndef __ANDROID__
+    // glDisable(GL_CULL_FACE);
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
 
 	glLineWidth(1.5f);
 	glPointSize(3.0f);
+#endif
 }
 
 void Topl_Renderer_GL4::clear() {
@@ -172,14 +174,14 @@ void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 
 #ifdef _WIN32
 static inline void swapBuffers_win(HDC* windowDC) { SwapBuffers(*windowDC); }
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 static void swapBuffers_linux(Display* display, Window* window) { glXSwapBuffers(display, *window); }
 #endif
 
 void Topl_Renderer_GL4::swapBuffers(double frameTime) {
 #ifdef _WIN32
         swapBuffers_win(&_platformCtx->deviceCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
         swapBuffers_linux(_platformCtx->display, &_platformCtx->window);
 #endif
 }
@@ -188,20 +190,21 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
 		_blockBufferMap.insert({ SCENE_RENDERID, Buffer_GL4(*(_bufferSlots + _bufferIndex)) });
 		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
+        /* unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW); */
+        // glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, 0);
 	} else {
 		unsigned long renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
 		_blockBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Render_Block, *(_bufferSlots + _bufferIndex)) });
 		_bufferIndex++; // increments to next available slot
-		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
+        glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glNamedBufferData(_blockBufferMap.at(renderID).buffer, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, 0);
 
 		// indices generation
 		(mesh->getIndices() != nullptr)
@@ -209,7 +212,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 			: _indexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Index_UI, *(_bufferSlots + _bufferIndex), 0) });
 		if (mesh->getIndices() != nullptr) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer); // gets the latest buffer
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexCount() * sizeof(unsigned), mesh->getIndices(), GL_DYNAMIC_DRAW);
 		}
 		_bufferIndex++; // increments to next available slot
 
@@ -217,12 +220,12 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		_vertexBufferMap.insert({ renderID, Buffer_GL4(renderID, BUFF_Vertex_Type, *(_bufferSlots + _bufferIndex), mesh->getVertexCount()) });
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer); // gets the latest buffer
-        glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->getVertexCount() * sizeof(Geo_Vertex), mesh->getVertices(), GL_DYNAMIC_DRAW);
 
 		// setting vertex input layout
 		_vertexArrayMap.insert({ renderID, VertexArray_GL4(renderID, *(_vertexArraySlots + _vertexArrayIndex)) });
 		_vertexArrayIndex++; // increment to next available slot
-		GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
+        GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
 
 		_flags[BUILD_BIT] = true;
 	}
@@ -233,18 +236,19 @@ void Topl_Renderer_GL4::update(const Geo_Actor* actor){
         // glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
         glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glNamedBufferData(_blockBufferMap.at(SCENE_RENDERID).buffer, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, 0);
 	} else {
 		unsigned renderID = getRenderID(actor);
 		
         // glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
         glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
-        printf("Block size is %d", blockSize);
-        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_STATIC_DRAW);
+        unsigned blockSize = sizeof(uint8_t) * _shaderBlockData.size();
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glNamedBufferData(_blockBufferMap.at(renderID).buffer, blockSize, _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        // glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, 0);
 	}
-
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
@@ -263,20 +267,29 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
 	// static Buffer_GL4 *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
-	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) // Scene Target
-		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
-	else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
+    if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID){ // Scene Target
+        glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _shaderBlockData.size(), _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(uint8_t) * _shaderBlockData.size(), _shaderBlockData.data());
+        // glUniform1i(1, 1); // TODO: Get Mode Here // test
+    } else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
-
-        // glUniform3f(2, actor->getPos()->data[0], actor->getPos()->data[1], actor->getPos()->data[2] );
-        glUniform3f(2, 0.0, 1.0, 0.0 ); // uniforms test
-		
 		if(_vertexArrayMap.find(renderID) != _vertexArrayMap.end()) glBindVertexArray(_vertexArrayMap.at(renderID).vao);
 
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer);
 		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
         // if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
         if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
+
+        _shaderBlockData.clear();
+        _entryShader->genRenderBlock(actor, &_shaderBlockData);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _shaderBlockData.size(), _shaderBlockData.data(), GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(uint8_t) * _shaderBlockData.size(), _shaderBlockData.data());
+
+        glUniform3f(2, actor->getPos()->data[0], actor->getPos()->data[1], actor->getPos()->data[2]); // test
+        glUniform3f(3, actor->getRot()->data[0], actor->getRot()->data[1], actor->getRot()->data[2]); // test
+        glUniform3f(4, actor->getSize()->data[0], actor->getSize()->data[1], actor->getSize()->data[2]); // test
+        glUniform4f(5, ((float)rand() / (float)RAND_MAX), ((float)rand() / (float)RAND_MAX), ((float)rand() / (float)RAND_MAX), 1.0F); // test
 
 		// Texture Updates 
 	
@@ -293,10 +306,12 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
+#ifndef __ANDROID__
 			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
-				glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-			else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
-		} 
+                glDrawElements((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+            else glDrawArrays((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+#endif
+        }
 		// TODO: Include instanced draw call
 		else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
 
@@ -340,7 +355,7 @@ void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned render
 	glActiveTexture(GL_TEXTURE0 + binding);
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
-	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
+	GLES::setTextureProperties(GL_TEXTURE_2D, _texMode);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -363,7 +378,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
 	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
-	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
+	GLES::setTextureProperties(GL_TEXTURE_3D, _texMode);
 	glTexImage3D(
 		GL_TEXTURE_3D,
 		0, GL_RGBA,

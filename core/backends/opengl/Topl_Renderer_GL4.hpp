@@ -48,6 +48,20 @@ struct Topl_Pipeline_GL4 : public Topl_Pipeline {
 #define RENDER_BLOCK_SUPPORT 1 // render block support only
 #define SCENE_BLOCK_SUPPORT 2 // render block and scene block support
 
+namespace GL4 {
+    // Shader Functions
+
+    GLenum getShaderFormat(enum SHDR_ValueType type);
+    void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader);
+    GLuint compileShader(std::string shaderText, GLenum shaderType);
+
+    // Additional Funtions
+#ifndef __ANDROID__
+    static void setTextureProperties(GLenum type, TEX_Mode m);
+#endif
+}
+
+
 class Topl_Renderer_GL4 : public Topl_Renderer {
 public:
     Topl_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context) {

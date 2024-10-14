@@ -9,7 +9,7 @@ void Geo_Volume::genVertices() {
 			(float)DEFAULT_Z + (_depth / 2)
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
 		Vec3f texcoord = getTexCoord(v, 0.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
@@ -23,7 +23,7 @@ void Geo_Volume::genVertices() {
 			(float)DEFAULT_Z - (_depth / 2)
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
 		Vec3f texcoord = getTexCoord(v, 1.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);

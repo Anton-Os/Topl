@@ -18,7 +18,7 @@ struct Geo_Vertex {
 	}
 
 	Vec3f position = Vec3f({ 0.0, 0.0, 0.0 });
-	// Vec3f normal = Vec3f({ 0.0, 0.0, 0.0 });
+	// // Vec3f normal = Vec3f({ 0.0, 0.0, 0.0 });
 	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 });
 };
 

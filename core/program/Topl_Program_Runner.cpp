@@ -46,7 +46,7 @@ static void onAnyKey(char k){
 }
 
 static void onDrag(float x, float y){
-	static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
+	// static Vec3f savedColorVec = Vec3f{0.0, 0.0, 0.0};
 
 	if(Platform::mouseControl.getIsMouseDown().second){
 		Topl_Program::cursorPos = { x, y, 0.0F };
@@ -83,9 +83,9 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
     _renderer->setCamera(&Topl_Program::cameraObj);
     _renderer->setDrawMode(DRAW_Triangles);
 
-    /* Platform::keyControl.addAnyCallback(onAnyKey);
-    Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress); */
-	// Platform::mouseControl.addDragCallback(onDrag); // for camera
+    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
+	Platform::mouseControl.addDragCallback(onDrag); // for camera
 
 	// Preset Pipeline Generation
 

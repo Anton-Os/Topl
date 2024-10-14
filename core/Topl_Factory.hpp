@@ -1,12 +1,17 @@
 #include "Geo_Mesh.hpp"
 // #include "Geo_Actor.hpp"
 
-#include "backends/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
+#ifdef __ANDROID__
+#include "../../Droidl_New/app/src/main/cpp/Droidl_Renderer.hpp" // TODO: Correct this path
+#else
+#include "backends/opengl/Topl_Renderer_GL4.hpp"
+#endif
 #ifdef _WIN32
 #include "backends/directx/Topl_Renderer_DX11.hpp"
 #endif
 #ifdef TOPL_ENABLE_VULKAN
 #include "backends/vulkan/Topl_Renderer_VK.hpp"
+
 #endif
 
 // Backends List
@@ -17,6 +22,7 @@ enum BACKEND_Target { BACKEND_GL4, BACKEND_DX11, BACKEND_VK };
 
 struct Engine_Config { unsigned pipeIndex; };
 
+#ifndef __ANDROID__
 struct Engine_Config_GL4 : public Engine_Config {
 	Topl_Renderer_GL4* renderer;
 	Topl_Pipeline_GL4** pipelines;
@@ -33,6 +39,12 @@ struct Engine_Config_DX11 : public Engine_Config {
 struct Engine_Config_VK : public Engine_Config {
 	Topl_Renderer_VK* renderer;
 	Topl_Pipeline_VK** pipelines;
+};
+#endif
+#else
+struct Engine_Config_GL4 : public Engine_Config {
+    Droidl_Renderer* renderer;
+    Topl_Pipeline_GL4** pipelines;
 };
 #endif
 
@@ -60,11 +72,13 @@ private:
 	// Engine Instances
 
 	static Engine_Config_GL4 GL4_engine_cfg;
+#ifndef __ANDROID__
 #ifdef _WIN32
 	static Engine_Config_DX11 DX11_engine_cfg;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
 	static Engine_Config_VK VK_engine_cfg;
+#endif
 #endif
 
     // On Demand Geometry Objects

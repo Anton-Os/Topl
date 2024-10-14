@@ -77,10 +77,10 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define DRAW_NORMAL true
 #define DRAW_INVERSE false
 
-#define RENDER_BLOCK_INDEX 0 // uniform block index for geometry updates // hard-coded value
-#define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
-#define SCENE_BLOCK_INDEX 1 // uniform block index for scene updates // hard-coded value
-#define SCENE_BLOCK_BINDING 1 // uniform block binding to for scene updates
+#define RENDER_BLOCK_INDEX 1 // uniform block index for geometry updates // hard-coded value
+#define RENDER_BLOCK_BINDING 1 // uniform block binding to for geometry updates
+#define SCENE_BLOCK_INDEX 0 // uniform block index for scene updates // hard-coded value
+#define SCENE_BLOCK_BINDING 0 // uniform block binding to for scene updates
 // #define ADDED_BLOCK_INDEX 2 // uniform block index for added data
 // #define ADDED_BLOCK_BINDING 2 // uniform block binding for added data
 
@@ -107,7 +107,7 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 class Topl_Renderer {
 public:
     Topl_Renderer(NATIVE_PLATFORM_CONTEXT* context){ _platformCtx = context; }
-    // Topl_Renderer(NATIVE_WINDOW window) { _platformCtx.window = window; }
+    virtual ~Topl_Renderer() = default;
 
     void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
@@ -142,6 +142,7 @@ protected:
     Topl_Camera _defaultCamera; // identity matrix by default, no transformation
     const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by userunsigned int numThreads = std::thread::hardware_concurrency();
     Topl_Viewport _defaultViewport = Topl_Viewport();
+    std::thread _threads[4];
 
 	Img_Base _frameImage; // internal frame container
 private:

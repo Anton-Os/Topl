@@ -13,7 +13,7 @@
     #define RASTERON_ENABLE_FONT // includes font support
     
     // #include "Toolbox.h"
-    #include "Rasteron.h" // includes Rasteron main modules and features
+    // #include "Rasteron.h" // includes Rasteron main modules and features
 #endif
 #if 0
 	#define TOPL_ENABLE_MODELS

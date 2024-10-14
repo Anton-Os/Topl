@@ -42,8 +42,9 @@ int main(int argc, char** argv) {
 
     std::cout << "Scene building" << std::endl;
 	if(TARGET_BACKEND != BACKEND_VK){
+        triangle.isTesselated = true;
 		scene.addGeometry(&actor);
-        renderer->setDrawMode(DRAW_Points);
+        renderer->setDrawMode(DRAW_Triangles);
 		renderer->buildScene(&scene);
 	}
 

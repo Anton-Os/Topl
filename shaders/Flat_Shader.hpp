@@ -19,7 +19,7 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genRenderBlock(actor, bytes);
 	}
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const override {
 		// appendDataToBytes((uint8_t*)&_mode, sizeof(unsigned), bytes);
 		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
 	}

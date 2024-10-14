@@ -22,6 +22,7 @@ void Entropy_Demo::init(){
     Platform::keyControl.addCallback(' ', showAll);
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);
+    Topl_Program::cameraObj.setPos({ 0.0, 0.0, 0.25F });
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         switch(a % 4){
@@ -66,7 +67,7 @@ void Entropy_Demo::loop(double frameTime){
 // #endif
     }
 
-    _flatVShader.setMode(FLAT_MODE_COORD);
+    _flatVShader.setMode(0);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
     // _renderer->clear();

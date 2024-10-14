@@ -2,33 +2,32 @@
 
 // Values
 
-layout(std140, binding = 0) uniform SceneBlock {
-	// uniform SceneBlock {
-	int mode;
-	vec4 cam_pos;
-	vec3 look_pos;
-	mat4 projMatrix;
-}; // sceneBlock;
-
-layout(std140, binding = 1) uniform Block {
+layout(std140, binding = 0) uniform Block {
 // uniform Block {
 	vec4 color;
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
-}; // renderBlock;
+};
+
+layout(std140, binding = 1) uniform SceneBlock {
+	int mode;
+	vec4 cam_pos;
+	vec3 look_pos;
+	mat4 projMatrix;
+};
 
 layout(location = 1) uniform int modeTest;
 layout(location = 2) uniform vec3 posTest;
 layout(location = 3) uniform vec3 rotTest;
 layout(location = 4) uniform vec3 sizeTest;
-layout(location = 5) uniform vec4 colorTest;
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 texcoord;
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out int id_out;
+layout(location = 1) flat out int id_out;
+layout(location = 2) out vec4 color_out;
 
 // Functions
 
@@ -66,18 +65,13 @@ mat4 calcCamMatrix(vec4 cPos, vec3 angles) { // Custom Function
 // Main
 
 void main() {
-	if(offset != vec3(0.0, 0.0, 0.0)){
-		vec3 angles = calcRotMatrix(rotation) * pos;
-		vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
+	vec3 angles = calcRotMatrix(rotTest) * pos;
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f); // * vec4(sizeTest.x, sizeTest.y, sizeTest.z, 1.0); // / cam_pos.w);
 
-		gl_Position = (final_pos + vec4(offset, 0.0f)); // * projMatrix;
-	}
-	// else
-	/* if(offset.x == 0.0 && offset.y == 0.0)
-		gl_Position = vec4((pos + vec3(0.0, offset.z, 0.0)), 1.0); */
-	else gl_Position = vec4((pos + offset) * sizeTest, 1.0);
-	// (final_pos + vec4(offset, 0.0f)) * calcCamMatrix(cam_pos, look_pos) * projMatrix;
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
+	gl_Position = final_pos + vec4(posTest, 0.0f); //* calcCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	pos_out = pos; // vec3(gl_Position.x, gl_Position.y, gl_Position.z);
+	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;
+	color_out = color - (color / (gl_VertexID + 1)); // getUniqueColor(gl_VertexID);
 }

@@ -31,7 +31,6 @@ void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 				return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name); 
 
 			Phys_Actor* physActor = _physicsMap.find(*actor)->second;
-			vec3f_cptr_t targetPos = (*actor)->getPos();
 
 			if(!physActor->addForce(forceVec)) return logMessage(MESSAGE_Exclaim, "Forces excess!");
 		}

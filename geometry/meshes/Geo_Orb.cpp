@@ -14,7 +14,7 @@ void Geo_Orb::genVertices() {
 			float y = xy * sinf(sliceAngle);
 
 			Vec3f pos = Vec3f({ x, y, z });
-			Vec3f normal = Vec3f({ x, y, z });
+			// Vec3f normal = Vec3f({ x, y, z });
 			Vec3f texcoord = Vec3f({ x, y, z });
 
 			_vertices[v] = Geo_Vertex(pos, texcoord);

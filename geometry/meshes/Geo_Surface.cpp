@@ -10,7 +10,7 @@ void Geo_Surface::genVertices() {
 			(float)_depth
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
 		Vec3f texcoord = getTexCoord(v, 0.0f);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);

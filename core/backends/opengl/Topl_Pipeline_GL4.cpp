@@ -1,7 +1,7 @@
 #include "backends/opengl/Topl_Renderer_GL4.hpp"
 
 namespace GL4 {
-	static GLuint compileShader(std::string shaderText, GLenum shaderType) {
+    GLuint compileShader(std::string shaderText, GLenum shaderType) {
 		GLint result;
 
 		const char* source = shaderText.c_str();
@@ -25,7 +25,7 @@ namespace GL4 {
 			free(errorLog);
 
 			return 0;
-		}
+        }
 
 		return shader;
 	}
@@ -51,14 +51,14 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
     std::cout << "Vertex shader file path is " << vertexShader->getFilePath() << std::endl;
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
-	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
+    pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
     std::cout << "Fragment shader file path is " << pixelShader->getFilePath() << std::endl;
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+    pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
 	// Program Linking
@@ -72,6 +72,13 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	GLint blockCount;
 	glGetProgramiv(_pipeline->shaderProg, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+    printf("Block count is %d", blockCount);
+
+    unsigned renderBlockIdx = glGetUniformBlockIndex(_pipeline->shaderProg, "Block");
+    unsigned sceneBlockIdx = glGetUniformBlockIndex(_pipeline->shaderProg, "SceneBlock");
+    unsigned extBlockIdx = glGetUniformBlockIndex(_pipeline->shaderProg, "ExtBlock");
+    printf("Render block is %d, Scene block is %d, Extended block is %d", renderBlockIdx, sceneBlockIdx, extBlockIdx);
+
 	if (blockCount == RENDER_BLOCK_SUPPORT) // Render uniforms supported
 		glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_INDEX, RENDER_BLOCK_BINDING);
 	else if (blockCount == SCENE_BLOCK_SUPPORT) { // Render and Scene uniforms supported
@@ -88,20 +95,20 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	// Vertex Shader
 
 	std::string vertexShaderSrc = readFile(vertexShader->getFilePath());
-	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
+    pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
 	if (pipeline->vertexShader == 0) pipeline->isReady = false;
 
 	// Pixel Shader
 
 	std::string fragShaderSrc = readFile(pixelShader->getFilePath());
-	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+    pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->pixelShader == 0) pipeline->isReady = false;
 
 	// Geometry Shader
-
+#ifndef __ANDROID__
 	if (geomShader != nullptr) { // optional stage
 		std::string geomShaderSrc = readFile(geomShader->getFilePath());
-		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
+        pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
 		if(pipeline->geomShader == 0) pipeline->isReady = false;
 	}
 
@@ -109,7 +116,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	if(tessCtrlShader != nullptr){ // optional stage
 		std::string tessCtrlShaderSrc = readFile(tessCtrlShader->getFilePath());
-		pipeline->tessCtrlShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
+        pipeline->tessCtrlShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
 		if(pipeline->tessCtrlShader == 0) pipeline->isReady = false;
 	}
 
@@ -117,10 +124,10 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 
 	if(tessEvalShader != nullptr){ // optional stage
 		std::string tessEvalShaderSrc = readFile(tessEvalShader->getFilePath());
-		pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
+        pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
 		if(pipeline->tessEvalShader == 0) pipeline->isReady = false;
 	}
-
+#endif
 	// Program Linking
 
 	linkShaders(pipeline, vertexShader, pixelShader, geomShader, tessCtrlShader, tessEvalShader);
