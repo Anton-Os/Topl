@@ -1,7 +1,7 @@
 #include "backends/opengl/Topl_Renderer_GL4.hpp"
 
 namespace GL4 {
-	static GLuint compileShader(std::string shaderText, GLenum shaderType) {
+	GLuint compileShader(std::string shaderText, GLenum shaderType) {
 		GLint result;
 
 		const char* source = shaderText.c_str();

@@ -4,9 +4,7 @@ namespace DX11 {
 	static ID3D11SamplerState* texSamplers[MAX_TEX_BINDINGS + 1];
 	static ID3D11ShaderResourceView* texResources[MAX_TEX_BINDINGS + 1];
 
-	// Buffer Functions
-
-	static bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data) {
+	bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data) {
 		// TODO: Ensure that data and size are valid!!!
 		
 		D3D11_BUFFER_DESC buffDesc;
@@ -28,21 +26,19 @@ namespace DX11 {
 		return true;
 	}
 
-	static bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr_t vData, unsigned vCount) {
+	bool createVertexBuff(ID3D11Device** device, ID3D11Buffer** vBuff, vertex_cptr_t vData, unsigned vCount) {
 		return createBuff(device, vBuff, sizeof(Geo_Vertex) * vCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, vData);
 	}
 
-	static bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
+	bool createIndexBuff(ID3D11Device** device, ID3D11Buffer** iBuff, DWORD* iData, unsigned iCount) {
 		return createBuff(device, iBuff, sizeof(DWORD) * iCount, D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER, 0, iData);
 	}
 
-	static bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const blockBytes_t* const blockBytes) {
+	bool createBlockBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const blockBytes_t* const blockBytes) {
 		return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
 	}
 
-	// Additional Functions
-
-	static D3D11_VIEWPORT createViewport(const Topl_Viewport* const vp) {
+	D3D11_VIEWPORT createViewport(const Topl_Viewport* const vp) {
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
@@ -56,7 +52,7 @@ namespace DX11 {
 		return viewport;
 	}
 
-	static D3D11_SAMPLER_DESC genSamplerDesc(enum TEX_Mode mode) {
+	D3D11_SAMPLER_DESC genSamplerDesc(enum TEX_Mode mode) {
 		D3D11_TEXTURE_ADDRESS_MODE texMode;
 
 		switch (mode) {

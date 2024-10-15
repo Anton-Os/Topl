@@ -1,7 +1,7 @@
 #include "Topl_Renderer_VK.hpp"
 
 namespace VK {
-	static void createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc){
+	void createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc){
 		VkResult result; // error checking variable
 		
 		VkShaderModuleCreateInfo moduleCreateInfo = {};
@@ -14,7 +14,7 @@ namespace VK {
 		else return logMessage(MESSAGE_Exclaim, " shader module creation failure!\n");
 	}
 
-	static void createShaderInfo(VkPipelineShaderStageCreateInfo* shaderInfo, VkShaderModule* shaderModule, VkShaderStageFlagBits stage){
+	void createShaderInfo(VkPipelineShaderStageCreateInfo* shaderInfo, VkShaderModule* shaderModule, VkShaderStageFlagBits stage){
 		shaderInfo->sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		shaderInfo->stage = stage;
 		shaderInfo->pNext = 0;
@@ -24,7 +24,7 @@ namespace VK {
 		shaderInfo->pName = "main";
 	}
 
-	static VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
+	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
 		VkPipelineLayoutCreateInfo layoutInfo = {};
 
 		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

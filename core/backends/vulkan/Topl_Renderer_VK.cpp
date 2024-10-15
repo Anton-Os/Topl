@@ -14,7 +14,7 @@ namespace VK {
 		return VK_FALSE;
 	}
 
-	static VkResult getExtensionProperties(std::vector<VkExtensionProperties>* extensions){
+	VkResult getExtensionProperties(std::vector<VkExtensionProperties>* extensions){
 		unsigned extensionCount;
 		result = vkEnumerateInstanceExtensionProperties(NULL, &extensionCount, NULL);
 		if(result != VK_SUCCESS) return result;
@@ -25,7 +25,7 @@ namespace VK {
 		return result;
 	}
 
-	static VkResult createDebugReport(VkInstance* instance){
+	VkResult createDebugReport(VkInstance* instance) {
 		PFN_vkCreateDebugReportCallbackEXT createDebugReportCallback = NULL;
 		createDebugReportCallback = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(*instance, "vkCreateDebugReportCallbackEXT"));
 
@@ -42,12 +42,12 @@ namespace VK {
 		return result;
 	}
 
-	static VkResult createInstance(VkInstance* instance, VkInstanceCreateInfo* createInfo){ }
-	static VkResult createSurface(VkInstance* instance, VkSurfaceKHR* surface){} // TODO: Win32 and Linux Version Required
-	static VkResult queryPhysicalDevices(VkInstance* instance, VkSurfaceKHR* surface, std::vector<VkPhysicalDevice>& physDevices, std::vector<VkQueueFamilyProperties>& queueProps){ }
-	static VkResult createLogicDevice(VkDevice* device, std::vector<VkPhysicalDevice>& physDevices){}
+	/* VkResult createInstance(VkInstance* instance, VkInstanceCreateInfo* createInfo){ }
+	VkResult createSurface(VkInstance* instance, VkSurfaceKHR* surface){} // TODO: Win32 and Linux Version Required
+	VkResult queryPhysicalDevices(VkInstance* instance, VkSurfaceKHR* surface, std::vector<VkPhysicalDevice>& physDevices, std::vector<VkQueueFamilyProperties>& queueProps){ }
+	VkResult createLogicDevice(VkDevice* device, std::vector<VkPhysicalDevice>& physDevices){} */
 
-	static VkResult createBuff(VkPhysicalDevice* physDevice, VkDevice* device, VkBuffer* buffer, VkDeviceMemory* memory, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags props){
+	VkResult createBuff(VkPhysicalDevice* physDevice, VkDevice* device, VkBuffer* buffer, VkDeviceMemory* memory, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags props){
 		VkBufferCreateInfo bufferCreateInfo = {};
 		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferCreateInfo.pNext = nullptr;

@@ -1,9 +1,7 @@
 #include "backends/opengl/Topl_Renderer_GL4.hpp"
 
 namespace GL4 {
-	// Shader Functions
-
-	static GLenum getShaderFormat(enum SHDR_ValueType type) {
+	GLenum getShaderFormat(enum SHDR_ValueType type) {
 		switch (type) {
 		case SHDR_float_vec4: case SHDR_float_vec3: case SHDR_float_vec2: case SHDR_float:
 			return GL_FLOAT;
@@ -15,7 +13,7 @@ namespace GL4 {
 		}
 	}
 
-	static void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader) {
+	void genVertexArrayLayout(VertexArray_GL4* VAO, entry_shader_cptr entryShader) {
 		glBindVertexArray(VAO->vao);
 
 		GLsizei inputElementOffset = 0;
@@ -38,9 +36,7 @@ namespace GL4 {
 		glBindVertexArray(0);
 	}
 
-	// Additional Funtions
-
-	static void setTextureProperties(GLenum type, TEX_Mode m) {
+	void setTextureProperties(GLenum type, TEX_Mode m) {
 		switch (m) {
 		case TEX_Wrap:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);

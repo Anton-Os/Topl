@@ -25,7 +25,7 @@ namespace DX11 {
 		return true;
 	}
 
-	static DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
+	DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
 		switch (type) {
 		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case SHDR_float_vec3: return DXGI_FORMAT_R32G32B32_FLOAT;
@@ -44,7 +44,7 @@ namespace DX11 {
 		return format;
 	}
 
-	static D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset) {
+	D3D11_INPUT_ELEMENT_DESC getElementDescFromInput(const Shader_Type* input, UINT offset) {
 		D3D11_INPUT_ELEMENT_DESC vertexElemDesc;
 		vertexElemDesc.SemanticName = input->semantic.c_str();
 		vertexElemDesc.SemanticIndex = 0;
