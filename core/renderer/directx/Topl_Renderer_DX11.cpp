@@ -1,4 +1,4 @@
-#include "backends/directx/Topl_Renderer_DX11.hpp"
+#include "renderer/directx/Topl_Renderer_DX11.hpp"
 
 namespace DX11 {
 	static ID3D11SamplerState* texSamplers[MAX_TEX_BINDINGS + 1];
@@ -89,10 +89,10 @@ Topl_Renderer_DX11::~Topl_Renderer_DX11() {
 	if(_rasterizerState != nullptr) _rasterizerState->Release();
 
 	if(_sceneBlockBuff != nullptr) _sceneBlockBuff->Release();
-	// for(std::vector<Buffer_DX11>::iterator buff = _buffers.begin(); buff != _buffers.end(); buff++)
+	// for(std::vector<DX11::Buffer>::iterator buff = _buffers.begin(); buff != _buffers.end(); buff++)
 	//		buff->buffer->Release();
 	
-	for(std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++){
+	for(std::vector<DX11::Texture>::iterator tex = _textures.begin(); tex != _textures.end(); tex++){
 		if(tex->sampler != nullptr) tex->sampler->Release();
 		if(tex->resource != nullptr) tex->resource->Release();
 	}
@@ -244,7 +244,7 @@ void Topl_Renderer_DX11::swapBuffers(double frameTime) { _swapChain->Present(0, 
 void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
 		_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_sceneBlockBuff, &_sceneBlockData);
-		_blockBufferMap.insert({ SCENE_RENDERID, Buffer_DX11(_sceneBlockBuff) });
+		_blockBufferMap.insert({ SCENE_RENDERID, DX11::Buffer(_sceneBlockBuff) });
 	} else {
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 		unsigned long renderID = getRenderID(actor);
@@ -254,7 +254,7 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_actorBlockData);
 		else {
 			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &renderBlockBuff, &_actorBlockData);
-			_blockBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Render_Block, renderBlockBuff) });
+			_blockBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Render_Block, renderBlockBuff) });
 		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
@@ -264,9 +264,9 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 			_flags[BUILD_BIT] = DX11::createIndexBuff(&_device, &_indexBufferMap.at(renderID).buffer, (DWORD*)mesh->getIndices(), mesh->getIndexCount());
 		else if (mesh->getIndices() != nullptr) { // checks if index data exists for render object
 			_flags[BUILD_BIT] = DX11::createIndexBuff(&_device, &indexBuff, (DWORD*)mesh->getIndices(), mesh->getIndexCount());
-			_indexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, mesh->getIndexCount()) });
+			_indexBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Index_UI, indexBuff, mesh->getIndexCount()) });
 		}
-		else _indexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Index_UI, indexBuff, 0) });
+		else _indexBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Index_UI, indexBuff, 0) });
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 
 		// vertices generation
@@ -275,7 +275,7 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 			_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &_vertexBufferMap.at(renderID).buffer, mesh->getVertices(), mesh->getVertexCount());
 		else {
 			_flags[BUILD_BIT] = DX11::createVertexBuff(&_device, &vertexBuff, mesh->getVertices(), mesh->getVertexCount());
-			_vertexBufferMap.insert({ renderID, Buffer_DX11(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
+			_vertexBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Vertex_Type, vertexBuff, mesh->getVertexCount()) });
 		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
 	}
@@ -313,7 +313,7 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
 		}
 		for(unsigned b = 0; b < MAX_TEX_BINDINGS - 1; b++){
-			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b + 1; });
+			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const DX11::Texture& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b + 1; });
 			if (tex2D != _textures.end()){
 				DX11::texSamplers[b + 1] = tex2D->sampler;
 				DX11::texResources[b + 1] = tex2D->resource;
@@ -335,12 +335,12 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 
 		// Texture Updates
 
-		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
+		auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID](const DX11::Texture& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == 0; });
 		if (tex2D != _textures.end()){
 			DX11::texSamplers[DEFAULT_TEX_BINDING] = tex2D->sampler;
 			DX11::texResources[DEFAULT_TEX_BINDING] = tex2D->resource;
 		}
-		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const Texture_DX11& t){ return t.renderID == renderID && t.format == TEX_3D; });
+		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const DX11::Texture& t){ return t.renderID == renderID && t.format == TEX_3D; });
 		if(tex3D != _textures.end()){
 			DX11::texSamplers[MAX_TEX_BINDINGS] = tex3D->sampler;
 			DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
@@ -447,16 +447,16 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resource);
 
-	for(std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
+	for(std::vector<DX11::Texture>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // multi-texture subsitution
 			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource);
+			*tex = DX11::Texture(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource);
 			return;
 		}
 
 
-	_textures.push_back(Texture_DX11(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource)); // multi-texture addition
+	_textures.push_back(DX11::Texture(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource)); // multi-texture addition
 
 	texture->Release();
 }
@@ -499,14 +499,14 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	_device->CreateShaderResourceView(texture, &resourceDesc, &resource);
 	_deviceCtx->UpdateSubresource(texture, 0, 0, volumeTexImage->getImage()->data, texData.SysMemPitch, 0);
 
-	for (std::vector<Texture_DX11>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
+	for (std::vector<DX11::Texture>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->format == TEX_3D) { // texture substitution
 			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = Texture_DX11(renderID, TEX_3D, _texMode, sampler, resource);
+			*tex = DX11::Texture(renderID, TEX_3D, _texMode, sampler, resource);
 			return;
 		}
-	_textures.push_back(Texture_DX11(renderID, TEX_3D, _texMode, sampler, resource)); // texture addition
+	_textures.push_back(DX11::Texture(renderID, TEX_3D, _texMode, sampler, resource)); // texture addition
 
 	// texture->Release(); // test deallocation
 }

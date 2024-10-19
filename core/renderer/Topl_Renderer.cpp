@@ -1,4 +1,4 @@
-#include "Topl_Renderer.hpp"
+#include "renderer/Topl_Renderer.hpp"
 
 void Topl_Renderer::setCamera(const Topl_Camera* camera){ 
     if(camera != nullptr) _activeCamera = camera;

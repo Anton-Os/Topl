@@ -1,33 +1,4 @@
-// VK Specific Inclusions
-#undef ENABLE_DEBUG_LAYERS
-
-#define VK_PROTOTYPES
-	#ifdef _WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#elif defined(__linux__)
-	#define VK_USE_PLATFORM_XLIB_KHR
-#endif
-
-#include <vulkan/vk_platform.h>
-#include <vulkan/vulkan.h>
-
-#include "Topl_Renderer.hpp"
-
-// Buffer
-
-struct Buffer_VK : public Buffer { 
-	Buffer_VK() : Buffer(){} 
-
-	VkBuffer* buffer = {};
-};
-
-// Texture
-
-struct Texture_VK : public Texture { 
-	Texture_VK() : Texture() {}
-
-	VkSampler* sampler = {};
-};
+#include "Topl_VK.hpp"
 
 // Pipeline
 
@@ -78,8 +49,8 @@ protected:
 
 	Topl_Pipeline_VK* _pipeline;
 
-	std::map<unsigned long, Buffer_VK> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
-	std::map<unsigned long, Texture_VK[8]> _textureMap;
+	std::map<unsigned long, VK::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::map<unsigned long, VK::Texture[8]> _textureMap;
 private:
 	std::vector<VkExtensionProperties> _vulkanExtensions;
 	std::vector<VkLayerProperties> _vulkanLayers;

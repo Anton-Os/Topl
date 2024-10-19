@@ -1,4 +1,4 @@
-#include "backends/opengl/Topl_Renderer_GL4.hpp"
+#include "renderer/opengl/Topl_Renderer_GL4.hpp"
 
 namespace GL4 {
 	GLuint compileShader(std::string shaderText, GLenum shaderType) {

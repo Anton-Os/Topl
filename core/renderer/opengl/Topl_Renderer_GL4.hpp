@@ -1,33 +1,4 @@
-#include "Topl_Renderer.hpp"
-
-// Buffer
-
-struct Buffer_GL4 : public Buffer {
-	Buffer_GL4(GLuint b){ buffer = b; }
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b) : Buffer(id, t){ buffer = b; }
-	Buffer_GL4(unsigned id, enum BUFF_Type t, GLuint b, unsigned c) : Buffer(id, t, c) { buffer = b; }
-	
-	GLuint buffer; // OpenGL buffer
-};
-
-// Vertex Array Object
-
-struct VertexArray_GL4 : public RenderObj {
-	VertexArray_GL4() : RenderObj() {}
-	VertexArray_GL4(unsigned id, GLuint v) : RenderObj(id){ vao = v; }
-
-	GLuint vao;
-};
-
-// Texture
-
-struct Texture_GL4 : public Texture {
-	Texture_GL4() : Texture() {}
-	Texture_GL4(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, f, m) { texture = t; }
-	Texture_GL4(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, GLuint t) : Texture(id, b, f, m) { texture = t; }
-
-	GLuint texture;
-};
+#include "Topl_GL4.hpp"
 
 // Pipeline
 
@@ -79,10 +50,10 @@ protected:
 	
 	Topl_Pipeline_GL4* _pipeline;
 
-	std::map<unsigned long, VertexArray_GL4> _vertexArrayMap;
-	std::map<unsigned long, Buffer_GL4> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
-	std::vector<Texture_GL4> _textures; // active textures
-	std::map<unsigned long, Texture_GL4[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+	std::map<unsigned long, GL4::VertexArray> _vertexArrayMap;
+	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::vector<GL4::Texture> _textures; // active textures
+	std::map<unsigned long, GL4::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
 private:
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint* _bufferSlots;

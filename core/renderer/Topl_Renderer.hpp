@@ -10,9 +10,9 @@
 
 #define SCENE_RENDERID 0
 
-struct RenderObj {
-	RenderObj() { renderID = SCENE_RENDERID; }
-	RenderObj(unsigned id) { renderID = id; }
+struct Topl_RenderObj {
+	Topl_RenderObj() { renderID = SCENE_RENDERID; }
+	Topl_RenderObj(unsigned id) { renderID = id; }
 	unsigned renderID;
 };
 
@@ -27,10 +27,10 @@ enum BUFF_Type {
     // BUFF_Ext_Block = 3, // extended block buffer type
 };
 
-struct Buffer : public RenderObj {
-    Buffer() : RenderObj(SCENE_RENDERID){}
-    Buffer(unsigned id, enum BUFF_Type t) : RenderObj(id){ type = t; }
-    Buffer(unsigned id, enum BUFF_Type t, unsigned c) : RenderObj(id){ type = t; count = c; }
+struct Topl_Buffer : public Topl_RenderObj {
+    Topl_Buffer() : Topl_RenderObj(SCENE_RENDERID){}
+    Topl_Buffer(unsigned id, enum BUFF_Type t) : Topl_RenderObj(id){ type = t; }
+    Topl_Buffer(unsigned id, enum BUFF_Type t, unsigned c) : Topl_RenderObj(id){ type = t; count = c; }
 
     enum BUFF_Type type; // type of buffer 
     unsigned count = 1; // no. of meshes
@@ -41,13 +41,13 @@ struct Buffer : public RenderObj {
 enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
-struct Texture : public RenderObj {
-	Texture() : RenderObj(){}
-	Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
+struct Topl_Texture : public Topl_RenderObj {
+	Topl_Texture() : Topl_RenderObj(){}
+	Topl_Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : Topl_RenderObj(id) {
 		format = f; mode = m; binding = 0;
 	}
 
-	Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : RenderObj(id) {
+	Topl_Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m) : Topl_RenderObj(id) {
 		format = f; mode = m; binding = b;
 	}
 

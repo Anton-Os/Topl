@@ -1,37 +1,4 @@
-#include <d3d11_1.h>
-#include <dxgi1_4.h>
-#include <d3dcompiler.h>
-
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
-
-#include "Topl_Renderer.hpp"
-
-// Buffer
-
-struct Buffer_DX11 : public Buffer {
-	Buffer_DX11(ID3D11Buffer* b) : Buffer(){ buffer = b; }
-	Buffer_DX11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) { buffer = b; }
-	Buffer_DX11(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Buffer(id, t, c) { buffer = b; }
-
-	ID3D11Buffer* buffer; // DirectX buffer
-};
-
-// Texture
-
-struct Texture_DX11 : public Texture {
-	Texture_DX11() : Texture() {}
-	Texture_DX11(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, f, m) { 
-		sampler = s; resource = r;
-	}
-
-	Texture_DX11(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, b, f, m) {
-		sampler = s; resource = r;
-	}
-
-	ID3D11SamplerState* sampler = nullptr;
-	ID3D11ShaderResourceView* resource = nullptr;
-};
+#include "Topl_DX11.hpp"
 
 // Pipeline
 
@@ -92,9 +59,9 @@ protected:
 	Topl_Pipeline_DX11* _pipeline = nullptr;
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
-	std::map<unsigned long, Buffer_DX11> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
-	std::vector<Texture_DX11> _textures;
-	std::map<unsigned long, Texture_DX11[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::vector<DX11::Texture> _textures;
+	std::map<unsigned long, DX11::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
 private:
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;

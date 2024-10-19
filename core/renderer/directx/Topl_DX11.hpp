@@ -5,28 +5,28 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include "Topl_Renderer.hpp"
+#include "renderer/Topl_Renderer.hpp"
 
 namespace DX11 {
     // Buffer
 
-    struct Buffer : public Buffer {
-        Buffer(ID3D11Buffer* b) : Buffer(){ buffer = b; }
-        Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Buffer(id, t) { buffer = b; }
-        Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Buffer(id, t, c) { buffer = b; }
+    struct Buffer : public Topl_Buffer {
+        Buffer(ID3D11Buffer* b) : Topl_Buffer(){ buffer = b; }
+        Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Topl_Buffer(id, t) { buffer = b; }
+        Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Topl_Buffer(id, t, c) { buffer = b; }
 
         ID3D11Buffer* buffer; // DirectX buffer
     };
 
     // Texture
 
-    struct Texture : public Texture {
-        Texture() : Texture() {}
-        Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, f, m) { 
+    struct Texture : public Topl_Texture {
+        Texture() : Topl_Texture() {}
+        Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Topl_Texture(id, f, m) { 
             sampler = s; resource = r;
         }
 
-        Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Texture(id, b, f, m) {
+        Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Topl_Texture(id, b, f, m) {
             sampler = s; resource = r;
         }
 

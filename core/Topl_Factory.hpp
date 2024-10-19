@@ -1,11 +1,11 @@
 #include <typeinfo>
 
-#include "backends/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
+#include "renderer/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
 #ifdef _WIN32
-#include "backends/directx/Topl_Renderer_DX11.hpp"
+#include "renderer/directx/Topl_Renderer_DX11.hpp"
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-#include "backends/vulkan/Topl_Renderer_VK.hpp"
+#include "renderer/vulkan/Topl_Renderer_VK.hpp"
 #endif
 
 // Backends List
