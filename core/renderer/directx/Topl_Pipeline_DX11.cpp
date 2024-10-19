@@ -58,7 +58,7 @@ namespace DX11 {
 	}
 
 
-	bool createVertexLayout(ID3D11Device** device, ID3D11DeviceContext** deviceCtx, ID3D11InputLayout** layout, Topl_Pipeline_DX11* pipeline, entry_shader_cptr entryShader){
+	bool createVertexLayout(ID3D11Device** device, ID3D11DeviceContext** deviceCtx, ID3D11InputLayout** layout, DX11::Pipeline* pipeline, entry_shader_cptr entryShader){
 		D3D11_INPUT_ELEMENT_DESC* vertexLayout_ptr = (D3D11_INPUT_ELEMENT_DESC*)malloc(sizeof(D3D11_INPUT_ELEMENT_DESC) * entryShader->getInputCount());
 		unsigned vertexElemOffset = 0;
 		for (unsigned inputNum = 0; inputNum < entryShader->getInputCount(); inputNum++) {
@@ -81,7 +81,7 @@ namespace DX11 {
 	}
 }
 
-void Topl_Renderer_DX11::setPipeline(Topl_Pipeline_DX11* pipeline) {
+void Topl_Renderer_DX11::setPipeline(DX11::Pipeline* pipeline) {
 	if (pipeline == nullptr) 
 		return logMessage(MESSAGE_Exclaim, "Pipeline cannot be null!");
 
@@ -97,7 +97,7 @@ void Topl_Renderer_DX11::setPipeline(Topl_Pipeline_DX11* pipeline) {
 	}
 }
 
-void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr) 
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
@@ -125,7 +125,7 @@ void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_
 	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->entryShader);
 }
 
-void Topl_Renderer_DX11::genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
+void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable

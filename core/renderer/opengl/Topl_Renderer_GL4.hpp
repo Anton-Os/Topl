@@ -1,19 +1,5 @@
 #include "Topl_GL4.hpp"
 
-// Pipeline
-
-struct Topl_Pipeline_GL4 : public Topl_Pipeline {
-	Topl_Pipeline_GL4() : Topl_Pipeline(){}
-
-	GLuint shaderProg; // Linked Shader Program
-
-	GLuint vertexShader;
-	GLuint pixelShader;
-	GLuint geomShader;
-	GLuint tessCtrlShader;
-	GLuint tessEvalShader;
-};
-
 // Renderer
 
 class Topl_Renderer_GL4 : public Topl_Renderer {
@@ -32,9 +18,9 @@ public:
 	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;
 
-	void setPipeline(Topl_Pipeline_GL4* pipeline);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
+	void setPipeline(GL4::Pipeline* pipeline);
+	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif
@@ -46,9 +32,9 @@ protected:
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
-	void linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
+	void linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader);
 	
-	Topl_Pipeline_GL4* _pipeline;
+	GL4::Pipeline* _pipeline;
 
 	std::map<unsigned long, GL4::VertexArray> _vertexArrayMap;
 	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;

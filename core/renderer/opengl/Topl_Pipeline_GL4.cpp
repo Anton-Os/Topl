@@ -31,7 +31,7 @@ namespace GL4 {
 	}
 }
 
-void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
+void Topl_Renderer_GL4::setPipeline(GL4::Pipeline* pipeline){
 	if (pipeline == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline cannot be null!");
 
@@ -42,7 +42,7 @@ void Topl_Renderer_GL4::setPipeline(Topl_Pipeline_GL4* pipeline){
 		glUseProgram(pipeline->shaderProg);
 }
 
-void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	else pipeline->isReady = true; // set to true until error encountered
@@ -76,7 +76,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, EXT_BLOCK_BINDING, EXT_BLOCK_BINDING); // enables extended block
 }
 
-void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
 	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	else pipeline->isReady = true; // set to true until error encountered
@@ -135,7 +135,7 @@ void Topl_Renderer_GL4::genPipeline(Topl_Pipeline_GL4* pipeline, entry_shader_cp
 	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, EXT_BLOCK_BINDING, EXT_BLOCK_BINDING); // enables extended block
 }
 
-void Topl_Renderer_GL4::linkShaders(Topl_Pipeline_GL4* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+void Topl_Renderer_GL4::linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
 	GLint result;
 	
 	pipeline->shaderProg = glCreateProgram();

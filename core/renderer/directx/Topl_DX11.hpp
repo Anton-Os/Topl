@@ -34,6 +34,28 @@ namespace DX11 {
         ID3D11ShaderResourceView* resource = nullptr;
     };
 
+    // Pipeline 
+
+    struct Pipeline : public Topl_Pipeline {
+        Pipeline() : Topl_Pipeline(){}
+        ~Pipeline(){
+            if(vertexShader != nullptr) vertexShader->Release(); if(vsBlob != nullptr) vsBlob->Release();
+            if(pixelShader != nullptr) pixelShader->Release(); if(psBlob != nullptr) psBlob->Release();
+            if(hullShader != nullptr) hullShader->Release(); if(hsBlob != nullptr) hsBlob->Release();
+            if(domainShader != nullptr) domainShader->Release(); if(dsBlob != nullptr) dsBlob->Release();
+            if(geomShader != nullptr) geomShader->Release(); if(gsBlob != nullptr) gsBlob->Release();
+        }
+
+        ID3D11VertexShader* vertexShader = nullptr;
+        ID3D11PixelShader* pixelShader = nullptr;
+        ID3D11GeometryShader* geomShader = nullptr;
+        ID3D11HullShader* hullShader = nullptr;
+        ID3D11DomainShader* domainShader = nullptr;
+        
+        ID3DBlob *vsBlob, *psBlob, *hsBlob, *dsBlob, *gsBlob = nullptr;
+    };
+
+
     // Functions
 
     bool createBuff(ID3D11Device** device, ID3D11Buffer** buffer, UINT byteWidth, D3D11_USAGE usage, UINT bindFlags, UINT cpuFlags, const void* data);

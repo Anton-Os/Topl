@@ -30,6 +30,18 @@ namespace VK {
         VkSampler* sampler = {};
     };
 
+    // Pipeline
+
+    struct Pipeline : public Topl_Pipeline {
+        Pipeline() : Topl_Pipeline(){}
+        ~Pipeline(){ }
+
+        VkPipelineShaderStageCreateInfo vertexSInfo, pixelSInfo, geomSInfo, tessCtrlSInfo, tessEvalSInfo;
+
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        VkPipeline pipeline = {};
+    };
+
     // Functions
 
     VKAPI_ATTR VkBool32 VKAPI_CALL debugReportLogCallback(

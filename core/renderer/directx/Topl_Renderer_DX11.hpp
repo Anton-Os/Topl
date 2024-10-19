@@ -1,26 +1,5 @@
 #include "Topl_DX11.hpp"
 
-// Pipeline
-
-struct Topl_Pipeline_DX11 : public Topl_Pipeline {
-	Topl_Pipeline_DX11() : Topl_Pipeline(){}
-	~Topl_Pipeline_DX11(){
-		if(vertexShader != nullptr) vertexShader->Release(); if(vsBlob != nullptr) vsBlob->Release();
-		if(pixelShader != nullptr) pixelShader->Release(); if(psBlob != nullptr) psBlob->Release();
-		if(hullShader != nullptr) hullShader->Release(); if(hsBlob != nullptr) hsBlob->Release();
-		if(domainShader != nullptr) domainShader->Release(); if(dsBlob != nullptr) dsBlob->Release();
-		if(geomShader != nullptr) geomShader->Release(); if(gsBlob != nullptr) gsBlob->Release();
-	}
-
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11GeometryShader* geomShader = nullptr;
-	ID3D11HullShader* hullShader = nullptr;
-	ID3D11DomainShader* domainShader = nullptr;
-	
-	ID3DBlob *vsBlob, *psBlob, *hsBlob, *dsBlob, *gsBlob = nullptr;
-};
-
 // Remderer
 
 class Topl_Renderer_DX11 : public Topl_Renderer {
@@ -40,9 +19,9 @@ public:
 	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;
 
-	void setPipeline(Topl_Pipeline_DX11* pipeline);
-	void genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_DX11* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader);
+	void setPipeline(DX11::Pipeline* pipeline);
+	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader);
 #ifdef RASTERON_H
     Img_Base frame() override;
 #endif
@@ -56,7 +35,7 @@ protected:
 #endif
 
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	Topl_Pipeline_DX11* _pipeline = nullptr;
+	DX11::Pipeline* _pipeline = nullptr;
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
 	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;

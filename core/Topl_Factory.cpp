@@ -65,14 +65,14 @@ Topl_Renderer* Topl_Factory::genRenderer(BACKEND_Target backend, Platform* platf
 
 void Topl_Factory::configPipelines() {
 	if (GL4_engine_cfg.pipelines == nullptr) 
-		GL4_engine_cfg.pipelines = (Topl_Pipeline_GL4**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_GL4*));
+		GL4_engine_cfg.pipelines = (GL4::Pipeline**)malloc(MAX_PIPELINES * sizeof(GL4::Pipeline*));
 #ifdef _WIN32
 	if (DX11_engine_cfg.pipelines == nullptr) 
-		DX11_engine_cfg.pipelines = (Topl_Pipeline_DX11**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_DX11*));
+		DX11_engine_cfg.pipelines = (DX11::Pipeline**)malloc(MAX_PIPELINES * sizeof(DX11::Pipeline*));
 #endif
 #ifdef TOPL_ENABLE_VULKAN
 	if (VK_engine_cfg.pipelines == nullptr) 
-		VK_engine_cfg.pipelines = (Topl_Pipeline_VK**)malloc(MAX_PIPELINES * sizeof(Topl_Pipeline_VK*));
+		VK_engine_cfg.pipelines = (VK::Pipeline**)malloc(MAX_PIPELINES * sizeof(VK::Pipeline*));
 #endif
 }
 
@@ -83,8 +83,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
     case BACKEND_GL4:
         if(GL4_engine_cfg.renderer == nullptr) return nullptr; // Error
         else {
-            Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
-            *pipeline = new Topl_Pipeline_GL4();
+            GL4::Pipeline** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
+            *pipeline = new GL4::Pipeline();
             GL4_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
             GL4_engine_cfg.pipeIndex++;
             return *pipeline;
@@ -93,8 +93,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
     case BACKEND_DX11:
         if(DX11_engine_cfg.renderer == nullptr) return nullptr; // Error
         else {
-            Topl_Pipeline_DX11** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
-            *pipeline = new Topl_Pipeline_DX11();
+            DX11::Pipeline** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
+            *pipeline = new DX11::Pipeline();
             DX11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
             DX11_engine_cfg.pipeIndex++;
             return *pipeline;
@@ -104,8 +104,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 	case BACKEND_VK:
 		if(VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_VK** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_VK();
+			VK::Pipeline** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
+			*pipeline = new VK::Pipeline();
 			VK_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader);
 			VK_engine_cfg.pipeIndex++;
 			return *pipeline;
@@ -122,8 +122,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 	case BACKEND_GL4:
 		if (GL4_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_GL4** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_GL4();
+			GL4::Pipeline** pipeline = GL4_engine_cfg.pipelines + GL4_engine_cfg.pipeIndex;
+			*pipeline = new GL4::Pipeline();
 			GL4_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
 			GL4_engine_cfg.pipeIndex++;
 			return *pipeline;
@@ -132,8 +132,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 	case BACKEND_DX11:
 		if (DX11_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_DX11** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_DX11();
+			DX11::Pipeline** pipeline = DX11_engine_cfg.pipelines + DX11_engine_cfg.pipeIndex;
+			*pipeline = new DX11::Pipeline();
 			DX11_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
 			DX11_engine_cfg.pipeIndex++;
 			return *pipeline;
@@ -143,8 +143,8 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 	case BACKEND_VK:
 		if (VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
-			Topl_Pipeline_VK** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
-			*pipeline = new Topl_Pipeline_VK();
+			VK::Pipeline** pipeline = VK_engine_cfg.pipelines + VK_engine_cfg.pipeIndex;
+			*pipeline = new VK::Pipeline();
 			VK_engine_cfg.renderer->genPipeline(*pipeline, vertexShader, pixelShader, tessCtrlShader, tessEvalShader, geomShader);
 			VK_engine_cfg.pipeIndex++;
 			return *pipeline;
@@ -155,12 +155,12 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 }
 
 void Topl_Factory::switchPipeline(Topl_Renderer* renderer, Topl_Pipeline* pipeline) {
-	if (typeid(*renderer) == typeid(Topl_Renderer_GL4)) ((Topl_Renderer_GL4*)renderer)->setPipeline((Topl_Pipeline_GL4*)pipeline);
+	if (typeid(*renderer) == typeid(Topl_Renderer_GL4)) ((Topl_Renderer_GL4*)renderer)->setPipeline((GL4::Pipeline*)pipeline);
 #ifdef _WIN32
-	else if(typeid(*renderer) == typeid(Topl_Renderer_DX11)) ((Topl_Renderer_DX11*)renderer)->setPipeline((Topl_Pipeline_DX11*)pipeline);
+	else if(typeid(*renderer) == typeid(Topl_Renderer_DX11)) ((Topl_Renderer_DX11*)renderer)->setPipeline((DX11::Pipeline*)pipeline);
 #endif
 #ifdef TOPL_ENABLE_VULKAN
-	else if(typeid(*renderer) == typeid(Topl_Renderer_VK)) ((Topl_Renderer_VK*)renderer)->setPipeline((Topl_Pipeline_VK*)pipeline);
+	else if(typeid(*renderer) == typeid(Topl_Renderer_VK)) ((Topl_Renderer_VK*)renderer)->setPipeline((VK::Pipeline*)pipeline);
 #endif
 	else return logMessage(MESSAGE_Exclaim, "Invalid Backend"); // Error
 }

@@ -45,7 +45,7 @@ namespace VK {
 	}
 }
 
-void Topl_Renderer_VK::setPipeline(Topl_Pipeline_VK* pipeline){
+void Topl_Renderer_VK::setPipeline(VK::Pipeline* pipeline){
 	_pipeline = pipeline;
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
 
@@ -54,7 +54,7 @@ void Topl_Renderer_VK::setPipeline(Topl_Pipeline_VK* pipeline){
 	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
-void Topl_Renderer_VK::genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
 	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	
@@ -107,7 +107,7 @@ void Topl_Renderer_VK::genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr
 	setPipeline(pipeline);
 }
 
-void Topl_Renderer_VK::genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
+void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
 	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	

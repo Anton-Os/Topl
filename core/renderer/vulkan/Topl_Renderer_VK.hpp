@@ -1,17 +1,5 @@
 #include "Topl_VK.hpp"
 
-// Pipeline
-
-struct Topl_Pipeline_VK : public Topl_Pipeline {
-	Topl_Pipeline_VK() : Topl_Pipeline(){}
-	~Topl_Pipeline_VK(){ }
-
-	VkPipelineShaderStageCreateInfo vertexSInfo, pixelSInfo, geomSInfo, tessCtrlSInfo, tessEvalSInfo;
-
-	VkGraphicsPipelineCreateInfo pipelineInfo = {};
-	VkPipeline pipeline = {};
-};
-
 // Renderer
 
 #define ENABLE_VULKAN_DEPTH true
@@ -32,9 +20,9 @@ public:
 	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;
 
-	void setPipeline(Topl_Pipeline_VK* pipeline);
-	void genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(Topl_Pipeline_VK* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
+	void setPipeline(VK::Pipeline* pipeline);
+	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
+	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader, shader_cptr geomShader);
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif
@@ -47,7 +35,7 @@ protected:
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
 
-	Topl_Pipeline_VK* _pipeline;
+	VK::Pipeline* _pipeline;
 
 	std::map<unsigned long, VK::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
 	std::map<unsigned long, VK::Texture[8]> _textureMap;

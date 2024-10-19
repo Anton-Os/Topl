@@ -18,7 +18,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		setPipeline(&tessOnlyPipeline);
 	}
 
-	Topl_Pipeline_GL4 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+	GL4::Pipeline basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
 
 	Idle_VertexShader_GL4 vertexShader;
 	Idle_PixelShader_GL4 pixelShader;
@@ -38,7 +38,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
 
-	Topl_Pipeline_DX11 basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+	DX11::Pipeline basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
 
 	Idle_VertexShader_DX11 vertexShader;
 	Idle_PixelShader_DX11 pixelShader;
@@ -66,7 +66,7 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 		// TODO: Implement drawing for testing purposes
 	}
 
-	Topl_Pipeline_VK pipeline;
+	VK::Pipeline pipeline;
 	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");
 	Idle_PixelShader pixelShader = Idle_PixelShader("spirv/Idle_Frag.glsl.spv");
 };

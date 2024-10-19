@@ -22,20 +22,20 @@ struct Engine_Config { unsigned pipeIndex; };
 
 struct Engine_Config_GL4 : public Engine_Config {
 	Topl_Renderer_GL4* renderer;
-	Topl_Pipeline_GL4** pipelines;
+	GL4::Pipeline** pipelines;
 };
 
 #ifdef _WIN32
 struct Engine_Config_DX11 : public Engine_Config {
 	Topl_Renderer_DX11* renderer;
-	Topl_Pipeline_DX11** pipelines;
+	DX11::Pipeline** pipelines;
 };
 #endif
 
 #ifdef TOPL_ENABLE_VULKAN
 struct Engine_Config_VK : public Engine_Config {
 	Topl_Renderer_VK* renderer;
-	Topl_Pipeline_VK** pipelines;
+	VK::Pipeline** pipelines;
 };
 #endif
 

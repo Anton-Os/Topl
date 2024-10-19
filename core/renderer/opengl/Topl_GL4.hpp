@@ -29,6 +29,20 @@ namespace GL4 {
 
         GLuint texture;
     };
+    
+    // Pipeline
+
+    struct Pipeline : public Topl_Pipeline {
+        Pipeline() : Topl_Pipeline(){}
+
+        GLuint shaderProg; // Linked Shader Program
+
+        GLuint vertexShader;
+        GLuint pixelShader;
+        GLuint geomShader;
+        GLuint tessCtrlShader;
+        GLuint tessEvalShader;
+    };
 
     // Functions
 
