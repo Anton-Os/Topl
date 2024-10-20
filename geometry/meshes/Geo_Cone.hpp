@@ -5,10 +5,10 @@
 class Geo_Cone : public Geo_Mesh {
 public:
 	Geo_Cone(Shape shape, Vec3f apex);
-	Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex);
+	Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex);
 
 	float getRadius() const { return _shape.radius; }
-	unsigned getSegments() const { return _shape.segments; }
+	unsigned short getSegments() const { return _shape.segments; }
 	Vec3f getApex() const { return _apex; }
 private:
 	Shape _shape;
@@ -41,7 +41,7 @@ struct Geo_CircleCone : public Geo_Cone { // Cone
 
 struct Geo_ExtCone : public Geo_Cone { // expands base into repeating portions
 	Geo_ExtCone(Shape shape, Vec3f apex, unsigned short iters);
-	Geo_ExtCone(Vec3f* points, unsigned short pointCount, Vec3f apex, unsigned short iters);
+	Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters);
 
 	unsigned short _iters;
 };

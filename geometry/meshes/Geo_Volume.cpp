@@ -120,7 +120,7 @@ Geo_Ext3D::Geo_Ext3D(Shape shape, float depth, unsigned short iters) : Geo_Volum
 		}
 }
 
-Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : Geo_Mesh(pointCount * 2, (pointCount * 3) * 3){
+Geo_Volume::Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth) : Geo_Mesh(pointCount * 2, (pointCount * 3) * 3){
 	_depth = depth;
 
 	unsigned short v = 0;
@@ -180,7 +180,7 @@ Geo_Volume::Geo_Volume(Vec3f* points, unsigned short pointCount, float depth) : 
 	}
 }
 
-Geo_Ext3D::Geo_Ext3D(Vec3f* points, unsigned short pointCount, float depth, unsigned short iters) : Geo_Volume(points, pointCount, depth){
+Geo_Ext3D::Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth, unsigned short iters) : Geo_Volume(points, pointCount, depth){
 	_iters = iters;
 
 	unsigned short svCount = getVertexCount(); // start vertex count
@@ -195,7 +195,7 @@ Geo_Ext3D::Geo_Ext3D(Vec3f* points, unsigned short pointCount, float depth, unsi
 			// TODO: Index face?
 
 			unsigned v = p + svCount;
-			for(unsigned i = _indices.size(); i < _indices.size() + (pointCount * 6); i += 6){ // indexing sides
+			for(unsigned i = siCount; i < siCount + (pointCount * 6); i += 6){ // indexing sides
 				_indices.push_back(v);
 				_indices.push_back(_vertices.size() - 1 - v);
 				_indices.push_back(v + 1);
@@ -203,6 +203,8 @@ Geo_Ext3D::Geo_Ext3D(Vec3f* points, unsigned short pointCount, float depth, unsi
 				_indices.push_back(_vertices.size() - 2 - v);
 				_indices.push_back(v + 1);
 				v++;
+
+				// printf("Volume vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
 			}
 		}
 }

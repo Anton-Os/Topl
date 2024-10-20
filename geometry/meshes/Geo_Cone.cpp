@@ -68,7 +68,7 @@ Geo_ExtCone::Geo_ExtCone(Shape shape, Vec3f apex, unsigned short iters) : Geo_Co
 	}
 }
 
-Geo_Cone::Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
+Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
 	_apex = apex;
 	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
 	
@@ -108,7 +108,7 @@ Geo_Cone::Geo_Cone(Vec3f* points, unsigned short pointCount, Vec3f apex) : Geo_M
 	// TODO: Indexing connecting to apex
 }
 
-Geo_ExtCone::Geo_ExtCone(Vec3f* points, unsigned short pointCount, Vec3f apex, unsigned short iters) : Geo_Cone(points, pointCount, apex){
+Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters) : Geo_Cone(points, pointCount, apex){
 	_iters = iters;
 
 	unsigned short svCount = getVertexCount(); // start vertex count
@@ -125,7 +125,7 @@ Geo_ExtCone::Geo_ExtCone(Vec3f* points, unsigned short pointCount, Vec3f apex, u
 			// TODO: Index face?
 
 			unsigned v = p + svCount;
-			for(unsigned i = _indices.size(); i < _indices.size() + (pointCount * 6); i += 6){ // indexing sides
+			for(unsigned i = siCount; i < siCount + (pointCount * 6); i += 6){ // indexing sides
 				_indices.push_back(v);
 				_indices.push_back(_vertices.size() - 1 - v);
 				_indices.push_back(v + 1);
@@ -133,6 +133,8 @@ Geo_ExtCone::Geo_ExtCone(Vec3f* points, unsigned short pointCount, Vec3f apex, u
 				_indices.push_back(_vertices.size() - 2 - v);
 				_indices.push_back(v + 1);
 				v++;
+				
+				// printf("Conic vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
 			}
 		}
 }

@@ -71,7 +71,7 @@ Geo_Ext2D::Geo_Ext2D(Shape shape, float z, unsigned short iters) : Geo_Surface(s
 	}
 }
 
-Geo_Surface::Geo_Surface(Vec3f* points, unsigned short pointCount) : Geo_Mesh(pointCount, (pointCount - 2) * 3){
+Geo_Surface::Geo_Surface(vertex_cptr_t points, unsigned short pointCount) : Geo_Mesh(pointCount, (pointCount - 2) * 3){
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
@@ -97,7 +97,7 @@ Geo_Surface::Geo_Surface(Vec3f* points, unsigned short pointCount) : Geo_Mesh(po
 	}
 }
 
-Geo_Ext2D::Geo_Ext2D(Vec3f* points, unsigned short pointCount, unsigned short iters) : Geo_Surface(points, pointCount){
+Geo_Ext2D::Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters) : Geo_Surface(points, pointCount){
 	_iters = iters;
 	
 	for(unsigned i = 0; i < iters; i++){

@@ -48,6 +48,11 @@ public:
 	void updateRot(const Vec3f& angleVec){ _rotation = _rotation + angleVec; }
 	void setSize(const Vec3f& scaleVec){ _scale = scaleVec; }
 	void updateSize(const Vec3f& scaleVec){ _scale = _scale + scaleVec; }
+	void setPropsTo(const Geo_Actor& actor){
+		setPos(*actor.getPos());
+		setRot(*actor.getRot());
+		setSize(*actor.getSize());
+	}
 
 	unsigned getId() const { return _id; }
 	std::string getName() const { return _name; }

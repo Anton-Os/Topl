@@ -16,9 +16,13 @@ static void onAnyKey(char key){
 
 void entropyReset(){ isInEntropy = !isInEntropy;  }
 
-void setScene1(){ Entropy_Demo::mode = 0; }
-void setScene2(){ Entropy_Demo::mode = 1; }
-void setScene3(){ Entropy_Demo::mode = 2; }
+void setScene1(){ Entropy_Demo::mode = 0; } // surface
+void setScene2(){ Entropy_Demo::mode = 1; } // conic
+void setScene3(){ Entropy_Demo::mode = 2; } // volumetric
+void setScene4(){ Entropy_Demo::mode = 3; } // extended surface
+void setScene5(){ Entropy_Demo::mode = 4; } // extended conic
+void setScene6(){ Entropy_Demo::mode = 5; } // extended volumetric
+
 
 void Entropy_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
@@ -26,6 +30,9 @@ void Entropy_Demo::init(){
     Platform::keyControl.addCallback('g', setScene1);
     Platform::keyControl.addCallback('h', setScene2);
     Platform::keyControl.addCallback('j', setScene3);
+    Platform::keyControl.addCallback('b', setScene4);
+    Platform::keyControl.addCallback('n', setScene5);
+    Platform::keyControl.addCallback('m', setScene6);
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);
@@ -37,15 +44,15 @@ void Entropy_Demo::init(){
         scene1.addGeometry("actor" + std::to_string(a), &actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
         physActors[a].damping = 0.995;
-        physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
+        // physActors[a].mass *= actors[a].getSize()->data[0] / ENTROPIC_SIZE;
         scene1.addPhysics("actor" + std::to_string(a), &physActors[a]);
 #endif
-        /* scene2.addGeometry("tessActor" + std::to_string(a), &tessActors[a]);
-        scene3.addGeometry("duplexActor" + std::to_string(a), &duplexActors[a]); */
+        ext_scene1.addGeometry("actor_surfaceExt" + std::to_string(a), &surfaceExt_actors[a]);
+        ext_scene2.addGeometry("actor_conicExt" + std::to_string(a), &conicExt_actors[a]);
+        ext_scene3.addGeometry("actor_volumeExt" + std::to_string(a), &volumeExt_actors[a]);
     }
-    _renderer->buildScene(&scene1);
-    // _renderer->buildScene(&scene2);
-    // _renderer->buildScene(&scene3);
+    _renderer->buildScene(&scene1); // _renderer->buildScene(&scene2); // _renderer->buildScene(&scene3);
+    _renderer->buildScene(&ext_scene1); _renderer->buildScene(&ext_scene2); _renderer->buildScene(&ext_scene3);
 }
 
 void Entropy_Demo::loop(double frameTime){
@@ -75,12 +82,9 @@ void Entropy_Demo::loop(double frameTime){
         actors[a].updateSize({ ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), 0.0 });
         actors[a].updateRot({((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F });
 #endif
-        /* tessActors[a].setPos(*actors[a].getPos());
-        tessActors[a].setRot(*actors[a].getRot());
-        tessActors[a].setSize(*actors[a].getSize());
-        duplexActors[a].setPos(*actors[a].getPos());
-        duplexActors[a].setRot(*actors[a].getRot());
-        duplexActors[a].setSize(*actors[a].getSize()); */
+        surfaceExt_actors[a].setPropsTo(actors[a]);
+        conicExt_actors[a].setPropsTo(actors[a]);
+        volumeExt_actors[a].setPropsTo(actors[a]);
     }
 
     // _flatVShader.setMode(flatMode);
