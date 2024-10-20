@@ -78,8 +78,13 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define DRAW_NORMAL true
 #define DRAW_INVERSE false
 
+#ifdef _WIN32
 #define RENDER_BLOCK_BINDING 0 // uniform block binding to for geometry updates
 #define SCENE_BLOCK_BINDING 1 // uniform block binding to for updates
+#else // TODO: Remove the condition
+#define RENDER_BLOCK_BINDING 1 // uniform block binding to for geometry updates
+#define SCENE_BLOCK_BINDING 0 // uniform block binding to for updates
+#endif
 #define EXT_BLOCK_BINDING 2 // uniform block for extended functionality and geometry
 
 #define ALL_SCENES nullptr // works for updating everything
