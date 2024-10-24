@@ -176,21 +176,28 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		_blockBufferMap.insert({ SCENE_RENDERID, GL4::Buffer(*(_bufferSlots + _bufferIndex)) });
 		_bufferIndex++; // increments to next available slot
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _sceneBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _sceneBlockData.data(), GL_STATIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _sceneBlockData.size(), _sceneBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	} else {
 		unsigned long renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 
+		// render buffer
 		if(_blockBufferMap.find(renderID) == _blockBufferMap.end()){
 			_blockBufferMap.insert({ renderID, GL4::Buffer(renderID, BUFF_Render_Block, *(_bufferSlots + _bufferIndex)) });
 			_bufferIndex++; // increments to next available slot
 		}
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _actorBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _actorBlockData.data(), GL_STATIC_DRAW);
-		// TODO: Support mesh block
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _actorBlockData.size(), _actorBlockData.data(), GL_STATIC_DRAW);
+		
+		// mesh buffer
+		if(_extBlockBufferMap.find(renderID) == _extBlockBufferMap.end()){
+			_extBlockBufferMap.insert({ renderID, GL4::Buffer(renderID, BUFF_Ext_Block, *(_bufferSlots + _bufferIndex)) });
+			_bufferIndex++; // increments to next available slot
+		}
+		glBindBuffer(GL_UNIFORM_BUFFER, _extBlockBufferMap.at(renderID).buffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _meshBlockData.size(), _meshBlockData.data(), GL_STATIC_DRAW);
+
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// indices generation
@@ -227,16 +234,15 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 void Topl_Renderer_GL4::update(const Geo_Actor* actor){
 	if(actor == SCENE_RENDERID){
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _sceneBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _sceneBlockData.data(), GL_STATIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _sceneBlockData.size(), _sceneBlockData.data(), GL_STATIC_DRAW);
 	} else {
 		unsigned renderID = getRenderID(actor);
 		
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(renderID).buffer);
-		unsigned blockSize = sizeof(uint8_t) * _actorBlockData.size();
-		glBufferData(GL_UNIFORM_BUFFER, blockSize, _actorBlockData.data(), GL_STATIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _actorBlockData.size(), _actorBlockData.data(), GL_STATIC_DRAW);
 
-		// TODO: Support mesh block
+		glBindBuffer(GL_UNIFORM_BUFFER, _extBlockBufferMap.at(renderID).buffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _meshBlockData.size(), _meshBlockData.data(), GL_STATIC_DRAW);
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);

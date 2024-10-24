@@ -18,7 +18,7 @@ void Molecular_Demo::init(){
 }
 
 void Molecular_Demo::loop(double frameTime){
-    scene.camera = Topl_Program::cameraObj;
+    scene.camera = &Topl_Program::cameraObj;
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
@@ -42,6 +42,7 @@ void Molecular_Demo::loop(double frameTime){
         } */
     }
 
+    // _beamsVShader.setMode(-3);
 
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     // _beamsVShader.setMode(3);
@@ -63,7 +64,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

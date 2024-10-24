@@ -102,7 +102,7 @@ public:
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
 #endif
-	Topl_Camera camera;
+	Topl_Camera* camera = &_defaultCamera;
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	// std::vector<const Topl_Light*> _lights; // stores all light sources
@@ -119,8 +119,12 @@ private:
 	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order
 #endif
+	Topl_Camera _defaultCamera;
 	Timer_Persist _ticker; // used for internal updates
 };
+
+typedef const Topl_Scene* const scene_cptr;
+
 
 #define TOPL_SCENE_H
 #endif

@@ -1,9 +1,9 @@
 #include "renderer/Topl_Renderer.hpp"
 
-void Topl_Renderer::setCamera(const Topl_Camera* camera){ 
+/* void Topl_Renderer::setCamera(const Topl_Camera* camera){ 
     if(camera != nullptr) _activeCamera = camera;
     else _activeCamera = &_defaultCamera;
-}
+} */
 
 void Topl_Renderer::setPipeline(const Topl_Pipeline* pipeline){
     _entryShader = pipeline->entryShader;
@@ -19,8 +19,8 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
 	// Build Scene  
-	_actorBlockData.clear();
-	_entryShader->genSceneBlock(scene, &scene->camera, &_actorBlockData); 
+	_sceneBlockData.clear();
+	_entryShader->genSceneBlock(scene, &_sceneBlockData); 
 	build(SCENE_RENDERID);
 
 	// Build Render Objects
@@ -36,10 +36,10 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
 			_renderTargetMap.insert({ scene->getGeoActor(g), _renderIDs });
 		} // else logMessage(MESSAGE_Exclaim, "Override required!");
 
-		_sceneBlockData.clear();
-		_entryShader->genActorBlock(actor, &_sceneBlockData);
-		// _meshBlockData.clear();
-		// _entryShader->genMeshBlock(mesh, &_meshBlockData);
+		_actorBlockData.clear();
+		_entryShader->genActorBlock(actor, &_actorBlockData);
+		_meshBlockData.clear();
+		_entryShader->genMeshBlock(actor->getMesh(), &_meshBlockData);
 		build(actor);
 	}
 
@@ -56,7 +56,7 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 
 	// Update Scene 
 	_sceneBlockData.clear();
-	_entryShader->genSceneBlock(scene, &scene->camera, &_sceneBlockData); 
+	_entryShader->genSceneBlock(scene, &_sceneBlockData); 
 	update(SCENE_RENDERID);
 
 	// Update Render Objects
@@ -64,8 +64,8 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		_actorBlockData.clear();
 		_entryShader->genActorBlock(actor, &_actorBlockData); // TODO: Include mesh updates
-		// _meshBlockData.clear();
-		// _entryShader->genMeshBlock(mesh, &_meshBlockData);
+		_meshBlockData.clear();
+		_entryShader->genMeshBlock(actor->getMesh(), &_meshBlockData);
 		update(actor);
 	}
 

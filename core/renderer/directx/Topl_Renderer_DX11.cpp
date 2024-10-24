@@ -249,6 +249,7 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
 		unsigned long renderID = getRenderID(actor);
 
+		// render block
 		ID3D11Buffer* renderBlockBuff = nullptr;
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
 			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_actorBlockData);
@@ -257,6 +258,16 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 			_blockBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Render_Block, renderBlockBuff) });
 		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Buffer creation failed"); // Error
+
+		// mesh block
+		ID3D11Buffer* meshBlockBuff = nullptr;
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_extBlockBufferMap.at(renderID).buffer, &_meshBlockData);
+		else {
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &meshBlockBuff, &_meshBlockData);
+			_extBlockBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Ext_Block, meshBlockBuff) });
+		}
+		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Mesh Buffer creation failed"); // Error
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;
@@ -288,6 +299,9 @@ void Topl_Renderer_DX11::update(const Geo_Actor* actor){
 
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end())
 			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_blockBufferMap.at(renderID).buffer, &_actorBlockData);
+
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createBlockBuff(&_device, &_extBlockBufferMap.at(renderID).buffer, &_meshBlockData);
 	}
 }
 

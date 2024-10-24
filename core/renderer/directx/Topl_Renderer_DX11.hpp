@@ -38,7 +38,7 @@ protected:
 	DX11::Pipeline* _pipeline = nullptr;
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
-	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
 	std::vector<DX11::Texture> _textures;
 	std::map<unsigned long, DX11::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
 private:

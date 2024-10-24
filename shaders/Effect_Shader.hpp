@@ -12,19 +12,19 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	Effect_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
+		Topl_EntryShader::genActorBlock(actor, bytes);
+	}
+
+	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 	
-		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
+		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
 
 		sendTracerData(bytes);
-	}
-
-	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
-		Topl_EntryShader::genActorBlock(actor, bytes);
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }

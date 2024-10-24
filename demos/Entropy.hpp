@@ -21,23 +21,17 @@ struct Entropy_Demo : public Topl_Program {
         backdropActor.setPos({ 0.0F, 0.0F, -0.1F });
         for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
-                case ENTROPIC_TRIG: actors[a] = Geo_Actor(&trigs[a / 4]); break;
-                case ENTROPIC_QUAD: actors[a] = Geo_Actor(&quads[a / 4]); break;
-                case ENTROPIC_HEX: actors[a] = Geo_Actor(&hexes[a / 4]); break;
-                case ENTROPIC_CIRCLE: actors[a] = Geo_Actor(&circles[a / 4]); break;
-            }
-            actors[a].setName("actor" + std::to_string(a));
-            actors[a].setPos({ (float)rand() / (float)RAND_MAX - 0.5f, (float)rand() / (float)RAND_MAX - 0.5f, 0.0 });
-            actors[a].setRot({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, });
-            float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
-            actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
-
-            switch(a % 4){
                 case ENTROPIC_TRIG: surface_actors[a] = Geo_Actor(&trigs[a / 4]); conic_actors[a] = Geo_Actor(&trigsCones[a / 4]); volume_actors[a] = Geo_Actor(&trigs3D[a / 4]); break;
                 case ENTROPIC_QUAD: surface_actors[a] = Geo_Actor(&quads[a / 4]); conic_actors[a] = Geo_Actor(&quadsCones[a / 4]); volume_actors[a] = Geo_Actor(&quads3D[a / 4]); break;
                 case ENTROPIC_HEX: surface_actors[a] = Geo_Actor(&hexes[a / 4]); conic_actors[a] = Geo_Actor(&hexesCones[a / 4]); volume_actors[a] = Geo_Actor(&hexes3D[a / 4]); break;
                 case ENTROPIC_CIRCLE: surface_actors[a] = Geo_Actor(&circles[a / 4]); conic_actors[a] = Geo_Actor(&circlesCones[a / 4]); volume_actors[a] = Geo_Actor(&circles3D[a / 4]); break;
             }
+
+            surface_actors[a].setName("actor_surface" + std::to_string(a));
+            surface_actors[a].setPos({ (float)rand() / (float)RAND_MAX - 0.5f, (float)rand() / (float)RAND_MAX - 0.5f, 0.0 });
+            surface_actors[a].setRot({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, });
+            float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
+            surface_actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
             
             // Extended Geometry & Actors
 
@@ -80,8 +74,8 @@ struct Entropy_Demo : public Topl_Program {
 
     Topl_Scene* getScene(){
         switch(mode % 6){
-            // case 1: return &scene2;
-            // case 2: return &scene3;
+            case 1: return &scene2;
+            case 2: return &scene3;
             case 3: return &ext_scene1;
             case 4: return &ext_scene2;
             case 5: return &ext_scene3;
@@ -96,7 +90,7 @@ struct Entropy_Demo : public Topl_Program {
     Geo_Quad2D quads[ENTROPIC_COUNT / 4]; Geo_QuadCone quadsCones[ENTROPIC_COUNT / 4]; Geo_Quad3D quads3D[ENTROPIC_COUNT / 4];
     Geo_Hex2D hexes[ENTROPIC_COUNT / 4]; Geo_HexCone hexesCones[ENTROPIC_COUNT / 4]; Geo_Hex3D hexes3D[ENTROPIC_COUNT / 4];
     Geo_Circle2D circles[ENTROPIC_COUNT / 4]; Geo_CircleCone circlesCones[ENTROPIC_COUNT / 4]; Geo_Circle3D circles3D[ENTROPIC_COUNT / 4];
-    Geo_Actor actors[ENTROPIC_COUNT];
+    // Geo_Actor actors[ENTROPIC_COUNT];
     Geo_Actor surface_actors[ENTROPIC_COUNT]; Geo_Actor conic_actors[ENTROPIC_COUNT]; Geo_Actor volume_actors[ENTROPIC_COUNT];
 
     std::vector<Geo_Ext2D*> surfaceMeshes; std::vector<Geo_ExtCone*> coneMeshes; std::vector<Geo_Ext3D*> volumeMeshes;

@@ -26,9 +26,6 @@ struct Volume { // TODO: Change to Shape3D
 
 // Mesh Object
 
-#include <iostream>
-#include <string>
-
 class Geo_Mesh {
 public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
@@ -46,7 +43,6 @@ public:
 	}
 	
 	Geo_Mesh(Geo_Mesh& refMesh){
-		if(refMesh.getVertexCount() == 0) std::cerr << "Mesh with no vertices detected" << std::endl;
 		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
 		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
 	}
@@ -59,7 +55,7 @@ public:
 	// void rotate(Vec3f angles) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
 
-	Vec3f getOrigin(){ return Vec3f({ 0.0F, 0.0F, 0.0F }); } // TODO: Compute origin
+	Vec3f getOrigin() const { return Vec3f({ 0.0F, 0.0F, 0.0F }); } // TODO: Compute origin
 	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
 	size_t getVertexCount() const { return _vertices.size(); }
 	vertex_cptr_t getVertices() const { return _vertices.data(); }

@@ -48,10 +48,6 @@ struct FirstPerson_Demo : public Topl_Program {
         models[2].shift({ 1.5F, -1.75, 1.0F });
         models[3].shift({ -1.5F, -1.75F, -1.0F });
         models[4].shift({ 1.5F, -1.75, -1.0F });
-        for(unsigned m = 0; m < 5; m++){ 
-            models[m].shift({ -5.0F, 0.0F, 0.0F }); // offset start for rotation
-            models[m].rotateAll({ -0.5F, 0.0F, 0.0F });
-        }
     }
 
     void init() override;

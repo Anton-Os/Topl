@@ -24,7 +24,7 @@ enum BUFF_Type {
     BUFF_Vertex_Type = 0, // vertex buffer type
     BUFF_Index_UI = 1, // index buffer type
     BUFF_Render_Block = 2, // render block buffer type
-    // BUFF_Ext_Block = 3, // extended block buffer type
+    BUFF_Ext_Block = 3, // extended block buffer type
 };
 
 struct Topl_Buffer : public Topl_RenderObj {
@@ -97,9 +97,9 @@ enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip }
 #define INVALID_RENDERID (unsigned long)- 1
 
 #define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
-#define CLEAR_R 0.0F // 0.290196F // red clear color code
-#define CLEAR_G 0.0F // 0.254902F // green clear color code
-#define CLEAR_B 0.0F // 0.164706F // blue clear color code
+#define CLEAR_R 0.25F // 0.290196F // red clear color code
+#define CLEAR_G 0.25F // 0.254902F // green clear color code
+#define CLEAR_B 0.25F // 0.164706F // blue clear color code
 #define CLEAR_A 1.0F // used for alpha channel clear color
 
 #define BUILD_BIT 0  // switch to true when build operation succeeds in _flags
@@ -111,7 +111,7 @@ class Topl_Renderer {
 public:
 	Topl_Renderer(NATIVE_PLATFORM_CONTEXT* context){ _platformCtx = context; }
 
-    void setCamera(const Topl_Camera* camera);
+    // void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);

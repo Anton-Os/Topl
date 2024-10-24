@@ -1,9 +1,12 @@
 #include <string>
+#include <thread>
 
 #include "support_def.h"
 
 #define DEFAULT_IMG_HEIGHT 256 * 4
 #define DEFAULT_IMG_WIDTH 256 * 4
+
+// typedef Rasteron_Image* (*imageCallback)();
 
 struct TaggedImg { // Refresh State
 	char** tag; // must update when out of date
@@ -29,12 +32,12 @@ struct Img_Base : public TaggedImg {
 
     void setColorImage(unsigned color){
 		cleanup();
+		// std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, c); }, color);
 		image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
 		tag = &image->name;
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
-		printf("Loading image for %s", filePath.c_str());
         image = loadImgOp(filePath.c_str()); // TODO: This may screw up image loading
 		tag = &image->name;
     }
@@ -53,7 +56,6 @@ struct Img_Base : public TaggedImg {
     Rasteron_Image* getImage() const { return image; }
 protected:
 	void cleanup() override {
-		// puts("Img_Base destroyed");
 		if (image != NULL) {
 			RASTERON_DEALLOC(image);
 			image = NULL; // reset

@@ -95,8 +95,9 @@ public:
 	const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
 	unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
+	virtual void genSceneBlock(scene_cptr scene, blockBytes_t* bytes) const {
 		static Timer_Dynamic dynamic_ticker = Timer_Dynamic(0.0);
+		Topl_Camera* camera = scene->camera;
 		double timeElapse = dynamic_ticker.getAbsSecs();
 
 		// _sceneBlock_bytes.clear();
@@ -114,17 +115,15 @@ public:
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);
-
 	}
 
 	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? mesh->getVertexCount() : 1), sizeof(unsigned), 0, bytes);
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? mesh->instanceCount : 1), sizeof(unsigned), 0, bytes);
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? 1 : 1), sizeof(unsigned), 0, bytes); // TODO: Refine this
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? 1 : 1), sizeof(unsigned), 0, bytes); // TODO: Refine this
+		unsigned vertexCount = mesh->getVertexCount();
+		Vec3f origin = mesh->getOrigin();
 
-		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getVertexCount() : &_defaultScalar), sizeof(unsigned), bytes); // vertex count
-		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->get0rigin() : &_defaultVec), sizeof(Vec3f), bytes); // origin
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), 12, bytes);
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), 12, bytes);
+		// appendDataToBytes((uint8_t*)((mesh != nullptr)? &origin : &_defaultVec), sizeof(Vec3f), bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 	}
 
@@ -136,6 +135,7 @@ protected:
 private:
 	std::vector<Shader_Type> _inputs; // inputs are required for vertex layout
 	Vec3f _defaultVec = VEC_3F_ZERO;
+	uint8_t _defaultNum = 1;
 	float _defaultScalar = 1.0f;
 	Mat4x4 _defaultMat = MAT_4x4_IDENTITY;
 };

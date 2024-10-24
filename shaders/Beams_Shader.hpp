@@ -35,8 +35,8 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	Beams_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Beams_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	virtual void genSceneBlock(const Topl_Scene* const scene, const Topl_Camera* const camera, blockBytes_t* bytes) const {
-		Topl_EntryShader::genSceneBlock(scene, camera, bytes);
+	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
+		Topl_EntryShader::genSceneBlock(scene, bytes);
 		sendLightData(&skyLight, bytes);
 		sendLightData(&flashLight, bytes);
 		sendLightData(&lampLight, bytes);

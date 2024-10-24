@@ -93,8 +93,8 @@ void FirstPerson_Demo::init(){
 }
 
 void FirstPerson_Demo::loop(double frameTime){
-    scene2D.camera = Topl_Program::cameraObj;
-    scene3D.camera = Topl_Program::cameraObj;
+    scene2D.camera = &Topl_Program::cameraObj;
+    scene3D.camera = &Topl_Program::cameraObj;
 
     {
 #ifdef TOPL_ENABLE_PHYSICS
@@ -119,13 +119,13 @@ void FirstPerson_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 
-        models[0].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
-        models[1].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / -500.0F });
-        models[2].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / 500.0F });
-        models[3].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / -500.0F });
-        models[4].rotateAll({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 100.0F,  0.0F, (float)frameTime / 500.0F });
-        for(unsigned m = 0; m < 5; m++)
-            models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
+        models[0].rotateAll({ 0.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
+        models[1].rotateAll({ 0.0F, 0.0F, (float)frameTime / -500.0F });
+        models[2].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
+        models[3].rotateAll({ 0.0F, 0.0F, (float)frameTime / -500.0F });
+        models[4].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
+        // for(unsigned m = 0; m < 5; m++)
+        //    models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
 
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
         _texVShader.setMode(0);
@@ -134,15 +134,6 @@ void FirstPerson_Demo::loop(double frameTime){
         _texVShader.setTexScroll({ 0.0F, _renderer->getFrameCount() * 0.01F, 0.0F });
         _renderer->updateScene(&scene3D);
         _renderer->drawScene(&scene3D);
-        /* _renderer->draw(&_DEMO->floor);
-        _renderer->draw(&_DEMO->roof);
-        for(unsigned p = 0; p < 4; p++) _renderer->draw(&_DEMO->pillars[p]); */
-        for(unsigned m = 0; m < 5; m++) 
-            for(unsigned s = 0; s < _DEMO->models[m].getActorCount(); s++){
-                _texVShader.setMode(m + 1);
-                _renderer->updateScene(&scene3D);
-                _renderer->draw(_DEMO->models[m].getGeoActor(s));
-            }
 
         _texVShader.setTexScroll({ 0.0F, 0.0F, 0.0F });
     }

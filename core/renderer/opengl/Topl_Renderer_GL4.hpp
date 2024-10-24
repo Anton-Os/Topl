@@ -37,7 +37,7 @@ protected:
 	GL4::Pipeline* _pipeline;
 
 	std::map<unsigned long, GL4::VertexArray> _vertexArrayMap;
-	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap;
+	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
 	std::vector<GL4::Texture> _textures; // active textures
 	std::map<unsigned long, GL4::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
 private:

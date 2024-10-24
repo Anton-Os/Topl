@@ -230,7 +230,7 @@ void Sandbox_Demo::loop(double frameTime){
         overlayThread = std::thread([this](){ updateOverlay(); }); // rerun thread
     } */
     updateOverlay();
-    mainScene.camera = Sandbox_Demo::cameraObj;
+    mainScene.camera = &Sandbox_Demo::cameraObj;
     
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
         _renderer->setCamera(&fixedCamera);
@@ -376,7 +376,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 int main(int argc, char** argv) {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);
