@@ -121,19 +121,20 @@ void Topl_Program::run(){
 		for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
 		for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
-		_renderer->clear(); // clears view to solid color
-		Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Remove Backend component
-		loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
-		_renderer->present(); // switches front and back buffers
+		if(_renderer != nullptr){
+			_renderer->clear(); // clears view to solid color
+			Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Remove Backend component
+			loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
+			_renderer->present(); // switches front and back buffers
+		}
 #ifdef RASTERON_H
 		/* Img_Base frameImg = _renderer->frame();
 		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
 		RASTERON_DEALLOC(frameImg.getImage()); */
 #endif
-		/* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1]){
-			std::cout << "Setting last picker coordinate" << std::endl;
+		/* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
 			Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
-		} */
+	 	*/
 	}
 
 	cleanup();

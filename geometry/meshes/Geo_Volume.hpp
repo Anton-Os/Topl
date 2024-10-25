@@ -4,14 +4,14 @@
 
 class Geo_Volume : public Geo_Mesh {
 public:
-	Geo_Volume(Shape shape, float depth);
+	Geo_Volume(Shape2D  shape,float depth);
 	Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth);
 
 	float getRadius(){ return _shape.radius; }
 	unsigned short getSegments(){ return _shape.segments; }
 	float getDepth(){ return _depth; }
 private:
-	Shape _shape;
+	Shape2D  _shape;
 	float _depth = 1.0F;
 };
 
@@ -40,7 +40,7 @@ struct Geo_Circle3D : public Geo_Volume {
 };
 
 struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
-	Geo_Ext3D(Shape shape, float depth, unsigned short iters);
+	Geo_Ext3D(Shape2D shape, float depth, unsigned short iters);
 	Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth, unsigned short iters);
 
 	unsigned short _iters;

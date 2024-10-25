@@ -1,6 +1,6 @@
 #include "Geo_Cone.hpp"
 
-Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
+Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 	_shape = shape;
 	_apex = apex;
 
@@ -57,7 +57,7 @@ Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape
 	}
 }
 
-Geo_ExtCone::Geo_ExtCone(Shape shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
+Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
 	_iters = iters;
 
 	for(unsigned i = 0; i < iters; i++){

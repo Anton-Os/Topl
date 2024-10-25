@@ -4,14 +4,14 @@
 
 class Geo_Surface : public Geo_Mesh {
 public:
-	Geo_Surface(Shape shape, float z);
+	Geo_Surface(Shape2D  shape,float z);
 	Geo_Surface(vertex_cptr_t points, unsigned short pointCount);
 
 	float getRadius(){ return _shape.radius; }
 	unsigned short getSegments(){ return _shape.segments; }
 private:
 
-	Shape _shape = { 0.0F, 0 };
+	Shape2D  _shape = { 0.0F, 0 };
 	float _depth = DEFAULT_Z;
 };
 
@@ -40,7 +40,7 @@ struct Geo_Circle2D : public Geo_Surface {
 };
 
 struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided portions
-	Geo_Ext2D(Shape shape, float z, unsigned short iters);
+	Geo_Ext2D(Shape2D shape, float z, unsigned short iters);
 	Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters);
 
 	unsigned short _iters;

@@ -219,7 +219,19 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 #elif defined(__ANDROID__)
 
-void Platform::createWindow(unsigned width, unsigned height){ }
+/* void android_proc(android_app *app, int32_t cmd) {
+    switch (cmd) {
+        case APP_CMD_INIT_WINDOW: _context.window = app->window; break;
+        case APP_CMD_TERM_WINDOW: break;
+        default: break;
+    }
+} */
+
+void Platform::createWindow(unsigned width, unsigned height){
+	while(_context.window == nullptr){
+		// Waiting for window to appear on event...
+	}
+}
 
 bool Platform::handleEvents(){
     // static int events;

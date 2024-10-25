@@ -1,6 +1,6 @@
 #include "Geo_Volume.hpp"
 
-Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
+Geo_Volume::Geo_Volume(Shape2D shape, float depth) : Geo_Mesh((shape.segments + 1) * 2, shape.segments * 12) {
 	_shape = shape;
 	_depth = depth;
 	
@@ -92,7 +92,7 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 	}
 }
 
-Geo_Ext3D::Geo_Ext3D(Shape shape, float depth, unsigned short iters) : Geo_Volume(shape, depth){
+Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Volume(shape, depth){
 	_iters = iters;
 
 	unsigned short svCount = getVertexCount(); // start vertex count

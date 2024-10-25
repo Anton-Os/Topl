@@ -14,15 +14,17 @@
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
-struct Shape {  // TODO: Change to Shape2D
+struct Shape2D {
 	float radius;
     unsigned short segments;
 };
 
-struct Volume { // TODO: Change to Shape3D
+struct Shape3D {
 	float radius;
 	unsigned short xSegs, ySegs;
 };
+
+enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip };
 
 // Mesh Object
 
@@ -64,7 +66,7 @@ public:
 
 	bool instanceCount = 0;
     bool isTesselated = false;
-    // DRAW_Mode drawMode = DRAW_Triangles; // Include draw mode as part of mesh?
+    DRAW_Mode drawMode = DRAW_Triangles; // Include draw mode as part of mesh?
 protected:
 	virtual void genVertices(){}
 	virtual void genIndices(){}

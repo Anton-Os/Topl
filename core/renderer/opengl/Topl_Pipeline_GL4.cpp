@@ -92,7 +92,7 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	std::string fragShaderSrc = pixelShader->getFileSource();
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
 	if (pipeline->pixelShader == 0) pipeline->isReady = false;
-
+#ifndef __ANDROID__
 	// Geometry Shader
 
 	if (geomShader != nullptr) { // optional stage
@@ -116,7 +116,7 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 		pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
 		if(pipeline->tessEvalShader == 0) pipeline->isReady = false;
 	}
-
+#endif
 	// Program Linking
 
 	linkShaders(pipeline, vertexShader, pixelShader, geomShader, tessCtrlShader, tessEvalShader);

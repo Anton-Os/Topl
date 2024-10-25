@@ -1,6 +1,6 @@
 #include "Geo_Surface.hpp"
 
-Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, shape.segments * 3){
+Geo_Surface::Geo_Surface(Shape2D shape, float z) : Geo_Mesh(shape.segments + 1, shape.segments * 3){
 	_shape = shape;
 	_depth = z;
 	
@@ -33,7 +33,7 @@ Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, sh
 	_indices[_indices.size() - 1] = 1;
 }
 
-Geo_Ext2D::Geo_Ext2D(Shape shape, float z, unsigned short iters) : Geo_Surface(shape, z){
+Geo_Ext2D::Geo_Ext2D(Shape2D shape, float z, unsigned short iters) : Geo_Surface(shape, z){
 	_iters = iters;
 	
 	unsigned short svCount = getVertexCount(); // start vertex count

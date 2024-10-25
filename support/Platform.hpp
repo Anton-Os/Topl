@@ -21,6 +21,9 @@ struct Platform {
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;
 		_winName = winName;
+#ifdef __ANROID__
+        _context.window = nullptr; // window set to zero
+#endif
         resetCursor();
     }
 

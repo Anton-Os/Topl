@@ -73,8 +73,6 @@ struct Topl_Viewport {
 
 // Renderer
 
-enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip };
-
 #define DRAW_NORMAL true
 #define DRAW_INVERSE false
 

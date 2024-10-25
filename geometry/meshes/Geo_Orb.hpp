@@ -22,7 +22,7 @@ public:
 		genVertices(); genIndices();
 	}
 
-	Geo_Orb(Volume shape) : Geo_Mesh(
+	Geo_Orb(Shape3D shape) : Geo_Mesh(
 		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
 		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count
 	){
@@ -35,7 +35,7 @@ private:
 	void genVertices() override;
 	void genIndices() override;
 
-	Volume _shape;
+	Shape3D _shape;
 };
 
 #define GEO_SPHERE_H
