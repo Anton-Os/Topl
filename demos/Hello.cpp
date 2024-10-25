@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 	if(TARGET_BACKEND != BACKEND_VK){
 		triangle.isTesselated = true;
 		scene.addGeometry(&actor);
-		renderer->setDrawMode(DRAW_Triangles);
+		renderer->setDrawMode(DRAW_Patch); // renderer->setDrawMode(DRAW_Triangles);
 		renderer->buildScene(&scene);
 	}
 

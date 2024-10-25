@@ -261,7 +261,7 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 	case DRAW_Fan: _drawMode_GL4 = GL_TRIANGLE_FAN; break;
 	case DRAW_Strip: _drawMode_GL4 = GL_TRIANGLE_STRIP; break;
 #ifndef __ANDROID__
-	case DRAW_Patch: _drawMode_GL4 = GL_PATCHES;
+	case DRAW_Patch: _drawMode_GL4 = GL_PATCHES; break;
 #endif
 	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported!");
 	}
@@ -288,6 +288,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer);
 		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, EXT_BLOCK_BINDING, _extBlockBufferMap.at(renderID).buffer);
 
 		// Texture Updates 
 	
@@ -304,13 +305,8 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-#ifndef __ANDROID__
-            if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
-                glDrawElements((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-            else glDrawArrays((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
-#else
-            glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0);
-#endif
+            if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+            else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
 		}
 		// TODO: Include instanced draw call
 		else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");

@@ -33,6 +33,7 @@ protected:
 	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
+	void setConstBufferData(ID3D11Buffer* buffer, unsigned short binding);
 
 	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	DX11::Pipeline* _pipeline = nullptr;

@@ -30,11 +30,10 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 #ifdef _WIN32
 // DirectX Test Renderer
 struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
-	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context)
-	: Topl_Renderer_DX11(context){
-		// genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		// genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
-		// genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
+	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_DX11(context){
+		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 	}
 

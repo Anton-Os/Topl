@@ -314,7 +314,7 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
 	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
 	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
-	case DRAW_Patch: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCH); break;
+	case DRAW_Patch: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST); break;
 	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
@@ -323,10 +323,7 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 	unsigned long renderID = _renderTargetMap[actor];
 
 	if(renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target
-		if (_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) {
-			_deviceCtx->VSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
-			_deviceCtx->PSSetConstantBuffers(SCENE_BLOCK_BINDING, 1, &_blockBufferMap.at(SCENE_RENDERID).buffer);
-		}
+		if(_blockBufferMap.find(SCENE_RENDERID) != _blockBufferMap.end()) setConstBufferData(_blockBufferMap.at(SCENE_RENDERID).buffer, SCENE_BLOCK_BINDING);
 		for(unsigned b = 0; b < MAX_TEX_BINDINGS - 1; b++){
 			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const DX11::Texture& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b + 1; });
 			if (tex2D != _textures.end()){
@@ -338,10 +335,8 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 	else if(renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
 		// Data & Buffer Updates
 
-		if (_blockBufferMap.find(renderID) != _blockBufferMap.end()) {
-			_deviceCtx->VSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
-			_deviceCtx->PSSetConstantBuffers(RENDER_BLOCK_BINDING, 1, &_blockBufferMap.at(renderID).buffer);
-		}
+		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) setConstBufferData(_blockBufferMap.at(renderID).buffer, RENDER_BLOCK_BINDING);
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) setConstBufferData(_extBlockBufferMap.at(renderID).buffer, EXT_BLOCK_BINDING);
 
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
 			_deviceCtx->IASetVertexBuffers(0, 1, &_vertexBufferMap.at(renderID).buffer, &_vertexStride, &_vertexOffset);
@@ -366,7 +361,6 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-			i
 			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) _deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
 			else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
 		}
@@ -374,6 +368,14 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 		else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 	}
 } 
+
+void Topl_Renderer_DX11::setConstBufferData(ID3D11Buffer* buffer, unsigned short binding){
+	_deviceCtx->VSSetConstantBuffers(binding, 1, &buffer);
+	_deviceCtx->PSSetConstantBuffers(binding, 1, &buffer);
+	if(_pipeline->geomShader != nullptr) _deviceCtx->GSSetConstantBuffers(binding, 1, &buffer);
+	if(_pipeline->domainShader != nullptr) _deviceCtx->DSSetConstantBuffers(binding, 1, &buffer);
+	if(_pipeline->hullShader != nullptr) _deviceCtx->HSSetConstantBuffers(binding, 1, &buffer);
+}
 
 #ifdef RASTERON_H
 
