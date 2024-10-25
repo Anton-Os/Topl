@@ -110,6 +110,7 @@ struct VectorXI {
 
 template <unsigned short r, unsigned short c>
 struct Matrix {
+    Matrix(){}
     Matrix(std::initializer_list<float> values){
         unsigned i = 0;
         for(float value : values) {
@@ -122,7 +123,22 @@ struct Matrix {
 
     // float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
 
-    Matrix operator* (const Matrix& input) { return {}; } // TODO: implement multiplication
+    Matrix operator* (const Matrix& input) {
+        Matrix<r, c> result = Matrix<r, c>();
+        for(unsigned row1 = 0; row1 < r; row1++)
+            for(unsigned col = 0; col < c; col++)
+                for(unsigned row2 = 0; row2 < r; row2++) // for now matrices have to match
+                    result.data[row1][col] += data[row1][row2] * input.data[row2][col];
+        return result;
+    }
+
+    VectorXF<r> operator* (const VectorXF<r>& input){
+        VectorXF<r> result = VectorXF<r>();
+        for(unsigned row = 0; row < r; row++)
+            for(unsigned col = 0; col < c; col++)
+                result[row] += data[row][col] * input.data[col];
+        return result;
+    }
 };
 
 typedef const unsigned* const ui_cptr_t;
@@ -152,8 +168,9 @@ typedef const Mat4x4* const mat4x4_cptr_t;
 #define VEC_3F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f })
 #define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
 
+#define MAT_3x3_IDENTITY Mat3x3({ 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f })
 #define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
-#define MAT_4x4_TEST Mat4x4({{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }})
+// #define MAT_4x4_TEST Mat4x4({{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }})
 
 #define MATHS_H
 #endif

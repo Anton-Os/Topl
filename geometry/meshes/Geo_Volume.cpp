@@ -100,7 +100,7 @@ Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Vol
 
 	for(unsigned l = 0; l < iters; l++)
 		for(unsigned p = 0; p < shape.segments; p++){
-			Geo_Vertex newVertex = _vertices[p];
+            /* Geo_Vertex newVertex = _vertices[p];
 			newVertex.position.data[2] += depth * (l + 1);
 			_vertices.push_back(newVertex);
 
@@ -115,7 +115,7 @@ Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Vol
 				_indices.push_back(_vertices.size() - 2 - v);
 				_indices.push_back(v + 1);
 				v++;
-			}
+            } */
 		}
 }
 
@@ -196,10 +196,10 @@ Geo_Ext3D::Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float dept
 			unsigned v = p + svCount;
 			for(unsigned i = siCount; i < siCount + (pointCount * 6); i += 6){ // indexing sides
 				_indices.push_back(v);
-				_indices.push_back(_vertices.size() - 1 - v);
+                _indices.push_back(svCount - 1 - v);
 				_indices.push_back(v + 1);
-				_indices.push_back(_vertices.size() - 1 - v);
-				_indices.push_back(_vertices.size() - 2 - v);
+                _indices.push_back(svCount - 1 - v);
+                _indices.push_back(svCount - 2 - v);
 				_indices.push_back(v + 1);
 				v++;
 

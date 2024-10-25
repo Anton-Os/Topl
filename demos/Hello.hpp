@@ -15,7 +15,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
-		setPipeline(&tessOnlyPipeline);
+        setPipeline(&geoOnlyPipeline);
 	}
 
 	GL4::Pipeline basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;

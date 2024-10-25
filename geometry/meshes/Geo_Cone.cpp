@@ -60,12 +60,32 @@ Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, sha
 Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
 	_iters = iters;
 
-	for(unsigned i = 0; i < iters; i++){
-		for(unsigned s = 0; s < shape.segments; s++){
-			// TODO: Perform vertex generation
-			// TODO: Perform indexing
-		}
-	}
+    unsigned short svCount = getVertexCount(); // start vertex count
+    unsigned short siCount = getIndexCount(); // start index count
+
+    for(unsigned l = 0; l < iters; l++)
+        for(unsigned p = 0; p < shape.segments; p++){
+            /* Geo_Vertex newVertex = _vertices[p];
+            newVertex.position.data[0] *= 1.1; // for testing
+            newVertex.position.data[1] *= 1.1; // for testing
+            newVertex.position.data[2] += apex.data[2] * (l + 1);
+            _vertices.push_back(newVertex);
+
+            // TODO: Index face?
+
+            unsigned v = p + svCount;
+            for(unsigned i = siCount; i < siCount + (shape.segments * 6); i += 6){ // indexing sides
+                _indices.push_back(v);
+                _indices.push_back(_vertices.size() - 1 - v);
+                _indices.push_back(v + 1);
+                _indices.push_back(_vertices.size() - 1 - v);
+                _indices.push_back(_vertices.size() - 2 - v);
+                _indices.push_back(v + 1);
+                v++;
+
+                // printf("Conic vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
+            } */
+        }
 }
 
 Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
@@ -116,7 +136,7 @@ Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f 
 
 	for(unsigned l = 0; l < iters; l++)
 		for(unsigned p = 0; p < pointCount; p++){
-			Geo_Vertex newVertex = _vertices[p];
+            Geo_Vertex newVertex = _vertices[p];
 			newVertex.position.data[0] *= 1.1; // for testing
 			newVertex.position.data[1] *= 1.1; // for testing
 			newVertex.position.data[2] += apex.data[2] * (l + 1);
@@ -135,6 +155,6 @@ Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f 
 				v++;
 				
 				// printf("Conic vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
-			}
+            }
 		}
 }

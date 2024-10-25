@@ -44,7 +44,7 @@ public:
 		}
 	}
 	
-	Geo_Mesh(Geo_Mesh& refMesh){
+    Geo_Mesh(const Geo_Mesh& refMesh){
 		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
 		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
 	}
@@ -54,10 +54,14 @@ public:
 			*(&v->position) = callback(v->position, transform);
 	}
 	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
-	// void rotate(Vec3f angles) { modify(rotateTForm, transform); } // rotates position attribute
+    void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
 
-	Vec3f getOrigin() const { return Vec3f({ 0.0F, 0.0F, 0.0F }); } // TODO: Compute origin
+    Vec3f getOrigin() const {
+        Vec3f origin = VEC_3F_ZERO;
+        for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
+        return origin * Vec3f({ 1.0F / getVertexCount(), 1.0F / getVertexCount(), 1.0F / getVertexCount() });
+    }
 	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
 	size_t getVertexCount() const { return _vertices.size(); }
 	vertex_cptr_t getVertices() const { return _vertices.data(); }

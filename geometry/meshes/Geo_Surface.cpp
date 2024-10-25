@@ -15,9 +15,9 @@ Geo_Surface::Geo_Surface(Shape2D shape, float z) : Geo_Mesh(shape.segments + 1, 
 		});
 
 		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
-		Vec3f texcoord = getTexCoord(pos);
-		_vertices[v] = Geo_Vertex(pos, texcoord);
-	}
+        Vec3f texcoord = getTexCoord(pos);
+        _vertices[v] = Geo_Vertex(pos, texcoord);
+    }
 
 	v = 1; // tracks current vertex
 	for (unsigned i = 0; i < _indices.size() - 3; i += 3) {

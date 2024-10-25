@@ -322,11 +322,16 @@ bool Platform::handleEvents(){
 
         switch(event.type){
         case (KeyPress): {
-            // const char key = translateKey(event.xkey.keycode); // see GLFW x11_window.c line 1258
-            Platform::keyControl.addKeyPress((char)event.xkey.keycode); // keycode needs to be converted!
-            printf("Key press: %c \n", (char)event.xkey.keycode);
+            KeySym keysym = XLookupKeysym(&event.xkey, 0);
+            Platform::keyControl.addKeyPress((char)keysym); // keycode needs to be converted!
+            printf("Key press: %c \n", (char)keysym);
         }
-        case (ButtonPress): { printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos); }
+        case (ButtonPress): {
+            printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos);
+        }
+        case (ButtonRelease): {
+            printf("Button release at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos);
+        }
         case (MotionNotify): { }
         /* case (DestroyNotify): {
            std::cout << "DestroyNotify event triggered" << std::endl;
@@ -339,11 +344,15 @@ bool Platform::handleEvents(){
 }
 
 unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
-    return TOPL_WIN_HEIGHT; // TODO: get height here
+    XWindowAttributes windowAttribs;
+    // XGetWindowAttributes(XOpenDisplay(NULL), window, &windowAttribs);
+    return TOPL_WIN_HEIGHT; // windowAttribs.height;
 }
 
 unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
-    return TOPL_WIN_WIDTH; // TODO: get height here
+    XWindowAttributes windowAttribs;
+    // XGetWindowAttributes(XOpenDisplay(NULL), window, &windowAttribs);
+    return TOPL_WIN_WIDTH; // windowAttribs.width;
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const {
@@ -357,6 +366,9 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
         &xRoot, &yRoot, &xChild, &yChild,
         &mask
     );
+
+    unsigned height = Platform::getViewportHeight(_context.window);
+    unsigned width = Platform::getViewportWidth(_context.window);
 
     *xPos = xChild; // x needs to be translated!
     *yPos = yChild; // y needs to be translated!

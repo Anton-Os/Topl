@@ -38,25 +38,27 @@ struct Entropy_Demo : public Topl_Program {
             switch(a % 4){
                 case ENTROPIC_TRIG: 
                     surfaceMeshes.push_back(new Geo_Ext2D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone(trigsCones[a / 4].getVertices(), trigsCones[a / 4].getVertexCount(), trigsCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D(trigs3D[a / 4].getVertices(), trigs3D[a / 4].getVertexCount(), trigs3D[a / 4].getDepth(), 1));
+                    coneMeshes.push_back(new Geo_ExtCone({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigsCones[a / 4].getApex(), 1));
+                    volumeMeshes.push_back(new Geo_Ext3D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigs3D[a / 4].getDepth(), 1));
                 break;
                 case ENTROPIC_QUAD: 
                     surfaceMeshes.push_back(new Geo_Ext2D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone(quadsCones[a / 4].getVertices(), quadsCones[a / 4].getVertexCount(), quadsCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D(quads3D[a / 4].getVertices(), quads3D[a / 4].getVertexCount(), quads3D[a / 4].getDepth(), 1));
+                    coneMeshes.push_back(new Geo_ExtCone({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quadsCones[a / 4].getApex(), 1));
+                    volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads3D[a / 4].getDepth(), 1));
                 break;
                 case ENTROPIC_HEX: 
                     surfaceMeshes.push_back(new Geo_Ext2D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone(hexesCones[a / 4].getVertices(), hexesCones[a / 4].getVertexCount(), hexesCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D(hexes3D[a / 4].getVertices(), hexes3D[a / 4].getVertexCount(), hexes3D[a / 4].getDepth(), 1));
+                    coneMeshes.push_back(new Geo_ExtCone({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexesCones[a / 4].getApex(), 1));
+                    volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes3D[a / 4].getDepth(), 1));
                 break;
                 case ENTROPIC_CIRCLE: 
                     surfaceMeshes.push_back(new Geo_Ext2D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone(circlesCones[a / 4].getVertices(), circlesCones[a / 4].getVertexCount(), circlesCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D(circles3D[a / 4].getVertices(), circles3D[a / 4].getVertexCount(), circles3D[a / 4].getDepth(), 1));
+                    coneMeshes.push_back(new Geo_ExtCone({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circlesCones[a / 4].getApex(), 1));
+                    volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles3D[a / 4].getDepth(), 1));
                 break;
             }
+
+            // surfaceMeshes[a]->rotate({ 0.1F * (a + 1), 0.1F * (a + 1), 0.1F * (a + 1) });
 
             surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
             surfaceExt_actors[a].setPropsTo(surface_actors[a]);
@@ -83,8 +85,8 @@ struct Entropy_Demo : public Topl_Program {
         }
     }
 
-    Geo_Quad2D backdropMesh = Geo_Quad2D(100.0);
-    Geo_Actor backdropActor = Geo_Actor(&backdropMesh);
+    Geo_Quad2D* backdropMesh = new Geo_Quad2D(100.0);
+    Geo_Actor backdropActor = Geo_Actor(backdropMesh);
 
     Geo_Trig2D trigs[ENTROPIC_COUNT / 4]; Geo_TrigCone trigsCones[ENTROPIC_COUNT / 4]; Geo_Trig3D trigs3D[ENTROPIC_COUNT / 4];
     Geo_Quad2D quads[ENTROPIC_COUNT / 4]; Geo_QuadCone quadsCones[ENTROPIC_COUNT / 4]; Geo_Quad3D quads3D[ENTROPIC_COUNT / 4];
