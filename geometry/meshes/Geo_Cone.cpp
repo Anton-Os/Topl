@@ -15,7 +15,7 @@ Geo_Cone::Geo_Cone(Shape shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape
 			(float)DEFAULT_Z
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
 		Vec3f texcoord = getTexCoord(pos);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);

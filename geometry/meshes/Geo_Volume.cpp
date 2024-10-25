@@ -14,8 +14,7 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 			(float)DEFAULT_Z + (_depth / 2)
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
-		// Vec3f texcoord = getTexCoord(v, 0.0f);
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // front face normal
 		Vec3f texcoord = getTexCoord(pos);
 
 		_vertices[v] = Geo_Vertex(pos, texcoord);
@@ -29,7 +28,7 @@ Geo_Volume::Geo_Volume(Shape shape, float depth) : Geo_Mesh((shape.segments + 1)
 			(float)DEFAULT_Z - (_depth / 2)
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, 1.0f }); // back face normal
 		// Vec3f texcoord = getTexCoord(v, 0.0f);
 		Vec3f texcoord = getTexCoord(pos);
 
@@ -108,7 +107,7 @@ Geo_Ext3D::Geo_Ext3D(Shape shape, float depth, unsigned short iters) : Geo_Volum
 			// TODO: Index face?
 
 			unsigned v = p + svCount;
-			for(unsigned i = _indices.size(); i < _indices.size() + (shape.segments * 6); i += 6){ // indexing sides
+			for(unsigned i = siCount; i < siCount + (shape.segments * 6); i += 6){ // indexing sides
 				_indices.push_back(v);
 				_indices.push_back(_vertices.size() - 1 - v);
 				_indices.push_back(v + 1);

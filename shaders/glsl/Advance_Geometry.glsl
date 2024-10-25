@@ -1,10 +1,5 @@
 #version 440
 
-#define IGNORE_INPUTS
-#define INCLUDE_EXTBLOCK
-
-#include "Common.glsl"
-
 /* in gl_PerVertex
 {
   vec4 gl_Position;
@@ -32,5 +27,5 @@ void main(void) {
 	gl_Position = gl_in[0].gl_Position + vec4(-0.05, -0.02, 0.0, 0.0);
 	EmitVertex();
 
-  EndPrimitive();
+        EndPrimitive();
 }

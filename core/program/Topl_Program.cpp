@@ -19,7 +19,7 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::cameraObj = Topl_Camera();
 
 static void onAnyKey(char k){
-	if(isalnum(k) || isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
+	if(isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
 	if(Topl_Program::isCamera_keys && isalpha(k)){
 		if(tolower(k) == 'w') Topl_Program::cameraObj.updatePos({ 0.0, 0.1F, 0.0 });

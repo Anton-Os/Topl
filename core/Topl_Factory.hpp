@@ -1,6 +1,10 @@
 #include <typeinfo>
 
-#include "renderer/opengl/Topl_Renderer_GL4.hpp" // at least 1 backend required
+#ifdef __ANDROID__
+#include "../../Droidl_New/app/src/main/cpp/Droidl_Renderer.hpp" // TODO: Correct this path
+#else
+#include "renderer/opengl/Topl_Renderer_GL4.hpp"
+#endif
 #ifdef _WIN32
 #include "renderer/directx/Topl_Renderer_DX11.hpp"
 #endif
@@ -10,16 +14,13 @@
 
 // Backends List
 
-enum BACKEND_Target {
-	BACKEND_GL4,
-	BACKEND_DX11,
-	BACKEND_VK
-};
+enum BACKEND_Target { BACKEND_GL4, BACKEND_DX11, BACKEND_VK };
 
 // Engine Configuration
 
 struct Engine_Config { unsigned pipeIndex; };
 
+#ifndef __ANDROID__
 struct Engine_Config_GL4 : public Engine_Config {
 	Topl_Renderer_GL4* renderer;
 	GL4::Pipeline** pipelines;
@@ -36,6 +37,12 @@ struct Engine_Config_DX11 : public Engine_Config {
 struct Engine_Config_VK : public Engine_Config {
 	Topl_Renderer_VK* renderer;
 	VK::Pipeline** pipelines;
+};
+#endif
+#else
+struct Engine_Config_GL4 : public Engine_Config {
+    Droidl_Renderer* renderer;
+    GL4::Pipeline** pipelines;
 };
 #endif
 
@@ -62,10 +69,12 @@ private:
 	// Engine Instances
 
 	static Engine_Config_GL4 GL4_engine_cfg;
+#ifndef __ANDROID__
 #ifdef _WIN32
 	static Engine_Config_DX11 DX11_engine_cfg;
 #endif
 #ifdef TOPL_ENABLE_VULKAN
 	static Engine_Config_VK VK_engine_cfg;
+#endif
 #endif
 };

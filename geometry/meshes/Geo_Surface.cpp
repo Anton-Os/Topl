@@ -14,8 +14,7 @@ Geo_Surface::Geo_Surface(Shape shape, float z) : Geo_Mesh(shape.segments + 1, sh
 			(float)_depth
 		});
 
-		Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
-		// Vec3f texcoord = getTexCoord(v, 0.0f);
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
 		Vec3f texcoord = getTexCoord(pos);
 		_vertices[v] = Geo_Vertex(pos, texcoord);
 	}

@@ -8,14 +8,37 @@
 // System Definitions
 
 #define GLEW_STATIC
-#include "GL/glew.h"
-#include <GL/gl.h>
+#ifndef __ANDROID__
+    #define MAIN_ENTRY int main(int argc, char** argv)
 
+    #include "GL/glew.h"
+    #include <GL/gl.h>
 #ifdef __linux__
-#include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
+    #include<GL/glx.h> // checkout https://askubuntu.com/questions/306703/compile-opengl-program-missing-gl-gl-h
+#endif
+#else
+    #define MAIN_ENTRY void android_main(struct android_app *pApp)
+
+    #include <EGL/egl.h>
+    #include <GLES3/gl3.h>
 #endif
 
-#ifdef _WIN32
+#ifdef __ANDROID__
+    // #include <game-activity/native_app_glue/android_native_app_glue.c>
+
+    #define NATIVE_WINDOW ANativeWindow*
+    #define NATIVE_GL_CONTEXT EGLContext
+
+    struct Android_Platform_Context { // placeholder value
+        NATIVE_WINDOW window;
+        EGLDisplay display;
+        EGLConfig config;
+        EGLSurface surface;
+        NATIVE_GL_CONTEXT eglCtx;
+    };
+
+    #define NATIVE_PLATFORM_CONTEXT Android_Platform_Context
+#elif defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
     #include <windowsx.h>
@@ -32,7 +55,7 @@
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP
     #define NATIVE_GL_CONTEXT HGLRC
-    
+
     struct Windows_Platform_Context {
         WNDCLASS windowClass;
         NATIVE_WINDOW window;
@@ -69,19 +92,6 @@
     };
 
     #define NATIVE_PLATFORM_CONTEXT Linux_Platform_Context
-    // #elif defined(__ANDROID__) // TODO: Check Android Implementation
-#else // No Support
-    typedef struct Dummy { };
-
-    #define NATIVE_WINDOW Dummy
-    #define NATIVE_GL_CONTEXT Dummy
-
-    struct Dummy_Platform_Context { // placeholder value
-        NATIVE_WINDOW window;
-        NATIVE_GL_CONTEXT oglCtx;
-    };
-
-    #define NATIVE_PLATFORM_CONTEXT Dummy_Platform_Context
 #endif
 
 #define NATIVE_OS_DEF

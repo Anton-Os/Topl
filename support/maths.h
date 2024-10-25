@@ -15,12 +15,12 @@ struct VectorXF {
     bool operator == (const VectorXF& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
-            return true;
+        return true;
     }
     bool operator != (const VectorXF& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
-            return false;
+        return false;
     }
     VectorXF operator +(const VectorXF& inputVec) const {
         VectorXF vec = {};
@@ -38,9 +38,9 @@ struct VectorXF {
         return vec;
     }
     VectorXF operator *(float scalar) const {
-        VectorXF vec = {};
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
-        return vec;
+       VectorXF vec = {};
+       for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
+       return vec;
     }
     float len() const {
         float length = 0.0;
@@ -48,7 +48,7 @@ struct VectorXF {
         return sqrt(length); // pythagorean theorem
     }
     void normalize() {
-        float length = len() * 0.75F; // fix for scaling
+        float length = len() * 0.75;
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
     }
     void randomize() { // randomizes between 0 and 1
@@ -74,12 +74,12 @@ struct VectorXI {
     bool operator == (const VectorXI& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return false; // unequal if one element doesnt match
-            return true;
+        return true;
     }
     bool operator != (const VectorXI& inputVec) const {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++)
             if(data[e] != inputVec.data[e]) return true; // unequal if one element doesnt match
-            return false;
+        return false;
     }
     VectorXI operator +(const VectorXI& inputVec) const {
         VectorXI vec;
@@ -110,7 +110,15 @@ struct VectorXI {
 
 template <unsigned short r, unsigned short c>
 struct Matrix {
-    float data[r][c];
+    Matrix(std::initializer_list<float> values){
+        unsigned i = 0;
+        for(float value : values) {
+            data[i / r][i % r] = value;
+            i++;
+        }
+    }
+
+    float data[r][c]{};
 
     // float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
 
@@ -145,7 +153,7 @@ typedef const Mat4x4* const mat4x4_cptr_t;
 #define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
 
 #define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })
-#define MAT_4x4_TEST Mat4x4({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f })
+#define MAT_4x4_TEST Mat4x4({{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }})
 
 #define MATHS_H
 #endif

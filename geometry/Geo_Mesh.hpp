@@ -63,7 +63,8 @@ public:
 	ui_cptr_t getIndices() const { return _indices.data(); }
 
 	bool instanceCount = 0;
-	bool isTesselated = false;
+    bool isTesselated = false;
+    // DRAW_Mode drawMode = DRAW_Triangles; // Include draw mode as part of mesh?
 protected:
 	virtual void genVertices(){}
 	virtual void genIndices(){}

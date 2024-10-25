@@ -106,7 +106,7 @@ private:
 // Volume based on slices
 
 struct Img_Volume : public TaggedImg { 
-    Img_Volume() : width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH), TaggedImg() {} // Empty Constructor
+    Img_Volume() : TaggedImg(), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
 	Img_Volume(unsigned s) : width(s), height(s), depth(s), TaggedImg() { // Matching Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);

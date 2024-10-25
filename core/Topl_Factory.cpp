@@ -4,7 +4,7 @@ Engine_Config_GL4 Topl_Factory::GL4_engine_cfg = Engine_Config_GL4();
 #ifdef _WIN32
 Engine_Config_DX11 Topl_Factory::DX11_engine_cfg = Engine_Config_DX11();
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 Engine_Config_VK Topl_Factory::VK_engine_cfg = Engine_Config_VK();
 #endif
 
@@ -14,7 +14,7 @@ Topl_Factory::~Topl_Factory(){
 #ifdef _WIN32
     if(DX11_engine_cfg.renderer != nullptr) delete(DX11_engine_cfg.renderer);
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	if(VK_engine_cfg.renderer != nullptr) delete(VK_engine_cfg.renderer);
 #endif
 
@@ -29,7 +29,7 @@ Topl_Factory::~Topl_Factory(){
         free(DX11_engine_cfg.pipelines);
     }
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	if (VK_engine_cfg.pipelines != nullptr) {
 		for (unsigned p = 0; p < VK_engine_cfg.pipeIndex; p++) delete(*(VK_engine_cfg.pipelines + p));
 		free(VK_engine_cfg.pipelines);
@@ -43,7 +43,11 @@ Topl_Renderer* Topl_Factory::genRenderer(BACKEND_Target backend, Platform* platf
     switch(backend){
     case BACKEND_GL4:
         if(GL4_engine_cfg.renderer == nullptr) 
-			GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getContext());
+#ifndef __ANDROID__
+            GL4_engine_cfg.renderer = new Topl_Renderer_GL4(platform->getContext());
+#else
+            GL4_engine_cfg.renderer = new Droidl_Renderer(platform->getContext());
+#endif
         return (Topl_Renderer*)GL4_engine_cfg.renderer;
 #ifdef _WIN32
 	case BACKEND_DX11:
@@ -51,7 +55,7 @@ Topl_Renderer* Topl_Factory::genRenderer(BACKEND_Target backend, Platform* platf
 			DX11_engine_cfg.renderer = new Topl_Renderer_DX11(platform->getContext());
         return (Topl_Renderer*)DX11_engine_cfg.renderer;
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	case BACKEND_VK:
 		if (VK_engine_cfg.renderer == nullptr) 
 			VK_engine_cfg.renderer = new Topl_Renderer_VK(platform->getContext());
@@ -70,7 +74,7 @@ void Topl_Factory::configPipelines() {
 	if (DX11_engine_cfg.pipelines == nullptr) 
 		DX11_engine_cfg.pipelines = (DX11::Pipeline**)malloc(MAX_PIPELINES * sizeof(DX11::Pipeline*));
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	if (VK_engine_cfg.pipelines == nullptr) 
 		VK_engine_cfg.pipelines = (VK::Pipeline**)malloc(MAX_PIPELINES * sizeof(VK::Pipeline*));
 #endif
@@ -100,7 +104,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
             return *pipeline;
         }
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	case BACKEND_VK:
 		if(VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
@@ -139,7 +143,7 @@ Topl_Pipeline* Topl_Factory::genPipeline(BACKEND_Target backend, entry_shader_cp
 			return *pipeline;
 		}
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	case BACKEND_VK:
 		if (VK_engine_cfg.renderer == nullptr) return nullptr; // Error
 		else {
@@ -159,7 +163,7 @@ void Topl_Factory::switchPipeline(Topl_Renderer* renderer, Topl_Pipeline* pipeli
 #ifdef _WIN32
 	else if(typeid(*renderer) == typeid(Topl_Renderer_DX11)) ((Topl_Renderer_DX11*)renderer)->setPipeline((DX11::Pipeline*)pipeline);
 #endif
-#ifdef TOPL_ENABLE_VULKAN
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	else if(typeid(*renderer) == typeid(Topl_Renderer_VK)) ((Topl_Renderer_VK*)renderer)->setPipeline((VK::Pipeline*)pipeline);
 #endif
 	else return logMessage(MESSAGE_Exclaim, "Invalid Backend"); // Error

@@ -27,7 +27,7 @@ namespace GL4 {
 				getShaderFormat(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
-				(inputElementOffset != 0) ? (void*)(inputElementOffset) : NULL
+				(inputElementOffset != 0) ? (void*)(inputElementOffset) : NULL // This line causes issus?
 			);
 
 			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
@@ -63,7 +63,7 @@ static void cleanup_win(HWND* window, HDC* windowDC, HGLRC* hglrc) {
 
 	ReleaseDC(*window, *windowDC);
 }
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 static void cleanup_linux(Display* display, GLXContext graphicsContext) { glXDestroyContext(display, graphicsContext); }
 #endif
 
@@ -74,7 +74,7 @@ Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 
 #ifdef _WIN32
 	cleanup_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 	cleanup_linux(_platformCtx->display, _platformCtx->oglCtx);
 #endif
 }
@@ -103,7 +103,7 @@ static void init_win(const HWND* window, HDC* windowDC, HGLRC* hglrc) {
 	*hglrc = wglCreateContext(*windowDC);
 	wglMakeCurrent(*windowDC, *hglrc);
 }
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 static void init_linux(Display* display, Window* window, XVisualInfo* visualInfo, GLXContext* oglCtx) {
 	int major, minor;
 	if(glXQueryVersion(display, &major, &minor)) std::cout << "GLX Version is " << std::to_string(major) << "." << std::to_string(minor) << std::endl;
@@ -123,30 +123,33 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 
 #ifdef _WIN32
     init_win(&_platformCtx->window, &_platformCtx->deviceCtx, &_platformCtx->oglCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     init_linux(_platformCtx->display, &_platformCtx->window, _platformCtx->visualInfo, &_platformCtx->oglCtx);
 #endif
-	glewExperimental = GL_TRUE;
-	glewInit();
-
+#ifndef __ANDROID__
+    glewExperimental = GL_TRUE;
+    glewInit();
+#endif
 	glEnable(GL_DEPTH_TEST); // make these customizable
-	glDepthFunc(GL_LESS); // make these customizable
+    glDepthFunc(GL_LESS); // make these customizable
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	_bufferSlots = (GLuint*)malloc(MAX_RENDERID* sizeof(GLuint));
-	_vertexArraySlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
-	_textureSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+    _bufferSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+    glGenBuffers(MAX_RENDERID, _bufferSlots);
+    _textureSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+    glGenTextures(MAX_RENDERID, _textureSlots);
+#ifndef __ANDROID__
+    _vertexArraySlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint)); // vertex arrays not supported EGL
+    glGenVertexArrays(MAX_RENDERID, _vertexArraySlots);
 
-	glGenBuffers(MAX_RENDERID, _bufferSlots);
-	glGenVertexArrays(MAX_RENDERID, _vertexArraySlots);
-	glGenTextures(MAX_RENDERID, _textureSlots);
+    // glDisable(GL_CULL_FACE);
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
 
-	// glDisable(GL_CULL_FACE);
-
-	glLineWidth(1.5f);
-	glPointSize(3.0f);
+    glLineWidth(1.5f);
+    glPointSize(3.0f);
+#endif
 }
 
 void Topl_Renderer_GL4::clear() {
@@ -166,7 +169,7 @@ void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 void Topl_Renderer_GL4::swapBuffers(double frameTime) {
 #ifdef _WIN32
 		SwapBuffers(_platformCtx->deviceCtx);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
 		glXSwapBuffers(_platformCtx->display, _platformCtx->window);
 #endif
 }
@@ -298,9 +301,13 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-			if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
-				glDrawElements((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-				else glDrawArrays((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+#ifndef __ANDROID__
+            if (_indexBufferMap.find(renderID) != _indexBufferMap.end())
+                glDrawElements((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
+            else glDrawArrays((actor->getMesh()->isTesselated)? GL_PATCHES : _drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+#else
+            glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0);
+#endif
 		}
 		// TODO: Include instanced draw call
 		else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");

@@ -98,7 +98,7 @@ public:
 	virtual void genSceneBlock(scene_cptr scene, blockBytes_t* bytes) const {
 		static Timer_Dynamic dynamic_ticker = Timer_Dynamic(0.0);
 		Topl_Camera* camera = scene->camera;
-		double timeElapse = dynamic_ticker.getAbsSecs();
+		// double timeElapse = dynamic_ticker.getAbsSecs();
 
 		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
@@ -119,7 +119,7 @@ public:
 
 	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
 		unsigned vertexCount = mesh->getVertexCount();
-		Vec3f origin = mesh->getOrigin();
+		// Vec3f origin = mesh->getOrigin();
 
 		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), 12, bytes);
 		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), 12, bytes);

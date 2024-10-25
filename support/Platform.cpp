@@ -11,14 +11,14 @@ bool Platform::isUserInput = false;
 resizeCallback Platform::onResize = nullptr;
 fileCallback Platform::onFileChoose = nullptr;
 
+#ifdef _WIN32
+
 // bool checkFile(std::string fileName){ return (access(fileName.c_str(), F_OK) == 0)? true : false; }
 
 static bool checkKey(int code){
 	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
 		   code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28; // handles arrows
 }
-
-#ifdef _WIN32
 
 static void addPress(enum MOUSE_Event button){
 	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
@@ -217,120 +217,139 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 	} else return false; // cursor outside the screen space!
 }
 
-#elif defined(__linux__)
+#elif defined(__ANDROID__)
 
-void Platform::openFileDialog(bool isRead){ /* TODO: Handle opening file dialog */ }
-
-void Platform::createWindow(unsigned width, unsigned height){
-	XInitThreads();
-	_context.display = XOpenDisplay(NULL);
-
-	/* int screenNum = DefaultScreen(_context.display);
-	 i nt d*epth = DefaultDepth(_context.display, screenNum);
-	 Visual* visual = DefaultVisual(_context.display, screenNum); */
-
-	GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	XVisualInfo* visualInfo = glXChooseVisual(_context.display, 0, visualInfoAttribs);
-	if(visualInfo == nullptr) return logMessage(MESSAGE_Exclaim, "Issue with GLX Visual");
-	else _context.visualInfo = visualInfo;
-
-	XSetWindowAttributes windowAttribs = {};
-	windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visualInfo->visual, AllocNone);
-	// windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visual, AllocNone);
-	windowAttribs.border_pixel = 0;
-	windowAttribs.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
-	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
-	ExposureMask | FocusChangeMask | VisibilityChangeMask |
-	EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
-
-	_context.window = XCreateWindow(
-		_context.display, DefaultRootWindow(_context.display),
-		0, 0,
-		width, height, // TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
-		0, visualInfo->depth,
-		InputOutput,
-		visualInfo->visual,
-		CWColormap | CWEventMask,
-		&windowAttribs
-	);
-
-	Atom nameAtom = XInternAtom(_context.display, "_NET_WM_NAME", False);
-	Atom iconAtom = XInternAtom(_context.display, "_NET_WM_ICON_NAME", False);
-
-	XChangeProperty( // changing window title
-	_context.display, _context.window,
-	nameAtom, XInternAtom(_context.display, "UTF8_STRING", False),
-					 8, PropModeReplace,
-				  (const unsigned char*)_winName, strlen(_winName)
-	);
-
-	// XChangeProperty( /* changing window icon */ );
-
-	// XSelectInput(_context.display, _context.window, ExposureMask);
-	XMapWindow(_context.display, _context.window);
-	XFlush(_context.display);
-}
+void Platform::createWindow(unsigned width, unsigned height){ }
 
 bool Platform::handleEvents(){
-	bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
-	(isCursorBound)? Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos) : resetCursor();
+    // static int events;
+    // static android_poll_source* pollSrc;
 
-	int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
-	XEvent event;
+    /*
+        if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
+            if (pSource) {
+                pSource->process(pApp, pSource);
+            }
+        }
+    */
 
-	while(eventsPending-- > 0){ // Deplete number of events
-		XNextEvent(_context.display, &event);
-
-		switch(event.type){
-			case (KeyPress): {
-				// const char key = translateKey(event.xkey.keycode); // see GLFW x11_window.c line 1258
-				Platform::keyControl.addKeyPress((char)event.xkey.keycode); // keycode needs to be converted!
-				printf("Key press: %c \n", (char)event.xkey.keycode);
-			}
-			case (ButtonPress): { printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos); }
-			case (MotionNotify): { }
-			/* case (DestroyNotify): {
-			 *     std::cout << "DestroyNotify event triggered" << std::endl;
-			 *     return false;
-		} */
-		}
-	}
-
-	return true;
+    return true;
 }
 
+bool Platform::getCursorCoords(float* xPos, float* yPos) const { return false; }
+
 unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
-	return TOPL_WIN_HEIGHT; // TODO: get height here
+    return TOPL_WIN_HEIGHT; // TODO: get height here
 }
 
 unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
-	return TOPL_WIN_WIDTH; // TODO: get height here
+    return TOPL_WIN_WIDTH; // TODO: get width here
+}
+
+#elif defined(__linux__)
+
+void Platform::createWindow(unsigned width, unsigned height){
+    XInitThreads();
+    _context.display = XOpenDisplay(NULL);
+
+    /* int screenNum = DefaultScreen(_context.display);
+    int depth = DefaultDepth(_context.display, screenNum);
+    Visual* visual = DefaultVisual(_context.display, screenNum); */
+
+    GLint visualInfoAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+    XVisualInfo* visualInfo = glXChooseVisual(_context.display, 0, visualInfoAttribs);
+    if(visualInfo == nullptr) return logMessage(MESSAGE_Exclaim, "Issue with GLX Visual");
+    else _context.visualInfo = visualInfo;
+
+    XSetWindowAttributes windowAttribs = {};
+    windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visualInfo->visual, AllocNone);
+    // windowAttribs.colormap = XCreateColormap(_context.display, DefaultRootWindow(_context.display), visual, AllocNone);
+    windowAttribs.border_pixel = 0;
+    windowAttribs.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
+                        PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+                        ExposureMask | FocusChangeMask | VisibilityChangeMask |
+                        EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
+
+    _context.window = XCreateWindow(
+        _context.display, DefaultRootWindow(_context.display),
+        0, 0,
+        width, height, // TOPL_WIN_WIDTH , TOPL_WIN_HEIGHT,
+        0, visualInfo->depth,
+        InputOutput,
+        visualInfo->visual,
+        CWColormap | CWEventMask,
+        &windowAttribs
+    );
+
+    Atom nameAtom = XInternAtom(_context.display, "_NET_WM_NAME", False);
+    Atom iconAtom = XInternAtom(_context.display, "_NET_WM_ICON_NAME", False);
+
+    XChangeProperty( // changing window title
+        _context.display, _context.window,
+        nameAtom, XInternAtom(_context.display, "UTF8_STRING", False),
+        8, PropModeReplace,
+        (const unsigned char*)_winName, strlen(_winName)
+    );
+
+    // XChangeProperty( /* changing window icon */ );
+
+    // XSelectInput(_context.display, _context.window, ExposureMask);
+    XMapWindow(_context.display, _context.window);
+    XFlush(_context.display);
+}
+
+bool Platform::handleEvents(){
+    bool isCursorBound = getCursorCoords(&Platform::xCursorPos, &Platform::yCursorPos);
+    (isCursorBound)? Platform::mouseControl.addHover(Platform::xCursorPos, Platform::yCursorPos) : resetCursor();
+
+    int eventsPending = XEventsQueued(_context.display, QueuedAfterReading);
+    XEvent event;
+
+    while(eventsPending-- > 0){ // Deplete number of events
+        XNextEvent(_context.display, &event);
+
+        switch(event.type){
+        case (KeyPress): {
+            // const char key = translateKey(event.xkey.keycode); // see GLFW x11_window.c line 1258
+            Platform::keyControl.addKeyPress((char)event.xkey.keycode); // keycode needs to be converted!
+            printf("Key press: %c \n", (char)event.xkey.keycode);
+        }
+        case (ButtonPress): { printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos); }
+        case (MotionNotify): { }
+        /* case (DestroyNotify): {
+           std::cout << "DestroyNotify event triggered" << std::endl;
+           return false;
+        } */
+        }
+    }
+
+    return true;
+}
+
+unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+    return TOPL_WIN_HEIGHT; // TODO: get height here
+}
+
+unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+    return TOPL_WIN_WIDTH; // TODO: get height here
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const {
-	Window root;
-	Window window = DefaultRootWindow(_context.display);
-	int xRoot, yRoot, xChild, yChild;
-	unsigned int mask;
+    Window root;
+    Window window = DefaultRootWindow(_context.display);
+    int xRoot, yRoot, xChild, yChild;
+    unsigned int mask;
 
-	XQueryPointer(
-		_context.display, window, &root, &window,
-		&xRoot, &yRoot, &xChild, &yChild,
-		&mask
-	);
+    XQueryPointer(
+        _context.display, window, &root, &window,
+        &xRoot, &yRoot, &xChild, &yChild,
+        &mask
+    );
 
-	*xPos = xChild; // x needs to be translated!
-	*yPos = yChild; // y needs to be translated!
+    *xPos = xChild; // x needs to be translated!
+    *yPos = yChild; // y needs to be translated!
 
-	return true; // check if cursor is in client area!
+    return true; // check if cursor is in client area!
 }
-
-#else // No Support
-
-void Platform::createWindow(){ }
-
-void Platform::handleEvents(bool isCursorUpdate){ }
-
-bool Platform::getCursorCoords(float* xPos, float* yPos) const {}
 
 #endif

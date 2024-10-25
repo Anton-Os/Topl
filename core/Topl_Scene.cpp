@@ -50,7 +50,7 @@ void Topl_Scene::removeActor(const std::string& name){
 	_arrayTexMap.erase(actor);
 	_volumeTexMap.erase(actor);
 #endif
-	std::remove(_geoActors.begin(), _geoActors.end(), actor);
+    static_cast<void>(std::remove(_geoActors.begin(), _geoActors.end(), actor));
 }
 
 #ifdef RASTERON_H
