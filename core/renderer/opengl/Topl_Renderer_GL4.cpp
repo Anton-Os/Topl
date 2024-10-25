@@ -260,6 +260,9 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 	case DRAW_Lines: _drawMode_GL4 = GL_LINES; break;
 	case DRAW_Fan: _drawMode_GL4 = GL_TRIANGLE_FAN; break;
 	case DRAW_Strip: _drawMode_GL4 = GL_TRIANGLE_STRIP; break;
+#ifndef __ANDROID__
+	case DRAW_Patch: _drawMode_GL4 = GL_PATCHES;
+#endif
 	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported!");
 	}
 }

@@ -132,7 +132,7 @@ protected:
     unsigned long _frameIDs = 0; // increments with each frame drawn
     std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
     std::map<const Geo_Actor*, unsigned long> _renderTargetMap; // maps each object to renderID
-    std::map<const TaggedImg*, std::string> _texTagMap; // tracks textures to refresh
+    std::map<const TaggedObj*, std::string> _texTagMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
     std::thread _threads[4]; // worker threads for allowing concurrent operations

@@ -314,6 +314,7 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	case DRAW_Triangles: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); break;
 	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
 	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
+	case DRAW_Patch: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCH); break;
 	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
@@ -365,8 +366,8 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
 		if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) {
-			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) 
-				_deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
+			i
+			if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) _deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
 			else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
 		}
 		// TODO: Include instanced draw call

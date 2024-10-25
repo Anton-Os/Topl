@@ -24,7 +24,7 @@ struct Shape3D {
 	unsigned short xSegs, ySegs;
 };
 
-enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip };
+enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip, DRAW_Patch };
 
 // Mesh Object
 

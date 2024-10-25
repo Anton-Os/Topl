@@ -8,24 +8,24 @@
 
 // typedef Rasteron_Image* (*imageCallback)();
 
-struct TaggedImg { // Refresh State
+struct TaggedObj { // Refresh State
 	char** tag; // must update when out of date
 protected:
 #ifdef RASTERON_H
-	~TaggedImg(){ cleanup(); }
+	~TaggedObj(){ cleanup(); }
 	virtual void cleanup(){ /* puts("Img destroyed"); */ }
 #endif
 };
 
 // Base Image wrapper around Rasteron_Image
 
-struct Img_Base : public TaggedImg {
-    Img_Base() : TaggedImg(){} // Empty Constructor
+struct Img_Base : public TaggedObj {
+    Img_Base() : TaggedObj(){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-    Img_Base(unsigned color) : TaggedImg(){ setColorImage(color); } // Solid Constructor
-    Img_Base(const std::string& filePath) : TaggedImg(){ setFileImage(filePath); } // File Constructor
-    Img_Base(Rasteron_Text textObj) : TaggedImg(){ setTextImage( &textObj); } // Text Constructor
-    Img_Base(Rasteron_Image* refImage) : TaggedImg(){ 
+    Img_Base(unsigned color) : TaggedObj(){ setColorImage(color); } // Solid Constructor
+    Img_Base(const std::string& filePath) : TaggedObj(){ setFileImage(filePath); } // File Constructor
+    Img_Base(Rasteron_Text textObj) : TaggedObj(){ setTextImage( &textObj); } // Text Constructor
+    Img_Base(Rasteron_Image* refImage) : TaggedObj(){ 
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
@@ -105,14 +105,14 @@ private:
 
 // Volume based on slices
 
-struct Img_Volume : public TaggedImg { 
-    Img_Volume() : TaggedImg(), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
+struct Img_Volume : public TaggedObj { 
+    Img_Volume() : TaggedObj(), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Volume(unsigned s) : width(s), height(s), depth(s), TaggedImg() { // Matching Lengths
+	Img_Volume(unsigned s) : width(s), height(s), depth(s), TaggedObj() { // Matching Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
-    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), TaggedImg() { // Custom Lengths
+    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), TaggedObj() { // Custom Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
