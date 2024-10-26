@@ -18,7 +18,7 @@ static Topl_Scene scene = Topl_Scene();
 
 // Hello Main Loop
 
-int main(int argc, char** argv) {
+MAIN_ENTRY {
 	Platform platform(argv[0], "Hello");
 	std::cout << "Window creation" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);

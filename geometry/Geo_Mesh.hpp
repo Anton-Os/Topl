@@ -75,18 +75,6 @@ protected:
 	virtual void genVertices(){}
 	virtual void genIndices(){}
 
-	Vec3f getTexCoord(unsigned v, float z) { // default texture coordinate generator
-		float x = ((v - 1) % 4 == 0 || (v - 1) % 4 == 1)? 1.0f : 0.0f;
-		float y = ((v - 1) % 4 == 1 || (v - 1) % 4 == 2) ? 1.0f : 0.0f;
-		return Vec3f({ x, y, z });
-	}
-
-	Vec3f getTexCoord(Vec3f vertex){
-		Vec3f normVec = vertex;
-		normVec.normalize();
-		return Vec3f({ (normVec[0] + 1.0F) / 2.0F, 1.0F - ((normVec[1] + 1.0F) / 2.0F), (normVec[2] + 1.0F) / 2.0F });
-	}
-
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 };

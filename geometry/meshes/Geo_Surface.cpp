@@ -15,8 +15,7 @@ Geo_Surface::Geo_Surface(Shape2D shape, float z) : Geo_Mesh(shape.segments + 1, 
 		});
 
 		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f });
-        Vec3f texcoord = getTexCoord(pos);
-        _vertices[v] = Geo_Vertex(pos, texcoord);
+        _vertices[v] = Geo_Vertex(pos);
     }
 
 	v = 1; // tracks current vertex
@@ -45,10 +44,7 @@ Geo_Ext2D::Geo_Ext2D(Shape2D shape, float z, unsigned short iters) : Geo_Surface
        		Geo_Vertex v2 = _vertices[_indices[i + 1]];
        		Geo_Vertex v3 = _vertices[_indices[i + 2]];
 
-			_vertices.push_back(Geo_Vertex(
-				Vec3f(v1.position + v2.position + v3.position * (1.0 / 3.0)), 
-            	Vec3f(v1.texcoord + v2.texcoord + v3.texcoord * (1.0 / 3.0))
-			));
+			_vertices.push_back(Geo_Vertex(Vec3f(v1.position + v2.position + v3.position * (1.0 / 3.0))));
 		}
 		// Increment siCount for # of iterations?
 	}
@@ -74,7 +70,7 @@ Geo_Surface::Geo_Surface(vertex_cptr_t points, unsigned short pointCount) : Geo_
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
-        _vertices[v].texcoord = getTexCoord(_vertices[v].position);
+        // _vertices[v].texcoord = getTexCoord(_vertices[v].position);
         v++; 
 	}
 

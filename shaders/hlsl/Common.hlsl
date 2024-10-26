@@ -23,8 +23,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 cbuffer CONST_EXT_BLOCK : register(b2) {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
-	uint geomCount; // count for emitting primitives
-	uint tessCount; // count for tesselation parameters
+	vec3 meshOrigin; // origin point for mesh
+	// uint geomCount; // count for emitting primitives
+	// uint tessCount; // count for tesselation parameters
 }
 
 #endif

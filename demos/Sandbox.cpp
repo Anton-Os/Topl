@@ -375,7 +375,7 @@ void Sandbox_Demo::updateOverlay(){
     }
 }
 
-int main(int argc, char** argv) {
+MAIN_ENTRY {
     _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 

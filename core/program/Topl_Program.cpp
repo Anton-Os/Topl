@@ -54,8 +54,8 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
     srand(time(NULL));
 
 	// Event Handling
-	
-	_platform = new Platform(execPath, name);
+
+	_platform = new Platform(execPath, name); // special initialization for Android?
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
     _renderer = Topl_Factory::genRenderer(backend, _platform);
 	// _renderer->setCamera(&Topl_Program::cameraObj);

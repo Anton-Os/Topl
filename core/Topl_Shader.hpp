@@ -121,9 +121,9 @@ public:
 		unsigned vertexCount = mesh->getVertexCount();
 		// Vec3f origin = mesh->getOrigin();
 
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), 12, bytes);
-		alignDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), 12, bytes);
-		// appendDataToBytes((uint8_t*)((mesh != nullptr)? &origin : &_defaultVec), sizeof(Vec3f), bytes); // origin
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), bytes);
+		alignDataToBytes((uint8_t*)((mesh != nullptr)? &mesh->getOrigin() : &_defaultVec), sizeof(Vec3f), 4, bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 	}
 

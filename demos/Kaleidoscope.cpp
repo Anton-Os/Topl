@@ -65,7 +65,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
             _renderer->draw(getConstruct()->getGeoActor(a));
 }
 
-int main(int argc, char** argv) {
+MAIN_ENTRY {
     _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 

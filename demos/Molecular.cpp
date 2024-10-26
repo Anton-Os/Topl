@@ -63,7 +63,7 @@ void Molecular_Demo::loop(double frameTime){
     }
 }
 
-int main(int argc, char** argv) {
+MAIN_ENTRY {
     _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 

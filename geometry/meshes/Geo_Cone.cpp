@@ -16,9 +16,7 @@ Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, sha
 		});
 
 		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
-		Vec3f texcoord = getTexCoord(pos);
-
-		_vertices[v] = Geo_Vertex(pos, texcoord);
+		_vertices[v] = Geo_Vertex(pos);
 	}
 
 	unsigned i; // current index
@@ -95,7 +93,7 @@ Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) 
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){
 		_vertices[v] = *(points + p);
-        _vertices[v].texcoord = getTexCoord(_vertices[v].position);
+        // _vertices[v].texcoord = getTexCoord(_vertices[v].position);
         v++; 
 	}
 

@@ -24,8 +24,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 layout(std140, binding = 2) uniform ExtBlock {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
-	uint geomCount; // count for emitting primitives
-	uint tessCount; // count for tesselation parameters
+	vec3 meshOrigin; // origin point for messh
+	// uint geomCount; // count for emitting primitives
+	// uint tessCount; // count for tesselation parameters
 }
 #endif
 

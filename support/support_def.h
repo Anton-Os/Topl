@@ -18,7 +18,7 @@
     // #include "Toolbox.h"
     #include "Rasteron.h" // includes Rasteron main modules and features
 #endif
-#if 0
+#if 1
 	#define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>
