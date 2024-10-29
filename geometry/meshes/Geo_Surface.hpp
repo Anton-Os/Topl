@@ -40,7 +40,9 @@ struct Geo_Circle2D : public Geo_Surface {
 };
 
 struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided portions
-	Geo_Ext2D(Shape2D shape, float z, unsigned short iters);
+    // Geo_Ext2D(Shape2D shape, float z); // one iteration
+    Geo_Ext2D(Shape2D shape, float z, unsigned short iters);
+    // Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount); // one iteration
 	Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters);
 
 	unsigned short _iters;

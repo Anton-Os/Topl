@@ -34,36 +34,38 @@ Geo_Surface::Geo_Surface(Shape2D shape, float z) : Geo_Mesh(shape.segments + 1, 
 
 Geo_Ext2D::Geo_Ext2D(Shape2D shape, float z, unsigned short iters) : Geo_Surface(shape, z){
 	_iters = iters;
-	
-	unsigned short svCount = getVertexCount(); // start vertex count
-	unsigned short siCount = getIndexCount(); // start index count
+    unsigned short svCount, siCount;
 	
 	for(unsigned l = 0; l < iters; l++){
+        svCount = getVertexCount(); // start vertex count
+        siCount = getIndexCount(); // start index count
+
 		for(unsigned i = 0; i < siCount; i += 3){
 			Geo_Vertex v1 = _vertices[_indices[i]];
        		Geo_Vertex v2 = _vertices[_indices[i + 1]];
        		Geo_Vertex v3 = _vertices[_indices[i + 2]];
 
-			_vertices.push_back(Geo_Vertex(Vec3f(v1.position + v2.position + v3.position * (1.0 / 3.0))));
+            _vertices.push_back(Geo_Vertex(Vec3f((v1.position + v2.position + v3.position) * (1.0 / 3.0))));
 		}
-		// Increment siCount for # of iterations?
+
+        for(unsigned i = 0; i < siCount; i += 3){
+            // TODO: Perform loop for # of iterations?
+            unsigned v = (svCount + (i / 3)); // * ((iters - 1) * 3); // determine start vertex
+            _indices.push_back(_indices[i]);
+            _indices.push_back(_indices[i + 1]);
+            _indices.push_back(v);
+
+            _indices.push_back(_indices[i + 2]);
+            _indices.push_back(_indices[i + 1]);
+            _indices.push_back(v);
+
+            _indices.push_back(_indices[i]);
+            _indices.push_back(_indices[i + 2]);
+            _indices.push_back(v);
+        }
 	}
 
-	for(unsigned i = 0; i < siCount; i += 3){ 
-		// TODO: Perform loop for # of iterations?
-		unsigned v = (svCount + i); // * ((iters - 1) * 3); // determine start vertex
-		_indices.push_back(_indices[i]);
-		_indices.push_back(_indices[i + 1]);
-		_indices.push_back(v);
-
-		_indices.push_back(_indices[i + 2]);
-		_indices.push_back(_indices[i + 1]);
-		_indices.push_back(v);
-
-		_indices.push_back(_indices[i]);
-		_indices.push_back(_indices[i + 2]);
-		_indices.push_back(v);
-	}
+    for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
 }
 
 Geo_Surface::Geo_Surface(vertex_cptr_t points, unsigned short pointCount) : Geo_Mesh(pointCount, (pointCount - 2) * 3){

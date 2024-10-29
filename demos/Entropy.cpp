@@ -94,15 +94,15 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _beamsVShader.setMode(shaderMode + lightMode);
-    _flatVShader.setMode(-shaderMode);
-    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+    _flatVShader.setMode(8);
+    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
     // _renderer->clear();
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

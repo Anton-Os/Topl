@@ -40,8 +40,10 @@ struct Geo_CircleCone : public Geo_Cone { // Cone
 };
 
 struct Geo_ExtCone : public Geo_Cone { // expands base into repeating portions
-	Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters);
-	Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters);
+    // Geo_ExtCone(Shape2D shape, Vec3f apex); // one iteration
+    Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters);
+    // Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex);
+    Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters);
 
 	unsigned short _iters;
 };

@@ -10,6 +10,7 @@
 #define ENTROPIC_HEX 2
 #define ENTROPIC_CIRCLE 3
 
+#define ENTROPIC_ITERS 1
 #define ENTROPIC_SPAWN 100
 #define ENTROPIC_COUNT 200
 #define ENTROPIC_PROB 0.05
@@ -37,24 +38,24 @@ struct Entropy_Demo : public Topl_Program {
 
             switch(a % 4){
                 case ENTROPIC_TRIG: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigsCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigs3D[a / 4].getDepth(), 1));
+                    surfaceMeshes.push_back(new Geo_Ext2D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
+                    coneMeshes.push_back(new Geo_ExtCone({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigsCones[a / 4].getApex(), ENTROPIC_ITERS));
+                    volumeMeshes.push_back(new Geo_Ext3D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigs3D[a / 4].getDepth(), ENTROPIC_ITERS));
                 break;
                 case ENTROPIC_QUAD: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quadsCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads3D[a / 4].getDepth(), 1));
+                    surfaceMeshes.push_back(new Geo_Ext2D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
+                    coneMeshes.push_back(new Geo_ExtCone({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quadsCones[a / 4].getApex(), ENTROPIC_ITERS));
+                    volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads3D[a / 4].getDepth(), ENTROPIC_ITERS));
                 break;
                 case ENTROPIC_HEX: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexesCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes3D[a / 4].getDepth(), 1));
+                    surfaceMeshes.push_back(new Geo_Ext2D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
+                    coneMeshes.push_back(new Geo_ExtCone({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexesCones[a / 4].getApex(), ENTROPIC_ITERS));
+                    volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes3D[a / 4].getDepth(), ENTROPIC_ITERS));
                 break;
                 case ENTROPIC_CIRCLE: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, DEFAULT_Z, 1));
-                    coneMeshes.push_back(new Geo_ExtCone({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circlesCones[a / 4].getApex(), 1));
-                    volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles3D[a / 4].getDepth(), 1));
+                    surfaceMeshes.push_back(new Geo_Ext2D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
+                    coneMeshes.push_back(new Geo_ExtCone({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circlesCones[a / 4].getApex(), ENTROPIC_ITERS));
+                    volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles3D[a / 4].getDepth(), ENTROPIC_ITERS));
                 break;
             }
 
@@ -75,6 +76,8 @@ struct Entropy_Demo : public Topl_Program {
     static unsigned short mode;
 
     Topl_Scene* getScene(){
+        _renderer->setDrawMode((mode == 0 || mode == 3)? DRAW_Triangles : DRAW_Points);
+
         switch(mode % 6){
             case 1: return &scene2;
             case 2: return &scene3;
