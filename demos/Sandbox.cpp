@@ -202,13 +202,18 @@ void Sandbox_Demo::init(){
         propsBillboard.overlay(p, _dials.back());
     }
 
+    mainScene.camera = &Sandbox_Demo::cameraObj;
+
+    editsScene.camera = &Sandbox_Demo::cameraObj;
     // plotChain.configure(&editsScene);
     plotGrid.configure(&editsScene);
+    _renderer->buildScene(&editsScene);
 
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->buildScene(&overlayScene);
     _renderer->texturizeScene(&overlayScene);
 
+    canvasScene.camera = &fixedCamera;
     canvasScene.addGeometry("canvas", &backdropActor);
     _renderer->buildScene(&canvasScene);
 
@@ -219,9 +224,7 @@ void Sandbox_Demo::init(){
     canvasScene.addTexture("canvas", &canvasImg);
     sequence_map.insert({ &backdropActor, Img_Sequence((unsigned)SANDBOX_SEQUENCE) });
 
-    _renderer->buildScene(&editsScene);
-
-    overlayThread = std::thread([this](){ updateOverlay(); });
+    // overlayThread = std::thread([this](){ updateOverlay(); });
 }
 
 void Sandbox_Demo::loop(double frameTime){
@@ -230,10 +233,8 @@ void Sandbox_Demo::loop(double frameTime){
         overlayThread = std::thread([this](){ updateOverlay(); }); // rerun thread
     } */
     updateOverlay();
-    mainScene.camera = &Sandbox_Demo::cameraObj;
     
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
-        _renderer->setCamera(&fixedCamera);
         _renderer->texturizeScene(&canvasScene);
         _renderer->setDrawMode(DRAW_Triangles);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
@@ -259,7 +260,6 @@ void Sandbox_Demo::loop(double frameTime){
         if(isRebuildReq){
             for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++)
                 mainScene.addGeometry("object" + std::to_string(g), objectActors[g]);
-
             if(mainScene.getActorCount() > 0) _renderer->buildScene(&mainScene);
             isRebuildReq = false;
         }
@@ -280,7 +280,6 @@ void Sandbox_Demo::loop(double frameTime){
             _texVShader.setMode(0);
             _renderer->setDrawMode(DRAW_Triangles);
 
-            _renderer->setCamera(&Topl_Program::cameraObj);
             Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
             _renderer->updateScene(&mainScene);
             _renderer->drawScene(&mainScene);
@@ -294,7 +293,6 @@ void Sandbox_Demo::loop(double frameTime){
         }
     }
 
-    _renderer->setCamera(&fixedCamera);
     _renderer->setDrawMode(DRAW_Triangles);
     _texVShader.setMode(0);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);

@@ -76,7 +76,7 @@ struct Entropy_Demo : public Topl_Program {
     static unsigned short mode;
 
     Topl_Scene* getScene(){
-        _renderer->setDrawMode((mode == 0 || mode == 3)? DRAW_Triangles : DRAW_Points);
+        // _renderer->setDrawMode((mode == 0 || mode == 3)? DRAW_Triangles : DRAW_Points);
 
         switch(mode % 6){
             case 1: return &scene2;

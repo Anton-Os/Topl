@@ -63,23 +63,22 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 
     for(unsigned l = 0; l < iters; l++){ // TODO: Push new face vertex?
         for(unsigned p = 0; p < shape.segments; p++){
-            Geo_Vertex newVertex = _vertices[p + (l * shape.segments)];
+            Geo_Vertex newVertex = _vertices[p + (l * shape.segments) + 1];
             newVertex.position.data[0] *= 1.0 + (shape.radius * 0.5);
             newVertex.position.data[1] *= 1.0 + (shape.radius * 0.5);
-            newVertex.position.data[2] += apex.data[2] * (l + 1);
+            newVertex.position.data[2] -= apex.data[2] * (l + 1);
             _vertices.push_back(newVertex);
         }
 
 
-        for(unsigned i = 1; i < siCount; i += 6){ // indexing sides
-            unsigned v = svCount + (i / 6);
+        for(unsigned i = 1; i < siCount; i++){ // indexing sides
             // New Vertexing
             _indices.push_back(i + (l * shape.segments));
             _indices.push_back(i + (l * shape.segments) + 1);
-            _indices.push_back(v);
-            _indices.push_back(v + 1);
+            _indices.push_back(i + (l * shape.segments) + svCount);
+            _indices.push_back(i + (l * shape.segments) + svCount + 1);
             _indices.push_back(i + (l * shape.segments) + 1);
-            _indices.push_back(v);
+            _indices.push_back(i + (l * shape.segments) + svCount);
 
             /* _indices.push_back(v);
             _indices.push_back(_vertices.size() - 1 - v);
@@ -93,6 +92,7 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
         // TODO: Index new face?
     }
 
+	// for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
 }
 
 Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){

@@ -34,7 +34,7 @@ void Entropy_Demo::init(){
     Platform::keyControl.addCallback('n', setScene5);
     Platform::keyControl.addCallback('m', setScene6);
 
-    Topl_Program::timeline.persist_ticker.addPeriodicEvent(30000, entropyReset);
+    Topl_Program::timeline.persist_ticker.addPeriodicEvent(10000, entropyReset);
     Topl_Program::cameraObj.setZoom(2.0);
 
     backdropScene.addGeometry("Backdrop", &backdropActor);
@@ -95,14 +95,14 @@ void Entropy_Demo::loop(double frameTime){
     // _flatVShader.setMode(flatMode);
     _beamsVShader.setMode(shaderMode + lightMode);
     _flatVShader.setMode(8);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
     // _renderer->clear();
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);
