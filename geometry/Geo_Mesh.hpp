@@ -33,14 +33,14 @@ public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
 	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
 
-	Geo_Mesh(Vec3f* points, unsigned short pointCount){ // point set constructor
+	Geo_Mesh(vertex_cptr_t points, unsigned short pointCount){ // point set constructor
 		_vertices.resize(pointCount); 
 		_indices.resize(pointCount);
 
 		for(auto p = 0; p < pointCount; p++){
 			_vertices[p] = *(points + p);
-			_vertices[p].texcoord = _vertices[p].position;
-			_indices[p] = p; // for testing
+			printf("Vertex is %f, %f, %f\n", _vertices[p].position[0], _vertices[p].position[1], _vertices[p].position[2]);
+			_indices[p] = p; // choose indexing scheme?
 		}
 	}
 	

@@ -116,7 +116,7 @@ Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Vol
             _indices.push_back(_vertices.size() - 2 - v);
             _indices.push_back(v + 1);
             v++; */
-        }
+		}
 
         // TODO: Index new face?
     }

@@ -6,11 +6,16 @@
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
 #include "Effect_Shader.hpp"
+#include "Canvas_Shader.hpp"
+#include "Dynamic_Shader.hpp"
+#include "Advance_Shader.hpp"
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0
 #define TIMELINE_END 60.0 // 1 minute will be default end
+
+#define PROGRAM_M 0.1f
 
 class Topl_Timeline {
 public:
@@ -59,9 +64,11 @@ public:
 	static Topl_Camera cameraObj; // custom camera object
 	static Topl_Timeline timeline;
 	static Vec3f cursorPos;
-	static bool isCamera_keys, isCamera_mouse; // static bool isCamera_MounseControl;
-	static bool isInputEnabled;
+	static float speed;
+	static unsigned shaderMode;
+	static Topl_EntryShader* activeShader; // active shader controlled by the pipeline
 	static std::string userInput; // input is added when characters are pressed
+	static bool isCtrl_keys, isCtrl_shader, isCtrl_input; // static bool isCamera_MounseControl;
 
 	static Geo_Actor* pickerObj; // picker for actor
 	static unsigned pickerColor, lastPickerColor; // picker for color
@@ -80,10 +87,10 @@ protected:
 
 	void cleanup();
 
-	void build_run(const Topl_Scene* scene);
+	/* void build_run(const Topl_Scene* scene);
 	void update_run(const Topl_Scene* scene);
 	void texturize_run(const Topl_Scene* scene);
-	void draw_run(const Topl_Scene* scene);
+	void draw_run(const Topl_Scene* scene); */
 
 	std::thread _threads[4]; // worker threads for allowing concurrent operations
 
@@ -98,4 +105,7 @@ protected:
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
+	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
+	Dynamic_VertexShader _dynamicVShader; Dynamic_PixelShader _dynamicPShader;
+	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 };

@@ -1,6 +1,17 @@
 #include "Molecular.hpp"
 
+static short lightMode = 1;
+
+static void onAnyKey(char key){
+    if(tolower(key) == 'v') lightMode = 0;
+    else if(tolower(key) == 'b') lightMode = 1;
+    else if(tolower(key) == 'n') lightMode = 2;
+    else if(tolower(key) == 'm') lightMode = 3;
+}
+
 void Molecular_Demo::init(){
+    Platform::keyControl.addAnyCallback(onAnyKey);
+
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
             constructs[m][c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F - (m * 0.5F + 1.0F), 0.0F }));
@@ -55,7 +66,7 @@ void Molecular_Demo::loop(double frameTime){
     _renderer->setDrawMode(DRAW_Triangles);
     // _renderer->drawScene(&scene);
     for(unsigned m = 0; m < 3; m++){
-        _beamsVShader.setMode(m * 10);
+        _beamsVShader.setMode(m * 10 + lightMode);
         _renderer->updateScene(&scene);
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
             for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)

@@ -13,10 +13,10 @@ static bool isModal = false;
 
 void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
-    else if(tolower(key) == 't'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'y'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'u'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'i'){ Sandbox_Demo::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 't'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'y'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'u'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'i'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
 }
 
 void onTimePanePress(MOUSE_Event evemt){
@@ -116,10 +116,10 @@ void onConfirmAction(float x, float y){
     if(Sandbox_Demo::mode == SANDBOX_SCULPT){
         if(sculptPoints.size() > 2) {
             switch(Sandbox_Demo::option){
-                case 0: _DEMO->objectMeshes.push_back(new Geo_Surface(sculptPoints.data(), sculptPoints.size())); break;
-                case 1: _DEMO->objectMeshes.push_back(new Geo_Cone(sculptPoints.data(), sculptPoints.size(), Vec3f({ 0.0F, 0.0F, -1.0F }))); break;
-                case 2: _DEMO->objectMeshes.push_back(new Geo_Volume(sculptPoints.data(), sculptPoints.size(), 1.0F)); break;
-                default: _DEMO->objectMeshes.push_back(new Geo_Mesh(sculptPoints.data(), sculptPoints.size())); 
+                case 0: _DEMO->objectMeshes.push_back(new Geo_Surface((vertex_cptr_t)sculptPoints.data(), sculptPoints.size())); break;
+                case 1: _DEMO->objectMeshes.push_back(new Geo_Cone((vertex_cptr_t)sculptPoints.data(), sculptPoints.size(), Vec3f({ 0.0F, 0.0F, -1.0F }))); break;
+                case 2: _DEMO->objectMeshes.push_back(new Geo_Volume((vertex_cptr_t)sculptPoints.data(), sculptPoints.size(), 1.0F)); break;
+                default: _DEMO->objectMeshes.push_back(new Geo_Mesh((vertex_cptr_t)sculptPoints.data(), sculptPoints.size())); 
             }
             _DEMO->objectTextures.push_back(new Img_Base(RAND_COLOR())); // non-textured object
             _DEMO->objectPhysics.push_back(nullptr); // non-dynamic object
@@ -202,9 +202,9 @@ void Sandbox_Demo::init(){
         propsBillboard.overlay(p, _dials.back());
     }
 
-    mainScene.camera = &Sandbox_Demo::cameraObj;
+    mainScene.camera = &Topl_Program::cameraObj;
 
-    editsScene.camera = &Sandbox_Demo::cameraObj;
+    editsScene.camera = &Topl_Program::cameraObj;
     // plotChain.configure(&editsScene);
     plotGrid.configure(&editsScene);
     _renderer->buildScene(&editsScene);

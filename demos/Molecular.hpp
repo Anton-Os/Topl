@@ -21,8 +21,8 @@ struct Molecular_Construct : Geo_Construct {
         }
 
         for(unsigned n = 1; n < nodeCount; n++){
-            Vec3f lineCoords[2] = { *_geoActors.front().getPos(), *_geoActors[n].getPos() };
-            _lines.push_back(new Geo_Mesh(&lineCoords[0], 2));
+            Geo_Vertex lineVertices[2] = { Geo_Vertex(*_geoActors.front().getPos()), Geo_Vertex(*_geoActors[n].getPos()) };
+            _lines.push_back(new Geo_Mesh((vertex_cptr_t)&lineVertices, 2));
             _geoActors.push_back(Geo_Actor(_lines.back()));
         }
     }
