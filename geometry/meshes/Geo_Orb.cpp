@@ -1,6 +1,6 @@
 #include "Geo_Orb.hpp"
 
-void Geo_Orb::genVertices() {
+void Geo_Orb::init() {
 	unsigned v = 0; // target vertex
 
 	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {
@@ -18,9 +18,7 @@ void Geo_Orb::genVertices() {
 			v++; // increment to next vertex
 		}
 	}
-}
 
-void Geo_Orb::genIndices() {
 	unsigned i = 0;
 
 	for (unsigned stack = 0; stack <= _shape.xSegs; stack++) {

@@ -10,7 +10,9 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 offset;
 	float3 rotation;
 	float3 scale;
+
 	float3 texScroll; // texture coordinate scrolling
+	float3 texScale; // texture coordinate scaling
 }
 
 struct PS_INPUT {
@@ -32,6 +34,7 @@ float4 color_correct(float4 color){ // switch red and blue color values
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(mode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
+	else if(mode == 9) return color_correct(areaTex.Sample(areaSampler, float3(input.texcoord.x, input.texcoord.y, 0.0))); // volumetric slice
 	else if(mode > 0 && mode < 8){
 		if(mode == 1) return color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
 		if(mode == 2) return color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));

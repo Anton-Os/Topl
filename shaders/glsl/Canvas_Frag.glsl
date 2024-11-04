@@ -1,7 +1,6 @@
 #version 440
 
 #define INCLUDE_BLOCK
-#define IGNORE_INPUTS
 
 #include "Common.glsl"
 

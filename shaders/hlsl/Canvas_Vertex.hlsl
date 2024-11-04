@@ -1,6 +1,5 @@
 #define INCLUDE_TEXTURES
 #define INCLUDE_BLOCK
-#define IGNORE_INPUTS
 
 #include "Common.hlsl"
 
@@ -33,7 +32,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
-	output.texcoord = input.texcoord
+	output.texcoord = input.texcoord;
 
 	return output;
 }

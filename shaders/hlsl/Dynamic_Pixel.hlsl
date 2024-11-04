@@ -27,7 +27,7 @@ struct PS_INPUT {
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	double r = sin(timeElapse / 1000.0);
 	double g = cos(timeElapse / 1000.0);
-	double b = tan(timeElaspe / 1000.0);
+	double b = tan(timeElapse / 1000.0);
 
 	return float4(r, g, b, 1.0);
 }

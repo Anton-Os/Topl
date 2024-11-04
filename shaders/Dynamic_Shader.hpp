@@ -18,6 +18,8 @@ struct Dynamic_VertexShader : public Topl_EntryShader {
 	}
 protected:
 	// Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
+
+	std::string shaderRoutineStr; // TODO: Make this settable in the dynamic shader
 };
 
 struct Dynamic_VertexShader_GL4 : public Dynamic_VertexShader {

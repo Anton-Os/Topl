@@ -45,7 +45,7 @@ protected:
 		alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 
 	}
 
-	unsigned _mode = EFFECT_MODE_CURSORY;
+	unsigned _mode = CANVAS_MODE_DOT;
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
 };

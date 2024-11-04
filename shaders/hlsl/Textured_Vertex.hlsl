@@ -8,7 +8,9 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 offset;
 	float3 rotation;
 	float3 scale;
+
 	float3 texScroll; // texture coordinate scrolling
+	float3 texScale; // texture coordinate scaling
 }
 
 struct VS_OUTPUT {
@@ -27,7 +29,7 @@ VS_OUTPUT main(VS_INPUT input) {
 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
-	output.texcoord = input.texcoord + texScroll;
+	output.texcoord = (input.texcoord + texScroll) * texScale;
 
 	return output;
 }

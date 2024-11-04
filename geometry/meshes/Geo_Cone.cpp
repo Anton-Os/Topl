@@ -73,28 +73,18 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 
         for(unsigned i = 1; i < siCount; i++){ // indexing sides
             // New Vertexing
-			if(i != siCount - 1){
-				_indices.push_back(i + (l * shape.segments));
-				_indices.push_back(i + (l * shape.segments) + 1);
-				_indices.push_back(i + (l * shape.segments) + svCount);
-				_indices.push_back(i + (l * shape.segments) + svCount + 1);
-				_indices.push_back(i + (l * shape.segments) + 1);
-				_indices.push_back(i + (l * shape.segments) + svCount);
-			} else {
-				_indices.push_back(i + (l * shape.segments));
+			_indices.push_back(i + (l * shape.segments));
+			_indices.push_back(i + (l * shape.segments) + 1);
+			_indices.push_back(i + (l * shape.segments) + svCount);
+			_indices.push_back(i + (l * shape.segments) + svCount + 1);
+			_indices.push_back(i + (l * shape.segments) + 1);
+			_indices.push_back(i + (l * shape.segments) + svCount);
+            /*_indices.push_back(i + (l * shape.segments));
 				_indices.push_back((l * shape.segments) + 1);
 				_indices.push_back(i + (l * shape.segments) + svCount);
 				_indices.push_back((l * shape.segments) + svCount + 1);
 				_indices.push_back((l * shape.segments) + 1);
-				_indices.push_back(i + (l * shape.segments) + svCount);
-			}
-            /* _indices.push_back(v);
-            _indices.push_back(_vertices.size() - 1 - v);
-            _indices.push_back(v + 1);
-            _indices.push_back(_vertices.size() - 1 - v);
-            _indices.push_back(_vertices.size() - 2 - v);
-            _indices.push_back(v + 1);
-            v++; */
+				_indices.push_back(i + (l * shape.segments) + svCount);*/
         }
 
         // TODO: Index new face?

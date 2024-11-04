@@ -26,7 +26,7 @@ public:
 		getMeshAttribCount(mesh, MESH_Index)
 	){
 		_assimpMeshes = { mesh };
-		genVertices(); genIndices();
+		init();
 	}
 
 	Geo_NodeMesh(const std::vector<const aiMesh*>& meshes) : Geo_Mesh(
@@ -34,13 +34,12 @@ public:
 		getMeshesAttribCount(meshes, MESH_Index)
 	) {
 		_assimpMeshes = std::vector<const aiMesh*>(meshes.begin(), meshes.end());
-		genVertices(); genIndices();
+		init();
 	}
 
 	unsigned short getMeshCount() const { return _assimpMeshes.size(); }
 private:
-	void genVertices() override;
-	void genIndices() override;
+	void init();
 
 	std::vector<const aiMesh*> _assimpMeshes;
 };

@@ -24,7 +24,7 @@ struct Shape3D {
 	unsigned short xSegs, ySegs;
 };
 
-enum DRAW_Mode { DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip, DRAW_Patch };
+enum DRAW_Mode { DRAW_Default, DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip, DRAW_Patch };
 
 // Mesh Object
 
@@ -39,7 +39,6 @@ public:
 
 		for(auto p = 0; p < pointCount; p++){
 			_vertices[p] = *(points + p);
-			printf("Vertex is %f, %f, %f\n", _vertices[p].position[0], _vertices[p].position[1], _vertices[p].position[2]);
 			_indices[p] = p; // choose indexing scheme?
 		}
 	}
@@ -70,13 +69,66 @@ public:
 
 	bool instanceCount = 0;
     bool isTesselated = false;
-    DRAW_Mode drawMode = DRAW_Triangles; // Include draw mode as part of mesh?
+    DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 protected:
-	virtual void genVertices(){}
-	virtual void genIndices(){}
-
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
+};
+
+
+// Extended Mesh Object
+
+struct Geo_ExtMesh : public Geo_Mesh {
+	Geo_ExtMesh(std::vector<const Geo_Mesh*> refMeshes) : Geo_Mesh(*(*refMeshes.begin())), subMeshes(refMeshes) {
+		unsigned svCount, siCount;
+
+		for(unsigned r = 1; r < subMeshes.size(); r++){
+			svCount = getVertexCount();
+			siCount = getIndexCount();
+
+			for(unsigned v = 0; v < (*(subMeshes.begin() + r))->getVertexCount(); v++)
+				_vertices.push_back(*((*(subMeshes.begin() + r))->getVertices() + v));
+
+			for(unsigned i = 0; i < (*(subMeshes.begin() + r))->getIndexCount(); i++)
+				_indices.push_back(*((*(subMeshes.begin() + r))->getIndices() + i) + svCount);
+		}
+	}
+
+	const std::vector<const Geo_Mesh*> subMeshes;
+};
+
+
+// Tesselated Mesh Object
+
+struct Geo_TessMesh : public Geo_Mesh {
+	Geo_TessMesh(const Geo_Mesh& refMesh, unsigned short t) : Geo_Mesh(refMesh), tessCount(t) {
+		unsigned short svCount, siCount;
+
+		for(unsigned l = 0; l < tessCount; l++){
+			svCount = getVertexCount(); // start vertex count
+			siCount = getIndexCount(); // start index count
+
+			for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
+				_vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
+
+			for(unsigned i = 0; i < siCount; i += 3){
+				unsigned v = (svCount + (i / 3));
+				_indices.push_back(_indices[i]);
+				_indices.push_back(_indices[i + 1]);
+				_indices.push_back(v); // first triangle
+				_indices.push_back(_indices[i + 2]);
+				_indices.push_back(_indices[i + 1]);
+				_indices.push_back(v); // second triangle
+				_indices.push_back(_indices[i]);
+				_indices.push_back(_indices[i + 2]);
+				_indices.push_back(v); // third triangle
+			}
+		}
+
+		for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
+	}
+
+	const unsigned short tessCount;
 };
 
 #define GEO_MESH_H

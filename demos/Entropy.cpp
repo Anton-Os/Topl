@@ -3,6 +3,7 @@
 unsigned short Entropy_Demo::mode = 0;
 
 static bool isInEntropy = true;
+static bool isInMotion = true;
 static short lightMode = 10;
 static short shaderMode = BEAMS_MODE_LIGHT;
 
@@ -12,9 +13,10 @@ static void onAnyKey(char key){
     else if(tolower(key) == 'n') lightMode = 50; // 20;
     else if(tolower(key) == 'm') lightMode = 60;
     else if(isdigit(key)) shaderMode = key - '0';
+    else if(isspace(key)) isInMotion = !isInMotion;
 }
 
-void entropyReset(){ isInEntropy = !isInEntropy;  }
+void entropyReset(){ isInEntropy = !isInEntropy; }
 
 void setScene1(){ Entropy_Demo::mode = 0; } // surface
 void setScene2(){ Entropy_Demo::mode = 1; } // conic
@@ -27,9 +29,9 @@ void setScene6(){ Entropy_Demo::mode = 5; } // extended volumetric
 void Entropy_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
     Platform::keyControl.addAnyCallback(onAnyKey);
-    Platform::keyControl.addCallback('g', setScene1);
-    Platform::keyControl.addCallback('h', setScene2);
-    Platform::keyControl.addCallback('j', setScene3);
+    Platform::keyControl.addCallback('j', setScene1);
+    Platform::keyControl.addCallback('k', setScene2);
+    Platform::keyControl.addCallback('l', setScene3);
     Platform::keyControl.addCallback('b', setScene4);
     Platform::keyControl.addCallback('n', setScene5);
     Platform::keyControl.addCallback('m', setScene6);
@@ -69,7 +71,7 @@ void Entropy_Demo::loop(double frameTime){
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
-        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB)
+        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion)
             scene1.addForce("actor_surface" + std::to_string(a), {
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (surface_actors[a].getPos()->data[0] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (surface_actors[a].getPos()->data[1] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
@@ -107,7 +109,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

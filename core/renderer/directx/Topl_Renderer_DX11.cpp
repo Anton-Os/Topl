@@ -315,11 +315,12 @@ void Topl_Renderer_DX11::setDrawMode(enum DRAW_Mode mode) {
 	case DRAW_Fan: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ); break; // not sure this is correct topology
 	case DRAW_Strip: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); break;
 	case DRAW_Patch: _deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST); break;
-	default: return logMessage(MESSAGE_Exclaim, "Draw Type not supported!");
 	}
 }
 
 void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
+	// if(actor->getMesh() != nullptr) if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
+
 	unsigned long renderID = _renderTargetMap[actor];
 
 	if(renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID) { // Scene Target

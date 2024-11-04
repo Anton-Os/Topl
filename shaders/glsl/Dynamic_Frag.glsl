@@ -26,9 +26,9 @@ layout(location = 0) out vec4 outColor;
 // Main
 
 void main() {
-	double r = sin(timeElapse / 1000.0);
-	double g = cos(timeElapse / 1000.0);
-	double b = tan(timeElaspe / 1000.0);
+	float r = sin(float(timeElapse) / 1000.0F);
+	float g = cos(float(timeElapse) / 1000.0F);
+	float b = tan(float(timeElapse) / 1000.0F);
 	
-	outColor = color; // solid mode // default
+	outColor = vec4(r, g, b, 1.0); // solid mode // default
 }

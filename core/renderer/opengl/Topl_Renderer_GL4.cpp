@@ -263,11 +263,12 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 #ifndef __ANDROID__
 	case DRAW_Patch: _drawMode_GL4 = GL_PATCHES; break;
 #endif
-	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported!");
 	}
 }
 
 void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
+	// if(actor->getMesh() != nullptr) if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
+
 	unsigned long renderID = _renderTargetMap[actor];
 	// static GL4::Buffer *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID){ // Scene Target

@@ -21,7 +21,7 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genActorBlock(actor, bytes);
 		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
-		// appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
 	}
 
 	void setTexScroll(const Vec3f& s){ _texScroll = s; }

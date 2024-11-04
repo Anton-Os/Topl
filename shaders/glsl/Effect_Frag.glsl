@@ -5,7 +5,6 @@
 
 #include "Common.glsl"
 
-#define CURSOR_SIZE 0.05
 #define FRACTAL_SIZE 3.0 // max fractal size
 #define FRACTAL_ITER 100 // max fractal iteratons
 #define C vec2(cursorPos.x, cursorPos.y) // c value for julia set
@@ -20,30 +19,11 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes; // resolution
 	vec2 cursorPos;
-	vec2 tracerSteps[8];
-	vec2 tracerPaths[8];
 };
 
 layout(location = 0) out vec4 color;
 
 // Functions
-
-vec4 cursorDot(vec2 pos, vec2 coord, float radius, vec4 color){
-    if (distance(pos, coord) < radius) return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
-}
-
-vec4 cursorHalo(vec2 pos, vec2 coord, float radius, vec4 color){
-    if (distance(pos, coord) > radius * 0.75 && distance(pos, coord) < radius * 1.25) return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
-}
-
-vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
-    if((abs(coord.x - pos.x) < radius * 0.5 && abs(coord.y - pos.y) < radius * 0.1)
-        || (abs(coord.y - pos.y) < radius * 0.5 && abs(coord.x - pos.x) < radius * 0.1))
-        return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
-}
 
 // Mandlebrot Set
 vec3 mandlebrotSet(vec2 coord){
@@ -80,11 +60,9 @@ vec3 juliaSet(vec2 coord){
 // Main
 
 void main() {
-	vec2 cursor = (tracerSteps[0] * 0.5f) + 0.5f; // adjusted cursor
+	vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
 	vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
-	if(mode < 0) color = vec4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f); // fractal mode
-	else if(mode == 1) color = cursorHalo(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
-    else if(mode == 2) color = cursorCross(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
-    else color = cursorDot(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
+	if(mode >= 10 && mode < 20) color = vec4(juliaSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
+	else color = vec4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f); // fractal mode
 }

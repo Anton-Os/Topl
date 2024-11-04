@@ -75,7 +75,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

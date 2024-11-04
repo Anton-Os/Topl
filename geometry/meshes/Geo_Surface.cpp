@@ -49,7 +49,6 @@ Geo_Ext2D::Geo_Ext2D(Shape2D shape, float z, unsigned short iters) : Geo_Surface
 		}
 
         for(unsigned i = 0; i < siCount; i += 3){
-            // TODO: Perform loop for # of iterations?
             unsigned v = (svCount + (i / 3)); // * ((iters - 1) * 3); // determine start vertex
             _indices.push_back(_indices[i]);
             _indices.push_back(_indices[i + 1]);

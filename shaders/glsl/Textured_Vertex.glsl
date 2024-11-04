@@ -13,7 +13,7 @@ layout(std140, binding = 0) uniform Block {
 	vec3 scale;
 
 	vec3 texScroll; // texture coordinate scrolling
-	// vec3 texScale; // texture coordinate scaling
+	vec3 texScale; // texture coordinate scaling
 };
 
 layout(location = 0) out vec3 texcoord_out;
@@ -34,6 +34,5 @@ void main() {
 		gl_Position.z += heightCoord.b * abs(mode);
 	}
 	
-	texcoord_out = texcoord + texScroll;
-	// texcoord_out = (texcoord + texScroll) * texScale;
+	texcoord_out = (texcoord + texScroll) * texScale;
 }

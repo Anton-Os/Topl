@@ -35,7 +35,7 @@ unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Att
 	}
 }
 
-void Geo_NodeMesh::genVertices() {
+void Geo_NodeMesh::init(){
 	for (std::vector<const aiMesh*>::const_iterator mesh = _assimpMeshes.cbegin(); mesh < _assimpMeshes.cend(); mesh++)
 		for (unsigned v = 0; v < _vertices.size(); v++) {
 			Vec3f pos, normal;
@@ -56,9 +56,7 @@ void Geo_NodeMesh::genVertices() {
 
 			_vertices[v] = Geo_Vertex(pos, texcoord);
 		}
-}
 
-void Geo_NodeMesh::genIndices() {
 	unsigned i = 0;
 
 	for (std::vector<const aiMesh*>::const_iterator mesh = _assimpMeshes.cbegin(); mesh < _assimpMeshes.cend(); mesh++)

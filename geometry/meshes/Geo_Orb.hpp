@@ -11,7 +11,7 @@ public:
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
 	){
 		_shape = { 1.0f, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
-		genVertices(); genIndices();
+		init();
 	}
 
 	Geo_Orb(float size) : Geo_Mesh(
@@ -19,7 +19,7 @@ public:
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
 	){
 		_shape = { size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
-		genVertices(); genIndices();
+		init();
 	}
 
 	Geo_Orb(Shape3D shape) : Geo_Mesh(
@@ -27,13 +27,12 @@ public:
 		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count
 	){
 		_shape = shape;
-		genVertices(); genIndices();
+		init();
 	}
 
 	float getRadius() const { return _shape.radius; }
 private:
-	void genVertices() override;
-	void genIndices() override;
+	void init();
 
 	Shape3D _shape;
 };
