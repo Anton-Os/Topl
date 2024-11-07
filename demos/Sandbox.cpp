@@ -241,8 +241,8 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
-        _effectVShader.setMode(2);
-        Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+        _canvasVShader.setMode(Sandbox_Demo::option);
+        Topl_Factory::switchPipeline(_renderer, _canvasPipeline);
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, -0.01F });
@@ -253,9 +253,6 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->updateScene(&editsScene);
         _renderer->drawScene(&editsScene);
         _effectVShader.setMode(0);
-        Topl_Factory::switchPipeline(_renderer, _effectPipeline);
-        _renderer->updateScene(&editsScene);
-        _renderer->drawScene(&editsScene);
     } else {
         if(isRebuildReq){
             for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++)
@@ -374,7 +371,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

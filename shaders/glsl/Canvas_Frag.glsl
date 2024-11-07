@@ -51,7 +51,7 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
 // Main
 
 void main() {
-	vec2 cursor = (tracerSteps[0] * 0.5f) + 0.5f; // adjusted cursor
+	vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
 	vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 
 	if(mode == 1) color = cursorHalo(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));

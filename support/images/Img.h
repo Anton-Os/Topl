@@ -32,23 +32,26 @@ struct Img_Base : public TaggedObj {
 
     void setColorImage(unsigned color){
 		cleanup();
-		// std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, c); }, color);
-		image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
+		if(image != NULL) std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, c); }, color);
+		else image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
 		tag = &image->name;
     }
     void setFileImage(const std::string& filePath){
 		cleanup();
-        image = loadImgOp(filePath.c_str()); // TODO: This may screw up image loading
+		if(image != NULL) std::thread([this](const std::string& s){ image = loadImgOp(s.c_str()); }, filePath);
+		else image = loadImgOp(filePath.c_str());
 		tag = &image->name;
     }
     void setTextImage(Rasteron_Text* textObj){
 		cleanup();
-		image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
+		if(image != NULL) std::thread([this](Rasteron_Text* t){ image = textImgOp(t, FONT_SIZE_MED); }, textObj);
+		else image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
 		tag = &image->name;
     }
     void setImage(ref_image_t refImage){
 		cleanup();
-        image = copyImgOp(refImage);
+        if(image != NULL) std::thread([this](ref_image_t r){ image = copyImgOp(r); }, refImage);
+		else image = copyImgOp(refImage);
 		tag = &image->name;
     }
 	// TODO: Set other image types?

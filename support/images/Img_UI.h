@@ -8,8 +8,6 @@ struct Img_UI {
 	~Img_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
 
 	virtual void setState(unsigned short index){
-		// std::cout << "Set state triggered with index " << std::to_string(index) << std::endl;
-
 		assert(queue != nullptr);
 		queue->index = index % queue->frameCount;
 		stateImg.setImage(queue_getImg(queue, index % queue->frameCount));
@@ -44,7 +42,7 @@ struct Img_Label : public Img_UI {
 		Img_UI::setState(MENU_None);
 	}
 
-	void setText(Rasteron_Text textObj){
+	void setText(Rasteron_Text textObj){ // TODO: Make this operation threaded?
 		if(textObj.fontFile != "" && textObj.text != ""){
 			textObjs[0] = textObj;
 			textObjs[1] = { textObj.fontFile, textObj.text, UI_COLOR_ON, textObj.fgColor };

@@ -29,5 +29,6 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	double g = cos(timeElapse / 1000.0);
 	double b = tan(timeElapse / 1000.0);
 
+	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 1.0);
 	return float4(r, g, b, 1.0);
 }
