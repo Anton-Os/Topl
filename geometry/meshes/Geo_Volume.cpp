@@ -90,38 +90,15 @@ Geo_Volume::Geo_Volume(Shape2D shape, float depth) : Geo_Mesh((shape.segments + 
 Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Volume(shape, depth){
 	_iters = iters;
 
-	unsigned short svCount = getVertexCount(); // start vertex count
-	unsigned short siCount = getIndexCount(); // start index count
+	Geo_Mesh* targetMesh = new Geo_Mesh(*((Geo_Mesh*)this));
+	for(unsigned i = 0; i < _iters; i++){
+		Geo_Mesh* newMesh = new Geo_Mesh(*targetMesh);
+		newMesh->shift({ 0.0F, 0.0F, _iters * depth });
+		extend(*newMesh);
+		delete newMesh;
+	}
 
-    for(unsigned l = 0; l < iters; l++){ // TODO: Push new face vertex?
-        for(unsigned p = 0; p < shape.segments; p++){
-            Geo_Vertex newVertex = _vertices[p + (l * shape.segments) + 1];
-			newVertex.position.data[2] += depth * (l + 1);
-			_vertices.push_back(newVertex);
-        }
-
-        for(unsigned i = 1; i < siCount; i++){ // indexing sides
-            // New Vertexing
-            _indices.push_back(i + (l * shape.segments));
-            _indices.push_back(i + (l * shape.segments) + 1);
-            _indices.push_back(i + (l * shape.segments) + svCount);
-            _indices.push_back(i + (l * shape.segments) + svCount + 1);
-            _indices.push_back(i + (l * shape.segments) + 1);
-            _indices.push_back(i + (l * shape.segments) + svCount);
-
-            /* _indices.push_back(v);
-            _indices.push_back(_vertices.size() - 1 - v);
-            _indices.push_back(v + 1);
-            _indices.push_back(_vertices.size() - 1 - v);
-            _indices.push_back(_vertices.size() - 2 - v);
-            _indices.push_back(v + 1);
-            v++; */
-		}
-
-        // TODO: Index new face?
-    }
-
-   // for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
+	delete targetMesh;
 }
 
 Geo_Volume::Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth) : Geo_Mesh(pointCount * 2, (pointCount * 3) * 3){
@@ -187,28 +164,13 @@ Geo_Volume::Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float de
 Geo_Ext3D::Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth, unsigned short iters) : Geo_Volume(points, pointCount, depth){
 	_iters = iters;
 
-	unsigned short svCount = getVertexCount(); // start vertex count
-	unsigned short siCount = getIndexCount(); // start index count
+	Geo_Mesh* targetMesh = new Geo_Mesh(*((Geo_Mesh*)this));
+	for(unsigned i = 0; i < _iters; i++){
+		Geo_Mesh* newMesh = new Geo_Mesh(*targetMesh);
+		newMesh->shift({ 0.0F, 0.0F, _iters * depth });
+		extend(*newMesh);
+		delete newMesh;
+	}
 
-	for(unsigned l = 0; l < iters; l++)
-		for(unsigned p = 0; p < pointCount; p++){
-			Geo_Vertex newVertex = _vertices[p];
-			newVertex.position.data[2] += depth * (l + 1);
-			_vertices.push_back(newVertex);
-
-			// TODO: Index face?
-
-			unsigned v = p + svCount;
-			for(unsigned i = siCount; i < siCount + (pointCount * 6); i += 6){ // indexing sides
-				_indices.push_back(v);
-                _indices.push_back(svCount - 1 - v);
-				_indices.push_back(v + 1);
-                _indices.push_back(svCount - 1 - v);
-                _indices.push_back(svCount - 2 - v);
-				_indices.push_back(v + 1);
-				v++;
-
-				// printf("Volume vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
-			}
-		}
+	delete targetMesh;
 }

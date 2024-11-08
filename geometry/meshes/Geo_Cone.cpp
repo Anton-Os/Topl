@@ -70,7 +70,6 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
             _vertices.push_back(newVertex);
         }
 
-
         for(unsigned i = 1; i < siCount; i++){ // indexing sides
             // New Vertexing
 			_indices.push_back(i + (l * shape.segments));
@@ -79,12 +78,12 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 			_indices.push_back(i + (l * shape.segments) + svCount + 1);
 			_indices.push_back(i + (l * shape.segments) + 1);
 			_indices.push_back(i + (l * shape.segments) + svCount);
-            /*_indices.push_back(i + (l * shape.segments));
-				_indices.push_back((l * shape.segments) + 1);
-				_indices.push_back(i + (l * shape.segments) + svCount);
-				_indices.push_back((l * shape.segments) + svCount + 1);
-				_indices.push_back((l * shape.segments) + 1);
-				_indices.push_back(i + (l * shape.segments) + svCount);*/
+			/*_indices.push_back(i + (l * shape.segments));
+			_indices.push_back((l * shape.segments) + 1);
+			_indices.push_back(i + (l * shape.segments) + svCount);
+			_indices.push_back((l * shape.segments) + svCount + 1);
+			_indices.push_back((l * shape.segments) + 1);
+			_indices.push_back(i + (l * shape.segments) + svCount);*/
         }
 
         // TODO: Index new face?

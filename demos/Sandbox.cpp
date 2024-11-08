@@ -249,7 +249,7 @@ void Sandbox_Demo::loop(double frameTime){
     }
     else if(Sandbox_Demo::mode == SANDBOX_SCULPT){
         _flatVShader.setMode(5);
-        Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+        Topl_Factory::switchPipeline(_renderer, _dynamicPipeline);
         _renderer->updateScene(&editsScene);
         _renderer->drawScene(&editsScene);
         _effectVShader.setMode(0);

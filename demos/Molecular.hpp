@@ -12,7 +12,13 @@ struct Molecular_Construct : Geo_Construct {
     }
 
     void init(unsigned short nodeCount){
-        _hub = new Geo_Orb(MOLECULAR_SIZE / 2);
+        switch(nodeCount % 5){
+            case 0: _hub = new Geo_TrigOrb(MOLECULAR_SIZE / 2); break;
+            case 1: _hub = new Geo_QuadOrb(MOLECULAR_SIZE / 2); break;
+            case 2: _hub = new Geo_HexOrb(MOLECULAR_SIZE / 2); break;
+            case 3: _hub = new Geo_OctOrb(MOLECULAR_SIZE / 2); break;
+            case 4: _hub = new Geo_DecOrb(MOLECULAR_SIZE / 2); break;
+        }
         _geoActors.push_back(Geo_Actor(_hub));
         for(unsigned n = 0; n < nodeCount; n++){
             _orbs.push_back(new Geo_Orb(MOLECULAR_SIZE / nodeCount));

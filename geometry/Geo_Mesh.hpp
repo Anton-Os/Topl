@@ -56,52 +56,18 @@ public:
     void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
 
-    Vec3f getOrigin() const {
-        Vec3f origin = VEC_3F_ZERO;
-        for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
-        return origin * Vec3f({ 1.0F / getVertexCount(), 1.0F / getVertexCount(), 1.0F / getVertexCount() });
-    }
-	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
-	size_t getVertexCount() const { return _vertices.size(); }
-	vertex_cptr_t getVertices() const { return _vertices.data(); }
-	size_t getIndexCount() const { return _indices.size(); }
-	ui_cptr_t getIndices() const { return _indices.data(); }
+	void extend(const Geo_Mesh& refMesh){
+		unsigned svCount = getVertexCount();
+		unsigned siCount = getIndexCount();
 
-	bool instanceCount = 0;
-    bool isTesselated = false;
-    DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
-protected:
-	std::vector<Geo_Vertex> _vertices;
-	std::vector<unsigned> _indices;
-};
+		for(unsigned v = 0; v < refMesh.getVertexCount(); v++)
+			_vertices.push_back(*(refMesh.getVertices() + v));
 
-
-// Extended Mesh Object
-
-struct Geo_ExtMesh : public Geo_Mesh {
-	Geo_ExtMesh(std::vector<const Geo_Mesh*> refMeshes) : Geo_Mesh(*(*refMeshes.begin())), subMeshes(refMeshes) {
-		unsigned svCount, siCount;
-
-		for(unsigned r = 1; r < subMeshes.size(); r++){
-			svCount = getVertexCount();
-			siCount = getIndexCount();
-
-			for(unsigned v = 0; v < (*(subMeshes.begin() + r))->getVertexCount(); v++)
-				_vertices.push_back(*((*(subMeshes.begin() + r))->getVertices() + v));
-
-			for(unsigned i = 0; i < (*(subMeshes.begin() + r))->getIndexCount(); i++)
-				_indices.push_back(*((*(subMeshes.begin() + r))->getIndices() + i) + svCount);
-		}
+		for(unsigned i = 0; i < refMesh.getIndexCount(); i++)
+			_indices.push_back(*(refMesh.getIndices() + i) + svCount);
 	}
 
-	const std::vector<const Geo_Mesh*> subMeshes;
-};
-
-
-// Tesselated Mesh Object
-
-struct Geo_TessMesh : public Geo_Mesh {
-	Geo_TessMesh(const Geo_Mesh& refMesh, unsigned short t) : Geo_Mesh(refMesh), tessCount(t) {
+	void tesselate(unsigned short tessCount){
 		unsigned short svCount, siCount;
 
 		for(unsigned l = 0; l < tessCount; l++){
@@ -124,11 +90,25 @@ struct Geo_TessMesh : public Geo_Mesh {
 				_indices.push_back(v); // third triangle
 			}
 		}
-
-		for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
 	}
 
-	const unsigned short tessCount;
+    Vec3f getOrigin() const {
+        Vec3f origin = VEC_3F_ZERO;
+        for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
+        return origin * Vec3f({ 1.0F / getVertexCount(), 1.0F / getVertexCount(), 1.0F / getVertexCount() });
+    }
+	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
+	size_t getVertexCount() const { return _vertices.size(); }
+	vertex_cptr_t getVertices() const { return _vertices.data(); }
+	size_t getIndexCount() const { return _indices.size(); }
+	ui_cptr_t getIndices() const { return _indices.data(); }
+
+	bool instanceCount = 0;
+    bool isTesselated = false;
+    DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
+protected:
+	std::vector<Geo_Vertex> _vertices;
+	std::vector<unsigned> _indices;
 };
 
 #define GEO_MESH_H

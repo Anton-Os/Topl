@@ -19,8 +19,6 @@ struct Effect_VertexShader : public Topl_EntryShader {
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		Vec2i screenRes = Vec2i({ width, height });
 		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
-		printf("Cursor pos is %f, %f", cursorPos.data[0], cursorPos.data[1]);
-	
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
