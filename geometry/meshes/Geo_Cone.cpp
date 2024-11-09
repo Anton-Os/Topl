@@ -58,11 +58,11 @@ Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, sha
 Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
 	_iters = iters;
 
-    unsigned short svCount = getVertexCount(); // start vertex count
-    unsigned short siCount = getIndexCount(); // start index count
-
     for(unsigned l = 0; l < iters; l++){ // TODO: Push new face vertex?
-        for(unsigned p = 0; p < shape.segments; p++){
+        unsigned short svCount = getVertexCount(); // start vertex count
+    	unsigned short siCount = getIndexCount(); // start index count
+		
+		for(unsigned p = 0; p < shape.segments; p++){
             Geo_Vertex newVertex = _vertices[p + (l * shape.segments) + 1];
             newVertex.position.data[0] *= 1.0 + (shape.radius * 0.5);
             newVertex.position.data[1] *= 1.0 + (shape.radius * 0.5);
@@ -74,17 +74,18 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
             // New Vertexing
 			_indices.push_back(i + (l * shape.segments));
 			_indices.push_back(i + (l * shape.segments) + 1);
+			_indices.push_back(i + (l * shape.segments) + svCount - 1);
 			_indices.push_back(i + (l * shape.segments) + svCount);
-			_indices.push_back(i + (l * shape.segments) + svCount + 1);
 			_indices.push_back(i + (l * shape.segments) + 1);
-			_indices.push_back(i + (l * shape.segments) + svCount);
-			/*_indices.push_back(i + (l * shape.segments));
-			_indices.push_back((l * shape.segments) + 1);
-			_indices.push_back(i + (l * shape.segments) + svCount);
-			_indices.push_back((l * shape.segments) + svCount + 1);
-			_indices.push_back((l * shape.segments) + 1);
-			_indices.push_back(i + (l * shape.segments) + svCount);*/
+			_indices.push_back(i + (l * shape.segments) + svCount - 1);
         }
+
+		_indices.push_back((l * shape.segments) + (svCount - 2));
+		_indices.push_back((l * shape.segments) + 1);
+		_indices.push_back((l * shape.segments) + (svCount + shape.segments - 1));
+		_indices.push_back((l * shape.segments) + svCount);
+		_indices.push_back((l * shape.segments) + 1);
+		_indices.push_back((l * shape.segments) + (svCount + shape.segments - 1));
 
         // TODO: Index new face?
     }
