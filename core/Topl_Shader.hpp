@@ -76,6 +76,8 @@ protected:
 
 	std::string genPrefix_glsl() const { return "glsl/"; }
 	std::string genPrefix_hlsl() const { return "hlsl/"; }
+
+	void embed(const std::string& embedStr, unsigned short lineNum); // embed string into source
 };
 
 // Entry shader contains inputs and functionality to pass uniform blocks
@@ -123,6 +125,8 @@ public:
 
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->drawMode : &_defaultNum), sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->tessLevel : &_defaultNum), sizeof(unsigned), bytes);
         alignDataToBytes((uint8_t*)((mesh != nullptr)? &origin : &_defaultVec), sizeof(Vec3f), 4, bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 	}

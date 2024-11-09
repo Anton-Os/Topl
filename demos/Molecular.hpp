@@ -19,9 +19,11 @@ struct Molecular_Construct : Geo_Construct {
             case 3: _hub = new Geo_OctOrb(MOLECULAR_SIZE / 2); break;
             case 4: _hub = new Geo_DecOrb(MOLECULAR_SIZE / 2); break;
         }
+        _hub->drawMode = DRAW_Triangles;
         _geoActors.push_back(Geo_Actor(_hub));
         for(unsigned n = 0; n < nodeCount; n++){
             _orbs.push_back(new Geo_Orb(MOLECULAR_SIZE / nodeCount));
+            _orbs.back()->drawMode = DRAW_Triangles;
             _geoActors.push_back(Geo_Actor(_orbs.back())); // adding  node
             _geoActors.back().setPos({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F, 0.0F });
         }
@@ -29,6 +31,7 @@ struct Molecular_Construct : Geo_Construct {
         for(unsigned n = 1; n < nodeCount; n++){
             Geo_Vertex lineVertices[2] = { Geo_Vertex(*_geoActors.front().getPos()), Geo_Vertex(*_geoActors[n].getPos()) };
             _lines.push_back(new Geo_Mesh((vertex_cptr_t)&lineVertices, 2));
+            _lines.back()->drawMode = DRAW_Lines;
             _geoActors.push_back(Geo_Actor(_lines.back()));
         }
     }

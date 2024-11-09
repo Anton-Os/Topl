@@ -93,7 +93,7 @@ Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Vol
 	Geo_Mesh* targetMesh = new Geo_Mesh(*((Geo_Mesh*)this));
 	for(unsigned i = 0; i < _iters; i++){
 		Geo_Mesh* newMesh = new Geo_Mesh(*targetMesh);
-		newMesh->shift({ 0.0F, 0.0F, _iters * depth });
+		newMesh->shift({ 0.0F, 0.0F, i * depth });
 		extend(*newMesh);
 		delete newMesh;
 	}
@@ -167,7 +167,7 @@ Geo_Ext3D::Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float dept
 	Geo_Mesh* targetMesh = new Geo_Mesh(*((Geo_Mesh*)this));
 	for(unsigned i = 0; i < _iters; i++){
 		Geo_Mesh* newMesh = new Geo_Mesh(*targetMesh);
-		newMesh->shift({ 0.0F, 0.0F, _iters * depth });
+		newMesh->shift({ 0.0F, 0.0F, i * depth });
 		extend(*newMesh);
 		delete newMesh;
 	}

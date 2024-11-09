@@ -2,6 +2,11 @@
 
 #extension GL_KHR_vulkan_glsl : enable
 
+#define INCLUDE_EXTBLOCK
+#define IGNORE_INPUTS
+
+#include "Common.glsl"
+
 // Values
 
 vec3 positions[3] = vec3[](

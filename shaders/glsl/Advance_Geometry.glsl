@@ -27,5 +27,5 @@ void main(void) {
 	gl_Position = gl_in[0].gl_Position + vec4(-0.05, -0.02, 0.0, 0.0);
 	EmitVertex();
 
-        EndPrimitive();
+  EndPrimitive();
 }

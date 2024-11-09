@@ -70,7 +70,7 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
             _vertices.push_back(newVertex);
         }
 
-        for(unsigned i = 1; i < siCount; i++){ // indexing sides
+        for(unsigned i = 1; i < siCount - 1; i++){ // indexing sides
             // New Vertexing
 			_indices.push_back(i + (l * shape.segments));
 			_indices.push_back(i + (l * shape.segments) + 1);
@@ -136,30 +136,35 @@ Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) 
 Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters) : Geo_Cone(points, pointCount, apex){
 	_iters = iters;
 
-	unsigned short svCount = getVertexCount(); // start vertex count
-	unsigned short siCount = getIndexCount(); // start index count
-
-	for(unsigned l = 0; l < iters; l++)
+    for(unsigned l = 0; l < iters; l++){ // TODO: Push new face vertex?
+        unsigned short svCount = getVertexCount(); // start vertex count
+    	unsigned short siCount = getIndexCount(); // start index count
+		
 		for(unsigned p = 0; p < pointCount; p++){
-            Geo_Vertex newVertex = _vertices[p];
-			newVertex.position.data[0] *= 1.1; // for testing
-			newVertex.position.data[1] *= 1.1; // for testing
-			newVertex.position.data[2] += apex.data[2] * (l + 1);
-			_vertices.push_back(newVertex);
+            Geo_Vertex newVertex = _vertices[p + (l * pointCount) + 1];
+            newVertex.position.data[0] *= 1.0 + (apex.data[2] * 0.5); // TODO: Compute radius
+            newVertex.position.data[1] *= 1.0 + (apex.data[2] * 0.5); // TODO: Compute radius
+            newVertex.position.data[2] -= apex.data[2] * (l + 1);
+            _vertices.push_back(newVertex);
+        }
 
-			// TODO: Index face?
+        for(unsigned i = 1; i < siCount; i++){ // indexing sides
+            // New Vertexing
+			_indices.push_back(i + (l * pointCount));
+			_indices.push_back(i + (l * pointCount) + 1);
+			_indices.push_back(i + (l * pointCount) + svCount - 1);
+			_indices.push_back(i + (l * pointCount) + svCount);
+			_indices.push_back(i + (l * pointCount) + 1);
+			_indices.push_back(i + (l * pointCount) + svCount - 1);
+        }
 
-			unsigned v = p + svCount;
-			for(unsigned i = siCount; i < siCount + (pointCount * 6); i += 6){ // indexing sides
-				_indices.push_back(v);
-				_indices.push_back(_vertices.size() - 1 - v);
-				_indices.push_back(v + 1);
-				_indices.push_back(_vertices.size() - 1 - v);
-				_indices.push_back(_vertices.size() - 2 - v);
-				_indices.push_back(v + 1);
-				v++;
-				
-				// printf("Conic vertex is %d with size %d, index is %d with size %d", v, _vertices.size(), i, _indices.size());
-            }
-		}
+		_indices.push_back((l * pointCount) + (svCount - 2));
+		_indices.push_back((l * pointCount) + 1);
+		_indices.push_back((l * pointCount) + (svCount + pointCount - 1));
+		_indices.push_back((l * pointCount) + svCount);
+		_indices.push_back((l * pointCount) + 1);
+		_indices.push_back((l * pointCount) + (svCount + pointCount - 1));
+
+        // TODO: Index new face?
+    }
 }

@@ -1,5 +1,10 @@
 #version 440
 
+#define INCLUDE_EXTBLOCK
+#define IGNORE_INPUTS
+
+#include "Common.glsl"
+
 // Values
 
 layout(location = 0) out vec4 color_out;

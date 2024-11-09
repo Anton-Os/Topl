@@ -267,8 +267,6 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
-	// if(actor->getMesh() != nullptr) if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
-
 	unsigned long renderID = _renderTargetMap[actor];
 	// static GL4::Buffer *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID){ // Scene Target
@@ -282,6 +280,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		}
 	}
 	else if (renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
+		if(actor->getMesh() != nullptr) if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
 		// Data & Buffer Updates
 		
 		if(_vertexArrayMap.find(renderID) != _vertexArrayMap.end()) glBindVertexArray(_vertexArrayMap.at(renderID).vao);

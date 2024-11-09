@@ -17,17 +17,13 @@ layout(std140, binding = 1) uniform SceneBlock{
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
-
-/* #define CONTROL_POINT_COUNT 12
-#define INSTANCE_TFORMS_COUNT 256 */
-
 layout(std140, binding = 2) uniform ExtBlock {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
+	uint drawMode; // draw mode cooresponding to primitive
+	uint tessLevel; // levels of tesselation
 	vec3 meshOrigin; // origin point for messh
-	// uint geomCount; // count for emitting primitives
-	// uint tessCount; // count for tesselation parameters
-}
+};
 #endif
 
 #ifdef INCLUDE_TEXTURES
@@ -48,7 +44,7 @@ layout(binding = 8) uniform sampler3D volumeTex;
 #ifndef IGNORE_INPUTS
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texcoord;
-layout(location = 3) in mat3 instanceData;
+// layout(location = 3) in mat3 instanceData;
 #endif
 
 // Functions

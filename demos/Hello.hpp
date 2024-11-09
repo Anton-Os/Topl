@@ -1,6 +1,6 @@
 #define RENDER_TEST_ENABLE
 
-#include "program/Topl_Program.hpp"
+#include "Topl_Factory.hpp"
 
 #include "meshes/Geo_Surface.hpp"
 
@@ -10,15 +10,15 @@
 // OpenGL Test Renderer
 struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 	Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
-		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&geoPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
-        setPipeline(&geoOnlyPipeline);
+        setPipeline(&tessPipeline);
 	}
 
-	GL4::Pipeline basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
 
 	Idle_VertexShader_GL4 vertexShader;
 	Idle_PixelShader_GL4 pixelShader;
@@ -31,13 +31,15 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 // DirectX Test Renderer
 struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_DX11(context){
-		genPipeline(&geoOnlyPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
-		genPipeline(&tessOnlyPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
+		genPipeline(&geoPipeline, &vertexShader, &pixelShader, &geomShader, nullptr, nullptr);
+		genPipeline(&tessPipeline, &vertexShader, &pixelShader, nullptr, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
+
+		setPipeline(&fullPipeline);
 	}
 
-	DX11::Pipeline basePipeline, geoOnlyPipeline, tessOnlyPipeline, fullPipeline;
+	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
 
 	Idle_VertexShader_DX11 vertexShader;
 	Idle_PixelShader_DX11 pixelShader;

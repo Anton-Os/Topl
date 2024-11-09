@@ -2,8 +2,8 @@
 
 #include "Hello.hpp"
 
-#define TARGET_BACKEND BACKEND_GL4
-// #define TARGET_BACKEND BACKEND_DX11
+// #define TARGET_BACKEND BACKEND_GL4
+#define TARGET_BACKEND BACKEND_DX11
 // #define TARGET_BACKEND BACKEND_VK
 
 #define FRAME_AVG_TIME 100
@@ -42,9 +42,9 @@ MAIN_ENTRY {
 
 	std::cout << "Scene building" << std::endl;
 	if(TARGET_BACKEND != BACKEND_VK){
-		triangle.isTesselated = true;
 		scene.addGeometry(&actor);
-        renderer->setDrawMode(DRAW_Patch); // renderer->setDrawMode(DRAW_Points);
+		triangle.drawMode = DRAW_Patch;
+       	// triangle.drawMode = DRAW_Points;
 		renderer->buildScene(&scene);
 	}
 

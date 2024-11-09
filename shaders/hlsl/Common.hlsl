@@ -16,18 +16,13 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
-
-/* #define CONTROL_POINT_COUNT 12
-#define INSTANCE_TFORMS_COUNT 256 */
-
 cbuffer CONST_EXT_BLOCK : register(b2) {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
+	uint drawMode; // draw mode cooresponding to primitive
+	uint tessLevel; // levels of tesselation
 	float3 meshOrigin; // origin point for mesh
-	// uint geomCount; // count for emitting primitives
-	// uint tessCount; // count for tesselation parameters
 }
-
 #endif
 
 #ifdef INCLUDE_TEXTURES

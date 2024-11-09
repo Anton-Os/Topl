@@ -24,7 +24,7 @@ struct Shape3D {
 	unsigned short xSegs, ySegs;
 };
 
-enum DRAW_Mode { DRAW_Default, DRAW_Points, DRAW_Lines, DRAW_Triangles, DRAW_Fan, DRAW_Strip, DRAW_Patch };
+enum DRAW_Mode { DRAW_Default = 0, DRAW_Points = 1, DRAW_Lines = 2, DRAW_Triangles = 3, DRAW_Fan = 4, DRAW_Strip = 5, DRAW_Patch = 6 };
 
 // Mesh Object
 
@@ -90,6 +90,8 @@ public:
 				_indices.push_back(v); // third triangle
 			}
 		}
+
+		tessLevel += tessCount; // for testing
 	}
 
     Vec3f getOrigin() const {
@@ -103,8 +105,8 @@ public:
 	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices() const { return _indices.data(); }
 
-	bool instanceCount = 0;
-    bool isTesselated = false;
+	unsigned tessLevel = 1;
+	unsigned instanceCount = 0;
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 protected:
 	std::vector<Geo_Vertex> _vertices;

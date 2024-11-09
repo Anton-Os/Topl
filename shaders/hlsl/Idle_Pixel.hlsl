@@ -1,3 +1,7 @@
+#define INCLUDE_EXTBLOCK
+
+#include "Common.hlsl"
+
 // Values
 
 struct PS_INPUT { float4 pos : SV_POSITION; };

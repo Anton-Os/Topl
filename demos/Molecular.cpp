@@ -35,10 +35,10 @@ void Molecular_Demo::loop(double frameTime){
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
 
-     if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
+    if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
         unsigned short setIndex = rand() % MOLECULAR_CONSTRUCTS;
-        for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
-            constructs[setIndex][c].scale({ 0.999F, 0.999F, 0.999F });
+        // for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
+        //    constructs[setIndex][c].scale({ 0.999F, 0.999F, 0.999F });
             
         /* scene.addForce(
             constructs[constructIndex].getPrefix() + "hub", 
@@ -53,21 +53,15 @@ void Molecular_Demo::loop(double frameTime){
         } */
     }
 
-    // _beamsVShader.setMode(-3);
-
-    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
-    // _beamsVShader.setMode(3);
+    _beamsVShader.setMode(10 + lightMode);
+    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
 
-    // _flatVShader.setMode(7);
-    // _renderer->updateScene(&scene);
-    _renderer->setDrawMode(DRAW_Triangles);
-    // _renderer->drawScene(&scene);
     for(unsigned m = 0; m < 3; m++){
-        _beamsVShader.setMode(m * 10 + lightMode);
-        _renderer->updateScene(&scene);
+        // _beamsVShader.setMode(m * 10 + lightMode);
+        // _renderer->updateScene(&scene);
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
             for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)
                 _renderer->draw(constructs[m][c].getGeoActor(o));
@@ -75,7 +69,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);
