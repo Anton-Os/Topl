@@ -66,7 +66,7 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
             Geo_Vertex newVertex = _vertices[p + (l * shape.segments) + 1];
             newVertex.position.data[0] *= 1.0 + (shape.radius * 0.5);
             newVertex.position.data[1] *= 1.0 + (shape.radius * 0.5);
-            newVertex.position.data[2] -= apex.data[2] * (l + 1);
+            newVertex.position.data[2] -= apex.data[2];
             _vertices.push_back(newVertex);
         }
 
@@ -144,7 +144,7 @@ Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f 
             Geo_Vertex newVertex = _vertices[p + (l * pointCount) + 1];
             newVertex.position.data[0] *= 1.0 + (apex.data[2] * 0.5); // TODO: Compute radius
             newVertex.position.data[1] *= 1.0 + (apex.data[2] * 0.5); // TODO: Compute radius
-            newVertex.position.data[2] -= apex.data[2] * (l + 1);
+            newVertex.position.data[2] -= apex.data[2];
             _vertices.push_back(newVertex);
         }
 

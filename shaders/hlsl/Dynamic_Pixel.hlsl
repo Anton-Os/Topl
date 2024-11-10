@@ -15,16 +15,11 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	// TODO: Include other dynamic parameters
 }
 
-struct PS_INPUT {
-	float4 pos : SV_POSITION;
-	float4 vertex_pos : POSITION0;
-	uint vertex_id : VERTEXID;
-	float4 vertex_color : COLOR0;
-};
+struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Main
 
-float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
+float4 main(PS_INPUT input) : SV_TARGET {
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 1.0);
 	
 	double r = sin(timeElapse / 1000.0);

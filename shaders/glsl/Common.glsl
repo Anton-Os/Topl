@@ -3,7 +3,6 @@ layout(std140, binding = 0) uniform Block {
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
-	// uint vertexCount;
 };
 #endif
 
@@ -22,7 +21,7 @@ layout(std140, binding = 2) uniform ExtBlock {
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
 	uint tessLevel; // levels of tesselation
-	vec3 meshOrigin; // origin point for messh
+	// vec3 meshOrigin; // origin point for messh
 };
 #endif
 
@@ -105,6 +104,12 @@ mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
 		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
 		0, 0, 0, 1
 	);
+}
+
+vec4 color_correct(vec4 color){ // switch red and blue color values
+	float t = color.r;
+	color.r = color.b; color.b = t;
+	return color;
 }
 
 // TODO: Include other helper functions

@@ -36,7 +36,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
-		setPipeline(&fullPipeline);
+		setPipeline(&tessPipeline);
 	}
 
 	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;

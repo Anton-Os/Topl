@@ -228,10 +228,6 @@ void Sandbox_Demo::init(){
 }
 
 void Sandbox_Demo::loop(double frameTime){
-    /* if(!overlayThread.joinable()){
-        overlayThread.join();
-        overlayThread = std::thread([this](){ updateOverlay(); }); // rerun thread
-    } */
     updateOverlay();
     
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
@@ -241,7 +237,7 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
-        _canvasVShader.setMode(Sandbox_Demo::option);
+        _canvasVShader.setMode(-10);
         Topl_Factory::switchPipeline(_renderer, _canvasPipeline);
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
@@ -371,7 +367,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

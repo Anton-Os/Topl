@@ -44,6 +44,8 @@ MAIN_ENTRY {
 	if(TARGET_BACKEND != BACKEND_VK){
 		scene.addGeometry(&actor);
 		triangle.drawMode = DRAW_Patch;
+		triangle.instanceCount = 10;
+		triangle.tessLevel = 10;
        	// triangle.drawMode = DRAW_Points;
 		renderer->buildScene(&scene);
 	}
@@ -62,10 +64,10 @@ MAIN_ENTRY {
 
 			frameTotal += f1 + f2 + f3 + f4;
 			/* // if(f1 + f2 + f3 + f4 > frameTotal / renderer->getFrameCount())
-			 *				std::cout << "Frame times: "
-			 *				<< f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
-			 *				<< " Total: " << f1 + f2 + f3 + f4
-			 *                << " | Average: " << frameTotal / renderer->getFrameCount() << std::endl; */
+			 *	std::cout << "Frame times: "
+			 *	<< f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
+			 *	<< " Total: " << f1 + f2 + f3 + f4
+			 *  << " | Average: " << frameTotal / renderer->getFrameCount() << std::endl; */
 		}
 	}
 

@@ -57,6 +57,8 @@ void Entropy_Demo::init(){
     }
     _renderer->buildScene(&scene1); _renderer->buildScene(&scene2); _renderer->buildScene(&scene3);
     _renderer->buildScene(&ext_scene1); _renderer->buildScene(&ext_scene2); _renderer->buildScene(&ext_scene3);
+
+    _renderer->isMeshUpdate = false;
 }
 
 void Entropy_Demo::loop(double frameTime){
@@ -64,7 +66,7 @@ void Entropy_Demo::loop(double frameTime){
     ext_scene1.camera = &Topl_Program::cameraObj; ext_scene2.camera = &Topl_Program::cameraObj; ext_scene3.camera = &Topl_Program::cameraObj;
 
     _beamsVShader.setMode((shaderMode + lightMode) * -1);
-    _effectVShader.setMode(-1);
+    _effectVShader.setMode(10);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
     _renderer->drawScene(&backdropScene);
@@ -109,7 +111,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

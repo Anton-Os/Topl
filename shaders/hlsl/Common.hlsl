@@ -21,7 +21,7 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
 	uint tessLevel; // levels of tesselation
-	float3 meshOrigin; // origin point for mesh
+	// float3 meshOrigin; // origin point for mesh
 }
 #endif
 
@@ -104,6 +104,12 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) { // camera postion and relati
 	};
 
 	return camMatrix;
+}
+
+float4 color_correct(float4 color){ // switch red and blue color values
+	float t = color[0];
+	color[0] = color[2]; color[2] = t;
+	return color;
 }
 
 // TODO: Include other helper functions

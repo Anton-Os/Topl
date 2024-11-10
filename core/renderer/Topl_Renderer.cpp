@@ -55,18 +55,24 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
     if(!_flags[PIPELINE_BIT] || !_flags[BUILD_BIT]) return false; // failure
 
 	// Update Scene 
-	_sceneBlockData.clear();
-	_entryShader->genSceneBlock(scene, &_sceneBlockData); 
-	update(SCENE_RENDERID);
+	if(isSceneUpdate){
+		_sceneBlockData.clear();
+		_entryShader->genSceneBlock(scene, &_sceneBlockData); 
+		update(SCENE_RENDERID);
+	}
 
 	// Update Render Objects
 	for (unsigned g = (scene != ALL_SCENES)? 0 : 1; g < ((scene != ALL_SCENES)? scene->getActorCount() : _renderIDs); g++) {
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
-		_actorBlockData.clear();
-		_entryShader->genActorBlock(actor, &_actorBlockData); // TODO: Include mesh updates
-		_meshBlockData.clear();
-		_entryShader->genMeshBlock(actor->getMesh(), &_meshBlockData);
-		update(actor);
+		if(isActorUpdate){
+			_actorBlockData.clear();
+			_entryShader->genActorBlock(actor, &_actorBlockData); // TODO: Include mesh updates
+		}
+		if(isMeshUpdate){
+			_meshBlockData.clear();
+			_entryShader->genMeshBlock(actor->getMesh(), &_meshBlockData);
+		}
+		if(isActorUpdate || isMeshUpdate) update(actor); // conditionally update
 	}
 
 	// _threads[1] = std::thread(&Topl_Renderer::updateScene, scene);

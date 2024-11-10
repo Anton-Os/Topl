@@ -42,7 +42,6 @@ struct Img_Canvas : public Img_Base {
     }
 
     void drawDot(float radius, Vec2f pos, unsigned color){ // TODO: Handle path and object draw cases
-        // std::thread([this](){ 
         for(unsigned p = 0; p < image->height * image->width; p++){
             double x = (1.0 / (double)image->width) * (p % image->width);
             double y = (1.0 / (double)image->height) * (p / image->width);
@@ -50,12 +49,10 @@ struct Img_Canvas : public Img_Base {
             double dist = sqrt(pow(x - pos.data[0], 2.0) + pow(y - pos.data[1], 2.0));
             if(dist < radius) *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
         }
-        // });
         refresh();
     }
 
     void drawPath(float radius, Vec2f pos1, Vec2f pos2, unsigned color){
-        // std::thread([this](){ 
         for(unsigned p = 0; p < image->height * image->width; p++){
             double x = (1.0 / (double)image->width) * (p % image->width);
             double y = (1.0 / (double)image->height) * (p / image->width);
@@ -69,12 +66,10 @@ struct Img_Canvas : public Img_Base {
             if(xDiff > yDiff - (radius * (radius / (xRang * yRang))) && xDiff < yDiff + (radius * (radius / (xRang * yRang))) && Vec2f({ (float)x - midpoint[0], (float)y - midpoint[1] }).len() < dist * 0.5F)
                 *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
         }
-        // });
         refresh();
     }
 
     void drawBox(Vec2f pos1, Vec2f pos2, unsigned color){
-        // std::thread([this](){ 
         for(unsigned p = 0; p < image->height * image->width; p++){
             double x = (1.0 / (double)image->width) * (p % image->width);
             double y = (1.0 / (double)image->height) * (p / image->width);
@@ -85,7 +80,6 @@ struct Img_Canvas : public Img_Base {
             if(x > xRanges[0] && x < xRanges[1] && y > yRanges[0] && y < yRanges[1])
                 *(image->data + p) = colors_blend(color, *(image->data + p), (*(image->data + p) != background)? blend : 0.0F);
         }
-        // });
     }
 
     char* refreshTag = "canvas";

@@ -26,6 +26,8 @@ void Molecular_Demo::init(){
 
     globeScene.addGeometry(&globe);
     _renderer->buildScene(&globeScene);
+
+    _renderer->isMeshUpdate = false;
 }
 
 void Molecular_Demo::loop(double frameTime){
@@ -53,8 +55,8 @@ void Molecular_Demo::loop(double frameTime){
         } */
     }
 
-    _beamsVShader.setMode(10 + lightMode);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    _beamsVShader.setMode(lightMode * 10 + 4);
+    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);

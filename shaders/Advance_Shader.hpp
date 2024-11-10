@@ -5,6 +5,8 @@
 struct Advance_TessCtrlShader : public Topl_Shader {
 	Advance_TessCtrlShader() : Topl_Shader(){} // Blank Constructor
 	Advance_TessCtrlShader(std::string fileName) : Topl_Shader(SHDR_TessCtrl, fileName){ }
+
+	// TODO: Include embedding logic
 };
 
 struct Advance_TessCtrlShader_GL4 : public Advance_TessCtrlShader {
@@ -20,6 +22,8 @@ struct Advance_TessCtrlShader_DX11 : public Advance_TessCtrlShader {
 struct Advance_TessEvalShader : public Topl_Shader {
 	Advance_TessEvalShader() : Topl_Shader(){} // Blank Constructor
 	Advance_TessEvalShader(std::string fileName) : Topl_Shader(SHDR_TessEval, fileName){ }
+
+	// TODO: Include embedding logic
 };
 
 struct Advance_TessEvalShader_GL4 : public Advance_TessEvalShader {
@@ -35,6 +39,8 @@ struct Advance_TessEvalShader_DX11 : public Advance_TessEvalShader {
 struct Advance_GeometryShader : public Topl_Shader {
 	Advance_GeometryShader() : Topl_Shader(){} // Blank Constructor
 	Advance_GeometryShader(std::string fileName) : Topl_Shader(SHDR_Geom, fileName){ }
+
+	// TODO: Include embedding logic
 };
 
 struct Advance_GeometryShader_GL4 : public Advance_GeometryShader {

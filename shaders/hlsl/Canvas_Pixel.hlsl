@@ -50,12 +50,20 @@ float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
+    float4 color_out = float4(0.0, 0.0, 0.0, 0.0);
+    if(mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // show texture if mode is positive
+
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-    // if(mode < 0) return float4(juliaSet((coords - cursor) * abs(mode) * FRACTAL_SIZE), 1.0f);
-    if(mode == 1) return cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-    else if(mode == 2) return cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-    else return cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-    // else return float4(cursorSet(cursor, coords), 1.0f);
+    if(abs(mode) >= 10){ // adding cursor color
+        float4 color_cursor = float4(0.0, 0.0, 0.0, 0.0);
+        if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+        else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+        else if(mode != 0) color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+
+        if(color_cursor.a != 0.0) color_out = color_cursor;
+    }
+
+    return color_out;
 }

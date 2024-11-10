@@ -24,47 +24,19 @@ struct PS_INPUT {
 
 float4 color_blend(float4 color1, float4 color2){ return (color1 + color2) / 2; }
 
-float4 color_correct(float4 color){ // switch red and blue color values
-	float t = color[0];
-	color[0] = color[2]; color[2] = t;
-	return color;
-}
-
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	if(mode == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
-	else if(mode == 9) return color_correct(areaTex.Sample(areaSampler, float3(input.texcoord.x, input.texcoord.y, 0.0))); // volumetric slice
-	else if(mode > 0 && mode < 8){
-		if(mode == 1) return color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 2) return color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 3) return color_correct(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 4) return color_correct(tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 5) return color_correct(tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 6) return color_correct(tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)));
-		if(mode == 7) return color_correct(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)));
-		else return float4(1.0, 0.0, 0.0, 1.0); // error
+	if(mode % 10 == 8) return color_correct(areaTex.Sample(areaSampler, input.texcoord)); // volumetric texture
+	else if(mode % 10 == 9) return color_correct(areaTex.Sample(areaSampler, float3(input.texcoord.x, input.texcoord.y, 0.0))); // volumetric slice
+	else {
+		if(mode % 10 == 1) return color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 2) return color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 3) return color_correct(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 4) return color_correct(tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 5) return color_correct(tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 6) return color_correct(tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)));
+		else if(mode % 10 == 7) return color_correct(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)));
+		else return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
 	}
-	else if(mode < 0 && mode > -8){ // Alpha Values are layered
-		float4 outColor = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y)));
-
-		if(mode <= -1 && tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -2 && tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -3 && tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -4 && tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex4.Sample(sampler4, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -5 && tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex5.Sample(sampler5, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -6 && tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex6.Sample(sampler6, float2(input.texcoord.x, input.texcoord.y)), outColor));
-		if(mode <= -7 && tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)).a > 0.05)
-			outColor = color_correct(color_blend(tex7.Sample(sampler7, float2(input.texcoord.x, input.texcoord.y)), outColor));
-	
-		return outColor;
-	}
-	else if(mode == 9) return float4(0.0, 0.0, 1.0, 0.5); // test
-	else return color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // base texture
 }

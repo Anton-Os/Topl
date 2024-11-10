@@ -95,8 +95,8 @@ struct Topl_Viewport {
 #define INVALID_RENDERID (unsigned long)- 1
 
 #define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
-#define CLEAR_R 0.25F // 0.290196F // red clear color code
-#define CLEAR_G 0.25F // 0.254902F // green clear color code
+#define CLEAR_R 0.1F // 0.290196F // red clear color code
+#define CLEAR_G 0.1F // 0.254902F // green clear color code
 #define CLEAR_B 0.25F // 0.164706F // blue clear color code
 #define CLEAR_A 1.0F // used for alpha channel clear color
 
@@ -127,6 +127,7 @@ public:
 	unsigned getPixelAt(float x, float y);
 #endif
     unsigned long getRenderID(const Geo_Actor* actor);
+    bool isSceneUpdate = true, isActorUpdate = true, isMeshUpdate = true;
 protected:
     unsigned long _renderIDs = 0; // id for each render target
     unsigned long _frameIDs = 0; // increments with each frame drawn
