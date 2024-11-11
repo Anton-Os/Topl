@@ -125,7 +125,7 @@ struct Sandbox_Demo : public Topl_Program {
     std::vector<Phys_Actor*> objectPhysics;
     std::vector<Geo_Actor*> objectActors;
 
-    Geo_Quad2D backdropMesh = Geo_Quad2D(1.5F);
+    Geo_Quad2D backdropMesh = Geo_Quad2D(1.0F);
     Geo_Actor backdropActor = Geo_Actor(&backdropMesh);
 
     Geo_Paneboard modeBillboard = Geo_Paneboard("mode_board");

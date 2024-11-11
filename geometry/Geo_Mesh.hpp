@@ -58,8 +58,7 @@ public:
 
 	void extend(const Geo_Mesh& refMesh){
 		unsigned svCount = getVertexCount();
-		unsigned siCount = getIndexCount();
-
+		
 		for(unsigned v = 0; v < refMesh.getVertexCount(); v++)
 			_vertices.push_back(*(refMesh.getVertices() + v));
 

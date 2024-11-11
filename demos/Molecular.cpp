@@ -55,7 +55,7 @@ void Molecular_Demo::loop(double frameTime){
         } */
     }
 
-    _beamsVShader.setMode(lightMode * 10 + 4);
+    _beamsVShader.setMode(lightMode * 10 + 7);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);

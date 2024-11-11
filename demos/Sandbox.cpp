@@ -5,7 +5,7 @@ unsigned short Sandbox_Demo::mode = 0;
 unsigned short Sandbox_Demo::option = 0;
 
 static bool isRebuildReq = false;
-static std::vector<Vec3f> sculptPoints;
+static std::vector<Geo_Vertex> sculptPoints;
 static bool isRepaintReq = false;
 static Img_Canvas canvasImg = Img_Canvas(0xFFFF | 0x22000000);
 static bool isTick = false;
@@ -66,12 +66,12 @@ void onEditAction(float x, float y){
             }
         }
         if(nearestNode != nullptr) nearestNode->setSize(Vec3f({2.0F, 2.0F, 2.0F }));
-        sculptPoints.push_back(nearestVec);
+        sculptPoints.push_back(Geo_Vertex(nearestVec));
     } else if(Sandbox_Demo::mode == SANDBOX_PAINT){
         Input_TracerStep lastStep = Platform::mouseControl.getTracerSteps()->at(Platform::mouseControl.getTracerSteps()->size() - 2);
-        if(Sandbox_Demo::option == 1) canvasImg.drawPath(0.1F, { lastStep.step.first + 0.5F, 1.0F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
-        else if(Sandbox_Demo::option == 2) canvasImg.drawBox({ lastStep.step.first + 0.5F, 1.0F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
-        else canvasImg.drawDot(0.1F, { Platform::getCursorX() + 0.5F, 1.0F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+        if(Sandbox_Demo::option == 1) canvasImg.drawPath(0.1F, { lastStep.step.first + 0.5F, 0.95F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 0.95F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+        else if(Sandbox_Demo::option == 2) canvasImg.drawBox({ lastStep.step.first + 0.5F, 0.95F - (lastStep.step.second + 0.5F) }, { Platform::getCursorX() + 0.5F, 0.95F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
+        else canvasImg.drawDot(0.1F, { Platform::getCursorX() + 0.5F, 0.95F - (Platform::getCursorY() + 0.5F) }, RAND_COLOR());
         isRepaintReq = true; // set for immediate updates
     }
 }
@@ -204,7 +204,7 @@ void Sandbox_Demo::init(){
 
     mainScene.camera = &Topl_Program::cameraObj;
 
-    editsScene.camera = &Topl_Program::cameraObj;
+    editsScene.camera = &fixedCamera;
     // plotChain.configure(&editsScene);
     plotGrid.configure(&editsScene);
     _renderer->buildScene(&editsScene);
@@ -224,7 +224,7 @@ void Sandbox_Demo::init(){
     canvasScene.addTexture("canvas", &canvasImg);
     sequence_map.insert({ &backdropActor, Img_Sequence((unsigned)SANDBOX_SEQUENCE) });
 
-    // overlayThread = std::thread([this](){ updateOverlay(); });
+    _renderer->texturizeScene(&canvasScene);
 }
 
 void Sandbox_Demo::loop(double frameTime){
@@ -233,7 +233,7 @@ void Sandbox_Demo::loop(double frameTime){
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
         _renderer->texturizeScene(&canvasScene);
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(_renderer, _texPipeline);
+        Topl_Factory::switchPipeline(_renderer, _effectPipeline);
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
@@ -248,7 +248,7 @@ void Sandbox_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(_renderer, _dynamicPipeline);
         _renderer->updateScene(&editsScene);
         _renderer->drawScene(&editsScene);
-        _effectVShader.setMode(0);
+        _effectVShader.setMode(20);
     } else {
         if(isRebuildReq){
             for(unsigned short g = mainScene.getActorCount(); g < objectActors.size(); g++)
@@ -258,10 +258,11 @@ void Sandbox_Demo::loop(double frameTime){
         }
 
         if(isRepaintReq){
-            if(!objectTextures.empty()) mainScene.addTexture("object" + std::to_string(objectTextures.size() - 1), objectTextures.back());
-            else std::cerr << "Null texture detected" << std::endl;
+            if(!objectTextures.empty()){ 
+                objectTextures.back()->setImage(canvasImg.getImage());
+                mainScene.addTexture("object" + std::to_string(objectTextures.size() - 1), &canvasImg); // objectTextures.back());
+            }
 
-            if(mainScene.getIsTextured()) _renderer->texturizeScene(&mainScene);
             isRepaintReq = false;
         }
 
@@ -270,19 +271,13 @@ void Sandbox_Demo::loop(double frameTime){
                 colorPicker(&mainScene);
                 if(Topl_Program::pickerObj != nullptr) coordPicker(&mainScene);
             }
-            _texVShader.setMode(0);
+            _texVShader.setMode(100);
             _renderer->setDrawMode(DRAW_Triangles);
 
-            Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+            Topl_Factory::switchPipeline(_renderer, _texPipeline);
             _renderer->updateScene(&mainScene);
+            _renderer->texturizeScene(&mainScene);
             _renderer->drawScene(&mainScene);
-            _renderer->clear();
-            Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
-            for(unsigned o = 0; o < mainScene.getActorCount(); o++){
-                _beamsVShader.setMode(0 + (10 * ((o % 3) + 1)));
-                _renderer->updateScene(&mainScene);
-                _renderer->draw(mainScene.getGeoActor(o));
-            }
         }
     }
 
@@ -367,7 +362,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

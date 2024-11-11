@@ -26,10 +26,12 @@ struct FirstPerson_Demo : public Topl_Program {
 
         // 3D Objects
         
+        floorMesh.tesselate(3);
         floor.setPos({ 0.0F, -3.0F, 0.0F});
         floor.setSize({ FLOOR_SIZE, 1.0F, FLOOR_SIZE });
         floor.setRot({ 0.0F, MATH_HALF_PI, 0.0F });
 
+        for(unsigned p = 0; p < 4; p++) pillarMeshes[p].tesselate(4);
         pillars[0].setPos({ 10.0F, 2.5F, 10.0F });
         pillars[1].setPos({ -10.0F, 2.5F, 10.0F });
         pillars[2].setPos({ 10.0F, 2.5F, -10.0F });
@@ -39,6 +41,7 @@ struct FirstPerson_Demo : public Topl_Program {
             pillars[p].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
         }
 
+        roofMesh.tesselate(3);
         roof.setRot({ 0.0F, -MATH_HALF_PI, 0.0F });
         roof.setPos({ 0.0F, 7.5F, 0.0F });
         roof.setSize({ 30.0, 3.0F, 30.0 });

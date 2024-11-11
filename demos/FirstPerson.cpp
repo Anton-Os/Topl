@@ -128,7 +128,7 @@ void FirstPerson_Demo::loop(double frameTime){
         //    models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
 
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
-        _texVShader.setMode(830);
+        _texVShader.setMode(0);
         _renderer->setDrawMode(DRAW_Triangles);
 
         _texVShader.setTexScroll({ 0.0F, _renderer->getFrameCount() * 0.01F, 0.0F });

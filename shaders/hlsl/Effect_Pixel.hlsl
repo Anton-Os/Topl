@@ -60,6 +60,5 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
     if(mode >= 10 && mode < 20) return float4(juliaSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
-    else return  float4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
-    // else return float4(cursorSet(cursor, coords), 1.0f);
+    else return float4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
 }
