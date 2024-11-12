@@ -24,9 +24,6 @@ void Molecular_Demo::init(){
 
     _renderer->buildScene(&scene);
 
-    globeScene.addGeometry(&globe);
-    _renderer->buildScene(&globeScene);
-
     _renderer->isMeshUpdate = false;
 }
 
@@ -37,37 +34,16 @@ void Molecular_Demo::loop(double frameTime){
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
 
-    if(_renderer->getFrameCount() % 60 == 0 && _renderer->getFrameCount() > 300){
-        unsigned short setIndex = rand() % MOLECULAR_CONSTRUCTS;
-        // for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
-        //    constructs[setIndex][c].scale({ 0.999F, 0.999F, 0.999F });
-            
-        /* scene.addForce(
-            constructs[constructIndex].getPrefix() + "hub", 
-            Vec3f({ ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, 0.0F })
-        ); */
-        /* for(unsigned m = 1; m < constructs[constructIndex].getActorCount(); m++){
-            scene.addForce(
-                constructs[constructIndex].getPrefix() + "node" + std::to_string(m),
-                Vec3f({ ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, ((float)rand() / (float)RAND_MAX - 0.5F) * 1000.0F, 0.0F })
-            );
-            constructs[constructIndex].getGeoActor(m)->updatePos({ 0.0F, 0.1F, 0.0F });
-        } */
-    }
-
     _beamsVShader.setMode(lightMode * 10 + 7);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
 
-    for(unsigned m = 0; m < 3; m++){
-        // _beamsVShader.setMode(m * 10 + lightMode);
-        // _renderer->updateScene(&scene);
+    for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
             for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)
                 _renderer->draw(constructs[m][c].getGeoActor(o));
-    }
 }
 
 MAIN_ENTRY {

@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MOLECULAR_CONSTRUCTS 12
-#define MOLECULAR_SIZE 0.25F
+#define MOLECULAR_SIZE 0.15F
 
 struct Molecular_Construct : Geo_Construct {
     Molecular_Construct(unsigned short nodeCount) : Geo_Construct("Molecular" + std::to_string(rand() % 999)){
@@ -12,13 +12,7 @@ struct Molecular_Construct : Geo_Construct {
     }
 
     void init(unsigned short nodeCount){
-        switch(nodeCount % 5){
-            case 0: _hub = new Geo_TrigOrb(MOLECULAR_SIZE / 2); break;
-            case 1: _hub = new Geo_QuadOrb(MOLECULAR_SIZE / 2); break;
-            case 2: _hub = new Geo_HexOrb(MOLECULAR_SIZE / 2); break;
-            case 3: _hub = new Geo_OctOrb(MOLECULAR_SIZE / 2); break;
-            case 4: _hub = new Geo_DecOrb(MOLECULAR_SIZE / 2); break;
-        }
+        _hub = new Geo_Orb(MOLECULAR_SIZE);
         _hub->drawMode = DRAW_Triangles;
         _geoActors.push_back(Geo_Actor(_hub));
         for(unsigned n = 0; n < nodeCount; n++){
@@ -91,11 +85,7 @@ struct Molecular_Demo : public Topl_Program {
         }
     };
 
-    Geo_Orb globeMesh = Geo_Orb(5.0F);
-    Geo_Actor globe = Geo_Actor(&globeMesh);
-
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];
 private:
     Topl_Scene scene;
-    Topl_Scene globeScene;
 } *_DEMO;

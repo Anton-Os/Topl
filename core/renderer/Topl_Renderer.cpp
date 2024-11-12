@@ -77,7 +77,6 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 
 	// _threads[1] = std::thread(&Topl_Renderer::updateScene, scene);
 
-    // update(scene);
     return _flags[BUILD_BIT];
 }
 

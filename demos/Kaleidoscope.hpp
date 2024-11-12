@@ -46,13 +46,7 @@ private:
 };
 
 struct Kaleidoscope_Demo : public Topl_Program {
-    Kaleidoscope_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Kaleidoscope", backend){
-        /* vertexShader = (backend == BACKEND_GL4)? Flat_VertexShader_GL4() : Flat_VertexShader_DX11();
-        pixelShader = (backend == BACKEND_GL4)? Flat_PixelShader_GL4() : Flat_PixelShader_DX11();
-        tessCtrlShader = (backend == BACKEND_GL4)? Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader_DX11();
-        tessEvalShader = (backend == BACKEND_GL4)? Advance_TessEvalShader_GL4() : Advance_TessEvalShader_DX11(); */
-        // tessPipeline = Topl_Factory::genPipeline(backend, &_flatVShader, &_flatPShader, &tessCtrlShader, &tessEvalShader, nullptr);
-    }
+    Kaleidoscope_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Kaleidoscope", backend){}
 
     void init() override;
     void loop(double frameTime) override;
