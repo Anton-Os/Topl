@@ -38,9 +38,6 @@ struct Topl_Buffer : public Topl_RenderObj {
 
 // Texture
 
-enum TEX_Frmt { TEX_2D, TEX_3D };
-enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
-
 struct Topl_Texture : public Topl_RenderObj {
 	Topl_Texture() : Topl_RenderObj(){}
 	Topl_Texture(unsigned id, enum TEX_Frmt f, enum TEX_Mode m) : Topl_RenderObj(id) {
@@ -133,7 +130,7 @@ protected:
     unsigned long _frameIDs = 0; // increments with each frame drawn
     std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
     std::map<const Geo_Actor*, unsigned long> _renderTargetMap; // maps each object to renderID
-    std::map<const TaggedObj*, std::string> _texTagMap; // tracks textures to refresh
+    std::map<const Img_Target*, std::string> _texTagMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
     std::thread _threads[4]; // worker threads for allowing concurrent operations

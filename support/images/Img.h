@@ -8,24 +8,31 @@
 
 // typedef Rasteron_Image* (*imageCallback)();
 
-struct TaggedObj { // Refresh State
+enum TEX_Frmt { TEX_2D, TEX_3D };
+enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
+
+struct Img_Target { // Refresh State
+	Img_Target(TEX_Frmt f){ format = f; }
+
 	char** tag; // must update when out of date
+	TEX_Mode mode = TEX_Wrap;
 protected:
 #ifdef RASTERON_H
-	~TaggedObj(){ cleanup(); }
+	~Img_Target(){ cleanup(); }
 	virtual void cleanup(){ /* puts("Img destroyed"); */ }
 #endif
+	TEX_Frmt format;
 };
 
 // Base Image wrapper around Rasteron_Image
 
-struct Img_Base : public TaggedObj {
-    Img_Base() : TaggedObj(){} // Empty Constructor
+struct Img_Base : public Img_Target {
+    Img_Base() : Img_Target(TEX_2D){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-    Img_Base(unsigned color) : TaggedObj(){ setColorImage(color); } // Solid Constructor
-    Img_Base(const std::string& filePath) : TaggedObj(){ setFileImage(filePath); } // File Constructor
-    Img_Base(Rasteron_Text textObj) : TaggedObj(){ setTextImage( &textObj); } // Text Constructor
-    Img_Base(Rasteron_Image* refImage) : TaggedObj(){ 
+    Img_Base(unsigned color) : Img_Target(TEX_2D){ setColorImage(color); } // Solid Constructor
+    Img_Base(const std::string& filePath) : Img_Target(TEX_2D){ setFileImage(filePath); } // File Constructor
+    Img_Base(Rasteron_Text textObj) : Img_Target(TEX_2D){ setTextImage( &textObj); } // Text Constructor
+    Img_Base(Rasteron_Image* refImage) : Img_Target(TEX_2D){ 
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
@@ -108,14 +115,14 @@ private:
 
 // Volume based on slices
 
-struct Img_Volume : public TaggedObj { 
-    Img_Volume() : TaggedObj(), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
+struct Img_Volume : public Img_Target { 
+    Img_Volume() : Img_Target(TEX_3D), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Volume(unsigned s) : width(s), height(s), depth(s), TaggedObj() { // Matching Lengths
+	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img_Target(TEX_3D) { // Matching Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
-    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), TaggedObj() { // Custom Lengths
+    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img_Target(TEX_3D) { // Custom Lengths
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		setData();
 	}
