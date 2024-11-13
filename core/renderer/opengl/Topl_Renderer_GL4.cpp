@@ -41,14 +41,17 @@ namespace GL4 {
 		case TEX_Wrap:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
 			break;
 		case TEX_Mirror:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
 			break;
 		case TEX_Clamp:
 			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			break;
 		}
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -296,11 +299,19 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		if (tex2D != _textures.end()){
 			glActiveTexture(GL_TEXTURE0 + tex2D->binding);
 			glBindTexture(GL_TEXTURE_2D, tex2D->texture);
+			if(tex2D->mode != _texMode){ // setting proper tex mode
+				setTexMode(tex2D->mode);
+				GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); 
+			}
 		}
 		auto tex3D = std::find_if(_textures.begin(), _textures.end(), [renderID](const GL4::Texture& t){ return t.renderID == renderID && t.format == TEX_3D; });
 		if(tex3D != _textures.end()){
 			glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 			glBindTexture(GL_TEXTURE_3D, tex3D->texture);
+			if(tex3D->mode != _texMode){ // setting proper tex mode
+				setTexMode(tex3D->mode);
+				GL4::setTextureProperties(GL_TEXTURE_2D, _texMode); 
+			}
 		}
 
 		// Draw Call!
@@ -337,7 +348,7 @@ Img_Base Topl_Renderer_GL4::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_GL4::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
 	GLuint textureTarget = *(_textureSlots + _textureIndex);
 	_textureIndex++; // increments to next available slot
 
@@ -351,12 +362,12 @@ void Topl_Renderer_GL4::attachTexAt(const Rasteron_Image* image, unsigned render
 	glActiveTexture(GL_TEXTURE0 + binding);
 	glBindTexture(GL_TEXTURE_2D, textureTarget);
 
-	GL4::setTextureProperties(GL_TEXTURE_2D, _texMode);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->height, image->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+    GL4::setTextureProperties(GL_TEXTURE_2D, image->mode);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->getImage()->height, image->getImage()->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->getImage()->data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (*(_textureSlots + _textureIndex - 1) == textureTarget)
-		_textures.push_back(GL4::Texture(renderID, (unsigned short)binding, TEX_2D, _texMode, textureTarget)); // multi-texture addition
+        _textures.push_back(GL4::Texture(renderID, (unsigned short)binding, TEX_2D, image->mode, textureTarget)); // multi-texture addition
 }
 
 void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
@@ -374,7 +385,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
 	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
-	GL4::setTextureProperties(GL_TEXTURE_3D, _texMode);
+    GL4::setTextureProperties(GL_TEXTURE_3D, volumeTex->mode);
 	glTexImage3D(
 		GL_TEXTURE_3D,
 		0, GL_RGBA,
@@ -388,7 +399,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	glGenerateMipmap(GL_TEXTURE_3D);
 
 	if (*(_textureSlots + _textureIndex - 1) == textureTarget)
-		_textures.push_back(GL4::Texture(renderID, TEX_3D, _texMode, textureTarget));
+        _textures.push_back(GL4::Texture(renderID, TEX_3D, volumeTex->mode, textureTarget));
 }
 
 #endif

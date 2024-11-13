@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 1.5
-#define MESHFORM_TESS 5
+#define MESHFORM_TESS 8
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){

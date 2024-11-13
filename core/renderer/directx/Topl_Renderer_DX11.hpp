@@ -30,7 +30,7 @@ protected:
 	void update(const Geo_Actor* actor) override;
 	void build(const Geo_Actor* actor) override;
 #ifdef RASTERON_H
-	void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) override;
+    void attachTexAt(const Img_Base* imageTex, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
 	void setConstBufferData(ID3D11Buffer* buffer, unsigned short binding);

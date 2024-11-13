@@ -135,7 +135,7 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 			if(texture != nullptr){
 				if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
 				else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
-				attachTexAt(texture->getImage(), SCENE_RENDERID, t);
+                attachTexAt(texture, SCENE_RENDERID, t);
 			}
 		}
 		
@@ -148,7 +148,7 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 				if(texture != nullptr){
 					if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
 					else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
-					attachTex(texture->getImage(), renderID);
+                    attachTex(texture, renderID);
 				}
 
 				const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());

@@ -102,10 +102,13 @@ struct Sandbox_Demo : public Topl_Program {
         objectsBillboard.toggleShow(false);
         actionsBillboard.scale({ 1.5F, -0.1F, 1.0F });
         actionsBillboard.shift({ 0.0F, 0.975F, 0.0F });
+        actionsBillboard.getImgRoot()->setImage(cornerImgOp(actionsBillboard.getImgRoot()->getImage(), 1.0, 1.0, 1.0, 1.0));
         sculptBillboard.scale({ -0.125F, 1.5F, 1.0F });
         sculptBillboard.shift({ -0.965F, 0.0F, 0.0F });
+        sculptBillboard.getImgRoot()->setImage(cornerImgOp(sculptBillboard.getImgRoot()->getImage(), 1.0, 1.0, 1.0, 1.0));
         paintBillboard.scale({ -0.125F, 1.5F, 1.0F });
         paintBillboard.shift({ 0.965F, 0.0F, 0.0F });
+        paintBillboard.getImgRoot()->setImage(cornerImgOp(paintBillboard.getImgRoot()->getImage(), 1.0, 1.0, 1.0, 1.0));
         // modeBillboard.rotateAll({ 0.3F, 0.0F, 0.0F });
         modeBillboard.scale({ 0.4F, 0.06F, 1.0F });
         modeBillboard.shift({ 0.0F, 0.975F, 0.0F });

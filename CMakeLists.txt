@@ -19,7 +19,7 @@ endif()
 
 set(SUPPORT_TEXTURES TRUE CACHE BOOL "Include texturing" FORCE)
 set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
-set(SUPPORT_MODELS ON CACHE BOOL "Include 3D model loading" FORCE)
+set(SUPPORT_MODELS TRUE CACHE BOOL "Include 3D model loading" FORCE)
 # set(SUPPORT_AUDIO ON CAHCE BOOL "Include audio support" FORCE)
 # set(SUPPORT_SAVES ON CACHE BOOL "Include custom saves" FORCE)
 
@@ -44,10 +44,11 @@ add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(FirstPerson demos/FirstPerson.cpp)
 add_executable(Molecular demos/Molecular.cpp)
+add_executable(Meshform demos/Meshform.cpp)
 add_executable(Kaleidoscope demos/Kaleidoscope.cpp)
 add_executable(Entropy demos/Entropy.cpp)
 
-list(APPEND demo_targets Hello Sandbox FirstPerson Molecular Kaleidoscope Entropy)
+list(APPEND demo_targets Hello Sandbox FirstPerson Molecular Meshform Kaleidoscope Entropy)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)

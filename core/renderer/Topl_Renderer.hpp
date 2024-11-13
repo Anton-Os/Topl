@@ -150,8 +150,8 @@ private:
     virtual void update(const Geo_Actor* actor) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-	virtual void attachTex(const Rasteron_Image* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
-	virtual void attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) = 0;
+    virtual void attachTex(const Img_Base* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
+    virtual void attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) = 0;
 	virtual void attachTex3D(const Img_Volume* volumeTex, unsigned renderID) = 0;
 #endif
 };

@@ -118,14 +118,8 @@ private:
 struct Img_Volume : public Img_Target { 
     Img_Volume() : Img_Target(TEX_3D), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img_Target(TEX_3D) { // Matching Lengths
-		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
-		setData();
-	}
-    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img_Target(TEX_3D) { // Custom Lengths
-		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
-		setData();
-	}
+	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img_Target(TEX_3D){ setData(); } // Matching Lengths
+    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img_Target(TEX_3D){ setData(); } // Custom Lengths
 	// Img_Volume(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
 	
 	void addSlice(ref_image_t refImg, unsigned d){
@@ -145,6 +139,14 @@ struct Img_Volume : public Img_Target {
 	unsigned getDepth() const { return depth; }
 private:
 	void setData(){
+		if(queue == nullptr){
+			queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
+			for(unsigned f = 0; f < depth; f++){
+				Rasteron_Image* solidImg = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color_level(0xFFFFFFFF, (1.0 / depth) * f));
+				queue_addImg(queue, solidImg, f);
+				RASTERON_DEALLOC(solidImg);
+			} 
+		}
 		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
 		for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){
 			Rasteron_Image* sliceImg = queue_getImg(queue, p / (width * depth));

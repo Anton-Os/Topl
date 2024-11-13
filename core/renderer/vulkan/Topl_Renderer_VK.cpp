@@ -675,7 +675,7 @@ Img_Base Topl_Renderer_VK::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_VK::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_VK::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
 	// Implement texture attaching
 }
 

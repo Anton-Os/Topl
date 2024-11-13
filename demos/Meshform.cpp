@@ -42,6 +42,7 @@ void Meshform_Demo::loop(double frameTime){
     for(unsigned a = 0; a < 4; a++) _DEMO->orbActors[a].updateRot(rotationVec);
 
     _flatVShader.setMode(-MESHFORM_TESS); // TODO: Change this to volumetric texture
+    _effectVShader.setMode(1);
     _renderer->setPipeline(_flatPipeline);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);

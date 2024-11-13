@@ -56,9 +56,9 @@ namespace DX11 {
 		D3D11_TEXTURE_ADDRESS_MODE texMode;
 
 		switch (mode) {
-		case(TEX_Wrap): texMode = D3D11_TEXTURE_ADDRESS_WRAP; break;
-		case(TEX_Mirror): texMode = D3D11_TEXTURE_ADDRESS_MIRROR; break;
-		case(TEX_Clamp): texMode = D3D11_TEXTURE_ADDRESS_CLAMP; break;
+			case(TEX_Wrap): texMode = D3D11_TEXTURE_ADDRESS_WRAP; break;
+			case(TEX_Mirror): texMode = D3D11_TEXTURE_ADDRESS_MIRROR; break;
+			case(TEX_Clamp): texMode = D3D11_TEXTURE_ADDRESS_CLAMP; break;
 		}
 
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -424,17 +424,17 @@ Img_Base Topl_Renderer_DX11::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_DX11::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
 	HRESULT result;
 
-	D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(_texMode);
+	D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(image->mode);
 	ID3D11SamplerState* sampler;
 	result = _device->CreateSamplerState(&samplerDesc, &sampler);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-	texDesc.Width = image->height; // inverse
-	texDesc.Height = image->width; // inverse
+    texDesc.Width = image->getImage()->height; // inverse
+    texDesc.Height = image->getImage()->width; // inverse
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -446,8 +446,8 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	D3D11_SUBRESOURCE_DATA texData;
-	texData.pSysMem = image->data;
-	texData.SysMemPitch = sizeof(uint32_t) * image->height;
+    texData.pSysMem = image->getImage()->data;
+    texData.SysMemPitch = sizeof(uint32_t) * image->getImage()->height;
 	texData.SysMemSlicePitch = 0;
 
 	ID3D11Texture2D* texture;
@@ -461,19 +461,19 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 
 	ID3D11ShaderResourceView* resource;
 	_device->CreateShaderResourceView(texture, &resourceDesc, &resource);
-	_deviceCtx->UpdateSubresource(texture, 0, 0, image->data, texData.SysMemPitch, 0);
+    _deviceCtx->UpdateSubresource(texture, 0, 0, image->getImage()->data, texData.SysMemPitch, 0);
 	_deviceCtx->GenerateMips(resource);
 
 	for(std::vector<DX11::Texture>::iterator tex = _textures.begin(); tex != _textures.end(); tex++)
 		if (tex->renderID == renderID && tex->binding == binding && tex->format == TEX_2D) { // multi-texture subsitution
 			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = DX11::Texture(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource);
+            *tex = DX11::Texture(renderID, (unsigned short)binding, TEX_2D, image->mode, sampler, resource);
 			return;
 		}
 
 
-	_textures.push_back(DX11::Texture(renderID, (unsigned short)binding, TEX_2D, _texMode, sampler, resource)); // multi-texture addition
+    _textures.push_back(DX11::Texture(renderID, (unsigned short)binding, TEX_2D, image->mode, sampler, resource)); // multi-texture addition
 
 	texture->Release();
 }
@@ -481,7 +481,7 @@ void Topl_Renderer_DX11::attachTexAt(const Rasteron_Image* image, unsigned rende
 void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
 	HRESULT result;
 
-	D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(_texMode);
+    D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(volumeTex->mode);
 	ID3D11SamplerState* sampler;
 	result = _device->CreateSamplerState(&samplerDesc, &sampler);
 
@@ -520,10 +520,10 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 		if (tex->renderID == renderID && tex->format == TEX_3D) { // texture substitution
 			tex->resource->Release(); // erase old texture
 			tex->sampler->Release(); // erase old sampler
-			*tex = DX11::Texture(renderID, TEX_3D, _texMode, sampler, resource);
+            *tex = DX11::Texture(renderID, TEX_3D, volumeTex->mode, sampler, resource);
 			return;
 		}
-	_textures.push_back(DX11::Texture(renderID, TEX_3D, _texMode, sampler, resource)); // texture addition
+    _textures.push_back(DX11::Texture(renderID, TEX_3D, volumeTex->mode, sampler, resource)); // texture addition
 
 	// texture->Release(); // test deallocation
 }

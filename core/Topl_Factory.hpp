@@ -14,7 +14,15 @@
 
 // Backends List
 
-enum BACKEND_Target { BACKEND_GL4, BACKEND_DX11, BACKEND_VK };
+enum BACKEND_Target { 
+	BACKEND_GL4,
+#ifdef _WIN32
+	BACKEND_DX11,
+#endif
+#ifdef TOPL_ENABLE_VULKAN 
+	BACKEND_VK 
+#endif
+};
 
 // Engine Configuration
 

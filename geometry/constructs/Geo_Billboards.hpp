@@ -54,6 +54,7 @@ public:
 		}
     }
 
+	Img_Base* getImgRoot(){ return getImgAt(_params.getGridSize()); }
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
 	void resetState(){ // abstract the loop
