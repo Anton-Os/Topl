@@ -356,6 +356,8 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 			DX11::texResources[MAX_TEX_BINDINGS] = tex3D->resource;
 		}
 
+		_deviceCtx->VSSetSamplers(0, MAX_TEX_BINDINGS + 1, &DX11::texSamplers[0]);
+		_deviceCtx->VSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 		_deviceCtx->PSSetSamplers(0, MAX_TEX_BINDINGS + 1, &DX11::texSamplers[0]);
 		_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 

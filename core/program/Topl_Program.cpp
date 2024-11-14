@@ -177,9 +177,8 @@ void Topl_Program::run(){
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_MODE_SOLID);
 	_renderer->setDrawMode(DRAW_Triangles);
-	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
-	_renderer->drawScene(scene);
+	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
 
 	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	if((Topl_Program::pickerColor & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
@@ -203,9 +202,8 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_MODE_COORD);
 	_renderer->setDrawMode(DRAW_Triangles);
-	// _renderer->setCamera(&Topl_Program::cameraObj); // remove this?
 	_renderer->updateScene(scene);
-	_renderer->drawScene(scene);
+	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
 
 	unsigned color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	Topl_Program::pickerCoord = Vec3f{

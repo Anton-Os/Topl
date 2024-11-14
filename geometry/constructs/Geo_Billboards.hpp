@@ -28,11 +28,13 @@ public:
 	}
 
 	void init(){
+		rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
+		rootImg.addBorder(0.05, 0xFF222222);
 		_geoActors.resize(_params.getGridSize() + 1);
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
-		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(0xFF666666) });
+		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(copyImgOp(rootImg.getImage())) });
 	}
 
 	void configure(Topl_Scene* scene) override {
@@ -61,8 +63,10 @@ public:
 		unsigned i = 0;
 
 		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
-			p->second->setState(MENU_None);
-			getImgAt(i)->setImage(p->second->stateImg.getImage());
+			if(p->second->getState() != MENU_None){
+				p->second->setState(MENU_None);
+				getImgAt(i)->setImage(p->second->stateImg.getImage());
+			}
 			i++;
 		}
 	}
@@ -109,7 +113,7 @@ protected:
 	Geo_Quad2D rootMesh = Geo_Quad2D(PANE_SIZE, PANE_Z);
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 #ifdef RASTERON_H
-	Img_Base rootImg = Img_Base(0xFF333333); // root background
+	Img_Base rootImg; // root background
 	std::map<const Geo_Actor*, Img_Base> paneImg_map; // for child images
 	std::map<const Geo_Actor*, Img_UI*> paneItemUI_map; // for child UI elements;
 	// std::map<const Geo_Actor*, pickerCallback> panesOnPick_map;

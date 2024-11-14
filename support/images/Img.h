@@ -64,6 +64,14 @@ struct Img_Base : public Img_Target {
 	// TODO: Set other image types?
 
     Rasteron_Image* getImage() const { return image; }
+
+	void addBorder(double size, unsigned color){
+		for(unsigned p = 0; p < image->height * image->width; p++){
+			double x = (1.0 / (double)image->width) * (p % image->width);
+            double y = (1.0 / (double)image->height) * (p / image->width);
+			if(x > 1.0 - size || x < size || y > 1.0 - size || y < size) *(image->data + p) = color;
+		}
+	}
 protected:
 	void cleanup() override {
 		if (image != NULL) {

@@ -41,6 +41,7 @@ void Meshform_Demo::loop(double frameTime){
     rotationVec = rotationVec * (0.001 * frameTime);
     for(unsigned a = 0; a < 4; a++) _DEMO->orbActors[a].updateRot(rotationVec);
 
+    _texVShader.setMode(1);
     _flatVShader.setMode(-MESHFORM_TESS); // TODO: Change this to volumetric texture
     _effectVShader.setMode(1);
     _renderer->setPipeline(_flatPipeline);
@@ -49,7 +50,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

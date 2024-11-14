@@ -41,5 +41,7 @@ void Geo_Orb::init() {
 				i += 3;
 			}
 		}
+
+		// Perform indexing for missing piece?
 	}
 }

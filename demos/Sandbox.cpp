@@ -13,10 +13,12 @@ static bool isModal = false;
 
 void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
-    else if(tolower(key) == 't'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'y'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'u'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'i'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'y'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'u'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'i'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'o'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+    // else if(tolower(key) == 'w' || tolower(key) == 'a' || tolower(key) == 's' || tolower(key) == 'd')
+    //     Topl_Program::timeline.addSequence_vec3f(Topl_Program::cameraObj.getPos(), std::make_pair(TIMELINE_AT, *Topl_Program::cameraObj.getPos()));
 }
 
 void onTimePanePress(MOUSE_Event evemt){
@@ -205,7 +207,6 @@ void Sandbox_Demo::init(){
     mainScene.camera = &Topl_Program::cameraObj;
 
     editsScene.camera = &fixedCamera;
-    // plotChain.configure(&editsScene);
     plotGrid.configure(&editsScene);
     _renderer->buildScene(&editsScene);
 
@@ -362,7 +363,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);
