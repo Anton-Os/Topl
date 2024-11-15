@@ -219,31 +219,29 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 #elif defined(__ANDROID__)
 
-/* void android_proc(android_app *app, int32_t cmd) {
+NATIVE_WINDOW window = nullptr;
+
+void android_proc(android_app *app, int32_t cmd) {
     switch (cmd) {
-        case APP_CMD_INIT_WINDOW: _context.window = app->window; break;
+        case APP_CMD_INIT_WINDOW: window = app->window; break;
         case APP_CMD_TERM_WINDOW: break;
         default: break;
     }
-} */
+}
 
 void Platform::createWindow(unsigned width, unsigned height){
-	while(_context.window == nullptr){
-		// Waiting for window to appear on event...
-	}
+	if(window != nullptr) _context.window = window;
 }
 
 bool Platform::handleEvents(){
-    // static int events;
-    // static android_poll_source* pollSrc;
+    static int events;
+    static android_poll_source* pollSrc;
 
-    /*
-        if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
-            if (pSource) {
-                pSource->process(pApp, pSource);
-            }
-        }
-    */
+	if (ALooper_pollAll(0, nullptr, &events, (void **) &pollSrc) >= 0) {
+		if (pollSrc) {
+			pollSrc->process(pApp, pollSrc);
+		}
+	}
 
     return true;
 }

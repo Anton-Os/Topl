@@ -9,20 +9,23 @@
 #include "IO.hpp"
 #include "Controls.hpp"
 
-#define DISABLE_CURSOR_UPDATE 0
-#define ENABLE_CURSOR_UPDATE 1
-
 typedef void (*resizeCallback)(unsigned, unsigned);
 typedef void (*fileCallback)(bool, const char*);
 
 bool checkFile(std::string fileName);
 
 struct Platform {
+#ifndef __ANDROID__
     Platform(const char* execPath, const char* winName){
         _execPath = execPath;
 		_winName = winName;
-        resetCursor();
     }
+#else
+    Platform(android_app* app){
+        _context.app = app;
+        _context.app->onAppCmd = android_proc;
+    }
+#endif
 
     void createWindow(unsigned width, unsigned height);
     bool handleEvents(); // handles platform specific events until end is reached

@@ -76,14 +76,18 @@ static void onPress(float x, float y){
 	Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
 }
 
-Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
+#ifndef __ANDROID__
+    Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
+#else
+	Topl_Program(android_app* app) : _backend(BACKEND_GL4){
+#endif
     srand(time(NULL));
 
 	// Event Handling
 
 	_platform = new Platform(execPath, name); // special initialization for Android?
 	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
-    _renderer = Topl_Factory::genRenderer(backend, _platform);
+    _renderer = Topl_Factory::genRenderer(_backend, _platform);
 	// _renderer->setCamera(&Topl_Program::cameraObj);
 	_renderer->setDrawMode(DRAW_Triangles);
 
@@ -102,6 +106,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 		// TODO: Include Advanced shaders
 	}
+#ifdef _WIN32
 	else if(_backend == BACKEND_DX11){
 		_texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
 		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
@@ -111,6 +116,7 @@ Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Targe
 		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
 		// TODO: Include Advanced shaders
 	}
+#endif
 
 	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);

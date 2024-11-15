@@ -47,7 +47,11 @@ private:
 
 class Topl_Program {
 public:
+#ifndef __ANDROID__
     Topl_Program(const char* execPath, const char* name, BACKEND_Target backend);
+#else
+	Topl_Program(android_app* app);
+#endif
 	~Topl_Program(){ }
 
 	void run();

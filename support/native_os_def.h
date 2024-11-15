@@ -24,10 +24,12 @@
 #endif
 
 #ifdef __ANDROID__
-    // #include <game-activity/native_app_glue/android_native_app_glue.c>
+    #include <game-activity/native_app_glue/android_native_app_glue.h>
 
     #define NATIVE_WINDOW ANativeWindow*
     #define NATIVE_GL_CONTEXT EGLContext
+
+    extern NATIVE_WINDOW window;
 
     struct Android_Platform_Context { // placeholder value
         NATIVE_WINDOW window;

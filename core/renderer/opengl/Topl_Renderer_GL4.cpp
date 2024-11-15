@@ -27,7 +27,7 @@ namespace GL4 {
 				getShaderFormat(shaderType->type),
 				GL_FALSE,
 				sizeof(Geo_Vertex),
-				(inputElementOffset != 0) ? (void*)(inputElementOffset) : NULL // This line causes issus?
+				(inputElementOffset != 0) ? reinterpret_cast<void*>(inputElementOffset) : NULL // This line causes issus?
 			);
 
 			inputElementOffset += Topl_Pipeline::getOffset(shaderType->type);
@@ -266,6 +266,7 @@ void Topl_Renderer_GL4::setDrawMode(enum DRAW_Mode mode) {
 #ifndef __ANDROID__
 	case DRAW_Patch: _drawMode_GL4 = GL_PATCHES; break;
 #endif
+	default: break;
 	}
 }
 

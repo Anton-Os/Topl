@@ -106,6 +106,8 @@ class Topl_Renderer {
 public:
 	Topl_Renderer(NATIVE_PLATFORM_CONTEXT* context){ _platformCtx = context; }
 
+    virtual ~Topl_Renderer() = default;
+
     // void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
     bool buildScene(const Topl_Scene* scene);
