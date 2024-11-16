@@ -29,9 +29,10 @@
     #define NATIVE_WINDOW ANativeWindow*
     #define NATIVE_GL_CONTEXT EGLContext
 
-    extern NATIVE_WINDOW window;
+    extern NATIVE_WINDOW _window;
 
     struct Android_Platform_Context { // placeholder value
+        android_app* app;
         NATIVE_WINDOW window;
         EGLDisplay display;
         EGLConfig config;
@@ -40,6 +41,8 @@
     };
 
     #define NATIVE_PLATFORM_CONTEXT Android_Platform_Context
+
+    void android_proc(android_app *app, int32_t cmd);
 #elif defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>

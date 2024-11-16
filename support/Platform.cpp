@@ -219,18 +219,19 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 #elif defined(__ANDROID__)
 
-NATIVE_WINDOW window = nullptr;
+NATIVE_WINDOW _window = nullptr;
 
 void android_proc(android_app *app, int32_t cmd) {
     switch (cmd) {
-        case APP_CMD_INIT_WINDOW: window = app->window; break;
+        case APP_CMD_INIT_WINDOW: _window = app->window; break;
         case APP_CMD_TERM_WINDOW: break;
         default: break;
     }
 }
 
-void Platform::createWindow(unsigned width, unsigned height){
-	if(window != nullptr) _context.window = window;
+void Platform::awaitWindow(){ // Should this be await window?
+	if(_window != nullptr)
+        _context.window = _window;
 }
 
 bool Platform::handleEvents(){
@@ -239,7 +240,7 @@ bool Platform::handleEvents(){
 
 	if (ALooper_pollAll(0, nullptr, &events, (void **) &pollSrc) >= 0) {
 		if (pollSrc) {
-			pollSrc->process(pApp, pollSrc);
+			pollSrc->process(_context.app, pollSrc);
 		}
 	}
 

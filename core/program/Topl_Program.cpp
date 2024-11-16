@@ -77,16 +77,19 @@ static void onPress(float x, float y){
 }
 
 #ifndef __ANDROID__
-    Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
+Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
 #else
-	Topl_Program(android_app* app) : _backend(BACKEND_GL4){
+Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 #endif
     srand(time(NULL));
 
 	// Event Handling
-
-	_platform = new Platform(execPath, name); // special initialization for Android?
-	_platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+#ifndef __ANDROID__
+	_platform = new Platform(execPath, name);
+    _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+#else
+    _platform = new Platform(app);
+#endif
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
 	// _renderer->setCamera(&Topl_Program::cameraObj);
 	_renderer->setDrawMode(DRAW_Triangles);

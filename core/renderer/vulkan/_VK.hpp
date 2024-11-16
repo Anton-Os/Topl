@@ -1,9 +1,13 @@
 // VK Specific Inclusions
-#undef ENABLE_DEBUG_LAYERS
+#ifdef _WIN32
+#define ENABLE_DEBUG_LAYERS
+#endif
 
 #define VK_PROTOTYPES
-	#ifdef _WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
+#ifdef _WIN32
+    #define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(__ANDROID__)
+    #define VK_USE_PLATFORM_ANDROID_KHR
 #elif defined(__linux__)
 	#define VK_USE_PLATFORM_XLIB_KHR
 #endif

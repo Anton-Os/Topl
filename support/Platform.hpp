@@ -23,11 +23,16 @@ struct Platform {
 #else
     Platform(android_app* app){
         _context.app = app;
+        _context.window = (app->window != nullptr)? app->window : nullptr;
         _context.app->onAppCmd = android_proc;
     }
 #endif
 
+#ifndef __ANDROID__
     void createWindow(unsigned width, unsigned height);
+#else
+    void awaitWindow();
+#endif
     bool handleEvents(); // handles platform specific events until end is reached
 
     NATIVE_PLATFORM_CONTEXT* getContext(){ return &_context; }
