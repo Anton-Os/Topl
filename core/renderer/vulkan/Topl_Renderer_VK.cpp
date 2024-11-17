@@ -532,7 +532,20 @@ void Topl_Renderer_VK::clear(){
 	clearValues[1].depthStencil = { 1.0f, 0 };
 	VkRect2D screenRect = {{0, 0}, { _surfaceCaps.currentExtent.width, _surfaceCaps.currentExtent.height }};
 
-	// Implement clearing operation
+	/* VkCommandBufferBeginInfo commandBufferInfo = {};
+    commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    commandBufferInfo.pNext = nullptr;
+    commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    commandBufferInfo.pInheritanceInfo = nullptr;
+
+    vkBeginCommandBuffer(&_commandBuffers[0], &commandBufferInfo);
+
+    VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
+	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE); */
 }
 
 void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
@@ -606,6 +619,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	uint32_t swapchainImgIdx;
 	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &swapchainImgIdx) != VK_SUCCESS)
 		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
+    else logMessage("Successfully aquired image " + std::to_string(swapchainImgIdx));
 
 	// Recording
 

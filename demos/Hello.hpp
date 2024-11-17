@@ -15,7 +15,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
-        setPipeline(&tessPipeline);
+        setPipeline(&geoPipeline);
 	}
 
 	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
@@ -36,7 +36,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, &geomShader, &tessCtrlShader, &tessEvalShader);
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
-		setPipeline(&tessPipeline);
+		setPipeline(&fullPipeline);
 	}
 
 	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;

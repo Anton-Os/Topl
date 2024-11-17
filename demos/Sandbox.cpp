@@ -7,18 +7,18 @@ unsigned short Sandbox_Demo::option = 0;
 static bool isRebuildReq = false;
 static std::vector<Geo_Vertex> sculptPoints;
 static bool isRepaintReq = false;
-static Img_Canvas canvasImg = Img_Canvas(0xFFFF | 0x22000000);
+static Img_Canvas canvasImg = Img_Canvas((0x00FFFFFF & RAND_COLOR()) | 0x66000000);
 static bool isTick = false;
 static bool isModal = false;
 
 void onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
-    else if(tolower(key) == 'y'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'u'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'i'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
-    else if(tolower(key) == 'o'){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'y'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'u'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'i'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+    else if(tolower(key) == 'o'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
     // else if(tolower(key) == 'w' || tolower(key) == 'a' || tolower(key) == 's' || tolower(key) == 'd')
-    //     Topl_Program::timeline.addSequence_vec3f(Topl_Program::cameraObj.getPos(), std::make_pair(TIMELINE_AT, *Topl_Program::cameraObj.getPos()));
+    //     Topl_Program::timeline.addSequence_vec3f(Topl_Program::camera.getPos(), std::make_pair(TIMELINE_AT, *Topl_Program::camera.getPos()));
 }
 
 void onTimePanePress(MOUSE_Event evemt){
@@ -48,6 +48,7 @@ void onPaintPanePress(MOUSE_Event event){
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_PAINT;
         Sandbox_Demo::option = std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
+        canvasImg.setBackground((0x00FFFFFF & RAND_COLOR()) | 0x66000000);
         if(Sandbox_Demo::option == SANDBOX_PANES - 1) Platform::openFileDialog(true);
     }
 }
@@ -107,9 +108,9 @@ void onChangeAction(float x, float y){
                 break;
                 }
         switch(SANDBOX_PANES - Sandbox_Demo::option - 1){
-            case SANDBOX_MOVE: Topl_Program::cameraObj.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_ROTATE: Topl_Program::cameraObj.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
-            case SANDBOX_SIZE: Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() + diffVec[0]); break;
+            case SANDBOX_MOVE: Topl_Program::camera.updatePos(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_ROTATE: Topl_Program::camera.updateRot(Vec3f({ diffVec[0], diffVec[1], 0.0F })); break;
+            case SANDBOX_SIZE: Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() + diffVec[0]); break;
         }
     }
 }
@@ -204,7 +205,7 @@ void Sandbox_Demo::init(){
         propsBillboard.overlay(p, _dials.back());
     }
 
-    mainScene.camera = &Topl_Program::cameraObj;
+    mainScene.camera = &Topl_Program::camera;
 
     editsScene.camera = &fixedCamera;
     plotGrid.configure(&editsScene);
@@ -234,11 +235,9 @@ void Sandbox_Demo::loop(double frameTime){
     if(Sandbox_Demo::mode == SANDBOX_PAINT){
         _renderer->texturizeScene(&canvasScene);
         _renderer->setDrawMode(DRAW_Triangles);
-        Topl_Factory::switchPipeline(_renderer, _effectPipeline);
-        _renderer->updateScene(&canvasScene);
-        _renderer->drawScene(&canvasScene);
         backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
-        _canvasVShader.setMode(-10);
+        _canvasVShader.setMode(10 * Sandbox_Demo::option);
+        _effectVShader.setMode(10 * Sandbox_Demo::option);
         Topl_Factory::switchPipeline(_renderer, _canvasPipeline);
         _renderer->updateScene(&canvasScene);
         _renderer->drawScene(&canvasScene);
@@ -263,7 +262,6 @@ void Sandbox_Demo::loop(double frameTime){
                 objectTextures.back()->setImage(canvasImg.getImage());
                 mainScene.addTexture("object" + std::to_string(objectTextures.size() - 1), &canvasImg); // objectTextures.back());
             }
-
             isRepaintReq = false;
         }
 
@@ -363,7 +361,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

@@ -54,6 +54,7 @@ public:
 			if(_params.getGridSize() != g)
 				_geoActors[g].updatePos({ offsetVec[0] * (2.0F + (scaleVec[0] - 1.0F)), offsetVec[1] *  (2.0F + (scaleVec[1] - 1.0F)), 0.0F });
 		}
+		// TODO: Adjust images and textures
     }
 
 	Img_Base* getImgRoot(){ return getImgAt(_params.getGridSize()); }

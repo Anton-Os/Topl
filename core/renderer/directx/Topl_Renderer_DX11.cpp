@@ -502,7 +502,7 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
 	D3D11_SUBRESOURCE_DATA texData;
 	texData.pSysMem = volumeTexImage->getImage()->data;
-	texData.SysMemPitch = sizeof(uint32_t) * volumeTex->getWidth();
+	texData.SysMemPitch = sizeof(uint32_t) * volumeTex->getWidth() * volumeTex->getDepth();
 	texData.SysMemSlicePitch = sizeof(uint32_t) * volumeTex->getHeight();
 
 	ID3D11Texture3D* texture;

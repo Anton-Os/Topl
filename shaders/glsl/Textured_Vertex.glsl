@@ -31,17 +31,17 @@ void main() {
 	
 	if(abs(mode) >= 10){
 		vec4 texOffset = texture(baseTex, vec2(texcoord_out.x, texcoord_out.y));
-		if(mod(floor(abs(mode) / 10), 10) == 1) texOffset = texture(tex1, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 2) texOffset = texture(tex2, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 3) texOffset = texture(tex3, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 4) texOffset = texture(tex4, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 5) texOffset = texture(tex5, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 6) texOffset = texture(tex6, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 7) texOffset = texture(tex7, vec2(texcoord_out.x, texcoord_out.y));
-		else if(mod(floor(abs(mode) / 10), 10) == 8) texOffset = texture(volumeTex, texcoord);
+		if(uint(floor(abs(mode) / 10)) % 10 == 1) texOffset = texture(tex1, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 2) texOffset = texture(tex2, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 3) texOffset = texture(tex3, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 4) texOffset = texture(tex4, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 5) texOffset = texture(tex5, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 6) texOffset = texture(tex6, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 7) texOffset = texture(tex7, vec2(texcoord_out.x, texcoord_out.y));
+		else if(uint(floor(abs(mode) / 10)) % 10 == 8) texOffset = texture(volumeTex, texcoord);
 
-		if(mode > 0) gl_Position.x += texOffset.g * (floor(abs(mode) / 100) + 1); else gl_Position.x -= texOffset.g * (floor(abs(mode) / 100) + 1);
-		if(mode > 0) gl_Position.y += texOffset.r * (floor(abs(mode) / 100) + 1); else gl_Position.y -= texOffset.r * (floor(abs(mode) / 100) + 1);
-		if(mode > 0) gl_Position.z += texOffset.b * (floor(abs(mode) / 100) + 1); else gl_Position.z -= texOffset.b * (floor(abs(mode) / 100) + 1);
+		if(mode > 0) texcoord_out.x += texOffset.g * (floor(abs(mode) / 100) + 1); else texcoord_out.x -= texOffset.g * (floor(abs(mode) / 100) + 1);
+		if(mode > 0) texcoord_out.y += texOffset.r * (floor(abs(mode) / 100) + 1); else texcoord_out.y -= texOffset.r * (floor(abs(mode) / 100) + 1);
+		if(mode > 0) texcoord_out.z += texOffset.b * (floor(abs(mode) / 100) + 1); else texcoord_out.z -= texOffset.b * (floor(abs(mode) / 100) + 1);
 	}
 }

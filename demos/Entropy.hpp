@@ -1,7 +1,6 @@
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
-#include "meshes/Geo_Iterable.hpp"
 
 #include "program/Topl_Program.hpp"
 

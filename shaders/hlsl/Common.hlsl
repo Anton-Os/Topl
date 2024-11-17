@@ -25,6 +25,8 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 }
 #endif
 
+#define STEP_ATTENUATION 0.001
+
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
@@ -61,8 +63,8 @@ float4 getRandColor(float4 seedColor){
 	return float4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), 1.0);
 }
 
-float4 getUniqueColor(int id){
-	float attenuation = floor(id / 6.0) * 0.025;
+float4 getStepColor(int id){
+	float attenuation = floor(id / 6.0) * STEP_ATTENUATION;
 
 	if(id % 6 == 0) return float4(1.0 - attenuation, 0.0, 0.0, 1.0); // red
 	else if (id % 6 == 1) return float4(0.0, 1.0 - attenuation, 0.0, 1.0); // green

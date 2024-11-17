@@ -26,9 +26,9 @@ void main() {
 	uint primID = gl_PrimitiveID;
 
 	if(mode < -1){
-		uint target = id;
+		uint target = primID;
 		while(target > mode * -1) target -= mode * -1;
-		outColor = getUniqueColor(target);
+		outColor = getStepColor(target);
 	}
 	else if (mode == 1) // directional mode
 		outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, color.a);
@@ -47,6 +47,6 @@ void main() {
 	else if(mode == 8) // dope mode
 		outColor = vec4(sin(vertex_color.r * id), cos(color.g * primID), tan(color.b * vertex_color.b * id * primID), 1.0);
 	else if(mode == -1) // indexing mode
-		outColor = getUniqueColor(primID);
+		outColor = getStepColor(id);
 	else outColor = color; // solid mode // default
 }

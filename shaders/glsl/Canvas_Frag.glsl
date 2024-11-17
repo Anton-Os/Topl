@@ -37,19 +37,18 @@ layout(location = 0) out vec4 color_out;
 
 vec4 cursorDot(vec2 pos, vec2 coord, float radius, vec4 color){
     if (distance(pos, coord) < radius) return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return vec4(color.r, color.g, color.b, 0.0); // nearly transparent
 }
 
 vec4 cursorHalo(vec2 pos, vec2 coord, float radius, vec4 color){
     if (distance(pos, coord) > radius * 0.75 && distance(pos, coord) < radius * 1.25) return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return vec4(color.r, color.g, color.b, 0.0); // nearly transparent
 }
 
 vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
-    if((abs(coord.x - pos.x) < radius * 0.5 && abs(coord.y - pos.y) < radius * 0.1)
-        || (abs(coord.y - pos.y) < radius * 0.5 && abs(coord.x - pos.x) < radius * 0.1))
+    if((abs(coord.x - pos.x) < radius * 0.5 && abs(coord.y - pos.y) < radius * 0.1) || (abs(coord.y - pos.y) < radius * 0.5 && abs(coord.x - pos.x) < radius * 0.1))
         return color;
-    else return vec4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return vec4(color.r, color.g, color.b, 0.0); // nearly transparent
 }
 
 // Main
@@ -62,9 +61,9 @@ void main() {
 
 	if(abs(mode) >= 10){
 		vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);
-		if(mod(floor(abs(mode) / 10.0), 10) == 1) color_cursor = cursorHalo(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
-		else if(mod(floor(abs(mode) / 10.0), 10) == 2) color_cursor = cursorCross(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
-		else if(mode != 0) color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
+		if(uint(floor(abs(mode) / 10.0)) % 10 == 1) color_cursor = cursorHalo(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
+		else if(uint(floor(abs(mode) / 10.0)) % 10 == 2) color_cursor = cursorCross(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
+		else color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, vec4(1.0, 1.0, 1.0, 0.75));
 
 		if(color_cursor.a != 0.0) color_out = color_cursor;
 	}

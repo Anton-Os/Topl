@@ -28,6 +28,6 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
-	vert_color_out = getRandColor(color - (color / (gl_VertexID + 1))); // getUniqueColor(gl_VertexID);
+	vert_color_out = getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
 	id_out = gl_VertexID;
 }

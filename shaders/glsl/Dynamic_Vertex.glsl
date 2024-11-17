@@ -31,5 +31,5 @@ void main() {
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;
-	vert_color_out = vec4(1.0, 1.0, 1.0, 1.0); // getRandColor(color - (color / (gl_VertexID + 1))); // getUniqueColor(gl_VertexID);
+	vert_color_out = vec4(1.0, 1.0, 1.0, 1.0); // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
 }

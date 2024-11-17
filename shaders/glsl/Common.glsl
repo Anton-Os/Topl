@@ -37,6 +37,8 @@ layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
 #endif
 
+#define STEP_ATTENUATION 0.001
+
 // uniform vec4 controlPoints[64];
 // uniform vec4 nearestVertex[1024];
 
@@ -63,8 +65,8 @@ vec4 getRandColor(vec4 seedColor){
 	return randColor;
 }
 
-vec4 getUniqueColor(uint index){
-	float attenuation = floor(index / 6.0) * 0.025;
+vec4 getStepColor(uint index){
+	float attenuation = floor(index / 6.0) * STEP_ATTENUATION;
 
 	if(index % 6 == 0) return vec4(1.0 - attenuation, 0.0, 0.0, 1.0); // red
 	else if (index % 6 == 1) return vec4(0.0, 1.0 - attenuation, 0.0, 1.0); // green

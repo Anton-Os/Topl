@@ -3,8 +3,9 @@
 
 #include "program/Topl_Program.hpp"
 
-#define KALEIDOSCOPE_Z 0.5F
+#define KALEIDOSCOPE_Z -0.5F
 #define KALEIDOSCOPE_SLICES 256 / 4
+#define KALEIDOSCOPE_DIVS 1
 
 struct Kaleidoscope_Construct : public Geo_Construct {
     Kaleidoscope_Construct() : Geo_Construct("Top" + std::to_string(rand() % 999)){ init(); }
@@ -24,7 +25,8 @@ struct Kaleidoscope_Construct : public Geo_Construct {
     void init(){
         for(unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++){
             // meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, CIRCLE_SEGMENTS + ((s * 64) % CIRCLE_SEGMENTS)});
-            meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, KALEIDOSCOPE_Z);
+            // meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, KALEIDOSCOPE_Z);
+            meshes[s] = new Geo_Ext2D({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, z, KALEIDOSCOPE_DIVS);
             _geoActors.push_back(Geo_Actor(meshes[s]));
             _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((2.0F / KALEIDOSCOPE_SLICES) * s )}));
 
@@ -40,8 +42,10 @@ struct Kaleidoscope_Construct : public Geo_Construct {
 private:
     unsigned short minDivs = CIRCLE_SEGMENTS;
     unsigned short maxDivs = CIRCLE_SEGMENTS;
+    unsigned z = KALEIDOSCOPE_Z;
 
-    Geo_Surface* meshes[KALEIDOSCOPE_SLICES];
+    // Geo_Surface* meshes[KALEIDOSCOPE_SLICES];
+    Geo_Ext2D* meshes[KALEIDOSCOPE_SLICES];
     float spinFactors[KALEIDOSCOPE_SLICES];
 };
 

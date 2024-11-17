@@ -2,8 +2,8 @@
 
 #include "Common.hlsl"
 
-#define FRACTAL_SIZE 3.0 // max fractal size
-#define FRACTAL_ITER 50 // max fractal iteratons
+#define FRACTAL_SIZE 5.0 // max fractal size
+#define FRACTAL_ITER 20 // max fractal iteratons
 #define C float2(cursorPos.x, cursorPos.y) // c value for julia set
 
 // Values
@@ -22,6 +22,12 @@ struct PS_INPUT { float4 pos : SV_POSITION; };
 
 // Functions
 
+float3 fractalColors(float2 coord, uint i){
+	if(mode % 10 == 0) return float3(1.0f / i, tan(i), 0.05f * i);
+	else return float3(coord.x, coord.y, 1.0 / i);
+	// TODO: Include more color options
+}
+
 // Mandlebrot Set
 float3 mandlebrotSet(float2 coord){
 	uint i = 0; // iteration count
@@ -34,7 +40,7 @@ float3 mandlebrotSet(float2 coord){
 		i++;
 	}
 
-	if(i < FRACTAL_ITER) return float3(0.05f * i, sin(i), 1.0f / i); // custom colors outside set
+	if(i < FRACTAL_ITER) return fractalColors(float2(x, y), i);
 	else return float3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
@@ -49,7 +55,22 @@ float3 juliaSet(float2 coord){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float3(1.0f / i, tan(i), 0.05f * i); // custom colors outside set
+	if (i < FRACTAL_ITER) return fractalColors(coord, i);
+	return float3(0, 0, 0); // black color within set
+}
+
+// Trig set
+float3 trigSet(float2 coord){
+	uint i = 0; // iteration count
+
+	while (atan(coord.x) + tan(coord.y) <= FRACTAL_SIZE && i < FRACTAL_ITER) {
+		double x = coord.x + sin(coord.y / coord.x);
+		double y = coord.y + cos(coord.x / coord.y);
+		coord = float2(x, y);
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return fractalColors(coord, i);
 	return float3(0, 0, 0); // black color within set
 }
 
@@ -58,7 +79,10 @@ float3 juliaSet(float2 coord){
 float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
+	float2 target;
+	if(mode > 0) target = coords - cursor; else target = cursor - coords;
 
-    if(mode >= 10 && mode < 20) return float4(juliaSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
-    else return float4(mandlebrotSet((coords - cursor) * FRACTAL_SIZE), 1.0f);
+    if(abs(mode) >= 10 && abs(mode) < 20) return float4(juliaSet(target * FRACTAL_SIZE), 1.0f);
+	else if(abs(mode) >= 20 && abs(mode) < 30) return float4(trigSet(target * FRACTAL_SIZE), 1.0f);
+    else return float4(mandlebrotSet(target * FRACTAL_SIZE), 1.0f);
 }

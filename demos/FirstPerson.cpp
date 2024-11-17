@@ -4,14 +4,14 @@
 
 static Vec3f puppet1_forceVec = VEC_3F_ZERO, puppet2_forceVec = VEC_3F_ZERO, puppet3_forceVec = VEC_3F_ZERO;
 
-void pivotCamY1(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.01F, 0.0F }); }
-void pivotCamY2(){ Topl_Program::cameraObj.updateRot({ 0.0F, -0.01F, 0.0F }); }
-void pivotCamZ1(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, 0.01F }); }
-void pivotCamZ2(){ Topl_Program::cameraObj.updateRot({ 0.0F, 0.0F, -0.01F }); }
-void projCamId(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-void projCamOrtho(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
-void projCamPerspective(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
-void projCamExperimental(){ Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
+void pivotCamY1(){ Topl_Program::camera.updateRot({ 0.0F, 0.01F, 0.0F }); }
+void pivotCamY2(){ Topl_Program::camera.updateRot({ 0.0F, -0.01F, 0.0F }); }
+void pivotCamZ1(){ Topl_Program::camera.updateRot({ 0.0F, 0.0F, 0.01F }); }
+void pivotCamZ2(){ Topl_Program::camera.updateRot({ 0.0F, 0.0F, -0.01F }); }
+void projCamId(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
+void projCamOrtho(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
+void projCamPerspective(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
+void projCamExperimental(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
 void movePuppetsRight(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] += 0.1F; }
 void movePuppetsLeft(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] -= 0.1F; }
 void movePuppetsUp(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] += 0.1F;  }
@@ -19,7 +19,7 @@ void movePuppetsDown(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].dat
 
 /* void projCallback(){
     static unsigned invocation = 0;
-    Topl_Program::cameraObj.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Orthographic : PROJECTION_Perspective, 1.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Orthographic : PROJECTION_Perspective, 1.0F).genProjMatrix());
     invocation++;
 } */
 
@@ -38,10 +38,10 @@ void FirstPerson_Demo::init(){
     Platform::keyControl.addCallback((char)0x27, movePuppetsRight);
     Platform::keyControl.addCallback((char)0x28, movePuppetsDown);
 
-    Topl_Program::cameraObj.setZoom(0.5F);
-    Topl_Program::cameraObj.setPos({ 0.0F, -0.5F, 10.0F });
-    // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
-    // Topl_Program::cameraObj.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
+    Topl_Program::camera.setZoom(0.5F);
+    Topl_Program::camera.setPos({ 0.0F, -0.5F, 10.0F });
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
     projCamPerspective();
 
     _renderer->setPipeline(_texPipeline);
@@ -93,8 +93,8 @@ void FirstPerson_Demo::init(){
 }
 
 void FirstPerson_Demo::loop(double frameTime){
-    scene2D.camera = &Topl_Program::cameraObj;
-    scene3D.camera = &Topl_Program::cameraObj;
+    scene2D.camera = &Topl_Program::camera;
+    scene3D.camera = &Topl_Program::camera;
 
     {
 #ifdef TOPL_ENABLE_PHYSICS

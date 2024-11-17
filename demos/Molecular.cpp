@@ -28,7 +28,7 @@ void Molecular_Demo::init(){
 }
 
 void Molecular_Demo::loop(double frameTime){
-    scene.camera = &Topl_Program::cameraObj;
+    scene.camera = &Topl_Program::camera;
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 

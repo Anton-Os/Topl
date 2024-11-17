@@ -33,18 +33,18 @@ struct PS_INPUT {
 
 float4 cursorDot(float2 pos, float2 coord, float radius, float4 color){
     if (distance(pos, coord) < radius) return color;
-    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return float4(color.r, color.g, color.b, 0.0);
 }
 
 float4 cursorHalo(float2 pos, float2 coord, float radius, float4 color){
     if (distance(pos, coord) > radius * 0.75 && distance(pos, coord) < radius * 1.25) return color;
-    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return float4(color.r, color.g, color.b, 0.0);
 }
 
 float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
     if((abs(coord.x - pos.x) < radius * 0.5 && abs(coord.y - pos.y) < radius * 0.1) || (abs(coord.y - pos.y) < radius * 0.5 && abs(coord.x - pos.x) < radius * 0.1))
         return color;
-    else return float4(color.r, color.g, color.b, color.a * 0.1); // nearly transparent
+    else return float4(color.r, color.g, color.b, 0.0);
 }
 
 // Main
@@ -60,7 +60,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
         float4 color_cursor = float4(0.0, 0.0, 0.0, 0.0);
         if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
         else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-        else if(mode != 0) color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+        else color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
 
         if(color_cursor.a != 0.0) color_out = color_cursor;
     }

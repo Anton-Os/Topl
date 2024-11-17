@@ -20,27 +20,27 @@ Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
 
-Topl_Camera Topl_Program::cameraObj = Topl_Camera();
+Topl_Camera Topl_Program::camera = Topl_Camera();
 
 static void onAnyKey(char k){
 	if(isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
 	if(Topl_Program::isCtrl_keys && isalpha(k)){
 		switch(tolower(k)){
-			case 'w': Topl_Program::cameraObj.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
-			case 's': Topl_Program::cameraObj.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
-			case 'a': Topl_Program::cameraObj.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
-			case 'd': Topl_Program::cameraObj.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
-			case 'x': Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, -0.1f }); break;
-			case 'v': Topl_Program::cameraObj.updatePos({ 0.0F, 0.0, 0.1f }); break;
-			case 'q': Topl_Program::cameraObj.updateRot({ -Topl_Program::speed, 0.0, 0.0 }); break;
-			case 'e': Topl_Program::cameraObj.updateRot({ Topl_Program::speed, 0.0, 0.0 }); break;
-			case 'r': Topl_Program::cameraObj.updateRot({ 0.0F, -Topl_Program::speed, 0.0 }); break;
-			case 'f': Topl_Program::cameraObj.updateRot({ 0.0F, Topl_Program::speed, 0.0 }); break;
-			case 't': Topl_Program::cameraObj.updateRot({ 0.0F, 0.0, -Topl_Program::speed }); break;
-			case 'g': Topl_Program::cameraObj.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
-			case 'z': Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * (1.0F + Topl_Program::speed)); break;
-			case 'c': Topl_Program::cameraObj.setZoom(*Topl_Program::cameraObj.getZoom() * (1.0F - Topl_Program::speed)); break;
+			case 'w': Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
+			case 's': Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
+			case 'a': Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
+			case 'd': Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
+			case 'x': Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
+			case 'v': Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+			case 'q': Topl_Program::camera.updateRot({ -Topl_Program::speed, 0.0, 0.0 }); break;
+			case 'e': Topl_Program::camera.updateRot({ Topl_Program::speed, 0.0, 0.0 }); break;
+			case 'r': Topl_Program::camera.updateRot({ 0.0F, -Topl_Program::speed, 0.0 }); break;
+			case 'f': Topl_Program::camera.updateRot({ 0.0F, Topl_Program::speed, 0.0 }); break;
+			case 't': Topl_Program::camera.updateRot({ 0.0F, 0.0, -Topl_Program::speed }); break;
+			case 'g': Topl_Program::camera.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
+			case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed)); break;
+			case 'c': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
 		}
 #ifdef RASTERON_H
 		/* else if(k == ';'){
@@ -91,7 +91,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     _platform = new Platform(app);
 #endif
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
-	// _renderer->setCamera(&Topl_Program::cameraObj);
+	// _renderer->setCamera(&Topl_Program::camera);
 	_renderer->setDrawMode(DRAW_Triangles);
 
 	Platform::keyControl.addAnyCallback(onAnyKey);
@@ -185,6 +185,7 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_MODE_SOLID);
+	// Topl_Factory::switchPipeline(_renderer, _flatPipeline);
 	_renderer->setDrawMode(DRAW_Triangles);
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
@@ -195,6 +196,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	if(scene != nullptr){ 
 		Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
 		if(actor != nullptr){
+			std::cout << "Picker actor is " << actor->getName() << std::endl;
 			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
@@ -210,6 +212,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_MODE_COORD);
+	// Topl_Factory::switchPipeline(_renderer, _flatPipeline);
 	_renderer->setDrawMode(DRAW_Triangles);
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles

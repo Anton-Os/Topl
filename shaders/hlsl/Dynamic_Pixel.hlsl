@@ -22,9 +22,9 @@ struct PS_INPUT { float4 pos : SV_POSITION; };
 float4 main(PS_INPUT input) : SV_TARGET {
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 1.0);
 	
-	double r = sin(timeElapse / 1000.0);
-	double g = cos(timeElapse / 1000.0);
-	double b = tan(timeElapse / 1000.0);
+	double r = sin(timeElapse / 10000.0);
+	double g = cos(timeElapse / 10000.0);
+	double b = tan(timeElapse / 10000.0);
 
 	return float4(r, g, b, 1.0);
 }

@@ -27,7 +27,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	if(mode < -1){
 		uint target = input.vertex_id;
 		while(target > uint(mode * -1)) target -= uint(mode * -1);
-		return getUniqueColor(target);
+		return getStepColor(target);
 	}
 	if(mode == 1) // directional mode
 		return float4((input.vertex_pos.x / 2) + 0.5, (input.vertex_pos.y/ 2) + 0.5, (input.vertex_pos.z / 2) + 0.5, 1.0f);
@@ -46,6 +46,6 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	else if(mode == 8) // dope mode
 		return float4(sin(input.vertex_color.r * id), cos(color.g * primID), tan(color.b * input.vertex_color.b * id * primID), 1.0);
 	else if (mode == -1) // indexing mode
-		return getUniqueColor(input.vertex_id);
+		return getStepColor(primID);
 	else return color; // solid mode // default
 }

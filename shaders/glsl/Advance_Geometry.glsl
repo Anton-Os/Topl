@@ -14,8 +14,11 @@ out gl_PerVertex
   float gl_ClipDistance[];
 }; */
 
-layout (points) in;
-layout (triangle_strip, max_vertices = 3) out;
+#define GEOM_INPUT layout(points) // TODO: Define this inside Advance_Shader.hpp
+#define GEOM_OUTPUT layout (triangle_strip, max_vertices = 3) // TODO: Define this inside Advance_Shader.hpp
+
+GEOM_INPUT in;
+GEOM_OUTPUT out;
 
 void main(void) {
 	gl_Position = gl_in[0].gl_Position;

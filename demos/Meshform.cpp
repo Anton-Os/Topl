@@ -14,7 +14,7 @@ static void onAnyKey(char key){
 
 
 void Meshform_Demo::init(){
-    scene.camera = &Topl_Program::cameraObj;
+    scene.camera = &Topl_Program::camera;
 
     Platform::keyControl.addAnyCallback(onAnyKey);
 
@@ -28,6 +28,11 @@ void Meshform_Demo::init(){
 
     _renderer->buildScene(&scene);
 #ifdef RASTERON_H
+    /* for(unsigned d = 0; d < volumeImg.getDepth(); d++){
+        Rasteron_Image* gradientImg = gradientImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, SIDE_Radial,  color_level(0xFFFFFFFF, (1.0 / 256) * d), 0xFFFF0000 + (0x1 * d) - (0x10000 * d));
+        volumeImg.addSlice(gradientImg, d);
+        RASTERON_DEALLOC(gradientImg);
+    } */
     scene.addVolumeTex("trigOrb", &volumeImg);
     scene.addVolumeTex("quadOrb", &volumeImg);
     scene.addVolumeTex("hexOrb", &volumeImg);
@@ -43,8 +48,8 @@ void Meshform_Demo::loop(double frameTime){
 
     _texVShader.setMode(8);
     _flatVShader.setMode(-MESHFORM_TESS); // TODO: Change this to volumetric texture
-    _effectVShader.setMode(1);
-    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    _effectVShader.setMode(-23);
+    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 }

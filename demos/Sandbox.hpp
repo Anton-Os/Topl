@@ -107,7 +107,7 @@ struct Sandbox_Demo : public Topl_Program {
         sculptBillboard.scale({ -0.12F, 1.15F, 1.0F });
         sculptBillboard.shift({ -0.965F, 0.0F, 0.0F });
         sculptBillboard.getImgRoot()->setImage(cornerImgOp(sculptBillboard.getImgRoot()->getImage(), 1.5, 0.0, 1.5, 0.0));
-        for(unsigned b = 0; b < sculptBillboard.getActorCount(); b++) sculptBillboard.getImgAt(b)->setImage(cornerImgOp(sculptBillboard.getImgAt(b)->getImage(), 0.1, 0.0, 0.1, 0.0));
+        for(unsigned b = 0; b < sculptBillboard.getActorCount(); b++) sculptBillboard.getImgAt(b)->setImage(cornerImgOp(sculptBillboard.getImgAt(b)->getImage(), 0.5, 0.0, 0.5, 0.0));
         paintBillboard.scale({ -0.12F, 1.15F, 1.0F });
         paintBillboard.shift({ 0.965F, 0.0F, 0.0F });
         paintBillboard.getImgRoot()->setImage(cornerImgOp(paintBillboard.getImgRoot()->getImage(), 0.0, 1.5, 0.0, 1.5));
