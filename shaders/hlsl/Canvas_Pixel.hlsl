@@ -55,12 +55,17 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
+    float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
+
+    if(mode % 10 != 0){
+        // TODO: Perform drawing and path operations
+    }
 
     if(abs(mode) >= 10){ // adding cursor color
         float4 color_cursor = float4(0.0, 0.0, 0.0, 0.0);
-        if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorHalo(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-        else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
-        else color_cursor = cursorDot(cursor, coords, CURSOR_SIZE, float4(1.0, 1.0, 1.0, 0.75));
+        if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
+        else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
+        else color_cursor = cursorHalo(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
 
         if(color_cursor.a != 0.0) color_out = color_cursor;
     }
