@@ -49,13 +49,13 @@ void Meshform_Demo::loop(double frameTime){
     _texVShader.setMode(8);
     _flatVShader.setMode(-MESHFORM_TESS); // TODO: Change this to volumetric texture
     _effectVShader.setMode(-23);
-    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
+    Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

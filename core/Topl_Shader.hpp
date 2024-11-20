@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Topl_Scene.hpp"
+#include "scene/Topl_Scene.hpp"
 
 enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval };
 
@@ -88,6 +88,8 @@ public:
 	Topl_EntryShader(std::string fileSrc) : Topl_Shader(SHDR_Vertex, fileSrc) { // Filename Constructor
 		_inputs.push_back(Shader_Type("pos", "POSITION", SHDR_float_vec3)); // default pos input
 		_inputs.push_back(Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec3)); // default texcoord input
+		_inputs.push_back(Shader_Type("normal", "NORMAL", SHDR_float_vec3));
+		_inputs.push_back(Shader_Type("vert_color", "COLOR", SHDR_float_vec3));
 	}
 
 	Topl_EntryShader(std::string fileSrc, std::initializer_list<Shader_Type> inputs) : Topl_Shader(SHDR_Vertex, fileSrc) {  // Inputs Constructor

@@ -15,11 +15,11 @@ list(APPEND core_src
     core/renderer/Topl_Renderer.cpp
     core/program/Topl_Program.cpp
     core/program/Topl_Program_Timeline.cpp
-    core/Topl_Scene.cpp
+    core/scene/Topl_Scene.cpp
 )
 
 if(SUPPORT_PHYSICS)
-    list(APPEND core_src core/Topl_Scene_Dynamics.cpp)
+    list(APPEND core_src core/scene/Topl_Scene_Dynamics.cpp)
 endif()
 
 add_library(CORELIB # Core Library

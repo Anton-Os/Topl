@@ -220,7 +220,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 	unsigned color = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
 	Topl_Program::pickerCoord = Vec3f{
 		((color & 0xFF0000) >> 16) / 255.0f,
-		((color & 0xFF00) >> 8) / 255.0f, 
+		((color & 0xFF00) >> 8) / 255.0f,
 		(color & 0xFF) / 255.0f,  
 	};
 	

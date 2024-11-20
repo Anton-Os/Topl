@@ -47,6 +47,8 @@ SamplerState areaSampler : register(s8);
 struct VS_INPUT {
 	float4 pos : POSITION;
 	float3 texcoord : TEXCOORD;
+	float3 normal : NORMAL;
+	float3 vert_color : COLOR;
 	// float3x3 instanceData : INSTANCE;
 };
 #endif

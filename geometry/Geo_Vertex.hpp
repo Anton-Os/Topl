@@ -16,10 +16,11 @@ struct Geo_Vertex {
 		position = p;
         texcoord = getTexCoord(position);
     }
-	Geo_Vertex(Vec3f p, /* Vec3f n, */ Vec3f t) { // full constructor
+	Geo_Vertex(Vec3f p, /* Vec3f n, */ Vec3f t /* Vec3f c */) { // full constructor
 		position = p; 
 		/* normal = n; */ 
 		texcoord = t;
+        /* color = c; */
 	}
 
     Vec3f getTexCoord(Vec3f vertex){ // regular texture coordinates
@@ -34,9 +35,10 @@ struct Geo_Vertex {
         return Vec3f({ x, y, z });
     }
 
-	Vec3f position = Vec3f({ 0.0, 0.0, 0.0 });
-	// Vec3f normal = Vec3f({ 0.0, 0.0, 0.0 });
-	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 });
+	Vec3f position = Vec3f({ 0.0, 0.0, 0.0 }); // indicates position data
+	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 }); // indicates texture mapping
+    Vec3f normal = Vec3f({ 0.0, 0.0, 1.0 }); // indicates face direction
+    Vec3f color = Vec3f({ 1.0, 1.0, 1.0 }); // indicates vertex number
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;
