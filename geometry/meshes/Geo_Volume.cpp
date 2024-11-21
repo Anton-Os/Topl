@@ -6,7 +6,7 @@ Geo_Volume::Geo_Volume(Shape2D shape, float depth) : Geo_Mesh((shape.segments + 
 	
 	unsigned v;
 
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f });
+    _vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + (_depth / 2) }, { 0.5, 0.5, 0.0f }, { 0.0F, 0.0F, -1.0F }, { 1.0F, 1.0F, 1.0F });
 	for (v = 1; v < _vertices.size() / 2; v++) { // front face vertices
 		Vec3f pos = Vec3f({
 			(float)sin(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
@@ -18,7 +18,7 @@ Geo_Volume::Geo_Volume(Shape2D shape, float depth) : Geo_Mesh((shape.segments + 
 		_vertices[v] = Geo_Vertex(pos);
 	}
 
-	_vertices[_vertices.size() / 2] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z - (_depth / 2) }, { 0.5, 0.5, 1.0f });
+    _vertices[_vertices.size() / 2] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z - (_depth / 2) }, { 0.5, 0.5, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F });
 	for (v = 1 + (_vertices.size() / 2); v < _vertices.size(); v++) { // back face vertices
 		Vec3f pos = Vec3f({
 			(float)sin(ANGLE_START(_shape.segments) + ((v - (_vertices.size() / 2)) * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),

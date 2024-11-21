@@ -37,7 +37,7 @@ layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
 #endif
 
-#define STEP_ATTENUATION 0.001
+#define STEP_ATTENUATION 0.00390625
 
 // uniform vec4 controlPoints[64];
 // uniform vec4 nearestVertex[1024];
@@ -56,7 +56,7 @@ uvec4 getModes(uint mode){
 	return uvec4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
 }
 
-vec4 getRandColor(vec4 seedColor){
+/* vec4 getRandColor(vec4 seedColor){
 	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 56.34);
 
 	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);
@@ -65,6 +65,19 @@ vec4 getRandColor(vec4 seedColor){
 	while(randColor.a > 1.0) randColor.a -= pow(randColor.a, 0.5);
 
 	return randColor;
+} */
+
+vec4 getRandColor(uint seed){
+	dvec4 randColor = dvec4(double(seed)* 0.325243, double(seed) * 0.953254, double(seed) * 0.563445, 1.0);
+
+	for(uint iter = 0; iter < 1; iter++){
+		randColor.x += randColor.y * 1.634923;
+		randColor.y += randColor.z * 2.456431;
+		randColor.z += randColor.x * 3.123145;
+	}
+
+	randColor = dvec4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), randColor.a);
+	return vec4(float(randColor.x), float(randColor.y), float(randColor.z), float(randColor.a));
 }
 
 vec4 getStepColor(uint index){

@@ -25,7 +25,7 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 }
 #endif
 
-#define STEP_ATTENUATION 0.001
+#define STEP_ATTENUATION 0.00390625
 
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
@@ -59,10 +59,16 @@ uint4 getModes(uint mode){
 	return uint4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
 }
 
-float4 getRandColor(float4 seedColor){
-	float4 randColor = (seedColor + float4(0.569, 0.853, 0.265, 1.0)) * float4(881.225, 111.159, 454.823, 1.0);
+float4 getRandColor(uint seed){
+	double4 randColor = double4(double(seed) * 0.722433, double(seed) * 0.423512, double(seed) * 0.324561, 1.0);
 
-	return float4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), 1.0);
+	for(uint iter = 0; iter < 1; iter++){
+		randColor.x *= randColor.z * 3.527719;
+		randColor.y *= randColor.x * 4.342534;
+		randColor.z *= randColor.y * 2.834565;
+	}
+
+	return float4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), randColor.a);
 }
 
 float4 getStepColor(int id){

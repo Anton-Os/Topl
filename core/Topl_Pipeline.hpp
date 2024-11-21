@@ -37,6 +37,8 @@ struct Topl_Pipeline {
 		}
 	}
 
+	// void setMode(unsigned mode){ if(entryShader != nullptr) entryShader->setMode(mode); }
+
 	entry_shader_cptr entryShader = nullptr; // entry shader stored internally
 	bool isReady; // value for compilation and link status
 };

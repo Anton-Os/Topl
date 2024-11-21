@@ -5,15 +5,17 @@ unsigned short Entropy_Demo::mode = 0;
 static bool isInEntropy = true;
 static bool isInMotion = true;
 static short lightMode = 10;
-static short shaderMode = BEAMS_MODE_LIGHT;
+static short shaderMode = 2;
 
 static void onAnyKey(char key){
-    if(tolower(key) == 'v') lightMode = 30; // 0;
-    else if(tolower(key) == 'b') lightMode = 40; // 10;
-    else if(tolower(key) == 'n') lightMode = 50; // 20;
-    else if(tolower(key) == 'm') lightMode = 60;
+    if(tolower(key) == 'u') lightMode = 60; // 0;
+    else if(tolower(key) == 'i') lightMode = 70; // 10;
+    else if(tolower(key) == 'o') lightMode = 80; // 20;
+    else if(tolower(key) == 'p') lightMode = 90;
     else if(isdigit(key)) shaderMode = key - '0';
     else if(isspace(key)) isInMotion = !isInMotion;
+
+    std::cout << "Shader mode is " << std::to_string(shaderMode) << std::endl;
 }
 
 void entropyReset(){ isInEntropy = !isInEntropy; }
@@ -38,6 +40,10 @@ void Entropy_Demo::init(){
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(10000, entropyReset);
     Topl_Program::camera.setZoom(2.0);
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 2.0F).genProjMatrix());
+
+    scene1.camera = &Topl_Program::camera; scene2.camera = &Topl_Program::camera; scene3.camera = &Topl_Program::camera;
+    ext_scene1.camera = &Topl_Program::camera; ext_scene2.camera = &Topl_Program::camera; ext_scene3.camera = &Topl_Program::camera;
 
     backdropScene.addGeometry("Backdrop", &backdropActor);
     _renderer->buildScene(&backdropScene);
@@ -62,10 +68,6 @@ void Entropy_Demo::init(){
 }
 
 void Entropy_Demo::loop(double frameTime){
-    scene1.camera = &Topl_Program::camera; scene2.camera = &Topl_Program::camera; scene3.camera = &Topl_Program::camera;
-    ext_scene1.camera = &Topl_Program::camera; ext_scene2.camera = &Topl_Program::camera; ext_scene3.camera = &Topl_Program::camera;
-
-    _beamsVShader.setMode((shaderMode + lightMode) * -1);
     _effectVShader.setMode(10);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
@@ -98,7 +100,8 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    _beamsVShader.setMode(shaderMode + lightMode);
+    _beamsVShader.setMode((shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
+    _flatVShader.setMode(shaderMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());

@@ -4,8 +4,8 @@ Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, sha
 	_shape = shape;
 	_apex = apex;
 
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }); // origin
-	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
+    _vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }, { 0.0F, 0.0F, -1.0F }, { 1.0F, 1.0F, 1.0F }); // origin
+    _vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
 
 	unsigned v;
 	for (v = 1; v < _vertices.size() - 1; v++) {
@@ -95,7 +95,7 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 
 Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
 	_apex = apex;
-	_vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }); // apex
+    _vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
 	
 	unsigned short v = 0;
 	for(unsigned p = 0; p < pointCount; p++){

@@ -54,7 +54,7 @@ void Geo_NodeMesh::init(){
 				texcoord = Vec3f({ attrib->x, attrib->y, attrib->z });
 			}
 
-			_vertices[v] = Geo_Vertex(pos, texcoord);
+			_vertices[v] = Geo_Vertex(pos, texcoord, normal, Vec3f({ 1.0F, 1.0F, 1.0F }));
 		}
 
 	unsigned i = 0;

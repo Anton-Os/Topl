@@ -56,7 +56,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
     }
 
     _renderer->setDrawMode(drawMode);
-    _flatVShader.setMode(-1);// _effectVShader.setMode(EFFECT_MODE_FRACTALS);
+    _flatVShader.setMode((unsigned)(floor(_renderer->getFrameCount() / 600) + 6) % 10); // _effectVShader.setMode(EFFECT_MODE_FRACTALS);
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     
     _renderer->updateScene(&scene);

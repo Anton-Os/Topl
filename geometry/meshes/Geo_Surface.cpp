@@ -4,7 +4,7 @@ Geo_Surface::Geo_Surface(Shape2D shape, float z) : Geo_Mesh(shape.segments + 1, 
 	_shape = shape;
 	_depth = z;
 	
-	_vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }); // origin
+    _vertices[0] = Geo_Vertex({ 0.0f, 0.0f, _depth }, { 0.5f, 0.5f, 0.0f }, { 0.0F, 0.0F, -1.0F }, { 1.0F, 1.0F, 1.0F }); // origin
 
 	unsigned v;
 	for (v = 1; v < _vertices.size(); v++) {
