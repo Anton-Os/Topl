@@ -59,8 +59,12 @@ uint4 getModes(uint mode){
 	return uint4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
 }
 
-float4 getRandColor(uint seed){
-	double4 randColor = double4(double(seed) * 0.722433, double(seed) * 0.423512, double(seed) * 0.324561, 1.0);
+float sum(float3 data){
+	return abs(data.x) + abs(data.y) + abs(data.z);
+}
+
+float3 getRandColor(uint seed){
+	double3 randColor = double3(double(seed) * 0.722433, double(seed) * 0.423512, double(seed) * 0.324561);
 
 	for(uint iter = 0; iter < 1; iter++){
 		randColor.x *= randColor.z * 3.527719;
@@ -68,7 +72,7 @@ float4 getRandColor(uint seed){
 		randColor.z *= randColor.y * 2.834565;
 	}
 
-	return float4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), randColor.a);
+	return float3(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z));
 }
 
 float4 getStepColor(int id){

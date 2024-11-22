@@ -8,14 +8,12 @@ static short lightMode = 10;
 static short shaderMode = 2;
 
 static void onAnyKey(char key){
-    if(tolower(key) == 'u') lightMode = 60; // 0;
-    else if(tolower(key) == 'i') lightMode = 70; // 10;
-    else if(tolower(key) == 'o') lightMode = 80; // 20;
-    else if(tolower(key) == 'p') lightMode = 90;
-    else if(isdigit(key)) shaderMode = key - '0';
+    if(tolower(key) == 'u') lightMode = 10; // 0;
+    else if(tolower(key) == 'i') lightMode = 20; // 10;
+    else if(tolower(key) == 'o') lightMode = 30; // 20;
+    else if(tolower(key) == 'p') lightMode = 40;
+    else if(isdigit(key)) Topl_Program::shaderMode = key - '0';
     else if(isspace(key)) isInMotion = !isInMotion;
-
-    std::cout << "Shader mode is " << std::to_string(shaderMode) << std::endl;
 }
 
 void entropyReset(){ isInEntropy = !isInEntropy; }
@@ -114,7 +112,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

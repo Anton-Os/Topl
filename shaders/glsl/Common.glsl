@@ -67,8 +67,8 @@ uvec4 getModes(uint mode){
 	return randColor;
 } */
 
-vec4 getRandColor(uint seed){
-	dvec4 randColor = dvec4(double(seed)* 0.325243, double(seed) * 0.953254, double(seed) * 0.563445, 1.0);
+vec3 getRandColor(uint seed){
+	dvec3 randColor = dvec3(double(seed)* 0.325243, double(seed) * 0.953254, double(seed) * 0.563445);
 
 	for(uint iter = 0; iter < 1; iter++){
 		randColor.x += randColor.y * 1.634923;
@@ -76,8 +76,8 @@ vec4 getRandColor(uint seed){
 		randColor.z += randColor.x * 3.123145;
 	}
 
-	randColor = dvec4(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z), randColor.a);
-	return vec4(float(randColor.x), float(randColor.y), float(randColor.z), float(randColor.a));
+	randColor = dvec3(randColor.x - floor(randColor.x), randColor.y - floor(randColor.y), randColor.z - floor(randColor.z));
+	return vec3(float(randColor.x), float(randColor.y), float(randColor.z));
 }
 
 vec4 getStepColor(uint index){
