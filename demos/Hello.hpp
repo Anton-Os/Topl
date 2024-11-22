@@ -59,13 +59,13 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 		_renderIDs = 1;
 	}
 
-	void build(const Geo_Actor* actor) {
+	/* void build(const Geo_Actor* actor) {
 		// TODO: Implement drawing for testing purposes
 	}
 
 	void draw(const Geo_Actor* actor) {
 		// TODO: Implement drawing for testing purposes
-	}
+	} */
 
 	VK::Pipeline pipeline;
 	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");

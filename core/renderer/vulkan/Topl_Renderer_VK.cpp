@@ -461,8 +461,14 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
 
         _commandBuffers.resize(imageCount);
         result = vkAllocateCommandBuffers(_logicDevice, &commandBufferAllocInfo, _commandBuffers.data());
-        if(result == VK_SUCCESS) logMessage("Command buffers creation success \n");
+        if(result == VK_SUCCESS) logMessage("Command buffers creation success! \n");
         else return logMessage(MESSAGE_Exclaim, "Command buffers creation failure! \n");
+
+        // VkCommandBufferBeginInfo commandBufferInfo = {};
+        _commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        _commandBufferInfo.pNext = nullptr;
+        _commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+        _commandBufferInfo.pInheritanceInfo = nullptr;
 
         // Command Buffer Execution
 
@@ -527,25 +533,25 @@ Topl_Renderer_VK::~Topl_Renderer_VK() {
 }
 
 void Topl_Renderer_VK::clear(){
-	VkClearValue clearValues[2];
-	clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-	VkRect2D screenRect = {{0, 0}, { _surfaceCaps.currentExtent.width, _surfaceCaps.currentExtent.height }};
+    logMessage("Clear started");
+    vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo);
 
-	/* VkCommandBufferBeginInfo commandBufferInfo = {};
-    commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    commandBufferInfo.pNext = nullptr;
-    commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-    commandBufferInfo.pInheritanceInfo = nullptr;
+    VkClearColorValue clearColor = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
+    VkClearValue clearValue = {};
+    clearValue.color = clearColor;
+    clearValue.depthStencil = { 1.0f, 0 };
+    // VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
 
-    vkBeginCommandBuffer(&_commandBuffers[0], &commandBufferInfo);
+    VkImageSubresourceRange imgRange = {};
+    imgRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    imgRange.levelCount = 1;
+    imgRange.layerCount = 1;
 
-    VkRenderPassBeginInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
-	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE); */
+    for(unsigned i = 0; i < _swapchainImages.size(); i++)
+        vkCmdClearColorImage(_commandBuffers[0], _swapchainImages[i], VK_IMAGE_LAYOUT_GENERAL, &clearColor, 1, &imgRange);
+
+    if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
+    logMessage("Clear ended");
 }
 
 void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
@@ -616,15 +622,14 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
 	vkResetFences(_logicDevice, 1, &_inFlightFence);
 
-	uint32_t swapchainImgIdx;
-	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &swapchainImgIdx) != VK_SUCCESS)
+	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
 		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
-    else logMessage("Successfully aquired image " + std::to_string(swapchainImgIdx));
+    else logMessage("Successfully aquired image " + std::to_string(_swapImgIdx));
 
 	// Recording
 
-	vkResetCommandBuffer(_commandBuffers[0], 0);
-	if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+	// vkResetCommandBuffer(_commandBuffers[0], 0);
+	/* if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -640,7 +645,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 
 	vkCmdEndRenderPass(_commandBuffers[0]);
 
-	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
+	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n"); */
 
 	// Submitting
 
@@ -659,6 +664,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	submitInfo.pCommandBuffers = _commandBuffers.data();
 
 	if(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue submission failure!\n");
+    else logMessage("Queue submission success!");
 
 	// Presentation
 
@@ -670,10 +676,11 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	VkSwapchainKHR swapchains[] = { _swapchain };
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapchains;
-	presentInfo.pImageIndices = &swapchainImgIdx;
+	presentInfo.pImageIndices = &_swapImgIdx;
 	presentInfo.pResults = nullptr;
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
+    else logMessage("Queue presentation success!");
 }
 
 #ifdef RASTERON_H

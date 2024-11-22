@@ -56,6 +56,7 @@ private:
 	std::vector<VkImage> _swapchainImages = {};
 	std::vector<VkImageView> _swapchainImageViews = {};
 	std::vector<VkFramebuffer> _framebuffers = {};
+	uint32_t _swapImgIdx = 0;
 	VkAttachmentReference colorAttachmentRef = {};
 	VkRenderPass _renderPass;
 	VkPipelineLayout _pipelineLayout;

@@ -56,17 +56,18 @@ MAIN_ENTRY {
 			double f1 = _ticker.getRelMillisecs();
 			renderer->clear();
 			double f2 = _ticker.getRelMillisecs();
-			if(renderer->drawScene(nullptr) != true) return 0;
+			/* if(TARGET_BACKEND != BACKEND_VK) if(renderer->drawScene(nullptr) != true) return 0;
+			else */ renderer->draw(&actor);
 			double f3 = _ticker.getRelMillisecs();
 			renderer->present();
 			double f4 = _ticker.getRelMillisecs();
 
-			frameTotal += f1 + f2 + f3 + f4;
+			/* frameTotal += f1 + f2 + f3 + f4;
 			  if(f1 + f2 + f3 + f4 > frameTotal / renderer->getFrameCount())
 			 	std::cout << "Frame times: "
 			 	<< f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
 			 	<< " Total: " << f1 + f2 + f3 + f4
-			   << " | Average: " << frameTotal / renderer->getFrameCount() << std::endl;
+			   << " | Average: " << frameTotal / renderer->getFrameCount() << std::endl; */
         // }
 	}
 
