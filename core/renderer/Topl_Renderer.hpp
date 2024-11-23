@@ -91,12 +91,6 @@ struct Topl_Viewport {
 #define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000
 #define INVALID_RENDERID (unsigned long)- 1
 
-#define CLEAR_COLOR_CODE 0xFF000000// 0xFF4A412A // hexadecimal version of clear color
-#define CLEAR_R 0.1F // 0.290196F // red clear color code
-#define CLEAR_G 0.1F // 0.254902F // green clear color code
-#define CLEAR_B 0.25F // 0.164706F // blue clear color code
-#define CLEAR_A 1.0F // used for alpha channel clear color
-
 #define BUILD_BIT 0  // switch to true when build operation succeeds in _flags
 #define PIPELINE_BIT 1 // switch to true when pipeline creation succeeds in _flags
 #define DRAWN_BIT 2 // switch to true after draw call and false after front/back buffer swap in _flags
@@ -136,6 +130,7 @@ protected:
 
     std::bitset<4> _flags; // tracks important states within renderer
     std::thread _threads[4]; // worker threads for allowing concurrent operations
+    Vec4f _clearColors = Vec4f({ 0.1f, 0.1f, 0.1f, 1.0f });
 	NATIVE_PLATFORM_CONTEXT* _platformCtx; // system specific context
     entry_shader_cptr _entryShader; // entry shader specifies vertex layout and uniforms passed to shader
     blockBytes_t _sceneBlockData, _actorBlockData, _meshBlockData; // shader block data contains bytes passed to GPU

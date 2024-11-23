@@ -156,7 +156,7 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
 }
 
 void Topl_Renderer_GL4::clear() {
-	glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A);
+	glClearColor(_clearColors[0], _clearColors[1], _clearColors[2], _clearColors[3]);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 

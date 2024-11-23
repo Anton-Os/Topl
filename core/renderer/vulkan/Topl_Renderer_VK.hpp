@@ -7,10 +7,11 @@
 class Topl_Renderer_VK : public Topl_Renderer {
 public:
 	Topl_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context){
+		_flags[DRAW_ORDER_BIT] = DRAW_NORMAL;
 		init(context->window);
-
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
+		_clearColors = Vec4f({ 0.5F, 0.0F, 0.0F, 1.0F });
 	}
 	~Topl_Renderer_VK();
 

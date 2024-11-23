@@ -7,9 +7,9 @@ public:
 	Topl_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context){
 		_flags[DRAW_ORDER_BIT] = DRAW_INVERSE;
 		init(context->window);
-
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
+		_clearColors = Vec4f({ 0.0F, 0.0F, 0.5F, 1.0F });
 	}
 	~Topl_Renderer_DX11();
 
@@ -35,7 +35,6 @@ protected:
 #endif
 	void setConstBufferData(ID3D11Buffer* buffer, unsigned short binding);
 
-	const float _clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	DX11::Pipeline* _pipeline = nullptr;
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data

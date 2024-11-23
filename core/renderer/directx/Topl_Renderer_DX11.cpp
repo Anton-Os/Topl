@@ -226,7 +226,7 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 }
 
 void Topl_Renderer_DX11::clear() {
-	const float clearColor[] = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
+	const float clearColor[] = {_clearColors[0], _clearColors[1], _clearColors[2], _clearColors[3] };
 	_deviceCtx->ClearRenderTargetView(_rtView, clearColor);
 	_deviceCtx->ClearDepthStencilView(_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 }

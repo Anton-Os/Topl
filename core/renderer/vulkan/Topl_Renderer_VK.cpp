@@ -533,10 +533,9 @@ Topl_Renderer_VK::~Topl_Renderer_VK() {
 }
 
 void Topl_Renderer_VK::clear(){
-    logMessage("Clear started");
     vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo);
 
-    VkClearColorValue clearColor = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
+    VkClearColorValue clearColor = { _clearColors[0], _clearColors[1], _clearColors[2], _clearColors[3] };
     VkClearValue clearValue = {};
     clearValue.color = clearColor;
     clearValue.depthStencil = { 1.0f, 0 };
@@ -551,7 +550,6 @@ void Topl_Renderer_VK::clear(){
         vkCmdClearColorImage(_commandBuffers[0], _swapchainImages[i], VK_IMAGE_LAYOUT_GENERAL, &clearColor, 1, &imgRange);
 
     if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
-    logMessage("Clear ended");
 }
 
 void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
@@ -664,7 +662,6 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	submitInfo.pCommandBuffers = _commandBuffers.data();
 
 	if(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue submission failure!\n");
-    else logMessage("Queue submission success!");
 
 	// Presentation
 
@@ -680,14 +677,13 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	presentInfo.pResults = nullptr;
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
-    else logMessage("Queue presentation success!");
 }
 
 #ifdef RASTERON_H
 
 Img_Base Topl_Renderer_VK::frame() {
 	_frameImage = Img_Base();
-	_frameImage.setColorImage(CLEAR_COLOR_CODE);
+	// _frameImage.setColorImage(CLEAR_COLOR_CODE);
 	return _frameImage;
 }
 

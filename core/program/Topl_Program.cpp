@@ -191,7 +191,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
 
 	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	if((Topl_Program::pickerColor & 0x00FFFFFF) == (CLEAR_COLOR_CODE & 0x00FFFFFF)) 
+	if((Topl_Program::pickerColor & 0x00FFFFFF) == 0xFFFFFF)// (0xFF000000 & 0x00FFFFFF)) 
 		Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
 		Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
