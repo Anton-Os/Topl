@@ -41,13 +41,10 @@ MAIN_ENTRY {
 	double swapTime = 0.0;
 
 	std::cout << "Scene building" << std::endl;
-	if(TARGET_BACKEND != BACKEND_VK){
-		scene.addGeometry(&actor);
-		triangle.drawMode = (TARGET_BACKEND == BACKEND_GL4)? DRAW_Points : DRAW_Patch;
-		triangle.instanceCount = 10;
-		triangle.tessLevel = 10;
-		renderer->buildScene(&scene);
-	}
+	scene.addGeometry(&actor);
+	triangle.instanceCount = 10;
+	triangle.tessLevel = 10;
+	renderer->buildScene(&scene);
 
 	std::cout << "Rendering loop" << std::endl;
 	while(platform.handleEvents()){

@@ -3,6 +3,8 @@
 #define ENABLE_DEBUG_LAYERS
 #endif
 
+#define ENABLE_VULKAN_DEPTH true
+
 #define VK_PROTOTYPES
 #ifdef _WIN32
     #define VK_USE_PLATFORM_WIN32_KHR
@@ -22,8 +24,13 @@ namespace VK {
 
     struct Buffer : public Topl_Buffer { 
         Buffer() : Topl_Buffer(){} 
+        Buffer(unsigned id, enum BUFF_Type t, VkBuffer b, VkDeviceMemory m) : Topl_Buffer(id, t){ 
+            buffer = b; 
+            memory = m;
+        }
 
-        VkBuffer* buffer = {};
+        VkBuffer buffer = {};
+        VkDeviceMemory memory = {};
     };
 
     // Texture

@@ -15,6 +15,8 @@ namespace DX11 {
         Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b) : Topl_Buffer(id, t) { buffer = b; }
         Buffer(unsigned id, enum BUFF_Type t, ID3D11Buffer* b, unsigned c) : Topl_Buffer(id, t, c) { buffer = b; }
 
+        // ~Buffer(){ buffer->Release(); }
+
         ID3D11Buffer* buffer; // DirectX buffer
     };
 
@@ -29,6 +31,11 @@ namespace DX11 {
         Texture(unsigned id, unsigned short b, enum TEX_Frmt f, enum TEX_Mode m, ID3D11SamplerState* s, ID3D11ShaderResourceView* r) : Topl_Texture(id, b, f, m) {
             sampler = s; resource = r;
         }
+
+        /* ~Texture(){
+            sampler->Release();
+            resource->Release();
+        } */
 
         ID3D11SamplerState* sampler = nullptr;
         ID3D11ShaderResourceView* resource = nullptr;

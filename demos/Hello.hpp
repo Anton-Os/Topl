@@ -16,6 +16,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
         setPipeline(&geoPipeline);
+		setDrawMode(DRAW_Points);
 	}
 
 	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
@@ -37,6 +38,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
 		setPipeline(&fullPipeline);
+		setDrawMode(DRAW_Patch);
 	}
 
 	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
@@ -54,6 +56,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 struct Hello_Renderer_VK : public Topl_Renderer_VK {
 	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context)
 	: Topl_Renderer_VK(context){
+		setDrawMode(DRAW_Triangles);
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;

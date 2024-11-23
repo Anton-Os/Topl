@@ -2,8 +2,6 @@
 
 // Renderer
 
-#define ENABLE_VULKAN_DEPTH true
-
 class Topl_Renderer_VK : public Topl_Renderer {
 public:
 	Topl_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer(context){
