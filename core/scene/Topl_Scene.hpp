@@ -9,6 +9,7 @@
 #include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
+// #include "Geo_Construct.hpp"
 
 #include "images/Img.h"
 #include "images/Img_UI.h"
@@ -62,15 +63,21 @@ typedef const Topl_Camera* const camera_cptr;
 class Topl_Scene {
 public:
 	Topl_Scene() { _ticker.reset(); } // Empty Constructor
-	/* Topl_Scene(const std::string& filePath) { // File Load Constructor
-		// loadFromFile(filePath); 
+	Topl_Scene(std::initializer_list<Geo_Actor*> actors){ // Actors Constuctor
+		for(auto a = actors.begin(); a != actors.end(); a++) addGeometry(*a);
+		_ticker.reset();
+	}
+	/* Topl_Scene(std::initializer_list<Geo_Construct*> constructs){ // Constructs Constuctor
+		for(auto c = constructs.begin(); c != constructs.end(); c++) (*c)->configure(this);
+		_ticker.reset();
 	} */
+	// Topl_Scene(const std::string& filePath) { loadFromFile(filePath); } // File Load Constructor
 	~Topl_Scene() {}
 
 	// void saveToFile(const std::string& fileName); // saves scene data to .tp file
 	// void loadFromFile(const std::string& filePath); // loads scene data from .tp file
 
-	// Static Operations
+	// Basic Operations
 
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry

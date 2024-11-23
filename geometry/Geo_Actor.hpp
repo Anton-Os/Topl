@@ -31,6 +31,13 @@ public:
 #endif
 		_mesh = mesh;
 	}
+	Geo_Actor(const std::string& name, const Geo_Mesh* mesh) {
+#ifdef RASTERON_H
+		_id = color_unique();
+#endif
+		_name = name;
+		_mesh = mesh;
+	}
 	Geo_Actor(const Geo_Actor& actor){
 		_id = actor.getId();
 		_name = actor.getName();
@@ -76,7 +83,7 @@ public:
 	// Add physics object?
 private:
 	// Data types
-	unsigned _id = DEFAULT_ACTOR_ID; // id used for color picking
+	unsigned _id = rand() % (256 * 256); // id used for color picking
 	std::string _name = DEFAULT_ACTOR_NAME; // user-friendly name
 	const Geo_Mesh* _mesh = nullptr; // mesh stored internally
 

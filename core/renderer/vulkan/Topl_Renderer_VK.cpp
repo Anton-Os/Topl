@@ -50,7 +50,7 @@ namespace VK {
 		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		// bufferCreateInfo.pNext = nullptr;
 		// bufferCreateInfo.flags = 0;
-		bufferCreateInfo.size = 3;
+		bufferCreateInfo.size = size;
 		bufferCreateInfo.usage = usage;
 		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		// bufferCreateInfo.queueFamilyIndexCount = 0;
@@ -605,80 +605,14 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
-	// Implement swapping buffers
-	_flags[DRAWN_BIT] = true;
-}
-
-void Topl_Renderer_VK::build(const Geo_Actor* actor){
-    if(actor == SCENE_RENDERID){
-        logMessage("Build scene data! Add global data");
-    } else {
-        unsigned long renderID = getRenderID(actor);
-		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
-
-        VkBuffer vertexBuff;
-        VkDeviceMemory vertexBuffMemory;
-        _flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, &vertexBuff, &vertexBuffMemory, mesh->getVertexCount() * sizeof(Geo_Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-
-        // TODO: Map and populate data
-
-        _vertexBufferMap.insert({ renderID, VK::Buffer(renderID, BUFF_Vertex_Type, vertexBuff, vertexBuffMemory) });
-    }
-}
-
-void Topl_Renderer_VK::update(const Geo_Actor* actor){
-	// TODO: Implement this
-}
-
-
-void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
-	_drawMode = mode;
-
-	_inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	_inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
-
-	switch(_drawMode) {
-	case DRAW_Points: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
-	case DRAW_Lines: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
-	case DRAW_Triangles: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
-	case DRAW_Fan: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN; break;
-	case DRAW_Strip: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; break;
-	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported yet!\n");
-	}
-}
-
-void Topl_Renderer_VK::draw(const Geo_Actor* actor){
-	vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
 	vkResetFences(_logicDevice, 1, &_inFlightFence);
 
 	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
 		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
-    else logMessage("Successfully aquired image " + std::to_string(_swapImgIdx));
+    // else logMessage("Successfully aquired image " + std::to_string(_swapImgIdx));
 
-	// Recording
-
-	// vkResetCommandBuffer(_commandBuffers[0], 0);
-	/* if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
-
-	VkRenderPassBeginInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
-	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-	// TODO: Draw all relevant data
-	unsigned long renderID = _renderTargetMap[actor];
-	// if(renderID == SCENE_RENDERID) { }
-	// else { vkCmdDraw(_commandBuffers[0], ...)}
-
-	vkCmdEndRenderPass(_commandBuffers[0]);
-
-	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n"); */
-
-	// Submitting
-
-	VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
+    VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
 	VkSemaphore signalSemaphores[] = { _renderFinishSemaphore };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT }; // { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
@@ -708,6 +642,80 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 	presentInfo.pResults = nullptr;
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
+
+	_flags[DRAWN_BIT] = true;
+}
+
+void Topl_Renderer_VK::build(const Geo_Actor* actor){
+    if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
+    else {
+        unsigned long renderID = getRenderID(actor);
+		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
+
+        VkBuffer vertexBuff;
+        VkDeviceMemory vertexBuffMemory;
+        _flags[BUILD_BIT] = VK::createBuff(&_physicalDevices[0], &_logicDevice, &vertexBuff, &vertexBuffMemory, mesh->getVertexCount() * sizeof(Geo_Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+        void* data;
+        vkMapMemory(_logicDevice, vertexBuffMemory, 0, mesh->getVertexCount() * sizeof(Geo_Vertex), 0, &data);
+        memcpy(data, mesh->getVertices(), mesh->getVertexCount() * sizeof(Geo_Vertex));
+        vkUnmapMemory(_logicDevice, vertexBuffMemory);
+
+        _vertexBufferMap.insert({ renderID, VK::Buffer(renderID, BUFF_Vertex_Type, vertexBuff, vertexBuffMemory) });
+    }
+}
+
+void Topl_Renderer_VK::update(const Geo_Actor* actor){
+	// TODO: Implement this
+}
+
+
+void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
+	_drawMode = mode;
+
+	_inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	_inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+	switch(_drawMode) {
+	case DRAW_Points: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
+	case DRAW_Lines: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
+	case DRAW_Triangles: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
+	case DRAW_Fan: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN; break;
+	case DRAW_Strip: _inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; break;
+	default: return logMessage(MESSAGE_Exclaim, "Draw type not supported yet!\n");
+	}
+}
+
+void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+    static VkDeviceSize offsets[] = { 0 };
+    unsigned long renderID = _renderTargetMap[actor];
+
+    // vkResetCommandBuffer(_commandBuffers[0], 0);
+	/* if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
+	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	// TODO: Draw all relevant data
+	unsigned long renderID = _renderTargetMap[actor];
+	// if(renderID == SCENE_RENDERID) { }
+	// else { vkCmdDraw(_commandBuffers[0], ...)}
+
+	vkCmdEndRenderPass(_commandBuffers[0]);
+
+	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n"); */
+
+    if(renderID == SCENE_RENDERID) logMessage("Handle scene data!");
+    else if(actor->isShown && actor->getMesh() != nullptr) {
+        if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) 
+            vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
+
+        vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+    }
 }
 
 #ifdef RASTERON_H

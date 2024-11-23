@@ -42,8 +42,10 @@ void Molecular_Demo::loop(double frameTime){
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
-            for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)
+            for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++){
+                // TODO: Set light and other parameters
                 _renderer->draw(constructs[m][c].getGeoActor(o));
+            }
 }
 
 MAIN_ENTRY {

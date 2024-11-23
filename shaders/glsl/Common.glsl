@@ -53,7 +53,7 @@ layout(location = 3) in vec3 vert_color;
 // Functions
 
 uvec4 getModes(uint mode){
-	return uvec4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
+	return uvec4(mode % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
 
 /* vec4 getRandColor(vec4 seedColor){

@@ -56,7 +56,7 @@ struct VS_INPUT {
 // Functions
 
 uint4 getModes(uint mode){
-	return uint4(mode % 10, (mode - (mode % 10)) / 10, (mode - (mode % 100)) / 100, (mode - (mode % 1000)) / 1000);
+	return uint4(mode % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
 
 float sum(float3 data){

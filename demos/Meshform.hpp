@@ -3,7 +3,7 @@
 
 #include "program/Topl_Program.hpp"
 
-#define MESHFORM_SIZE 1.0
+#define MESHFORM_SIZE 0.45
 #define MESHFORM_TESS 8
 
 Vec3f spikeTForm(Vec3f target, Vec3f amount){
@@ -38,13 +38,13 @@ struct Meshform_Demo : public Topl_Program {
         trigOrb->drawMode = DRAW_Triangles;
         quadOrb->tesselate(MESHFORM_TESS);
         // quadOrb->drawMode = DRAW_Fan;
-        quadOrb->modify(spikeTForm, Vec3f({ 1.05F, 1.05F, 1.05F }));
+        // quadOrb->modify(spikeTForm, Vec3f({ 1.05F, 1.05F, 1.05F }));
         hexOrb->tesselate(MESHFORM_TESS);
         // hexOrb->drawMode = DRAW_Strip;
-        hexOrb->modify(waveTForm, Vec3f({ 0.01F, 0.01F, 0.01F }));
+        // hexOrb->modify(waveTForm, Vec3f({ 0.01F, 0.01F, 0.01F }));
         decOrb->tesselate(MESHFORM_TESS);
         // decOrb->drawMode = DRAW_Lines;
-        decOrb->modify(elongTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
+        // decOrb->modify(elongTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
     }
 
     void init() override;

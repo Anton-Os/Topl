@@ -4,7 +4,7 @@
 
 #include "scene/Topl_Scene.hpp"
 
-enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval };
+enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval, SHDR_Compute };
 
 enum SHDR_ValueType {
 	SHDR_float, SHDR_float_vec2, SHDR_float_vec3, SHDR_float_vec4,

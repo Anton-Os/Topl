@@ -9,7 +9,7 @@ public:
 		init(context->window);
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
-		_clearColors = Vec4f({ 0.0F, 0.5F, 0.0F, 1.0F });
+		_clearColors = Vec4f({ 0.25F, 1.0F, 0.25F, 1.0F });
 	}
 	~Topl_Renderer_GL4();
 

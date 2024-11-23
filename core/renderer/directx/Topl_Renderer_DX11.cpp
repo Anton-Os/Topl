@@ -331,8 +331,8 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 			}
 		}
 	}
-	else if(renderID != SCENE_RENDERID && actor->isShown) { // Drawable Target
-		if(actor->getMesh() != nullptr) if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
+	else if(actor->getMesh() != nullptr && actor->isShown) { // Drawable Target
+		if(actor->getMesh()->drawMode != DRAW_Default) setDrawMode(actor->getMesh()->drawMode);
 		// Data & Buffer Updates
 
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) setConstBufferData(_blockBufferMap.at(renderID).buffer, RENDER_BLOCK_BINDING);

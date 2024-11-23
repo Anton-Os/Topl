@@ -147,14 +147,7 @@ struct Img_Volume : public Img_Target {
 	unsigned getDepth() const { return depth; }
 private:
 	void setData(){
-		if(queue == nullptr){
-			queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
-			for(unsigned f = 0; f < depth; f++){
-				Rasteron_Image* solidImg = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color_level(0xFFFFFFFF, (1.0 / depth) * f));
-				queue_addImg(queue, solidImg, f);
-				RASTERON_DEALLOC(solidImg);
-			} 
-		}
+		if(queue == nullptr) populate();
 		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
 		for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){
 			Rasteron_Image* sliceImg = queue_getImg(queue, p / (width * depth));
@@ -162,6 +155,16 @@ private:
 		}
 		volumeTexImg.setImage(compositeImg);
 		RASTERON_DEALLOC(compositeImg);
+	}
+
+	void populate(){
+		if(queue != nullptr) RASTERON_QUEUE_DEALLOC(queue);
+		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
+		for(unsigned f = 0; f < depth; f++){
+			Rasteron_Image* solidImg = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color_level(0xFFFFFFFF, (1.0 / depth) * f));
+			queue_addImg(queue, solidImg, f);
+			RASTERON_DEALLOC(solidImg);
+		} 
 	}
 
 	void cleanup() override {
