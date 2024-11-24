@@ -51,6 +51,7 @@ namespace DX11 {
             if(hullShader != nullptr) hullShader->Release(); if(hsBlob != nullptr) hsBlob->Release();
             if(domainShader != nullptr) domainShader->Release(); if(dsBlob != nullptr) dsBlob->Release();
             if(geomShader != nullptr) geomShader->Release(); if(gsBlob != nullptr) gsBlob->Release();
+            if(computeShader != nullptr) computeShader->Release(); if(csBlob != nullptr) csBlob->Release();
         }
 
         ID3D11VertexShader* vertexShader = nullptr;
@@ -58,8 +59,9 @@ namespace DX11 {
         ID3D11GeometryShader* geomShader = nullptr;
         ID3D11HullShader* hullShader = nullptr;
         ID3D11DomainShader* domainShader = nullptr;
+        ID3D11ComputeShader* computeShader = nullptr;
         
-        ID3DBlob *vsBlob, *psBlob, *hsBlob, *dsBlob, *gsBlob = nullptr;
+        ID3DBlob *vsBlob, *psBlob, *hsBlob, *dsBlob, *gsBlob, *csBlob = nullptr;
     };
 
 

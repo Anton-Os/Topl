@@ -42,6 +42,7 @@ namespace GL4 {
         GLuint geomShader;
         GLuint tessCtrlShader;
         GLuint tessEvalShader;
+        GLuint computeShader;
     };
 
     // Functions

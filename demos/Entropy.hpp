@@ -19,7 +19,7 @@
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
         backdropActor.setPos({ 0.0F, 0.0F, -1.0F });
-        backdropActor.isShown = false;
+
         for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
             switch(a % 4){
                 case ENTROPIC_TRIG: surface_actors[a] = Geo_Actor(&trigs[a / 4]); conic_actors[a] = Geo_Actor(&trigsCones[a / 4]); volume_actors[a] = Geo_Actor(&trigs3D[a / 4]); break;

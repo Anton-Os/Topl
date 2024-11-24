@@ -4,7 +4,8 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 8
+#define MESHFORM_TESS 1
+#define MESHFORM_INDEX 1
 
 Vec3f spikeTForm(Vec3f target, Vec3f amount){
     static unsigned svCount = 0;
@@ -34,28 +35,37 @@ Vec3f elongTForm(Vec3f target, Vec3f amount){
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){
-        trigOrb->tesselate(MESHFORM_TESS);
-        trigOrb->drawMode = DRAW_Triangles;
-        quadOrb->tesselate(MESHFORM_TESS);
-        // quadOrb->drawMode = DRAW_Fan;
-        // quadOrb->modify(spikeTForm, Vec3f({ 1.05F, 1.05F, 1.05F }));
-        hexOrb->tesselate(MESHFORM_TESS);
-        // hexOrb->drawMode = DRAW_Strip;
-        // hexOrb->modify(waveTForm, Vec3f({ 0.01F, 0.01F, 0.01F }));
-        decOrb->tesselate(MESHFORM_TESS);
-        // decOrb->drawMode = DRAW_Lines;
-        // decOrb->modify(elongTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
+        if(MESHFORM_TESS > 0)
+            for(unsigned o = 0; o < 3; o++){
+                trigOrbs[o]->tesselate(MESHFORM_TESS);
+                quadOrbs[o]->tesselate(MESHFORM_TESS);
+                hexOrbs[o]->tesselate(MESHFORM_TESS);
+                decOrbs[o]->tesselate(MESHFORM_TESS);
+            }
+
+        trigOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 1.5F, 1.5F }));
+        trigOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
+        quadOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 0.0F, 0.0F }));
+        quadOrbs[2]->modify(waveTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
+        hexOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 1.5F, 0.0F }));
+        hexOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
+        decOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 0.0F, 1.5F }));
+        decOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
     }
 
     void init() override;
     void loop(double frameTime) override;
 
-    Geo_TrigOrb* trigOrb = new Geo_TrigOrb(MESHFORM_SIZE);
-    Geo_QuadOrb* quadOrb = new Geo_QuadOrb(MESHFORM_SIZE);
-    Geo_HexOrb* hexOrb = new Geo_HexOrb(MESHFORM_SIZE);
-    Geo_DecOrb* decOrb = new Geo_DecOrb(MESHFORM_SIZE);
+    Geo_TrigOrb* trigOrbs[3] = { new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE) };
+    Geo_QuadOrb* quadOrbs[3] = { new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE) };
+    Geo_HexOrb* hexOrbs[3] = { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) };
+    Geo_DecOrb* decOrbs[3] = { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) };
 
-    Geo_Actor orbActors[4] = { trigOrb, quadOrb, hexOrb, decOrb };
+    Geo_Actor orbActors[3][4] = {
+        { trigOrbs[0], quadOrbs[0], hexOrbs[0], decOrbs[0] },
+        { trigOrbs[1], quadOrbs[1], hexOrbs[1], decOrbs[1] },
+        { trigOrbs[2], quadOrbs[2], hexOrbs[2], decOrbs[2] }
+    };
 #ifdef RASTERON_H
     Img_Volume volumeImg = Img_Volume(256);
 #endif

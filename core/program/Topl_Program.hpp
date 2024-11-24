@@ -91,18 +91,12 @@ protected:
 
 	void cleanup();
 
-	/* void build_run(const Topl_Scene* scene);
-	void update_run(const Topl_Scene* scene);
-	void texturize_run(const Topl_Scene* scene);
-	void draw_run(const Topl_Scene* scene); */
-
-	std::thread _threads[4]; // worker threads for allowing concurrent operations
-
 	// Rendering
 	const enum BACKEND_Target _backend;
 	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
 
+	// Pipelines & Shaders
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_dynamicPipeline; // for easy reuse
 
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
@@ -112,4 +106,18 @@ protected:
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
 	Dynamic_VertexShader _dynamicVShader; Dynamic_PixelShader _dynamicPShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
+private:
+	// Scenes, Geometry & Targets
+	struct Background {
+		/* Geo_Quad2D mesh;
+		Geo_Actor actor;
+		Geo_Scene scene;
+		Topl_Camera camera; */
+	} _background;
+
+	struct Overlays {
+		/* std::vector<Geo_Billboard> billboards; 
+		Geo_Scene scene;
+		Topl_Camera camera; */
+	} _overlays;
 };

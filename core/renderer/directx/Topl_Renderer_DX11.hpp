@@ -20,8 +20,8 @@ public:
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(DX11::Pipeline* pipeline);
-	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr hullShader, shader_cptr domainShader);
+	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader);
+	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, shader_cptr gShader, shader_cptr hShader, shader_cptr dShader);
 #ifdef RASTERON_H
     Img_Base frame() override;
 #endif

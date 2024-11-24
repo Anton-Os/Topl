@@ -88,5 +88,6 @@ void main() {
 
 	if(abs(mode) >= 10 && abs(mode) < 20) color = vec4(juliaSet(target * FRACTAL_SIZE), 1.0f);
 	else if(abs(mode) >= 20 && abs(mode) < 30) color = vec4(powerSet((target + vec2(0.5, 0.5)) * FRACTAL_SIZE), 1.0f);
+	// else if(abs(mode) >= 30 && abs(mode) < 40) color = vec4(noise3(target), 1.0f);
 	else color = vec4(mandlebrotSet(target * FRACTAL_SIZE), 1.0f); // fractal mode
 }

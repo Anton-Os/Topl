@@ -67,6 +67,7 @@ public:
 	}
 
 	void tesselate(unsigned short tessCount){
+		if(tessCount == 0) return;
 		unsigned short svCount, siCount;
 
 		for(unsigned l = 0; l < tessCount; l++){
