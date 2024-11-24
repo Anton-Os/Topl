@@ -43,7 +43,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	uint intensity = modes[2] + 1;
 
 	float3 target;
-	if(mode >= 0) target = input.normal; else target = input.pos;
+	if(mode >= 0) target = input.normal; else target = input.vertex_pos;
 	
     float3 lights[3][2];
     if(modes[1] % 3 == 1){ lights[0] = flashLight; lights[1] = lampLight; lights[2] = skyLight; }
@@ -69,18 +69,20 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	if(modes[0] == 1) return float4(ambient, 1.0f); // ambient mode
 	else if(modes[0] == 2) return float4(diffuse, 1.0f); // diffuse mode
 	else if(modes[0] == 3) return float4(specular, 1.0f); // specular mode
-	else if(modes[0] == 4) return float4(lights[0][1], 1.0); // reference mode
-	else if(modes[0] == 5) return float4(lights[0][1] * sin(dot(specular, diffuse)), 1.0); // trig mode
-	else if(modes[0] == 6) return float4(ambient + pow(diffuse, 1.0 / specular), 1.0); // power mode
-	else if(modes[0] == 7) return float4(normalize(lights[0][0]) - normalize(target), 1.0); // inverse mode
-	else if(modes[0] == 8){ // depth mode
+	else if(modes[0] == 4) return float4(ambient + (lights[0][1] * dot(normalize(float3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target))), 1.0); // highlight mode
+	else if(modes[0] == 5) return float4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0); // spot mode
+	// else if(modes[0] == 6) return float4(ambient + pow(diffuse, 1.0 / specular), 1.0); // power mode
+	// else if(modes[0] == 7) return float4(normalize(lights[0][0]) - normalize(target), 1.0); // inverse mode
+	else if(modes[0] == 6){ // depth mode
 		float depth = sqrt(pow(target.x, 2) + pow(target.y, 2) + pow(target.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 	}
-	else if(modes[0] == 9){
+	else if(modes[0] == 7){ // distance mode
 		float3 distVec = lights[0][0] - target - offset;
 		float dist = sqrt(pow(distVec.x, 2) + pow(distVec.y, 2) + pow(distVec.z, 2));
 		return float4(lights[0][1] * (1.0 - (dist * (1.0 / pow(abs(mode), 0.5)))), 1.0 - (dist * (1.0 / pow(abs(mode), 0.5))));
 	}
+	else if(modes[0] == 8) return float4(normalize(cross(lights[0][0] - float3(cam_pos.x, cam_pos.y, cam_pos.z), target)), 1.0); // relative mode
+	else if(modes[0] == 9) return float4(ambient + float3(cos(1.0 / (diffuse.r * specular.r)), sin(1.0 / (specular.g * diffuse.g)), tan(diffuse.b - specular.b)), 1.0); // experimental mode
 	else return float4(ambient + diffuse + specular, 1.0); // all lighting
 }

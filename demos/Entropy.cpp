@@ -66,7 +66,7 @@ void Entropy_Demo::init(){
 }
 
 void Entropy_Demo::loop(double frameTime){
-    // backdropActor.isShown = false;
+    backdropActor.isShown = false;
     _renderer->setDrawMode(DRAW_Triangles);
     _effectVShader.setMode(30);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
@@ -100,7 +100,7 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    _beamsVShader.setMode((shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
+    _beamsVShader.setMode((200 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
     _flatVShader.setMode(shaderMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
@@ -114,7 +114,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

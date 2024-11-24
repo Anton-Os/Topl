@@ -18,7 +18,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out vec3 normal_out;
+layout(location = 1) out vec3 vertex_pos_out;
+layout(location = 2) out vec3 normal_out;
 
 // Main
 
@@ -26,12 +27,9 @@ void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;
 	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
-
-	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
+	vertex_pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 	normal_out = getRotMatrix(rotation) * normal;
 
-	// light_dist_out = pow(pow(offset.x - light_pos_out.x, 2) + pow(offset.y - light_pos_out.y, 2) + pow(offset.z - light_pos_out.z, 2), 0.5);
-	// light_dist_out = pow(pow(light_pos_out.x - (offset.x + pos_out.x), 2) + pow(light_pos_out.y - (offset.y + pos_out.y), 2) + pow(light_pos_out.z - (offset.z + pos_out.z), 2), 0.5);
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
 }

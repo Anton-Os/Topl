@@ -52,14 +52,14 @@ layout(location = 3) in vec3 vert_color;
 
 // Functions
 
-uvec4 getModes(uint mode){
-	return uvec4(mode % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
+uvec4 getModes(int mode){
+	return uvec4(abs(mode) % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
 
 /* vec4 getRandColor(vec4 seedColor){
 	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 56.34);
 
-	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);
+	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);213
 	while(randColor.y > 1.0) randColor.g -= pow(randColor.y, 0.5);
 	while(randColor.z > 1.0) randColor.b -= pow(randColor.z, 0.5);
 	while(randColor.a > 1.0) randColor.a -= pow(randColor.a, 0.5);
