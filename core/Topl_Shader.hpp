@@ -53,6 +53,8 @@ public:
 
 		unsigned short startOffset = 0, includeOffset = 0;
 		while(shaderSrc.find("#include", includeOffset) != std::string::npos){
+			// TODO: Check the include type and replace conditionally based on <> or ""
+
 			startOffset = shaderSrc.find("#include", includeOffset);
 			includeOffset += startOffset + 10; // location of include after the space
 

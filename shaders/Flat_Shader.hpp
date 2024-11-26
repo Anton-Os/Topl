@@ -1,10 +1,15 @@
 #include "Topl_Pipeline.hpp"
 
-#define MAX_FLAT_MODE 3
-
-#define FLAT_MODE_SOLID 0 // default color from id
-#define FLAT_MODE_DIRECTION 1 // determines position on screen
-#define FLAT_MODE_COORD 2 // determines coordiates relative to object
+#define FLAT_ID 0
+#define FLAT_DIRECTIONAL 1
+#define FLAT_COORD 2
+#define FLAT_VERTEX 3
+#define FLAT_CAMERA 4
+#define FLAT_ANGULAR 5
+#define FLAT_TEXCOORD 6
+#define FLAT_SECTIONED 7
+#define FLAT_RANDOM 8
+#define FLAT_TRIAL 9
 
 // Vertex Shaders
 

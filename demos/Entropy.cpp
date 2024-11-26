@@ -100,7 +100,7 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    _beamsVShader.setMode((200 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
+    _beamsVShader.setMode((shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
     _flatVShader.setMode(shaderMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());

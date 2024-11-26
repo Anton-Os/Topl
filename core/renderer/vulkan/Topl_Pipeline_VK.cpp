@@ -1,6 +1,24 @@
 #include "Topl_Renderer_VK.hpp"
 
 namespace VK {
+    std::vector<VkVertexInputAttributeDescription> vertexAttribDescs;
+
+    VkFormat getShaderFormat(enum SHDR_ValueType type) {
+        switch (type) {
+        case SHDR_float_vec4: return VK_FORMAT_R32G32B32A32_SFLOAT;
+        case SHDR_float_vec3: return VK_FORMAT_R32G32B32_SFLOAT;
+        case SHDR_float_vec2: return VK_FORMAT_R32G32_SFLOAT;
+        case SHDR_float: return VK_FORMAT_R32_SFLOAT;
+        case SHDR_uint_vec4: return VK_FORMAT_R8G8B8A8_UINT;
+        case SHDR_uint_vec3: return VK_FORMAT_R8G8B8_UINT;
+        case SHDR_uint_vec2: return VK_FORMAT_R8G8_UINT;
+        case SHDR_uint: return VK_FORMAT_R8_UINT;
+        default:
+            logMessage(MESSAGE_Exclaim, "VK Shader Input Type Not Supported!");
+            return VK_FORMAT_UNDEFINED; // error
+        }
+    }
+
 	void createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc){
 		VkResult result; // error checking variable
 		
@@ -27,13 +45,33 @@ namespace VK {
 	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
 		VkPipelineLayoutCreateInfo layoutInfo = {};
 
-		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputs->vertexBindingDescriptionCount = 0; // TODO: Add vertex bindings
-		vertexInputs->pVertexBindingDescriptions = nullptr;
-		vertexInputs->vertexAttributeDescriptionCount = 0; // TODO: Add vertex attributes
-		vertexInputs->pVertexAttributeDescriptions = nullptr;
+        VkVertexInputBindingDescription vertexBindDesc = {};
+        vertexBindDesc.binding = 0;
+        vertexBindDesc.stride = sizeof(Geo_Vertex);
+        vertexBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // TODO: Should this be contingent on instanced rendering?
 
-		// TODO: Use entry shader to determine layout
+        // VkVertexInputAttributeDescription vertexAttribDescs[4] = { {}, {}, {}, {} };
+        vertexAttribDescs.clear();
+
+        unsigned short inputOffset = 0;
+        for(unsigned inputNum = 0; inputNum < entryShader->getInputCount(); inputNum++){
+            const Shader_Type* shaderType = entryShader->getInputAtIndex(inputNum);
+
+            vertexAttribDescs.push_back({
+                inputNum, inputNum,
+                getShaderFormat(shaderType->type),
+                inputOffset
+            });
+
+            inputOffset += Topl_Pipeline::getOffset(shaderType->type);
+            logMessage("Created input with name " + shaderType->name + " at offset " + std::to_string(inputOffset) + '\n');
+        }
+
+		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputs->vertexBindingDescriptionCount = 1;
+        vertexInputs->pVertexBindingDescriptions = &vertexBindDesc;
+        vertexInputs->vertexAttributeDescriptionCount = entryShader->getInputCount();
+        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs.data();
 
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 0;

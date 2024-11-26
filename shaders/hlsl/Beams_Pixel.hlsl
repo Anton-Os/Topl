@@ -1,6 +1,19 @@
 #define INCLUDE_BLOCK
 #define IGNORE_INPUTS
 
+#define BEAMS_FULL 0
+#define BEAMS_AMBIENT 1
+#define BEAMS_DIFFUSE 2
+#define BEAMS_SPECULAR 3
+#define BEAMS_HIGHLIGHT 4
+#define BEAMS_SPOT 5
+#define BEAMS_DEPTH 6
+#define BEAMS_DISTANCE 7
+#define BEAMS_TRAJECTORY 8
+#define BEAMS_TRIAL 9
+
+// #include <Beams>
+
 #include "Common.hlsl"
 
 // Values
@@ -66,23 +79,21 @@ float4 main(PS_INPUT input) : SV_TARGET{
         }
     }
 
-	if(modes[0] == 1) return float4(ambient, 1.0f); // ambient mode
-	else if(modes[0] == 2) return float4(diffuse, 1.0f); // diffuse mode
-	else if(modes[0] == 3) return float4(specular, 1.0f); // specular mode
-	else if(modes[0] == 4) return float4(ambient + (lights[0][1] * dot(normalize(float3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target))), 1.0); // highlight mode
-	else if(modes[0] == 5) return float4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0); // spot mode
-	// else if(modes[0] == 6) return float4(ambient + pow(diffuse, 1.0 / specular), 1.0); // power mode
-	// else if(modes[0] == 7) return float4(normalize(lights[0][0]) - normalize(target), 1.0); // inverse mode
-	else if(modes[0] == 6){ // depth mode
+	if(modes[0] == BEAMS_AMBIENT) return float4(ambient, 1.0f);
+	else if(modes[0] == BEAMS_DIFFUSE) return float4(diffuse, 1.0f);
+	else if(modes[0] == BEAMS_SPECULAR) return float4(specular, 1.0f);
+	else if(modes[0] == BEAMS_HIGHLIGHT) return float4(ambient + (lights[0][1] * dot(normalize(float3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target))), 1.0);
+	else if(modes[0] == BEAMS_SPOT) return float4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0);
+	else if(modes[0] == BEAMS_DEPTH){ // depth mode
 		float depth = sqrt(pow(target.x, 2) + pow(target.y, 2) + pow(target.z, 2)); // depth calculation
 		return float4(depth, depth, depth, 1.0f);
 	}
-	else if(modes[0] == 7){ // distance mode
+	else if(modes[0] == BEAMS_DISTANCE){ // distance mode
 		float3 distVec = lights[0][0] - target - offset;
 		float dist = sqrt(pow(distVec.x, 2) + pow(distVec.y, 2) + pow(distVec.z, 2));
 		return float4(lights[0][1] * (1.0 - (dist * (1.0 / pow(abs(mode), 0.5)))), 1.0 - (dist * (1.0 / pow(abs(mode), 0.5))));
 	}
-	else if(modes[0] == 8) return float4(normalize(cross(lights[0][0] - float3(cam_pos.x, cam_pos.y, cam_pos.z), target)), 1.0); // relative mode
-	else if(modes[0] == 9) return float4(ambient + float3(cos(1.0 / (diffuse.r * specular.r)), sin(1.0 / (specular.g * diffuse.g)), tan(diffuse.b - specular.b)), 1.0); // experimental mode
+	else if(modes[0] == BEAMS_TRAJECTORY) return float4(normalize(cross(lights[0][0] - float3(cam_pos.x, cam_pos.y, cam_pos.z), target)), 1.0);
+	else if(modes[0] == BEAMS_TRIAL) return float4(ambient + float3(cos(1.0 / (diffuse.r * specular.r)), sin(1.0 / (specular.g * diffuse.g)), tan(diffuse.b - specular.b)), 1.0);
 	else return float4(ambient + diffuse + specular, 1.0); // all lighting
 }

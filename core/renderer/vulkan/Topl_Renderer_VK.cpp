@@ -605,9 +605,6 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
-    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(_logicDevice, 1, &_inFlightFence);
-
 	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
 		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
     // else logMessage("Successfully aquired image " + std::to_string(_swapImgIdx));
@@ -643,6 +640,8 @@ void Topl_Renderer_VK::swapBuffers(double frameTime){
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
 
+    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(_logicDevice, 1, &_inFlightFence);
 	_flags[DRAWN_BIT] = true;
 }
 
@@ -714,7 +713,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
         if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) 
             vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
-        vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+        // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
     }
 }
 
