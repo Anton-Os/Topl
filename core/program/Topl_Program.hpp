@@ -55,7 +55,7 @@ public:
 #else
 	Topl_Program(android_app* app);
 #endif
-	~Topl_Program(){ }
+	~Topl_Program(){ cleanup(); }
 
 	void run();
 #ifdef RASTERON_H
@@ -90,7 +90,9 @@ public:
 #endif
 protected:
     virtual void init() = 0;
+	virtual void preloop();
     virtual void loop(millisec_t frameTime) = 0;
+	virtual void postloop();
 
 	void cleanup();
 
@@ -120,7 +122,7 @@ private:
 
 	// Scenes, Geometry & Targets
 	struct Background {
-        Geo_Quad2D mesh = Geo_Quad2D(10.0F);
+        Geo_Quad2D mesh = Geo_Quad2D(2.0F);
         Geo_Actor actor = Geo_Actor("background", &mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene({ &actor });

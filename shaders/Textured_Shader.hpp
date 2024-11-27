@@ -1,14 +1,15 @@
 #include "Topl_Pipeline.hpp"
 
-#define TEX_MODE_BASE 0 // default base texture
-#define TEX_MODE_LAYER1 1
-#define TEX_MODE_LAYER2 2
-#define TEX_MODE_LAYER3 3
-#define TEX_MODE_LAYER4 4
-#define TEX_MODE_LAYER5 5
-#define TEX_MODE_LAYER6 6
-#define TEX_MODE_LAYER7 7
-#define TEX_MODE_VOLUME 8 // volumetric texture
+#define TEX_BASE 0 // default base texture
+#define TEX_1 1
+#define TEX_2 2
+#define TEX_3 3
+#define TEX_4 4
+#define TEX_5 5
+#define TEX_6 6
+#define TEX_7 7
+#define TEX_VOLUME 8 // volumetric texture
+#define TEX_SLICE 9 // volumetric slice
 
 // TODO: Include more modes
 

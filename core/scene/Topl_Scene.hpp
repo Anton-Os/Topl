@@ -121,7 +121,16 @@ private:
 #endif
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
-	Img_Base _textures[MAX_TEX_BINDINGS] = { Img_Base(0xAA0000FF), Img_Base(0xAA00FF00), Img_Base(0xAAFF0000), Img_Base(0xAA00FFFF), Img_Base(0xAAFF00FF), Img_Base(0xAAFFFF00), Img_Base(0xAAEEEEEE), Img_Base(0xAA333333) };
+	Img_Base _textures[MAX_TEX_BINDINGS] = { 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 2, 2, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 4, 4, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 8, 8, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 16, 16, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 32, 32, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 64, 64, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 128, 128, 0xDD111111, 0xEE111111 })), 
+		Img_Base(checkeredImgOp({ 1024, 1024 }, { 256, 256, 0xDD111111, 0xEE111111 })), 
+	};
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order

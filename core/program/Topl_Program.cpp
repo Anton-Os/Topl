@@ -160,6 +160,7 @@ void Topl_Program::cleanup() {
 #ifdef RASTERON_H
 	for(unsigned f = 0; f < Topl_Program::cachedFrames->frameCount; f++){ // exports frames
 		std::string frameName = "frame" + std::to_string(f + 1) + ".bmp";
+		std::cout << " Writing frame " << frameName << std::endl;
 		Rasteron_Image* frameImg = queue_getImg(Topl_Program::cachedFrames, f);
 		writeFileImageRaw(frameName.c_str(), IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
 	}
@@ -169,6 +170,35 @@ void Topl_Program::cleanup() {
 	// for(unsigned o = 0; o < PROGRAM_OVERLAYS; o++) delete _overlays.billboards[o];
 	delete(_renderer);
 	delete(_platform);
+}
+
+void Topl_Program::preloop(){
+	if(isEnable_background){
+		unsigned pickerColor = colorPicker(&_background.scene);
+		Vec3f pickerCoord = coordPicker(&_background.scene);
+		// if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
+		//	std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
+	}
+
+	if(isEnable_overlays){
+		unsigned pickerColor = colorPicker(&_overlays.scene);
+		Vec3f pickerCoord = coordPicker(&_overlays.scene);
+		// if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
+		//	std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
+	}
+}
+
+void Topl_Program::postloop(){
+#ifdef RASTERON_H
+	static unsigned index = 0;
+
+	if(_renderer->getFrameCount() % 60 == 0){ 
+		Img_Base frameImg = _renderer->frame();
+		queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
+		std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+		index++;
+	}
+#endif
 }
 
 void Topl_Program::run(){
@@ -183,18 +213,15 @@ void Topl_Program::run(){
 		for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
 		if(_renderer != nullptr){
+			// preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-            if(isEnable_background) renderScene(&_background.scene, _beamsPipeline, BEAMS_TRIAL);
+            if(isEnable_background) renderScene(&_background.scene, _texPipeline, TEX_3);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
-            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, 0);
+            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer
+			postloop();
 		}
-#ifdef RASTERON_H
-		/* Img_Base frameImg = _renderer->frame();
-		queue_addImg(Topl_Program::cachedFrames, frameImg.getImage(), _renderer->getFrameCount() % CACHED_FRAME_COUNT);
-		RASTERON_DEALLOC(frameImg.getImage()); */
-#endif
 		/* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
 			Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
 	 	*/
@@ -218,7 +245,6 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	if(scene != nullptr){ 
 		Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
 		if(actor != nullptr){
-			std::cout << "Picker actor is " << actor->getName() << std::endl;
 			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
