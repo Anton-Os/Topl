@@ -55,8 +55,8 @@ static void onAnyKey(char k){
 		else if(k == '+') Topl_Program::shaderMode++;
 		else if(isdigit(k)){
 			switch(tolower(k)){
-				case 0: Topl_Program::activeShader = nullptr;
-				// case 1: Topl_Program::activeShader = &Topl_Progarm::_texVShader; _renderer->setPipeline(Topl_Program::texPipeline) break;
+                case 0: Topl_Program::activeShader = nullptr;
+                // case 1: Topl_Program::activeShader = &Topl_Progarm::_texVShader; _renderer->setPipeline(Topl_Program::texPipeline) break;
 				// case 2: Topl_Program::activeShader = &Topl_Progarm::_flatVShader; _renderer->setPipeline(Topl_Program::flatPipeline) break;
 				// case 3: Topl_Program::activeShader = &Topl_Progarm::_beamsVShader; _renderer->setPipeline(Topl_Program::beamsPipeline) break;
 				// case 4: Topl_Program::activeShader = &Topl_Progarm::_effectVShader; _renderer->setPipeline(Topl_Program::effectPipeline) break;
@@ -127,6 +127,25 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
 	_dynamicPipeline = Topl_Factory::genPipeline(_backend, &_dynamicVShader, &_dynamicPShader);
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+
+    // Geometric Data Generation
+
+    _background.scene.camera = &_background.camera;
+    _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
+    _renderer->buildScene(&_background.scene);
+    _renderer->texturizeScene(&_background.scene);
+
+    /* for(unsigned short o = 0; o < PROGRAM_OVERLAYS; o++)
+        _overlays.billboards[o].configure(&_overlays.scene); */
+	_overlays.billboard_camera.shift({ -0.5, - 0.85F, 0.0F });
+	_overlays.billboard_object.shift({ 0.0F, -0.85F, 0.0F });
+	_overlays.billboard_shader.shift({ 0.5F, -0.85F, 0.0F });
+	for(unsigned short o = 0; o < 3; o++) _overlays.billboards[o]->scale({ 1.0F, 0.33F, 1.0F });
+    _overlays.scene.camera = &_overlays.camera;
+    _renderer->buildScene(&_overlays.scene);
+    _renderer->texturizeScene(&_overlays.scene);
+
+    // Texturing Data Generation
 #ifdef RASTERON_H
 	// Imaging Initialization
 	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
@@ -147,6 +166,7 @@ void Topl_Program::cleanup() {
 	if(Topl_Program::cachedFrames != NULL) RASTERON_QUEUE_DEALLOC(Topl_Program::cachedFrames);
 	cleanupFreeType();
 #endif
+	// for(unsigned o = 0; o < PROGRAM_OVERLAYS; o++) delete _overlays.billboards[o];
 	delete(_renderer);
 	delete(_platform);
 }
@@ -164,9 +184,11 @@ void Topl_Program::run(){
 
 		if(_renderer != nullptr){
 			_renderer->clear(); // clears view to solid color
-			Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Remove Backend component
-			loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
-			_renderer->present(); // switches front and back buffers
+            Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+            if(isEnable_background) renderScene(&_background.scene, _beamsPipeline, BEAMS_TRIAL);
+            loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
+            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, 0);
+            _renderer->present(); // switches front and back buffer
 		}
 #ifdef RASTERON_H
 		/* Img_Base frameImg = _renderer->frame();
@@ -229,6 +251,16 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 	return Topl_Program::pickerCoord;
 }
 #endif
+
+void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, unsigned short mode){
+    Topl_Factory::switchPipeline(_renderer, pipeline);
+	for(unsigned s = 0; s < 6; s++) // TODO: Improve this logic!
+		if(_entryShaders[s]->getFilePath() == pipeline->entryShader->getFilePath()){ _entryShaders[s]->setMode(mode); break; } // find matching pipeline and set mode
+    
+	_renderer->setDrawMode(DRAW_Triangles);
+    _renderer->updateScene(scene);
+    _renderer->drawScene(scene);
+}
 
 /* void Topl_Program::build_run(const Topl_Scene* scene){
 	_threads[0] = std::thread([this](const Topl_Scene* s){ _renderer->buildScene(s); }, scene);

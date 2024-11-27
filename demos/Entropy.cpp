@@ -43,8 +43,8 @@ void Entropy_Demo::init(){
     scene1.camera = &Topl_Program::camera; scene2.camera = &Topl_Program::camera; scene3.camera = &Topl_Program::camera;
     ext_scene1.camera = &Topl_Program::camera; ext_scene2.camera = &Topl_Program::camera; ext_scene3.camera = &Topl_Program::camera;
 
-    backdropScene.addGeometry("Backdrop", &backdropActor);
-    _renderer->buildScene(&backdropScene);
+    // backdropScene.addGeometry("Backdrop", &backdropActor);
+    // _renderer->buildScene(&backdropScene);
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         scene1.addGeometry("actor_surface" + std::to_string(a), &surface_actors[a]);
@@ -66,12 +66,12 @@ void Entropy_Demo::init(){
 }
 
 void Entropy_Demo::loop(double frameTime){
-    backdropActor.isShown = false;
+    /* backdropActor.isShown = false;
     _renderer->setDrawMode(DRAW_Triangles);
     _effectVShader.setMode(30);
     Topl_Factory::switchPipeline(_renderer, _effectPipeline);
     _renderer->updateScene(&backdropScene);
-    _renderer->drawScene(&backdropScene);
+    _renderer->drawScene(&backdropScene); */
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
@@ -100,7 +100,7 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    _beamsVShader.setMode((shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
+    _beamsVShader.setMode((100 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
     _flatVShader.setMode(shaderMode);
     Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
@@ -114,7 +114,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

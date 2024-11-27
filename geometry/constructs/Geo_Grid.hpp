@@ -58,14 +58,14 @@ public:
 	std::string getCellName(unsigned num){ return getPrefix() + "cell" + std::to_string(num); }
 	const Geo_Grid_Params* getParams(){ return &_params; }
 
-	void init(){
+    void init() override {
 		Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
 
 		const unsigned short width = _params.x.first;
 		const float x = _params.x.second;
 		const unsigned short height = _params.y.first;
 		const float y = _params.y.second;
-		const unsigned short depth = _params.z.first;
+		// const unsigned short depth = _params.z.first;
 		const float z = _params.z.second;
 		
 		for(unsigned c = 0; c < _params.getGridSize(); c++){

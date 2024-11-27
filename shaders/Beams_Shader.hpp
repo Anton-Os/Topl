@@ -1,14 +1,15 @@
 #include "Topl_Pipeline.hpp"
 
-#define BEAMS_MODE_LIGHT 0
-#define BEAMS_MODE_AMBIENT 1
-#define BEAMS_MODE_DIFFUSE 2
-#define BEAMS_MODE_SPECULAR 3
-#define BEAMS_MODE_DEPTH 4
-#define BEAMS_MODE_REF 5
-#define BEAMS_MODE_TRIG 6
-// TODO: Include mode 7
-// TODO: Include mode 8
+#define BEAMS_FULL 0
+#define BEAMS_AMBIENT 1
+#define BEAMS_DIFFUSE 2
+#define BEAMS_SPECULAR 3
+#define BEAMS_HIGHLIGHT 4
+#define BEAMS_SPOT 5
+#define BEAMS_DEPTH 6
+#define BEAMS_DISTANCE 7
+#define BEAMS_TRAJECTORY 8
+#define BEAMS_TRIAL 9
 
 // Light
 

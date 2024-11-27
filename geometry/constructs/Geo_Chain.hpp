@@ -31,7 +31,7 @@ public:
 
     std::string getLinkName(unsigned num){ return getPrefix() + "link" + std::to_string(num); }
 
-    void init(){
+    void init() override {
         for(unsigned c = 0; c < _geoActors.size(); c++) _geoActors[c].updatePos(_origin + (_direction * c));
 #ifdef TOPL_ENABLE_PHYSICS
         _links.resize(_geoActors.size() - 1);

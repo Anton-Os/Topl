@@ -10,12 +10,18 @@
 #include "Dynamic_Shader.hpp"
 #include "Advance_Shader.hpp"
 
+#include "constructs/Geo_Billboards.hpp"
+#include "meshes/Geo_Surface.hpp"
+
+#define NO_PICKER_OBJ nullptr
+#define CACHED_FRAME_COUNT 60
+#define PROGRAM_M 0.1f
+#define PROGRAM_OVERLAYS 3
+
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0
 #define TIMELINE_END 60.0 // 1 minute will be default end
-
-#define PROGRAM_M 0.1f
 
 class Topl_Timeline {
 public:
@@ -41,9 +47,6 @@ private:
 	std::vector<float> float_data;
 	std::vector<double> double_data;
 };
-
-#define NO_PICKER_OBJ nullptr
-#define CACHED_FRAME_COUNT 60
 
 class Topl_Program {
 public:
@@ -93,11 +96,10 @@ protected:
 
 	// Rendering
 	const enum BACKEND_Target _backend;
-	Platform* _platform = nullptr;
 	Topl_Renderer* _renderer = nullptr;
+	Platform* _platform;
 
-	// Pipelines & Shaders
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_dynamicPipeline; // for easy reuse
+	// Shaders and Pipelines
 
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
@@ -106,18 +108,30 @@ protected:
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
 	Dynamic_VertexShader _dynamicVShader; Dynamic_PixelShader _dynamicPShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
+
+	Topl_EntryShader* _entryShaders[6] = { &_texVShader, &_beamsVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_dynamicVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_dynamicPipeline; // for easy reuse
+
+    // Options & Properties
+
+    bool isEnable_background = true, isEnable_overlays = true;
 private:
+    void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, unsigned short mode);
+
 	// Scenes, Geometry & Targets
 	struct Background {
-		/* Geo_Quad2D mesh;
-		Geo_Actor actor;
-		Geo_Scene scene;
-		Topl_Camera camera; */
+        Geo_Quad2D mesh = Geo_Quad2D(10.0F);
+        Geo_Actor actor = Geo_Actor("background", &mesh);
+        Topl_Camera camera = Topl_Camera();
+        Topl_Scene scene = Topl_Scene({ &actor });
 	} _background;
 
 	struct Overlays {
-		/* std::vector<Geo_Billboard> billboards; 
-		Geo_Scene scene;
-		Topl_Camera camera; */
+        Topl_Camera camera;
+        Topl_Scene scene;
+		Geo_Gridboard billboard_camera = Geo_Gridboard("prog_camera", 2, &scene);
+		Geo_Gridboard billboard_object = Geo_Gridboard("prog_object", 3, &scene);
+		Geo_Gridboard billboard_shader = Geo_Gridboard("prog_shader", 4, &scene);
+		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 	} _overlays;
 };

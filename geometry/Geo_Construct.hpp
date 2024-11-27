@@ -61,7 +61,8 @@ public:
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].setSize(scaleVec);
     }
 
-    virtual void configure(Topl_Scene* scene) = 0; // function to pass data into  scene
+    virtual void init() = 0; // function to create elements
+    virtual void configure(Topl_Scene* scene) = 0; // function to pass data into scene
 protected:
     Vec3f _origin = Vec3f({ 0.0f, 0.0f, 0.0f });
 

@@ -22,7 +22,7 @@ struct Kaleidoscope_Construct : public Geo_Construct {
         init();
     }
 
-    void init(){
+    void init() override {
         for(unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++){
             // meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, CIRCLE_SEGMENTS + ((s * 64) % CIRCLE_SEGMENTS)});
             // meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, KALEIDOSCOPE_Z);

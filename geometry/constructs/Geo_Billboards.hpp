@@ -1,4 +1,3 @@
-
 #ifndef GEO_LAYOUT_H
 
 #include "meshes/Geo_Surface.hpp"
@@ -27,14 +26,16 @@ public:
 		configure(scene);
 	}
 
-	void init(){
-		rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
-		rootImg.addBorder(0.05, 0xFF222222);
+    void init() override {
 		_geoActors.resize(_params.getGridSize() + 1);
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
+#ifdef RASTERON_H
+        rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
+        rootImg.addBorder(0.05, 0xFF222222);
 		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(copyImgOp(rootImg.getImage())) });
+#endif
 	}
 
 	void configure(Topl_Scene* scene) override {
@@ -47,6 +48,7 @@ public:
 			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p))); 
 #endif
 	}
+
 	void scale(Vec3f scaleVec){
     	for(unsigned g = 0; g < _geoActors.size(); g++) {
 			_geoActors[g].setSize(scaleVec);
@@ -57,10 +59,13 @@ public:
 		// TODO: Adjust images and textures
     }
 
+    // void expandRow(unsigned short index); // combines multiple elements
+    // void expandCol(unsigned short index); // combines multiple elements
+#ifdef RASTERON_H
 	Img_Base* getImgRoot(){ return getImgAt(_params.getGridSize()); }
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
 
-	void resetState(){ // abstract the loop
+    void resetState(){ // abstract the loop
 		unsigned i = 0;
 
 		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
@@ -77,19 +82,19 @@ public:
 
 		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i){
-				if(p->second->getName().find("dial") != std::string::npos){
-					Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*p->second));
-					(dialUI != nullptr)? dialUI->setState(x, y) : std::cout << "Null pointer cast!" << std::endl;
-				}
-				else if(p->second->getName().find("slider") != std::string::npos){
-					Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
-					(sliderUI != nullptr)? sliderUI->setState(x) : std::cout << "Null pointer cast!" << std::endl;
-				}
+                if(p->second->getName().find("dial") != std::string::npos){ // checks for dial match
+                    Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*p->second));
+                    if(dialUI != nullptr) dialUI->setState(x, y);
+                }
+                else if(p->second->getName().find("slider") != std::string::npos){ // checks for slider match
+                    Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
+                    if(sliderUI != nullptr) sliderUI->setState(x);
+                }
 				getImgAt(i)->setImage(p->second->stateImg.getImage());
 			}
 			i++;
 		}
-	}
+    }
 
 	void setState(unsigned paneIndex, bool isSelect){ // abstract the loop
 		unsigned i = 0;
@@ -107,6 +112,7 @@ public:
 		paneItemUI_map.insert({ getGeoActor(paneIndex), element });
 		getImgAt(paneIndex)->setImage(element->stateImg.getImage());
 	}
+#endif
 protected:
 	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);
 	// Geo_Actor childActor = Geo_Actor(&childMesh);

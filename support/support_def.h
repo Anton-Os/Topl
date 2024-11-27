@@ -1,3 +1,5 @@
+#ifndef TOPL_SUPPORT_H
+
 #define ASSETS_DIR "F:/Codex/PROJECT/Topl/master/assets/"
 #define FONTS_DIR "F:/Codex/PROJECT/Topl/master/assets/fonts/"
 #define IMAGES_DIR "F:/Codex/PROJECT/Topl/master/assets/images/"
@@ -11,11 +13,9 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 1
+#if 1 && !defined(__ANDROID__)
     #define RASTERON_ENABLE_ANIM // includes animation support
     #define RASTERON_ENABLE_FONT // includes font support
-    
-    // #include "Toolbox.h"
     #include "Rasteron.h" // includes Rasteron main modules and features
 #endif
 #if 1
@@ -26,4 +26,7 @@
 #endif
 #if TRUE
     #define TOPL_ENABLE_PHYSICS
+#endif
+
+#define TOPL_SUPPORT_H
 #endif

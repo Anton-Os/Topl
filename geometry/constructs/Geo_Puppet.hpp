@@ -29,6 +29,8 @@ struct Geo_Puppet : public Geo_Construct {
         configure(scene);
     }
 
+    void init() override { }
+
     void configure(Topl_Scene* scene) override {
         scene->addGeometry(getPrefix() + "head", &_geoActors[PUPPET_Head]);
         scene->addGeometry(getPrefix() + "body", &_geoActors[PUPPET_Body]);
@@ -73,12 +75,22 @@ struct Geo_Puppet : public Geo_Construct {
 
 #ifdef RASTERON_H
 
-typedef const std::string puppetSpritePaths[PUPPET_PARTS]; // list of paths for loading sprites
+typedef std::string puppetSpritePaths[PUPPET_PARTS]; // list of paths for loading sprites
 
 class Geo_Puppet2D : public Geo_Puppet {
 public:
     // Geo_Puppet2D(const std::string& prefix) : Geo_Puppet(prefix){}
-    Geo_Puppet2D(const std::string& prefix, puppetSpritePaths spriteImgPaths) : Geo_Puppet(prefix){
+    Geo_Puppet2D(const std::string& prefix, puppetSpritePaths paths) : Geo_Puppet(prefix){
+        for(unsigned p = 0; p < PUPPET_PARTS; p++) spriteImgPaths[p] = paths[p];
+        init();
+    }
+    // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
+
+#ifdef RASTERON_H
+    // ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) RASTERON_SPRITE_DEALLOC(sprites[p]); }
+#endif
+
+    void init() override {
         _geoActors.resize(PUPPET_PARTS);
 #ifdef RASTERON_H
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
@@ -98,11 +110,6 @@ public:
         }
 #endif
     }
-    // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
-
-#ifdef RASTERON_H
-    // ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) RASTERON_SPRITE_DEALLOC(sprites[p]); }
-#endif
 
     void configure(Topl_Scene* scene) override {
         Geo_Puppet::configure(scene);
@@ -114,6 +121,7 @@ public:
     }
 
 protected:
+    puppetSpritePaths spriteImgPaths;
     Geo_Quad2D quads[PUPPET_PARTS];
 #ifdef RASTERON_H  
     Img_Base spriteImgs[PUPPET_PARTS];
@@ -132,6 +140,10 @@ class Geo_Puppet3D : public Geo_Puppet, public Geo_Model3D {
 public:
     // Geo_Puppet3D(const std::string& prefix) : Geo_Puppet(prefix){}
     Geo_Puppet3D(const std::string& prefix, const std::string& modelPath) : Geo_Puppet(prefix), Geo_Model3D(prefix, modelPath) {
+        init();
+    }
+
+    void init() override {
         // auto headActor = std::find_if(_geoNodes.begin(); _geoNodes.end(); [](const Geo_NodeActor*& nodeActor){ return nodeActor->getName.find("head") != std::string::npos; });
         for(auto a = _geoNodes.begin(); a != _geoNodes.end(); a++){
             if((*a)->getName().find("Head") != std::string::npos || (*a)->getName().find("head") != std::string::npos)
@@ -139,15 +151,15 @@ public:
             else if((*a)->getName().find("Body") != std::string::npos || (*a)->getName().find("body") != std::string::npos)
                 actors[PUPPET_Body] = *a; // finding body
             else if ((*a)->getName().find("Arm") != std::string::npos || (*a)->getName().find("arm") != std::string::npos) {
-                if ((*a)->getName().find("Left") != std::string::npos || (*a)->getName().find("left") != std::string::npos) 
+                if ((*a)->getName().find("Left") != std::string::npos || (*a)->getName().find("left") != std::string::npos)
                     actors[PUPPET_LeftArm] = *a; // finding left arm
-                else if ((*a)->getName().find("Right") != std::string::npos || (*a)->getName().find("right") != std::string::npos) 
+                else if ((*a)->getName().find("Right") != std::string::npos || (*a)->getName().find("right") != std::string::npos)
                     actors[PUPPET_RightArm] = *a; // finding right arm
             }
             else if ((*a)->getName().find("Leg") != std::string::npos || (*a)->getName().find("leg") != std::string::npos) {
-                if ((*a)->getName().find("Left") != std::string::npos || (*a)->getName().find("left") != std::string::npos) 
+                if ((*a)->getName().find("Left") != std::string::npos || (*a)->getName().find("left") != std::string::npos)
                     actors[PUPPET_LeftLeg] = *a; // finding left leg
-                else if ((*a)->getName().find("Right") != std::string::npos || (*a)->getName().find("right") != std::string::npos) 
+                else if ((*a)->getName().find("Right") != std::string::npos || (*a)->getName().find("right") != std::string::npos)
                     actors[PUPPET_RightLeg] = *a; // finding right leg
             }
         }

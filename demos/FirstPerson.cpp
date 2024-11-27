@@ -115,7 +115,7 @@ void FirstPerson_Demo::loop(double frameTime){
 
 
     {
-        _flatVShader.setMode(FLAT_MODE_COORD);
+        _flatVShader.setMode(FLAT_COORD);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 

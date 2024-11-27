@@ -20,10 +20,16 @@ struct Geo_Vertex {
     }
     Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c) { // full constructor
         position = p;
-		texcoord = t;
+        texcoord = t;
         normal = n;
         color = c;
-	}
+    }
+    Geo_Vertex(const Geo_Vertex& vertex){ // copy constructor
+        position = vertex.position;
+        texcoord = vertex.texcoord;
+        normal = vertex.normal;
+        color = vertex.color;
+    }
 
     Vec3f getTexCoord(Vec3f vertex){ // regular texture coordinates
         Vec3f normVec = vertex;

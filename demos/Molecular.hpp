@@ -7,11 +7,11 @@
 #define MOLECULAR_SIZE 0.15F
 
 struct Molecular_Construct : Geo_Construct {
-    Molecular_Construct(unsigned short nodeCount) : Geo_Construct("Molecular" + std::to_string(rand() % 999)){
-        init(nodeCount);
+    Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n) {
+        init();
     }
 
-    void init(unsigned short nodeCount){
+    void init() override {
         _hub = new Geo_Orb(MOLECULAR_SIZE);
         _hub->drawMode = DRAW_Triangles;
         _geoActors.push_back(Geo_Actor(_hub));
@@ -52,6 +52,8 @@ struct Molecular_Construct : Geo_Construct {
     }
 
 private:
+    const unsigned short nodeCount;
+
     Geo_Orb* _hub;
     std::vector<Geo_Orb*> _orbs;
     std::vector<Geo_Mesh*> _lines;

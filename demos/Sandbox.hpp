@@ -118,6 +118,9 @@ struct Sandbox_Demo : public Topl_Program {
         propsBillboard.scale({ 0.5F, 0.5F, 1.0F });
         propsBillboard.toggleShow(false);
         // propsBillboard.shift({ 0.0F, 0.5F, 0.0F });
+
+        isEnable_background = false;
+        isEnable_overlays = false;
     }
 
     void init() override;

@@ -1,6 +1,5 @@
 #include "program/Topl_Program.hpp"
 
-
 std::map<Vec3f*, std::map<millisec_t, Vec3f>> Topl_Timeline::vec3f_map = std::map<Vec3f*, std::map<millisec_t, Vec3f>>();
 std::map<float*, std::map<millisec_t, float>> Topl_Timeline::float_map = std::map<float*, std::map<millisec_t, float>>();
 std::map<double*, std::map<millisec_t, double>> Topl_Timeline::double_map = std::map<double*, std::map<millisec_t, double>>();
