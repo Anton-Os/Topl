@@ -42,7 +42,7 @@ namespace VK {
 		shaderInfo->pName = "main";
 	}
 
-	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
+	/* VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
 		VkPipelineLayoutCreateInfo layoutInfo = {};
 
         VkVertexInputBindingDescription vertexBindDesc = {};
@@ -80,6 +80,26 @@ namespace VK {
 		layoutInfo.pPushConstantRanges = nullptr;
 
 		return vkCreatePipelineLayout(*device, &layoutInfo, nullptr, pipelineLayout);
+	}  */
+
+	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
+		VkPipelineLayoutCreateInfo layoutInfo = {};
+
+		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputs->vertexBindingDescriptionCount = 0; // TODO: Add vertex bindings
+		vertexInputs->pVertexBindingDescriptions = nullptr;
+		vertexInputs->vertexAttributeDescriptionCount = 0; // TODO: Add vertex attributes
+		vertexInputs->pVertexAttributeDescriptions = nullptr;
+
+		// TODO: Use entry shader to determine layout
+
+		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		layoutInfo.setLayoutCount = 0;
+		layoutInfo.pSetLayouts = nullptr;
+		layoutInfo.pushConstantRangeCount = 0;
+		layoutInfo.pPushConstantRanges = nullptr;
+
+		return vkCreatePipelineLayout(*device, &layoutInfo, nullptr, pipelineLayout);
 	}
 }
 
@@ -92,68 +112,15 @@ void Topl_Renderer_VK::setPipeline(VK::Pipeline* pipeline){
 	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
-void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){
+void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
 	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	VK::createPipelineLayout(&_logicDevice, &_pipelineLayout, &vertexInputInfo, vertexShader);
 
-	std::string vertexShaderSrc = readFileBinary(vertexShader->getFilePath().c_str());
-	std::cout << "Vertex Shader path: " << vertexShader->getFilePath().c_str(); // for testing
-	VkShaderModule vertexShaderModule = {};
-	VK::createShaderModule(&_logicDevice, &vertexShaderModule, vertexShaderSrc);
-	VK::createShaderInfo(&pipeline->vertexSInfo, &vertexShaderModule, VK_SHADER_STAGE_VERTEX_BIT);
-
-	std::string pixelShaderSrc = readFileBinary(pixelShader->getFilePath().c_str());
-	std::cout << "Pixel Shader path: " << pixelShader->getFilePath().c_str(); // for testing
-	VkShaderModule pixelShaderModule = {};
-	VK::createShaderModule(&_logicDevice, &pixelShaderModule, pixelShaderSrc);
-	VK::createShaderInfo(&pipeline->pixelSInfo, &pixelShaderModule, VK_SHADER_STAGE_FRAGMENT_BIT);
-
-	VkPipelineShaderStageCreateInfo shaderStages[2] = { // TODO: Make configurable
-		pipeline->vertexSInfo,
-		pipeline->pixelSInfo
-	};
-
-	pipeline->pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipeline->pipelineInfo.stageCount = 2; // TODO: Make configurable
-	pipeline->pipelineInfo.pStages = shaderStages;
-	pipeline->pipelineInfo.pVertexInputState = &vertexInputInfo;
-	pipeline->pipelineInfo.pInputAssemblyState = &_inputAssemblyInfo;
-	pipeline->pipelineInfo.pViewportState = &_viewportStateInfo;
-	pipeline->pipelineInfo.pRasterizationState = &_rasterStateInfo;
-	pipeline->pipelineInfo.pMultisampleState = &_multisampleInfo;
-	pipeline->pipelineInfo.pDepthStencilState = nullptr; // &_depthStencilInfo;
-	pipeline->pipelineInfo.pColorBlendState = &_colorBlendInfo;
-	pipeline->pipelineInfo.pDynamicState = &_dynamicStateInfo;
-	pipeline->pipelineInfo.layout = _pipelineLayout;
-	pipeline->pipelineInfo.renderPass = _renderPass;
-	pipeline->pipelineInfo.subpass = 0;
-	pipeline->pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-	pipeline->pipelineInfo.basePipelineIndex = 0;
-
-	if(vkCreateGraphicsPipelines(_logicDevice, VK_NULL_HANDLE, 1, &pipeline->pipelineInfo, nullptr, &pipeline->pipeline) == VK_SUCCESS)
-		logMessage("Pipeline creation success\n");
-	else return logMessage("Pipeline creation failure!");
-
-	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
-	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
-
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
-	setPipeline(pipeline);
-}
-
-void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, shader_cptr geomShader, shader_cptr tessCtrlShader, shader_cptr tessEvalShader){
-	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
-		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
-	
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-	VK::createPipelineLayout(&_logicDevice, &_pipelineLayout, &vertexInputInfo, vertexShader);
-
-	unsigned short shaderStageCount = 0;
-	VkPipelineShaderStageCreateInfo shaderStages[5];
+	unsigned short shaderStageCount = 2;
+	VkPipelineShaderStageCreateInfo shaderStages[MAX_PIPELINE_STAGES];
 
 	std::string vertexShaderSrc = readFileBinary(vertexShader->getFilePath().c_str());
 	std::cout << "Vertex Shader path: " << vertexShader->getFilePath().c_str(); // for testing
@@ -169,37 +136,49 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 	VK::createShaderInfo(&pipeline->pixelSInfo, &pixelShaderModule, VK_SHADER_STAGE_FRAGMENT_BIT);
 	shaderStages[1] = pipeline->pixelSInfo;
 
-	VkShaderModule geomShaderModule = {};
-	if(geomShader != nullptr){
+	auto geomShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Geom; });
+	auto tessCtrlShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_TessCtrl; });
+	auto tessEvalShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_TessEval; });
+	auto computeShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Compute; });
+
+	VkShaderModule geomShaderModule = {}; // Geometry Shader
+	if(geomShader != shaders.end()){
 		shaderStageCount++;
 
-		std::string geomShaderSrc = readFileBinary(geomShader->getFilePath().c_str());
-		VkShaderModule geomShaderModule = {};
+		std::string geomShaderSrc = readFileBinary((*geomShader)->getFilePath().c_str());
 		VK::createShaderModule(&_logicDevice, &geomShaderModule, geomShaderSrc);
 		VK::createShaderInfo(&pipeline->geomSInfo, &geomShaderModule, VK_SHADER_STAGE_GEOMETRY_BIT);
 		shaderStages[shaderStageCount] = pipeline->geomSInfo;
 	}
 
-	VkShaderModule tessCtrlShaderModule = {};
-	if(tessCtrlShader != nullptr){
+	VkShaderModule tessCtrlShaderModule = {}; // Tess. Control Shader
+	if(tessCtrlShader != shaders.end()){
 		shaderStageCount++;
 
-		std::string tessCtrlShaderSrc = readFileBinary(tessCtrlShader->getFilePath().c_str());
-		VkShaderModule tessCtrlShaderModule = {};
+		std::string tessCtrlShaderSrc = readFileBinary((*tessCtrlShader)->getFilePath().c_str());
 		VK::createShaderModule(&_logicDevice, &tessCtrlShaderModule, tessCtrlShaderSrc);
 		VK::createShaderInfo(&pipeline->tessCtrlSInfo, &tessCtrlShaderModule, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 		shaderStages[shaderStageCount] = pipeline->tessCtrlSInfo;
 	}
 
-	VkShaderModule tessEvalShaderModule = {};
-	if(tessEvalShader != nullptr){
+	VkShaderModule tessEvalShaderModule = {}; // Tess. Evaluation Shader
+	if(tessEvalShader != shaders.end()){
 		shaderStageCount++;
 
-		std::string tessEvalShaderSrc = readFileBinary(tessEvalShader->getFilePath().c_str());
-		VkShaderModule tessEvalShaderModule = {};
+		std::string tessEvalShaderSrc = readFileBinary((*tessEvalShader)->getFilePath().c_str());
 		VK::createShaderModule(&_logicDevice, &tessEvalShaderModule, tessEvalShaderSrc);
 		VK::createShaderInfo(&pipeline->tessEvalSInfo, &tessEvalShaderModule, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 		shaderStages[shaderStageCount] = pipeline->tessEvalSInfo;
+	}
+
+	VkShaderModule computeShaderModule = {}; // Compute Shader
+	if(tessEvalShader != shaders.end()){
+		shaderStageCount++;
+
+		std::string computeShaderSrc = readFileBinary((*computeShader)->getFilePath().c_str());
+		VK::createShaderModule(&_logicDevice, &computeShaderModule, computeShaderSrc);
+		VK::createShaderInfo(&pipeline->computeSInfo, &computeShaderModule, VK_SHADER_STAGE_COMPUTE_BIT);
+		shaderStages[shaderStageCount] = pipeline->computeSInfo;
 	}
 
 	pipeline->pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -225,6 +204,9 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 
 	vkDestroyShaderModule(_logicDevice, vertexShaderModule, nullptr);
 	vkDestroyShaderModule(_logicDevice, pixelShaderModule, nullptr);
+	if(tessCtrlShader != shaders.end()) vkDestroyShaderModule(_logicDevice, geomShaderModule, nullptr);
+	if(tessEvalShader != shaders.end()) vkDestroyShaderModule(_logicDevice, tessCtrlShaderModule, nullptr);
+	if(geomShader != shaders.end()) vkDestroyShaderModule(_logicDevice, tessEvalShaderModule, nullptr);
 
 	pipeline->entryShader = vertexShader;
 	pipeline->isReady = true;

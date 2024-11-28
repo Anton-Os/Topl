@@ -47,7 +47,7 @@ namespace VK {
         Pipeline() : Topl_Pipeline(){}
         ~Pipeline(){ }
 
-        VkPipelineShaderStageCreateInfo vertexSInfo, pixelSInfo, geomSInfo, tessCtrlSInfo, tessEvalSInfo;
+        VkPipelineShaderStageCreateInfo vertexSInfo, pixelSInfo, geomSInfo, tessCtrlSInfo, tessEvalSInfo, computeSInfo;
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         VkPipeline pipeline = {};

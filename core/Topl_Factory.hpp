@@ -61,14 +61,8 @@ public:
 	~Topl_Factory();
 	static Topl_Renderer* genRenderer(BACKEND_Target backend, Platform* platform);
 
-	static Topl_Pipeline* genPipeline(BACKEND_Target backend, entry_shader_cptr vertexShader, shader_cptr pixelShader);
-	static Topl_Pipeline* genPipeline(BACKEND_Target backend,
-		entry_shader_cptr vertexSource,
-		shader_cptr pixelSource,
-		shader_cptr tessCtrlSource,
-		shader_cptr tessEvalSource,
-		shader_cptr geomSource
-	);
+	static Topl_Pipeline* genPipeline(BACKEND_Target backend, entry_shader_cptr vShader, shader_cptr pShader){ return genPipeline(backend, vShader, pShader, {}); }
+	static Topl_Pipeline* genPipeline(BACKEND_Target backend, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
 
 	static void switchPipeline(Topl_Renderer* renderer, Topl_Pipeline* pipeline);
 private:

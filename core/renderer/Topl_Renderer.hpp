@@ -84,8 +84,6 @@ struct Topl_Viewport {
 
 #define ALL_SCENES nullptr // works for updating everything
 #define MAX_RENDERID 256 * 256 // * 256
-#define MAX_PIPELINES 24 // limits number of unique pipelines
-#define MAX_SHADERS 24 * 5  // limits number of unique shaders
 #define FRAME_CACHE_COUNT 32 // sets number of frames that are cached
 #define FRAME_RATE_SECS 1.0 / 60.0
 #define FRAME_RATE_MILLISECS (1.0 / 60.0) * 1000

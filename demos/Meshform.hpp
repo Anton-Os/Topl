@@ -4,8 +4,8 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 3
-#define MESHFORM_INDEX 1
+#define MESHFORM_TESS 1
+#define MESHFORM_INDEX 0
 
 Vec3f spikeTForm(Vec3f target, Vec3f amount){
     static unsigned svCount = 0;

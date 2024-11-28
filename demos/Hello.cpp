@@ -23,8 +23,6 @@ MAIN_ENTRY {
 	std::cout << "Window creation" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 
-	// Performance Testing
-
 	Topl_Renderer* renderer = nullptr;
 
 	std::cout << "Renderer creation" << std::endl;
@@ -51,8 +49,7 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-		/* if(TARGET_BACKEND != BACKEND_VK) if(renderer->drawScene(nullptr) != true) return 0;
-		else */ renderer->draw(&actor);
+		if(TARGET_BACKEND != BACKEND_VK) renderer->draw(&actor);
 		double f3 = _ticker.getRelMillisecs();
 		renderer->present();
 		double f4 = _ticker.getRelMillisecs();

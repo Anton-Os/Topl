@@ -2,6 +2,10 @@
 
 #include "Topl_Shader.hpp"
 
+#define MAX_PIPELINE_STAGES 6
+#define MAX_PIPELINES 24 // limits number of unique pipelines
+#define MAX_SHADERS 24 * 6  // limits number of unique shaders
+
 struct Topl_Pipeline {
 	Topl_Pipeline() {}
 	Topl_Pipeline(entry_shader_cptr entry) { entryShader = entry; }

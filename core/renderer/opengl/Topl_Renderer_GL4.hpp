@@ -20,8 +20,8 @@ public:
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(GL4::Pipeline* pipeline);
-	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader);
-	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, shader_cptr gShader, shader_cptr tcShader, shader_cptr teShader);
+	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader){ genPipeline(pipeline, vShader, pShader, {}); }
+	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif
@@ -33,7 +33,7 @@ protected:
     void attachTexAt(const Img_Base* imageTex, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
 #endif
-	void linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, shader_cptr gShader, shader_cptr tcShader, shader_cptr teShader);
+	void linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
 	
 	GL4::Pipeline* _pipeline;
 

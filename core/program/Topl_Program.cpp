@@ -225,7 +225,7 @@ void Topl_Program::run(){
 			if(Platform::mouseControl.getIsMouseDown().second) preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-            if(isEnable_background) renderScene(&_background.scene, _texPipeline, TEX_3);
+            if(isEnable_background) renderScene(&_background.scene, _effectPipeline, 21);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer
