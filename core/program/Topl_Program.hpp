@@ -87,6 +87,7 @@ public:
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, Img_Sequence> sequence_map; // for dynamically changing textures
+	bool isEnable_screencap = true;
 #endif
 protected:
     virtual void init() = 0;
@@ -131,9 +132,12 @@ private:
 	struct Overlays {
         Topl_Camera camera;
         Topl_Scene scene;
-		Geo_Gridboard billboard_camera = Geo_Gridboard("prog_camera", 2, &scene);
-		Geo_Gridboard billboard_object = Geo_Gridboard("prog_object", 3, &scene);
-		Geo_Gridboard billboard_shader = Geo_Gridboard("prog_shader", 4, &scene);
+		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 2, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 2, 3, &scene);
+		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 2, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
+#ifdef RASTERON_H
+		Img_Button button = Img_Button(MENU_Medium);
+#endif
 	} _overlays;
 };

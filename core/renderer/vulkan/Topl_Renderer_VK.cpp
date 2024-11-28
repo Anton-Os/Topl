@@ -364,12 +364,22 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     subpassDesc.colorAttachmentCount = 1;
     subpassDesc.pColorAttachments = &colorAttachmentRef;
 
+    /* VkSubpassDependency subpassDependency = {};
+    subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependency.dstSubpass = 0;
+    subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.srcAccessMask = 0;
+    subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; */
+
     VkRenderPassCreateInfo renderPassCreateInfo = {};
     renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassCreateInfo.attachmentCount = 1;
     renderPassCreateInfo.pAttachments = &colorAttachment;
     renderPassCreateInfo.subpassCount = 1;
     renderPassCreateInfo.pSubpasses = &subpassDesc;
+    // renderPassCreateInfo.dependencyCount = 1;
+    // renderPassCreateInfo.pDependencies = &subpassDependency;
 
     result = vkCreateRenderPass(_logicDevice, &renderPassCreateInfo, nullptr, &_renderPass);
     if(result == VK_SUCCESS) logMessage("RenderPass creation success \n");
@@ -492,36 +502,6 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     _commandBufferInfo.pNext = nullptr;
     _commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
     _commandBufferInfo.pInheritanceInfo = nullptr;
-
-    // Command Buffer Execution
-
-    /* VkCommandBufferBeginInfo commandBufferInfo = {};
-    commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    commandBufferInfo.pNext = nullptr;
-    commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-    commandBufferInfo.pInheritanceInfo = nullptr;
-
-    for(unsigned c = 0; c < _commandBuffers.size(); c++)
-        result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
-    if(result == VK_SUCCESS) logMessage("Command buffer execution success \n");
-    else return logMessage(MESSAGE_Exclaim, "Command buffer execution failure! \n");
-
-    VkClearValue clearValues[2];
-    clearValues[0].color = { CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A };
-    clearValues[1].depthStencil = { 1.0f, 0 };
-    VkRect2D screenRect = {{0, 0}, { TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT }};
-
-    VkRenderPassBeginInfo renderPassInfo;
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.pNext = nullptr;
-    // renderPassInfo.renderPass = XXXX; // NEED RENDER PASS!!!
-    renderPassInfo.renderArea = screenRect;
-    renderPassInfo.clearValueCount = 2;
-    renderPassInfo.pClearValues = clearValues;
-    for(unsigned c = 0; c < _commandBuffers.size(); c++){
-        // renderPassInfo.framebuffer = XXXX; // NEED FRAMEBUFFERS!!!
-        result = vkBeginCommandBuffer(_commandBuffers[c], &commandBufferInfo);
-    } */
 
     // Synchronization Object Creation
 
@@ -690,23 +670,16 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
     unsigned long renderID = _renderTargetMap[actor];
 
     // vkResetCommandBuffer(_commandBuffers[0], 0);
-	/* if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
-	VkRenderPassBeginInfo renderPassInfo = {};
+    if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+
+    VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.framebuffer = _framebuffers[0]; // TODO: Determine this dynamically
+	renderPassInfo.framebuffer = _framebuffers[0];
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
-	vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	// TODO: Draw all relevant data
-	unsigned long renderID = _renderTargetMap[actor];
-	// if(renderID == SCENE_RENDERID) { }
-	// else { vkCmdDraw(_commandBuffers[0], ...)}
-
-	vkCmdEndRenderPass(_commandBuffers[0]);
-
-	if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n"); */
+    vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     if(renderID == SCENE_RENDERID) logMessage("Handle scene data!");
     else if(actor->isShown && actor->getMesh() != nullptr) {
@@ -715,6 +688,8 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 
         // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
     }
+
+    if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
 #ifdef RASTERON_H

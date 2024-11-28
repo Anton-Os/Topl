@@ -54,8 +54,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 #ifdef TOPL_ENABLE_VULKAN
 // VK Test Renderer
 struct Hello_Renderer_VK : public Topl_Renderer_VK {
-	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context)
-	: Topl_Renderer_VK(context){
+	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_VK(context){
 		setDrawMode(DRAW_Triangles);
 		genPipeline(&pipeline, &vertexShader, &pixelShader);
 		_flags[BUILD_BIT] = true;

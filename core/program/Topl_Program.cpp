@@ -137,11 +137,20 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 
     /* for(unsigned short o = 0; o < PROGRAM_OVERLAYS; o++)
         _overlays.billboards[o].configure(&_overlays.scene); */
-	_overlays.billboard_camera.shift({ -0.5, - 0.85F, 0.0F });
-	_overlays.billboard_object.shift({ 0.0F, -0.85F, 0.0F });
-	_overlays.billboard_shader.shift({ 0.5F, -0.85F, 0.0F });
-	for(unsigned short o = 0; o < 3; o++) _overlays.billboards[o]->scale({ 1.0F, 0.33F, 1.0F });
-    _overlays.scene.camera = &_overlays.camera;
+	_overlays.billboard_camera.shift({ -0.75, -0.9F, 0.0F });
+	_overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
+	_overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
+	for(unsigned short o = 0; o < 3; o++){ 
+		_overlays.billboards[o]->scale({ 0.5F, 0.33F, 1.0F });
+		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
+		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
+		for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
+			if(e != _overlays.billboards[o]->getActorCount() - 1){
+				_overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
+				_overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
+			}
+	}
+	_overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
 
@@ -194,8 +203,8 @@ void Topl_Program::postloop(){
 
 	if(_renderer->getFrameCount() % 60 == 0){ 
 		Img_Base frameImg = _renderer->frame();
-		queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
-		std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+		// queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
+		// std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
 		index++;
 	}
 #endif
@@ -213,14 +222,14 @@ void Topl_Program::run(){
 		for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
 		if(_renderer != nullptr){
-			// preloop();
+			if(Platform::mouseControl.getIsMouseDown().second) preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
             if(isEnable_background) renderScene(&_background.scene, _texPipeline, TEX_3);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer
-			postloop();
+			if(isEnable_screencap) postloop();
 		}
 		/* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
 			Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;

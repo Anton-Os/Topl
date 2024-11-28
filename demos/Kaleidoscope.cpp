@@ -60,8 +60,6 @@ void Kaleidoscope_Demo::loop(double frameTime){
     Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     
     _renderer->updateScene(&scene);
-    _renderer->drawScene(&scene);
-    _renderer->clear();
     if(getConstruct() != nullptr)
         for(unsigned a = 0; a < getConstruct()->getActorCount(); a++)
             _renderer->draw(getConstruct()->getGeoActor(a));

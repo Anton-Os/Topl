@@ -43,9 +43,9 @@ void main() {
 			texcoord_out.y += (texOffset.r - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 			texcoord_out.z += (texOffset.b - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 		} else {
-			final_pos.x += (texOffset.g - 0.5F) * (floor(abs(mode) / 100.0) + 1);
-			final_pos.y += (texOffset.r - 0.5F) * (floor(abs(mode) / 100.0) + 1);
-			final_pos.z += (texOffset.b - 0.5F) * (floor(abs(mode) / 100.0) + 1);
+			final_pos.x *= texOffset.g * (floor(abs(mode) / 100.0) + 1);
+			final_pos.y *= texOffset.r * (floor(abs(mode) / 100.0) + 1);
+			final_pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
 		}
 	}
 

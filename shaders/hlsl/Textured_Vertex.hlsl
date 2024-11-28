@@ -45,9 +45,9 @@ VS_OUTPUT main(VS_INPUT input) {
 			output.texcoord.y += (texOffset.r - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 			output.texcoord.z += (texOffset.b - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 		} else {
-			output.pos.x += (texOffset.g - 0.5F) * (floor(abs(mode) / 100.0) + 1);
-			output.pos.y += (texOffset.r - 0.5F) * (floor(abs(mode) / 100.0) + 1);
-			output.pos.z += (texOffset.b - 0.5F) * (floor(abs(mode) / 100.0) + 1);
+			output.pos.x *= texOffset.g * (floor(abs(mode) / 100.0) + 1);
+			output.pos.y *= texOffset.r * (floor(abs(mode) / 100.0) + 1);
+			output.pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
 		}
 	}
 
