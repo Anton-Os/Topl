@@ -117,9 +117,12 @@ protected:
 
     // Options & Properties
 
-    bool isEnable_background = true, isEnable_overlays = true;
-private:
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, unsigned short mode);
+	bool isEnable_background = true, isEnable_overlays = true;
+private:
+	void createPipelines();
+	void createBackground();
+	void createOverlays();
 
 	// Scenes, Geometry & Targets
 	struct Background {

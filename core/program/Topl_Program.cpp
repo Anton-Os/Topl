@@ -22,6 +22,14 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 
 Topl_Camera Topl_Program::camera = Topl_Camera();
 
+static void backgroundCallback(MOUSE_Event event){
+	if(Topl_Program::pickerObj != nullptr) std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << std::endl;
+}
+
+static void overlayCallback(MOUSE_Event event){
+	if(Topl_Program::pickerObj != nullptr) std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << std::endl;
+}
+
 static void onAnyKey(char k){
 	if(isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
@@ -98,8 +106,22 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 	Platform::mouseControl.addCallback(MOUSE_LeftBtn_Press, onPress);
 	// Platform::mouseControl.addDragCallback(onDrag);
 
-	// Preset Pipeline Generation
+	createPipelines();
+	if(isEnable_background) createBackground();
+	if(isEnable_overlays) createOverlays();
 
+    // Texturing Data Generation
+#ifdef RASTERON_H
+	// Imaging Initialization
+	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
+
+	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
+	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
+	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
+#endif
+}
+
+void Topl_Program::createPipelines(){
 	if(_backend == BACKEND_GL4){
 		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
@@ -120,23 +142,23 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 		// TODO: Include Advanced shaders
 	}
 #endif
-
 	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
 	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
 	_dynamicPipeline = Topl_Factory::genPipeline(_backend, &_dynamicVShader, &_dynamicPShader);
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+}
 
-    // Geometric Data Generation
-
-    _background.scene.camera = &_background.camera;
+void Topl_Program::createBackground(){
+	_background.scene.camera = &_background.camera;
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
+	_background.actor.pickerFunc = &backgroundCallback;
     _renderer->buildScene(&_background.scene);
     _renderer->texturizeScene(&_background.scene);
+}
 
-    /* for(unsigned short o = 0; o < PROGRAM_OVERLAYS; o++)
-        _overlays.billboards[o].configure(&_overlays.scene); */
+void Topl_Program::createOverlays(){
 	_overlays.billboard_camera.shift({ -0.75, -0.9F, 0.0F });
 	_overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
 	_overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
@@ -144,8 +166,10 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 		_overlays.billboards[o]->scale({ 0.5F, 0.33F, 1.0F });
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
+		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickerFunc = &overlayCallback;
 		for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
 			if(e != _overlays.billboards[o]->getActorCount() - 1){
+				
 				_overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
 				_overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
 			}
@@ -153,16 +177,6 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 	_overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
-
-    // Texturing Data Generation
-#ifdef RASTERON_H
-	// Imaging Initialization
-	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
-
-	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
-	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
-	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
-#endif
 }
 
 void Topl_Program::cleanup() {
@@ -185,15 +199,11 @@ void Topl_Program::preloop(){
 	if(isEnable_background){
 		unsigned pickerColor = colorPicker(&_background.scene);
 		Vec3f pickerCoord = coordPicker(&_background.scene);
-		if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
-			std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
 	}
 
 	if(isEnable_overlays){
 		unsigned pickerColor = colorPicker(&_overlays.scene);
 		Vec3f pickerCoord = coordPicker(&_overlays.scene);
-		if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
-			std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
 	}
 }
 
