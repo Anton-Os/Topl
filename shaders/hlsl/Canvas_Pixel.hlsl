@@ -5,7 +5,8 @@
 #include "Common.hlsl"
 
 #define CURSOR_SIZE 0.05
-#define C float2(cursorPos.x, cursorPos.y) // c value for julia set
+#define TRACER_STEPS 8
+#define TRACER_PATHS 8
 
 // Values
 
@@ -17,19 +18,19 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	float4 steps[4];
-	float4 paths[4];
+	float4 steps[TRACER_STEPS / 2];
+	float4 paths[TRACER_PATHS / 2];
 }
 
-static const float2 tracerSteps[8] = (float2[8])steps;
-static const float2 tracerPaths[8] = (float2[8])paths;
+static const float2 tracerSteps[TRACER_STEPS] = (float2[TRACER_STEPS])steps;
+static const float2 tracerPaths[TRACER_PATHS] = (float2[TRACER_PATHS])paths;
 
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 texcoord : TEXCOORD0;
 };
 
-// Functions
+// Cursor Functions
 
 float4 cursorDot(float2 pos, float2 coord, float radius, float4 color){
     if (distance(pos, coord) < radius) return color;
@@ -47,9 +48,30 @@ float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
     else return float4(color.r, color.g, color.b, 0.0);
 }
 
+// Draw Functions
+
+float4 drawTrial(float2 pos, float2 coord, float dist, float4 color){;
+    uint t = 0;
+    float4 color_draw = float4(color.r, color.g, color.b, 0.0);
+
+    while(tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0 && tracerPaths[t + 1].y != 0 && t < TRACER_PATHS){
+        float x1 = tracerPaths[t].x - coord.x; 
+        float y1 = tracerPaths[t].y - coord.y;
+        float x2 = tracerPaths[t + 1].x - coord.x; 
+        float y2 = tracerPaths[t + 1].y - coord.y;
+
+        float lineDist = abs(((y2 - y1) * coord.x) - ((x2 - x1) * coord.y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+        if(lineDist < dist) color_draw = color;
+
+        t++;
+    }
+
+    return color_draw;
+}
+
 // Main
 
-float4 main(PS_INPUT input) : SV_TARGET{
+float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
     float4 color_out = float4(0.0, 0.0, 0.0, 0.0);
     if(mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // show texture if mode is positive
 
@@ -58,7 +80,10 @@ float4 main(PS_INPUT input) : SV_TARGET{
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
     if(mode % 10 != 0){
-        // TODO: Perform drawing and path operations
+        float4 color_draw = float4(0.0, 0.0, 0.0, 0.0);
+        if(mode % 10 == 1) color_draw = drawTrial(cursor, coords, size, float4(input.texcoord, 0.5));
+        
+        if(color_draw.a != 0.0) color_out = color_draw;
     }
 
     if(abs(mode) >= 10){ // adding cursor color

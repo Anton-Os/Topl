@@ -35,10 +35,12 @@ endif()
 include("cmake/internalTargets.cmake") # For building core and geometry libraries
 include("cmake/engineTargets.cmake") # For building engine specific libraries
 include("cmake/shaderTargets.cmake") # For copying and compiling shaders
-include ("cmake/resourceTargets.cmake") # For generating assets compile-time
+include("cmake/resourceTargets.cmake") # For generating assets compile-time
 include("cmake/installTargets.cmake") # For installation procedures
 
 # ------------- Demos and Tests ------------- #
+
+configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
 
 add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)

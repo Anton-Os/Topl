@@ -72,5 +72,3 @@ if(VK_FOUND) # comiling shaders for vulkan
         endforeach()
     endif()
 endif()
-
-configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")

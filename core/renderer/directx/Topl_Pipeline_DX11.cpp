@@ -88,11 +88,12 @@ void Topl_Renderer_DX11::setPipeline(DX11::Pipeline* pipeline) {
 	Topl_Renderer::setPipeline((Topl_Pipeline*)pipeline);
 
 	if (_flags[PIPELINE_BIT]) {
-		if (pipeline->vertexShader != nullptr) _deviceCtx->VSSetShader(pipeline->vertexShader, 0, 0);
-		if (pipeline->hullShader != nullptr) _deviceCtx->HSSetShader(pipeline->hullShader, 0, 0);
+		_deviceCtx->VSSetShader(pipeline->vertexShader, 0, 0);
+		_deviceCtx->HSSetShader(pipeline->hullShader, 0, 0);
 		_deviceCtx->DSSetShader(pipeline->domainShader, 0, 0);
 		_deviceCtx->GSSetShader(pipeline->geomShader, 0, 0);
 		_deviceCtx->PSSetShader(pipeline->pixelShader, 0, 0);
+		_deviceCtx->CSSetShader(pipeline->computeShader, 0, 0);
 	}
 }
 

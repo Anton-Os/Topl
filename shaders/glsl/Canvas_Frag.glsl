@@ -7,6 +7,8 @@
 #include "Common.glsl"
 
 #define CURSOR_SIZE 0.05
+#define TRACER_STEPS 8
+#define TRACER_PATHS 8
 
 // Values
 
@@ -18,22 +20,15 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes; // resolution
 	vec2 cursorPos;
-	vec2 tracerSteps[8];
-	vec2 tracerPaths[8];
+	vec2 tracerSteps[TRACER_STEPS];
+	vec2 tracerPaths[TRACER_PATHS];
 };
 
 layout(location = 0) in vec3 texcoord;
 
 layout(location = 0) out vec4 color_out;
 
-// Functions
-
-/* vec3 cursorSet(vec2 cursorPos, vec2 coord){
-	float red = pow(1 - min(abs(cursorPos.x - coord.x), abs(cursorPos.y - coord.y)), 20); // crosshairs
-	float green = tan(distance(cursorPos, coord) * 50); // spirals
-	float blue = 1 / distance(cursorPos, coord); // gradient
-	return vec3(red, green, blue);
-} */
+// Cursor Functions
 
 vec4 cursorDot(vec2 pos, vec2 coord, float radius, vec4 color){
     if (distance(pos, coord) < radius) return color;
@@ -51,6 +46,21 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
     else return vec4(color.r, color.g, color.b, 0.0);
 }
 
+// Draw Functions
+
+vec4 drawTrial(vec2 pos, vec2 coord, float dist, vec4 color){
+	uint t = 0;
+    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
+
+	while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
+		if(distance(tracerSteps[t], coord - pos) < dist * cos(coord.x / coord.y)) 
+			color_draw = vec4(getRandColor(t), 1.0); // color;
+		t++;
+	}
+
+	return color_draw;
+}
+
 // Main
 
 void main() {
@@ -61,7 +71,10 @@ void main() {
 	float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
 	if(mode % 10 != 0){
-        // TODO: Perform drawing and path operations
+        vec4 color_draw = vec4(0.0, 0.0, 0.0, 0.0);
+		if(mode % 10 == 1) color_draw = drawTrial(cursor, coords, size, vec4(getRandColor(gl_PrimitiveID), 1.0));
+
+		if(color_draw.a != 0.0) color_out = color_draw;
     }
 
 	if(abs(mode) >= 10){

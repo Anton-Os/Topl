@@ -19,7 +19,7 @@ namespace VK {
         }
     }
 
-	void createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc){
+	VkResult createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc){
 		VkResult result; // error checking variable
 		
 		VkShaderModuleCreateInfo moduleCreateInfo = {};
@@ -29,7 +29,9 @@ namespace VK {
 
 		result = vkCreateShaderModule(*device, &moduleCreateInfo, nullptr, shaderModule);
 		if(result == VK_SUCCESS) logMessage(" shader module creation success\n");
-		else return logMessage(MESSAGE_Exclaim, " shader module creation failure!\n");
+		else logMessage(MESSAGE_Exclaim, " shader module creation failure!\n");
+
+		return result;
 	}
 
 	void createShaderInfo(VkPipelineShaderStageCreateInfo* shaderInfo, VkShaderModule* shaderModule, VkShaderStageFlagBits stage){
@@ -113,6 +115,8 @@ void Topl_Renderer_VK::setPipeline(VK::Pipeline* pipeline){
 }
 
 void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
+	VkResult result;
+	
 	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	
@@ -122,18 +126,21 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 	unsigned short shaderStageCount = 2;
 	VkPipelineShaderStageCreateInfo shaderStages[MAX_PIPELINE_STAGES];
 
+	VkShaderModule vertexShaderModule = {}; // Vertex Shader
 	std::string vertexShaderSrc = readFileBinary(vertexShader->getFilePath().c_str());
 	std::cout << "Vertex Shader path: " << vertexShader->getFilePath().c_str(); // for testing
-	VkShaderModule vertexShaderModule = {};
-	VK::createShaderModule(&_logicDevice, &vertexShaderModule, vertexShaderSrc);
-	VK::createShaderInfo(&pipeline->vertexSInfo, &vertexShaderModule, VK_SHADER_STAGE_VERTEX_BIT);
+	result = VK::createShaderModule(&_logicDevice, &vertexShaderModule, vertexShaderSrc);
+	if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->vertexSInfo, &vertexShaderModule, VK_SHADER_STAGE_VERTEX_BIT);
+	else { pipeline->isReady = false; return; }
 	shaderStages[0] = pipeline->vertexSInfo;
+	
 
+	VkShaderModule pixelShaderModule = {}; // Pixel Shader
 	std::string pixelShaderSrc = readFileBinary(pixelShader->getFilePath().c_str());
 	std::cout << "Pixel Shader path: " << pixelShader->getFilePath().c_str(); // for testing
-	VkShaderModule pixelShaderModule = {};
-	VK::createShaderModule(&_logicDevice, &pixelShaderModule, pixelShaderSrc);
-	VK::createShaderInfo(&pipeline->pixelSInfo, &pixelShaderModule, VK_SHADER_STAGE_FRAGMENT_BIT);
+	result = VK::createShaderModule(&_logicDevice, &pixelShaderModule, pixelShaderSrc);
+	if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->pixelSInfo, &pixelShaderModule, VK_SHADER_STAGE_FRAGMENT_BIT);
+	else { pipeline->isReady = false; return; }
 	shaderStages[1] = pipeline->pixelSInfo;
 
 	auto geomShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Geom; });
@@ -146,8 +153,9 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 		shaderStageCount++;
 
 		std::string geomShaderSrc = readFileBinary((*geomShader)->getFilePath().c_str());
-		VK::createShaderModule(&_logicDevice, &geomShaderModule, geomShaderSrc);
-		VK::createShaderInfo(&pipeline->geomSInfo, &geomShaderModule, VK_SHADER_STAGE_GEOMETRY_BIT);
+		result = VK::createShaderModule(&_logicDevice, &geomShaderModule, geomShaderSrc);
+		if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->geomSInfo, &geomShaderModule, VK_SHADER_STAGE_GEOMETRY_BIT);
+		else { pipeline->isReady = false; return; }
 		shaderStages[shaderStageCount] = pipeline->geomSInfo;
 	}
 
@@ -156,8 +164,9 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 		shaderStageCount++;
 
 		std::string tessCtrlShaderSrc = readFileBinary((*tessCtrlShader)->getFilePath().c_str());
-		VK::createShaderModule(&_logicDevice, &tessCtrlShaderModule, tessCtrlShaderSrc);
-		VK::createShaderInfo(&pipeline->tessCtrlSInfo, &tessCtrlShaderModule, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		result = VK::createShaderModule(&_logicDevice, &tessCtrlShaderModule, tessCtrlShaderSrc);
+		if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->tessCtrlSInfo, &tessCtrlShaderModule, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		else { pipeline->isReady = false; return; }
 		shaderStages[shaderStageCount] = pipeline->tessCtrlSInfo;
 	}
 
@@ -166,8 +175,9 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 		shaderStageCount++;
 
 		std::string tessEvalShaderSrc = readFileBinary((*tessEvalShader)->getFilePath().c_str());
-		VK::createShaderModule(&_logicDevice, &tessEvalShaderModule, tessEvalShaderSrc);
-		VK::createShaderInfo(&pipeline->tessEvalSInfo, &tessEvalShaderModule, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		result = VK::createShaderModule(&_logicDevice, &tessEvalShaderModule, tessEvalShaderSrc);
+		if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->tessEvalSInfo, &tessEvalShaderModule, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		else { pipeline->isReady = false; return; }
 		shaderStages[shaderStageCount] = pipeline->tessEvalSInfo;
 	}
 
@@ -176,8 +186,9 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 		shaderStageCount++;
 
 		std::string computeShaderSrc = readFileBinary((*computeShader)->getFilePath().c_str());
-		VK::createShaderModule(&_logicDevice, &computeShaderModule, computeShaderSrc);
-		VK::createShaderInfo(&pipeline->computeSInfo, &computeShaderModule, VK_SHADER_STAGE_COMPUTE_BIT);
+		result = VK::createShaderModule(&_logicDevice, &computeShaderModule, computeShaderSrc);
+		if(result == VK_SUCCESS) VK::createShaderInfo(&pipeline->computeSInfo, &computeShaderModule, VK_SHADER_STAGE_COMPUTE_BIT);
+		else { pipeline->isReady = false; return; }
 		shaderStages[shaderStageCount] = pipeline->computeSInfo;
 	}
 

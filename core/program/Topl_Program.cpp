@@ -185,15 +185,15 @@ void Topl_Program::preloop(){
 	if(isEnable_background){
 		unsigned pickerColor = colorPicker(&_background.scene);
 		Vec3f pickerCoord = coordPicker(&_background.scene);
-		// if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
-		//	std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
+		if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
+			std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
 	}
 
 	if(isEnable_overlays){
 		unsigned pickerColor = colorPicker(&_overlays.scene);
 		Vec3f pickerCoord = coordPicker(&_overlays.scene);
-		// if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
-		//	std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
+		if(pickerColor != NO_COLOR && Topl_Program::pickerObj != nullptr) 
+			std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << ", Picker color is " << std::to_string(pickerColor) << ", Coord Color is {" << std::to_string(pickerCoord[0]) << ", " << std::to_string(pickerCoord[1]) << ", " << std::to_string(pickerCoord[2]) << "}\n";
 	}
 }
 
@@ -225,7 +225,7 @@ void Topl_Program::run(){
 			if(Platform::mouseControl.getIsMouseDown().second) preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-            if(isEnable_background) renderScene(&_background.scene, _effectPipeline, 21);
+            if(isEnable_background) renderScene(&_background.scene, _flatPipeline, FLAT_TEXCOORD);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer
@@ -243,22 +243,22 @@ void Topl_Program::run(){
 #ifdef RASTERON_H
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 	_flatVShader.setMode(FLAT_ID);
-	// Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+	Topl_Factory::switchPipeline(_renderer, _flatPipeline);
 	_renderer->setDrawMode(DRAW_Triangles);
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
 
 	Topl_Program::pickerColor = _renderer->getPixelAt(Platform::getCursorX(), Platform::getCursorY());
-	if((Topl_Program::pickerColor & 0x00FFFFFF) == 0xFFFFFF)// (0xFF000000 & 0x00FFFFFF)) 
-		Topl_Program::pickerObj = nullptr;
+	// if((Topl_Program::pickerColor & 0x00FFFFFF) == 0xFFFFFF) Topl_Program::pickerObj = nullptr;
 	if(scene != nullptr){ 
 		Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
+		Topl_Program::pickerObj = actor;
 		if(actor != nullptr){
-			Topl_Program::pickerObj = actor;
 			if(actor->pickerFunc != nullptr){
 				if(!Platform::mouseControl.getIsMouseDown().second) actor->pickerFunc(MOUSE_Hover);
 				else actor->pickerFunc(Platform::mouseControl.getIsMouseDown().first);
 			}
+			std::cout << "Actor is " << actor->getName() << std::endl;
 		}
 	}
 
@@ -269,7 +269,7 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
  	_flatVShader.setMode(FLAT_COORD);
-	// Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+	Topl_Factory::switchPipeline(_renderer, _flatPipeline);
 	_renderer->setDrawMode(DRAW_Triangles);
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
@@ -281,7 +281,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 		(color & 0xFF) / 255.0f,  
 	};
 	
-	_renderer->clear();
+	// _renderer->clear();
 
 	return Topl_Program::pickerCoord;
 }

@@ -48,12 +48,12 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	// Vertex Shader
 	std::string vertexShaderSrc = vertexShader->getFileSource();
 	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
-	if (pipeline->vertexShader == 0) pipeline->isReady = false;
+	if (pipeline->vertexShader == 0){ pipeline->isReady = false; return; }
 
 	// Pixel Shader
 	std::string fragShaderSrc = pixelShader->getFileSource();
 	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->pixelShader == 0) pipeline->isReady = false;
+	if (pipeline->pixelShader == 0){ pipeline->isReady = false; return; }
 #ifndef __ANDROID__
 	auto geomShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Geom; });
 	auto tessCtrlShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_TessCtrl; });
@@ -64,28 +64,28 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	if (geomShader != shaders.end()) { // optional stage
 		std::string geomShaderSrc = (*geomShader)->getFileSource();
 		pipeline->geomShader = GL4::compileShader(geomShaderSrc, GL_GEOMETRY_SHADER);
-		if(pipeline->geomShader == 0) pipeline->isReady = false;
+		if(pipeline->geomShader == 0){ pipeline->isReady = false; return; }
 	}
 
 	// Tess. Control Shader
 	if(tessCtrlShader != shaders.end()){ // optional stage
 		std::string tessCtrlShaderSrc = (*tessCtrlShader)->getFileSource();
 		pipeline->tessCtrlShader = GL4::compileShader(tessCtrlShaderSrc, GL_TESS_CONTROL_SHADER);
-		if(pipeline->tessCtrlShader == 0) pipeline->isReady = false;
+		if(pipeline->tessCtrlShader == 0){ pipeline->isReady = false; return; }
 	}
 
 	// Tess. Evaluation Shader
 	if(tessEvalShader != shaders.end()){ // optional stage
 		std::string tessEvalShaderSrc = (*tessEvalShader)->getFileSource();
 		pipeline->tessEvalShader = GL4::compileShader(tessEvalShaderSrc, GL_TESS_EVALUATION_SHADER);
-		if(pipeline->tessEvalShader == 0) pipeline->isReady = false;
+		if(pipeline->tessEvalShader == 0){ pipeline->isReady = false; return; }
 	}
 
 	// Compute Shader
 	if(computeShader != shaders.end()){ // optional stage
 		std::string computeShaderSrc = (*computeShader)->getFileSource();
 		pipeline->computeShader = GL4::compileShader(computeShaderSrc, GL_COMPUTE_SHADER);
-		if(pipeline->computeShader == 0) pipeline->isReady = false;
+		if(pipeline->computeShader == 0){ pipeline->isReady = false; return; }
 	}
 #endif
 	// Program Linking
@@ -141,6 +141,7 @@ void Topl_Renderer_GL4::linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr v
 		if(tessCtrlShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
 		if(tessEvalShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessEvalShader);
 		if(geomShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->geomShader);
+		if(computeShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->computeShader);
 		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
 	}
 }

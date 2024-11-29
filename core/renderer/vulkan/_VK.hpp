@@ -64,7 +64,8 @@ namespace VK {
     VkResult getExtensionProperties(std::vector<VkExtensionProperties>* extensions);
     VkResult createDebugReport(VkInstance* instance);
 
-    void createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc);
+    VkFormat getShaderFormat(enum SHDR_ValueType type);
+    VkResult createShaderModule(VkDevice* device, VkShaderModule* shaderModule, std::string& shaderSrc);
     void createShaderInfo(VkPipelineShaderStageCreateInfo* shaderInfo, VkShaderModule* shaderModule, VkShaderStageFlagBits stage);
     VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader);
 
