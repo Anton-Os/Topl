@@ -48,14 +48,22 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
 
 // Draw Functions
 
-vec4 drawTrial(vec2 pos, vec2 coord, float dist, vec4 color){
+vec4 drawLines(vec2 pos, vec2 coord, float dist, vec4 color){
 	uint t = 0;
     vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
 
 	while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
-		if(distance(tracerSteps[t], coord - pos) < dist * cos(coord.x / coord.y)) 
-			color_draw = vec4(getRandColor(t), 1.0); // color;
-		t++;
+		vec2 step1 = (tracerSteps[t] * 0.5f) + 1.0;
+        vec2 step2 = (tracerSteps[t + 1] * 0.5f) + 1.0;
+        
+        float x1 = step1.x - coord.x; float y1 = step1.y - coord.y;
+        float x2 = step2.x - coord.x; float y2 = step2.y - coord.y;
+
+        float lineDist = abs(((y2 - y1) * coord.x) - ((x2 - x1) * coord.y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+		vec3 pointDists = vec3(sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0)), sqrt(pow(coord.x - x1, 2.0) + pow(coord.y - y1, 2.0)), sqrt(pow(coord.x - x2, 2.0) + pow(coord.y - y2, 2.0)));
+        if(lineDist < dist && pointDists[1] < pointDists[0] && pointDists[2] < pointDists[0]) color_draw = color;
+
+        t++;
 	}
 
 	return color_draw;
@@ -70,9 +78,9 @@ void main() {
 	vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 	float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
-	if(mode % 10 != 0){
+	if(abs(mode) % 10 != 0){
         vec4 color_draw = vec4(0.0, 0.0, 0.0, 0.0);
-		if(mode % 10 == 1) color_draw = drawTrial(cursor, coords, size, vec4(getRandColor(gl_PrimitiveID), 1.0));
+		if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, vec4(distance(cursor, coords), distance(coords, vec2(0.0, 0.0)), distance(cursor, vec2(0.0, 0.0)), 1.0));
 
 		if(color_draw.a != 0.0) color_out = color_draw;
     }

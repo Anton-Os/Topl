@@ -10,7 +10,7 @@ struct Advance_TessCtrlShader : public Topl_Shader {
 };
 
 struct Advance_TessCtrlShader_GL4 : public Advance_TessCtrlShader {
-	Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader(genPrefix_glsl() + "Advance_TessCtrl.glsl"){ }
+	Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader(genPrefix_glsl() + "Advance_TessCtrl.glsl"){}
 };
 
 struct Advance_TessCtrlShader_DX11 : public Advance_TessCtrlShader {
@@ -44,9 +44,34 @@ struct Advance_GeometryShader : public Topl_Shader {
 };
 
 struct Advance_GeometryShader_GL4 : public Advance_GeometryShader {
-	Advance_GeometryShader_GL4() : Advance_GeometryShader(genPrefix_glsl() + "Advance_Geometry.glsl"){}
+	Advance_GeometryShader_GL4() : Advance_GeometryShader(genPrefix_glsl() + "Advance_Geometry.glsl"){
+		_embedMap.insert({ "Entry", 
+			"#define GEOM_INPUT layout(points)\n#define GEOM_OUTPUT layout (triangle_strip, max_vertices = 3)"
+		});
+	}
 };
 
 struct Advance_GeometryShader_DX11 : public Advance_GeometryShader {
-	Advance_GeometryShader_DX11() : Advance_GeometryShader(genPrefix_hlsl() + "Advance_Geometry.hlsl"){}
+	Advance_GeometryShader_DX11() : Advance_GeometryShader(genPrefix_hlsl() + "Advance_Geometry.hlsl"){
+		_embedMap.insert({ "Entry", 
+			"#define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream)" 
+		});
+	}
+};
+
+// Compute Shaders
+
+struct Advance_ComputeShader : public Topl_Shader {
+	Advance_ComputeShader() : Topl_Shader(){} // Blank Constructor
+	Advance_ComputeShader(std::string fileName) : Topl_Shader(SHDR_Compute, fileName){ }
+
+	// TODO: Include embedding logic
+};
+
+struct Advance_ComputeShader_GL4 : public Advance_ComputeShader {
+	Advance_ComputeShader_GL4() : Advance_ComputeShader(genPrefix_glsl() + "Advance_Compute.glsl"){ }
+};
+
+struct Advance_ComputeShader_DX11 : public Advance_ComputeShader {
+	Advance_ComputeShader_DX11() : Advance_ComputeShader(genPrefix_hlsl() + "Advance_Compute.hlsl"){ }
 };
