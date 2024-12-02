@@ -56,7 +56,7 @@ protected:
 	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, -1.0 }, { 1.0, 0.0, 1.0 });
 	Topl_Light lampLight = Topl_Light({ 0.0, 0.0f, 1.0 }, { 0.0, 1.0, 1.0 });
 private:
-	static void sendLightData(const Topl_Light* light, blockBytes_t* bytes) {
+	void sendLightData(const Topl_Light* light, blockBytes_t* bytes) const {
 		appendDataToBytes((uint8_t*)&light->pos, sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)&light->value, sizeof(Vec3f), bytes);
 	}

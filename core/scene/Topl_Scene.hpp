@@ -6,7 +6,6 @@
 
 #include "IO.hpp"
 #include "Timer.hpp"
-#include "ValueGen.hpp"
 
 #include "Geo_Actor.hpp"
 // #include "Geo_Construct.hpp"
@@ -19,44 +18,7 @@
 #include "physics/Phys_Connector.h"
 #endif
 
-// Camera
-
-#define CAM_ZOOM 1.0f
-#define CAM_DEPTH -0.99F
-
-class Topl_Camera {
-public:
-	Topl_Camera() { // Identity matrix
-		_projMatrix = MAT_4x4_IDENTITY;
-		_projMatrix.data[2][2] = -1; // flip z axis
-	}
-	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
-		_projMatrix = Projection(projType).genProjMatrix();
-	}
-	Topl_Camera(enum PROJECTION_Type projType, float scaleFactor){ // Sized Bounds
-		_projMatrix = Projection(projType, scaleFactor).genProjMatrix();
-	}
-	Topl_Camera(Projection proj){ // Custom Bounds
-		_projMatrix = proj.genProjMatrix();
-	}
-	void setPos(const Vec3f& pos){ _pos = pos; }
-	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }
-	void setRot(const Vec3f& vec){ _rotation = vec; }
-	void updateRot(const Vec3f& vec) { _rotation = _rotation + vec; }
-	void setZoom(float z){ _zoom = z;}
-	void setProjMatrix(Mat4x4 matrix){ _projMatrix = matrix; }
-	const float* getZoom() const { return &_zoom;}
-	vec3f_cptr_t getPos() const { return &_pos; }
-	vec3f_cptr_t getRot() const { return &_rotation; }
-	mat4x4_cptr_t getProjMatrix() const { return &_projMatrix; }
-private:
-	float _zoom = CAM_ZOOM; 
-	Vec3f _pos = Vec3f({ 0.0f, 0.0f, CAM_DEPTH }); // in front of scene
-	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
-	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
-};
-
-typedef const Topl_Camera* const camera_cptr;
+#include "Topl_Camera.hpp"
 
 // Scene
 

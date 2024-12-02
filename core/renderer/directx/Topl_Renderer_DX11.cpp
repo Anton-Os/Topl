@@ -445,7 +445,7 @@ void Topl_Renderer_DX11::attachTexAt(const Img_Base* image, unsigned renderID, u
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	// texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	D3D11_SUBRESOURCE_DATA texData;
     texData.pSysMem = image->getImage()->data;
@@ -497,7 +497,7 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	// texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
 	D3D11_SUBRESOURCE_DATA texData;

@@ -666,30 +666,33 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
-    static VkDeviceSize offsets[] = { 0 };
-    unsigned long renderID = _renderTargetMap[actor];
+    if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
+    else {
+        static VkDeviceSize offsets[] = { 0 };
+        unsigned long renderID = _renderTargetMap[actor];
 
-    // vkResetCommandBuffer(_commandBuffers[0], 0);
+        // vkResetCommandBuffer(_commandBuffers[0], 0);
 
-    if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+        // if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
-    VkRenderPassBeginInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.framebuffer = _framebuffers[0];
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
+        VkRenderPassBeginInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.framebuffer = _framebuffers[_swapImgIdx];
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
 
-    vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        // vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    if(renderID == SCENE_RENDERID) logMessage("Handle scene data!");
-    else if(actor->isShown && actor->getMesh() != nullptr) {
-        if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) 
-            vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
+        if(renderID == SCENE_RENDERID) logMessage("Handle scene data!");
+        else if(actor->isShown && actor->getMesh() != nullptr) {
+            // if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) 
+            //    vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
-        // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+        }
+
+        // if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
     }
-
-    if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
 }
 
 #ifdef RASTERON_H
@@ -701,11 +704,45 @@ Img_Base Topl_Renderer_VK::frame() {
 }
 
 void Topl_Renderer_VK::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
-	// Implement texture attaching
+	// Create Data
+    
+    VkImageCreateInfo imageCreateInfo = {};
+    imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageCreateInfo.extent.width = image->getImage()->height;
+    imageCreateInfo.extent.height = image->getImage()->width;
+    imageCreateInfo.extent.depth = 1;
+    imageCreateInfo.mipLevels = 1;
+    imageCreateInfo.arrayLayers = 1;
+    imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+    imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageCreateInfo.flags = 0;
+
+    // Create Image
 }
 
 void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
-	// Implement Body
+	// Create Data
+    
+    VkImageCreateInfo imageCreateInfo = {};
+    imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateInfo.imageType = VK_IMAGE_TYPE_3D;
+    imageCreateInfo.extent.width = volumeTex->getWidth();
+    imageCreateInfo.extent.height = volumeTex->getHeight();
+    imageCreateInfo.extent.depth = volumeTex->getDepth();
+    imageCreateInfo.mipLevels = 1;
+    imageCreateInfo.arrayLayers = 1;
+    imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+    imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageCreateInfo.flags = 0;
+
+    // Create Image
 }
 
 #endif

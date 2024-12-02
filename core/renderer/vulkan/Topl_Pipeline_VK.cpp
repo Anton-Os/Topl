@@ -44,7 +44,7 @@ namespace VK {
 		shaderInfo->pName = "main";
 	}
 
-	/* VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
+	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
 		VkPipelineLayoutCreateInfo layoutInfo = {};
 
         VkVertexInputBindingDescription vertexBindDesc = {};
@@ -70,10 +70,10 @@ namespace VK {
         }
 
 		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputs->vertexBindingDescriptionCount = 1;
-        vertexInputs->pVertexBindingDescriptions = &vertexBindDesc;
-        vertexInputs->vertexAttributeDescriptionCount = entryShader->getInputCount();
-        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs.data();
+        vertexInputs->vertexBindingDescriptionCount = 0; // 1;
+        vertexInputs->pVertexBindingDescriptions = nullptr; // &vertexBindDesc;
+        vertexInputs->vertexAttributeDescriptionCount = 0; // entryShader->getInputCount();
+        vertexInputs->pVertexAttributeDescriptions = nullptr; // vertexAttribDescs.data();
 
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 0;
@@ -82,27 +82,7 @@ namespace VK {
 		layoutInfo.pPushConstantRanges = nullptr;
 
 		return vkCreatePipelineLayout(*device, &layoutInfo, nullptr, pipelineLayout);
-	}  */
-
-	VkResult createPipelineLayout(VkDevice* device, VkPipelineLayout* pipelineLayout, VkPipelineVertexInputStateCreateInfo* vertexInputs, entry_shader_cptr entryShader){
-		VkPipelineLayoutCreateInfo layoutInfo = {};
-
-		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputs->vertexBindingDescriptionCount = 0; // TODO: Add vertex bindings
-		vertexInputs->pVertexBindingDescriptions = nullptr;
-		vertexInputs->vertexAttributeDescriptionCount = 0; // TODO: Add vertex attributes
-		vertexInputs->pVertexAttributeDescriptions = nullptr;
-
-		// TODO: Use entry shader to determine layout
-
-		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		layoutInfo.setLayoutCount = 0;
-		layoutInfo.pSetLayouts = nullptr;
-		layoutInfo.pushConstantRangeCount = 0;
-		layoutInfo.pPushConstantRanges = nullptr;
-
-		return vkCreatePipelineLayout(*device, &layoutInfo, nullptr, pipelineLayout);
-	}
+	} 
 }
 
 void Topl_Renderer_VK::setPipeline(VK::Pipeline* pipeline){

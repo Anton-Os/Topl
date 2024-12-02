@@ -26,6 +26,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 	Advance_GeometryShader_GL4 geomShader;
 	Advance_TessCtrlShader_GL4 tessCtrlShader;
 	Advance_TessEvalShader_GL4 tessEvalShader;
+	Advance_ComputeShader_GL4 computeShader;
 };
 
 #ifdef _WIN32
@@ -48,6 +49,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 	Advance_GeometryShader_DX11 geomShader;
 	Advance_TessCtrlShader_DX11 tessCtrlShader;
 	Advance_TessEvalShader_DX11 tessEvalShader;
+	Advance_ComputeShader_DX11 computeShader;
 };
 #endif
 

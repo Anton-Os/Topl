@@ -156,6 +156,7 @@ void Topl_Program::createBackground(){
 	_background.actor.pickerFunc = &backgroundCallback;
     _renderer->buildScene(&_background.scene);
     _renderer->texturizeScene(&_background.scene);
+	// std::bind(&Topl_Program::_backgroundCallback, this, MOUSE_RightBtn_Press);
 }
 
 void Topl_Program::createOverlays(){
@@ -169,14 +170,14 @@ void Topl_Program::createOverlays(){
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickerFunc = &overlayCallback;
 		for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
 			if(e != _overlays.billboards[o]->getActorCount() - 1){
-				
 				_overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
-				_overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
+				// _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
 			}
 	}
 	_overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
+	// std::bind(&Topl_Program::_overlayCallback, this, MOUSE_RightBtn_Press);
 }
 
 void Topl_Program::cleanup() {
@@ -235,7 +236,7 @@ void Topl_Program::run(){
 			if(Platform::mouseControl.getIsMouseDown().second) preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-            if(isEnable_background) renderScene(&_background.scene, _flatPipeline, FLAT_TEXCOORD);
+            if(isEnable_background) renderScene(&_background.scene, _effectPipeline, -30);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer
@@ -297,7 +298,7 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
 }
 #endif
 
-void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, unsigned short mode){
+void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode){
     Topl_Factory::switchPipeline(_renderer, pipeline);
 	for(unsigned s = 0; s < 6; s++) // TODO: Improve this logic!
 		if(_entryShaders[s]->getFilePath() == pipeline->entryShader->getFilePath()){ _entryShaders[s]->setMode(mode); break; } // find matching pipeline and set mode

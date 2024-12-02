@@ -49,7 +49,7 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-		if(TARGET_BACKEND != BACKEND_VK) renderer->draw(&actor);
+		renderer->draw(&actor);
 		double f3 = _ticker.getRelMillisecs();
 		renderer->present();
 		double f4 = _ticker.getRelMillisecs();

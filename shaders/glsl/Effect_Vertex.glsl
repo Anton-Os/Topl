@@ -16,6 +16,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec2 cursorPos;
 };
 
+layout(location = 1) out vec3 texcoord_out;
+
 // Main
 
 void main() {
@@ -24,4 +26,5 @@ void main() {
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	texcoord_out = texcoord;
 }

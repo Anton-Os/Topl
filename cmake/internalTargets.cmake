@@ -1,8 +1,6 @@
 # -------------- Core Library ------------- #
 
 list(APPEND support_src
-	support/ValueGen.cpp
-
 	support/IO.cpp
 	support/Controls.cpp
     support/Timer.cpp

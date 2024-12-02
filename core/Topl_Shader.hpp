@@ -1,6 +1,7 @@
 #ifndef TOPL_SHADER_H
 
 #include <string>
+#include <vector>
 
 #include "scene/Topl_Scene.hpp"
 
@@ -32,6 +33,11 @@ struct Shader_Type {
 };
 
 #define DEFAULT_SHADER_MODE 0
+#define NO_PADDING 0
+#define PADDING_WIDTH 16 // padding aligned by 4 byte boundaries
+
+typedef std::vector<uint8_t> blockBytes_t; // container used to pass data to shaders
+typedef const uint8_t* bytes_cptr; // intermediate type for all shader data
 
 // Shader
 
@@ -58,16 +64,17 @@ public:
 			startOffset = shaderSrc.find("#include", includeOffset);
 			includeOffset += startOffset + 10; // location of include after the space
 
-			std::string includeFilePath = "";
+			std::string includeStr = "";
 			while(shaderSrc[includeOffset] != '\n' && shaderSrc[includeOffset] != '\0'){
-				if(shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != ';') includeFilePath += shaderSrc[includeOffset];
+				if(shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != '>' && shaderSrc[includeOffset] != ';') includeStr += shaderSrc[includeOffset];
 				includeOffset++;
 			}
 
-			if(includeFilePath.substr(includeFilePath.size() - 4) == "glsl") includeFilePath = SHADERS_DIR + genPrefix_glsl() + includeFilePath;
-			else if(includeFilePath.substr(includeFilePath.size() - 4) == "hlsl") includeFilePath = SHADERS_DIR + genPrefix_hlsl() + includeFilePath;
+			if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
+			else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
 
-			std::string includeSrc = readFile(includeFilePath.c_str());
+			std::string includeSrc = readFile(includeStr.c_str());
+			if(includeSrc.empty()) if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr);
 			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);
 		}
 		return shaderSrc;
@@ -75,11 +82,31 @@ public:
 protected:
 	enum SHDR_Type _shaderType;
 	std::string _shaderFilePath; // make into const type!
+	std::map<std::string, std::string> _embedMap;
 
 	std::string genPrefix_glsl() const { return "glsl/"; }
 	std::string genPrefix_hlsl() const { return "hlsl/"; }
 
-	void embed(const std::string& embedStr, unsigned short lineNum); // embed string into source
+	void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes) const {
+		targetBytes->clear();
+		targetBytes->resize(dataSize);
+		
+		for(unsigned d = 0; d < dataSize; d++) if(data_ptr + d != nullptr) targetBytes->at(d) = *(data_ptr + d);
+	}
+
+	void alignDataToBytes(const uint8_t* data_ptr, size_t dataSize, size_t paddingSize, std::vector<uint8_t>* targetBytes) const {
+		for (unsigned d = 0; d < dataSize + paddingSize; d++)
+			(d < dataSize && data_ptr + d != nullptr)
+				? targetBytes->push_back(*(data_ptr + d)) // value is copied into targetBytes
+				: targetBytes->push_back(0); // otherwise zero padding is applied
+	}
+
+	void appendDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes) const {
+		size_t paddingSize = PADDING_WIDTH - (dataSize % PADDING_WIDTH); // manually computed padding value
+		alignDataToBytes(data_ptr, dataSize, paddingSize, targetBytes);
+	}
+
+	void embed(const std::string& embedTag, const std::string& embedStr){ _embedMap.insert({ embedTag, embedStr }); }
 };
 
 // Entry shader contains inputs and functionality to pass uniform blocks

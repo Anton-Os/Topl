@@ -39,6 +39,7 @@ namespace VK {
         Texture() : Topl_Texture() {}
 
         VkSampler* sampler = {};
+        VkDeviceMemory memory = {};
     };
 
     // Pipeline

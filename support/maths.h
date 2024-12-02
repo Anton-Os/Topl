@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstdint>
+#include <string>
 
 #define MATH_PI 3.141592653
 #define MATH_HALF_PI 1.57079633
@@ -64,6 +65,11 @@ struct VectorXF {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] *= -1.0f;
         return vec;
     }
+    std::string toString() const {
+        std::string vecStr = "{ ";
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vecStr = vecStr + std::to_string(data[e]) + ", ";
+        return vecStr + " }";
+    }
 };
 
 template <unsigned short n>
@@ -106,6 +112,11 @@ struct VectorXI {
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) length += pow(data[e], 2);
         return sqrt(length);
     }
+    std::string toString() const {
+        std::string vecStr = "{ ";
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vecStr = vecStr + std::to_string(data[e]) + ", ";
+        return vecStr + " }";
+    }
 };
 
 template <unsigned short r, unsigned short c>
@@ -138,6 +149,17 @@ struct Matrix {
             for(unsigned col = 0; col < c; col++)
                 result[row] += data[row][col] * input.data[col];
         return result;
+    }
+
+    std::string toString (){
+        std::string matStr = "{\n";
+        for(unsigned row = 0; row < r; row++)
+            for(unsigned col = 0; col < c; col++){
+                if(col == 0) matStr += "{ ";
+                matStr += std::to_string(data[row][col]) + ", ";
+                if(col == c - 1) matStr += " }\n";
+            }
+        return matStr + "\n}";
     }
 };
 

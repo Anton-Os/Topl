@@ -1,3 +1,5 @@
+#include <functional>
+
 #include "Platform.hpp"
 
 #include "Topl_Factory.hpp"
@@ -117,7 +119,7 @@ protected:
 
     // Options & Properties
 
-    void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, unsigned short mode);
+    void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
 	bool isEnable_background = true, isEnable_overlays = true;
 private:
 	void createPipelines();
@@ -132,6 +134,8 @@ private:
         Topl_Scene scene = Topl_Scene({ &actor });
 	} _background;
 
+	void _backgroundCallback(MOUSE_Event event){}
+
 	struct Overlays {
         Topl_Camera camera;
         Topl_Scene scene;
@@ -143,4 +147,6 @@ private:
 		Img_Button button = Img_Button(MENU_Medium);
 #endif
 	} _overlays;
+
+	void _overlayCallback(MOUSE_Event event){}
 };

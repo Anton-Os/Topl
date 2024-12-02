@@ -5,7 +5,7 @@
 
 #define MESHFORM_SIZE 0.45
 #define MESHFORM_TESS 1
-#define MESHFORM_INDEX 0
+#define MESHFORM_INDEX 2
 
 Vec3f spikeTForm(Vec3f target, Vec3f amount){
     static unsigned svCount = 0;
@@ -33,6 +33,12 @@ Vec3f elongTForm(Vec3f target, Vec3f amount){
     return target;
 }
 
+Vec3f trialTForm(Vec3f target, Vec3f amount){
+    Vec3f angles = Vec3f({ atan(target[1] / target[0]) - (float)MATH_HALF_PI, atan(target[1] / target[2]) - (float)MATH_HALF_PI, atan(target[0] / target[2]) - (float)MATH_HALF_PI });
+
+    return target * angles; // for testing
+}
+
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){
         if(MESHFORM_TESS > 0)
@@ -44,13 +50,13 @@ struct Meshform_Demo : public Topl_Program {
             }
 
         trigOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 1.5F, 1.5F }));
-        trigOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
+        trigOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
         quadOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 0.0F, 0.0F }));
-        quadOrbs[2]->modify(waveTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
+        quadOrbs[2]->modify(trialTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
         hexOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 1.5F, 0.0F }));
-        hexOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
+        hexOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
         decOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 0.0F, 1.5F }));
-        decOrbs[2]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
+        decOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
     }
 
     void init() override;
