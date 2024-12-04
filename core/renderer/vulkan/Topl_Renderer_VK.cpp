@@ -536,6 +536,7 @@ Topl_Renderer_VK::~Topl_Renderer_VK() {
 }
 
 void Topl_Renderer_VK::clear(){
+    vkResetCommandBuffer(_commandBuffers[0], 0);
     vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo);
 
     VkClearColorValue clearColor = { _clearColors[0], _clearColors[1], _clearColors[2], _clearColors[3] };
@@ -673,25 +674,27 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 
         // vkResetCommandBuffer(_commandBuffers[0], 0);
 
-        // if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
+        if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
         VkRenderPassBeginInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.framebuffer = _framebuffers[_swapImgIdx];
+        renderPassInfo.renderPass = _renderPass;
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
 
-        // vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         if(renderID == SCENE_RENDERID) logMessage("Handle scene data!");
         else if(actor->isShown && actor->getMesh() != nullptr) {
-            // if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) 
-            //    vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
+            if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
+                vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
+            // std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
             // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
-        // if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
+        if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
     }
 }
 

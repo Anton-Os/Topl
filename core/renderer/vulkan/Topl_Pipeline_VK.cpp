@@ -60,7 +60,7 @@ namespace VK {
             const Shader_Type* shaderType = entryShader->getInputAtIndex(inputNum);
 
             vertexAttribDescs.push_back({
-                inputNum, inputNum,
+                0, inputNum,
                 getShaderFormat(shaderType->type),
                 inputOffset
             });
@@ -70,10 +70,10 @@ namespace VK {
         }
 
 		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputs->vertexBindingDescriptionCount = 0; // 1;
-        vertexInputs->pVertexBindingDescriptions = nullptr; // &vertexBindDesc;
-        vertexInputs->vertexAttributeDescriptionCount = 0; // entryShader->getInputCount();
-        vertexInputs->pVertexAttributeDescriptions = nullptr; // vertexAttribDescs.data();
+        vertexInputs->vertexBindingDescriptionCount = 1;
+        vertexInputs->pVertexBindingDescriptions = &vertexBindDesc;
+        vertexInputs->vertexAttributeDescriptionCount = entryShader->getInputCount();
+        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs.data();
 
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 0;

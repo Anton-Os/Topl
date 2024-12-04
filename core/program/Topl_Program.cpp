@@ -168,11 +168,13 @@ void Topl_Program::createOverlays(){
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
 		_overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickerFunc = &overlayCallback;
+#ifdef RASTERON_H
 		for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
 			if(e != _overlays.billboards[o]->getActorCount() - 1){
 				_overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
 				// _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
 			}
+#endif
 	}
 	_overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
@@ -197,6 +199,7 @@ void Topl_Program::cleanup() {
 }
 
 void Topl_Program::preloop(){
+#ifdef RASTERON_H
 	if(isEnable_background){
 		unsigned pickerColor = colorPicker(&_background.scene);
 		Vec3f pickerCoord = coordPicker(&_background.scene);
@@ -206,6 +209,7 @@ void Topl_Program::preloop(){
 		unsigned pickerColor = colorPicker(&_overlays.scene);
 		Vec3f pickerCoord = coordPicker(&_overlays.scene);
 	}
+#endif
 }
 
 void Topl_Program::postloop(){
@@ -236,7 +240,7 @@ void Topl_Program::run(){
 			if(Platform::mouseControl.getIsMouseDown().second) preloop();
 			_renderer->clear(); // clears view to solid color
             Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-            if(isEnable_background) renderScene(&_background.scene, _effectPipeline, -30);
+            if(isEnable_background) renderScene(&_background.scene, _effectPipeline, 22);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE);
             _renderer->present(); // switches front and back buffer

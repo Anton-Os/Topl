@@ -236,7 +236,7 @@ void Sandbox_Demo::loop(double frameTime){
         _renderer->texturizeScene(&canvasScene);
         _renderer->setDrawMode(DRAW_Triangles);
         backdropActor.updatePos({ 0.0F, 0.0F, 0.01F });
-        _canvasVShader.setMode(10 * (Sandbox_Demo::option + 1) + 1);
+        _canvasVShader.setMode(10 * (Sandbox_Demo::option + 1) + Sandbox_Demo::option + 1);
         _effectVShader.setMode(10 * Sandbox_Demo::option);
         Topl_Factory::switchPipeline(_renderer, _canvasPipeline);
         _renderer->updateScene(&canvasScene);

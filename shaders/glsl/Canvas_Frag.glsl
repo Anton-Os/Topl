@@ -49,40 +49,79 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
 // Draw Functions
 
 vec4 drawLines(vec2 pos, vec2 coord, float dist, vec4 color){
-	uint t = 0;
+    uint t = 0;
     vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
 
-	while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
-		vec2 step1 = (tracerSteps[t] * 0.5f) + 1.0;
-        vec2 step2 = (tracerSteps[t + 1] * 0.5f) + 1.0;
-        
-        float x1 = step1.x - coord.x; float y1 = step1.y - coord.y;
-        float x2 = step2.x - coord.x; float y2 = step2.y - coord.y;
+    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
+        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
+        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
 
-        float lineDist = abs(((y2 - y1) * coord.x) - ((x2 - x1) * coord.y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
-		vec3 pointDists = vec3(sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0)), sqrt(pow(coord.x - x1, 2.0) + pow(coord.y - y1, 2.0)), sqrt(pow(coord.x - x2, 2.0) + pow(coord.y - y2, 2.0)));
-        if(lineDist < dist && pointDists[1] < pointDists[0] && pointDists[2] < pointDists[0]) color_draw = color;
+        float lineDist = getLineDistance(coord, step1, step2);
+        vec3 distances = getCoordDistances(coord, step1, step2);
+        if(lineDist < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
 
         t++;
-	}
+    }
 
-	return color_draw;
+    return color_draw;
+}
+
+vec4 drawCurves(vec2 pos, vec2 coord, float dist, vec4 color){
+    uint t = 0;
+    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
+
+    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
+        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
+        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
+
+        float lineDist = getLineDistance(coord, step1, step2);
+        vec3 distances = getCoordDistances(coord, step1, step2);
+        if(sin(lineDist) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+
+        t++;
+    }
+
+    return color_draw;
+}
+
+vec4 drawZigZags(vec2 pos, vec2 coord, float dist, vec4 color){
+    uint t = 0;
+    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
+
+    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
+        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
+        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
+
+        float lineDist = getLineDistance(coord, step1, step2);
+        vec3 distances = getCoordDistances(coord, step1, step2);
+        if((lineDist * 10) - floor(lineDist * 10) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+
+        t++;
+    }
+
+    return drawLines(pos, coord, dist, color); // color_draw;
 }
 
 // Main
 
 void main() {
-	if(mode >= 0) color_out = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
+    if(mode < 0) color_out = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
 
 	vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
 	vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
 	float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
 	if(abs(mode) % 10 != 0){
-        vec4 color_draw = vec4(0.0, 0.0, 0.0, 0.0);
-		if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, vec4(distance(cursor, coords), distance(coords, vec2(0.0, 0.0)), distance(cursor, vec2(0.0, 0.0)), 1.0));
+        vec4 color_draw;
+        if(mode > 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
+        else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
 
-		if(color_draw.a != 0.0) color_out = color_draw;
+        if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, color_draw);
+        else if(abs(mode % 10) == 2) color_draw = drawCurves(cursor, coords, size, color_draw);
+        else if(abs(mode % 10) == 3) color_draw = drawZigZags(cursor, coords, size, color_draw);
+
+        if(color_draw.a != 0.0 && mode >= 0) color_out = color_draw;
+        // else if(color_draw.a == 0.0 && mode < 0) color_out = color_draw;
     }
 
 	if(abs(mode) >= 10){

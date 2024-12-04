@@ -50,45 +50,74 @@ float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
 
 // Draw Functions
 
-float4 drawLines(float2 pos, float2 coord, float dist, float4 color){;
-    uint t = 0;
-    float4 color_draw = float4(color.r, color.g, color.b, 0.0);
+uint intersectLines(float2 pos, float2 coord, float dist){
+    uint i = 0;
 
-    while(tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && t < TRACER_PATHS){
-        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f;
-        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f;
-        
-        float x1 = path1.x - coord.x; float y1 = path1.y - coord.y;
-        float x2 = path2.x - coord.x; float y2 = path2.y - coord.y;
+    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
 
-        float lineDist = abs(((y2 - y1) * coord.x) - ((x2 - x1) * coord.y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
-        float3 pointDists = float3(distance(float2(x1, y1), float2(x2, y2)), distance(coord, float2(x1, y1)), distance(coord, float2(x2, y2)));
-        if(lineDist < dist && pointDists[1] < pointDists[0] && pointDists[2] < pointDists[0]) color_draw = color;
-
-        t++;
+        float lineDist = getLineDistance(coord, path1, path2);
+        float3 distances = getCoordDistances(coord, path1, path2);
+        if(lineDist < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
     }
 
-    return color_draw;
+    return i;
+}
+
+uint intersectCurves(float2 pos, float2 coord, float dist){
+    uint i = 0;
+
+    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+
+        float lineDist = getLineDistance(coord, path1, path2);
+        float3 distances = getCoordDistances(coord, path1, path2);
+        if(lineDist + sin(distances[1]) + sin(distances[2]) < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
+    }
+
+    return i;
+}
+
+uint intersectZigZags(float2 pos, float2 coord, float dist){
+    uint i = 0;
+
+    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+
+        float lineDist = getLineDistance(coord, path1, path2);
+        float3 distances = getCoordDistances(coord, path1, path2);
+        if(lineDist * distance(pos, coord) < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
+    }
+
+    return i;
 }
 
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
-    float4 color_out = float4(0.0, 0.0, 0.0, 0.0);
-    if(mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // show texture if mode is positive
-
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
-    if(abs(mode) % 10 != 0){
-        float4 color_draw = float4(0.0, 0.0, 0.0, 0.0);
-        if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, float4(input.texcoord, 0.5));
-        
-        if(color_draw.a != 0.0) color_out = color_draw;
-    }
+    // Drawing
 
-    if(abs(mode) >= 10){ // adding cursor color
+    float4 color_out = float4(0.0, 0.0, 0.0, 0.0); // blank canvas
+    if(mode < 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // full canvas
+
+    uint intersections = 0;
+    if(abs(mode) % 10 == 1) intersections = intersectLines(cursor, coords, size);
+    else if(abs(mode) % 10 == 2) intersections = intersectCurves(cursor, coords, size);
+    else if(abs(mode) % 10 == 3) intersections = intersectZigZags(cursor, coords, size);
+
+    if(intersections > 0 && mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // draw on canvas
+    else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
+
+    // Cursor
+
+    if(abs(mode) >= 10){
         float4 color_cursor = float4(0.0, 0.0, 0.0, 0.0);
         if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
         else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));

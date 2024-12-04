@@ -1,5 +1,3 @@
-#include <functional>
-
 #include "Platform.hpp"
 
 #include "Topl_Factory.hpp"
@@ -89,8 +87,8 @@ public:
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
 #ifdef RASTERON_H
 	std::map<Geo_Actor*, Img_Sequence> sequence_map; // for dynamically changing textures
-	bool isEnable_screencap = true;
 #endif
+    bool isEnable_screencap = true;
 protected:
     virtual void init() = 0;
 	virtual void preloop();

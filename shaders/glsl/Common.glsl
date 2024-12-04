@@ -123,6 +123,18 @@ mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
 	);
 }
 
+float getLineDistance(vec2 coord, vec2 p1, vec2 p2){
+	return abs(((p2.y - p1.y) * coord.x) - ((p2.x - p1.x) * coord.y) + (p2.x * p1.y) - (p2.y * p1.x)) / sqrt(pow(p2.y - p1.y, 2.0) + pow(p2.x - p1.x, 2.0));
+}
+
+vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
+	return vec3(
+		sqrt(pow(p2.x - p1.x, 2.0) + pow(p2.y - p1.y, 2.0)), // distance between points 1 and 2
+		sqrt(pow(coord.x - p1.x, 2.0) + pow(coord.y - p1.y, 2.0)), // distance between coordinate and point 1 
+		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
+	);
+}
+
 vec4 color_correct(vec4 color){ // switch red and blue color values
 	float t = color.r;
 	color.r = color.b; color.b = t;

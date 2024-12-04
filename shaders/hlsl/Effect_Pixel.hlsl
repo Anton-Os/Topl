@@ -29,6 +29,7 @@ float3 fractalColors(float2 coord, float2 cursor, uint i){
 	else if(mode % 10 == 1) return float3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
 	else if(mode % 10 == 2) return float3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
 	else if(mode % 10 == 3) return float3(distance(coord - cursor, float2(0.0, 0.0)), distance(cursor, float2(0.0, 0.0)), distance(coord, cursor));
+	else if(mode % 10 == 4) return float3(coord.x * i - floor(coord.x * i), ceil(coord.y * i) - coord.y * i, abs(dot(cursor, coord)) - floor(abs(dot(cursor, coord))));
 	else return float3(coord.x, coord.y, 1.0 / i);
 	// TODO: Include more color options
 }
@@ -103,6 +104,21 @@ float3 powerSet(float2 coord, float2 cursor){
 	return float3(0, 0, 0); // black color within set
 }
 
+// Step Set
+
+float3 stepSet(float2 coord, float2 cursor){
+	uint i = 1; // iteration count
+
+	while(((coord.y * (1.0 / coord.x)) - floor(coord.y * (1.0 / coord.x))) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
+		// coord = float2((coord.x * i) - floor(coord.x * i), ceil(coord.y * i) - (coord.y * i));
+		coord *= i * distance(coord, cursor);
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	return float3(0, 0, 0); // black color within set
+}
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -116,5 +132,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
     if(abs(mode) >= 10 && abs(mode) < 20) return float4(juliaSet(target * FRACTAL_SIZE, cursor), 1.0f);
 	else if(abs(mode) >= 20 && abs(mode) < 30) return float4(trigSet(target * FRACTAL_SIZE), 1.0f);
 	else if(abs(mode) >= 30 && abs(mode) < 40) return float4(powerSet(target * FRACTAL_SIZE, cursorPos), 1.0f);
+	else if(abs(mode) >= 40 && abs(mode) < 50) return float4(stepSet(target * FRACTAL_SIZE, cursorPos), 1.0f);
     else return float4(mandlebrotSet(target * FRACTAL_SIZE), 1.0f);
 }
