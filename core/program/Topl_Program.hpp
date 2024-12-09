@@ -136,7 +136,7 @@ private:
         Topl_Scene scene = Topl_Scene({ &actor });
 	} _background;
 
-	void _backgroundCallback(MOUSE_Event event){}
+	void _backgroundCallback(MOUSE_Event event, Geo_Actor* actor);
 
 	struct Overlays {
         Topl_Camera camera;
@@ -150,5 +150,5 @@ private:
 #endif
 	} _overlays;
 
-	void _overlayCallback(MOUSE_Event event){}
+	void _overlayCallback(MOUSE_Event event, Geo_Actor* actor);
 };

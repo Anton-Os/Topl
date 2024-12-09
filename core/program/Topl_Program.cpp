@@ -22,12 +22,12 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 
 Topl_Camera Topl_Program::camera = Topl_Camera();
 
-static void backgroundCallback(MOUSE_Event event){
-	if(Topl_Program::pickerObj != nullptr) std::cout << "BACKGROUND: Actor is " << Topl_Program::pickerObj->getName() << std::endl;
+void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
+	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
 }
 
-static void overlayCallback(MOUSE_Event event){
-	if(Topl_Program::pickerObj != nullptr) std::cout << "OVERLAYS: Actor is " << Topl_Program::pickerObj->getName() << std::endl;
+void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
+	std::cout << "OVERLAYS: Actor is " << actor->getName() << std::endl;
 }
 
 void Topl_Program::_onAnyKey(char k){
@@ -62,7 +62,6 @@ void Topl_Program::_onAnyKey(char k){
         if(k == '-' || k == (char)0x25) Topl_Program::shaderMode--;
         else if(k == '+' || k == (char)0x27) Topl_Program::shaderMode++;
         else if(isdigit(k)){
-            std::cout << "Numerical digit is " << k << std::endl;
             switch(tolower(k)){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                 case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
@@ -158,10 +157,9 @@ void Topl_Program::setPipelines(){
 void Topl_Program::createBackground(){
     _background.scene.camera = &_background.camera;
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
-    _background.actor.pickerFunc = &backgroundCallback;
+    _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
     _renderer->buildScene(&_background.scene);
     _renderer->texturizeScene(&_background.scene);
-    // std::bind(&Topl_Program::_backgroundCallback, this, MOUSE_RightBtn_Press);
 }
 
 void Topl_Program::createOverlays(){
@@ -172,7 +170,7 @@ void Topl_Program::createOverlays(){
         _overlays.billboards[o]->scale({ 0.5F, 0.33F, 1.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
-        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickerFunc = &overlayCallback;
+        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
@@ -184,7 +182,6 @@ void Topl_Program::createOverlays(){
     _overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
-    // std::bind(&Topl_Program::_overlayCallback, this, MOUSE_RightBtn_Press);
 }
 
 void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode){

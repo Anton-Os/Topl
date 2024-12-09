@@ -1,22 +1,13 @@
 #include "Meshform.hpp"
 
-static void onAnyKey(char key){
-    if(tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o'){
-        /* for(unsigned a = 0; a < 4; a++) _DEMO->orbActors[a].isShown = false;
-        switch(tolower(key)){
-            case 'u': _DEMO->orbActors[0].isShown = true; break;
-            case 'i': _DEMO->orbActors[1].isShown = true; break;
-            case 'o': _DEMO->orbActors[2].isShown = true; break;
-            case 'p': _DEMO->orbActors[3].isShown = true; break;
-        } */
-    }
+void Meshform_Demo::onAnyKey(char key){
+    // TODO: Toggle which actors are shown
 }
-
 
 void Meshform_Demo::init(){
     scene.camera = &Topl_Program::camera;
 
-    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
     orbActors[MESHFORM_INDEX][0].setPos({ 0.5F, 0.5F, 0.0F });
     scene.addGeometry("trigOrb", &orbActors[MESHFORM_INDEX][0]);

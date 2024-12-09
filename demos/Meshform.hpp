@@ -76,5 +76,7 @@ struct Meshform_Demo : public Topl_Program {
     Img_Volume volumeImg = Img_Volume(256);
 #endif
 private:
+    void onAnyKey(char key);
+
     Topl_Scene scene;
 } *_DEMO;

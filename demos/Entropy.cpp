@@ -7,34 +7,24 @@ static bool isInMotion = true;
 static short lightMode = 10;
 static short shaderMode = 2;
 
-static void onAnyKey(char key){
-    if(tolower(key) == 'u') lightMode = 10; // 0;
-    else if(tolower(key) == 'i') lightMode = 20; // 10;
-    else if(tolower(key) == 'o') lightMode = 30; // 20;
-    else if(tolower(key) == 'p') lightMode = 40;
-    else if(isdigit(key)) Topl_Program::shaderMode = key - '0';
-    else if(isspace(key)) isInMotion = !isInMotion;
+void Entropy_Demo::onAnyKey(char key){
+    // else if(isdigit(key)) Topl_Program::shaderMode = key - '0';
+    if(isspace(key)) isInMotion = !isInMotion;
+    else switch(tolower(key)){
+        case 'j': Entropy_Demo::mode = 0; break;
+        case 'k': Entropy_Demo::mode = 1; break;
+        case 'l': Entropy_Demo::mode = 2; break;
+        case 'b': Entropy_Demo::mode = 3; break;
+        case 'n': Entropy_Demo::mode = 4; break;
+        case 'm': Entropy_Demo::mode = 5; break;
+    }
 }
 
 void entropyReset(){ isInEntropy = !isInEntropy; }
 
-void setScene1(){ Entropy_Demo::mode = 0; } // surface
-void setScene2(){ Entropy_Demo::mode = 1; } // conic
-void setScene3(){ Entropy_Demo::mode = 2; } // volumetric
-void setScene4(){ Entropy_Demo::mode = 3; } // extended surface
-void setScene5(){ Entropy_Demo::mode = 4; } // extended conic
-void setScene6(){ Entropy_Demo::mode = 5; } // extended volumetric
-
-
 void Entropy_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
-    Platform::keyControl.addAnyCallback(onAnyKey);
-    Platform::keyControl.addCallback('j', setScene1);
-    Platform::keyControl.addCallback('k', setScene2);
-    Platform::keyControl.addCallback('l', setScene3);
-    Platform::keyControl.addCallback('b', setScene4);
-    Platform::keyControl.addCallback('n', setScene5);
-    Platform::keyControl.addCallback('m', setScene6);
+    Platform::keyControl.addHandler(std::bind(&Entropy_Demo::onAnyKey, this, std::placeholders::_1));
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(10000, entropyReset);
     Topl_Program::camera.setZoom(2.0);
@@ -42,9 +32,6 @@ void Entropy_Demo::init(){
 
     scene1.camera = &Topl_Program::camera; scene2.camera = &Topl_Program::camera; scene3.camera = &Topl_Program::camera;
     ext_scene1.camera = &Topl_Program::camera; ext_scene2.camera = &Topl_Program::camera; ext_scene3.camera = &Topl_Program::camera;
-
-    // backdropScene.addGeometry("Backdrop", &backdropActor);
-    // _renderer->buildScene(&backdropScene);
 
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         scene1.addGeometry("actor_surface" + std::to_string(a), &surface_actors[a]);
@@ -91,23 +78,15 @@ void Entropy_Demo::loop(double frameTime){
         volumeExt_actors[a].setPropsTo(surface_actors[a]);
     }
 
-    // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    // _beamsVShader.setMode((100 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
-    // _flatVShader.setMode(shaderMode);
-    // Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
     _renderer->setDrawMode(DRAW_Points);
-    // _flatVShader.setMode(8);
-    // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-    // _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
-    // _renderer->clear();
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

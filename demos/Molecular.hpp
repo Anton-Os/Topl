@@ -89,5 +89,7 @@ struct Molecular_Demo : public Topl_Program {
 
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];
 private:
+    void onAnyKey(char key);
+
     Topl_Scene scene;
 } *_DEMO;

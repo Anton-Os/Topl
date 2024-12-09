@@ -4,37 +4,30 @@ unsigned short Kaleidoscope_Demo::mode = 2;
 
 static DRAW_Mode drawMode = DRAW_Triangles;
 
-static void _onAnyKey(char key){
-    if(isdigit(key)){
-        switch(key - '0'){
-            case 2: drawMode = DRAW_Lines; break;
-            case 3: drawMode = DRAW_Points; break;
-            case 4: drawMode = DRAW_Strip; break;
-            case 5: _DEMO->getConstruct()->rotate({ 0.1F, 0.0F, 0.0F }); break;
-            case 6: _DEMO->getConstruct()->rotate({ -0.1F, 0.0F, 0.0F }); break;
-            case 7: _DEMO->getConstruct()->rotate({ 0.0F, 0.1F, 0.0F }); break;
-            case 8: _DEMO->getConstruct()->rotate({ 0.0F, -0.1F, 0.0F }); break;
-            case 9: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, 0.1F }); break;
-            case 0: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, -0.1F }); break;
-            default: drawMode = DRAW_Triangles; break;
-        }
-    } else {
-        if(tolower(key) == 'n') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, 0.025F });
-        else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
+void Kaleidoscope_Demo::onAnyKey(char key){
+    switch(tolower(key)){
+        case 'u': drawMode = DRAW_Triangles; break;
+        case 'i': drawMode = DRAW_Lines; break;
+        case 'o': drawMode = DRAW_Points; break;
+        case 'p': drawMode = DRAW_Strip; break;
+        case 'h': Kaleidoscope_Demo::mode = 0; break;
+        case 'j': Kaleidoscope_Demo::mode = 1; break;
+        case 'k': Kaleidoscope_Demo::mode = 2; break;
+        case 'l': Kaleidoscope_Demo::mode = 3; break;
+        case 'v': _DEMO->getConstruct()->rotate({ 0.1F, 0.0F, 0.0F }); break;
+        case 'b': _DEMO->getConstruct()->rotate({ -0.1F, 0.0F, 0.0F }); break;
+        case 'n': _DEMO->getConstruct()->rotate({ 0.0F, 0.1F, 0.0F }); break;
+        case 'm': _DEMO->getConstruct()->rotate({ 0.0F, -0.1F, 0.0F }); break;
+        // case 9: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, 0.1F }); break;
+        // case 0: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, -0.1F }); break;
+        // default: drawMode = DRAW_Triangles; break;
     }
+    // if(tolower(key) == 'n') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, 0.025F });
+    // else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
 }
 
-void setConstruct1(){ Kaleidoscope_Demo::mode = 0; }
-void setConstruct2(){ Kaleidoscope_Demo::mode = 1; }
-void setConstruct3(){ Kaleidoscope_Demo::mode = 2; }
-void setConstruct4(){ Kaleidoscope_Demo::mode = 4; }
-
 void Kaleidoscope_Demo::init(){
-    Platform::keyControl.addAnyCallback(_onAnyKey);
-    Platform::keyControl.addCallback('g', setConstruct1);
-    Platform::keyControl.addCallback('h', setConstruct2);
-    Platform::keyControl.addCallback('j', setConstruct3);
-    Platform::keyControl.addCallback('k', setConstruct4);
+    Platform::keyControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyKey, this, std::placeholders::_1));
 
     construct1.configure(&scene);
     construct2.configure(&scene);
@@ -56,9 +49,6 @@ void Kaleidoscope_Demo::loop(double frameTime){
     }
 
     _renderer->setDrawMode(drawMode);
-    _flatVShader.setMode(80 + (unsigned)(floor(_renderer->getFrameCount() / 600) + 6) % 10); // _effectVShader.setMode(EFFECT_MODE_FRACTALS);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-    
     _renderer->updateScene(&scene);
     if(getConstruct() != nullptr)
         for(unsigned a = 0; a < getConstruct()->getActorCount(); a++)
@@ -66,7 +56,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

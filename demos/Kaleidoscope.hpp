@@ -75,6 +75,8 @@ struct Kaleidoscope_Demo : public Topl_Program {
 
     Img_Volume volumeImg = Img_Volume(KALEIDOSCOPE_SLICES);
 private:
+    void onAnyKey(char key);
+
     Topl_Scene scene;
     // Topl_Scene targetScene;
 

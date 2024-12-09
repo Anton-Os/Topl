@@ -70,10 +70,14 @@ namespace VK {
         }
 
 		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputs->vertexBindingDescriptionCount = 1;
+        /* vertexInputs->vertexBindingDescriptionCount = 1;
         vertexInputs->pVertexBindingDescriptions = &vertexBindDesc;
         vertexInputs->vertexAttributeDescriptionCount = entryShader->getInputCount();
-        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs.data();
+        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs.data(); */
+		vertexInputs->vertexBindingDescriptionCount = 0;
+        vertexInputs->pVertexBindingDescriptions = nullptr;
+        vertexInputs->vertexAttributeDescriptionCount = 0;
+        vertexInputs->pVertexAttributeDescriptions = nullptr;
 
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 0;
@@ -189,6 +193,7 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 	pipeline->pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline->pipelineInfo.basePipelineIndex = 0;
 
+	std::cout << "About to create pipeline" << std::endl;
 	if(vkCreateGraphicsPipelines(_logicDevice, VK_NULL_HANDLE, 1, &pipeline->pipelineInfo, nullptr, &pipeline->pipeline) == VK_SUCCESS)
 		logMessage("Pipeline creation success\n");
 	else return logMessage("Pipeline creation failure!");

@@ -104,8 +104,8 @@ struct Entropy_Demo : public Topl_Program {
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif
 private:
+    void onAnyKey(char key);
+
     Topl_Scene scene1, scene2, scene3;
     Topl_Scene ext_scene1, ext_scene2, ext_scene3;
-    Topl_Scene backdropScene;
-    // Topl_Scene spawnScene;
 } *_DEMO;

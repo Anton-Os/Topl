@@ -79,8 +79,7 @@ public:
 	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
 	shaderCallback shaderFunc = nullptr; // invoked during shader render block
 
-	// Add texture object?
-	// Add physics object?
+	std::function<void(MOUSE_Event event, Geo_Actor* actor)> pickFunc;
 private:
 	// Data types
 	unsigned _id = rand() % (256 * 256); // id used for color picking

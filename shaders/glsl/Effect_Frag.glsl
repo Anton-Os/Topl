@@ -19,7 +19,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	uint effectIters;
 };
 
-#define FRACTAL_SIZE effectSize
+#define FRACTAL_SIZE 5.0
 #define FRACTAL_ITER 20 // max fractal iteratons
 
 layout(location = 1) in vec3 texcoord;
