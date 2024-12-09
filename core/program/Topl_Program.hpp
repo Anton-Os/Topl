@@ -68,6 +68,7 @@ public:
 		return (*cam->getPos() + Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0 }) - Vec3f{ 0.0, 0.0, CAM_DEPTH } ) * (1.0 / *cam->getZoom());  // TODO: Include roll
 	}
 
+	// These should not be static
 	static Topl_Camera camera; // custom camera object
 	static Topl_Timeline timeline;
 	static Vec3f cursorPos;
@@ -120,7 +121,10 @@ protected:
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
 	bool isEnable_background = true, isEnable_overlays = true;
 private:
-	void createPipelines();
+    void _onAnyKey(char k);
+    void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
+
+    void setPipelines();
 	void createBackground();
 	void createOverlays();
 

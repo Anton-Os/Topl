@@ -5,9 +5,6 @@
 
 #include "Common.glsl"
 
-#define FRACTAL_SIZE 5.0 // max fractal size
-#define FRACTAL_ITER 20 // max fractal iteratons
-
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock {
@@ -18,7 +15,12 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes; // resolution
 	vec2 cursorPos;
+	float effectSize;
+	uint effectIters;
 };
+
+#define FRACTAL_SIZE effectSize
+#define FRACTAL_ITER 20 // max fractal iteratons
 
 layout(location = 1) in vec3 texcoord;
 
@@ -32,6 +34,7 @@ vec3 fractalColors(vec2 coord, vec2 cursor, uint i){
 	else if(mode % 10 == 2) return vec3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
 	else if(mode % 10 == 3) return vec3(distance(coord, cursor), distance(coord, vec2(0.0, 0.0)), distance(cursor, vec2(0.0, 0.0)));
 	else if(mode % 10 == 4) return vec3(coord.x * i - floor(coord.y * i), ceil(coord.y * i) - coord.x * i, cursor.x * cursor.y * i - floor(cursor.x * cursor.y * i));
+	else if(mode % 10 == 5) return vec3(i / (FRACTAL_ITER * 0.5), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
 	else return vec3(coord.x, coord.y, 1.0 / i);
 	// TODO: Include more color options
 }
@@ -101,11 +104,11 @@ vec3 powerSet(vec2 coord, vec2 cursor){
 
 // Step Set
 vec3 stepSet(vec2 coord, vec2 cursor){
-	uint i = 0; // iteration count
+	uint i = 1; // iteration count
 
-	// while(((coord.x / coord.y * i) - floor(coord.x / coord.y * i)) / (ceil(coord.y / coord.x * i) - (coord.y / coord.x * i)) < FRACTAL_SIZE && i < FRACTAL_ITER){
-	while(((coord.y * 10) - floor(coord.y * 10)) / (ceil(coord.x * 10) - (coord.x * 10)) < FRACTAL_SIZE && i < FRACTAL_ITER){
-		coord = vec2(coord.x * (i + 1), coord.y * (i + 1));
+	while(((coord.y * (1.0 / coord.x)) - floor(coord.y * (1.0 / coord.x))) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
+		// coord = vec2((coord.x * i) - floor(coord.x * i), ceil(coord.y * i) - (coord.y * i));
+		coord *= pow(i, dot(coord, cursor)) / pow(distance(coord, cursor), i);
 		i++;
 	}
 
@@ -121,7 +124,7 @@ void main() {
 	float size = cam_pos.w * FRACTAL_SIZE;
 
 	vec2 target;
-	if(mode > 0) target = coords - cursor; 
+	if(mode >= 0) target = coords - cursor - vec2(cam_pos.x, cam_pos.y);
 	else target = vec2(texcoord.x - 0.5, texcoord.y - 0.5) - cursor;
 
 	if(abs(mode) >= 10 && abs(mode) < 20) color = vec4(juliaSet(target * size, cursor), 1.0f);

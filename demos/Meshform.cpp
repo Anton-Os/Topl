@@ -57,11 +57,11 @@ void Meshform_Demo::loop(double frameTime){
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->drawScene(&scene);
     // _renderer->setDrawMode(DRAW_Lines);
-    // _renderer->drawScene(&scene);aaaaaaaaaaaaaaa
+    // _renderer->drawScene(&scene);
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

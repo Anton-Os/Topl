@@ -13,6 +13,7 @@ list(APPEND core_src
     core/renderer/Topl_Renderer.cpp
     core/program/Topl_Program.cpp
     core/program/Topl_Program_Timeline.cpp
+    core/program/Topl_Program_Runner.cpp
     core/scene/Topl_Scene.cpp
 )
 

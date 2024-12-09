@@ -22,13 +22,23 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+        // alignDataToBytes((uint8_t*)&effectSize, sizeof(effectSize), NO_PADDING, bytes);
+        // alignDataToBytes((uint8_t*)&effectIters, sizeof(effectIters), NO_PADDING, bytes);
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }
 	void setHeight(int h) { if(h > 0) height = h; }
+
+    void setEffect(float s, unsigned i){
+        effectSize = s;
+        effectIters = i;
+    }
 protected:
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
+
+    float effectSize = 5.0;
+    unsigned effectIters = 15;
 };
 
 struct Effect_VertexShader_GL4 : public Effect_VertexShader {

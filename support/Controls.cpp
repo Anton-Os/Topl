@@ -11,8 +11,8 @@ void Input_KeyControl::addKeyPress(char keyCode) {
 	for (std::map<char, keyCallback>::const_iterator c = _keyCallback_map.cbegin(); c != _keyCallback_map.cend(); c++)
 		if(isalpha(keyCode)){ if (tolower(keyCode) == tolower(c->first)) c->second(); }// triggers callback if match
 		else if(keyCode == c->first) c->second();
-
-	stampEvent();
+    for(auto function = _keyFunctions.begin(); function != _keyFunctions.end(); function++)
+        (*function)(keyCode);
 }
 
 void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
@@ -21,6 +21,10 @@ void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
 
 void Input_KeyControl::addAnyCallback(anyKeyCallback callback){
 	_anyKeyCallbacks.push_back(callback);
+}
+
+void Input_KeyControl::addHandler(keyFunc function){ // New API
+    _keyFunctions.push_back(function);
 }
 
 // Mouse Interaction
@@ -47,6 +51,9 @@ void Input_MouseControl::addPress(enum MOUSE_Event event, float x, float y){
 	
 	for(std::map<MOUSE_Event, pressCallback>::const_iterator c = _pressCallback_map.cbegin(); c != _pressCallback_map.end(); c++)
 		if(event == c->first) c->second(x, y); // makes callback go off where keys match
+
+    for(auto function = _mouseFunctions.begin(); function != _mouseFunctions.end(); function++)
+        (*function)(event, std::make_pair(x, y));
 	
 	// if(x != INVALID_CURSOR_POS && y != INVALID_CURSOR_POS && (event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press)){
 	if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
@@ -84,4 +91,8 @@ void Input_MouseControl::addDrag(float x, float y){
 		_tracerPaths.back().steps[_tracerPaths.back().stepsCount % MAX_PATH_STEPS] = { x, y };
 		_tracerPaths.back().stepsCount++;
 	}
+}
+
+void Input_MouseControl::addHandler(mouseFunc function){
+    _mouseFunctions.push_back(function);
 }

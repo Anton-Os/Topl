@@ -12,6 +12,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
+	float effectSize;
+	uint effectIters;
 }
 
 struct VS_OUTPUT { 
@@ -29,6 +31,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	
 	output.texcoord = input.texcoord;
 
 	return output;

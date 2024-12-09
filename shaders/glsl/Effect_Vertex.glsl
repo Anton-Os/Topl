@@ -14,6 +14,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes;
 	vec2 cursorPos;
+	float effectSize;
+	uint effectIters;
 };
 
 layout(location = 1) out vec3 texcoord_out;

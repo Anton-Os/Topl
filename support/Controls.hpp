@@ -3,6 +3,7 @@
 #include <map>
 #include <algorithm>
 #include <cctype>
+#include <functional>
 
 #include "Timer.hpp"
 
@@ -28,15 +29,22 @@ protected:
 typedef void (*keyCallback)(void); // Triggers action on a specified keypress
 typedef void (*anyKeyCallback)(char); // Triggers action on any keypress
 
+typedef std::function<void(char)> keyFunc; // new type for key input
+
 class Input_KeyControl : public Input_Control {
 public:
 	Input_KeyControl() : Input_Control(){}
+
 	void addKeyPress(char keyCode);
 	void addCallback(char keyCode, keyCallback callback);
     void addAnyCallback(anyKeyCallback callback);
+
+    void addHandler(keyFunc function);
 private:
     std::vector<anyKeyCallback> _anyKeyCallbacks;
 	std::map<char, keyCallback> _keyCallback_map;
+
+    std::vector<keyFunc> _keyFunctions;
 };
 
 // Mouse
@@ -91,6 +99,8 @@ typedef void (*hoverCallback)(float, float); // Triggers action on a cursor hove
 typedef void (*dragCallback)(float, float); // Triggers action on a cursor hover over specified region
 typedef void (*scrollCallback)(bool); // Triggers action on wheel in positive or negative direction
 
+typedef std::function<void(enum MOUSE_Event, std::pair<float, float>)> mouseFunc; // new type for mouse input
+
 class Input_MouseControl : public Input_Control {
 public:
     Input_MouseControl() : Input_Control(){}
@@ -103,6 +113,8 @@ public:
     void addDragCallback(dragCallback callback);
     void addDrag(float x, float y);  // checks for drag events given cursor position
     
+    void addHandler(mouseFunc function);
+
     scrollCallback onScroll = nullptr;
     std::pair<enum MOUSE_Event, bool> getIsMouseDown(){ return _isMouseDown; }
     // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
@@ -112,12 +124,14 @@ public:
 private:
     std::pair<enum MOUSE_Event, bool> _isMouseDown; // tracks state of mouse being held
     std::vector<Input_TracerStep> _tracerSteps; // tracks steps whenever mouse event and cursor pos is known 
-	std::vector<Input_TracerPath> _tracerPaths; // tracks paths whenever mouse is held and moving
+    std::vector<Input_TracerPath> _tracerPaths; // tracks paths whenever mouse is held and moving
 
 	std::vector<mouseCallback> _mouseCallbacks; // will store any action
     std::map<MOUSE_Event, pressCallback> _pressCallback_map;
     std::map<const Input_CursorRange*, hoverCallback> _hoverCallback_map;
     std::map<const Input_CursorRange*, dragCallback> _dragCallback_map;
+
+    std::vector<mouseFunc> _mouseFunctions;
 };
 
 #define CONTROLS_H

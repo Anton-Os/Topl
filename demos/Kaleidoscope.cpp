@@ -4,7 +4,7 @@ unsigned short Kaleidoscope_Demo::mode = 2;
 
 static DRAW_Mode drawMode = DRAW_Triangles;
 
-static void onAnyKey(char key){
+static void _onAnyKey(char key){
     if(isdigit(key)){
         switch(key - '0'){
             case 2: drawMode = DRAW_Lines; break;
@@ -30,7 +30,7 @@ void setConstruct3(){ Kaleidoscope_Demo::mode = 2; }
 void setConstruct4(){ Kaleidoscope_Demo::mode = 4; }
 
 void Kaleidoscope_Demo::init(){
-    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addAnyCallback(_onAnyKey);
     Platform::keyControl.addCallback('g', setConstruct1);
     Platform::keyControl.addCallback('h', setConstruct2);
     Platform::keyControl.addCallback('j', setConstruct3);

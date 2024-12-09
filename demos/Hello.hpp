@@ -13,13 +13,14 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
+		genPipeline(&calcPipeline, &vertexShader, &pixelShader, { &computeShader });
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
         setPipeline(&geoPipeline);
 		setDrawMode(DRAW_Points);
 	}
 
-	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
+	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
 	Idle_VertexShader_GL4 vertexShader;
 	Idle_PixelShader_GL4 pixelShader;
@@ -36,13 +37,14 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
+		genPipeline(&calcPipeline, &vertexShader, &pixelShader, { &computeShader });
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
 
 		setPipeline(&fullPipeline);
 		setDrawMode(DRAW_Patch);
 	}
 
-	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline;
+	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
 	Idle_VertexShader_DX11 vertexShader;
 	Idle_PixelShader_DX11 pixelShader;

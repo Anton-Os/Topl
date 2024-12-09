@@ -1,4 +1,5 @@
 #define INCLUDE_BLOCK
+#define IGNORE_INPUTS
 
 #include "Common.hlsl"
 
@@ -15,6 +16,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
+	float effectSize;
+	uint effectIters;
 }
 
 struct PS_INPUT { 
@@ -125,8 +128,12 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-	float2 target;
-	if(mode > 0) target = coords - cursor; 
+	/* if(abs(mode) == 0) return float4(cursor, 1.0, 1.0);
+	else if(abs(mode) == 1) return float4(cursor, 0.5, 1.0);
+	else return float4(cursor, 0.0, 1.0); */
+
+	float2 target = coords - cursor;
+	if(mode >= 0) target = coords - cursor; 
 	else target = float2(input.texcoord.x - 0.5, input.texcoord.y - 0.5) - cursor;
 
     if(abs(mode) >= 10 && abs(mode) < 20) return float4(juliaSet(target * FRACTAL_SIZE, cursor), 1.0f);

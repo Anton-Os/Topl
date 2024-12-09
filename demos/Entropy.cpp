@@ -66,13 +66,6 @@ void Entropy_Demo::init(){
 }
 
 void Entropy_Demo::loop(double frameTime){
-    /* backdropActor.isShown = false;
-    _renderer->setDrawMode(DRAW_Triangles);
-    _effectVShader.setMode(30);
-    Topl_Factory::switchPipeline(_renderer, _effectPipeline);
-    _renderer->updateScene(&backdropScene);
-    _renderer->drawScene(&backdropScene); */
-
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
         if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion)
@@ -100,15 +93,15 @@ void Entropy_Demo::loop(double frameTime){
 
     // _flatVShader.setMode(flatMode);
     _renderer->setDrawMode(DRAW_Triangles);
-    _beamsVShader.setMode((100 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
-    _flatVShader.setMode(shaderMode);
-    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+    // _beamsVShader.setMode((100 + shaderMode + lightMode) * ((isInEntropy)? 1 : -1));
+    // _flatVShader.setMode(shaderMode);
+    // Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
     _renderer->setDrawMode(DRAW_Points);
-    _flatVShader.setMode(8);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
-    _renderer->updateScene(getScene());
+    // _flatVShader.setMode(8);
+    // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    // _renderer->updateScene(getScene());
     _renderer->drawScene(getScene());
     // _renderer->clear();
 }

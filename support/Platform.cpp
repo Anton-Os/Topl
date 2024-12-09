@@ -18,6 +18,7 @@ fileCallback Platform::onFileChoose = nullptr;
 static bool checkKey(int code){
 	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
 		   code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28; // handles arrows
+		   // code == 189 || code == 187; // handles + and -
 }
 
 static void addPress(enum MOUSE_Event button){
@@ -344,13 +345,13 @@ bool Platform::handleEvents(){
 
 unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
     XWindowAttributes windowAttribs;
-    // XGetWindowAttributes(XOpenDisplay(NULL), window, &windowAttribs);
+    // XGetWindowAttributes(_context.display, window, &windowAttribs);
     return TOPL_WIN_HEIGHT; // windowAttribs.height;
 }
 
 unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
     XWindowAttributes windowAttribs;
-    // XGetWindowAttributes(XOpenDisplay(NULL), window, &windowAttribs);
+    // XGetWindowAttributes(_context.display, window, &windowAttribs);
     return TOPL_WIN_WIDTH; // windowAttribs.width;
 }
 
@@ -366,11 +367,15 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
         &mask
     );
 
-    unsigned height = Platform::getViewportHeight(_context.window);
-    unsigned width = Platform::getViewportWidth(_context.window);
+    XWindowAttributes windowAttribs;
+    XGetWindowAttributes(_context.display, _context.window, &windowAttribs);
 
-    *xPos = xChild; // x needs to be translated!
-    *yPos = yChild; // y needs to be translated!
+    unsigned height = windowAttribs.height; // Platform::getViewportHeight(_context.window);
+    unsigned width = windowAttribs.width; // Platform::getViewportWidth(_context.window);
+    // printf("Window offset is %d, %d", windowAttribs.x, windowAttribs.y);
+
+    *xPos = ((xChild / (double)width) - 0.5) * 2.0;
+    *yPos = ((yChild / (double)height) - 0.5) * 2.0;
 
     return true; // check if cursor is in client area!
 }
