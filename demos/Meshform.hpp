@@ -49,13 +49,13 @@ struct Meshform_Demo : public Topl_Program {
                 decOrbs[o]->tesselate(MESHFORM_TESS);
             }
 
-        trigOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 1.5F, 1.5F }));
+        trigOrbs[1]->modify(waveTForm, Vec3f({ 1.5F, 1.5F, 1.5F }));
         trigOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
-        quadOrbs[1]->modify(spikeTForm, Vec3f({ 1.5F, 0.0F, 0.0F }));
+        quadOrbs[1]->modify(waveTForm, Vec3f({ 1.5F, 0.0F, 0.0F }));
         quadOrbs[2]->modify(trialTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
-        hexOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 1.5F, 0.0F }));
+        hexOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 1.5F, 0.0F }));
         hexOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
-        decOrbs[1]->modify(spikeTForm, Vec3f({ 0.0F, 0.0F, 1.5F }));
+        decOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 1.5F }));
         decOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
     }
 

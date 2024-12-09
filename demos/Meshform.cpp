@@ -1,7 +1,11 @@
 #include "Meshform.hpp"
 
 void Meshform_Demo::onAnyKey(char key){
-    // TODO: Toggle which actors are shown
+    switch(tolower(key)){
+        case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
+        case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
+        case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
+    }
 }
 
 void Meshform_Demo::init(){
@@ -9,14 +13,22 @@ void Meshform_Demo::init(){
 
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
-    orbActors[MESHFORM_INDEX][0].setPos({ 0.5F, 0.5F, 0.0F });
-    scene.addGeometry("trigOrb", &orbActors[MESHFORM_INDEX][0]);
-    orbActors[MESHFORM_INDEX][1].setPos({ -0.5F, -0.5F, 0.0F });
-    scene.addGeometry("quadOrb", &orbActors[MESHFORM_INDEX][1]);
-    orbActors[MESHFORM_INDEX][2].setPos({ 0.5F, -0.5F, 0.0F });
-    scene.addGeometry("hexOrb", &orbActors[MESHFORM_INDEX][2]);
-    orbActors[MESHFORM_INDEX][3].setPos({ -0.5F, 0.5F, 0.0F });
-    scene.addGeometry("decOrb", &orbActors[MESHFORM_INDEX][3]);
+    for(unsigned m = 0; m < 3; m++){
+        orbActors[m][0].setPos({ 0.5F, 0.5F, 0.0F });
+        scene.addGeometry("trigOrb" + std::to_string(m), &orbActors[m][0]);
+        orbActors[m][1].setPos({ -0.5F, -0.5F, 0.0F });
+        scene.addGeometry("quadOrb" + std::to_string(m), &orbActors[m][1]);
+        orbActors[m][2].setPos({ 0.5F, -0.5F, 0.0F });
+        scene.addGeometry("hexOrb" + std::to_string(m), &orbActors[m][2]);
+        orbActors[m][3].setPos({ -0.5F, 0.5F, 0.0F });
+        scene.addGeometry("decOrb" + std::to_string(m), &orbActors[m][3]);
+        for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == MESHFORM_INDEX;
+
+        scene.addVolumeTex("trigOrb" + std::to_string(m), &volumeImg);
+        scene.addVolumeTex("quadOrb" + std::to_string(m), &volumeImg);
+        scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
+        scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
+    }
 
     _renderer->buildScene(&scene);
 #ifdef RASTERON_H
@@ -25,10 +37,6 @@ void Meshform_Demo::init(){
         volumeImg.addSlice(gradientImg, d);
         RASTERON_DEALLOC(gradientImg);
     } */
-    scene.addVolumeTex("trigOrb", &volumeImg);
-    scene.addVolumeTex("quadOrb", &volumeImg);
-    scene.addVolumeTex("hexOrb", &volumeImg);
-    scene.addVolumeTex("decOrb", &volumeImg);
     _renderer->texturizeScene(&scene);
 #endif
 }
@@ -52,7 +60,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

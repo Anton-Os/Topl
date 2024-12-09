@@ -2,15 +2,12 @@
 
 static short lightMode = 1;
 
-static void onAnyKey(char key){
-    if(tolower(key) == 'v') lightMode = 0;
-    else if(tolower(key) == 'b') lightMode = 1;
-    else if(tolower(key) == 'n') lightMode = 2;
-    else if(tolower(key) == 'm') lightMode = 3;
+void Molecular_Demo::onAnyKey(char key){
+    // TODO: Shift light positions
 }
 
 void Molecular_Demo::init(){
-    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addHandler(std::bind(&Molecular_Demo::onAnyKey, this, std::placeholders::_1));
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
@@ -34,22 +31,20 @@ void Molecular_Demo::loop(double frameTime){
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
 
-    _beamsVShader.setMode(lightMode * 10);
-    Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
+    // _beamsVShader.setMode(lightMode * 10);
+    // Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++)
-            for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++){
-                // TODO: Set light and other parameters
+            for(unsigned o = 0; o < constructs[m][c].getActorCount(); o++)
                 _renderer->draw(constructs[m][c].getGeoActor(o));
-            }
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);
