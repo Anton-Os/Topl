@@ -78,5 +78,5 @@ struct Meshform_Demo : public Topl_Program {
 private:
     void onAnyKey(char key);
 
-    Topl_Scene scene;
+    Topl_Scene scene = PROGRAM_SCENE;
 } *_DEMO;

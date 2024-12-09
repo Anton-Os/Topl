@@ -93,9 +93,6 @@ void FirstPerson_Demo::init(){
 }
 
 void FirstPerson_Demo::loop(double frameTime){
-    scene2D.camera = &Topl_Program::camera;
-    scene3D.camera = &Topl_Program::camera;
-
     {
 #ifdef TOPL_ENABLE_PHYSICS
         if(_renderer->getFrameCount() % 10 == 0 && Topl_Program::timeline.persist_ticker.getAbsSecs() > 10.0){

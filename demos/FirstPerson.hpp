@@ -101,5 +101,6 @@ struct FirstPerson_Demo : public Topl_Program {
     Img_Base modelTexs[5];
 #endif
 private:
-    Topl_Scene scene2D, scene3D;
+    Topl_Scene scene2D = PROGRAM_SCENE; 
+    Topl_Scene scene3D = PROGRAM_SCENE;
 } *_DEMO;

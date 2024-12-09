@@ -11,6 +11,10 @@
 #define BEAMS_TRAJECTORY 8
 #define BEAMS_TRIAL 9
 
+#define BEAMS_SKY_LIGHT Topl_Light({ 0.0, 1.0f, 0.0 }, { 1.0, 1.0, 0.0 })
+#define BEAMS_FLASH_LIGHT Topl_Light({ 0.0, 1.0f, 0.0 }, { 1.0, 1.0, 0.0 })
+#define BEAMS_LAMP_LIGHT Topl_Light({ 0.0, 0.0f, 1.0 }, { 0.0, 1.0, 1.0 })
+
 // Light
 
 enum LIGHT_Type { 
@@ -52,9 +56,9 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		}
 	}
 protected:
-	Topl_Light skyLight = Topl_Light({ 0.0, 1.0f, 0.0 }, { 1.0, 1.0, 0.0 });
-	Topl_Light flashLight = Topl_Light({ 0.0, 0.0f, -1.0 }, { 1.0, 0.0, 1.0 });
-	Topl_Light lampLight = Topl_Light({ 0.0, 0.0f, 1.0 }, { 0.0, 1.0, 1.0 });
+	Topl_Light skyLight = BEAMS_SKY_LIGHT;
+	Topl_Light flashLight = BEAMS_FLASH_LIGHT;
+	Topl_Light lampLight = BEAMS_LAMP_LIGHT;
 private:
 	void sendLightData(const Topl_Light* light, blockBytes_t* bytes) const {
 		appendDataToBytes((uint8_t*)&light->pos, sizeof(Vec3f), bytes);

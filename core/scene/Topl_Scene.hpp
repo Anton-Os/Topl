@@ -24,10 +24,12 @@
 
 class Topl_Scene {
 public:
-	Topl_Scene() { _ticker.reset(); } // Empty Constructor
-	Topl_Scene(std::initializer_list<Geo_Actor*> actors){ // Actors Constuctor
+	Topl_Scene() { } // Empty Constructor
+	Topl_Scene(Topl_Camera* cam){ camera = cam; } // Camera Constuctor
+	Topl_Scene(std::initializer_list<Geo_Actor*> actors){ for(auto a = actors.begin(); a != actors.end(); a++) addGeometry(*a); } // Actors Constuctor
+	Topl_Scene(Topl_Camera* cam, std::initializer_list<Geo_Actor*> actors){ // Camera dnd Actors Constructor
+		camera = cam;
 		for(auto a = actors.begin(); a != actors.end(); a++) addGeometry(*a);
-		_ticker.reset();
 	}
 	/* Topl_Scene(std::initializer_list<Geo_Construct*> constructs){ // Constructs Constuctor
 		for(auto c = constructs.begin(); c != constructs.end(); c++) (*c)->configure(this);

@@ -9,8 +9,6 @@ void Meshform_Demo::onAnyKey(char key){
 }
 
 void Meshform_Demo::init(){
-    scene.camera = &Topl_Program::camera;
-
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
     for(unsigned m = 0; m < 3; m++){

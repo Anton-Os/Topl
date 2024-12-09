@@ -3,7 +3,11 @@
 static short lightMode = 1;
 
 void Molecular_Demo::onAnyKey(char key){
-    // TODO: Shift light positions
+    if(tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
+        _beamsVShader.setLight(LIGHT_Sky, skyLight);
+        _beamsVShader.setLight(LIGHT_Flash, flashLight);
+        _beamsVShader.setLight(LIGHT_Lamp, lampLight);
+    }
 }
 
 void Molecular_Demo::init(){
@@ -25,8 +29,6 @@ void Molecular_Demo::init(){
 }
 
 void Molecular_Demo::loop(double frameTime){
-    scene.camera = &Topl_Program::camera;
-
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });

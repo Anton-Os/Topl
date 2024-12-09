@@ -155,7 +155,6 @@ void Topl_Program::setPipelines(){
 }
 
 void Topl_Program::createBackground(){
-    _background.scene.camera = &_background.camera;
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
     _renderer->buildScene(&_background.scene);
@@ -179,7 +178,6 @@ void Topl_Program::createOverlays(){
             }
 #endif
     }
-    _overlays.scene.camera = &_overlays.camera;
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
 }

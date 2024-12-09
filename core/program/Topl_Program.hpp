@@ -17,6 +17,7 @@
 #define CACHED_FRAME_COUNT 60
 #define PROGRAM_M 0.1f
 #define PROGRAM_OVERLAYS 3
+#define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -133,14 +134,14 @@ private:
         Geo_Quad2D mesh = Geo_Quad2D(2.0F);
         Geo_Actor actor = Geo_Actor("background", &mesh);
         Topl_Camera camera = Topl_Camera();
-        Topl_Scene scene = Topl_Scene({ &actor });
+        Topl_Scene scene = Topl_Scene(&camera, { &actor });
 	} _background;
 
 	void _backgroundCallback(MOUSE_Event event, Geo_Actor* actor);
 
 	struct Overlays {
         Topl_Camera camera;
-        Topl_Scene scene;
+        Topl_Scene scene = Topl_Scene(&camera);
 		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 2, 3, &scene);
 		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 2, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 2, 3, &scene);

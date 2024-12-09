@@ -39,8 +39,6 @@ void Kaleidoscope_Demo::init(){
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){
-    scene.camera = &Topl_Program::camera;
-
     for(unsigned s = 0; s < construct1.getActorCount(); s++){
         construct1.getGeoActor(s)->updateRot(Vec3f({ construct1.getSpinFactor(s), 0.0F, 0.0F }));
         construct2.getGeoActor(s)->updateRot(Vec3f({ construct2.getSpinFactor(s), 0.0F, 0.0F }));

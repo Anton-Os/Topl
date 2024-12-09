@@ -76,7 +76,7 @@ public:
 	vec3f_cptr_t getSize() const { return &_scale; }
 
 	bool isShown = true;
-	pickerCallback pickerFunc = nullptr; // invoked on color picking operation
+	// pickerCallback pickerFunc = nullptr; // invoked on color picking operation
 	shaderCallback shaderFunc = nullptr; // invoked during shader render block
 
 	std::function<void(MOUSE_Event event, Geo_Actor* actor)> pickFunc;
