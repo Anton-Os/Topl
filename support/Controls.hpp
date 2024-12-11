@@ -117,10 +117,11 @@ public:
 
     scrollCallback onScroll = nullptr;
     std::pair<enum MOUSE_Event, bool> getIsMouseDown(){ return _isMouseDown; }
-    // const Input_TracerStep* getLastTracerStep(unsigned short steps) const { return (steps < _tracerSteps.size())? &_tracerSteps[_tracerSteps.size() - steps - 1] : &_tracerSteps.back(); }
+
     const std::vector<Input_TracerStep>* getTracerSteps() const { return &_tracerSteps; }
-    // const Input_TracerPath* getLastTracerPath(unsigned short steps) const { return (steps < _tracerPaths.size())? &_tracerPaths[_tracerPaths.size() - steps - 1] : &_tracerPaths.back(); }
+    std::pair<float, float> getLastStepDiff() const;
     const std::vector<Input_TracerPath>* getTracerPaths() const { return &_tracerPaths; }
+    std::pair<float, float> getLastPathDiff() const;
 private:
     std::pair<enum MOUSE_Event, bool> _isMouseDown; // tracks state of mouse being held
     std::vector<Input_TracerStep> _tracerSteps; // tracks steps whenever mouse event and cursor pos is known 

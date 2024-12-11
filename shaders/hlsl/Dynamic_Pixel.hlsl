@@ -12,7 +12,10 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 look_pos;
 	float4x4 projMatrix;
 
+    double timeFrame;
 	double timeElapse;
+    // float2 coordPoints[8];
+    // float4 coordColors[8];
 }
 
 struct PS_INPUT { float4 pos : SV_POSITION; };

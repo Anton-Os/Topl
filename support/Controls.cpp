@@ -96,3 +96,27 @@ void Input_MouseControl::addDrag(float x, float y){
 void Input_MouseControl::addHandler(mouseFunc function){
     _mouseFunctions.push_back(function);
 }
+
+std::pair<float, float> Input_MouseControl::getLastStepDiff() const {
+    unsigned short steps = _tracerSteps.size();
+    if(steps >= 2)
+        return std::make_pair(
+            _tracerSteps[steps - 1].step.first - _tracerSteps[steps - 2].step.first,
+            _tracerSteps[steps - 1].step.second - _tracerSteps[steps - 2].step.second
+        );
+    else return std::make_pair(0.0f, 0.0f);
+}
+
+std::pair<float, float> Input_MouseControl::getLastPathDiff() const {
+    if(_tracerPaths.size() < 1) return std::make_pair(0.0f, 0.0f);
+
+	std::cout << "Getting path diff" << std::endl;
+    Input_TracerPath lastPath = getTracerPaths()->back();
+    if(lastPath.stepsCount >= 2)
+        return std::make_pair(
+            lastPath.steps[lastPath.stepsCount - 1].first - lastPath.steps[lastPath.stepsCount - 2].first,
+            lastPath.steps[lastPath.stepsCount - 1].second - lastPath.steps[lastPath.stepsCount - 2].second
+        );
+    else return std::make_pair(0.0f, 0.0f);
+}
+

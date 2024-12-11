@@ -23,11 +23,17 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::camera = Topl_Camera();
 
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
-	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
+	// std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
 }
 
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
-	std::cout << "OVERLAYS: Actor is " << actor->getName() << std::endl;
+    std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
+    Geo_Construct* overlayConstruct = nullptr;
+    for(unsigned o = 0; o < 3; o++) 
+        if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
+            overlayConstruct = _overlays.billboards[o];
+            overlayConstruct->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
+        }
 }
 
 void Topl_Program::_onAnyKey(char k){
@@ -59,8 +65,8 @@ void Topl_Program::_onAnyKey(char k){
 #endif
     }
     if(Topl_Program::isCtrl_shader){
-        if(k == '-' || k == (char)0x25) Topl_Program::shaderMode--;
-        else if(k == '+' || k == (char)0x27) Topl_Program::shaderMode++;
+        if(k == '-' || k == '_' || k == (char)0x25) Topl_Program::shaderMode--;
+        else if(k == '+' || k == '=' || k == (char)0x27) Topl_Program::shaderMode++;
         else if(isdigit(k)){
             switch(tolower(k)){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
@@ -72,7 +78,7 @@ void Topl_Program::_onAnyKey(char k){
             }
         }
 
-        if(k == (char)0x25 || k == (char)0x27 || k == '+' || k == '='){
+        if(k == (char)0x25 || k == (char)0x27 || k == '-' || k == '_' || k == '+' || k == '='){
             for(unsigned s = 0; s < 6; s++)
                 _entryShaders[s]->setMode(Topl_Program::shaderMode);
         }
@@ -174,6 +180,7 @@ void Topl_Program::createOverlays(){
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
                 _overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
+                _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
                 // _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
             }
 #endif

@@ -364,13 +364,13 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     subpassDesc.colorAttachmentCount = 1;
     subpassDesc.pColorAttachments = &colorAttachmentRef;
 
-    /* VkSubpassDependency subpassDependency = {};
+    VkSubpassDependency subpassDependency = {};
     subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
     subpassDependency.dstSubpass = 0;
     subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency.srcAccessMask = 0;
     subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; */
+    subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
     VkRenderPassCreateInfo renderPassCreateInfo = {};
     renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -378,8 +378,8 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     renderPassCreateInfo.pAttachments = &colorAttachment;
     renderPassCreateInfo.subpassCount = 1;
     renderPassCreateInfo.pSubpasses = &subpassDesc;
-    // renderPassCreateInfo.dependencyCount = 1;
-    // renderPassCreateInfo.pDependencies = &subpassDependency;
+    renderPassCreateInfo.dependencyCount = 1;
+    renderPassCreateInfo.pDependencies = &subpassDependency;
 
     result = vkCreateRenderPass(_logicDevice, &renderPassCreateInfo, nullptr, &_renderPass);
     if(result == VK_SUCCESS) logMessage("RenderPass creation success \n");
@@ -586,9 +586,8 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
-	if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
-		logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
-    // else logMessage("Successfully aquired image " + std::to_string(_swapImgIdx));
+    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
+        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
 
     VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
 	VkSemaphore signalSemaphores[] = { _renderFinishSemaphore };
@@ -682,6 +681,9 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
         renderPassInfo.renderPass = _renderPass;
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = _surfaceCaps.currentExtent;
+        VkClearValue clearColor = {{{ _clearColors[0], _clearColors[1], _clearColors[2], _clearColors[3] }}};
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
 
         vkCmdBeginRenderPass(_commandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -690,9 +692,11 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
             if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
-            // std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
-            // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
+            if(_frameIDs > 300) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
+
+        vkCmdEndRenderPass(_commandBuffers[0]);
 
         if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
     }

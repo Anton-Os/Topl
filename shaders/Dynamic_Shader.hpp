@@ -11,10 +11,12 @@ struct Dynamic_VertexShader : public Topl_EntryShader {
 
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		static Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
-		double millisecs = dynamic_timer.getAbsMillisecs();
+        double relMillisecs = dynamic_timer.getRelMillisecs();
+        double absMillisecs = dynamic_timer.getAbsMillisecs();
 
 		Topl_EntryShader::genSceneBlock(scene, bytes);
-		alignDataToBytes((uint8_t*)&millisecs, sizeof(millisecs), NO_PADDING, bytes);
+        alignDataToBytes((uint8_t*)&relMillisecs, sizeof(relMillisecs), NO_PADDING, bytes);
+        alignDataToBytes((uint8_t*)&absMillisecs, sizeof(absMillisecs), NO_PADDING, bytes);
 	}
 protected:
 	// Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
