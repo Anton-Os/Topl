@@ -102,6 +102,7 @@ public:
 
     // void setCamera(const Topl_Camera* camera);
     void setPipeline(const Topl_Pipeline* pipeline);
+    virtual Topl_Pipeline* getPipeline() = 0;
     bool buildScene(const Topl_Scene* scene);
     bool updateScene(const Topl_Scene* scene);
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }

@@ -20,6 +20,7 @@ public:
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(VK::Pipeline* pipeline);
+	Topl_Pipeline* getPipeline() override { return _pipeline; }
 	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){ genPipeline(pipeline, vertexShader, pixelShader, {}); }
 	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders);
 #ifdef RASTERON_H

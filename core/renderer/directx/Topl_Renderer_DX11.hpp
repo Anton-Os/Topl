@@ -20,6 +20,7 @@ public:
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(DX11::Pipeline* pipeline);
+	Topl_Pipeline* getPipeline() override { return _pipeline; }
 	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader){ genPipeline(pipeline, vShader, pShader, {}); }
 	void genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
 #ifdef RASTERON_H

@@ -126,8 +126,8 @@ private:
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
     void setPipelines();
-	void createBackground();
-	void createOverlays();
+    void createBackground(Img_Base* backgroundTex);
+    void createOverlays(Img_UI* overlayUI);
 
 	// Scenes, Geometry & Targets
 	struct Background {
@@ -135,6 +135,9 @@ private:
         Geo_Actor actor = Geo_Actor("background", &mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
+#ifdef RASTERON_H
+        Img_Base image = Img_Base(std::string(IMAGES_DIR) + "Blueprint-Grid.png");
+#endif
 	} _background;
 
 	void _backgroundCallback(MOUSE_Event event, Geo_Actor* actor);
@@ -148,6 +151,8 @@ private:
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
 		Img_Button button = Img_Button(MENU_Medium);
+        Img_Dial dial = Img_Dial(MENU_Medium, 4);
+        Img_Slider slider = Img_Slider(MENU_Medium, 2);
 #endif
 	} _overlays;
 

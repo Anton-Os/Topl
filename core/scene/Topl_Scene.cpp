@@ -56,8 +56,10 @@ void Topl_Scene::removeActor(const std::string& name){
 #ifdef RASTERON_H
 
 void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
-	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+    if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7"){
 		_textures[(char)name[0] - '0' - 1].setImage(image->getImage());
+        std::cout << "Setting image for " << name << std::endl;
+    }
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_textureMap.erase(*actor);

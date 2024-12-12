@@ -28,12 +28,31 @@ void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
-    Geo_Construct* overlayConstruct = nullptr;
+    Geo_Billboard* billboard = nullptr;
     for(unsigned o = 0; o < 3; o++) 
         if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
-            overlayConstruct = _overlays.billboards[o];
-            overlayConstruct->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
+            billboard = _overlays.billboards[o];
+            billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
+            for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
+                billboard->setState(p, actor == billboard->getGeoActor(p));
+                if(actor == billboard->getGeoActor(p)){
+                    if(o == 0) // handling shader switching
+                        switch(p){
+                            case 0: Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
+                            case 1: Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
+                            case 2: Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
+                            case 3: Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
+                            case 4: Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
+                            case 5: Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+                            default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                        }
+                    else switch(p){
+                        default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                    }
+                }
+            }
         }
+    _renderer->texturizeScene(&_overlays.scene);
 }
 
 void Topl_Program::_onAnyKey(char k){
@@ -117,8 +136,13 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     Platform::mouseControl.addHandler(std::bind(&Topl_Program::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
 
     setPipelines();
-	if(isEnable_background) createBackground();
-	if(isEnable_overlays) createOverlays();
+#ifdef RASTERON_H
+    if(isEnable_background) createBackground(&_background.image);
+    if(isEnable_overlays) createOverlays(&_overlays.button);
+#else
+    if(isEnable_background) createBackground(nullptr);
+    if(isEnable_overlays) createOverlays(nullptr);
+#endif
 
     // Texturing Data Generation
 #ifdef RASTERON_H
@@ -160,14 +184,21 @@ void Topl_Program::setPipelines(){
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
 }
 
-void Topl_Program::createBackground(){
+void Topl_Program::createBackground(Img_Base* backgroundTex){
+    // _background.mesh.tesselate(3);
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
+#ifdef RASTERON_H
+    if(backgroundTex != nullptr){
+        _background.scene.addTexture("background", backgroundTex);
+        for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
+    }
+#endif
     _renderer->buildScene(&_background.scene);
     _renderer->texturizeScene(&_background.scene);
 }
 
-void Topl_Program::createOverlays(){
+void Topl_Program::createOverlays(Img_UI* overlayUI){
     _overlays.billboard_camera.shift({ -0.75, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
@@ -179,10 +210,12 @@ void Topl_Program::createOverlays(){
 #ifdef RASTERON_H
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
-                _overlays.billboards[o]->overlay(e, &_overlays.button); // test overlay
+                if(overlayUI != nullptr) _overlays.billboards[o]->overlay(e, overlayUI);
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
                 // _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
+                // if(paneTex != nullptr) _overlays.billboards[o]->getImgAt(e)->setImage(paneTex->getImage());
             }
+        // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
 #endif
     }
     _renderer->buildScene(&_overlays.scene);
