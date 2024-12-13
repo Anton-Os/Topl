@@ -367,12 +367,18 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
         &mask
     );
 
+
     XWindowAttributes windowAttribs;
     XGetWindowAttributes(_context.display, _context.window, &windowAttribs);
-
     unsigned height = windowAttribs.height; // Platform::getViewportHeight(_context.window);
     unsigned width = windowAttribs.width; // Platform::getViewportWidth(_context.window);
-    // printf("Window offset is %d, %d", windowAttribs.x, windowAttribs.y);
+    // unsigned border, depth;
+    // XGetGeometry(_context.display, _context.window, &root, &xOff, &yOff, &width, &height, &border, &depth);
+
+    int xOff, yOff;
+    XTranslateCoordinates(_context.display, _context.window, window, xChild, yChild, &xOff, &yOff, &window);
+    printf("Offset is %d, %d", xOff, yOff);
+    // printf("Window offset is %d, %d, dimensions are %d, %d", xChild, yChild, width, height);
 
     *xPos = ((xChild / (double)width) - 0.5) * 2.0;
     *yPos = ((yChild / (double)height) - 0.5) * 2.0;

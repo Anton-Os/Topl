@@ -34,16 +34,19 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
             billboard = _overlays.billboards[o];
             billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
             for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
-                billboard->setState(p, actor == billboard->getGeoActor(p));
                 if(actor == billboard->getGeoActor(p)){
+                    billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     if(o == 0) // handling shader switching
                         switch(p){
-                            case 0: Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
-                            case 1: Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
-                            case 2: Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
-                            case 3: Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
-                            case 4: Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
-                            case 5: Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+                            case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
+                            case 1: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
+                            case 2: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
+                            case 3: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
+                            case 4: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
+                            case 5: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+                            case 6: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
+                            case 7: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
+                            case 8: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
                             default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                         }
                     else switch(p){
@@ -138,10 +141,9 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     setPipelines();
 #ifdef RASTERON_H
     if(isEnable_background) createBackground(&_background.image);
-    if(isEnable_overlays) createOverlays(&_overlays.button);
+    if(isEnable_overlays) createOverlays();
 #else
     if(isEnable_background) createBackground(nullptr);
-    if(isEnable_overlays) createOverlays(nullptr);
 #endif
 
     // Texturing Data Generation
@@ -198,7 +200,7 @@ void Topl_Program::createBackground(Img_Base* backgroundTex){
     _renderer->texturizeScene(&_background.scene);
 }
 
-void Topl_Program::createOverlays(Img_UI* overlayUI){
+void Topl_Program::createOverlays(){
     _overlays.billboard_camera.shift({ -0.75, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
@@ -210,10 +212,14 @@ void Topl_Program::createOverlays(Img_UI* overlayUI){
 #ifdef RASTERON_H
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
-                if(overlayUI != nullptr) _overlays.billboards[o]->overlay(e, overlayUI);
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
+                /* // if(overlayUI != nullptr) _overlays.billboards[o]->overlay(e, overlayUI);
                 // _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
                 // if(paneTex != nullptr) _overlays.billboards[o]->getImgAt(e)->setImage(paneTex->getImage());
+                unsigned contentColors[3] = { UI_COLOR_ON, UI_COLOR_DEFAULT, UI_COLOR_OFF };
+                if(bgColor != 0 && fgColor != 0) setUI_colorScheme(bgColor, fgColor, contentColors); */
+                _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Img_Button(MENU_Medium) });
+                _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
             }
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
 #endif

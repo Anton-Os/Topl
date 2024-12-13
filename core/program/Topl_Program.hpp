@@ -127,7 +127,7 @@ private:
 
     void setPipelines();
     void createBackground(Img_Base* backgroundTex);
-    void createOverlays(Img_UI* overlayUI);
+    void createOverlays();
 
 	// Scenes, Geometry & Targets
 	struct Background {
@@ -145,14 +145,15 @@ private:
 	struct Overlays {
         Topl_Camera camera;
         Topl_Scene scene = Topl_Scene(&camera);
-		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 2, 3, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 2, 3, &scene);
-		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 2, 3, &scene);
+		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 3, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 3, 3, &scene);
+		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
 		Img_Button button = Img_Button(MENU_Medium);
         Img_Dial dial = Img_Dial(MENU_Medium, 4);
         Img_Slider slider = Img_Slider(MENU_Medium, 2);
+		std::map<Geo_Actor*, Img_Button*> button_map;
 #endif
 	} _overlays;
 

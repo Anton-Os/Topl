@@ -586,9 +586,6 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
-    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS)
-        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
-
     VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
 	VkSemaphore signalSemaphores[] = { _renderFinishSemaphore };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT }; // { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
@@ -666,6 +663,9 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
+        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
+
     if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
     else {
         static VkDeviceSize offsets[] = { 0 };
@@ -692,8 +692,9 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
             if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
-            std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
-            if(_frameIDs > 300) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            // std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
+            std::cout << "Frame IDs is " << std::to_string(_frameIDs) << "image index is " << std::to_string(_swapImgIdx) << std::endl;
+            if(_frameIDs > 10) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
         vkCmdEndRenderPass(_commandBuffers[0]);

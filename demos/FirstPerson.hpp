@@ -98,7 +98,7 @@ struct FirstPerson_Demo : public Topl_Program {
         Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA0000FF, color_invert(0xAA0000FF))),
         Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAEEEEEE, color_invert(0xAAEEEEEE)))
     };
-    Img_Base modelTexs[5];CD .
+    Img_Base modelTexs[5];
 #endif
 private:
     Topl_Scene scene2D = PROGRAM_SCENE; 
