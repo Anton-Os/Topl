@@ -59,8 +59,16 @@ public:
 		// TODO: Adjust images and textures
     }
 
-    // void expandRow(unsigned short index); // combines multiple elements
-    // void expandCol(unsigned short index); // combines multiple elements
+    void expandHorz(std::pair<unsigned short, unsigned short> cell, unsigned short amount){
+		unsigned index = (cell.second * _params.x.first) + cell.first;
+		for(unsigned a = 0; a < _params.x.first * _params.y.first; a++) _geoActors[a].isShown = a != index - 1 && a != index + 1;
+		_geoActors[index].updateSize({ (float)amount, 0.0F, 0.0F });
+	}
+	void expandVert(std::pair<unsigned short, unsigned short> cell, unsigned short amount){
+		unsigned index = (cell.second * _params.x.first) + cell.first;
+		for(unsigned a = 0; a < _params.x.first * _params.y.first; a++) _geoActors[a].isShown = a != index - _params.x.first && a != index + _params.x.first;
+		_geoActors[index].updateSize({ 0.0F, (float)amount * 0.66F, 0.0F }); // TODO: Figure out exact proportions
+	}
 #ifdef RASTERON_H
 	Img_Base* getImgRoot(){ return getImgAt(_params.getGridSize()); }
 	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }

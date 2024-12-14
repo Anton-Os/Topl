@@ -15,6 +15,14 @@ void Topl_Program::preloop(){
 }
 
 void Topl_Program::postloop(){
+     if(Topl_Program::pickerObj != nullptr){
+        _editor.actor.setPos(*Topl_Program::pickerObj->getPos());
+        _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
+        _editor.actor.setSize(*Topl_Program::pickerObj->getPos() * 1.25F);
+        _editor.mesh.drawMode = DRAW_Lines;
+        _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
+    }
+    else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H
     static unsigned index = 0;
 
@@ -41,10 +49,10 @@ void Topl_Program::run(){
         if(_renderer != nullptr){
             if(Platform::mouseControl.getIsMouseDown().second) preloop();
             _renderer->clear(); // clears view to solid color
-            // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
-            if(isEnable_overlays) renderScene(&_overlays.scene, nullptr, shaderMode);
+            if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, nullptr, shaderMode);
+            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
         }
@@ -73,11 +81,12 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
         Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
         Topl_Program::pickerObj = actor;
         if(actor != nullptr){
-            std::cout << "Actor is " << actor->getName() << std::endl;
+            // std::cout << "Actor is " << actor->getName() << std::endl;
             if(actor->pickFunc != nullptr){
                 if(!Platform::mouseControl.getIsMouseDown().second) actor->pickFunc(MOUSE_Hover, actor);
                 else actor->pickFunc(Platform::mouseControl.getIsMouseDown().first, actor);
             }
+            if(Platform::mouseControl.getIsMouseDown().second) Topl_Program::lastPickerObj = actor;
         }
     }
 

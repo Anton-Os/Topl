@@ -16,6 +16,7 @@ unsigned Topl_Program::lastPickerColor = 0;
 Vec3f Topl_Program::pickerCoord = { 0.0F, 0.0F, 0.0F };
 Vec3f Topl_Program::lastPickerCoord = { 0.0F, 0.0F, 0.0F };
 Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
+Geo_Actor* Topl_Program::lastPickerObj = NO_PICKER_OBJ;
 #ifdef RASTERON_H
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
@@ -145,6 +146,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 #else
     if(isEnable_background) createBackground(nullptr);
 #endif
+    _renderer->buildScene(&_editor.scene);
 
     // Texturing Data Generation
 #ifdef RASTERON_H
@@ -224,6 +226,8 @@ void Topl_Program::createOverlays(){
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
 #endif
     }
+    _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
+    _overlays.billboard_camera.expandVert(std::make_pair(2, 1), 1);
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
 }

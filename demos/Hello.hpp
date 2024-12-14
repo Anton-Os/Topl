@@ -13,12 +13,14 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
-		genPipeline(&calcPipeline, &vertexShader, &pixelShader, { &computeShader });
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
+        genComputePipeline(&calcPipeline, &computeShader);
 
-        setPipeline(&geoPipeline);
+        setDrawPipeline(true);
 		setDrawMode(DRAW_Points);
 	}
+
+    void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &geoPipeline); }
 
 	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
@@ -37,12 +39,14 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
-		genPipeline(&calcPipeline, &vertexShader, &pixelShader, { &computeShader });
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
+        genComputePipeline(&calcPipeline, &computeShader);
 
-		setPipeline(&fullPipeline);
+        setDrawPipeline(true);
 		setDrawMode(DRAW_Patch);
 	}
+
+    void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &fullPipeline); }
 
 	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
@@ -65,13 +69,7 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 		_renderIDs = 1;
 	}
 
-	/* void build(const Geo_Actor* actor) {
-		// TODO: Implement drawing for testing purposes
-	}
-
-	void draw(const Geo_Actor* actor) {
-		// TODO: Implement drawing for testing purposes
-	} */
+    void setDrawPipeline(bool isNonCompute){ } // dummy invocation
 
 	VK::Pipeline pipeline;
 	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");

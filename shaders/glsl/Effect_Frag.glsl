@@ -116,8 +116,8 @@ vec3 wingSet(vec2 coord){
     while(abs(x / coord.x) * abs(y / coord.y) < FRACTAL_SIZE && i < FRACTAL_ITER){
         // x += smoothstep(coord.x + x, coord.x - x, 1.0 / (i * i)) * pow(coord.x, x / y); // sin(y * i);
         // y += smoothstep(coord.y - y, coord.y + y, 1.0 / sqrt(i)) * pow(coord.y, y / x); // cos(x * i);
-        x += smoothstep(coord.x, coord.x + abs(x), i * i) * pow(coord.x / abs(y), coord.x * i); // experiment with abs() for effects
-        y -= smoothstep(coord.y, coord.y + abs(y), sqrt(i)) * pow(coord.y / abs(x), coord.y * i); // experiment with abs() for effects
+        x *= smoothstep(coord.x, coord.x + abs(x), i * i) * pow(coord.x / abs(y), coord.x * i); // experiment with abs() for effects
+        y *= smoothstep(coord.y, coord.y + abs(y), sqrt(i)) * pow(coord.y / abs(x), coord.y * i); // experiment with abs() for effects
         i++;
     }
 

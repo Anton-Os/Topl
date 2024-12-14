@@ -46,14 +46,18 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	else pipeline->isReady = true; // set to true until error encountered
 
 	// Vertex Shader
-	std::string vertexShaderSrc = vertexShader->getFileSource();
-	pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
-	if (pipeline->vertexShader == 0){ pipeline->isReady = false; return; }
+    if(vertexShader != nullptr){
+        std::string vertexShaderSrc = vertexShader->getFileSource();
+        pipeline->vertexShader = GL4::compileShader(vertexShaderSrc, GL_VERTEX_SHADER);
+        if (pipeline->vertexShader == 0){ pipeline->isReady = false; return; }
+    }
 
 	// Pixel Shader
-	std::string fragShaderSrc = pixelShader->getFileSource();
-	pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
-	if (pipeline->pixelShader == 0){ pipeline->isReady = false; return; }
+    if(pixelShader != nullptr){
+        std::string fragShaderSrc = pixelShader->getFileSource();
+        pipeline->pixelShader = GL4::compileShader(fragShaderSrc, GL_FRAGMENT_SHADER);
+        if (pipeline->pixelShader == 0){ pipeline->isReady = false; return; }
+    }
 #ifndef __ANDROID__
 	auto geomShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Geom; });
 	auto tessCtrlShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_TessCtrl; });

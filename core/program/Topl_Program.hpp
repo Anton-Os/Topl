@@ -12,6 +12,8 @@
 
 #include "constructs/Geo_Billboards.hpp"
 #include "meshes/Geo_Surface.hpp"
+#include "meshes/Geo_Cone.hpp"
+#include "meshes/Geo_Volume.hpp"
 
 #define NO_PICKER_OBJ nullptr
 #define CACHED_FRAME_COUNT 60
@@ -79,7 +81,7 @@ public:
 	static std::string userInput; // input is added when characters are pressed
 	static bool isCtrl_keys, isCtrl_shader, isCtrl_input; // static bool isCamera_MounseControl;
 
-	static Geo_Actor* pickerObj; // picker for actor
+	static Geo_Actor *pickerObj, *lastPickerObj; // picker for actor
 	static unsigned pickerColor, lastPickerColor; // picker for color
 	static Vec3f pickerCoord, lastPickerCoord;
 	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
@@ -126,8 +128,6 @@ private:
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
     void setPipelines();
-    void createBackground(Img_Base* backgroundTex);
-    void createOverlays();
 
 	// Scenes, Geometry & Targets
 	struct Background {
@@ -140,7 +140,14 @@ private:
 #endif
 	} _background;
 
+	void createBackground(Img_Base* backgroundTex);
 	void _backgroundCallback(MOUSE_Event event, Geo_Actor* actor);
+
+	struct Editor {
+		Geo_Quad3D mesh = Geo_Quad3D(1.0F);
+		Geo_Actor actor = Geo_Actor("pickerEdit", &mesh);
+		Topl_Scene scene = Topl_Scene(&Topl_Program::camera, { &actor });
+	} _editor;
 
 	struct Overlays {
         Topl_Camera camera;
@@ -157,5 +164,6 @@ private:
 #endif
 	} _overlays;
 
+	void createOverlays();
 	void _overlayCallback(MOUSE_Event event, Geo_Actor* actor);
 };

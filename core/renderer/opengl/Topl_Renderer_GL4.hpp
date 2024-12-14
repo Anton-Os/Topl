@@ -23,6 +23,7 @@ public:
 	Topl_Pipeline* getPipeline() override { return _pipeline; }
 	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader){ genPipeline(pipeline, vShader, pShader, {}); }
 	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
+    void genComputePipeline(GL4::Pipeline* pipeline, shader_cptr cShader){ if(cShader->getType() == SHDR_Compute) genPipeline(pipeline, nullptr, nullptr, { cShader }); }
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif

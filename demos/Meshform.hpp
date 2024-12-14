@@ -60,6 +60,10 @@ struct Meshform_Demo : public Topl_Program {
     }
 
     void init() override;
+    void preloop() override {
+        Topl_Program::preloop();
+        colorPicker(&scene);
+    }
     void loop(double frameTime) override;
 
     Geo_TrigOrb* trigOrbs[3] = { new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE) };

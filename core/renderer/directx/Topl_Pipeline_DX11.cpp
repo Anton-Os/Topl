@@ -103,14 +103,18 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 	HRESULT hr; // error checking variable
 
 	// Vertex Shader
-	if(!DX11::compileShader(vertexShader->getFilePath().c_str(), "vs_5_0", &pipeline->vsBlob)) return;
-	hr = _device->CreateVertexShader(pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(), NULL, &pipeline->vertexShader);
-	if (FAILED(hr)) { pipeline->isReady = false; return; }
+    if(vertexShader != nullptr){
+        if(!DX11::compileShader(vertexShader->getFilePath().c_str(), "vs_5_0", &pipeline->vsBlob)) return;
+        hr = _device->CreateVertexShader(pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(), NULL, &pipeline->vertexShader);
+        if (FAILED(hr)) { pipeline->isReady = false; return; }
+    }
 
 	// Pixel Shader
-	if (!DX11::compileShader(pixelShader->getFilePath().c_str(), "ps_5_0", &pipeline->psBlob)) return;
-	hr = _device->CreatePixelShader(pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),NULL, &pipeline->pixelShader);
-	if (FAILED(hr)) { pipeline->isReady = false; return; }
+    if(pixelShader != nullptr){
+        if (!DX11::compileShader(pixelShader->getFilePath().c_str(), "ps_5_0", &pipeline->psBlob)) return;
+        hr = _device->CreatePixelShader(pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),NULL, &pipeline->pixelShader);
+        if (FAILED(hr)) { pipeline->isReady = false; return; }
+    }
 
 	auto geomShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Geom; });
 	auto hullShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_TessCtrl; });
