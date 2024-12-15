@@ -86,14 +86,14 @@ private:
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Img_Base _textures[MAX_TEX_BINDINGS] = { 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 2, 2, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 4, 4, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 8, 8, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 16, 16, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 32, 32, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 64, 64, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 128, 128, 0xDD111111, 0xEE111111 })), 
-		Img_Base(checkeredImgOp({ 1024, 1024 }, { 256, 256, 0xDD111111, 0xEE111111 })), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp"),
+		Img_Base(std::string(IMAGES_DIR) + "Background-Grid.png"), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Pins.png"), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Frame.png"), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Canvas.png"),
+		Img_Base(std::string(IMAGES_DIR) + "Background-Squared.png"), 
+		Img_Base(std::string(IMAGES_DIR) + "Background-Circular.png"),
 	};
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

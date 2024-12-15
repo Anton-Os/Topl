@@ -114,6 +114,7 @@ public:
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
     void texturizeScene(const Topl_Scene* scene); // reloads textures from scene
+    virtual void dispatch(std::vector<Vec3f>* data){ }
 #ifdef RASTERON_H
     virtual Img_Base frame() = 0;
 	unsigned getPixelAt(float x, float y);

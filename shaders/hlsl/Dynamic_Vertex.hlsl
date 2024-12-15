@@ -1,5 +1,6 @@
 #define INCLUDE_BLOCK
 #define INCLUDE_EXTBLOCK
+#define INCLUDE_TEXTURES
 
 #include "Common.hlsl"
 
@@ -13,6 +14,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
+	float3 lightVal;
+	float3 lightPos;
     // float2 coordPoints[8];
     // float4 coordColors[8];
 }

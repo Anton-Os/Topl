@@ -2,6 +2,7 @@
 
 #define INCLUDE_BLOCK
 #define INCLUDE_EXTBLOCK
+#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -15,6 +16,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	double timeFrame;
 	double timeElapse;
+	vec3 lightVal;
+	vec3 lightPos;
 	// vec2f coordPoints[8];
 	// vec4f coordColors[8];
 };
@@ -31,7 +34,7 @@ void main() {
 	// final_pos = final_pos * vec4(1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f);
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	// gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;

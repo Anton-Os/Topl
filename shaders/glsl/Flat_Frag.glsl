@@ -54,7 +54,8 @@ void main() {
 	else if(mode % 10 == FLAT_ANGULAR) outColor = vec4(atan((pos.y - offset.y) / (pos.x - offset.x)), atan((pos.y - offset.y) / (pos.z - offset.z)), atan((pos.x - offset.x) / (pos.z - offset.z)), alpha);
 	else if(mode % 10 == FLAT_TEXCOORD) outColor = vec4(texcoord.x, texcoord.y, texcoord.z, alpha);
 	else if(mode % 10 == FLAT_SECTIONED) outColor = vec4(((id + 1) / 3.0) - floor((id + 1) / 3.0), ((id + 1) / 6.0) - floor((id + 1) / 6.0), ((id + 1) / 9.0) - floor((id + 1) / 9.0), alpha);
-	else if(mode % 10 == FLAT_RANDOM) outColor = vec4(getRandColor(primID), alpha);
+	// else if(mode % 10 == FLAT_SECTIONED) outColor = vec4(abs(gl_FragCoord.x * 80.0) - abs(floor(gl_FragCoord.x * 80.0)), abs(gl_FragCoord.y * 80.0) - abs(floor(gl_FragCoord.y * 80.0)), (gl_FragCoord.z * 8.0) - floor(gl_FragCoord.z * 8.0), alpha);
+	else if(mode % 10 == FLAT_RANDOM) outColor = vec4(getRandColor(uint(floor((color.r + color.b + color.g) * 546.32))), alpha);
 	else if(mode % 10 == FLAT_TRIAL) outColor = vec4(sin(vertex_color.r * id), cos(vertex_color.g * primID), tan(vertex_color.b * (id / primID)), alpha);
 	else outColor = color; // solid mode // default
 }

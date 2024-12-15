@@ -110,7 +110,6 @@ std::pair<float, float> Input_MouseControl::getLastStepDiff() const {
 std::pair<float, float> Input_MouseControl::getLastPathDiff() const {
     if(_tracerPaths.size() < 1) return std::make_pair(0.0f, 0.0f);
 
-	std::cout << "Getting path diff" << std::endl;
     Input_TracerPath lastPath = getTracerPaths()->back();
     if(lastPath.stepsCount >= 2)
         return std::make_pair(

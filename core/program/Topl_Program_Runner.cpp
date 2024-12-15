@@ -18,9 +18,11 @@ void Topl_Program::postloop(){
      if(Topl_Program::pickerObj != nullptr){
         _editor.actor.setPos(*Topl_Program::pickerObj->getPos());
         _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
-        _editor.actor.setSize(*Topl_Program::pickerObj->getPos() * 1.25F);
+        _editor.actor.setSize(*Topl_Program::pickerObj->getSize());
         _editor.mesh.drawMode = DRAW_Lines;
         _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
+        _editor.nameMesh.drawMode = DRAW_Triangles;
+        _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
     }
     else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H
@@ -52,7 +54,7 @@ void Topl_Program::run(){
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, nullptr, shaderMode);
-            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
+            if(isEnable_overlays) renderScene(&_overlays.scene, nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
         }

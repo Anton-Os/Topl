@@ -27,6 +27,7 @@ public:
 #ifdef RASTERON_H
     Img_Base frame() override;
 #endif
+	void dispatch(std::vector<Vec3f>* data) override { _deviceCtx->Dispatch(data->size(), data->size(), data->size()); }
 protected:
 	void init(NATIVE_WINDOW window) override;
 	void update(const Geo_Actor* actor) override;

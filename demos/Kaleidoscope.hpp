@@ -63,7 +63,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
             case 0: return &construct1;
             case 1: return &construct2;
             case 2: return &construct3;
-            case 4: return &construct4;
+            case 3: return &construct4;
             default: return nullptr; 
         }
     }

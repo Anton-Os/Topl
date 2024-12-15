@@ -140,13 +140,16 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     Platform::mouseControl.addHandler(std::bind(&Topl_Program::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
 
     setPipelines();
+    _renderer->buildScene(&_editor.scene);
 #ifdef RASTERON_H
     if(isEnable_background) createBackground(&_background.image);
     if(isEnable_overlays) createOverlays();
+    _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
+    _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
+    _renderer->texturizeScene(&_editor.scene);
 #else
     if(isEnable_background) createBackground(nullptr);
 #endif
-    _renderer->buildScene(&_editor.scene);
 
     // Texturing Data Generation
 #ifdef RASTERON_H
@@ -215,11 +218,6 @@ void Topl_Program::createOverlays(){
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
-                /* // if(overlayUI != nullptr) _overlays.billboards[o]->overlay(e, overlayUI);
-                // _overlays.billboards[o]->getImgAt(e)->setImage(cornerImgOp(_overlays.billboards[o]->getImgAt(e)->getImage(), 1.5, 0.0, 0.0, 1.5));
-                // if(paneTex != nullptr) _overlays.billboards[o]->getImgAt(e)->setImage(paneTex->getImage());
-                unsigned contentColors[3] = { UI_COLOR_ON, UI_COLOR_DEFAULT, UI_COLOR_OFF };
-                if(bgColor != 0 && fgColor != 0) setUI_colorScheme(bgColor, fgColor, contentColors); */
                 _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Img_Button(MENU_Medium) });
                 _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
             }

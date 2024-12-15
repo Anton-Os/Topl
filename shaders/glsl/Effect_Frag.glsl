@@ -157,5 +157,5 @@ void main() {
         else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
 	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 
-        if(color.r == 0.0f && color.g == 0.0f && color.b == 0.0f) color.a = 0.0; // make transparent if not in set
+	if(color.r == 0.0f && color.g == 0.0f && color.b == 0.0f) color.a = 0.0; // make transparent if not in set
 }

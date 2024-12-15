@@ -3,6 +3,7 @@
 #define IGNORE_INPUTS
 #define INCLUDE_BLOCK
 #define INCLUDE_EXTBLOCK
+#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -16,6 +17,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	double timeFrame;
 	double timeElapse;
+	vec3 lightVal;
+	vec3 lightPos;
 	// vec2f coordPoints[8];
 	// vec4f coordColors[8];
 };

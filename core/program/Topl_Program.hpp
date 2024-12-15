@@ -136,7 +136,7 @@ private:
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef RASTERON_H
-        Img_Base image = Img_Base(std::string(IMAGES_DIR) + "Blueprint-Grid.png");
+        Img_Base image = Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp");
 #endif
 	} _background;
 
@@ -146,7 +146,15 @@ private:
 	struct Editor {
 		Geo_Quad3D mesh = Geo_Quad3D(1.0F);
 		Geo_Actor actor = Geo_Actor("pickerEdit", &mesh);
+#ifdef RASTERON_H
+		std::string fontPath = std::string(FONTS_DIR) + "MajorMonoDisplay-Regular.ttf";
+		Img_Base nameImg = Img_Base({ fontPath.c_str(), actor.getName().c_str(), 0xFF111111, 0xFFEEEEEE });
+		Geo_Quad2D nameMesh = Geo_Quad2D(0.05F);
+		Geo_Actor nameActor = Geo_Actor("pickerName", &nameMesh);
+		Topl_Scene scene = Topl_Scene(&Topl_Program::camera, { &actor, &nameActor });
+#else
 		Topl_Scene scene = Topl_Scene(&Topl_Program::camera, { &actor });
+#endif
 	} _editor;
 
 	struct Overlays {

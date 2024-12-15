@@ -28,11 +28,6 @@ void Molecular_Demo::init(){
     _renderer->isMeshUpdate = false;
 }
 
-/* void Molecular_Demo::preloop(){
-    Topl_Program::preloop();
-    colorPicker(&scene);
-} */
-
 void Molecular_Demo::loop(double frameTime){
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
@@ -51,7 +46,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

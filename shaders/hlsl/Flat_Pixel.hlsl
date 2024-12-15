@@ -53,7 +53,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	else if(mode % 10 == FLAT_ANGULAR) return float4(atan(input.vertex_pos.y / input.vertex_pos.z), atan(input.vertex_pos.z / input.vertex_pos.x), atan(input.vertex_pos.x / input.vertex_pos.y), alpha);
 	else if(mode % 10 == FLAT_TEXCOORD) return float4(input.texcoord, alpha);
 	else if(mode % 10 == FLAT_SECTIONED) return float4(((primID + 1) / 9.0) - floor((primID + 1) / 9.0), ((primID + 1) / 6.0) - floor((primID + 1) / 6.0), ((primID + 1) / 3.0) - floor((primID + 1) / 3.0), alpha);
-	else if(mode % 10 == FLAT_RANDOM) return float4(getRandColor(id), alpha);
+	else if(mode % 10 == FLAT_RANDOM) return float4(getRandColor(floor((color.r * color.g * color.b) * 995.49)), alpha);
 	else if(mode % 10 == FLAT_TRIAL) return float4(dot(color, input.vertex_color), dot(float4(input.texcoord, 1.0), input.vertex_pos), dot(rotation, scale), alpha);
 	else return color; // solid mode // default
 }

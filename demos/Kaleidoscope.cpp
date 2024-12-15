@@ -46,6 +46,8 @@ void Kaleidoscope_Demo::loop(double frameTime){
         construct4.getGeoActor(s)->updateRot(Vec3f({ construct4.getSpinFactor(s), 0.0F, 0.0F }));
     }
 
+    // _flatVShader.setMode(8);
+    // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     _renderer->setDrawMode(drawMode);
     _renderer->updateScene(&scene);
     if(getConstruct() != nullptr)
