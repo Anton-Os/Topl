@@ -143,7 +143,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     _renderer->buildScene(&_editor.scene);
 #ifdef RASTERON_H
     if(isEnable_background) createBackground(&_background.image);
-    if(isEnable_overlays) createOverlays();
+    if(isEnable_overlays) createOverlays(1.0);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
     _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
     _renderer->texturizeScene(&_editor.scene);
@@ -205,12 +205,12 @@ void Topl_Program::createBackground(Img_Base* backgroundTex){
     _renderer->texturizeScene(&_background.scene);
 }
 
-void Topl_Program::createOverlays(){
-    _overlays.billboard_camera.shift({ -0.75, -0.9F, 0.0F });
+void Topl_Program::createOverlays(double size){
+    _overlays.billboard_camera.shift({ -0.75F, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
     for(unsigned short o = 0; o < 3; o++){
-        _overlays.billboards[o]->scale({ 0.5F, 0.33F, 1.0F });
+        _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
@@ -225,6 +225,7 @@ void Topl_Program::createOverlays(){
 #endif
     }
     _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
+    // _overlays.billboard_object.getGeoActor(8)->setSize({ 0.0F, 0.0F, 0.0F }); // permanently hide
     _overlays.billboard_camera.expandVert(std::make_pair(2, 1), 1);
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);

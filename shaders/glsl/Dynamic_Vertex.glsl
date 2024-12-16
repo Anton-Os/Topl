@@ -26,7 +26,7 @@ layout(location = 0) out vec3 pos_out;
 layout(location = 1) out vec4 vert_color_out;
 layout(location = 2) flat out int id_out;
 
-// Main
+// M
 
 void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;
@@ -34,7 +34,7 @@ void main() {
 	// final_pos = final_pos * vec4(1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f);
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	id_out = gl_VertexID;

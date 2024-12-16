@@ -161,7 +161,7 @@ private:
         Topl_Camera camera;
         Topl_Scene scene = Topl_Scene(&camera);
 		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 3, 3, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 3, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 3, 4, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
@@ -172,6 +172,6 @@ private:
 #endif
 	} _overlays;
 
-	void createOverlays();
+	void createOverlays(double size);
 	void _overlayCallback(MOUSE_Event event, Geo_Actor* actor);
 };

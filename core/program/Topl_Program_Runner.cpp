@@ -53,7 +53,7 @@ void Topl_Program::run(){
             _renderer->clear(); // clears view to solid color
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
-            if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, nullptr, shaderMode);
+            if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, 0);
             if(isEnable_overlays) renderScene(&_overlays.scene, nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
