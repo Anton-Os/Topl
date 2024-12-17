@@ -68,6 +68,7 @@ public:
 #ifdef TOPL_ENABLE_PHYSICS
 	void resolvePhysics(); // iterates through all physics objects and applies forces 
 	void addForce(const std::string& name, const Vec3f& vec);
+	void addForces(const std::string& name, const Vec3f& posVec, const Vec3f& angleVec, const Vec3f& sizeVec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);
 	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
 	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object

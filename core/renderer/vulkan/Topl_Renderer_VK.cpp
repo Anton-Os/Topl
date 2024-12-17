@@ -617,8 +617,6 @@ void Topl_Renderer_VK::swapBuffers(double frameTime){
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
 
-    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(_logicDevice, 1, &_inFlightFence);
 	_flags[DRAWN_BIT] = true;
 }
 
@@ -663,6 +661,9 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(_logicDevice, 1, &_inFlightFence);
+
     if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
         logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
 
@@ -671,8 +672,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
         static VkDeviceSize offsets[] = { 0 };
         unsigned long renderID = _renderTargetMap[actor];
 
-        // vkResetCommandBuffer(_commandBuffers[0], 0);
-
+        vkResetCommandBuffer(_commandBuffers[0], 0);
         if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
         VkRenderPassBeginInfo renderPassInfo = {};

@@ -35,6 +35,12 @@ void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
 		}
 }
 
+void Topl_Scene::addForces(const std::string& name, const Vec3f& posVec, const Vec3f& angleVec, const Vec3f& sizeVec) {
+	addForce(name, posVec);
+	// TODO: Add wobble
+	// TODO: Add constriction
+}
+
 void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
