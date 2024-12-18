@@ -17,8 +17,11 @@ struct Dynamic_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, bytes);
         alignDataToBytes((uint8_t*)&relMillisecs, sizeof(relMillisecs), NO_PADDING, bytes);
         alignDataToBytes((uint8_t*)&absMillisecs, sizeof(absMillisecs), NO_PADDING, bytes);
+		appendDataToBytes((uint8_t*)&lightPos, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
 protected:
+	Vec3f lightPos, lightVal;
 	// Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
 
 	std::string shaderRoutineStr; // TODO: Make this settable in the dynamic shader

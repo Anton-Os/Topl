@@ -28,9 +28,9 @@ struct PS_INPUT { float4 pos : SV_POSITION; };
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-    float r = sin(float(timeElapse) / 1000.0F);
-	float g = cos(float(timeElapse) / 1000.0F);
-	float b = tan(float(timeElapse) / 1000.0F);
+    float r = sin(float(timeElapse * input.pos.x) / 1000.0F);
+	float g = cos(float(timeElapse * input.pos.y) / 1000.0F);
+	float b = tan(float(timeFrame * input.pos.z));
 	
 	return float4(r, g, b, 1.0); // solid mode // default
 }

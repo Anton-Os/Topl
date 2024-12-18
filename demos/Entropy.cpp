@@ -56,11 +56,11 @@ void Entropy_Demo::loop(double frameTime){
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++) {
 #ifdef TOPL_ENABLE_PHYSICS
         if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion)
-            scene1.addForce("actor_surface" + std::to_string(a), {
+            scene1.addForces("actor_surface" + std::to_string(a), {
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (surface_actors[a].getPos()->data[0] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (surface_actors[a].getPos()->data[1] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)), 
                 0.0F 
-            });
+            }, VEC_3F_ZERO, VEC_3F_ZERO);
         if(physActors[a].actingForceCount > 0) surface_actors[a].updateRot(*(physActors[a].forces));
         // Set size and mass based on distance
         scene1.resolvePhysics();

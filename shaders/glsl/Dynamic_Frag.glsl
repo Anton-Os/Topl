@@ -2,7 +2,7 @@
 
 #define IGNORE_INPUTS
 #define INCLUDE_BLOCK
-#define INCLUDE_EXTBLOCK
+// #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
 #include "Common.glsl"
@@ -19,8 +19,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 	double timeElapse;
 	vec3 lightVal;
 	vec3 lightPos;
-	// vec2f coordPoints[8];
-	// vec4f coordColors[8];
 };
 
 layout(location = 0) in vec3 pos;
@@ -34,7 +32,8 @@ layout(location = 0) out vec4 outColor;
 void main() {
 	float r = sin(float(timeElapse) / 1000.0F);
 	float g = cos(float(timeElapse) / 1000.0F);
-	float b = tan(float(timeElapse) / 1000.0F);
+	float b = tan(float(timeFrame));
 	
-	outColor = vec4(r * abs(pos.x), g * abs(pos.y), b * abs(pos.z), 1.0); // solid mode // default
+	if(mode >= 0) outColor = vec4(r * abs(pos.x), g * abs(pos.y), b * abs(pos.z), 1.0); // color shift mode
+	// else perform texture calculations with light
 }

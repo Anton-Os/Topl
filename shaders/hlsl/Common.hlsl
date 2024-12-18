@@ -25,6 +25,13 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 }
 #endif
 
+#ifdef INCLUDE_DATASTREAM
+
+RWBuffer feedIn : register(b3) { float3[]; }
+RWBuffer feedOut : register(b4) { float3[]; }
+
+#endif
+
 #define STEP_ATTENUATION 0.00390625
 
 #ifdef INCLUDE_TEXTURES

@@ -7,7 +7,7 @@ layout(std140, binding = 0) uniform Block {
 #endif
 
 #ifdef INCLUDE_SCENEBLOCK
-layout(std140, binding = 1) uniform SceneBlock{
+layout(std140, binding = 1) uniform SceneBlock {
 	int mode;
 	vec4 cam_pos;
 	vec3 look_pos;
@@ -23,6 +23,13 @@ layout(std140, binding = 2) uniform ExtBlock {
 	uint tessLevel; // levels of tesselation
 	// vec3 meshOrigin; // origin point for messh
 };
+#endif
+
+#ifdef INCLUDE_DATASTREAM
+
+layout(std140, binding = 3) readonly FeedIn { vec3 data[]; }
+layout(std140, binding = 4) writeonly FeedOut { vec3 data[]; }
+
 #endif
 
 #ifdef INCLUDE_TEXTURES

@@ -52,6 +52,10 @@ public:
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
 			*(&v->position) = callback(v->position, transform);
 	}
+	void modify(iTformCallback callback, Vec3f transform){
+		for (std::vector<unsigned>::iterator i = _indices.begin(); i != _indices.end(); i++)
+			_vertices[*i] = callback(*i, _vertices[*i].position, transform);
+	}
 	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
     void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute

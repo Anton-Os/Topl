@@ -4,25 +4,19 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 1
+#define MESHFORM_TESS 2
 #define MESHFORM_INDEX 0
 
-Vec3f spikeTForm(Vec3f target, Vec3f amount){
-    static unsigned svCount = 0;
-
-    if(target.data[0] == 0.0 && target.data[1] == 0.0 && target.data[2] == 0.0) svCount = 0; // reset at origin
-    else svCount++;
-
-    return (svCount % MESHFORM_TESS == 1)? target * amount : target;
+Vec3f spikeTForm(unsigned index, Vec3f target, Vec3f amount){
+    return (index % 6 * MESHFORM_TESS == 0)? target * amount : target;
 }
 
-Vec3f waveTForm(Vec3f target, Vec3f amount){
-    static unsigned svCount = 0;
-
-    if(target.data[0] == 0.0 && target.data[1] == 0.0 && target.data[2] == 0.0) svCount = 0; // reset at origin
-    else svCount++;
-
-    return Vec3f({ target.data[0] * (1.0F + sinf(amount.data[0] * svCount) * 0.25F), target.data[1] * (1.0F + sinf(amount.data[1] * svCount) * 0.25F), target.data[2] * (1.0F + sinf(amount.data[2] * svCount) * 0.25F) });
+Vec3f waveTForm(unsigned index, Vec3f target, Vec3f amount){
+    return Vec3f({ 
+        target.data[0] * (1.0F + sinf(amount.data[0] * index * 0.01F) * 0.025F), 
+        target.data[1] * (1.0F + sinf(amount.data[1] * index * 0.01F) * 0.025F), 
+        target.data[2] * (1.0F + sinf(amount.data[2] * index * 0.01F) * 0.025F) 
+    });
 }
 
 Vec3f elongTForm(Vec3f target, Vec3f amount){
@@ -49,14 +43,14 @@ struct Meshform_Demo : public Topl_Program {
                 decOrbs[o]->tesselate(MESHFORM_TESS);
             }
 
-        trigOrbs[1]->modify(waveTForm, Vec3f({ 1.5F, 1.5F, 1.5F }));
-        trigOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 0.0F }));
-        quadOrbs[1]->modify(waveTForm, Vec3f({ 1.5F, 0.0F, 0.0F }));
-        quadOrbs[2]->modify(trialTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
-        hexOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 1.5F, 0.0F }));
-        hexOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
-        decOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 1.5F }));
-        decOrbs[2]->modify(trialTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
+        trigOrbs[1]->modify(waveTForm, Vec3f({ 1.0F, 1.0F, 1.0F }));
+        trigOrbs[2]->modify(spikeTForm, Vec3f({ 0.95F, 0.95F, 0.95F }));
+        quadOrbs[1]->modify(waveTForm, Vec3f({ 1.0F, 0.0F, 0.0F }));
+        quadOrbs[2]->modify(spikeTForm, Vec3f({ 0.95F, 0.0F, 0.0F }));
+        hexOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 1.0F, 0.0F }));
+        hexOrbs[2]->modify(spikeTForm, Vec3f({ 0.0F, 0.95F, 0.0F }));
+        decOrbs[1]->modify(waveTForm, Vec3f({ 0.0F, 0.0F, 1.0F }));
+        decOrbs[2]->modify(spikeTForm, Vec3f({ 0.0F, 0.0F, 0.95F }));
     }
 
     void init() override;

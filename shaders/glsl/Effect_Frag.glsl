@@ -111,6 +111,7 @@ vec3 powerSet(vec2 coord, vec2 cursor){
 // Wing Set
 vec3 wingSet(vec2 coord){
     uint i = 1;
+	coord = vec2(abs(coord.x), abs(coord.y));
     float x = coord.x; float y = coord.y;
 
     while(abs(x / coord.x) * abs(y / coord.y) < FRACTAL_SIZE && i < FRACTAL_ITER){

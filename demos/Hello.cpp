@@ -3,8 +3,8 @@
 #include "Hello.hpp"
 
 // #define TARGET_BACKEND BACKEND_GL4
-// #define TARGET_BACKEND BACKEND_DX11
-#define TARGET_BACKEND BACKEND_VK
+#define TARGET_BACKEND BACKEND_DX11
+// #define TARGET_BACKEND BACKEND_VK
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -23,15 +23,12 @@ MAIN_ENTRY {
 	std::cout << "Window creation" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 
-    Topl_Renderer* renderer = nullptr;
-
-	std::cout << "Renderer creation" << std::endl;
-	if (TARGET_BACKEND == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getContext());
-#ifdef _WIN32
-	else if (TARGET_BACKEND == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getContext());
-#endif
-#ifdef TOPL_ENABLE_VULKAN
-	else if (TARGET_BACKEND == BACKEND_VK) renderer = new Hello_Renderer_VK(platform.getContext());
+#if TARGET_BACKEND == BACKEND_GL4
+	Hello_Renderer_GL4* renderer = new Hello_Renderer_GL4(platform.getContext());
+#elif defined(_WIN32) && TARGET_BACKEND == BACKEND_DX11
+	Hello_Renderer_DX11* renderer = new Hello_Renderer_DX11(platform.getContext());
+#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND == BACKEND_VK
+	Hello_Renderer_VK* renderer = new Hello_Renderer_VK(platform.getContext());
 #endif
 
 	Timer_Persist _ticker;
@@ -49,11 +46,9 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-        /* if(TARGET_BACKEND != BACKEND_VK){
-            renderer->setPipeline(false);
-            // renderer->dispatch(100);
-            renderer->setDrawPipeline(true);
-        } */
+		renderer->setDrawPipeline(false);
+		// renderer->dispatch(100);
+		renderer->setDrawPipeline(true);
 		renderer->draw(&actor);
 		double f3 = _ticker.getRelMillisecs();
 		renderer->present();

@@ -115,6 +115,7 @@ float4 powerSet(float2 coord, float2 cursor){
 // Wing Set
 float4 wingSet(float2 coord){
     uint i = 1;
+	coord = float2(abs(coord.x), abs(coord.y));
     float x = coord.x; float y = coord.y;
 
     while(abs(x / coord.x) * abs(y / coord.y) < FRACTAL_SIZE && i < FRACTAL_ITER){
