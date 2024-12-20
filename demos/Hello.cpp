@@ -2,9 +2,9 @@
 
 #include "Hello.hpp"
 
-// #define TARGET_BACKEND BACKEND_GL4
-#define TARGET_BACKEND BACKEND_DX11
-// #define TARGET_BACKEND BACKEND_VK
+// #define TARGET_BACKEND 1 // BACKEND_GL4
+// #define TARGET_BACKEND 2 // BACKEND_DX11
+#define TARGET_BACKEND 3 // BACKEND_VK
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -23,11 +23,12 @@ MAIN_ENTRY {
 	std::cout << "Window creation" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 
-#if TARGET_BACKEND == BACKEND_GL4
+    std::cout << "Creating backend" << std::endl;
+#if TARGET_BACKEND==1
 	Hello_Renderer_GL4* renderer = new Hello_Renderer_GL4(platform.getContext());
-#elif defined(_WIN32) && TARGET_BACKEND == BACKEND_DX11
+#elif defined(_WIN32) && TARGET_BACKEND==2
 	Hello_Renderer_DX11* renderer = new Hello_Renderer_DX11(platform.getContext());
-#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND == BACKEND_VK
+#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND==3
 	Hello_Renderer_VK* renderer = new Hello_Renderer_VK(platform.getContext());
 #endif
 

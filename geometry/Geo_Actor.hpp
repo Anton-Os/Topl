@@ -9,8 +9,8 @@
 #define DEFAULT_ACTOR_ID 0xFFFFFFFF
 #define DEFAULT_ACTOR_NAME "actor"
 
-// extern class Geo_Actor;
-// extern struct Topl_EntryShader;
+// class Geo_Actor;
+// struct Topl_EntryShader;
 
 typedef void (*pickerCallback)(MOUSE_Event);
 typedef void (*shaderCallback)(void);
@@ -87,9 +87,9 @@ private:
 	const Geo_Mesh* _mesh = nullptr; // mesh stored internally
 
 	// Orientation types
-	Vec3f _position = Vec3f({ 0.0f, 0.0f, 0.0f });
-	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f });
-	Vec3f _scale = Vec3f({ 1.0f, 1.0f, 1.0f });
+    Vec3f _position = VEC_3F_ZERO;
+    Vec3f _rotation = VEC_3F_ZERO;
+    Vec3f _scale = VEC_3F_ONES;
 };
 
 typedef const Geo_Actor* const actor_cptr;

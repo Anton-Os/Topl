@@ -37,8 +37,8 @@ struct Platform {
 
     NATIVE_PLATFORM_CONTEXT* getContext(){ return &_context; }
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
-    static unsigned getViewportWidth(NATIVE_WINDOW window);
-    static unsigned getViewportHeight(NATIVE_WINDOW window);
+    static unsigned getViewportWidth(NATIVE_PLATFORM_CONTEXT* context);
+    static unsigned getViewportHeight(NATIVE_PLATFORM_CONTEXT* context);
     static float getCursorX(){ return xCursorPos; }
     static float getCursorY(){ return yCursorPos; }
     static void openFileDialog(bool isRead); // opens file dialog

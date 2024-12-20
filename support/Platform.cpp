@@ -185,15 +185,15 @@ bool Platform::handleEvents(){
 	return true;
 }
 
-unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+unsigned Platform::getViewportHeight(NATIVE_PLATFORM_CONTEXT* context){
 	RECT rect;
-	GetClientRect(window, &rect);
+    GetClientRect(context->window, &rect);
 	return rect.right - rect.left;
 }
 
-unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+unsigned Platform::getViewportWidth(NATIVE_PLATFORM_CONTEXT* context){
 	RECT rect;
-	GetClientRect(window, &rect);
+    GetClientRect(context->window, &rect);
 	return rect.bottom - rect.top;
 }
 
@@ -250,11 +250,11 @@ bool Platform::handleEvents(){
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const { return false; }
 
-unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+unsigned Platform::getViewportHeight(NATIVE_PLATFORM_CONTEXT* context){
     return TOPL_WIN_HEIGHT; // TODO: get height here
 }
 
-unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+unsigned Platform::getViewportWidth(NATIVE_PLATFORM_CONTEXT* context){
     return TOPL_WIN_WIDTH; // TODO: get width here
 }
 
@@ -327,10 +327,12 @@ bool Platform::handleEvents(){
             printf("Key press: %c \n", (char)keysym);
         }
         case (ButtonPress): {
-            printf("Button press at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos);
+            Platform::mouseControl.addPress(MOUSE_RightBtn_Press, Platform::xCursorPos, Platform::yCursorPos);
+            Platform::mouseControl.addPress(MOUSE_LeftBtn_Press, Platform::xCursorPos, Platform::yCursorPos);
         }
         case (ButtonRelease): {
-            printf("Button release at %.5f, %.5f \n", Platform::xCursorPos, Platform::yCursorPos);
+            Platform::mouseControl.addPress(MOUSE_RightBtn_Release, Platform::xCursorPos, Platform::yCursorPos);
+            Platform::mouseControl.addPress(MOUSE_LeftBtn_Release, Platform::xCursorPos, Platform::yCursorPos);
         }
         case (MotionNotify): { }
         /* case (DestroyNotify): {
@@ -343,16 +345,16 @@ bool Platform::handleEvents(){
     return true;
 }
 
-unsigned Platform::getViewportHeight(NATIVE_WINDOW window){
+unsigned Platform::getViewportHeight(NATIVE_PLATFORM_CONTEXT* context){
     XWindowAttributes windowAttribs;
-    // XGetWindowAttributes(_context.display, window, &windowAttribs);
-    return TOPL_WIN_HEIGHT; // windowAttribs.height;
+    XGetWindowAttributes(context->display, context->window, &windowAttribs);
+    return windowAttribs.width;
 }
 
-unsigned Platform::getViewportWidth(NATIVE_WINDOW window){
+unsigned Platform::getViewportWidth(NATIVE_PLATFORM_CONTEXT* context){
     XWindowAttributes windowAttribs;
-    // XGetWindowAttributes(_context.display, window, &windowAttribs);
-    return TOPL_WIN_WIDTH; // windowAttribs.width;
+    XGetWindowAttributes(context->display, context->window, &windowAttribs);
+    return windowAttribs.height;
 }
 
 bool Platform::getCursorCoords(float* xPos, float* yPos) const {
@@ -362,23 +364,15 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
     unsigned int mask;
 
     XQueryPointer(
-        _context.display, window, &root, &window,
+        _context.display, _context.window, &root, &window,
         &xRoot, &yRoot, &xChild, &yChild,
         &mask
     );
-
 
     XWindowAttributes windowAttribs;
     XGetWindowAttributes(_context.display, _context.window, &windowAttribs);
     unsigned height = windowAttribs.height; // Platform::getViewportHeight(_context.window);
     unsigned width = windowAttribs.width; // Platform::getViewportWidth(_context.window);
-    // unsigned border, depth;
-    // XGetGeometry(_context.display, _context.window, &root, &xOff, &yOff, &width, &height, &border, &depth);
-
-    int xOff, yOff;
-    XTranslateCoordinates(_context.display, _context.window, window, xChild, yChild, &xOff, &yOff, &window);
-    printf("Offset is %d, %d", xOff, yOff);
-    // printf("Window offset is %d, %d, dimensions are %d, %d", xChild, yChild, width, height);
 
     *xPos = ((xChild / (double)width) - 0.5) * 2.0;
     *yPos = ((yChild / (double)height) - 0.5) * 2.0;

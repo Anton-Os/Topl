@@ -132,7 +132,7 @@ struct Img_Volume : public Img_Target {
 	
 	void addSlice(ref_image_t refImg, unsigned d){
 		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
-		else return logMessage("Slice needs to match width and height"); // error
+        else return logMessage("Slice needs to match width and height, got " + std::to_string(refImg->height) + ", " + std::to_string(refImg->width) + " but expected " + std::to_string(height) + ", " + std::to_string(width)); // error
 
 		// Updating data internally
 		unsigned imgOffset = (width * depth) * d;

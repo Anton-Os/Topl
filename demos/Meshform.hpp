@@ -75,6 +75,11 @@ struct Meshform_Demo : public Topl_Program {
 #endif
 private:
     void onAnyKey(char key);
+#ifdef RASTERON_H
+    void genVolumeTex(unsigned color1, unsigned color2);
+#endif
 
     Topl_Scene scene = PROGRAM_SCENE;
+
+    std::thread* textureThread = nullptr;
 } *_DEMO;

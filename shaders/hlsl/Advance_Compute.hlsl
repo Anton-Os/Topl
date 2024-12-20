@@ -1,5 +1,6 @@
-ByteAddressBuffer computeBuffer : register(t0);
-RWByteAddressBuffer outputBuffer : register(u0);
+#define INCLUDE_DATASTREAM
+
+#include "Common.hlsl"
 
 [numthreads(1, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID){

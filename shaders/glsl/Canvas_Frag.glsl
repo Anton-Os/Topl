@@ -106,14 +106,15 @@ vec4 drawZigZags(vec2 pos, vec2 coord, float dist, vec4 color){
 
 void main() {
     if(mode < 0) color_out = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
+    // else color_out = vec4(0.0, 0.0, 0.0, 0.0);
 
-	vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
-	vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
-	float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
+    vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
+    vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
+    float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
-	if(abs(mode) % 10 != 0){
+    if(abs(mode) % 10 != 0){
         vec4 color_draw;
-        if(mode > 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
+        if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
         else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
 
         if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, color_draw);
@@ -124,12 +125,12 @@ void main() {
         // else if(color_draw.a == 0.0 && mode < 0) color_out = color_draw;
     }
 
-	if(abs(mode) >= 10){
-		vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);
-		if(uint(floor(abs(mode) / 10.0)) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
-		else if(uint(floor(abs(mode) / 10.0)) % 10 == 2) color_cursor = cursorHalo(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
-		else color_cursor = cursorCross(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+    if(abs(mode) >= 10){
+            vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);
+            if(uint(floor(abs(mode) / 10.0)) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+            else if(uint(floor(abs(mode) / 10.0)) % 10 == 2) color_cursor = cursorHalo(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+            else color_cursor = cursorCross(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
 
-		if(color_cursor.a != 0.0) color_out = color_cursor;
-	}
+            if(color_cursor.a != 0.0) color_out = color_cursor;
+    }
 }

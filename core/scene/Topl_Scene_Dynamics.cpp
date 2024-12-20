@@ -25,20 +25,27 @@ void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
 }
 
 void Topl_Scene::addForce(const std::string& name, const Vec3f& forceVec) {
-	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
-		if (name == (*actor)->getName()) {
-			if (_physicsMap.find(*actor) == _physicsMap.end()) 
-				return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name); 
-
-			Phys_Actor* physActor = _physicsMap.find(*actor)->second;
-			if(!physActor->addForce(forceVec)) return logMessage(MESSAGE_Exclaim, "Forces excess!");
-		}
+    addForces(name, forceVec, VEC_3F_ZERO, VEC_3F_ZERO);
 }
 
 void Topl_Scene::addForces(const std::string& name, const Vec3f& posVec, const Vec3f& angleVec, const Vec3f& sizeVec) {
-	addForce(name, posVec);
-	// TODO: Add wobble
-	// TODO: Add constriction
+    for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++) // TODO: Replace with find
+        if (name == (*actor)->getName()) {
+            if (_physicsMap.find(*actor) == _physicsMap.end())
+                return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name);
+
+            Phys_Actor* physActor = _physicsMap.find(*actor)->second;
+            if(!posVec.isZero()) physActor->addForce(FORCE_Directional, posVec);
+            if(!angleVec.isZero()){
+                physActor->addForce(FORCE_Angular, angleVec);
+                if(physActor->angle.isZero()) physActor->angle = *(*actor)->getRot(); // set the angle to revert to
+            }
+            if(!sizeVec.isZero()){
+                physActor->addForce(FORCE_Constricting, sizeVec);
+                if(physActor->scale.isZero()) physActor->scale = *(*actor)->getSize(); // set the scale to revert to
+            }
+            // break;
+        }
 }
 
 void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
@@ -78,7 +85,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 
 void Topl_Scene::resolvePhysics() {
 	double elapseSecs = _ticker.getRelSecs();
-	// Resolve Link Connections
+    // Resolve Link Connections // TODO: Run in a thread
 	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
 		Phys_Connector* connector = link->connector;
@@ -87,7 +94,7 @@ void Topl_Scene::resolvePhysics() {
 
 		calcConnectorAttrib(connector, *linkItem1->getPos(), *linkItem2->getPos());
 
-		// Forces acting by length displacement
+        // Forces acting by length displacement
 		if(fabs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
 			// determines direction of force for first geometry link
 			Vec3f force1 = (connector->length < connector->restLength)
@@ -119,7 +126,7 @@ void Topl_Scene::resolvePhysics() {
 		}
 	}
 
-	// Resolve Anchor Connections
+    // Resolve Anchor Connections // TODO: Run in a thread
 	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++){
 		Phys_Connector* connector = anchor->connector;
@@ -148,17 +155,17 @@ void Topl_Scene::resolvePhysics() {
 		}
 	}
 
-	// Resolve All Forces
+    // Resolve All Forces // TODO: Run in a thread
 	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _physicsMap.begin(); m != _physicsMap.end(); m++) {
 		Geo_Actor* geoActor = m->first;
 		Phys_Actor* physActor = m->second;
 
 		if (physActor->actingForceCount > 0) 
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
-				physActor->acceleration = physActor->acceleration + (*(physActor->forces + forceIndex)) * (1.0f / physActor->mass);
-				*(physActor->forces + forceIndex) = VEC_3F_ZERO; // removing current resolved force
+                physActor->acceleration = physActor->acceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass);
+                (*(physActor->actingForces + forceIndex)).force = VEC_3F_ZERO; // removing current resolved force
 			}
-		(physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
+        // (physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
 
 		physActor->velocity = physActor->velocity + (physActor->acceleration * elapseSecs); // velocity integration
 		physActor->velocity = physActor->velocity * (float)physActor->damping; // velocity damping

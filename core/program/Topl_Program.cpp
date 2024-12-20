@@ -104,6 +104,7 @@ void Topl_Program::_onAnyKey(char k){
         if(k == (char)0x25 || k == (char)0x27 || k == '-' || k == '_' || k == '+' || k == '='){
             for(unsigned s = 0; s < 6; s++)
                 _entryShaders[s]->setMode(Topl_Program::shaderMode);
+            std::cout << "Shader mode is " << std::to_string(Topl_Program::shaderMode) << std::endl;
         }
     }
 }

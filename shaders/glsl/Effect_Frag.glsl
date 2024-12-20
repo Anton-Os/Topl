@@ -140,6 +140,22 @@ vec3 stepSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
+// Recursive Fracals
+
+/* vec3 recursiveAlgo(vec3 input1, vec3 input2, vec3 input3){
+    uint i = 1;
+
+    while(length(input1 - input2) * dot(input1, input3) < length(input2 - input3) * dot(input1, input2) && i < FRACTAL_ITER){
+        input1 -= input3;
+        input2 += input3;
+        input3 *= dot(input1, input2);
+        i++;
+    }
+
+    if(i >= FRACTAL_ITER || (input1.r == 0 && input1.g == 0 && input1.b == 0)) return vec3(0, 0, 0);
+    else return fractalColors(vec2(input1.r - input3.b, input1.g + input3.r), vec2(input2.g - input3.r, input2.b + input3.g), i);
+} */
+
 // Main
 
 void main() {
@@ -156,6 +172,8 @@ void main() {
 	else if(abs(mode) >= 30 && abs(mode) < 40) color = vec4(powerSet(target * size, cursorPos), 1.0f);
         else if(abs(mode) >= 40 && abs(mode) < 50) color = vec4(wingSet(target), 1.0f);
         else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
+        // TODO: Add more fractals
+        // else if(abs(mode) >= 100) color = vec4(recursiveAlgo(mandlebrotSet(target), vec3(coords, 1.0), vec3(cursor, 1.0)), 1.0);
 	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 
 	if(color.r == 0.0f && color.g == 0.0f && color.b == 0.0f) color.a = 0.0; // make transparent if not in set

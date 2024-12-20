@@ -70,6 +70,10 @@ struct VectorXF {
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vecStr = vecStr + std::to_string(data[e]) + ", ";
         return vecStr + " }";
     }
+    bool isZero() const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) if(data[e] != 0.0F) return false;
+        return true;
+    }
 };
 
 template <unsigned short n>
@@ -117,6 +121,10 @@ struct VectorXI {
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vecStr = vecStr + std::to_string(data[e]) + ", ";
         return vecStr + " }";
     }
+    bool isZero() const {
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) if(data[e] != 0) return false;
+        return true;
+    }
 };
 
 template <unsigned short r, unsigned short c>
@@ -161,6 +169,12 @@ struct Matrix {
             }
         return matStr + "\n}";
     }
+
+    bool isIdentity(){
+        if(c != r) return false;
+        for(unsigned i = 0; i < c; i++) if(data[i][i] != 1) return false;
+        return true;
+    }
 };
 
 typedef const unsigned* const ui_cptr_t;
@@ -189,6 +203,10 @@ typedef const Mat4x4* const mat4x4_cptr_t;
 #define VEC_2F_ZERO Vec2f({ 0.0f, 0.0f })
 #define VEC_3F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f })
 #define VEC_4F_ZERO Vec3f({ 0.0f, 0.0f, 0.0f, 0.0f })
+
+#define VEC_2F_ONES Vec2f({ 1.0f, 1.0f })
+#define VEC_3F_ONES Vec3f({ 1.0f, 1.0f, 1.0f })
+#define VEC_4F_ONES Vec3f({ 1.0f, 1.0f, 1.0f, 1.0f })
 
 #define MAT_3x3_IDENTITY Mat3x3({ 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f })
 #define MAT_4x4_IDENTITY Mat4x4({ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f })

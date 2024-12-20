@@ -3,11 +3,21 @@
 static short lightMode = 1;
 
 void Molecular_Demo::onAnyKey(char key){
-    if(tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
-        _beamsVShader.setLight(LIGHT_Sky, skyLight);
-        _beamsVShader.setLight(LIGHT_Flash, flashLight);
-        _beamsVShader.setLight(LIGHT_Lamp, lampLight);
-    }
+    Topl_Light* targetLight;
+    if((Topl_Program::shaderMode / 10) % 3 == 0) targetLight = &skyLight;
+    else if((Topl_Program::shaderMode / 10) % 3 == 1) targetLight = &flashLight;
+    else targetLight = &lampLight;
+
+    if(tolower(key) == 'j') targetLight->pos = targetLight->pos + Vec3f({ 0.1F, 0.0F, 0.0F });
+    else if(tolower(key) == 'b') targetLight->pos = targetLight->pos + Vec3f({ -0.1F, 0.0F, 0.0F });
+    else if(tolower(key) == 'k') targetLight->pos = targetLight->pos + Vec3f({ 0.0F, 0.1F, 0.0F });
+    else if(tolower(key) == 'n') targetLight->pos = targetLight->pos + Vec3f({ 0.0F, -0.1F, 0.0F });
+    else if(tolower(key) == 'l') targetLight->pos = targetLight->pos + Vec3f({ 0.0F, 0.0F, 0.1F });
+    else if(tolower(key) == 'm') targetLight->pos = targetLight->pos + Vec3f({ 0.0F, 0.0F, -0.1F });
+
+    if((Topl_Program::shaderMode / 10) % 3 == 0) _beamsVShader.setLight(LIGHT_Sky, *targetLight);
+    else if((Topl_Program::shaderMode / 10) % 3 == 1) _beamsVShader.setLight(LIGHT_Flash, *targetLight);
+    else _beamsVShader.setLight(LIGHT_Lamp, *targetLight);
 }
 
 void Molecular_Demo::init(){
@@ -33,7 +43,7 @@ void Molecular_Demo::loop(double frameTime){
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
 
-    // _beamsVShader.setMode(lightMode * 10);
+    // _beamsVShader.setMode(Topl_Progam::shaderMode);
     // Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
@@ -46,7 +56,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

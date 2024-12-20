@@ -162,8 +162,8 @@ void Topl_Renderer_GL4::clear() {
 
 void Topl_Renderer_GL4::setViewport(const Topl_Viewport* viewport) {
 	// TODO: Scale to viewport
-	unsigned width = Platform::getViewportWidth(_platformCtx->window);
-	unsigned height = Platform::getViewportHeight(_platformCtx->window);
+    unsigned width = Platform::getViewportWidth(_platformCtx);
+    unsigned height = Platform::getViewportHeight(_platformCtx);
 
 	if (viewport != nullptr) glViewport(viewport->xOffset, viewport->yOffset, height, width);
 	else _flags[BUILD_BIT] = false; // Error
@@ -333,8 +333,8 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 #ifdef RASTERON_H
 
 Img_Base Topl_Renderer_GL4::frame() {
-	unsigned viewportHeight = Platform::getViewportHeight(_platformCtx->window);
-	unsigned viewportWidth = Platform::getViewportWidth(_platformCtx->window);
+    unsigned viewportHeight = Platform::getViewportHeight(_platformCtx);
+    unsigned viewportWidth = Platform::getViewportWidth(_platformCtx);
 
 	Rasteron_Image* stageImage = RASTERON_ALLOC("frame", viewportWidth, viewportHeight);
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);

@@ -5,8 +5,31 @@ void Meshform_Demo::onAnyKey(char key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
+        case 'j': genVolumeTex(0xFF0000FF, 0xFF00FF00); break;
+        case 'k': genVolumeTex(0xAA993366, 0x99AA6633); break;
+        case 'l': genVolumeTex(RAND_COLOR(), RAND_COLOR()); break;
     }
 }
+
+#ifdef RASTERON_H
+void Meshform_Demo::genVolumeTex(unsigned color1, unsigned color2){
+    if(textureThread == nullptr)
+        textureThread = new std::thread([this](unsigned c1, unsigned c2){
+            SIDE_Type side = SIDE_Radial;
+            ImageSize size = { 256, 256 };
+
+            for(unsigned d = 0; d < volumeImg.getDepth(); d++){
+                Rasteron_Image* gradientImg = gradientImgOp(size, side, color_level(c1, (1.0 / 256) * d), color_level(c2, 1.0 - ((1.0 / 256) * d))); // adding gradient
+                volumeImg.addSlice(gradientImg, d);
+                RASTERON_DEALLOC(gradientImg);
+            }
+        }, color1, color2);
+    else {
+        std::cerr << "Texture thread is not null" << std::endl;
+        _renderer->texturizeScene(&scene);
+    }
+}
+#endif
 
 void Meshform_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
@@ -30,11 +53,6 @@ void Meshform_Demo::init(){
 
     _renderer->buildScene(&scene);
 #ifdef RASTERON_H
-    /* for(unsigned d = 0; d < volumeImg.getDepth(); d++){
-        Rasteron_Image* gradientImg = gradientImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, SIDE_Radial,  color_level(0xFFFFFFFF, (1.0 / 256) * d), 0xFFFF0000 + (0x1 * d) - (0x10000 * d));
-        volumeImg.addSlice(gradientImg, d);
-        RASTERON_DEALLOC(gradientImg);
-    } */
     _renderer->texturizeScene(&scene);
 #endif
 }
