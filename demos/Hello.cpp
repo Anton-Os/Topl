@@ -18,10 +18,28 @@ static Topl_Scene scene = Topl_Scene();
 
 // Hello Main Loop
 
+static void logFrameRate(double f1, double f2, double f3, double f4){
+    static unsigned frameCount = 0;
+    static double frameTotal = 0.0;
+
+    frameCount++;
+    frameTotal += f1 + f2 + f3 + f4;
+
+    std::cout << "Frame times: "
+        << f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
+        << " Total: " << f1 + f2 + f3 + f4
+        << " | Average: " << frameTotal / frameCount
+        << std::endl;
+}
+
 MAIN_ENTRY {
-	Platform platform(argv[0], "Hello");
-	std::cout << "Window creation" << std::endl;
+#ifndef __ANDROID__
+    Platform platform(argv[0], "Hello");
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+#else
+    Platform platform(pApp);
+    while(platform.getParentWindow() == nullptr) platform.awaitWindow(); // waiting for window on Android
+#endif
 
     std::cout << "Creating backend" << std::endl;
 #if TARGET_BACKEND==1
@@ -38,7 +56,7 @@ MAIN_ENTRY {
 
 	std::cout << "Scene building" << std::endl;
 	scene.addGeometry(&actor);
-	triangle.instanceCount = 10;
+    triangle.instanceCount = 10;
 	triangle.tessLevel = 10;
 	renderer->buildScene(&scene);
 
@@ -47,22 +65,19 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
+#ifndef __ANDROID__
 		renderer->setDrawPipeline(false);
 		// renderer->dispatch(100);
 		renderer->setDrawPipeline(true);
+#endif
+        renderer->update(&actor);
 		renderer->draw(&actor);
 		double f3 = _ticker.getRelMillisecs();
 		renderer->present();
-		double f4 = _ticker.getRelMillisecs();
-
-		/* frameTotal += f1 + f2 + f3 + f4;
-			if(f1 + f2 + f3 + f4 > frameTotal / renderer->getFrameCount())
-			std::cout << "Frame times: "
-			<< f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
-			<< " Total: " << f1 + f2 + f3 + f4
-			<< " | Average: " << frameTotal / renderer->getFrameCount() << std::endl; */
+        double f4 = _ticker.getRelMillisecs();
+        // logFrameRate(f1, f2, f3, f4);
 	}
 
 	if(renderer != nullptr) delete(renderer);
-	return 0;
+	// return 0;
 }

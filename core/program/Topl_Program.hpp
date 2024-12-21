@@ -7,7 +7,7 @@
 #include "Beams_Shader.hpp"
 #include "Effect_Shader.hpp"
 #include "Canvas_Shader.hpp"
-#include "Dynamic_Shader.hpp"
+#include "Experimental_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #include "constructs/Geo_Billboards.hpp"
@@ -113,7 +113,7 @@ protected:
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
-	Dynamic_VertexShader _dynamicVShader; Dynamic_PixelShader _dynamicPShader;
+	Experimental_VertexShader _dynamicVShader; Experimental_PixelShader _dynamicPShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 
 	Topl_EntryShader* _entryShaders[6] = { &_texVShader, &_beamsVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_dynamicVShader };

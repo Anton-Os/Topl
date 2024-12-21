@@ -36,6 +36,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
             billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
             for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
                 if(actor == billboard->getGeoActor(p)){
+#ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     if(o == 0) // handling shader switching
                         switch(p){
@@ -53,6 +54,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                     else switch(p){
                         default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                     }
+#endif
                 }
             }
         }
@@ -132,6 +134,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
     _platform = new Platform(app);
+    while(_platform->getParentWindow() == nullptr) _platform->awaitWindow(); // waiting for window on Android
 #endif
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
 	// _renderer->setCamera(&Topl_Program::camera);
@@ -169,7 +172,7 @@ void Topl_Program::setPipelines(){
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
 		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
 		_canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
-		_dynamicVShader = Dynamic_VertexShader_GL4(); _dynamicPShader = Dynamic_PixelShader_GL4();
+		_dynamicVShader = Experimental_VertexShader_GL4(); _dynamicPShader = Experimental_PixelShader_GL4();
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 		// TODO: Include Advanced shaders
 	}
@@ -179,7 +182,7 @@ void Topl_Program::setPipelines(){
 		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
 		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
 		_canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
-		_dynamicVShader = Dynamic_VertexShader_DX11(); _dynamicPShader = Dynamic_PixelShader_DX11();
+		_dynamicVShader = Experimental_VertexShader_DX11(); _dynamicPShader = Experimental_PixelShader_DX11();
 		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
 		// TODO: Include Advanced shaders
 	}

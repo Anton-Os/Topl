@@ -21,8 +21,10 @@ void Topl_Program::postloop(){
         _editor.actor.setSize(*Topl_Program::pickerObj->getSize());
         _editor.mesh.drawMode = DRAW_Lines;
         _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
+#ifdef RASTERON_H
         _editor.nameMesh.drawMode = DRAW_Triangles;
         _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
+#endif
     }
     else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H

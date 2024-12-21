@@ -118,12 +118,14 @@ bool Topl_Renderer::drawScene(const Topl_Scene* scene){
 }
 
 void Topl_Renderer::present() {
-	static Timer_Persist ticker;
 	_frameIDs++;
 	if (!_flags[DRAWN_BIT]) { 
-		swapBuffers(ticker.getRelMillisecs());
+        swapBuffers(_ticker.getRelMillisecs());
 		_flags[DRAWN_BIT] = true;
 	}
+
+    float clearTime = _ticker.getAbsSecs();
+    _clearColors = Vec4f({ sin(clearTime), cos(clearTime), tan(clearTime), 1.0F });
 }
 
 #ifdef RASTERON_H

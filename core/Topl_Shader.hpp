@@ -35,6 +35,7 @@ struct Shader_Type {
 #define DEFAULT_SHADER_MODE 0
 #define NO_PADDING 0
 #define PADDING_WIDTH 16 // padding aligned by 4 byte boundaries
+#define MAX_SHADER_INPUTS 16
 
 typedef std::vector<uint8_t> blockBytes_t; // container used to pass data to shaders
 typedef const uint8_t* bytes_cptr; // intermediate type for all shader data
@@ -154,6 +155,7 @@ public:
 		unsigned vertexCount = mesh->getVertexCount();
         // Vec3f origin = mesh->getOrigin();
 
+        // std::cout << "Sending vertex count of " << std::to_string(vertexCount) << " and instance count of " << std::to_string(mesh->instanceCount) << std::endl;
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->drawMode : &_defaultNum), sizeof(unsigned), bytes);

@@ -108,7 +108,9 @@ public:
 	void setTexMode(enum TEX_Mode mode) { _texMode = mode; }
     bool drawScene(const Topl_Scene* scene);
 	void present(); // present scene by swapping front and back buffers
-    virtual void draw(const Geo_Actor* actor) = 0; // draw call per render target
+    virtual void draw(const Geo_Actor* actor) = 0; // draw call per actor
+    virtual void build(const Geo_Actor* actor) = 0; // build call per actor
+    virtual void update(const Geo_Actor* actor) = 0; // update call per actor
     virtual void clear() = 0; // clears view to predefined background color
 	virtual void setViewport(const Topl_Viewport* viewport) = 0; // creates a viewport
 	virtual void setDrawMode(enum DRAW_Mode mode) { _drawMode = mode; }
@@ -143,14 +145,13 @@ protected:
 	Img_Base _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
-    virtual void build(const Geo_Actor* actor) = 0;
-    virtual void update(const Geo_Actor* actor) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
     virtual void attachTex(const Img_Base* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
     virtual void attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) = 0;
 	virtual void attachTex3D(const Img_Volume* volumeTex, unsigned renderID) = 0;
 #endif
+    Timer_Persist _ticker = Timer_Persist();
 };
 
 #define TOPL_RENDERER_H

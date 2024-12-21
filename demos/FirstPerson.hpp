@@ -4,7 +4,9 @@
 #include "meshes/Geo_Volume.hpp"
 
 #include "constructs/Geo_Puppet.hpp"
+#ifdef TOPL_ENABLE_MODELS
 #include "constructs/Geo_Model3D.hpp"
+#endif
 
 #include "program/Topl_Program.hpp"
 
@@ -45,12 +47,13 @@ struct FirstPerson_Demo : public Topl_Program {
         roof.setRot({ 0.0F, -MATH_HALF_PI, 0.0F });
         roof.setPos({ 0.0F, 7.5F, 0.0F });
         roof.setSize({ 30.0, 3.0F, 30.0 });
-
+#ifdef TOPL_ENABLE_MODELS
         models[0].shift({ 0.0F, -1.75F, 0.0F });
         models[1].shift({ -1.5F, -1.75F, 1.0F });
         models[2].shift({ 1.5F, -1.75, 1.0F });
         models[3].shift({ -1.5F, -1.75F, -1.0F });
         models[4].shift({ 1.5F, -1.75, -1.0F });
+#endif
     }
 
     void init() override;
@@ -87,8 +90,10 @@ struct FirstPerson_Demo : public Topl_Program {
     Geo_Actor roof = Geo_Actor(&roofMesh);
     Geo_Circle3D pillarMeshes[4] = { Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE), Geo_Circle3D(PILLAR_SIZE) };
     Geo_Actor pillars[4] = { Geo_Actor(&pillarMeshes[0]), Geo_Actor(&pillarMeshes[1]), Geo_Actor(&pillarMeshes[2]), Geo_Actor(&pillarMeshes[3]) };
+#ifdef TOPL_ENABLE_MODELS
     std::string modelPath = std::string(std::string(MODELS_DIR) + "SpinTop.obj");
     Geo_Model3D models[5] = { Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath) };
+#endif
 #ifdef RASTERON_H
     Img_Base floorTex = Img_Base(checkeredImgOp({ 1024, 1024 }, { 20, 20, 0xAAEE3333, 0xAA3333EE }));
     Img_Base roofTex =  Img_Base(linedImgOp({ 1024, 1024 }, 0xAAFFFF00, color_invert(0xAA00FF00), 10, 0.0));
@@ -101,6 +106,8 @@ struct FirstPerson_Demo : public Topl_Program {
     Img_Base modelTexs[5];
 #endif
 private:
+    void onAnyKey(char key);
+
     Topl_Scene scene2D = PROGRAM_SCENE; 
     Topl_Scene scene3D = PROGRAM_SCENE;
 } *_DEMO;

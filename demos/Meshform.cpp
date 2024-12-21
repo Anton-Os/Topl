@@ -5,8 +5,8 @@ void Meshform_Demo::onAnyKey(char key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
-        case 'j': genVolumeTex(0xFF0000FF, 0xFF00FF00); break;
-        case 'k': genVolumeTex(0xAA993366, 0x99AA6633); break;
+        case 'j': genVolumeTex(0xFF0000FF, 0xFFFF0000); break;
+        case 'k': genVolumeTex(0x22FFFFAA, 0xDDAAFFFF); break;
         case 'l': genVolumeTex(RAND_COLOR(), RAND_COLOR()); break;
     }
 }
@@ -26,6 +26,10 @@ void Meshform_Demo::genVolumeTex(unsigned color1, unsigned color2){
         }, color1, color2);
     else {
         std::cerr << "Texture thread is not null" << std::endl;
+        /* if(textureThread->joinable()){
+            textureThread->join();
+            delete textureThread;
+        } */
         _renderer->texturizeScene(&scene);
     }
 }
@@ -76,7 +80,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

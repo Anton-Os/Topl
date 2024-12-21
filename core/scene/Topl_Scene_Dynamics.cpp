@@ -160,20 +160,23 @@ void Topl_Scene::resolvePhysics() {
 		Geo_Actor* geoActor = m->first;
 		Phys_Actor* physActor = m->second;
 
-		if (physActor->actingForceCount > 0) 
+        if (physActor->actingForceCount > 0){
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {
-                physActor->acceleration = physActor->acceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass);
+                switch(physActor->getForceAt(forceIndex).type){
+                    case FORCE_Directional: physActor->acceleration = physActor->acceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass); break;
+                    case FORCE_Angular: physActor->angularAcceleration = physActor->angularAcceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass); break;
+                    case FORCE_Constricting: physActor->scaleAcceleration = physActor->scaleAcceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass); break;
+                }
+                // physActor->acceleration = physActor->acceleration + physActor->getForceVecAt(forceIndex) * (1.0f / physActor->mass); break;
                 (*(physActor->actingForces + forceIndex)).force = VEC_3F_ZERO; // removing current resolved force
 			}
-        // (physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
+            physActor->actingForceCount = 0; // TODO: account for gravity
+            // (physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
+        }
 
-		physActor->velocity = physActor->velocity + (physActor->acceleration * elapseSecs); // velocity integration
-		physActor->velocity = physActor->velocity * (float)physActor->damping; // velocity damping
-
-		Vec3f updatedPos = (physActor->velocity * (float)elapseSecs) + ((physActor->acceleration * pow(elapseSecs, 2))) * 0.5f;
-		geoActor->updatePos(updatedPos); // position integration
-
-		physActor->acceleration = VEC_3F_ZERO; // resetting acceleration
+        geoActor->updatePos(physActor->integrate(FORCE_Directional, elapseSecs));
+        // geoActor->updateRot(physActor->integrate(FORCE_Angular, elapseSecs));
+        // geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
 	}
 }
 

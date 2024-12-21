@@ -14,13 +14,15 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
-	float3 lightVal;
-	float3 lightPos;
-    // float2 coordPoints[8];
-    // float4 coordColors[8];
+	float2 ctrlPoints[8];
+	// float3 lightVal;
+	// float3 lightPos;
 }
 
-struct VS_OUTPUT { float4 pos : SV_POSITION; };
+struct VS_OUTPUT { 
+	float4 pos : SV_POSITION; 
+	float2 nearestPoint : POSITION1;	
+};
 
 // Main
 
@@ -33,6 +35,11 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+
+	float2 nearestPoint = ctrlPoints[0];
+	for(uint n = 1; n < 8; n++) 
+		if(length(float2(output.pos.x, output.pos.y) - ctrlPoints[n]) < length(float2(output.pos.x, output.pos.y) - nearestPoint)) nearestPoint = ctrlPoints[n];
+	output.nearestPoint = nearestPoint;
 
 	return output;
 }

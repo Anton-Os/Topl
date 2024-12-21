@@ -222,6 +222,12 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const { // Optimize thi
 
 NATIVE_WINDOW _window = nullptr;
 
+bool motion_event_filter_func(const GameActivityMotionEvent *motionEvent) {
+    auto sourceClass = motionEvent->source & AINPUT_SOURCE_CLASS_MASK;
+    return (sourceClass == AINPUT_SOURCE_CLASS_POINTER ||
+            sourceClass == AINPUT_SOURCE_CLASS_JOYSTICK);
+}
+
 void android_proc(android_app *app, int32_t cmd) {
     switch (cmd) {
         case APP_CMD_INIT_WINDOW: _window = app->window; break;
@@ -239,6 +245,8 @@ bool Platform::handleEvents(){
     static int events;
     static android_poll_source* pollSrc;
 
+    android_app_set_motion_event_filter(_context.app, motion_event_filter_func);
+
 	if (ALooper_pollAll(0, nullptr, &events, (void **) &pollSrc) >= 0) {
 		if (pollSrc) {
 			pollSrc->process(_context.app, pollSrc);
@@ -251,11 +259,11 @@ bool Platform::handleEvents(){
 bool Platform::getCursorCoords(float* xPos, float* yPos) const { return false; }
 
 unsigned Platform::getViewportHeight(NATIVE_PLATFORM_CONTEXT* context){
-    return TOPL_WIN_HEIGHT; // TODO: get height here
+    return (context->window != nullptr)? ANativeWindow_getHeight(context->window) : 0;
 }
 
 unsigned Platform::getViewportWidth(NATIVE_PLATFORM_CONTEXT* context){
-    return TOPL_WIN_WIDTH; // TODO: get width here
+    return (context->window != nullptr)? ANativeWindow_getWidth(context->window) : 0;
 }
 
 #elif defined(__linux__)
@@ -324,13 +332,12 @@ bool Platform::handleEvents(){
         case (KeyPress): {
             KeySym keysym = XLookupKeysym(&event.xkey, 0);
             Platform::keyControl.addKeyPress((char)keysym); // keycode needs to be converted!
-            printf("Key press: %c \n", (char)keysym);
         }
-        case (ButtonPress): {
+        case (ButtonPress): { // TODO: Detect correct mouse button
             Platform::mouseControl.addPress(MOUSE_RightBtn_Press, Platform::xCursorPos, Platform::yCursorPos);
             Platform::mouseControl.addPress(MOUSE_LeftBtn_Press, Platform::xCursorPos, Platform::yCursorPos);
         }
-        case (ButtonRelease): {
+        case (ButtonRelease): { // TODO: Detect correct mouse button
             Platform::mouseControl.addPress(MOUSE_RightBtn_Release, Platform::xCursorPos, Platform::yCursorPos);
             Platform::mouseControl.addPress(MOUSE_LeftBtn_Release, Platform::xCursorPos, Platform::yCursorPos);
         }

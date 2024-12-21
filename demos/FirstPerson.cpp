@@ -4,45 +4,23 @@
 
 static Vec3f puppet1_forceVec = VEC_3F_ZERO, puppet2_forceVec = VEC_3F_ZERO, puppet3_forceVec = VEC_3F_ZERO;
 
-void pivotCamY1(){ Topl_Program::camera.updateRot({ 0.0F, 0.01F, 0.0F }); }
-void pivotCamY2(){ Topl_Program::camera.updateRot({ 0.0F, -0.01F, 0.0F }); }
-void pivotCamZ1(){ Topl_Program::camera.updateRot({ 0.0F, 0.0F, 0.01F }); }
-void pivotCamZ2(){ Topl_Program::camera.updateRot({ 0.0F, 0.0F, -0.01F }); }
-void projCamId(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
-void projCamOrtho(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
-void projCamPerspective(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); }
-void projCamExperimental(){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Experimental, 1.0F).genProjMatrix()); }
-void movePuppetsRight(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] += 0.1F; }
-void movePuppetsLeft(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] -= 0.1F; }
-void movePuppetsUp(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] += 0.1F;  }
-void movePuppetsDown(){ for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] -= 0.1F; }
-
-/* void projCallback(){
-    static unsigned invocation = 0;
-    Topl_Program::camera.setProjMatrix(Projection((invocation % 2 == 0)? PROJECTION_Orthographic : PROJECTION_Perspective, 1.0F).genProjMatrix());
-    invocation++;
-} */
+void FirstPerson_Demo::onAnyKey(char key){
+    switch(tolower(key)){
+        case 'a': for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] -= Topl_Program::speed * 2; break;
+        case 's': for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] -= Topl_Program::speed * 2; break;
+        case 'd': for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[0] += Topl_Program::speed * 2; break;
+        case 'w': for(unsigned a = 0; a < 3; a++) _DEMO->anchorOffs[a].data[1] += Topl_Program::speed * 2; break;
+    }
+}
 
 void FirstPerson_Demo::init(){
-    // Platform::keyControl.addCallback('p', projCallback);
-    Platform::keyControl.addCallback('l', pivotCamY1);
-    Platform::keyControl.addCallback('k', pivotCamY2);
-    Platform::keyControl.addCallback('m', pivotCamZ1);
-    Platform::keyControl.addCallback('n', pivotCamZ2);
-    Platform::keyControl.addCallback('u', projCamExperimental);
-    Platform::keyControl.addCallback('i', projCamId);
-    Platform::keyControl.addCallback('o', projCamOrtho);
-    Platform::keyControl.addCallback('p', projCamPerspective);
-    Platform::keyControl.addCallback((char)0x25, movePuppetsLeft);
-    Platform::keyControl.addCallback((char)0x26, movePuppetsUp);
-    Platform::keyControl.addCallback((char)0x27, movePuppetsRight);
-    Platform::keyControl.addCallback((char)0x28, movePuppetsDown);
+    Platform::keyControl.addHandler(std::bind(&FirstPerson_Demo::onAnyKey, this, std::placeholders::_1));
 
     Topl_Program::camera.setZoom(0.5F);
     Topl_Program::camera.setPos({ 0.0F, -0.5F, 10.0F });
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
-    projCamPerspective();
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix());
 
     _renderer->setPipeline(_texPipeline);
 
@@ -54,6 +32,7 @@ void FirstPerson_Demo::init(){
         scene3D.addGeometry("pillar" + std::to_string(p), &pillars[p]);
         scene3D.addTexture("pillar" + std::to_string(p), &pillarTex[p]);
     }
+#ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < 5; m++){ 
         models[m].configure(&scene3D);
 
@@ -70,6 +49,7 @@ void FirstPerson_Demo::init(){
         scene3D.addTexture(std::to_string(m + 1), &modelTexs[m]);
         RASTERON_DEALLOC(image);
     }
+#endif
 
     _renderer->buildScene(&scene3D);
     _renderer->texturizeScene(&scene3D);
@@ -79,8 +59,11 @@ void FirstPerson_Demo::init(){
     puppet3.configure(&_DEMO->scene2D);
 
 #ifdef TOPL_ENABLE_PHYSICS
+    anchors[0].kVal *= 0.33;
     scene2D.addAnchor(&anchors[0], puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[0]);
+    anchors[1].kVal *= 1.0;
     scene2D.addAnchor(&anchors[1], puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[1]);
+    anchors[2].kVal *= 3.0;
     scene2D.addAnchor(&anchors[2], puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[2]);
 #endif
 
@@ -115,7 +98,7 @@ void FirstPerson_Demo::loop(double frameTime){
         _flatVShader.setMode(FLAT_COORD);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
-
+#ifdef TOPL_ENABLE_MODELS
         models[0].rotateAll({ 0.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
         models[1].rotateAll({ 0.0F, 0.0F, (float)frameTime / -500.0F });
         models[2].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
@@ -123,7 +106,7 @@ void FirstPerson_Demo::loop(double frameTime){
         models[4].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
         // for(unsigned m = 0; m < 5; m++)
         //    models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
-
+#endif
         // _renderer->setDrawMode((_renderer->getFrameCount() % 180 > 120)? DRAW_Strip : (_renderer->getFrameCount() % 180 > 60)? DRAW_Lines : DRAW_Points);
         _texVShader.setMode(0);
         _renderer->setDrawMode(DRAW_Triangles);

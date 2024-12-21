@@ -43,6 +43,9 @@ struct VectorXF {
        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] = data[e] * scalar;
        return vec;
     }
+    // VectorXF& operator *=(float scalar) { return this * scalar; }
+    // VectorXF& operator *=(const VectorXF& inputVec) { return this * inputVec; }
+    // VectorXF& operator +=(const VectorXF& inputVec) { return this + inputVec; }
     float len() const {
         float length = 0.0;
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) length += pow(data[e], 2);

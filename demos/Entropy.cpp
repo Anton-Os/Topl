@@ -61,7 +61,8 @@ void Entropy_Demo::loop(double frameTime){
             0.0F
         };
         if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForce("actor_surface" + std::to_string(a), force);
-        // if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForces("actor_surface" + std::to_string(a), force, force, force);
+        // if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForces("actor_surface" + std::to_string(a), force, force, VEC_3F_ZERO);
+        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForces("actor_surface" + std::to_string(a), force, force, force);
         // if(physActors[a].actingForceCount > 0) surface_actors[a].updateRot(*(physActors[a].forces));
         scene1.resolvePhysics();
 #else
@@ -86,7 +87,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

@@ -56,6 +56,28 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
         } else logMessage(MESSAGE_Exclaim, "Forces excess!");
     }
 
+    Vec3f integrate(FORCE_Type type, double elapseSecs){
+        if(elapseSecs == 0.0) return VEC_3F_ZERO; // no update
+
+        Vec3f& vel = velocity;
+        Vec3f& acc = acceleration;
+
+        switch(type){
+            case FORCE_Directional: vel = velocity; acc = acceleration; break;
+            case FORCE_Angular: vel = angularVelocity; acc = angularAcceleration; break;
+            case FORCE_Constricting: vel = scaleVelocity; acc = scaleAcceleration; break;
+        }
+
+        if((vel.isZero() && acc.isZero())) return VEC_3F_ZERO; // no update
+        else {
+            vel = (vel + (acc * elapseSecs)) * damping; // calculating velocity
+            Vec3f result = (vel * (float)elapseSecs) + ((acc * pow(elapseSecs, 2))) * 0.5f; // calculating result
+            acc = VEC_3F_ZERO; // resetting acceleration
+            return result;
+        }
+    }
+
+    Phys_Force getForceAt(unsigned f){ return *(actingForces + f); }
     Vec3f getForceVecAt(unsigned f){ return (*(actingForces + f)).force; }
 
     // bool isGravityEnabled = false;

@@ -8,8 +8,7 @@ struct Idle_VertexShader : public Topl_EntryShader {
 		: Topl_EntryShader( // Idle Shader can be used for testing new inputs
 			name,
 			{ 
-				Shader_Type("pos", "POSITION", SHDR_float_vec3),
-				// Shader_Type("normal", "NORMAL", SHDR_float_vec3),
+                Shader_Type("pos", "POSITION", SHDR_float_vec3),
 				Shader_Type("texcoord", "TEXCOORD", SHDR_float_vec2) 
 			} // Inputs
 		) {  }

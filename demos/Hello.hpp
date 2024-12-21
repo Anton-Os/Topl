@@ -8,8 +8,9 @@
 #include "Advance_Shader.hpp"
 
 // OpenGL Test Renderer
+#ifndef __ANDROID__
 struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
-	Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
+    Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
@@ -31,9 +32,23 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 	Advance_TessEvalShader_GL4 tessEvalShader;
 	Advance_ComputeShader_GL4 computeShader;
 };
+#else
+struct Hello_Renderer_GL4 : public Droidl_Renderer {
+    Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Droidl_Renderer(context){
+        // genPipeline(&basePipeline, &vertexShader, &pixelShader);
+        setDrawMode(DRAW_Triangles);
+    }
+
+    void setDrawPipeline(bool isNonCompute){ /* empty */ }
+
+    GL4::Pipeline pipeline;
+
+    Idle_VertexShader_GL4 vertexShader;
+    Idle_PixelShader_GL4 pixelShader;
+};
+#endif
 
 #ifdef _WIN32
-// DirectX Test Renderer
 struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_DX11(context){
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
@@ -60,7 +75,6 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 #endif
 
 #ifdef TOPL_ENABLE_VULKAN
-// VK Test Renderer
 struct Hello_Renderer_VK : public Topl_Renderer_VK {
 	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_VK(context){
 		setDrawMode(DRAW_Triangles);

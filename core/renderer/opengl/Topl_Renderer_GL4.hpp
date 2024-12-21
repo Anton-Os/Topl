@@ -14,9 +14,10 @@ public:
 	~Topl_Renderer_GL4();
 
 	void draw(const Geo_Actor* actor) override;
+    void update(const Geo_Actor* actor) override;
+    void build(const Geo_Actor* actor) override;
 	void clear() override;
 	void setViewport(const Topl_Viewport* viewport) override;
-	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(GL4::Pipeline* pipeline);
@@ -27,11 +28,12 @@ public:
 #ifdef RASTERON_H
 	Img_Base frame() override;
 #endif
+#ifndef __ANDROID__
 	void dispatch(std::vector<Vec3f>* data) override { glDispatchCompute(data->size(), data->size(), data->size()); }
+#endif
 protected:
-  	void init(NATIVE_WINDOW window) override;
-	void update(const Geo_Actor* actor) override;
-	void build(const Geo_Actor* actor) override;
+    void init(NATIVE_WINDOW window) override;
+    void swapBuffers(double frameTime) override;
 #ifdef RASTERON_H
     void attachTexAt(const Img_Base* imageTex, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
@@ -42,8 +44,9 @@ protected:
 
 	std::map<unsigned long, GL4::VertexArray> _vertexArrayMap;
 	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
-	std::vector<GL4::Texture> _textures; // active textures
-	std::map<unsigned long, GL4::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+    GL4::Buffer _feedBuffers[2] = { GL4::Buffer(0), GL4::Buffer(0) }; // for shader storage blocks
+    std::map<unsigned long, GL4::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+    std::vector<GL4::Texture> _textures; // active textures
 private:
 	GLenum _drawMode_GL4; // OpenGL specific draw mode
 	GLuint* _bufferSlots;

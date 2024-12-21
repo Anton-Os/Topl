@@ -1,5 +1,7 @@
 #version 440
 
+#define INCLUDE_BLOCK
+#define INCLUD_SCENEBLOCK
 #define INCLUDE_EXTBLOCK
 #define IGNORE_INPUTS
 

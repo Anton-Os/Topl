@@ -536,6 +536,8 @@ Topl_Renderer_VK::~Topl_Renderer_VK() {
 }
 
 void Topl_Renderer_VK::clear(){
+    _clearColors = Vec4f({ 1.0F, 0.25F, 0.25F, 1.0F });
+
     vkResetCommandBuffer(_commandBuffers[0], 0);
     vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo);
 
@@ -661,6 +663,7 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+    std::cout << "Waiting for fences"  << std::endl;
     vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(_logicDevice, 1, &_inFlightFence);
 
@@ -672,6 +675,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
         static VkDeviceSize offsets[] = { 0 };
         unsigned long renderID = _renderTargetMap[actor];
 
+        std::cout << "Resetting command buffer"  << std::endl;
         vkResetCommandBuffer(_commandBuffers[0], 0);
         if(vkBeginCommandBuffer(_commandBuffers[0], &_commandBufferInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer begin failure!\n");
 
@@ -692,13 +696,13 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
             if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
-            // std::cout << "Number of vertices: " << std::to_string(actor->getMesh()->getVertexCount()) << std::endl;
             std::cout << "Frame IDs is " << std::to_string(_frameIDs) << "image index is " << std::to_string(_swapImgIdx) << std::endl;
-            if(_frameIDs > 10) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            // if(_frameIDs > 10) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
         vkCmdEndRenderPass(_commandBuffers[0]);
 
+        std::cout << "Finishing command buffer"  << std::endl;
         if(vkEndCommandBuffer(_commandBuffers[0]) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Command buffer ending failure!\n");
     }
 }

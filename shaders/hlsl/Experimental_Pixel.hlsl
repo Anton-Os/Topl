@@ -15,22 +15,26 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
-	float3 lightVal;
-	float3 lightPos;
-    // float2 coordPoints[8];
-    // float4 coordColors[8];
+	float2 ctrlPoints[8];
+	// float3 lightVal;
+	// float3 lightPos;
 }
 
-struct PS_INPUT { float4 pos : SV_POSITION; };
+struct PS_INPUT { 
+	float4 pos : SV_POSITION; 
+	float2 nearestPoint : POSITION;
+};
 
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-    float r = sin(float(timeElapse * input.pos.x) / 1000.0F);
-	float g = cos(float(timeElapse * input.pos.y) / 1000.0F);
-	float b = tan(float(timeFrame * input.pos.z));
-	
+	float nearestDist = length(float2(input.pos.x, input.pos.y) - input.nearestPoint);
+
+    float r = sin(float(timeElapse * input.pos.x * nearestDist) / 10000.0F);
+	float g = cos(float(timeElapse * input.pos.y * nearestDist) / 10000.0F);
+	float b = tan(float(timeElapse * input.pos.z * nearestDist) / 10000.0F);
+
 	return float4(r, g, b, 1.0); // solid mode // default
 }

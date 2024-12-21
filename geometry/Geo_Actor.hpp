@@ -70,6 +70,7 @@ public:
 		std::reverse(ext.begin(), ext.end());
 		return (ext.length() > 0)? ext : "0";
 	}
+    std::string toString() const { return _name + ":I=" + std::to_string(_id) + ":P=" + _position.toString() + ":R=" + _rotation.toString() + ":S=" + _scale.toString(); }
 	const Geo_Mesh* getMesh() const { return _mesh; }
 	vec3f_cptr_t getPos() const { return &_position; }
 	vec3f_cptr_t getRot() const { return &_rotation; }

@@ -13,10 +13,11 @@ public:
 	}
 	~Topl_Renderer_DX11();
 
-	void draw(const Geo_Actor* actor) override;
+    void draw(const Geo_Actor* actor) override;
+    void update(const Geo_Actor* actor) override;
+    void build(const Geo_Actor* actor) override;
 	void clear() override;
 	void setViewport(const Topl_Viewport* viewport) override;
-	void swapBuffers(double frameTime) override;
 	void setDrawMode(enum DRAW_Mode mode) override;
 
 	void setPipeline(DX11::Pipeline* pipeline);
@@ -30,8 +31,7 @@ public:
 	void dispatch(std::vector<Vec3f>* data) override { _deviceCtx->Dispatch(data->size(), data->size(), data->size()); }
 protected:
 	void init(NATIVE_WINDOW window) override;
-	void update(const Geo_Actor* actor) override;
-	void build(const Geo_Actor* actor) override;
+    void swapBuffers(double frameTime) override;
 #ifdef RASTERON_H
     void attachTexAt(const Img_Base* imageTex, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
@@ -42,8 +42,9 @@ protected:
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
 	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
-	std::vector<DX11::Texture> _textures;
+    DX11::Buffer _feedBuffers[2] = { DX11::Buffer(0), DX11::Buffer(0) }; // for shader storage blocks
 	std::map<unsigned long, DX11::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
+    std::vector<DX11::Texture> _textures;
 private:
 	ID3D11Device* _device;
 	IDXGISwapChain* _swapChain;
