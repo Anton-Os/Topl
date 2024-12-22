@@ -2,6 +2,8 @@
 
 #define DYNAMIC_MODE_RAINBOW 0
 
+#define DYNAMIC_POINTS_MAX 8
+
 // Vertex Shaders
 
 struct Experimental_VertexShader : public Topl_EntryShader {
@@ -21,11 +23,20 @@ struct Experimental_VertexShader : public Topl_EntryShader {
 		// appendDataToBytes((uint8_t*)&lightPos, sizeof(Vec3f), bytes);
 		// appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
+
+	void setCtrlPoints(std::initializer_list<Vec3f> points){
+		unsigned short idx = 0;
+		for(auto p = points.begin(); p != points.end() && idx < DYNAMIC_POINTS_MAX; p++){
+			ctrlPoints[idx] = *p;
+			idx++;
+		}
+	}
+
 protected:
 	// Vec3f lightPos, lightVal;
-	Vec2f ctrlPoints[8] = {
-		{ 0.0F, 0.0F }, { 0.25F, 0.25F }, { -0.25F, 0.25F }, { 0.5F, 0.5F },  
-		{ 0.5F, -0.5F }, { 0.75F, 0.75F }, { -0.75F, -0.75F }, { 1.0F, 1.0F },
+	Vec3f ctrlPoints[8] = {
+		{ 0.0F, 0.0F, 0.0F }, { 0.25F, 0.25F, 0.0F }, { -0.25F, -0.25F, 0.0F }, { -0.5F, 0.5F, 0.0F },  
+		{ 0.5F, -0.5F, 0.0F }, { 0.75F, 0.75F, 0.0F }, { -0.75F, -0.75F, 0.0F }, { 1.0F, 1.0F, 0.0F },
 	};
 
 	std::string shaderRoutineStr; // TODO: Make this settable in the dynamic shader

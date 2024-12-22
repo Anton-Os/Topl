@@ -54,17 +54,17 @@ void FirstPerson_Demo::init(){
     _renderer->buildScene(&scene3D);
     _renderer->texturizeScene(&scene3D);
 
-    puppet1.configure(&_DEMO->scene2D);
-    puppet2.configure(&_DEMO->scene2D);
-    puppet3.configure(&_DEMO->scene2D);
+    puppets[0].configure(&_DEMO->scene2D);
+    puppets[1].configure(&_DEMO->scene2D);
+    puppets[2].configure(&_DEMO->scene2D);
 
 #ifdef TOPL_ENABLE_PHYSICS
     anchors[0].kVal *= 0.33;
-    scene2D.addAnchor(&anchors[0], puppet1.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[0]);
+    scene2D.addAnchor(&anchors[0], puppets[0].getGeoActor(PUPPET_Head)->getName(), &anchorOffs[0]);
     anchors[1].kVal *= 1.0;
-    scene2D.addAnchor(&anchors[1], puppet2.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[1]);
+    scene2D.addAnchor(&anchors[1], puppets[1].getGeoActor(PUPPET_Body)->getName(), &anchorOffs[1]);
     anchors[2].kVal *= 3.0;
-    scene2D.addAnchor(&anchors[2], puppet3.getGeoActor(PUPPET_Body)->getName(), &anchorOffs[2]);
+    scene2D.addAnchor(&anchors[2], puppets[2].getGeoActor(PUPPET_LeftArm)->getName(), &anchorOffs[2]);
 #endif
 
     Topl_Program::timeline.addSequence_vec3f(&puppet1_forceVec, std::make_pair(60.0, Vec3f({ 0.0F, 50.0F, 0.0F })));
@@ -78,11 +78,6 @@ void FirstPerson_Demo::init(){
 void FirstPerson_Demo::loop(double frameTime){
     {
 #ifdef TOPL_ENABLE_PHYSICS
-        if(_renderer->getFrameCount() % 10 == 0 && Topl_Program::timeline.persist_ticker.getAbsSecs() > 10.0){
-            // scene2D.addForce(puppet1.getGeoActor(rand() % 6)->getName(), puppet1_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
-            // scene2D.addForce(puppet2.getGeoActor(rand() % 6)->getName(), puppet2_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
-            // scene2D.addForce(puppet3.getGeoActor(rand() % 6)->getName(), puppet3_forceVec * ((_renderer->getFrameCount() % 120 < 60)? 10.0 : -10.0));
-        }
         if(_renderer->getFrameCount() > 60) scene2D.resolvePhysics();
 #endif
         _texVShader.setMode(0);

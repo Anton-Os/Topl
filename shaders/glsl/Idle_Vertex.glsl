@@ -20,4 +20,13 @@ layout(location = 0) in vec3 pos;
 
 // Main
 
-void main() { gl_Position = vec4(pos, 1.0f); }
+void main() { 
+    gl_Position = vec4(pos, 1.0f);
+
+    if(gl_InstanceID >= 1){
+        if(gl_InstanceID % 5 == 1) gl_Position = gl_Position + vec4(0.1, 0.1, 0.0, 0.0);
+        else if(gl_InstanceID % 5 == 2) gl_Position = gl_Position + vec4(-0.1, -0.1, 0.0, 0.0);
+        else if(gl_InstanceID % 5 == 3) gl_Position = gl_Position + vec4(-0.1, 0.1, 0.0, 0.0);
+        else if(gl_InstanceID % 5 == 4) gl_Position = gl_Position + vec4(0.1, -0.1, 0.0, 0.0);
+    }
+}

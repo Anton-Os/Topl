@@ -149,6 +149,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     if(isEnable_background) createBackground(&_background.image);
     if(isEnable_overlays) createOverlays(1.0);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
+    // _editor.nameImg.setTextImage({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
     _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
     _renderer->texturizeScene(&_editor.scene);
 #else
@@ -157,8 +158,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 
     // Texturing Data Generation
 #ifdef RASTERON_H
-	// Imaging Initialization
-	_invertImage = INVERT_IMG_TRUE; // make sure images show up inverse
+	_invertImage = INVERT_IMG_TRUE; // Imaging Initialization
 
 	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
 	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };

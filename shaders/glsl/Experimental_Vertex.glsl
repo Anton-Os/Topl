@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	double timeFrame;
 	double timeElapse;
-	vec2 ctrlPoints[2];
+	vec3 ctrlPoints[8];
 	// vec3 lightVal;
 	// vec3 lightPos;
 };
@@ -24,8 +24,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) out vec3 pos_out;
 layout(location = 1) out vec4 vert_color_out;
 layout(location = 2) flat out int id_out;
-
-// M
 
 void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;

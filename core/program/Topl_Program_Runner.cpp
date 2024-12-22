@@ -22,8 +22,16 @@ void Topl_Program::postloop(){
         _editor.mesh.drawMode = DRAW_Lines;
         _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
 #ifdef RASTERON_H
-        _editor.nameMesh.drawMode = DRAW_Triangles;
-        _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
+        // std::cout << "Actor name is " << Topl_Program::pickerObj->getName() << std::endl;
+        if(Platform::mouseControl.getIsMouseDown().second){
+            std::string name = "| " + Topl_Program::pickerObj->getName() + " |";
+            Rasteron_Text text = { _editor.fontPath.c_str(), name.c_str(), 0xFF111111, 0xFFEEEEEE };
+            _editor.nameImg.setTextImage(&text);
+            _renderer->texturizeScene(&_editor.scene);
+            _editor.nameMesh.drawMode = DRAW_Triangles;
+            _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
+            _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.075f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
+        }
 #endif
     }
     else _overlays.billboard_object.toggleShow(false);

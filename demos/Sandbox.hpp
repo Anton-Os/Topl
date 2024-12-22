@@ -162,6 +162,12 @@ private:
     Topl_Scene overlayScene, canvasScene;
     Topl_Camera fixedCamera;
 
+    void onAnyKey(char key);
+    void onTimePanePress(MOUSE_Event event, Geo_Actor* actor);
+    void onActionPanePress(MOUSE_Event event, Geo_Actor* actor);
+    void onSculptPanePress(MOUSE_Event event, Geo_Actor* actor);
+    void onPaintPanePress(MOUSE_Event event, Geo_Actor* actor);
+
     std::vector<Img_Base*> _images;
     std::vector<Img_Button*> _buttons;
     std::vector<Img_Label*> _labels;

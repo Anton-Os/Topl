@@ -72,14 +72,9 @@ struct Img_Label : public Img_UI {
 		}
 	}
 
-	void setPadding(unsigned short l, unsigned short r, unsigned short t, unsigned short b){
-		// paddings[0] = l; paddings[1] = r;paddings[2] = t;paddings[3] = b;
-		// setText(textObjs[0]);
-	}
-	
-	void setString(const std::string& str){
-		// textObjs[0].text = str.c_str();
-		// setText(textObjs[0]);
+	void setText(Rasteron_Text textObj, unsigned pads[4]){ // with updated paddings
+		for(unsigned p = 0; p < 4; p++) paddings[p] = pads[p];
+		setText(textObj);
 	}
 
 	// void setMessage(Rasteron_Message message){} // TODO: Enable multi-line functionality

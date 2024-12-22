@@ -12,15 +12,15 @@
 
 #define FLOOR_SIZE 50.0F / 2
 #define PILLAR_SIZE 1.0F
-#define PUPPET_DIST 5.0F
+#define PUPPET_DIST 3.0F
 
 struct FirstPerson_Demo : public Topl_Program {
     FirstPerson_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "FirstPerson", backend){
         // 2D Objects
 
-        puppet1.shift({ 0.0F, -1.0, PUPPET_DIST });
-        puppet2.shift({ -3.0F, -1.0, PUPPET_DIST });
-        puppet3.shift({ 3.0F, -1.0, PUPPET_DIST });
+        puppets[0].shift({ 0.0F, -1.0, PUPPET_DIST });
+        puppets[1].shift({ -3.0F, -1.0, PUPPET_DIST });
+        puppets[2].shift({ 3.0F, -1.0, PUPPET_DIST });
 
         anchorOffs[0] = { 0.0F, -1.0, 0.0F };
         anchorOffs[1] = { -3.0F, -1.0, 0.0F };
@@ -74,9 +74,8 @@ struct FirstPerson_Demo : public Topl_Program {
 		std::string(IMAGES_DIR) + "characters/" + "Demon-LeftWing.png", std::string(IMAGES_DIR) + "characters/" + "Demon-RightWing.png",
 		std::string(IMAGES_DIR) + "characters/" + "Demon-LeftLeg.png", std::string(IMAGES_DIR) + "characters/" + "Demon-RightLeg.png"
     };
-    Geo_Puppet2D puppet1 = Geo_Puppet2D("puppet1", ghostPuppetAssets);
-    Geo_Puppet2D puppet2 = Geo_Puppet2D("puppet2", angelPuppetAssets);
-    Geo_Puppet2D puppet3 = Geo_Puppet2D("puppet3", demonPuppetAssets);
+
+    Geo_Puppet2D puppets[3] = { Geo_Puppet2D("puppet1", ghostPuppetAssets), Geo_Puppet2D("puppet2", angelPuppetAssets), Geo_Puppet2D("puppet3", demonPuppetAssets) };
     // Geo_Puppet3D puppet = Geo_Puppet3D("puppet3D", "puppetModelPath"); // TODO: Test Puppet3D Implementation
 
 #ifdef TOPL_ENABLE_PHYSICS

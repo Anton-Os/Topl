@@ -11,7 +11,7 @@ static Img_Canvas canvasImg = Img_Canvas((0x00FFFFFF & RAND_COLOR()) | 0x6600000
 static bool isTick = false;
 static bool isModal = false;
 
-void onAnyKey(char key){
+void Sandbox_Demo::onAnyKey(char key){
     if(isdigit(key)){ Sandbox_Demo::mode = key - '0'; }
     else if(tolower(key) == 'y'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); }
     else if(tolower(key) == 'u'){ Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); }
@@ -21,12 +21,12 @@ void onAnyKey(char key){
     //     Topl_Program::timeline.addSequence_vec3f(Topl_Program::camera.getPos(), std::make_pair(TIMELINE_AT, *Topl_Program::camera.getPos()));
 }
 
-void onTimePanePress(MOUSE_Event evemt){
+void Sandbox_Demo::onTimePanePress(MOUSE_Event event, Geo_Actor* actor){
     isModal = Sandbox_Demo::mode != SANDBOX_TIME;
     Sandbox_Demo::mode = SANDBOX_TIME;
 }
 
-void onActionPanePress(MOUSE_Event event){
+void Sandbox_Demo::onActionPanePress(MOUSE_Event event, Geo_Actor* actor){
     isModal = Sandbox_Demo::mode != SANDBOX_ACTION || Sandbox_Demo::option != std::stoi(Topl_Program::pickerObj->getNameExt()) - 1;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_ACTION;
@@ -34,7 +34,7 @@ void onActionPanePress(MOUSE_Event event){
     }
 }
 
-void onSculptPanePress(MOUSE_Event event){
+void Sandbox_Demo::onSculptPanePress(MOUSE_Event event, Geo_Actor* actor){
     isModal = Sandbox_Demo::mode != SANDBOX_SCULPT;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_SCULPT;
@@ -43,7 +43,7 @@ void onSculptPanePress(MOUSE_Event event){
     }
 }
 
-void onPaintPanePress(MOUSE_Event event){
+void Sandbox_Demo::onPaintPanePress(MOUSE_Event event, Geo_Actor* actor){
     isModal = Sandbox_Demo::mode != SANDBOX_PAINT;
     if(event == MOUSE_LeftBtn_Press || event == MOUSE_RightBtn_Press){
         Sandbox_Demo::mode = SANDBOX_PAINT;
@@ -139,7 +139,7 @@ void onConfirmAction(float x, float y){
 }
 
 void Sandbox_Demo::init(){
-    Platform::keyControl.addAnyCallback(onAnyKey);
+    Platform::keyControl.addHandler(std::bind(&Sandbox_Demo::onAnyKey, this, std::placeholders::_1));
     Platform::mouseControl.addCallback(MOUSE_RightBtn_Release, onEditAction);
     Platform::mouseControl.addCallback(MOUSE_LeftBtn_Release, onConfirmAction);
     Platform::mouseControl.addDragCallback(onChangeAction);
@@ -170,7 +170,7 @@ void Sandbox_Demo::init(){
     timeCtrlBillboard.overlay(2, _buttons.back());
     _sliders.push_back(new Img_Slider(MENU_XL, (unsigned)SANDBOX_SEQUENCE));
     timeBillboard.overlay(0, _sliders.back());
-    timeBillboard.getGeoActor(0)->pickerFunc = onTimePanePress;
+    timeBillboard.getGeoActor(0)->pickFunc = std::bind(&Sandbox_Demo::onTimePanePress, this, std::placeholders::_1, std::placeholders::_2);
     for(unsigned p = 0; p < actionsBillboard.getParams()->getGridSize(); p++){
         switch(p){
             case SANDBOX_MOVE: _buttons.push_back(new Img_Button(MENU_XL, "control_camera")); break;
@@ -182,7 +182,8 @@ void Sandbox_Demo::init(){
             default: _buttons.push_back(new Img_Button(MENU_XL, "sort"));
         }
         actionsBillboard.overlay(p, _buttons.back());
-        (p < 3 || p >= SANDBOX_PANES - 3)? actionsBillboard.getGeoActor(p)->pickerFunc = onActionPanePress : actionsBillboard.getGeoActor(p)->isShown = false;
+        if(p < 3 || p >= SANDBOX_PANES - 3) actionsBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onActionPanePress, this, std::placeholders::_1, std::placeholders::_2);
+        else actionsBillboard.getGeoActor(p)->isShown = false;
     }
     for(unsigned p = 0; p < sculptBillboard.getParams()->getGridSize(); p++){
         switch(p){
@@ -190,7 +191,8 @@ void Sandbox_Demo::init(){
             default: _buttons.push_back(new Img_Button(MENU_XL, "category"));
         }
         sculptBillboard.overlay(p, _buttons.back());
-        (p < 3 || p >= SANDBOX_PANES - 1)? sculptBillboard.getGeoActor(p)->pickerFunc = onSculptPanePress : sculptBillboard.getGeoActor(p)->isShown = false;
+        if(p < 3 || p >= SANDBOX_PANES - 1) sculptBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onSculptPanePress, this, std::placeholders::_1, std::placeholders::_2);
+        else sculptBillboard.getGeoActor(p)->isShown = false;
     }
     for(unsigned p = 0; p < paintBillboard.getParams()->getGridSize(); p++){
         switch(p){
@@ -198,7 +200,8 @@ void Sandbox_Demo::init(){
             default: _buttons.push_back(new Img_Button(MENU_XL, "brush"));
         }
         paintBillboard.overlay(p, _buttons.back());
-        (p < 3 || p >= SANDBOX_PANES - 1)? paintBillboard.getGeoActor(p)->pickerFunc = onPaintPanePress : paintBillboard.getGeoActor(p)->isShown = false;
+        if(p < 3 || p >= SANDBOX_PANES - 1) paintBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onPaintPanePress, this, std::placeholders::_1, std::placeholders::_2);
+        else paintBillboard.getGeoActor(p)->isShown = false;
     }
     for(unsigned p = 0; p < propsBillboard.getParams()->getGridSize(); p++){
         _dials.push_back(new Img_Dial(MENU_XL, 4));
@@ -361,7 +364,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);
