@@ -98,7 +98,7 @@ void Topl_Renderer_DX11::setPipeline(DX11::Pipeline* pipeline) {
 }
 
 void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
-	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+	if (pipeline == nullptr || ((vertexShader == nullptr || pixelShader == nullptr) && shaders.size() == 0))
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	HRESULT hr; // error checking variable
 
@@ -149,10 +149,8 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 		if (FAILED(hr)) { pipeline->isReady = false; return; }
 	}
 
-
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
+	pipeline->setShaders(vertexShader, pixelShader, shaders);
 	setPipeline(pipeline);
 
-	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->entryShader);
+	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->getEntryShader());
 }

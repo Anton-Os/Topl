@@ -41,9 +41,8 @@ void Topl_Renderer_GL4::setPipeline(GL4::Pipeline* pipeline){
 }
 
 void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
-	if (pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+	if (pipeline == nullptr || ((vertexShader == nullptr || pixelShader == nullptr) && shaders.size() == 0))
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
-	else pipeline->isReady = true; // set to true until error encountered
 
 	// Vertex Shader
     if(vertexShader != nullptr){
@@ -97,8 +96,7 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	linkShaders(pipeline, vertexShader, pixelShader, shaders);
 	if(pipeline->isReady == false) return logMessage(MESSAGE_Exclaim, "Error during pipeline generation");
 
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
+	pipeline->setShaders(vertexShader, pixelShader, shaders);
 	setPipeline(pipeline);
 
 	GLint blockCount;

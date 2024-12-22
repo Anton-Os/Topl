@@ -239,7 +239,7 @@ void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int m
     if(pipeline != nullptr){
         Topl_Factory::switchPipeline(_renderer, pipeline);
         for(unsigned s = 0; s < 6; s++) // TODO: Improve this logic!
-            if(_entryShaders[s]->getFilePath() == pipeline->entryShader->getFilePath()){ _entryShaders[s]->setMode(mode); break; } // find matching pipeline and set mode
+            if(_entryShaders[s]->getFilePath() == pipeline->getEntryShader()->getFilePath()){ _entryShaders[s]->setMode(mode); break; } // find matching pipeline and set mode
     }
 
     _renderer->setDrawMode(DRAW_Triangles);

@@ -97,7 +97,7 @@ void Topl_Renderer_VK::setPipeline(VK::Pipeline* pipeline){
 void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
 	VkResult result;
 	
-	if(pipeline == nullptr || vertexShader == nullptr || pixelShader == nullptr)
+	if(pipeline == nullptr || ((vertexShader == nullptr || pixelShader == nullptr) && shaders.size() == 0))
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
 	
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
@@ -200,7 +200,6 @@ void Topl_Renderer_VK::genPipeline(VK::Pipeline* pipeline, entry_shader_cptr ver
 	if(tessEvalShader != shaders.end()) vkDestroyShaderModule(_logicDevice, tessCtrlShaderModule, nullptr);
 	if(geomShader != shaders.end()) vkDestroyShaderModule(_logicDevice, tessEvalShaderModule, nullptr);
 
-	pipeline->entryShader = vertexShader;
-	pipeline->isReady = true;
+	pipeline->setShaders(vertexShader, pixelShader, shaders);
 	setPipeline(pipeline);
 }

@@ -11,6 +11,11 @@ struct Experimental_VertexShader : public Topl_EntryShader {
 	Experimental_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Experimental_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
+	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
+		Topl_EntryShader::genActorBlock(actor, bytes);
+		// if(actor == targetActor) appendDataToBytes(&ctrlMatrix, sizeof(ctrlMatrix), bytes);
+	}
+
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		static Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
         double relMillisecs = dynamic_timer.getRelMillisecs();
@@ -24,6 +29,11 @@ struct Experimental_VertexShader : public Topl_EntryShader {
 		// appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
 
+	void setCtrlMatrix(const Geo_Actor* actor, Mat4x4 matrix){
+		targetActor = actor;
+		ctrlMatrix = matrix;
+	}
+
 	void setCtrlPoints(std::initializer_list<Vec3f> points){
 		unsigned short idx = 0;
 		for(auto p = points.begin(); p != points.end() && idx < DYNAMIC_POINTS_MAX; p++){
@@ -33,13 +43,15 @@ struct Experimental_VertexShader : public Topl_EntryShader {
 	}
 
 protected:
-	// Vec3f lightPos, lightVal;
+	const Geo_Actor* targetActor = nullptr;
+	Mat4x4 ctrlMatrix = MAT_4x4_IDENTITY;
+	
 	Vec3f ctrlPoints[8] = {
 		{ 0.0F, 0.0F, 0.0F }, { 0.25F, 0.25F, 0.0F }, { -0.25F, -0.25F, 0.0F }, { -0.5F, 0.5F, 0.0F },  
 		{ 0.5F, -0.5F, 0.0F }, { 0.75F, 0.75F, 0.0F }, { -0.75F, -0.75F, 0.0F }, { 1.0F, 1.0F, 0.0F },
 	};
 
-	std::string shaderRoutineStr; // TODO: Make this settable in the dynamic shader
+	// Vec3f lightPos, lightVal;
 };
 
 struct Experimental_VertexShader_GL4 : public Experimental_VertexShader {

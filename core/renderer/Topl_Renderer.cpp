@@ -6,7 +6,7 @@
 } */
 
 void Topl_Renderer::setPipeline(const Topl_Pipeline* pipeline){
-    _entryShader = pipeline->entryShader;
+    _entryShader = pipeline->getEntryShader();
     _flags[PIPELINE_BIT] = pipeline->isReady;
 }
 

@@ -145,8 +145,8 @@ void Topl_Renderer_DX11::init(NATIVE_WINDOW window) {
 
 	D3D11_TEXTURE2D_DESC depthTexDesc;
 
-	depthTexDesc.Height = TOPL_WIN_HEIGHT;
-	depthTexDesc.Width = TOPL_WIN_WIDTH;
+	depthTexDesc.Height = Platform::getViewportHeight(_platformCtx);
+	depthTexDesc.Width = Platform::getViewportWidth(_platformCtx);
 	depthTexDesc.MipLevels = 1;
 	depthTexDesc.ArraySize = 1;
 	depthTexDesc.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;

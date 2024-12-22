@@ -8,7 +8,7 @@
 
 struct Topl_Pipeline {
 	Topl_Pipeline() {}
-	Topl_Pipeline(entry_shader_cptr entry) { entryShader = entry; }
+	Topl_Pipeline(entry_shader_cptr entry) { _vertexShader = entry; }
 
 	static unsigned getOffset(enum SHDR_ValueType type) {
 		switch (type) {
@@ -41,10 +41,31 @@ struct Topl_Pipeline {
 		}
 	}
 
-	// void setMode(unsigned mode){ if(entryShader != nullptr) entryShader->setMode(mode); }
+	void setShaders(entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders){
+		_vertexShader = vShader;
+		_pixelShader = pShader;
+		for(auto s = shaders.begin(); s != shaders.end(); s++)
+			switch((*s)->getType()){
+				case SHDR_Geom: _geomShader = *s; break;
+				case SHDR_TessCtrl: _tessCtrlShader = *s; break;
+				case SHDR_TessEval: _tessEvalShader = *s; break;
+				case SHDR_Compute: _computeShader = *s; break;
+			}
+		// isReady = (vShader == nullptr || pShader == nullptr) && shaders.size() == 0;
+		isReady = true;
+	}
 
-	entry_shader_cptr entryShader = nullptr; // entry shader stored internally
+	entry_shader_cptr getEntryShader() const { return _vertexShader; }
+
+	// void setMode(unsigned mode){ if(entryShader != nullptr) entryShader->setMode(mode); }
 	bool isReady; // value for compilation and link status
+private:
+	entry_shader_cptr _vertexShader = nullptr;
+	shader_cptr _geomShader = nullptr;
+	shader_cptr _tessCtrlShader = nullptr;
+	shader_cptr _tessEvalShader = nullptr;
+	shader_cptr _pixelShader = nullptr;
+	shader_cptr _computeShader = nullptr;
 };
 
 #define TOPL_PIPELINE_H
