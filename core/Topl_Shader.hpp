@@ -155,13 +155,14 @@ public:
 		unsigned vertexCount = mesh->getVertexCount();
         // Vec3f origin = mesh->getOrigin();
 
-        // std::cout << "Sending vertex count of " << std::to_string(vertexCount) << " and instance count of " << std::to_string(mesh->instanceCount) << std::endl;
-		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
+        appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->drawMode : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->tessLevel : &_defaultNum), sizeof(unsigned), bytes);
         // alignDataToBytes((uint8_t*)((mesh != nullptr)? &origin : &_defaultVec), sizeof(Vec3f), 4, bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
+
+		if(mesh != nullptr) appendDataToBytes((uint8_t*)mesh->getInstanceData(), sizeof(Mat4x4) * mesh->instanceCount, bytes);
 	}
 
 	virtual void reset(){ _mode = DEFAULT_SHADER_MODE; }

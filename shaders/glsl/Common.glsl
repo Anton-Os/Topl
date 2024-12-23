@@ -16,12 +16,15 @@ layout(std140, binding = 1) uniform SceneBlock {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
+#define MAX_INSTANCES 32
+
 layout(std140, binding = 2) uniform ExtBlock {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
 	uint tessLevel; // levels of tesselation
-	// vec3 meshOrigin; // origin point for messh
+
+	mat4 instanceData[MAX_INSTANCES];
 };
 #endif
 

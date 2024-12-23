@@ -1,13 +1,20 @@
 #version 440
 
 #define IGNORE_INPUTS
-#define INCLUDE_BLOCK
 // #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
 // Values
+
+layout(std140, binding = 0) uniform Block {
+        vec3 offset;
+        vec3 rotation;
+        vec3 scale;
+
+        mat4 ctrlMatrix;
+};
 
 layout(std140, binding = 1) uniform SceneBlock {
 	int mode;

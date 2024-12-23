@@ -83,11 +83,11 @@ private:
 	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors
 	std::vector<AnchoredItems> _anchoredItems; // stores anchored actors and connectors
 	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
+    // std::thread _phys_thread;
 #endif
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Img_Base _textures[MAX_TEX_BINDINGS] = { 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp"),
 		Img_Base(std::string(IMAGES_DIR) + "Background-Grid.png"), 
 		Img_Base(std::string(IMAGES_DIR) + "Background-Pins.png"), 
 		Img_Base(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
@@ -95,6 +95,7 @@ private:
 		Img_Base(std::string(IMAGES_DIR) + "Background-Canvas.png"),
 		Img_Base(std::string(IMAGES_DIR) + "Background-Squared.png"), 
 		Img_Base(std::string(IMAGES_DIR) + "Background-Circular.png"),
+        Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp"),
 	};
 	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

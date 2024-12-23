@@ -66,7 +66,7 @@ bool Topl_Renderer::updateScene(const Topl_Scene* scene){
 		actor_cptr actor = (scene != ALL_SCENES)? scene->getGeoActor(g) : _renderObjMap[g];
 		if(isActorUpdate){
 			_actorBlockData.clear();
-			_entryShader->genActorBlock(actor, &_actorBlockData); // TODO: Include mesh updates
+            _entryShader->genActorBlock(actor, &_actorBlockData);
 		}
 		if(isMeshUpdate){
 			_meshBlockData.clear();

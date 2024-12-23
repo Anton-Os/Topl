@@ -16,19 +16,22 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
+#define MAX_INSTANCES 32
+
 cbuffer CONST_EXT_BLOCK : register(b2) {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
 	uint tessLevel; // levels of tesselation
-	// float3 meshOrigin; // origin point for mesh
+
+    float4x4 instanceData[MAX_INSTANCES];
 }
 #endif
 
 #ifdef INCLUDE_DATASTREAM
 
-ByteAddressBuffer feedIn : register(t0); // Buffer feedIn : register(b3) { float3[]; }
-RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) { float3[]; }
+ByteAddressBuffer feedIn : register(b3); // Buffer feedIn : register(b3) { float3[]; }
+RWByteAddressBuffer feedOut : register(b4); // RWBuffer feedOut : register(b4) { float3[]; }
 
 #endif
 

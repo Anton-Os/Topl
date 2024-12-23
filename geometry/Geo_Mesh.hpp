@@ -11,6 +11,7 @@
 #define DEFAULT_Z 0.0f // default depth value for objects
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units
+#define MAX_INSTANCES 16
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
@@ -32,6 +33,8 @@ class Geo_Mesh {
 public:
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
 	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
+
+	~Geo_Mesh(){ if(_instanceData != nullptr) free(_instanceData); }
 
 	Geo_Mesh(vertex_cptr_t points, unsigned short pointCount){ // point set constructor
 		_vertices.resize(pointCount); 
@@ -98,6 +101,17 @@ public:
 		tessLevel += tessCount; // for testing
 	}
 
+	void setInstances(std::initializer_list<Mat4x4> matrices){
+		if(_instanceData != nullptr) free(_instanceData);
+		_instanceData = (Mat4x4*)malloc(matrices.size() * sizeof(Mat4x4));
+		
+		unsigned instanceOffset = 0;
+		for(auto m = matrices.begin(); m != matrices.end() && instanceOffset < MAX_INSTANCES; m++){
+			*(_instanceData + instanceOffset) = *m;
+			instanceOffset++;
+		}
+	}
+
     Vec3f getOrigin() const {
         Vec3f origin = VEC_3F_ZERO;
         for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
@@ -108,6 +122,7 @@ public:
 	vertex_cptr_t getVertices() const { return _vertices.data(); }
 	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices() const { return _indices.data(); }
+	const Mat4x4* getInstanceData() const { return _instanceData; }
 
 	unsigned tessLevel = 1;
 	unsigned instanceCount = 0;
@@ -115,6 +130,8 @@ public:
 protected:
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
+
+	Mat4x4* _instanceData = nullptr;
 };
 
 #define GEO_MESH_H

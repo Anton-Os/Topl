@@ -352,6 +352,8 @@ bool Platform::handleEvents(){
     return true;
 }
 
+void Platform::openFileDialog(bool isRead){}
+
 unsigned Platform::getViewportHeight(NATIVE_PLATFORM_CONTEXT* context){
     XWindowAttributes windowAttribs;
     XGetWindowAttributes(context->display, context->window, &windowAttribs);

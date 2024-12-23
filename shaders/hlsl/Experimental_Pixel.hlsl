@@ -1,4 +1,3 @@
-#define INCLUDE_BLOCK
 #define INCLUDE_EXTBLOCK
 #define IGNORE_INPUTS
 #define INCLUDE_TEXTURES
@@ -6,6 +5,14 @@
 #include "Common.hlsl"
 
 // Values
+
+cbuffer CONST_BLOCK : register(b0) {
+    float3 offset;
+    float3 rotation;
+    float3 scale;
+
+    float4x4 ctrlMatrix;
+}
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
 	int mode;
