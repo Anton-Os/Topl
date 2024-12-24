@@ -4,25 +4,30 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 2
+#define MESHFORM_TESS 0
 #define MESHFORM_INDEX 0
-#define MESHFORM_INC 1.01F
-#define MESHFORM_DEC 0.91F
-#define MESHFORM_CURVE 0.005F
+#define MESHFORM_INC 1.15F // 1.01F
+#define MESHFORM_DEC 0.9F
+#define MESHFORM_CURVE 0.15F // 0.005F
 
 #define MESHFORM_GRADIENT 0
 #define MESHFORM_LINES 1
 #define MESHFORM_CHECKER 2
 
-Vec3f rigidTForm(unsigned index, Vec3f target, Vec3f amount){
-    return (index % 6 * MESHFORM_TESS == 0)? target * amount : target;
+Vec3f rigidTForm(Vec3f target, Vec3f amount){
+    static unsigned index = 0; 
+    index++;
+    return (index % 6 * (MESHFORM_TESS + 1) == 0)? target * amount : target;
 }
 
-Vec3f curveTForm(unsigned index, Vec3f target, Vec3f amount){
+Vec3f curveTForm(Vec3f target, Vec3f amount){
+    static unsigned index = 0; 
+    index++;
+
     return Vec3f({
-        target.data[0] * (1.0F + (sinf(amount.data[0] * index) * MESHFORM_CURVE)),
-        target.data[1] * (1.0F + (sinf(amount.data[1] * index) * MESHFORM_CURVE)),
-        target.data[2] * (1.0F + (sinf(amount.data[2] * index) * MESHFORM_CURVE))
+        target.data[0] * (1.0F + (sinf(fabs(1.0F - amount.data[0]) * index) * MESHFORM_CURVE)),
+        target.data[1] * (1.0F + (sinf(fabs(1.0F - amount.data[1]) * index) * MESHFORM_CURVE)),
+        target.data[2] * (1.0F + (sinf(fabs(1.0F - amount.data[2]) * index) * MESHFORM_CURVE))
     });
 }
 
@@ -42,16 +47,9 @@ Vec3f trialTForm(Vec3f target, Vec3f amount){
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){
-        for(unsigned o = 0; o < 3; o++){
-            if(MESHFORM_TESS > 0) trigOrbs[o]->tesselate(MESHFORM_TESS);
-            if(MESHFORM_TESS > 0) quadOrbs[o]->tesselate(MESHFORM_TESS);
-            if(MESHFORM_TESS > 0) hexOrbs[o]->tesselate(MESHFORM_TESS);
-            if(MESHFORM_TESS > 0) decOrbs[o]->tesselate(MESHFORM_TESS);
-            if(o > 0) trigOrbs[o]->modify((o % 2 == 1)? curveTForm : rigidTForm, Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC }));
-            if(o > 0) quadOrbs[o]->modify((o % 2 == 1)? curveTForm : rigidTForm, Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC }));
-            if(o > 0) hexOrbs[o]->modify((o % 2 == 1)? curveTForm : rigidTForm, Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC }));
-            if(o > 0) decOrbs[o]->modify((o % 2 == 1)? curveTForm : rigidTForm, Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC }));
-        }
+        Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
+        Vec3f decVec = Vec3f({ MESHFORM_DEC, MESHFORM_DEC, MESHFORM_DEC });
+        genShapes(MESHFORM_TESS, std::make_pair(curveTForm, decVec), std::make_pair(rigidTForm, incVec));
     }
 
     void init() override;
@@ -79,8 +77,10 @@ private:
 #ifdef RASTERON_H
     void genTex3D(unsigned short mode, unsigned color1, unsigned color2);
 #endif
+    void genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2);
 
     Topl_Scene scene = PROGRAM_SCENE;
 
     std::thread* textureThread = nullptr;
+    // std::thread* geometryThread = nullptr;
 } *_DEMO;

@@ -12,6 +12,8 @@ cbuffer CONST_BLOCK : register(b0) {
 
 	float3 texScroll; // texture coordinate scrolling
 	float3 texScale; // texture coordinate scaling
+	float antialiasArea; // antialiasing area from texoords
+	uint antialiasSteps; // antialiasing step count
 }
 
 struct VS_OUTPUT {

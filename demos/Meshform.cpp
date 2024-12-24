@@ -1,14 +1,22 @@
 #include "Meshform.hpp"
 
 void Meshform_Demo::onAnyKey(char key){
+    static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
+    static Vec3f decVec = Vec3f({ MESHFORM_DEC, MESHFORM_DEC, MESHFORM_DEC });
     switch(tolower(key)){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
+        case 'j': genShapes(0, std::make_pair(curveTForm, decVec), std::make_pair(rigidTForm, incVec)); break;
+        case 'k': genShapes(MESHFORM_TESS + 1, std::make_pair(curveTForm, decVec), std::make_pair(rigidTForm, incVec)); break;
+        case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(rigidTForm, decVec), std::make_pair(curveTForm, incVec)); break;
         case 'b': genTex3D(MESHFORM_GRADIENT, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
         case 'n': genTex3D(MESHFORM_LINES, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
         case 'm': genTex3D(MESHFORM_CHECKER, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
     }
+
+    if(tolower(key) == 'j' || tolower(key) == 'k' || tolower(key) == 'l')
+        _renderer->buildScene(&scene);
 }
 
 #ifdef RASTERON_H
@@ -38,6 +46,24 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 }
 #endif
 
+
+void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
+    for(unsigned o = 0; o < 3; o++){ // iterate through all shapes
+        if(tessCount > 0){
+            trigOrbs[o]->tesselate(tessCount);
+            quadOrbs[o]->tesselate(tessCount);
+            hexOrbs[o]->tesselate(tessCount);
+            decOrbs[o]->tesselate(tessCount);
+        }
+        // for(unsigned t = 0; t < MESHFORM_TESS + 1; t++){
+        if(o > 0) trigOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+        if(o > 0) quadOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+        if(o > 0) hexOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+        if(o > 0) decOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+        // }
+    }
+}
+
 void Meshform_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
@@ -57,6 +83,10 @@ void Meshform_Demo::init(){
         scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
     }
+
+    _texVShader.setAntialiasing(0.01F, 6);
+    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    Topl_Program::shaderMode = 8;
 
     _renderer->buildScene(&scene);
 #ifdef RASTERON_H
@@ -79,7 +109,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

@@ -142,6 +142,21 @@ float4 stepSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
+// Distance Set
+float4 distSet(float2 coord, float2 cursor){
+	uint i = 1; // iteration count
+
+	while(distance(coord, cursor) * atan((coord.x - cursor.x) / (coord.y - cursor.y)) < FRACTAL_SIZE && i < FRACTAL_ITER){
+		float angle = atan((coord.x - cursor.x) / (coord.y - cursor.y));
+		if(distance(coord, cursor) < angle) coord += distance(coord, cursor) * abs(dot(coord, cursor));
+		else coord *= distance(coord, cursor) * angle;
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursor, i), 1.0);
+	return float4(0, 0, 0, 0); // black color within set
+}
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -155,15 +170,17 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 target = coords - cursor;
 	if(mode >= 0) target = coords - cursor; 
 	else target = float2(input.texcoord.x, input.texcoord.y) - cursor;
+	target *= FRACTAL_SIZE;
 
-    if(abs(mode) >= 10 && abs(mode) < 20) return juliaSet(target * FRACTAL_SIZE, cursor);
-	else if(abs(mode) >= 20 && abs(mode) < 30) return trigSet(target * FRACTAL_SIZE);
-	else if(abs(mode) >= 30 && abs(mode) < 40) return powerSet(target * FRACTAL_SIZE, cursorPos);
-    else if(abs(mode) >= 40 && abs(mode) < 50) return wingSet(target * FRACTAL_SIZE);
-    else if(abs(mode) >= 50 && abs(mode) < 60) return stepSet(target * FRACTAL_SIZE, cursorPos);
+    if(abs(mode) >= 10 && abs(mode) < 20) return juliaSet(target, cursor);
+	else if(abs(mode) >= 20 && abs(mode) < 30) return trigSet(target);
+	else if(abs(mode) >= 30 && abs(mode) < 40) return powerSet(target, cursorPos);
+    else if(abs(mode) >= 40 && abs(mode) < 50) return wingSet(target);
+    else if(abs(mode) >= 50 && abs(mode) < 60) return stepSet(target, cursorPos);
+	else if(abs(mode) >= 60 && abs(mode) < 70) return distSet(target, cursorPos);
 	// TODO: Fill in rangers 60 - 100
 	else if(abs(mode) >= 100 && abs(mode) < 110) return juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
 	else if(abs(mode) >= 110 && abs(mode) < 120) return trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));
 	else if(abs(mode) >= 120 && abs(mode) < 130) return stepSet(float2(wingSet(target).r * wingSet(target).b, wingSet(target).g / wingSet(target).b), cursor);
-    else return mandlebrotSet(target * FRACTAL_SIZE);
+    else return mandlebrotSet(target);
 }
