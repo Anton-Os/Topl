@@ -29,8 +29,15 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out vec4 vert_color_out;
-layout(location = 2) flat out int id_out;
+layout(location = 1) flat out uint ctrl_index_out;
+layout(location = 2) out vec4 vert_color_out;
+
+uint calcCtrlPointIndex(vec3 target){
+	uint index = 0;
+	for(uint n = 1; n < 8; n++) 
+		if(length(target - ctrlPoints[n]) < length(target - ctrlPoints[index])) index = n;
+	return index;
+}
 
 void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;
@@ -41,6 +48,6 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
-	id_out = gl_VertexID;
-	vert_color_out = vec4(1.0, 1.0, 1.0, 1.0); // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
+	ctrl_index_out = calcCtrlPointIndex(pos_out);
+	vert_color_out = getStepColor(ctrl_index_out);
 }

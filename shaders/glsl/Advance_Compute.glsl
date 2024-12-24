@@ -1,5 +1,6 @@
 #version 430 core
 
+#define IGNORE_INPUTS
 #define INCLUDE_DATASTREAM
 
 #include "Common.glsl"

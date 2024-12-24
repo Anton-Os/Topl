@@ -30,27 +30,21 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec4 vertex_color;
-layout(location = 2) flat in int id;
+layout(location = 1) flat in uint ctrl_index;
+layout(location = 2) in vec4 vertex_color;
 
 layout(location = 0) out vec4 outColor;
-
-vec3 calcNearestPoint(vec3 target){
-	vec3 nearestPoint = ctrlPoints[0];
-	for(uint n = 1; n < 8; n++) 
-		if(length(target - ctrlPoints[n]) < length(target - nearestPoint)) nearestPoint = ctrlPoints[n];
-	return nearestPoint;
-}
 
 // Main
 
 void main() {
-	vec3 nearestPoint = calcNearestPoint(pos);
+	vec3 nearestPoint = ctrlPoints[ctrl_index];
+	float nearestDist = length(nearestPoint - pos);
 
-	float r = sin(float(timeElapse * nearestPoint.x) / 1000.0F);
-	float g = cos(float(timeElapse * nearestPoint.y) / 1000.0F);
-	float b = tan(float(timeFrame * nearestPoint.z));
+	float r = sin(float(timeElapse * vertex_color.r) / 1000.0F);
+	float g = cos(float(timeElapse * vertex_color.g) / 1000.0F);
+	float b = tan(float(timeFrame * vertex_color.b));
 	
-	if(mode >= 0) outColor = vec4(r, g, b, 1.0); // color shift mode
+	if(mode >= 0) outColor = vec4(r * nearestDist, g * nearestDist, b * nearestDist, 1.0); // color shift mode
 	// else perform texture calculations with light
 }

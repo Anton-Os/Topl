@@ -76,6 +76,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
     Img_Volume volumeImg = Img_Volume(KALEIDOSCOPE_SLICES);
 private:
     void onAnyKey(char key);
+    void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
     Topl_Scene scene = PROGRAM_SCENE;
     // Topl_Scene targetScene;

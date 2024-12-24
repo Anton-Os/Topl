@@ -26,8 +26,17 @@ void Kaleidoscope_Demo::onAnyKey(char key){
     // else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
 }
 
+void Kaleidoscope_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
+    unsigned short p = 0;
+
+    _dynamicVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
+
+    p++;
+}
+
 void Kaleidoscope_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyKey, this, std::placeholders::_1));
+    Platform::mouseControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
 
     construct1.configure(&scene);
     construct2.configure(&scene);
@@ -56,7 +65,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

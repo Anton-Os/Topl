@@ -165,7 +165,7 @@ void main() {
 
 	vec2 target;
 	if(mode >= 0) target = coords - cursor - vec2(cam_pos.x, cam_pos.y);
-	else target = vec2(texcoord.x - 0.5, texcoord.y - 0.5) - cursor;
+	else target = vec2(texcoord.x, texcoord.y) - cursor;
 
 	if(abs(mode) >= 10 && abs(mode) < 20) color = vec4(juliaSet(target * size, cursor), 1.0f);
 	else if(abs(mode) >= 20 && abs(mode) < 30) color = vec4(trigSet((target + vec2(0.5, 0.5)) * size), 1.0f);

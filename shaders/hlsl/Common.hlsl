@@ -30,8 +30,8 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 
 #ifdef INCLUDE_DATASTREAM
 
-ByteAddressBuffer feedIn : register(b3); // Buffer feedIn : register(b3) { float3[]; }
-RWByteAddressBuffer feedOut : register(b4); // RWBuffer feedOut : register(b4) { float3[]; }
+// ByteAddressBuffer feedIn : register(t9); // Buffer feedIn : register(b3) { float3[]; }
+RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) { float3[]; }
 
 #endif
 

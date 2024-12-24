@@ -5,32 +5,35 @@ void Meshform_Demo::onAnyKey(char key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
-        case 'j': genVolumeTex(0xFF0000FF, 0xFFFF0000); break;
-        case 'k': genVolumeTex(0x22FFFFAA, 0xDDAAFFFF); break;
-        case 'l': genVolumeTex(RAND_COLOR(), RAND_COLOR()); break;
+        case 'b': genTex3D(MESHFORM_GRADIENT, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
+        case 'n': genTex3D(MESHFORM_LINES, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
+        case 'm': genTex3D(MESHFORM_CHECKER, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
     }
 }
 
 #ifdef RASTERON_H
-void Meshform_Demo::genVolumeTex(unsigned color1, unsigned color2){
+void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned color2){
     if(textureThread == nullptr)
-        textureThread = new std::thread([this](unsigned c1, unsigned c2){
-            SIDE_Type side = SIDE_Radial;
+        textureThread = new std::thread([this](unsigned short m, unsigned c1, unsigned c2){
+            SIDE_Type side = SIDE_Bottom;
             ImageSize size = { 256, 256 };
 
             for(unsigned d = 0; d < volumeImg.getDepth(); d++){
-                Rasteron_Image* gradientImg = gradientImgOp(size, side, color_level(c1, (1.0 / 256) * d), color_level(c2, 1.0 - ((1.0 / 256) * d))); // adding gradient
-                volumeImg.addSlice(gradientImg, d);
-                RASTERON_DEALLOC(gradientImg);
+                Rasteron_Image* sliceImg;
+                switch(m){
+                    case MESHFORM_LINES: sliceImg = linedImgOp(size, c1, c2, d, 0.0); break;
+                    case MESHFORM_CHECKER: sliceImg = checkeredImgOp(size, { d, d, c1, c2 }); break;
+                    default: sliceImg = solidImgOp(size, colors_blend(c1, c2, d / 256.0)); break;
+                }
+                volumeImg.addSlice(sliceImg, d);
+                RASTERON_DEALLOC(sliceImg);
             }
-        }, color1, color2);
-    else {
-        std::cerr << "Texture thread is not null" << std::endl;
-        /* if(textureThread->joinable()){
-            textureThread->join();
-            delete textureThread;
-        } */
+        }, mode, color1, color2);
+    else if(textureThread->joinable()){ // TODO: Refine this logic
+        textureThread->join();
         _renderer->texturizeScene(&scene);
+        delete textureThread;
+        textureThread = nullptr;
     }
 }
 #endif
@@ -68,10 +71,6 @@ void Meshform_Demo::loop(double frameTime){
         for(unsigned o = 0; o < 3; o++) _DEMO->orbActors[o][a].updateRot(rotationVec);
     }
 
-    _texVShader.setMode(8);
-    _flatVShader.setMode(MESHFORM_TESS); // TODO: Change this to volumetric texture
-    _effectVShader.setMode(-23);
-    Topl_Factory::switchPipeline(_renderer, _texPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->drawScene(&scene);
@@ -80,7 +79,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

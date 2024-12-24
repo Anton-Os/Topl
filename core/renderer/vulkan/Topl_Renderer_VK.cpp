@@ -663,12 +663,12 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
+    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
+        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
+
     std::cout << "Waiting for fences"  << std::endl;
     vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(_logicDevice, 1, &_inFlightFence);
-
-    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
-        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
 
     if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
     else {

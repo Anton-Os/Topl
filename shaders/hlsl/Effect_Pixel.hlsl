@@ -28,16 +28,16 @@ struct PS_INPUT {
 // Functions
 
 float3 fractalColors(float2 coord, float2 cursor, uint i){
-	if(mode % 10 == 0) return float3(1.0f / i, tan(i), 0.05f * i);
-	else if(mode % 10 == 1) return float3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
-	else if(mode % 10 == 2) return float3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
-	else if(mode % 10 == 3) return float3(distance(coord - cursor, float2(0.0, 0.0)), distance(cursor, float2(0.0, 0.0)), distance(coord, cursor));
-	else if(mode % 10 == 4) return float3(coord.x * i - floor(coord.x * i), ceil(coord.y * i) - coord.y * i, abs(dot(cursor, coord)) - floor(abs(dot(cursor, coord))));
-    else if(mode % 10 == 5) return float3(i / (FRACTAL_ITER * 0.75), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
-    else if(mode % 10 == 6) return getRandColor(i) * float3(length(coord - cursor), dot(coord, cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
-    else if(mode % 10 == 7) return float3(sin(1.0f / coord.y) + cos(1.0f / coord.x), atan(cursor.y / cursor.x), pow(abs(cursor.x + coord.y), abs(coord.x * cursor.y)));
-    else if(mode % 10 == 8) return float3(sin(dot(coord, cursor)), sin(dot(-coord, cursor)), tan(cos(coord.x - cursor.x) / sin(coord.y - cursor.y)));
-    else if(mode % 10 == 9) return getCoordDistances(coord, cursor, float2(0.5f, 0.5f)) * float3(pow(coord.x - cursor.x, 1.0 / i), pow(i, coord.y - cursor.y), pow(coord.x - cursor.x, coord.y - cursor.y));
+	if(abs(mode) % 10 == 0) return float3(1.0f / i, tan(i), 0.05f * i);
+	else if(abs(mode) % 10 == 1) return float3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
+	else if(abs(mode) % 10 == 2) return float3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
+	else if(abs(mode) % 10 == 3) return float3(distance(coord - cursor, float2(0.0, 0.0)), distance(cursor, float2(0.0, 0.0)), distance(coord, cursor));
+	else if(abs(mode) % 10 == 4) return float3(coord.x * i - floor(coord.x * i), ceil(coord.y * i) - coord.y * i, abs(dot(cursor, coord)) - floor(abs(dot(cursor, coord))));
+    else if(abs(mode) % 10 == 5) return float3(i / (FRACTAL_ITER * 0.75), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
+    else if(abs(mode) % 10 == 6) return getRandColor(i) * float3(length(coord - cursor), dot(coord, cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
+    else if(abs(mode) % 10 == 7) return float3(sin(1.0f / coord.y) + cos(1.0f / coord.x), atan(cursor.y / cursor.x), pow(abs(cursor.x + coord.y), abs(coord.x * cursor.y)));
+    else if(abs(mode) % 10 == 8) return float3(sin(dot(coord, cursor)), sin(dot(-coord, cursor)), tan(cos(coord.x - cursor.x) / sin(coord.y - cursor.y)));
+    else if(abs(mode) % 10 == 9) return getCoordDistances(coord, cursor, float2(0.5f, 0.5f)) * float3(pow(coord.x - cursor.x, 1.0 / i), pow(i, coord.y - cursor.y), pow(coord.x - cursor.x, coord.y - cursor.y));
     else return float3(coord.x, coord.y, 1.0 / i);
 	// TODO: Include more color options
 }
@@ -154,12 +154,16 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float2 target = coords - cursor;
 	if(mode >= 0) target = coords - cursor; 
-	else target = float2(input.texcoord.x - 0.5, input.texcoord.y - 0.5) - cursor;
+	else target = float2(input.texcoord.x, input.texcoord.y) - cursor;
 
     if(abs(mode) >= 10 && abs(mode) < 20) return juliaSet(target * FRACTAL_SIZE, cursor);
 	else if(abs(mode) >= 20 && abs(mode) < 30) return trigSet(target * FRACTAL_SIZE);
 	else if(abs(mode) >= 30 && abs(mode) < 40) return powerSet(target * FRACTAL_SIZE, cursorPos);
     else if(abs(mode) >= 40 && abs(mode) < 50) return wingSet(target * FRACTAL_SIZE);
     else if(abs(mode) >= 50 && abs(mode) < 60) return stepSet(target * FRACTAL_SIZE, cursorPos);
+	// TODO: Fill in rangers 60 - 100
+	else if(abs(mode) >= 100 && abs(mode) < 110) return juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
+	else if(abs(mode) >= 110 && abs(mode) < 120) return trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));
+	else if(abs(mode) >= 120 && abs(mode) < 130) return stepSet(float2(wingSet(target).r * wingSet(target).b, wingSet(target).g / wingSet(target).b), cursor);
     else return mandlebrotSet(target * FRACTAL_SIZE);
 }

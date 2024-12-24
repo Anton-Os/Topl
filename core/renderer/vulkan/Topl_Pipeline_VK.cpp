@@ -48,8 +48,8 @@ namespace VK {
 
         vertexBindDesc.binding = 0;
         vertexBindDesc.stride = sizeof(Geo_Vertex);
-        // vertexBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		vertexBindDesc.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+        vertexBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		// vertexBindDesc.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 
         VkVertexInputAttributeDescription* vertexAttribDescs = (VkVertexInputAttributeDescription*)malloc(sizeof(VkVertexInputAttributeDescription) * MAX_SHADER_INPUTS);
 

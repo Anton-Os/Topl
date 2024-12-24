@@ -31,10 +31,15 @@ struct VS_OUTPUT {
 	float3 nearestPoint : POSITION1;	
 };
 
-float3 calcNearestPoint(float3 target){
-	float3 nearestPoint = ctrlPoints[0];
+float3 transformCtrlPoint(float3 target){
+	float4 transformPoint = mul(ctrlMatrix, float4(target, 1.0));
+	return float3(transformPoint.x, transformPoint.y, transformPoint.z);
+}
+
+float3 calcNearestPoint(float3 target){ // TODO: Calculate with control matrix
+	float3 nearestPoint = transformCtrlPoint(ctrlPoints[0]);
 	for(uint n = 1; n < 8; n++) 
-		if(length(target - ctrlPoints[n]) < length(target - nearestPoint)) nearestPoint = ctrlPoints[n];
+		if(length(target - transformCtrlPoint(ctrlPoints[n])) < length(target - nearestPoint)) nearestPoint = ctrlPoints[n];
 	return nearestPoint;
 }
 

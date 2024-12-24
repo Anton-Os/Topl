@@ -30,8 +30,8 @@ layout(std140, binding = 2) uniform ExtBlock {
 
 #ifdef INCLUDE_DATASTREAM
 
-layout(std140, binding = 3) readonly FeedIn { vec3 data[]; }
-layout(std140, binding = 4) writeonly FeedOut { vec3 data[]; }
+// layout(std140, binding = 3) readonly buffer FeedIn { vec3 data[]; };
+layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
 
 #endif
 
