@@ -11,7 +11,7 @@
 #define DEFAULT_Z 0.0f // default depth value for objects
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units
-#define MAX_INSTANCES 16
+#define MAX_INSTANCES 32
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
@@ -49,6 +49,7 @@ public:
     Geo_Mesh(const Geo_Mesh& refMesh){
 		for(unsigned short v = 0; v < refMesh.getVertexCount(); v++) _vertices.push_back(*(refMesh.getVertices() + v));
 		for(unsigned short i = 0; i < refMesh.getIndexCount(); i++) _indices.push_back(*(refMesh.getIndices() + i));
+		// TODO: Copy instance and other data?
 	}
 
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
@@ -98,10 +99,11 @@ public:
 			}
 		}
 
-		tessLevel += tessCount; // for testing
+		_tessLevel += tessCount; // for testing
 	}
 
 	void setInstances(std::initializer_list<Mat4x4> matrices){
+		_instanceCount = matrices.size();
 		if(_instanceData != nullptr) free(_instanceData);
 		_instanceData = (Mat4x4*)malloc(matrices.size() * sizeof(Mat4x4));
 		
@@ -122,15 +124,18 @@ public:
 	vertex_cptr_t getVertices() const { return _vertices.data(); }
 	size_t getIndexCount() const { return _indices.size(); }
 	ui_cptr_t getIndices() const { return _indices.data(); }
+
+	unsigned getTessLevel() const { return _tessLevel; }
+	unsigned getInstanceCount() const { return _instanceCount; }
 	const Mat4x4* getInstanceData() const { return _instanceData; }
 
-	unsigned tessLevel = 1;
-	unsigned instanceCount = 0;
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 protected:
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 
+	unsigned _tessLevel = 0;
+	unsigned _instanceCount = 0;
 	Mat4x4* _instanceData = nullptr;
 };
 

@@ -49,7 +49,30 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 	if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(tex.Sample(samp, coords));
 	else {
 		float4 texColor = color_correct(tex.Sample(samp, coords));
-		// TODO: Perform antialiasing calculation
+		/* for(uint a = 0; a < antialiasSteps; a++){
+			float f = (antialiasArea / antialiasSteps) * (a + 1);
+			float4 nebrTexColors[(8 * 3) + 2] = {
+				// slice neighbors
+				color_correct(tex.Sample(samp, coords + float3(f, 0.0, 0.0))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, 0.0))), // left and right
+				color_correct(tex.Sample(samp, coords + float3(0.0, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, 0.0))), // top and bottom
+				color_correct(tex.Sample(samp, coords + float3(f, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(-f, -f, 0.0))), // top right and bottom left
+				color_correct(tex.Sample(samp, coords + float3(-f, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(f, -f, 0.0))) // top left and bottom right
+				// back neighbors
+				color_correct(tex.Sample(samp, coords + float3(0.0f, 0.0, -f)))
+				color_correct(tex.Sample(samp, coords + float3(f, 0.0, -f))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, -f))), // left and right
+				color_correct(tex.Sample(samp, coords + float3(0.0, f, -f))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, -f))), // top and bottom
+				color_correct(tex.Sample(samp, coords + float3(f, f, -f))), color_correct(tex.Sample(samp, coords + float3(-f, -f, -f))), // top right and bottom left
+				color_correct(tex.Sample(samp, coords + float3(-f, f, -f))), color_correct(tex.Sample(samp, coords + float3(f, -f, -f))) // top left and bottom right
+				// back neighbors
+				color_correct(tex.Sample(samp, coords + float3(0.0f, 0.0, f)))
+				color_correct(tex.Sample(samp, coords + float3(f, 0.0, f))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, f))), // left and right
+				color_correct(tex.Sample(samp, coords + float3(0.0, f, f))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, f))), // top and bottom
+				color_correct(tex.Sample(samp, coords + float3(f, f, f))), color_correct(tex.Sample(samp, coords + float3(-f, -f, f))), // top right and bottom left
+				color_correct(tex.Sample(samp, coords + float3(-f, f, f))), color_correct(tex.Sample(samp, coords + float3(f, -f, f))) // top left and bottom right
+			}
+			for(uint n = 0; n < (8 * 3) + 2; n++) texColor += nebrTexColors[n]; // total
+			texColor *= 1.0 / ((8 * 3) + 2); // average
+		} */
 		return texColor;
 	}
 }

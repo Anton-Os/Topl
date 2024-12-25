@@ -39,12 +39,17 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
+	if(mode > 0){
+		nearestPoint.x += sin(float(timeElapse) / 1000) * mode * 0.1;
+		nearestPoint.y += cos(float(timeElapse) / 1000) * mode * 0.1;
+		nearestPoint.z += tan(float(timeFrame) / 1000) * mode * 0.1;
+	}
+
 	float nearestDist = length(nearestPoint - pos);
 
-	float r = sin(float(timeElapse * vertex_color.r) / 1000.0F);
-	float g = cos(float(timeElapse * vertex_color.g) / 1000.0F);
-	float b = tan(float(timeFrame * vertex_color.b));
+	float r = sin(vertex_color.r * mode) * nearestDist;
+	float g = cos(vertex_color.g * mode) * nearestDist;
+	float b = tan(vertex_color.b * mode) * nearestDist;
 	
-	if(mode >= 0) outColor = vec4(r * nearestDist, g * nearestDist, b * nearestDist, 1.0); // color shift mode
-	// else perform texture calculations with light
+	outColor = vec4(r, g, b, 1.0); // color shift mode
 }

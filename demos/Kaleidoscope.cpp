@@ -29,7 +29,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
 void Kaleidoscope_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
     unsigned short p = 0;
 
-    _dynamicVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
+    _constructVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
 
     p++;
 }
@@ -65,7 +65,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

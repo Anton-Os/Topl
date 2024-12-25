@@ -152,5 +152,6 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 	pipeline->setShaders(vertexShader, pixelShader, shaders);
 	setPipeline(pipeline);
 
-	if(_vertexDataLayout == nullptr) DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->getEntryShader());
+	if(_vertexDataLayout == nullptr && pipeline->getEntryShader() != nullptr) 
+		DX11::createVertexLayout(&_device, &_deviceCtx, &_vertexDataLayout, pipeline, pipeline->getEntryShader());
 }

@@ -13,6 +13,7 @@
 
 static Geo_Trig2D triangle;
 static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
+std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 
 static Topl_Scene scene = Topl_Scene();
 
@@ -56,8 +57,8 @@ MAIN_ENTRY {
 
 	std::cout << "Scene building" << std::endl;
 	scene.addGeometry(&actor);
-    triangle.instanceCount = 10;
-	triangle.tessLevel = 10;
+    // triangle.instanceCount = 10;
+	// triangle.tessLevel = 10;
 	renderer->buildScene(&scene);
 
 	std::cout << "Rendering loop" << std::endl;
@@ -65,9 +66,9 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-#ifndef __ANDROID__
-		// renderer->setDrawPipeline(false);
-		// renderer->dispatch(100);
+#ifndef __ANDROID__ && TARGET_BACKEND!=3
+		renderer->setDrawPipeline(false);
+		renderer->dispatch(&calcPoints);
 		renderer->setDrawPipeline(true);
 #endif
         renderer->update(&actor);

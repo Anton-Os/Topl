@@ -174,9 +174,15 @@ void Topl_Scene::resolvePhysics() {
             // (physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
         }
 
+
         geoActor->updatePos(physActor->integrate(FORCE_Directional, elapseSecs));
+		if(physActor->angularAcceleration != VEC_3F_ZERO) physActor->angle = *(geoActor->getRot());
         // geoActor->updateRot(physActor->integrate(FORCE_Angular, elapseSecs));
-        // geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
+        if(physActor->scale == VEC_3F_ZERO) physActor->scale = *(geoActor->getSize());
+		// geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
+
+		if(*(geoActor->getSize()) != physActor->scale) // Adding a balancing force
+			physActor->scaleAcceleration = (physActor->scale - *(geoActor->getSize())) * (1.0f / physActor->mass) * (physActor->damping * 0.5);
 	}
 }
 

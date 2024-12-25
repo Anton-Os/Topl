@@ -153,16 +153,18 @@ public:
 
 	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
 		unsigned vertexCount = mesh->getVertexCount();
+		unsigned instanceCount = mesh->getInstanceCount();
+		unsigned tessLevel = mesh->getTessLevel();
         // Vec3f origin = mesh->getOrigin();
 
         appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&vertexCount : &_defaultNum), sizeof(unsigned), bytes);
-		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->instanceCount : &_defaultNum), sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&instanceCount : &_defaultNum), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->drawMode : &_defaultNum), sizeof(unsigned), bytes);
-		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&mesh->tessLevel : &_defaultNum), sizeof(unsigned), bytes);
+		appendDataToBytes((uint8_t*)((mesh != nullptr)? (uint8_t*)&tessLevel : &_defaultNum), sizeof(unsigned), bytes);
         // alignDataToBytes((uint8_t*)((mesh != nullptr)? &origin : &_defaultVec), sizeof(Vec3f), 4, bytes); // origin
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 
-		if(mesh != nullptr) appendDataToBytes((uint8_t*)mesh->getInstanceData(), sizeof(Mat4x4) * mesh->instanceCount, bytes);
+		if(mesh != nullptr) appendDataToBytes((uint8_t*)mesh->getInstanceData(), sizeof(Mat4x4) * mesh->getInstanceCount(), bytes);
 	}
 
 	virtual void reset(){ _mode = DEFAULT_SHADER_MODE; }

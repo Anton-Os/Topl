@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 0
+#define MESHFORM_TESS 1
 #define MESHFORM_INDEX 0
 #define MESHFORM_INC 1.15F // 1.01F
 #define MESHFORM_DEC 0.9F
@@ -13,6 +13,7 @@
 #define MESHFORM_GRADIENT 0
 #define MESHFORM_LINES 1
 #define MESHFORM_CHECKER 2
+// #define MESHFORM_NOISE 2
 
 Vec3f rigidTForm(Vec3f target, Vec3f amount){
     static unsigned index = 0; 

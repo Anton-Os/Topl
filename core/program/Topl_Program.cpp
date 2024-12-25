@@ -99,7 +99,7 @@ void Topl_Program::_onAnyKey(char k){
                 case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
                 case '3': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
                 case '4': Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
-                case '5': Topl_Factory::switchPipeline(_renderer, _dynamicPipeline); break;
+                case '5': Topl_Factory::switchPipeline(_renderer, _constructPipeline); break;
             }
         }
 
@@ -172,7 +172,7 @@ void Topl_Program::setPipelines(){
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
 		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
 		_canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
-		_dynamicVShader = Experimental_VertexShader_GL4(); _dynamicPShader = Experimental_PixelShader_GL4();
+		_constructVShader = Construct_VertexShader_GL4(); _constructPShader = Construct_PixelShader_GL4();
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 		// TODO: Include Advanced shaders
 	}
@@ -182,7 +182,7 @@ void Topl_Program::setPipelines(){
 		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
 		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
 		_canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
-		_dynamicVShader = Experimental_VertexShader_DX11(); _dynamicPShader = Experimental_PixelShader_DX11();
+		_constructVShader = Construct_VertexShader_DX11(); _constructPShader = Construct_PixelShader_DX11();
 		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
 		// TODO: Include Advanced shaders
 	}
@@ -191,7 +191,7 @@ void Topl_Program::setPipelines(){
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
 	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
-	_dynamicPipeline = Topl_Factory::genPipeline(_backend, &_dynamicVShader, &_dynamicPShader);
+	_constructPipeline = Topl_Factory::genPipeline(_backend, &_constructVShader, &_constructPShader);
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
 }
 

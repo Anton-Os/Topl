@@ -30,6 +30,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 struct PS_INPUT { 
 	float4 pos : SV_POSITION; 
 	float3 nearestPoint : POSITION;
+	float3 vertex_color: COLOR;
 };
 
 // Main
@@ -39,9 +40,9 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float nearestDist = length(float3(input.pos.x, input.pos.y, input.pos.z) - input.nearestPoint);
 
-    float r = sin(float(timeElapse * input.pos.x * nearestDist) / 10000.0F);
-	float g = cos(float(timeElapse * input.pos.y * nearestDist) / 10000.0F);
-	float b = tan(float(timeElapse * input.pos.z * nearestDist) / 10000.0F);
+    float r = sin(nearestDist * ((mode + 1) / 10)) * input.vertex_color.r;
+	float g = cos(nearestDist * ((mode + 1) / 10)) * input.vertex_color.g;
+	float b = tan(nearestDist * ((mode + 1) / 10)) * input.vertex_color.b;
 
 	return float4(r, g, b, 1.0); // solid mode // default
 }

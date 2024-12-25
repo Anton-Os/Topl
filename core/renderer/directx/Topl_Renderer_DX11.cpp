@@ -362,12 +362,12 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 		_deviceCtx->PSSetShaderResources(0, MAX_TEX_BINDINGS + 1, &DX11::texResources[0]);
 
         if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()){ // DRAW CALL
-            if(actor->getMesh()->instanceCount <= 1){
+            if(actor->getMesh()->getInstanceCount() <= 1){
                 if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) _deviceCtx->DrawIndexed(_indexBufferMap.at(renderID).count, 0, 0); // indexed draw
                 else _deviceCtx->Draw(_vertexBufferMap.at(renderID).count, 0); // non-indexed draw
             } else {
-                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) _deviceCtx->DrawIndexedInstanced(_indexBufferMap.at(renderID).count, actor->getMesh()->instanceCount, 0, 0, 0); // instanced indexed draw
-                else _deviceCtx->DrawInstanced(_vertexBufferMap.at(renderID).count, actor->getMesh()->instanceCount, 0, 0); // instanced non-indexed draw
+                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) _deviceCtx->DrawIndexedInstanced(_indexBufferMap.at(renderID).count, actor->getMesh()->getInstanceCount(), 0, 0, 0); // instanced indexed draw
+                else _deviceCtx->DrawInstanced(_vertexBufferMap.at(renderID).count, actor->getMesh()->getInstanceCount(), 0, 0); // instanced non-indexed draw
             }
         } else logMessage(MESSAGE_Exclaim, "Corrupted Vertex Buffer!");
 	}

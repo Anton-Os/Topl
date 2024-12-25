@@ -29,6 +29,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 struct VS_OUTPUT { 
 	float4 pos : SV_POSITION; 
 	float3 nearestPoint : POSITION1;	
+	float3 vertex_color : COLOR;
 };
 
 float3 transformCtrlPoint(float3 target){
@@ -55,7 +56,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
-	float3 nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
+	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
+	output.vertex_color = getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 100));
 
 	return output;
 }

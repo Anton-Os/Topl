@@ -86,6 +86,7 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 
 	// Compute Shader
 	if(computeShader != shaders.end()){ // optional stage
+		logMessage("Creating computue shader");
 		std::string computeShaderSrc = (*computeShader)->getFileSource();
 		pipeline->computeShader = GL4::compileShader(computeShaderSrc, GL_COMPUTE_SHADER);
 		if(pipeline->computeShader == 0){ pipeline->isReady = false; return; }
@@ -116,12 +117,12 @@ void Topl_Renderer_GL4::linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr v
 	auto computeShader = std::find_if(shaders.begin(), shaders.end(), [](const shader_cptr& s){ return s->getType() == SHDR_Compute; });
 	
 	pipeline->shaderProg = glCreateProgram();
-	glAttachShader(pipeline->shaderProg, pipeline->vertexShader);
+	if(vertexShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->vertexShader);
 	if(tessCtrlShader != shaders.end()) glAttachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
 	if(tessEvalShader != shaders.end()) glAttachShader(pipeline->shaderProg, pipeline->tessEvalShader);
 	if(geomShader != shaders.end()) glAttachShader(pipeline->shaderProg, pipeline->geomShader);
 	if(computeShader != shaders.end()) glAttachShader(pipeline->shaderProg, pipeline->computeShader);
-	glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
+	if(pixelShader != nullptr) glAttachShader(pipeline->shaderProg, pipeline->pixelShader);
 	glLinkProgram(pipeline->shaderProg);
 
 	glGetProgramiv(pipeline->shaderProg, GL_LINK_STATUS, &result);
@@ -139,11 +140,11 @@ void Topl_Renderer_GL4::linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr v
 		return;
 	}
 	else { // detach after successful link
-		glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
+		if(vertexShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->vertexShader);
 		if(tessCtrlShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessCtrlShader);
 		if(tessEvalShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->tessEvalShader);
 		if(geomShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->geomShader);
 		if(computeShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->computeShader);
-		glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
+		if(pixelShader != nullptr) glDetachShader(pipeline->shaderProg, pipeline->pixelShader);
 	}
 }

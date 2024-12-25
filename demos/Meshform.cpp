@@ -7,12 +7,12 @@ void Meshform_Demo::onAnyKey(char key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
-        case 'j': genShapes(0, std::make_pair(curveTForm, decVec), std::make_pair(rigidTForm, incVec)); break;
+        case 'j': genShapes(MESHFORM_TESS + 1, std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
         case 'k': genShapes(MESHFORM_TESS + 1, std::make_pair(curveTForm, decVec), std::make_pair(rigidTForm, incVec)); break;
         case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(rigidTForm, decVec), std::make_pair(curveTForm, incVec)); break;
-        case 'b': genTex3D(MESHFORM_GRADIENT, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
-        case 'n': genTex3D(MESHFORM_LINES, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
-        case 'm': genTex3D(MESHFORM_CHECKER, 0xAA000000 & RAND_COLOR(), RAND_COLOR()); break;
+        case 'b': genTex3D(MESHFORM_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
+        case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
+        case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
     }
 
     if(tolower(key) == 'j' || tolower(key) == 'k' || tolower(key) == 'l')
@@ -31,6 +31,7 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
                 switch(m){
                     case MESHFORM_LINES: sliceImg = linedImgOp(size, c1, c2, d, 0.0); break;
                     case MESHFORM_CHECKER: sliceImg = checkeredImgOp(size, { d, d, c1, c2 }); break;
+                    // case MESHFORM_NOISE: sliceImg = noiseImgOp_tiled(size, { d, d, c1, c2 }); break;
                     default: sliceImg = solidImgOp(size, colors_blend(c1, c2, d / 256.0)); break;
                 }
                 volumeImg.addSlice(sliceImg, d);
@@ -55,12 +56,12 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
             hexOrbs[o]->tesselate(tessCount);
             decOrbs[o]->tesselate(tessCount);
         }
-        // for(unsigned t = 0; t < MESHFORM_TESS + 1; t++){
-        if(o > 0) trigOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
-        if(o > 0) quadOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
-        if(o > 0) hexOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
-        if(o > 0) decOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
-        // }
+        if(transform1.first != nullptr && transform2.first != nullptr && o > 0){
+            trigOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+            quadOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+            hexOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+            decOrbs[o]->modify((o % 2 == 1)? transform1.first : transform2.first, (o % 2 == 1)? transform1.second : transform2.second);
+        }
     }
 }
 
@@ -102,7 +103,7 @@ void Meshform_Demo::loop(double frameTime){
     }
 
     _renderer->updateScene(&scene);
-    _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->setDrawMode(DRAW_Fan);
     _renderer->drawScene(&scene);
     // _renderer->setDrawMode(DRAW_Lines);
     // _renderer->drawScene(&scene);

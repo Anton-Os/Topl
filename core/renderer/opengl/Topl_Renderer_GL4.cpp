@@ -317,12 +317,12 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
         if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()){
-            if(actor->getMesh()->instanceCount <= 1){
+            if(actor->getMesh()->getInstanceCount() <= 1){
                 if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
                 else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
             } else {
-                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElementsInstanced(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0, actor->getMesh()->instanceCount); // instanced indexed draw
-                else glDrawArraysInstanced(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count, actor->getMesh()->instanceCount); // instanced non-indexed draw
+                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElementsInstanced(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0, actor->getMesh()->getInstanceCount()); // instanced indexed draw
+                else glDrawArraysInstanced(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count, actor->getMesh()->getInstanceCount()); // instanced non-indexed draw
             }
         } else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
 

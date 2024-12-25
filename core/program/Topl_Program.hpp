@@ -7,7 +7,7 @@
 #include "Beams_Shader.hpp"
 #include "Effect_Shader.hpp"
 #include "Canvas_Shader.hpp"
-#include "Experimental_Shader.hpp"
+#include "Construct_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #include "constructs/Geo_Billboards.hpp"
@@ -113,11 +113,11 @@ protected:
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
-	Experimental_VertexShader _dynamicVShader; Experimental_PixelShader _dynamicPShader;
+	Construct_VertexShader _constructVShader; Construct_PixelShader _constructPShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 
-	Topl_EntryShader* _entryShaders[6] = { &_texVShader, &_beamsVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_dynamicVShader };
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_dynamicPipeline; // for easy reuse
+	Topl_EntryShader* _entryShaders[6] = { &_texVShader, &_beamsVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_constructVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_constructPipeline; // for easy reuse
 
     // Options & Properties
 
