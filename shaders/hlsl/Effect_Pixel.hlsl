@@ -142,14 +142,27 @@ float4 stepSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Distance Set
-float4 distSet(float2 coord, float2 cursor){
+// Loop Set
+float4 loopSet(float2 coord){
+	uint i = 1;
+
+	while(length(coord) * atan(coord.y / coord.x) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
+		coord = float2(coord.x + cos(pow(i, i)), coord.y + sin(pow(i, i))) * atan(coord.x / coord.y);
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
+	return float4(0, 0, 0, 0); // black color within set
+}
+
+// Shard Set
+float4 shardSet(float2 coord, float2 cursor){
 	uint i = 1; // iteration count
 
 	while(distance(coord, cursor) * atan((coord.x - cursor.x) / (coord.y - cursor.y)) < FRACTAL_SIZE && i < FRACTAL_ITER){
 		float angle = atan((coord.x - cursor.x) / (coord.y - cursor.y));
-		if(distance(coord, cursor) < angle) coord += distance(coord, cursor) * abs(dot(coord, cursor));
-		else coord *= distance(coord, cursor) * angle;
+		if(distance(coord, cursor) < angle) coord += distance(coord, cursor) * abs(dot(coord, cursor) / i);
+		else coord *= distance(coord, cursor) * angle * i;
 		i++;
 	}
 
@@ -163,10 +176,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
 
-	/* if(abs(mode) == 0) return float4(cursor, 1.0, 1.0);
-	else if(abs(mode) == 1) return float4(cursor, 0.5, 1.0);
-	else return float4(cursor, 0.0, 1.0); */
-
 	float2 target = coords - cursor;
 	if(mode >= 0) target = coords - cursor; 
 	else target = float2(input.texcoord.x, input.texcoord.y) - cursor;
@@ -177,7 +186,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	else if(abs(mode) >= 30 && abs(mode) < 40) return powerSet(target, cursorPos);
     else if(abs(mode) >= 40 && abs(mode) < 50) return wingSet(target);
     else if(abs(mode) >= 50 && abs(mode) < 60) return stepSet(target, cursorPos);
-	else if(abs(mode) >= 60 && abs(mode) < 70) return distSet(target, cursorPos);
+	else if(abs(mode) >= 60 && abs(mode) < 70) return loopSet(target);
+	else if(abs(mode) >= 70 && abs(mode) < 80) return shardSet(target, cursorPos);
 	// TODO: Fill in rangers 60 - 100
 	else if(abs(mode) >= 100 && abs(mode) < 110) return juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
 	else if(abs(mode) >= 110 && abs(mode) < 120) return trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));

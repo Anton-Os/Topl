@@ -134,7 +134,8 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
     _platform = new Platform(app);
-    while(_platform->getParentWindow() == nullptr) _platform->awaitWindow(); // waiting for window on Android
+    while(_platform->getParentWindow() == nullptr && _platform->handleEvents() && !app->destroyRequested)
+        _platform->awaitWindow(); // waiting for window on Android
 #endif
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
 	// _renderer->setCamera(&Topl_Program::camera);

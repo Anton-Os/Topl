@@ -33,13 +33,16 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 	Advance_ComputeShader_GL4 computeShader;
 };
 #else
+#include <game-activity/GameActivity.cpp> // TODO: Move to a different file
+#include <game-text-input/gametextinput.cpp> // TODO: Move to a different file
+
 struct Hello_Renderer_GL4 : public Droidl_Renderer {
     Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Droidl_Renderer(context){
-        // genPipeline(&basePipeline, &vertexShader, &pixelShader);
+        genPipeline(&pipeline, &vertexShader, &pixelShader);
         setDrawMode(DRAW_Triangles);
     }
 
-    void setDrawPipeline(bool isNonCompute){ /* empty */ }
+    void update(const Geo_Actor* actor){ Droidl_Renderer::update(actor); }
 
     GL4::Pipeline pipeline;
 
@@ -74,7 +77,7 @@ struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
 };
 #endif
 
-#ifdef TOPL_ENABLE_VULKAN
+#ifdef TOPL_ENABLE_VULKAN && !defined(__ANDROID__)
 struct Hello_Renderer_VK : public Topl_Renderer_VK {
 	Hello_Renderer_VK(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_VK(context){
 		setDrawMode(DRAW_Triangles);
@@ -82,8 +85,6 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 		_flags[BUILD_BIT] = true;
 		_renderIDs = 1;
 	}
-
-    void setDrawPipeline(bool isNonCompute){ } // dummy invocation
 
 	VK::Pipeline pipeline;
 	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");

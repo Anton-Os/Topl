@@ -140,14 +140,30 @@ vec3 stepSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Distance Set
-vec3 distSet(vec2 coord, vec2 cursor){
+// Loop Set
+vec3 loopSet(vec2 coord){
+	uint i = 1;
+
+	while(length(coord) * atan(coord.y / coord.x) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
+		coord = vec2(coord.x + cos(i * i), coord.y + sin(i * i)) * atan(coord.y / coord.x);
+		// coord = vec2(coord.x + cos(i * length(coord)), coord.y + cos(i * length(coord)));
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return fractalColors(coord, cursorPos, i);
+	return vec3(0, 0, 0); // black color within set
+}
+
+// Shard Set
+vec3 shardSet(vec2 coord, vec2 cursor){
 	uint i = 1; // iteration count
 
 	while(length(coord - cursor) * (abs(coord.x - cursor.x) + abs(coord.y - cursor.y)) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
 		if(abs(coord.x - cursor.x) > abs(coord.y - cursor.y) * (1.0 / i)) coord.y *= 1.0 + length(coord - cursor);
 		else if(abs(coord.y - cursor.y) > abs(coord.x - cursor.x) * (1.0 / i)) coord.x *= 1.0 + length(coord - cursor);
 		// else coord += length(coord - cursor) / i;
+		if(abs(coord.x - cursor.y) > abs(coord.y - cursor.x) * (1.0 / i)) coord.x += coord.y;
+		else if(abs(coord.y - cursor.x) > abs(coord.x - cursor.y) * (1.0 / i)) coord.y += coord.x;
 		i++;
 	}
 
@@ -187,7 +203,8 @@ void main() {
 	else if(abs(mode) >= 30 && abs(mode) < 40) color = vec4(powerSet(target * size, cursorPos), 1.0f);
 	else if(abs(mode) >= 40 && abs(mode) < 50) color = vec4(wingSet(target), 1.0f);
 	else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
-	else if(abs(mode) >= 60 && abs(mode) < 70) color = vec4(distSet(target, cursorPos), 1.0f);
+	else if(abs(mode) >= 60 && abs(mode) < 70) color = vec4(loopSet(target), 1.0F);
+	else if(abs(mode) >= 70 && abs(mode) < 80) color = vec4(shardSet(target, cursorPos), 1.0f);
 	// TODO: Add more fractals
 	else if(abs(mode) >= 100) color = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
 	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode

@@ -4,11 +4,11 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 1
+#define MESHFORM_TESS 3
 #define MESHFORM_INDEX 0
 #define MESHFORM_INC 1.15F // 1.01F
 #define MESHFORM_DEC 0.9F
-#define MESHFORM_CURVE 0.15F // 0.005F
+#define MESHFORM_CURVE 0.1F // 0.005F
 
 #define MESHFORM_GRADIENT 0
 #define MESHFORM_LINES 1
@@ -30,6 +30,12 @@ Vec3f curveTForm(Vec3f target, Vec3f amount){
         target.data[1] * (1.0F + (sinf(fabs(1.0F - amount.data[1]) * index) * MESHFORM_CURVE)),
         target.data[2] * (1.0F + (sinf(fabs(1.0F - amount.data[2]) * index) * MESHFORM_CURVE))
     });
+}
+
+Vec3f pullTForm(Vec3f target, Vec3f amount){
+    Vec3f diffVec = amount - target;
+
+    return (diffVec.len() < MESHFORM_SIZE * 3)? target + (amount * 0.33) : target;
 }
 
 /* Vec3f elongTForm(Vec3f target, Vec3f amount){
@@ -83,5 +89,5 @@ private:
     Topl_Scene scene = PROGRAM_SCENE;
 
     std::thread* textureThread = nullptr;
-    // std::thread* geometryThread = nullptr;
+    std::thread* geometryThread = nullptr;
 } *_DEMO;

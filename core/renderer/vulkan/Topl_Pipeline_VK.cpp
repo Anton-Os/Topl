@@ -70,8 +70,8 @@ namespace VK {
 		vertexInputs->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputs->vertexBindingDescriptionCount = 1;
         vertexInputs->pVertexBindingDescriptions = &vertexBindDesc;
-        vertexInputs->vertexAttributeDescriptionCount = entryShader->getInputCount();
-        vertexInputs->pVertexAttributeDescriptions = vertexAttribDescs;
+        vertexInputs->vertexAttributeDescriptionCount = 0; // entryShader->getInputCount();
+        vertexInputs->pVertexAttributeDescriptions = NULL; // vertexAttribDescs;
 
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 0;

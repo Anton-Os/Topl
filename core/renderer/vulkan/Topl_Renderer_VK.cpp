@@ -667,8 +667,10 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
         logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
 
     std::cout << "Waiting for fences"  << std::endl;
-    vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(_logicDevice, 1, &_inFlightFence);
+    if(_frameIDs > 0){
+        vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(_logicDevice, 1, &_inFlightFence);
+    }
 
     if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
     else {
@@ -697,7 +699,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
             std::cout << "Frame IDs is " << std::to_string(_frameIDs) << "image index is " << std::to_string(_swapImgIdx) << std::endl;
-            // if(_frameIDs > 10) vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
         vkCmdEndRenderPass(_commandBuffers[0]);

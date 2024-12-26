@@ -80,6 +80,8 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
+	if(antialiasArea > 0.0) return float4(0.0, 1.0, 0.0, 1.0); // test
+
 	if(abs(mode) % 10 == 8) return sampleTex3D(input.texcoord, areaTex, areaSampler);
 	else if(abs(mode) % 10 == 9) return sampleTex3D(float3(input.texcoord.x, input.texcoord.y, 0.0), areaTex, areaSampler);
 	else {

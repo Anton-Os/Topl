@@ -29,8 +29,7 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
     std::cout << "Frame times: "
         << f1 << " on start, " << f2 << " on clear, " << f3 << " on render, " << f4 << " on present, "
         << " Total: " << f1 + f2 + f3 + f4
-        << " | Average: " << frameTotal / frameCount
-        << std::endl;
+        << " | Average: " << frameTotal / frameCount << std::endl;
 }
 
 MAIN_ENTRY {
@@ -39,7 +38,8 @@ MAIN_ENTRY {
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
     Platform platform(pApp);
-    while(platform.getParentWindow() == nullptr) platform.awaitWindow(); // waiting for window on Android
+    while(platform.getParentWindow() == nullptr && platform.handleEvents() && !pApp->destroyRequested)
+        platform.awaitWindow(); // waiting for window on Android
 #endif
 
     std::cout << "Creating backend" << std::endl;
@@ -66,7 +66,7 @@ MAIN_ENTRY {
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-#ifndef __ANDROID__ && TARGET_BACKEND!=3
+#if !defined(__ANDROID__) && TARGET_BACKEND!=3
 		renderer->setDrawPipeline(false);
 		renderer->dispatch(&calcPoints);
 		renderer->setDrawPipeline(true);

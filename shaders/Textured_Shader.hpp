@@ -23,8 +23,8 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genActorBlock(actor, bytes);
 		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
-		// alignDataToBytes((uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
-		// alignDataToBytes((uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&_antialiasSteps, sizeof(unsigned), sizeof(unsigned) * 2, bytes);
 	}
 
 	void setTexScroll(const Vec3f& s){ _texScroll = s; }
