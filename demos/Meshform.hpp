@@ -38,20 +38,6 @@ Vec3f pullTForm(Vec3f target, Vec3f amount){
     return (diffVec.len() < MESHFORM_SIZE * 3)? target + (amount * 0.33) : target;
 }
 
-/* Vec3f elongTForm(Vec3f target, Vec3f amount){
-    target.data[0] = (target.data[0] > amount.data[0])? target.data[0] * 1.05 + amount.data[0] : target.data[0] * 0.95 - amount.data[0]; 
-    target.data[1] = (target.data[1] > amount.data[1])? target.data[1] * 1.05 + amount.data[1] : target.data[1] * 0.95 - amount.data[1]; 
-    target.data[2] = (target.data[2] > amount.data[2])? target.data[2] * 1.05 + amount.data[2] : target.data[2] * 0.95 - amount.data[2]; 
-
-    return target;
-}
-
-Vec3f trialTForm(Vec3f target, Vec3f amount){
-    Vec3f angles = Vec3f({ atan(target[1] / target[0]) - (float)MATH_HALF_PI, atan(target[1] / target[2]) - (float)MATH_HALF_PI, atan(target[0] / target[2]) - (float)MATH_HALF_PI });
-
-    return target * angles; // for testing
-} */
-
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){
         Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });

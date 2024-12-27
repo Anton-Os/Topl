@@ -65,7 +65,8 @@ private:
 	VkCommandPool _commandPool;
 	VkCommandBufferBeginInfo _commandBufferInfo = {};
 	std::vector<VkCommandBuffer> _commandBuffers = {};
-	VkDescriptorPool _descriptorPool = {};
+    VkDescriptorPool _descriptorPool = {};
+    std::vector<VkDescriptorSet> _descriptorSets = {};
 	VkViewport _viewport;
 	VkPipelineViewportStateCreateInfo _viewportStateInfo = {};
 	VkRect2D _scissorRect = {};

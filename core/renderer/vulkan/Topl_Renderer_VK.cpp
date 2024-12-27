@@ -84,6 +84,33 @@ namespace VK {
 
 		return result;
 	}
+
+    VkResult createDescriptorLayout(VkDevice* device, VkDescriptorSetLayout* layout, std::initializer_list<std::pair<uint32_t, VkDescriptorType>> bindingsDesc){
+        VkDescriptorSetLayoutBinding* layoutBindings = (VkDescriptorSetLayoutBinding*)malloc(sizeof(VkDescriptorSetLayoutBinding) * bindingsDesc.size());
+
+        unsigned b = 0;
+        for(auto desc = bindingsDesc.begin(); desc != bindingsDesc.end(); desc++){
+            (layoutBindings + b)->binding = desc->first;
+            (layoutBindings + b)->descriptorType = desc->second;
+            (layoutBindings + b)->descriptorCount = 1;
+            (layoutBindings + b)->stageFlags = VK_SHADER_STAGE_ALL;
+            (layoutBindings + b)->pImmutableSamplers = nullptr; // Should this be conditional based on descriptor type?
+            b++;
+        }
+
+        VkDescriptorSetLayoutCreateInfo descLayoutInfo = {};
+        descLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        descLayoutInfo.pNext = nullptr;
+        descLayoutInfo.flags = 0;
+        descLayoutInfo.bindingCount = bindingsDesc.size();
+        descLayoutInfo.pBindings = layoutBindings;
+
+        result = vkCreateDescriptorSetLayout(*device, &descLayoutInfo, nullptr, layout);
+        if(result != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Failed to create descriptor set layout!");
+
+        free(layoutBindings);
+        return result;
+    }
 }
 
 void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
@@ -503,6 +530,48 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     _commandBufferInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
     _commandBufferInfo.pInheritanceInfo = nullptr;
 
+    // Descriptors Creation
+
+    VkDescriptorPoolSize descriptorPoolSizes[2] = {}; // Increase by 1 if including storage blocks
+    descriptorPoolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorPoolSizes[0].descriptorCount = MAX_RENDERID; // uniform buffer per target
+    descriptorPoolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorPoolSizes[1].descriptorCount = MAX_RENDERID; // sampler per target // TODO: Include other textures?
+
+    VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
+    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolInfo.maxSets = MAX_RENDERID;
+    descriptorPoolInfo.pNext = nullptr;
+    descriptorPoolInfo.flags = 0;
+    descriptorPoolInfo.poolSizeCount = 2; // Match the pool sizes above!
+    descriptorPoolInfo.pPoolSizes = &descriptorPoolSizes[0];
+
+    result = vkCreateDescriptorPool(_logicDevice, &descriptorPoolInfo, nullptr, &_descriptorPool);
+    if(result == VK_SUCCESS) logMessage("Descriptor pool creation success! \n");
+    else return logMessage(MESSAGE_Exclaim, "Descriptor pool creation failure! \n");
+
+    VkDescriptorSetLayout descriptorLayout = {};
+    result = VK::createDescriptorLayout(&_logicDevice, &descriptorLayout, {
+        std::make_pair(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER),
+        std::make_pair(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+    });
+    if(result == VK_SUCCESS) logMessage("Descriptor layout creation success!");
+    else return logMessage(MESSAGE_Exclaim, "Descriptor layout creation failure!");
+
+    std::vector<VkDescriptorSetLayout> descriptorLayouts(imageCount, descriptorLayout);
+
+    _descriptorSets.resize(imageCount);
+    VkDescriptorSetAllocateInfo descriptorAllocInfo = {};
+    descriptorAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descriptorAllocInfo.pNext = nullptr;
+    descriptorAllocInfo.descriptorPool = _descriptorPool;
+    descriptorAllocInfo.descriptorSetCount = imageCount;
+    descriptorAllocInfo.pSetLayouts = descriptorLayouts.data();
+
+    result = vkAllocateDescriptorSets(_logicDevice, &descriptorAllocInfo, _descriptorSets.data());
+    if(result == VK_SUCCESS) logMessage("Descriptor sets creation success!");
+    else return logMessage(MESSAGE_Exclaim, "Descriptor sets creation failure!");
+
     // Synchronization Object Creation
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -699,7 +768,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
             std::cout << "Frame IDs is " << std::to_string(_frameIDs) << "image index is " << std::to_string(_swapImgIdx) << std::endl;
-            vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
         vkCmdEndRenderPass(_commandBuffers[0]);

@@ -48,7 +48,7 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
 
 // Draw Functions
 
-vec4 drawLines(vec2 pos, vec2 coord, float dist, vec4 color){
+vec4 drawLines(vec2 coord, float size, vec4 color){
     uint t = 0;
     vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
 
@@ -58,7 +58,7 @@ vec4 drawLines(vec2 pos, vec2 coord, float dist, vec4 color){
 
         float lineDist = getLineDistance(coord, step1, step2);
         vec3 distances = getCoordDistances(coord, step1, step2);
-        if(lineDist < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
 
         t++;
     }
@@ -66,7 +66,7 @@ vec4 drawLines(vec2 pos, vec2 coord, float dist, vec4 color){
     return color_draw;
 }
 
-vec4 drawCurves(vec2 pos, vec2 coord, float dist, vec4 color){
+vec4 drawSegments(vec2 coord, float size, vec4 color){
     uint t = 0;
     vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
 
@@ -76,7 +76,9 @@ vec4 drawCurves(vec2 pos, vec2 coord, float dist, vec4 color){
 
         float lineDist = getLineDistance(coord, step1, step2);
         vec3 distances = getCoordDistances(coord, step1, step2);
-        if(sin(lineDist) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+        // if(sin(lineDist) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) // color_draw = color;
+            if((abs(distances[1] - distances[2]) * 10) - floor(abs(distances[1] - distances[2]) * 10) < 0.5) color_draw = color;
 
         t++;
     }
@@ -84,7 +86,7 @@ vec4 drawCurves(vec2 pos, vec2 coord, float dist, vec4 color){
     return color_draw;
 }
 
-vec4 drawZigZags(vec2 pos, vec2 coord, float dist, vec4 color){
+vec4 drawRails(vec2 coord, float size, vec4 color){
     uint t = 0;
     vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
 
@@ -94,12 +96,14 @@ vec4 drawZigZags(vec2 pos, vec2 coord, float dist, vec4 color){
 
         float lineDist = getLineDistance(coord, step1, step2);
         vec3 distances = getCoordDistances(coord, step1, step2);
-        if((lineDist * 10) - floor(lineDist * 10) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+        // if((lineDist * 10) - floor(lineDist * 10) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
+        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) // color_draw = color;
+            if(cos(lineDist * 100) < 0) color_draw = color;
 
         t++;
     }
 
-    return drawLines(pos, coord, dist, color); // color_draw;
+    return color_draw;
 }
 
 // Main
@@ -117,20 +121,20 @@ void main() {
         if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
         else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
 
-        if(abs(mode) % 10 == 1) color_draw = drawLines(cursor, coords, size, color_draw);
-        else if(abs(mode % 10) == 2) color_draw = drawCurves(cursor, coords, size, color_draw);
-        else if(abs(mode % 10) == 3) color_draw = drawZigZags(cursor, coords, size, color_draw);
+        if(abs(mode) % 10 == 1) color_draw = drawLines(coords, size, color_draw);
+        else if(abs(mode % 10) == 2) color_draw = drawSegments(coords, size, color_draw);
+        else if(abs(mode % 10) == 3) color_draw = drawRails(coords, size, color_draw);
 
         if(color_draw.a != 0.0 && mode >= 0) color_out = color_draw;
         // else if(color_draw.a == 0.0 && mode < 0) color_out = color_draw;
     }
 
     if(abs(mode) >= 10){
-            vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);
-            if(uint(floor(abs(mode) / 10.0)) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
-            else if(uint(floor(abs(mode) / 10.0)) % 10 == 2) color_cursor = cursorHalo(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
-            else color_cursor = cursorCross(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+        vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);
+        if(uint(floor(abs(mode) / 10.0)) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+        else if(uint(floor(abs(mode) / 10.0)) % 10 == 2) color_cursor = cursorHalo(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
+        else color_cursor = cursorCross(cursor, coords, size, vec4(1.0, 1.0, 1.0, 0.75));
 
-            if(color_cursor.a != 0.0) color_out = color_cursor;
+        if(color_cursor.a != 0.0) color_out = color_cursor;
     }
 }

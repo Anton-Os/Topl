@@ -40,9 +40,9 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float nearestDist = length(float3(input.pos.x, input.pos.y, input.pos.z) - input.nearestPoint);
 
-    float r = sin(nearestDist * ((mode + 1) / 10)) * input.vertex_color.r;
-	float g = cos(nearestDist * ((mode + 1) / 10)) * input.vertex_color.g;
-	float b = tan(nearestDist * ((mode + 1) / 10)) * input.vertex_color.b;
+    float r = sin(nearestDist * (mode + 1) / abs(input.nearestPoint.x)) * input.vertex_color.r;
+	float g = cos(nearestDist * (mode + 1) * abs(input.nearestPoint.y)) * input.vertex_color.g;
+	float b = tan(nearestDist * (mode + 1) + abs(input.nearestPoint.z)) * input.vertex_color.b;
 
 	return float4(r, g, b, 1.0); // solid mode // default
 }
