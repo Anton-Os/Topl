@@ -15,8 +15,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes;
 	vec2 cursorPos;
-	vec2 tracerSteps[8];
-	vec2 tracerPaths[8];
+	vec2 tracerSteps[TRACER_STEPS];
+	vec2 tracerPaths[TRACER_PATHS];
 };
 
 layout(location = 0) out vec3 texcoord_out;

@@ -23,12 +23,16 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genActorBlock(actor, bytes);
 		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
+        alignDataToBytes((uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
+        alignDataToBytes((uint8_t*)&_flip, sizeof(unsigned), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
-		alignDataToBytes((uint8_t*)&_antialiasSteps, sizeof(unsigned), sizeof(unsigned) * 2, bytes);
+        alignDataToBytes((uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
 	}
 
 	void setTexScroll(const Vec3f& s){ _texScroll = s; }
 	void setTexScale(const Vec3f& s){ _texScale = s; }
+    void setSlice(float s){ _slice = s; }
+    void setFlip(unsigned f){ _flip = f; }
 
 	void setAntialiasing(float area, unsigned steps){
 		_antialiasArea = area;
@@ -38,8 +42,11 @@ private:
 	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
 	Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });
 
-	float _antialiasArea = 0.0F;
-	unsigned _antialiasSteps = 0;
+    float _slice = 0.0; // slice to use for 3D texture
+    unsigned _flip = 0; // orientation for 2D texture
+
+    float _antialiasArea = 0.0F; // area for antialiasing
+    unsigned _antialiasSteps = 0; // iterations for antialiasing
 };
 
 struct Textured_VertexShader_GL4 : public Textured_VertexShader {

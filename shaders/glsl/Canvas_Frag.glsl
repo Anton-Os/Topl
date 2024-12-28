@@ -7,8 +7,6 @@
 #include "Common.glsl"
 
 #define CURSOR_SIZE 0.05
-#define TRACER_STEPS 8
-#define TRACER_PATHS 8
 
 // Values
 
@@ -48,62 +46,20 @@ vec4 cursorCross(vec2 pos, vec2 coord, float radius, vec4 color){
 
 // Draw Functions
 
-vec4 drawLines(vec2 coord, float size, vec4 color){
-    uint t = 0;
-    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
-
-    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
-        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
-        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        vec3 distances = getCoordDistances(coord, step1, step2);
-        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
-
-        t++;
-    }
-
-    return color_draw;
+bool intersectLines(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    return lineDist < size && dist1 < endpointDist && dist2 < endpointDist;
 }
 
-vec4 drawSegments(vec2 coord, float size, vec4 color){
-    uint t = 0;
-    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
-
-    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
-        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
-        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        vec3 distances = getCoordDistances(coord, step1, step2);
-        // if(sin(lineDist) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
-        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) // color_draw = color;
-            if((abs(distances[1] - distances[2]) * 10) - floor(abs(distances[1] - distances[2]) * 10) < 0.5) color_draw = color;
-
-        t++;
-    }
-
-    return color_draw;
+bool intersectSegments(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return (abs(dist1 - dist2) * 10) - floor(abs(dist1 - dist2) * 10) < 0.5;
+    else return false;
 }
 
-vec4 drawRails(vec2 coord, float size, vec4 color){
-    uint t = 0;
-    vec4 color_draw = vec4(color.r, color.g, color.b, 0.0);
-
-    while(tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS){
-        vec2 step1 = ((tracerSteps[t] * 0.5f) + 1.0) - coord;
-        vec2 step2 = ((tracerSteps[t + 1] * 0.5f) + 1.0) - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        vec3 distances = getCoordDistances(coord, step1, step2);
-        // if((lineDist * 10) - floor(lineDist * 10) < dist && distances[1] < distances[0] && distances[2] < distances[0]) color_draw = color;
-        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) // color_draw = color;
-            if(cos(lineDist * 100) < 0) color_draw = color;
-
-        t++;
-    }
-
-    return color_draw;
+bool intersectRails(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return cos(lineDist * 100) < 0;
+    else return false;
 }
 
 // Main
@@ -116,17 +72,21 @@ void main() {
     vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
-    if(abs(mode) % 10 != 0){
-        vec4 color_draw;
-        if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
-        else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
+    vec4 color_draw;
+    if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
+    else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
 
-        if(abs(mode) % 10 == 1) color_draw = drawLines(coords, size, color_draw);
-        else if(abs(mode % 10) == 2) color_draw = drawSegments(coords, size, color_draw);
-        else if(abs(mode % 10) == 3) color_draw = drawRails(coords, size, color_draw);
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS; t++){
+        vec2 step1 = ((tracerSteps[t]) + 1.0) - coords;
+        vec2 step2 = ((tracerSteps[t + 1]) + 1.0) - coords;
 
-        if(color_draw.a != 0.0 && mode >= 0) color_out = color_draw;
-        // else if(color_draw.a == 0.0 && mode < 0) color_out = color_draw;
+        float lineDist = getLineDistance(coords, step1, step2);
+        vec3 distances = getCoordDistances(coords, step1, step2);
+
+        if(abs(mode) % 10 == 0 && distance(coords, step1) < size) color_out = color_draw;
+        if(abs(mode) % 10 == 1 && intersectLines(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
+        if(abs(mode) % 10 == 2 && intersectSegments(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
+        if(abs(mode) % 10 == 3 && intersectRails(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
     }
 
     if(abs(mode) >= 10){

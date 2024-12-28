@@ -14,6 +14,11 @@ layout(std140, binding = 0) uniform Block {
 
 	vec3 texScroll; // texture coordinate scrolling
 	vec3 texScale; // texture coordinate scaling
+
+        float slice;
+        uint flip;
+        float antialiasArea;
+        uint antialiasSteps;
 };
 
 layout(location = 0) out vec3 texcoord_out;
@@ -25,7 +30,14 @@ void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;
 	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 
-	texcoord_out = (texcoord + texScroll) * texScale;
+        texcoord_out = texcoord;
+
+        if(flip % 4 != 0){ // performing flip operation
+               if(flip % 4 != 1) texcoord_out.x = 1.0 - texcoord_out.x;
+               if(flip % 4 != 3) texcoord_out.y = 1.0 - texcoord_out.y;
+        }
+
+        texcoord_out = (texcoord_out + texScroll) * texScale;
 	
 	if(abs(mode) >= 10){
 		vec4 texOffset = texture(baseTex, vec2(texcoord_out.x, texcoord_out.y));

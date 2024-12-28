@@ -16,7 +16,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
-#define MAX_INSTANCES 32
+#define MAX_INSTANCES 3
 
 layout(std140, binding = 2) uniform ExtBlock {
 	uint vertCount; // count for vertices
@@ -35,6 +35,9 @@ layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
 
 #endif
 
+#define TRACER_STEPS 16
+#define TRACER_PATHS 16
+
 #ifdef INCLUDE_TEXTURES
 layout(binding = 0) uniform sampler2D baseTex;
 layout(binding = 1) uniform sampler2D tex1;
@@ -47,7 +50,7 @@ layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
 #endif
 
-#define STEP_ATTENUATION 0.00390625
+#define COLOR_INC 0.00390625
 
 // uniform vec4 controlPoints[64];
 // uniform vec4 nearestVertex[1024];
@@ -91,7 +94,7 @@ vec3 getRandColor(uint seed){
 }
 
 vec4 getStepColor(uint index){
-	float attenuation = floor(index / 6.0) * STEP_ATTENUATION;
+	float attenuation = floor(index / 6.0) * COLOR_INC;
 
 	if(index % 6 == 0) return vec4(1.0 - attenuation, 0.0, 0.0, 1.0); // red
 	else if (index % 6 == 1) return vec4(0.0, 1.0 - attenuation, 0.0, 1.0); // green

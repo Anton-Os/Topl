@@ -15,6 +15,11 @@ layout(std140, binding = 0) uniform Block {
 
 	vec3 texScroll; // texture coordinate scrolling
 	vec3 texScale; // texture coordinate scaling
+
+	float slice;
+	uint flip;
+	float antialiasArea;
+	uint antialiasSteps;
 };
 
 layout(location = 0) in vec3 texcoord;

@@ -35,7 +35,8 @@ RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) {
 
 #endif
 
-#define STEP_ATTENUATION 0.00390625
+#define TRACER_STEPS 32
+#define TRACER_PATHS 32
 
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
@@ -52,6 +53,8 @@ Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
 Texture3D areaTex : register(t8);
 SamplerState areaSampler : register(s8);
 #endif
+
+#define COLOR_INC 0.00390625
 
 #ifndef IGNORE_INPUTS
 struct VS_INPUT {
@@ -86,7 +89,7 @@ float3 getRandColor(uint seed){
 }
 
 float4 getStepColor(int id){
-	float attenuation = floor(id / 6.0) * STEP_ATTENUATION;
+	float attenuation = floor(id / 6.0) * COLOR_INC;
 
 	if(id % 6 == 0) return float4(1.0 - attenuation, 0.0, 0.0, 1.0); // red
 	else if (id % 6 == 1) return float4(0.0, 1.0 - attenuation, 0.0, 1.0); // green
