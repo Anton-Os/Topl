@@ -248,7 +248,7 @@ void Sandbox_Demo::loop(double frameTime){
     }
     else if(Sandbox_Demo::mode == SANDBOX_SCULPT){
         _flatVShader.setMode(5);
-        Topl_Factory::switchPipeline(_renderer, _constructPipeline);
+        Topl_Factory::switchPipeline(_renderer, _forgePipeline);
         _renderer->updateScene(&editsScene);
         _renderer->drawScene(&editsScene);
         _effectVShader.setMode(20);
@@ -364,7 +364,7 @@ void Sandbox_Demo::updateOverlay(){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Sandbox_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Sandbox_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

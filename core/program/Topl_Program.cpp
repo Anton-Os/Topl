@@ -97,9 +97,13 @@ void Topl_Program::_onAnyKey(char k){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                 case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                 case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
-                case '3': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+                // case '3': Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
                 case '4': Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
-                case '5': Topl_Factory::switchPipeline(_renderer, _constructPipeline); break;
+                case '5': Topl_Factory::switchPipeline(_renderer, _forgePipeline); break;
+                case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+                // case '7': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // tesselation stages
+                // case '8': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // geometry stage
+                // case '9': Topl_Factory::switchPipeline(_renderer, _longPipeline); break; // tesselation & geometry stages
             }
         }
 
@@ -171,9 +175,10 @@ void Topl_Program::setPipelines(){
 	if(_backend == BACKEND_GL4){
 		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
 		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
+        _materialVShader = Material_VertexShader_GL4(); _materialPShader = Material_PixelShader_GL4();
 		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
 		_canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
-		_constructVShader = Construct_VertexShader_GL4(); _constructPShader = Construct_PixelShader_GL4();
+		_forgeVShader = Forge_VertexShader_GL4(); _forgePShader = Forge_PixelShader_GL4();
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
 		// TODO: Include Advanced shaders
 	}
@@ -181,18 +186,20 @@ void Topl_Program::setPipelines(){
 	else if(_backend == BACKEND_DX11){
 		_texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
 		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
+        _materialVShader = Material_VertexShader_DX11(); _materialPShader = Material_PixelShader_DX11();
 		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
 		_canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
-		_constructVShader = Construct_VertexShader_DX11(); _constructPShader = Construct_PixelShader_DX11();
+		_forgeVShader = Forge_VertexShader_DX11(); _forgePShader = Forge_PixelShader_DX11();
 		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
 		// TODO: Include Advanced shaders
 	}
 #endif
-	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
-	_effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
+	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
+    // _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
+    _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
-	_constructPipeline = Topl_Factory::genPipeline(_backend, &_constructVShader, &_constructPShader);
+	_forgePipeline = Topl_Factory::genPipeline(_backend, &_forgeVShader, &_forgePShader);
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
 }
 

@@ -6,6 +6,18 @@
 #define MAX_PIPELINES 24 // limits number of unique pipelines
 #define MAX_SHADERS 24 * 6  // limits number of unique shaders
 
+struct Topl_Light {
+	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor
+	Topl_Light(const Vec3f& p, const Vec3f& v) { // Extended Constructor
+		pos = p;
+		value = v;
+	}
+	Vec3f pos;
+	Vec3f value = Vec3f({ 1.0f, 1.0f, 1.0f }); // indicates both color and intensity
+};
+
+// TODO: Include other data that can be sent to pipeline
+
 struct Topl_Pipeline {
 	Topl_Pipeline() {}
 	Topl_Pipeline(entry_shader_cptr entry) { _vertexShader = entry; }

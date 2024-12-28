@@ -5,8 +5,6 @@
 #include "Common.hlsl"
 
 #define CURSOR_SIZE 0.05
-#define TRACER_STEPS 8
-#define TRACER_PATHS 8
 
 // Values
 

@@ -4,6 +4,9 @@
 
 #define CANVAS_MODE_DOT 0
 
+#define CANVAS_STEPS 16
+#define CANVAS_PATHS 16
+
 // Vertex Shaders
 
 struct Canvas_VertexShader : public Topl_EntryShader {
@@ -26,8 +29,8 @@ struct Canvas_VertexShader : public Topl_EntryShader {
 	void setHeight(int h) { if(h > 0) height = h; }
 protected:
 	void sendTracerData(blockBytes_t* bytes) const {
-		static Vec2f steps[8];
-		for(unsigned short t = 0; t < 8; t++)
+		static Vec2f steps[CANVAS_STEPS];
+		for(unsigned short t = 0; t < CANVAS_STEPS; t++)
 			if(t < Platform::mouseControl.getTracerSteps()->size()){
 				Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - t - 1];
 				steps[t] = Vec2f({ tracerStep.step.first, tracerStep.step.second });
@@ -35,11 +38,11 @@ protected:
 			else steps[t] = VEC_2F_ZERO; // Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
 		alignDataToBytes((uint8_t*)&steps[0], sizeof(Vec2f) * 8, NO_PADDING, bytes);
 
-		static Vec2f paths[MAX_PATH_STEPS];
-		for(unsigned short t = 0; t < MAX_PATH_STEPS; t++) paths[t] = VEC_2F_ZERO; // Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
+		static Vec2f paths[CANVAS_PATHS];
+		for(unsigned short t = 0; t < CANVAS_PATHS; t++) paths[t] = VEC_2F_ZERO; // Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
 		if(Platform::mouseControl.getTracerPaths()->size() > 0){
 			Input_TracerPath tracerPath = Platform::mouseControl.getTracerPaths()->back();
-			for(unsigned short t = 0; t < tracerPath.stepsCount && t < MAX_PATH_STEPS; t++)
+			for(unsigned short t = 0; t < tracerPath.stepsCount && t < CANVAS_PATHS; t++)
 				paths[t] = Vec2f({ tracerPath.steps[t].first, tracerPath.steps[t].second });
 		}
 		alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 

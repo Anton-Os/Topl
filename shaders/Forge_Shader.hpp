@@ -6,10 +6,10 @@
 
 // Vertex Shaders
 
-struct Construct_VertexShader : public Topl_EntryShader {
-	Construct_VertexShader() : Topl_EntryShader(){ }
-	Construct_VertexShader(std::string name) : Topl_EntryShader(name) { }
-	Construct_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
+struct Forge_VertexShader : public Topl_EntryShader {
+	Forge_VertexShader() : Topl_EntryShader(){ }
+	Forge_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Forge_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		// Mat4x4 idMatrix = MAT_4x4_IDENTITY;
@@ -56,27 +56,27 @@ protected:
 	// Vec3f lightPos, lightVal;
 };
 
-struct Construct_VertexShader_GL4 : public Construct_VertexShader {
-	Construct_VertexShader_GL4() : Construct_VertexShader(genPrefix_glsl() + "Construct_Vertex.glsl") {}
-	Construct_VertexShader_GL4(unsigned mode) : Construct_VertexShader(genPrefix_glsl() + "Construct_Vertex.glsl", mode) {}
+struct Forge_VertexShader_GL4 : public Forge_VertexShader {
+	Forge_VertexShader_GL4() : Forge_VertexShader(genPrefix_glsl() + "Forge_Vertex.glsl") {}
+	Forge_VertexShader_GL4(unsigned mode) : Forge_VertexShader(genPrefix_glsl() + "Forge_Vertex.glsl", mode) {}
 };
 
-struct Construct_VertexShader_DX11 : public Construct_VertexShader {
-	Construct_VertexShader_DX11() : Construct_VertexShader(genPrefix_hlsl() + "Construct_Vertex.hlsl") {}
-	Construct_VertexShader_DX11(unsigned mode) : Construct_VertexShader(genPrefix_hlsl() + "Construct_Vertex.hlsl", mode) {}
+struct Forge_VertexShader_DX11 : public Forge_VertexShader {
+	Forge_VertexShader_DX11() : Forge_VertexShader(genPrefix_hlsl() + "Forge_Vertex.hlsl") {}
+	Forge_VertexShader_DX11(unsigned mode) : Forge_VertexShader(genPrefix_hlsl() + "Forge_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
 
-struct Construct_PixelShader : public Topl_Shader {
-	Construct_PixelShader() : Topl_Shader(){} // Blank Constructor
-	Construct_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
+struct Forge_PixelShader : public Topl_Shader {
+	Forge_PixelShader() : Topl_Shader(){} // Blank Constructor
+	Forge_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
 };
 
-struct Construct_PixelShader_GL4 : public Construct_PixelShader {
-	Construct_PixelShader_GL4() : Construct_PixelShader(genPrefix_glsl() + "Construct_Frag.glsl") {}
+struct Forge_PixelShader_GL4 : public Forge_PixelShader {
+	Forge_PixelShader_GL4() : Forge_PixelShader(genPrefix_glsl() + "Forge_Frag.glsl") {}
 };
 
-struct Construct_PixelShader_DX11 : public Construct_PixelShader {
-	Construct_PixelShader_DX11() : Construct_PixelShader(genPrefix_hlsl() + "Construct_Pixel.hlsl") {}
+struct Forge_PixelShader_DX11 : public Forge_PixelShader {
+	Forge_PixelShader_DX11() : Forge_PixelShader(genPrefix_hlsl() + "Forge_Pixel.hlsl") {}
 };

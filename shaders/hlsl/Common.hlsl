@@ -35,8 +35,8 @@ RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) {
 
 #endif
 
-#define TRACER_STEPS 32
-#define TRACER_PATHS 32
+#define TRACER_STEPS 16
+#define TRACER_PATHS 16
 
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
