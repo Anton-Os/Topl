@@ -14,7 +14,7 @@ struct Material_VertexShader : public Topl_EntryShader {
 		appendDataToBytes((uint8_t*)&light.value, sizeof(Vec3f), bytes);
 	}
 protected:
-	Topl_Light light = Topl_Light(Vec3f({ 0.0F, 0.0F, 0.0F }));
+	Topl_Light light = Topl_Light(Vec3f({ 0.0F, 0.0F, -1.0F }));
 };
 
 struct Material_VertexShader_GL4 : public Material_VertexShader {

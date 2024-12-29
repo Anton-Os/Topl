@@ -118,7 +118,7 @@ protected:
 	Forge_VertexShader _forgeVShader; Forge_PixelShader _forgePShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 
-	Topl_EntryShader* _entryShaders[6] = { &_texVShader, &_beamsVShader, /* &_materialVShader */ &_flatVShader, &_effectVShader, &_canvasVShader, &_forgeVShader };
+	Topl_EntryShader* _entryShaders[7] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_forgeVShader };
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_forgePipeline; // for easy reuse
 
     // Options & Properties

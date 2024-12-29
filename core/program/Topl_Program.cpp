@@ -97,7 +97,7 @@ void Topl_Program::_onAnyKey(char k){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                 case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                 case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
-                // case '3': Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
+                case '3': Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
                 case '4': Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
                 case '5': Topl_Factory::switchPipeline(_renderer, _forgePipeline); break;
                 case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
@@ -196,7 +196,7 @@ void Topl_Program::setPipelines(){
 #endif
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
 	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
-    // _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
+    _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
 	_forgePipeline = Topl_Factory::genPipeline(_backend, &_forgeVShader, &_forgePShader);

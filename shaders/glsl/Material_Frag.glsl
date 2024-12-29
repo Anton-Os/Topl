@@ -49,11 +49,20 @@ void main() {
 	vec3 target;
 	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
 
-	vec3 ambient = lightVal * (0.25 + (0.05 * intensity));
-	vec3 diffuse = lightVal * calcDiffuse(lightPos, target - offset) * 0.5 * intensity;
-	vec3 specular = lightVal * calcSpec(lightPos, target, float(1 + intensity));
+	vec3 texVals[3];
+	texVals[0] = vec3(color_correct(texture(tex1, vec2(texcoord.x, texcoord.y))));
+	texVals[1] = vec3(color_correct(texture(tex2, vec2(texcoord.x, texcoord.y))));
+	texVals[2] = vec3(color_correct(texture(tex3, vec2(texcoord.x, texcoord.y))));
+
+	// vec3 diffuse_target = target * (vec3(color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
+	// vec3 specular_target = target * (vec3(color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
+
+	color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y)));
+	vec3 ambient = ((lightVal + texVals[0]) / 2) * (0.25 + (0.05 * intensity));
+	vec3 diffuse = ((lightVal + texVals[1]) / 2) * calcDiffuse(lightPos, target - offset) * 0.5 * intensity;
+	vec3 specular = ((lightVal + texVals[2]) / 2) * calcSpec(lightPos, target, float(1 + intensity));
 
 	// TODO: Calculate light interaction with texture
 
-	color = vec4(ambient + diffuse + specular, 1.0f); // all lighting
+	color *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

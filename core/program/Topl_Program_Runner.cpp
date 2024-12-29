@@ -3,11 +3,13 @@
 void Topl_Program::preloop(){
 #ifdef RASTERON_H
     if(isEnable_background){
+    // if(isEnable_background && _renderer->getFrameCount() % 3 == 0){
         unsigned pickerColor = colorPicker(&_background.scene);
         Vec3f pickerCoord = coordPicker(&_background.scene);
     }
 
     if(isEnable_overlays){
+    // if(isEnable_overlays && _renderer->getFrameCount() % 3 == 0){
         unsigned pickerColor = colorPicker(&_overlays.scene);
         Vec3f pickerCoord = coordPicker(&_overlays.scene);
     }
@@ -30,7 +32,7 @@ void Topl_Program::postloop(){
             _renderer->texturizeScene(&_editor.scene);
             _editor.nameMesh.drawMode = DRAW_Triangles;
             _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
-            _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.075f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
+            _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
         }
 #endif
     }

@@ -21,6 +21,7 @@ struct Canvas_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+		// alignDataToBytes((uint8_t*)&drawSize, sizeof(drawSize), NO_PADDING, bytes);
 
 		sendTracerData(bytes);
 	}
@@ -48,9 +49,9 @@ protected:
 		alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 
 	}
 
-	unsigned _mode = CANVAS_MODE_DOT;
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
+	double drawSize = 0.05;
 };
 
 struct Canvas_VertexShader_GL4 : public Canvas_VertexShader {

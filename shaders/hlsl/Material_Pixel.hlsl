@@ -1,16 +1,6 @@
 #define INCLUDE_BLOCK
+#define INCLUDE_TEXTURES
 #define IGNORE_INPUTS
-
-#define BEAMS_FULL 0
-#define BEAMS_AMBIENT 1
-#define BEAMS_DIFFUSE 2
-#define BEAMS_SPECULAR 3
-#define BEAMS_HIGHLIGHT 4
-#define BEAMS_SPOT 5
-#define BEAMS_DEPTH 6
-#define BEAMS_DISTANCE 7
-#define BEAMS_TRAJECTORY 8
-#define BEAMS_TRIAL 9
 
 // #include <Beams>
 
@@ -58,9 +48,17 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float3 target;
 	if(mode >= 0) target = input.normal; else target = input.vertex_pos;
 
-	float3 ambient = lightVal * (0.25 + (0.05 * intensity));
-	float3 diffuse = lightVal * calcDiffuse(lightPos, target - offset) * 0.5 * intensity;
-	float3 specular = lightVal * calcSpec(cam_pos, target, float(intensity + 1) * 0.5);
+	float3 texVals[3];
+	texVals[0] = color_correct(tex1.Sample(sampler1, float2(input.texcoord.x, input.texcoord.y)));
+	texVals[1] = color_correct(tex2.Sample(sampler2, float2(input.texcoord.x, input.texcoord.y)));
+	texVals[2] = color_correct(tex3.Sample(sampler3, float2(input.texcoord.x, input.texcoord.y)));
 
-	return float4(ambient + diffuse + specular, 1.0);
+	float3 color = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y)));
+	float3 ambient = (lightVal * texVals[0]) * (0.25 + (0.05 * intensity));
+	float3 diffuse = (lightVal * texVals[1]) * calcDiffuse(lightPos, target - offset) * 0.5 * intensity;
+	float3 specular = (lightVal * texVals[2]) * calcSpec(cam_pos, target, float(intensity + 1) * 0.5);
+
+	// TODO: Calculate light interaction with texture
+
+	return float4((color + abs(ambient + diffuse + specular)) / 2.0, 1.0);
 }

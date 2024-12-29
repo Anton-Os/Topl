@@ -15,6 +15,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 	
 	ivec2 screenRes;
 	vec2 cursorPos;
+	// double drawSize;
 	vec2 tracerSteps[TRACER_STEPS];
 	vec2 tracerPaths[TRACER_PATHS];
 };

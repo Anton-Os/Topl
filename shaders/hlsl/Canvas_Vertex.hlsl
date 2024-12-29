@@ -13,6 +13,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
+	// double drawSize;
 	float4 tracerSteps[TRACER_STEPS / 2]; // TODO: This needs to be packed
 	float4 tracerPaths[TRACER_STEPS / 2]; // TODO: This needs to be packed
 }

@@ -16,6 +16,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
+    // double drawSize;
 	float4 steps[TRACER_STEPS / 2];
 	float4 paths[TRACER_PATHS / 2];
 }
@@ -48,45 +49,56 @@ float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
 
 // Draw Functions
 
-uint intersectLines(float2 pos, float2 coord, float dist){
+uint intersectDots(float2 pos, float2 coord, float size){
     uint i = 0;
 
-    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
-        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
-
-        float lineDist = getLineDistance(coord, path1, path2);
-        float3 distances = getCoordDistances(coord, path1, path2);
-        if(lineDist < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
+        if(distance(coord, step1) < size) i++;
     }
 
     return i;
 }
 
-uint intersectCurves(float2 pos, float2 coord, float dist){
+uint intersectLines(float2 pos, float2 coord, float size){
     uint i = 0;
 
-    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
-        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
+        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
 
-        float lineDist = getLineDistance(coord, path1, path2);
-        float3 distances = getCoordDistances(coord, path1, path2);
-        if(lineDist + sin(distances[1]) + sin(distances[2]) < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
+        float lineDist = getLineDistance(coord, step1, step2);
+        float3 distances = getCoordDistances(coord, step1, step2);
+        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) i++;
     }
 
     return i;
 }
 
-uint intersectZigZags(float2 pos, float2 coord, float dist){
+uint intersectBlobs(float2 pos, float2 coord, float size){
     uint i = 0;
 
-    for(uint t = 0; tracerPaths[t].x != 0.0 && tracerPaths[t].y != 0.0 && tracerPaths[t + 1].x != 0.0 && tracerPaths[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 path1 = ((tracerPaths[t] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
-        float2 path2 = ((tracerPaths[t + 1] * float2(1.0f, -1.0f)) * 0.5f) + 1.0f - coord;
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
+        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
 
-        float lineDist = getLineDistance(coord, path1, path2);
-        float3 distances = getCoordDistances(coord, path1, path2);
+        float lineDist = getLineDistance(coord, step1, step2);
+        float3 distances = getCoordDistances(coord, step1, step2);
+        if(lineDist + sin(distances[1]) * cos(distances[2]) < tan(distances[0] / (distances[1] + distances[2])) && distances[1] < distances[0] && distances[2] < distances[0]) i++;
+    }
+
+    return i;
+}
+
+uint intersectStreaks(float2 pos, float2 coord, float dist){
+    uint i = 0;
+
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
+        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
+        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
+
+        float lineDist = getLineDistance(coord, step1, step2);
+        float3 distances = getCoordDistances(coord, step1, step2);
         if(lineDist * distance(pos, coord) < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
     }
 
@@ -96,7 +108,7 @@ uint intersectZigZags(float2 pos, float2 coord, float dist){
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
-	float2 cursor = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
+	float2 cursor = ((cursorPos * float2(1.0f, -1.0f))) + 0.5f; // adjusted cursor
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
@@ -106,9 +118,10 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
     if(mode < 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // full canvas
 
     uint intersections = 0;
-    if(abs(mode) % 10 == 1) intersections = intersectLines(cursor, coords, size);
-    else if(abs(mode) % 10 == 2) intersections = intersectCurves(cursor, coords, size);
-    else if(abs(mode) % 10 == 3) intersections = intersectZigZags(cursor, coords, size);
+    if(abs(mode) % 10 == 0) intersections = intersectDots(cursor, coords, size);
+    else if(abs(mode) % 10 == 1) intersections = intersectLines(cursor, coords, size);
+    else if(abs(mode) % 10 == 2) intersections = intersectBlobs(cursor, coords, size);
+    else if(abs(mode) % 10 == 3) intersections = intersectStreaks(cursor, coords, size);
 
     if(intersections > 0 && mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // draw on canvas
     else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas

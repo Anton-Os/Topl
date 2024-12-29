@@ -132,12 +132,12 @@ void Topl_Renderer::present() {
 
 void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 	if(scene->getIsTextured()){
-		for(unsigned t = 0; t < MAX_TEX_BINDINGS - 1; t++){ // unbound textures
+		for(unsigned t = 0; t < MAX_TEX_BINDINGS; t++){ // unbound textures
 			const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
 			if(texture != nullptr){
 				if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
 				else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
-                attachTexAt(texture, SCENE_RENDERID, t);
+                attachTexAt(texture, SCENE_RENDERID, t + 1);
 			}
 		}
 		
