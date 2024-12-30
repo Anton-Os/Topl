@@ -54,8 +54,8 @@ void main() {
 	texVals[1] = vec3(color_correct(texture(tex2, vec2(texcoord.x, texcoord.y))));
 	texVals[2] = vec3(color_correct(texture(tex3, vec2(texcoord.x, texcoord.y))));
 
-	// vec3 diffuse_target = target * (vec3(color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
-	// vec3 specular_target = target * (vec3(color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
+	// vec3 lightPos_diffuse = lightPos + (vec3(color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
+	// vec3 lightPos_specular = lightPos + (vec3(color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
 
 	color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y)));
 	vec3 ambient = ((lightVal + texVals[0]) / 2) * (0.25 + (0.05 * intensity));

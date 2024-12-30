@@ -26,6 +26,20 @@ struct Idle_VertexShader_GL4 : public Idle_VertexShader {
 	Idle_VertexShader_GL4() : Idle_VertexShader(genPrefix_glsl() + "Idle_Vertex.glsl") {}
 };
 
+#ifdef __ANDROID__
+struct Idle_VertexShader_GLES : public Idle_VertexShader {
+    Idle_VertexShader_GLES() : Idle_VertexShader("") {} // TODO: Correctly route to local emulated path
+
+    std::string getFileSource() const {
+        return std::string("#version 440")
+            + "\n" + "layout(location = 0) in vec3 pos;"
+            + "\n" + "void main() {"
+            + "\n" + "gl_Position = vec4(pos, 1.0f);"
+            + "\n" + "}";
+    }
+};
+#endif
+
 struct Idle_VertexShader_DX11 : public Idle_VertexShader {
 	Idle_VertexShader_DX11() : Idle_VertexShader(genPrefix_hlsl() + "Idle_Vertex.hlsl") {}
 };
@@ -44,3 +58,18 @@ struct Idle_PixelShader_GL4 : public Idle_PixelShader {
 struct Idle_PixelShader_DX11 : public Idle_PixelShader {
 	Idle_PixelShader_DX11() : Idle_PixelShader(genPrefix_hlsl() + "Idle_Pixel.hlsl") { }
 };
+
+
+#ifdef __ANDROID__
+struct Idle_PixelShader_GLES : public Idle_PixelShader {
+    Idle_PixelShader_GLES() : Idle_PixelShader("") {} // TODO: Correctly route to local emulated path
+
+    std::string getFileSource() const {
+        return std::string("#version 440")
+            + "\n" + "layout(location = 0) out vec4 color_out;"
+            + "\n" + "void main() {"
+            + "\n" + "color_out = vec4(1.0f, 1.0f, 0.0f, 1.0f);"
+            + "\n" + "}";
+    }
+};
+#endif

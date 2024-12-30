@@ -25,6 +25,22 @@ namespace DX11 {
 		return true;
 	}
 
+	bool compileShader(std::string shaderText, LPCSTR shaderTarget, ID3DBlob** blob){
+		std::string tempFilePath = std::string(SHADERS_DIR) + "hlsl/" + "Shader.hlsl";
+		std::replace(tempFilePath.begin(), tempFilePath.end(), '/', '\\'); // replacing forward and backward slashes
+		std::ofstream shaderFile = std::ofstream(tempFilePath.c_str(), std::ios::out);
+		if(!shaderFile.is_open()) return false;
+		else logMessage("Writing shader to path: " + tempFilePath + " text:\n" + shaderText);
+		shaderFile.write(shaderText.c_str(), shaderText.size());
+		shaderFile.flush();
+
+		compileShader(tempFilePath.c_str(), shaderTarget, blob);
+
+		shaderFile.close();
+		std::remove(tempFilePath.c_str());
+		return true;
+	}
+
 	DXGI_FORMAT getShaderFormat(enum SHDR_ValueType type) {
 		switch (type) {
 		case SHDR_float_vec4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
