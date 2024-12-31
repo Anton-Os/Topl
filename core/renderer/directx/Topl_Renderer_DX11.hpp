@@ -42,7 +42,7 @@ protected:
 
 	ID3D11Buffer* _sceneBlockBuff = nullptr; // buffer target for scene block data
 	std::map<unsigned long, DX11::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
-    DX11::Buffer _feedBuffers[2] = { DX11::Buffer(0), DX11::Buffer(0) }; // for shader storage blocks
+    // DX11::Buffer _feedBuffers[2] = { DX11::Buffer(0), DX11::Buffer(0) }; // for shader storage blocks
 	std::map<unsigned long, DX11::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
     std::vector<DX11::Texture> _textures;
 private:

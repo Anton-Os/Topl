@@ -71,8 +71,28 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
             }
         }
     }, tessCount, transform1, transform2, trigOrbs, quadOrbs, hexOrbs, decOrbs);
+    geometryThread->join(); // TODO: Perform blocking call
 
     _renderer->buildScene(&scene);
+}
+
+void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
+    Vec3f size = *(actor->getSize());
+    Vec3f texScale = Vec3f({ 1.0F, 1.0F, 1.0F });
+
+    _renderer->update(actor); // original object
+    _renderer->draw(actor); // original object
+
+    for(unsigned c = 0; c < count; c++){ // inscribed objects
+        float inc = 1.0F - ((1.0F / count) * (c + 1));
+        actor->setSize(size * inc);
+        _texVShader.setTexScale(texScale * inc);
+        _renderer->update(actor);
+        _renderer->draw(actor);
+    }
+
+    actor->setSize(size); 
+    _texVShader.setTexScale(texScale);
 }
 
 void Meshform_Demo::init(){
@@ -95,7 +115,6 @@ void Meshform_Demo::init(){
         scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
     }
 
-    _texVShader.setAntialiasing(0.01F, 6);
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     Topl_Program::shaderMode = 8;
 
@@ -109,14 +128,21 @@ void Meshform_Demo::loop(double frameTime){
     for(unsigned a = 0; a < 4; a++){ 
         Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
         rotationVec = rotationVec * (0.001 * frameTime);
-        for(unsigned o = 0; o < 3; o++) _DEMO->orbActors[o][a].updateRot(rotationVec);
+        for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
     }
 
+#ifdef RASTERON_H
+    _texVShader.setFlip(1);
+    _texVShader.setSlice(1.0f);
+    _texVShader.setAntialiasing(0.001F, 30);
+#endif
     _renderer->updateScene(&scene);
-    // _renderer->setDrawMode(DRAW_Fan);
     _renderer->drawScene(&scene);
-    // _renderer->setDrawMode(DRAW_Lines);
-    // _renderer->drawScene(&scene);
+
+    /* _renderer->updateScene(&scene);
+    for(unsigned a = 0; a < 4; a++)
+        for(unsigned o = 0; o < 3; o++) 
+            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3); */
 }
 
 MAIN_ENTRY {

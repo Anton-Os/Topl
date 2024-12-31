@@ -10,29 +10,35 @@ enum VERTEX_Attrib { VERTEX_Pos = 0, VERTEX_Normal = 1, VERTEX_Texcoord = 2 };
 
 enum AXIS_Target { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
 
-struct Geo_Vertex {
-	Geo_Vertex() {} // empty constructor
-    Geo_Vertex(Vec3f p){ // position constructor
+struct Geo_Pos {
+    Geo_Pos() {}
+    Geo_Pos(Vec3f p){ // position constructor
 		position = p;
+    }
+
+    Vec3f position = Vec3f({ 0.0, 0.0, 0.0 });
+};
+
+struct Geo_Vertex : public Geo_Pos {
+	Geo_Vertex() : Geo_Pos() {} // empty constructor
+    Geo_Vertex(Vec3f p) : Geo_Pos(p){ // position constructor
         normal = p;
         texcoord = getTexCoord(position);
         color = getColor();
     }
-    Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c) { // full constructor
-        position = p;
+    Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c) : Geo_Pos(p) { // full constructor
         texcoord = t;
         normal = n;
         color = c;
     }
-    Geo_Vertex(const Geo_Vertex& vertex){ // copy constructor
-        position = vertex.position;
+    Geo_Vertex(const Geo_Vertex& vertex) : Geo_Pos(vertex.position) { // copy constructor
         texcoord = vertex.texcoord;
         normal = vertex.normal;
         color = vertex.color;
     }
 
-    Vec3f getTexCoord(Vec3f vertex){ // regular texture coordinates
-        Vec3f normVec = vertex;
+    Vec3f getTexCoord(Vec3f vertexPos){ // regular texture coordinates
+        Vec3f normVec = vertexPos;
         normVec.normalize();
         return Vec3f({ (normVec[0] + 1.0F) / 2.0F, 1.0F - ((normVec[1] + 1.0F) / 2.0F), (normVec[2] + 1.0F) / 2.0F });
     }
@@ -59,7 +65,6 @@ struct Geo_Vertex {
         else return Vec3f({ 1.0F - attenuation, 1.0F - attenuation, 1.0F - attenuation }); // white
     }
 
-	Vec3f position = Vec3f({ 0.0, 0.0, 0.0 }); // indicates position data
 	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 }); // indicates texture mapping
     Vec3f normal = Vec3f({ 0.0, 0.0, -1.0 }); // indicates face direction
     Vec3f color = Vec3f({ 1.0, 1.0, 1.0 }); // indicates vertex number

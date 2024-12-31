@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MOLECULAR_CONSTRUCTS 12
-#define MOLECULAR_SIZE 0.15F
+#define MOLECULAR_SIZE 0.1F
 
 struct Molecular_Construct : Geo_Construct {
     Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n) {

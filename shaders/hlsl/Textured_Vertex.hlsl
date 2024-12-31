@@ -11,7 +11,7 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 scale;
 
 	float3 texScroll; // texture coordinate scrolling
-	float3 texScale; // texture coordinate scaling
+	float4 texScale; // texture coordinate scaling
 	
 	float slice;
     uint flip;
@@ -32,7 +32,7 @@ VS_OUTPUT main(VS_INPUT input) {
 
 	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
 	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
-	output.texcoord = (input.texcoord + texScroll) * texScale;
+	output.texcoord = (input.texcoord + texScroll) * float3(texScale.x, texScale.y, texScale.z);
 
 	if(abs(mode) >= 10){
 		float4 texOffset = baseTex.SampleLevel(baseSampler, float2(output.texcoord.x, output.texcoord.y), 0);

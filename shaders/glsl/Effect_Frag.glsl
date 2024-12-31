@@ -171,6 +171,40 @@ vec3 shardSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
+// Modulo Set
+vec3 modSet(vec2 coord, float startMod){
+	uint i = 1;
+	float m = startMod;
+
+	while((mod(coord.x, m) + mod(coord.y, m)) * (i / m) < FRACTAL_SIZE && i < FRACTAL_ITER){
+		m *= 1.0 + abs(coord.x - coord.y);
+		if(mod(m, startMod) > startMod / 2) coord += vec2(coord.x * m, coord.y / m);
+		else coord -= vec2(coord.x / m, coord.y * m);
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return fractalColors(coord, cursorPos, i);
+	return vec3(0, 0, 0); // black color within set
+}
+
+// Proto Set
+/* vec3 protoSet(vec2 coord, vec2 cursor){
+	uint i = 1;
+	vec2 points[5] = { vec2(0.0, 0.0), vec2(1.0, -1.0), vec2(1.0, 1.0), vec2(-0.1, 1.0), vec2(-1.0, -1.0) };
+	vec2 nearestPoint = points[0];
+
+	for(uint p = 1, p < 5; p++) if(distance(points[p], coord) < distance(nearestPoint, coord)) nearestPoint = points[p];
+
+	while(distance(nearestPoint, points[i - 1]) * abs(dot(coord, nearestPoint)) < FRACTAL_SIZE && i < FRACTAL_ITER){
+		// TODO: Perform calculation
+		i++;
+	}
+
+	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	return vec3(0, 0, 0); // black color within set
+} */
+
+
 // Recursive Fracals
 
 vec3 recursiveAlgo(vec3 input1, vec3 input2, vec3 input3){
@@ -205,7 +239,8 @@ void main() {
 	else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
 	else if(abs(mode) >= 60 && abs(mode) < 70) color = vec4(loopSet(target), 1.0F);
 	else if(abs(mode) >= 70 && abs(mode) < 80) color = vec4(shardSet(target, cursorPos), 1.0f);
-	// TODO: Add more fractals
+	else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(modSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
+	// else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(protoSet(target, cursor), 1.0f);
 	else if(abs(mode) >= 100) color = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
 	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 

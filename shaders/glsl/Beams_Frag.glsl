@@ -85,16 +85,8 @@ void main() {
 	else if(modes[0] == BEAMS_SPECULAR) color = vec4(specular, 1.0f);
 	else if(modes[0] == BEAMS_HIGHLIGHT) color = vec4(lights[0][1] * dot(normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target)), 1.0);
 	else if(modes[0] == BEAMS_SPOT) color = vec4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0);
-	else if(modes[0] == BEAMS_DEPTH){
-		float depth = sqrt(pow(target.x, 2) + pow(target.y, 2) + pow(target.z, 2)); // depth calculation
-		color = vec4(depth, depth, depth, 1.0f);
-	}
-	else if(modes[0] == BEAMS_DISTANCE){
-		vec3 distVec = lights[0][0] - target - offset;
-		float dist = sqrt(pow(distVec.x, 2) + pow(distVec.y, 2) + pow(distVec.z, 2));
-		color = vec4(ambient + (lights[0][1] * (1.0 - dist)), 1.0);
-		// vec3 outputColor = lights[0][1] * (1.0 - (dist * (1.0 / pow(abs(mode), 0.5)))), 1.0 - (dist * (1.0 / pow(abs(mode), 0.5)));
-	}
+	else if(modes[0] == BEAMS_DEPTH) color = vec4(distance(target, vec3(cam_pos)), distance(target, vec3(cam_pos)), distance(target, vec3(cam_pos)), 1.0f);
+	else if(modes[0] == BEAMS_DISTANCE) color =  vec4(ambient + (distance(target, vec3(cam_pos)) * diffuse) + specular, 1.0f);
 	else if(modes[0] == BEAMS_TRAJECTORY) color = vec4(normalize(cross(vec3(cam_pos.x, cam_pos.y, cam_pos.z) - lights[0][0], target)), 1.0);
 	else if(modes[0] == BEAMS_TRIAL) color = vec4(ambient + vec3(sin(specular.r / diffuse.r), cos(diffuse.g / specular.g), tan(diffuse.b + specular.b)), 1.0); 
 	else color = vec4(ambient + diffuse + specular, 1.0f); // all lighting

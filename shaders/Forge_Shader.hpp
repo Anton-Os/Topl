@@ -2,7 +2,7 @@
 
 #define CONSTRUCT_VORNOI 0
 
-#define CONSTRUCT_POINTS_MAX 8
+#define FORGE_POINTS_MAX 8
 
 // Vertex Shaders
 
@@ -11,13 +11,11 @@ struct Forge_VertexShader : public Topl_EntryShader {
 	Forge_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Forge_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
-	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
-		// Mat4x4 idMatrix = MAT_4x4_IDENTITY;
+	void genActorBlock(actor_cptr actor, blockBytes_t* bytes) const {
 		Topl_EntryShader::genActorBlock(actor, bytes);
 
-		// if(actor == targetActor) 
-		appendDataToBytes((uint8_t*)&ctrlMatrix, sizeof(ctrlMatrix), bytes);
-		// else appendDataToBytes((uint8_t*)&idMatrix, sizeof(idMatrix), bytes);
+		auto matrixEntry = std::find_if(ctrlMatrixMap.begin(), ctrlMatrixMap.end(), [actor](const std::pair<actor_cptr, Mat4x4> p){ return p.first == actor; });
+		appendDataToBytes((matrixEntry != ctrlMatrixMap.end())? (uint8_t*)&matrixEntry->second : (uint8_t*)&ctrlMatrix, sizeof(ctrlMatrix), bytes);
 	}
 
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
@@ -33,27 +31,27 @@ struct Forge_VertexShader : public Topl_EntryShader {
 		// appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
 
-	void setCtrlMatrix(Mat4x4 matrix){ ctrlMatrix = matrix; }
+	void setCtrlMatrix(actor_cptr actor, Mat4x4 matrix){ctrlMatrixMap.insert({ actor, matrix }); }
 
-	void setCtrlPoint(unsigned short index, Vec3f point){ ctrlPoints[index % CONSTRUCT_POINTS_MAX] = point; }
+	void setCtrlMatrix(Mat4x4 matrix){ ctrlMatrix = matrix; }
 
 	void setCtrlPoints(std::initializer_list<Vec3f> points){
 		unsigned short idx = 0;
-		for(auto p = points.begin(); p != points.end() && idx < CONSTRUCT_POINTS_MAX; p++){
+		for(auto p = points.begin(); p != points.end() && idx < FORGE_POINTS_MAX; p++){
 			ctrlPoints[idx] = *p;
 			idx++;
 		}
 	}
+
+	void setCtrlPoint(unsigned short index, Vec3f point){ ctrlPoints[index % FORGE_POINTS_MAX] = point; }
 protected:
-	// const Geo_Actor* targetActor = nullptr;
 	Mat4x4 ctrlMatrix = MAT_4x4_IDENTITY;
-	
-	Vec3f ctrlPoints[CONSTRUCT_POINTS_MAX] = {
+	std::map<actor_cptr, Mat4x4> ctrlMatrixMap;
+
+	Vec3f ctrlPoints[FORGE_POINTS_MAX] = {
 		{ 0.0F, 0.0F, 0.0F }, { 0.25F, 0.25F, 0.0F }, { -0.25F, -0.25F, 0.0F }, { -0.5F, 0.5F, 0.0F },  
 		{ 0.5F, -0.5F, 0.0F }, { 0.75F, 0.75F, 0.0F }, { -0.75F, -0.75F, 0.0F }, { 1.0F, 1.0F, 0.0F },
 	};
-
-	// Vec3f lightPos, lightVal;
 };
 
 struct Forge_VertexShader_GL4 : public Forge_VertexShader {

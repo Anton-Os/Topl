@@ -52,6 +52,25 @@ Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
 
 Texture3D areaTex : register(t8);
 SamplerState areaSampler : register(s8);
+
+struct TexData {
+	Texture2D texState;
+	SamplerState samplerState;
+};
+
+TexData getTexDataAt(uint offset){
+	TexData texData;
+	if(offset % 8 == 1){ texData.texState = tex1; texData.samplerState = sampler1; }
+	else if(offset % 8 == 2){ texData.texState = tex2; texData.samplerState = sampler2; }
+	else if(offset % 8 == 3){ texData.texState = tex3; texData.samplerState = sampler3; }
+	else if(offset % 8 == 4){ texData.texState = tex4; texData.samplerState = sampler4; }
+	else if(offset % 8 == 5){ texData.texState = tex5; texData.samplerState = sampler5; }
+	else if(offset % 8 == 6){ texData.texState = tex6; texData.samplerState = sampler6; }
+	else if(offset % 8 == 7){ texData.texState = tex7; texData.samplerState = sampler7; }
+	else { texData.texState = baseTex; texData.samplerState = baseSampler; }
+	return texData;
+}
+
 #endif
 
 #define COLOR_INC 0.00390625

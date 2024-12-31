@@ -49,66 +49,35 @@ float4 cursorCross(float2 pos, float2 coord, float radius, float4 color){
 
 // Draw Functions
 
-uint intersectDots(float2 pos, float2 coord, float size){
-    uint i = 0;
-
-    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
-        if(distance(coord, step1) < size) i++;
-    }
-
-    return i;
+bool intersectLines(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    return lineDist < size && dist1 < endpointDist && dist2 < endpointDist;
 }
 
-uint intersectLines(float2 pos, float2 coord, float size){
-    uint i = 0;
-
-    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
-        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        float3 distances = getCoordDistances(coord, step1, step2);
-        if(lineDist < size && distances[1] < distances[0] && distances[2] < distances[0]) i++;
-    }
-
-    return i;
+bool intersectBlobs(float lineDist, float endpointDist, float dist1, float dist2){
+    return lineDist + sin(dist1) * cos(dist2) < tan(endpointDist / (dist1 + dist2)) && dist1 < endpointDist && dist2 < endpointDist;
 }
 
-uint intersectBlobs(float2 pos, float2 coord, float size){
-    uint i = 0;
-
-    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
-        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        float3 distances = getCoordDistances(coord, step1, step2);
-        if(lineDist + sin(distances[1]) * cos(distances[2]) < tan(distances[0] / (distances[1] + distances[2])) && distances[1] < distances[0] && distances[2] < distances[0]) i++;
-    }
-
-    return i;
+bool intersectStreaks(float lineDist, float2 coord, float size, float endpointDist, float dist1, float dist2){
+    return lineDist * distance(cursorPos, coord) < size && dist1 < endpointDist && dist2 < endpointDist;
 }
 
-uint intersectStreaks(float2 pos, float2 coord, float dist){
-    uint i = 0;
+// Sample Functions
 
-    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && tracerSteps[t + 1].x != 0.0 && tracerSteps[t + 1].y != 0.0 && t < TRACER_PATHS; t++){
-        float2 step1 = ((tracerSteps[t] * float2(1.0f, -1.0f))) + 1.0f - coord;
-        float2 step2 = ((tracerSteps[t + 1] * float2(1.0f, -1.0f))) + 1.0f - coord;
-
-        float lineDist = getLineDistance(coord, step1, step2);
-        float3 distances = getCoordDistances(coord, step1, step2);
-        if(lineDist * distance(pos, coord) < dist && distances[1] < distances[0] && distances[2] < distances[0]) i++;
-    }
-
-    return i;
+float4 sampleTex(uint sampleMode, float3 texcoords){
+    if(abs(sampleMode) % 8 == 1) return color_correct(tex1.Sample(sampler1, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 2) return color_correct(tex2.Sample(sampler2, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 3) return color_correct(tex3.Sample(sampler3, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 4) return color_correct(tex4.Sample(sampler4, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 5) return color_correct(tex5.Sample(sampler5, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 6) return color_correct(tex6.Sample(sampler6, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 7) return color_correct(tex7.Sample(sampler7, float2(texcoords.x, texcoords.y)));
+    else return color_correct(baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y)));
 }
 
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
-	float2 cursor = ((cursorPos * float2(1.0f, -1.0f))) + 0.5f; // adjusted cursor
+	float2 cursor = ((cursorPos * float2(1.0f, -1.0f))) + 0.5f;
 	float2 coords = float2(input.pos.x / screenRes.x, input.pos.y / screenRes.y); // adjusted coordinates
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
@@ -118,21 +87,31 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
     if(mode < 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // full canvas
 
     uint intersections = 0;
-    if(abs(mode) % 10 == 0) intersections = intersectDots(cursor, coords, size);
-    else if(abs(mode) % 10 == 1) intersections = intersectLines(cursor, coords, size);
-    else if(abs(mode) % 10 == 2) intersections = intersectBlobs(cursor, coords, size);
-    else if(abs(mode) % 10 == 3) intersections = intersectStreaks(cursor, coords, size);
 
-    if(intersections > 0 && mode >= 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // draw on canvas
+    for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS; t++){
+        float2 step1 = ((tracerSteps[t]) + 1.0) - coords;
+        float2 step2 = ((tracerSteps[t + 1]) + 1.0) - coords;
+
+        float lineDist = getLineDistance(coords, step1, step2);
+        float3 distances = getCoordDistances(coords, step1, step2);
+
+        if(abs(mode) % 10 == 0 && distance(coords, step1) < size) intersections++;
+        if(abs(mode) % 10 == 1 && intersectLines(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 2 && intersectBlobs(lineDist, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 3 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
+    }
+
+    if(intersections > 0 && mode >= 0) color_out = sampleTex(intersections, input.texcoord);
     else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
 
     // Cursor
 
     if(abs(mode) >= 10){
         float4 color_cursor = float4(0.0, 0.0, 0.0, 0.0);
-        if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorDot(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
-        else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
-        else color_cursor = cursorHalo(cursor, coords, size, float4(1.0, 1.0, 1.0, 0.75));
+        float2 cursorAdj = ((cursorPos * float2(1.0f, -1.0f)) * 0.5f) + 0.5f; // adjusted cursor
+        if(floor(abs(mode) / 10.0) % 10 == 1) color_cursor = cursorDot(cursorAdj, coords, size, float4(1.0, 1.0, 1.0, 0.75));
+        else if(floor(abs(mode) / 10.0) % 10 == 2) color_cursor = cursorCross(cursorAdj, coords, size, float4(1.0, 1.0, 1.0, 0.75));
+        else color_cursor = cursorHalo(cursorAdj, coords, size, float4(1.0, 1.0, 1.0, 0.75));
 
         if(color_cursor.a != 0.0) color_out = color_cursor;
     }

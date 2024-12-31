@@ -14,7 +14,7 @@ layout(std140, binding = 0) uniform Block {
 	vec3 scale;
 
 	vec3 texScroll; // texture coordinate scrolling
-	vec3 texScale; // texture coordinate scaling
+	vec4 texScale; // texture coordinate scaling
 
 	float slice;
 	uint flip;
@@ -26,13 +26,13 @@ layout(location = 0) in vec3 texcoord;
 
 layout(location = 0) out vec4 color;
 
-// Funtions
+// Functions
 
 // Main
 
 void main() {
 	if(abs(mode) % 10 == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
-	else if(abs(mode) % 10 == 9) color = color_correct(texture(volumeTex, vec3(texcoord.x, texcoord.y, 0.0))); // volumetric slice
+	else if(abs(mode) % 10 == 9) color = color_correct(texture(volumeTex, vec3(texcoord.x, texcoord.y, slice))); // volumetric slice
 	else { // select texture
 		if(abs(mode) % 10 == 1) color = color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
 		else if(abs(mode) % 10 == 2) color = color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));

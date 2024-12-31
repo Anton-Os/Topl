@@ -12,7 +12,7 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 scale;
 
 	float3 texScroll; // texture coordinate scrolling
-	float3 texScale; // texture coordinate scaling
+	float4 texScale; // texture coordinate scaling
 
     float slice;
     uint flip;
@@ -52,8 +52,8 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 	if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(tex.Sample(samp, coords));
 	else {
 		float4 texColor = color_correct(tex.Sample(samp, coords));
-		/* for(uint a = 0; a < antialiasSteps; a++){
-			float f = (antialiasArea / antialiasSteps) * (a + 1);
+		for(uint a = 0; a < antialiasSteps; a++){
+			/* float f = (antialiasArea / antialiasSteps) * (a + 1);
 			float4 nebrTexColors[(8 * 3) + 2] = {
 				// slice neighbors
 				color_correct(tex.Sample(samp, coords + float3(f, 0.0, 0.0))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, 0.0))), // left and right
@@ -74,8 +74,8 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 				color_correct(tex.Sample(samp, coords + float3(-f, f, f))), color_correct(tex.Sample(samp, coords + float3(f, -f, f))) // top left and bottom right
 			}
 			for(uint n = 0; n < (8 * 3) + 2; n++) texColor += nebrTexColors[n]; // total
-			texColor *= 1.0 / ((8 * 3) + 2); // average
-		} */
+			texColor *= 1.0 / ((8 * 3) + 2); // average */
+		}
 		return texColor;
 	}
 }
@@ -83,8 +83,6 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	if(antialiasArea > 0.0) return float4(0.0, 1.0, 0.0, 1.0); // test
-
 	if(abs(mode) % 10 == 8) return sampleTex3D(input.texcoord, areaTex, areaSampler);
 	else if(abs(mode) % 10 == 9) return sampleTex3D(float3(input.texcoord.x, input.texcoord.y, 0.0), areaTex, areaSampler);
 	else {

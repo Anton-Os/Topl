@@ -72,6 +72,7 @@ static void cleanup_linux(Display* display, GLXContext graphicsContext) { glXDes
 
 Topl_Renderer_GL4::~Topl_Renderer_GL4() {
 	glDeleteBuffers(MAX_RENDERID, _bufferSlots);
+	glDeleteBuffers(MAX_RENDERID, _storageSlots);
 	glDeleteVertexArrays(MAX_RENDERID, _vertexArraySlots);
 	glDeleteTextures(MAX_RENDERID, _textureSlots);
 
@@ -143,6 +144,8 @@ void Topl_Renderer_GL4::init(NATIVE_WINDOW window) {
     glGenBuffers(MAX_RENDERID, _bufferSlots);
     _textureSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
     glGenTextures(MAX_RENDERID, _textureSlots);
+	_storageSlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint));
+	glGenBuffers(MAX_RENDERID, _storageSlots);
 #ifndef __ANDROID__
     _vertexArraySlots = (GLuint*)malloc(MAX_RENDERID * sizeof(GLuint)); // vertex arrays not supported EGL
     glGenVertexArrays(MAX_RENDERID, _vertexArraySlots);
@@ -184,6 +187,7 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _sceneBlockData.size(), _sceneBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		// TODO: Populate and bind storage buffer
 	} else {
 		unsigned long renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
@@ -232,6 +236,8 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 			_vertexArrayIndex++; // increment to next available slot
 			GL4::genVertexArrayLayout(&_vertexArrayMap.at(renderID), _entryShader);
 		}
+
+		// TODO: Populate storage buffer
 
 		_flags[BUILD_BIT] = true;
 	}

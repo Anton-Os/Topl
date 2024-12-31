@@ -44,7 +44,7 @@ protected:
 
 	std::map<unsigned long, GL4::VertexArray> _vertexArrayMap;
 	std::map<unsigned long, GL4::Buffer> _vertexBufferMap, _indexBufferMap, _blockBufferMap, _extBlockBufferMap;
-    GL4::Buffer _feedBuffers[2] = { GL4::Buffer(0), GL4::Buffer(0) }; // for shader storage blocks
+	std::map<unsigned long, GL4::Buffer> _storageBufferMap;
     std::map<unsigned long, GL4::Texture[MAX_TEX_BINDINGS + 2]> _textureMap; // TODO: Change to this type
     std::vector<GL4::Texture> _textures; // active textures
 private:
@@ -55,4 +55,6 @@ private:
 	unsigned _vertexArrayIndex = 0; // increments to indicate next available vertex array slot
 	GLuint* _textureSlots;
 	unsigned _textureIndex = 0; // increments to indicate next available texture slot
+	GLuint* _storageSlots;
+	unsigned _storageIndex = 0; // increments to indicate next available storage buffer
 };
