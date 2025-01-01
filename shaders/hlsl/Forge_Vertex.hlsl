@@ -57,7 +57,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
-	output.vertex_color = getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 100));
+	if(mode >= 0) output.vertex_color = input.vert_color;
+	else output.vertex_color = getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
 
 	return output;
 }

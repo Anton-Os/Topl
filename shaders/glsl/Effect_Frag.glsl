@@ -171,8 +171,8 @@ vec3 shardSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Modulo Set
-vec3 modSet(vec2 coord, float startMod){
+// Sparse Set
+vec3 sparseSet(vec2 coord, float startMod){
 	uint i = 1;
 	float m = startMod;
 
@@ -187,22 +187,24 @@ vec3 modSet(vec2 coord, float startMod){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Proto Set
-/* vec3 protoSet(vec2 coord, vec2 cursor){
+// Retro Set
+vec3 retroSet(vec2 coord, vec2 cursor){
 	uint i = 1;
 	vec2 points[5] = { vec2(0.0, 0.0), vec2(1.0, -1.0), vec2(1.0, 1.0), vec2(-0.1, 1.0), vec2(-1.0, -1.0) };
-	vec2 nearestPoint = points[0];
+	vec2 nearestPoint = points[uint(floor(dot(coord, cursor) * 100)) % 5];
 
-	for(uint p = 1, p < 5; p++) if(distance(points[p], coord) < distance(nearestPoint, coord)) nearestPoint = points[p];
-
-	while(distance(nearestPoint, points[i - 1]) * abs(dot(coord, nearestPoint)) < FRACTAL_SIZE && i < FRACTAL_ITER){
-		// TODO: Perform calculation
+	while(distance(nearestPoint, points[(i - 1) % 5]) * abs(coord.x + coord.y) < FRACTAL_SIZE && i < FRACTAL_ITER){
+		if(distance(points[(i - 1) % 5], coord - cursor) < distance(nearestPoint, coord - cursor)){
+			coord -= nearestPoint / dot(coord - cursor, points[(i - 1) % 5]);
+			nearestPoint = points[(i - 1) % 5];
+		} else coord += points[(i - 1) % 5] * distance(coord - cursor, nearestPoint); // (1.0 / i);
 		i++;
 	}
 
 	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
-} */
+}
+
 
 
 // Recursive Fracals
@@ -239,8 +241,8 @@ void main() {
 	else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
 	else if(abs(mode) >= 60 && abs(mode) < 70) color = vec4(loopSet(target), 1.0F);
 	else if(abs(mode) >= 70 && abs(mode) < 80) color = vec4(shardSet(target, cursorPos), 1.0f);
-	else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(modSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
-	// else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(protoSet(target, cursor), 1.0f);
+	else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(sparseSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
+	else if(abs(mode) >= 90 && abs(mode) < 100) color = vec4(retroSet(target, cursor), 1.0f);
 	else if(abs(mode) >= 100) color = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
 	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 

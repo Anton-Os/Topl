@@ -131,6 +131,7 @@ public:
 
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 protected:
+	// std::vector<Geo_Pos> _positions;
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 

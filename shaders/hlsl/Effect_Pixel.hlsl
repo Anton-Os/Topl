@@ -170,8 +170,8 @@ float4 shardSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Modulo Set
-float4 modSet(float2 coord, float startMod){
+// Sparse Set
+float4 sparseSet(float2 coord, float startMod){
 	uint i = 1; // iteration count
 	float m = startMod;
 
@@ -186,23 +186,25 @@ float4 modSet(float2 coord, float startMod){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Proto Set
-/* float4 protoSet(float2 coord, float2 cursor){
+// Retro Set
+float4 retroSet(float2 coord, float2 cursor){
 	uint i = 1;
 	float2 points[5] = { float2(0.0, 0.0), float2(1.0, -1.0), float2(1.0, 1.0), float2(-0.1, 1.0), float2(-1.0, -1.0) };
 	float2 nearestPoint = points[0];
 
-	uint n = 1;
-	for(n = 1, n < 5; n++){ if(distance(points[n], coord) < distance(nearestPoint, coord)){ nearestPoint = points[n]; }}
+	for(uint n = 1; n < 5; n++) if(distance(points[n], coord) < distance(nearestPoint, coord)) nearestPoint = points[n];
 
-	while(distance(nearestPoint, points[i - 1]) * abs(dot(coord, nearestPoint)) < FRACTAL_SIZE && i < FRACTAL_ITER){
-		// TODO: Perform calculation
+	while(distance(nearestPoint, points[(i - 1) % 5]) * abs(coord.x + coord.y) < FRACTAL_SIZE && i < FRACTAL_ITER){
+		if(distance(points[(i - 1) % 5], coord - cursor) < distance(nearestPoint, coord - cursor)){
+			coord += nearestPoint * sin(float(i) * cursor.x); // (1.0 / i);
+			nearestPoint = points[(i - 1) % 5];
+		} else coord -= points[(i - 1) % 5] * cos(float(i) * cursor.y); // (1.0 / i);
 		i++;
 	}
 
 	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
-} */
+}
 
 // Main
 
@@ -222,8 +224,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
     else if(abs(mode) >= 50 && abs(mode) < 60) return stepSet(target, cursorPos);
 	else if(abs(mode) >= 60 && abs(mode) < 70) return loopSet(target);
 	else if(abs(mode) >= 70 && abs(mode) < 80) return shardSet(target, cursorPos);
-	else if(abs(mode) >= 80 && abs(mode) < 90) return modSet(target, distance(coords, cursor));
-	// else if(abs(mode) >= 90 && abs(mode) < 100) return protoSet(target, cursor);
+	else if(abs(mode) >= 80 && abs(mode) < 90) return sparseSet(target, distance(coords, cursor));
+	else if(abs(mode) >= 90 && abs(mode) < 100) return retroSet(target, cursor);
 	else if(abs(mode) >= 100 && abs(mode) < 110) return juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
 	else if(abs(mode) >= 110 && abs(mode) < 120) return trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));
 	else if(abs(mode) >= 120 && abs(mode) < 130) return stepSet(float2(wingSet(target).r * wingSet(target).b, wingSet(target).g / wingSet(target).b), cursor);

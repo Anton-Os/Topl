@@ -187,7 +187,8 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		glBindBuffer(GL_UNIFORM_BUFFER, _blockBufferMap.at(SCENE_RENDERID).buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _sceneBlockData.size(), _sceneBlockData.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		// TODO: Populate and bind storage buffer
+		_storageBufferMap.insert({ SCENE_RENDERID, GL4::Buffer(*(_storageSlots + _storageIndex)) });
+		_storageIndex;
 	} else {
 		unsigned long renderID = getRenderID(actor);
 		Geo_Mesh* mesh = (Geo_Mesh*)actor->getMesh();
@@ -207,8 +208,16 @@ void Topl_Renderer_GL4::build(const Geo_Actor* actor){
 		}
 		glBindBuffer(GL_UNIFORM_BUFFER, _extBlockBufferMap.at(renderID).buffer);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(uint8_t) * _meshBlockData.size(), _meshBlockData.data(), GL_STATIC_DRAW);
-
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		// storage buffer
+		if(_storageBufferMap.find(renderID) == _storageBufferMap.end()){
+			_storageBufferMap.insert({ renderID, GL4::Buffer(*(_storageSlots + _storageIndex)) });
+			_storageIndex++;
+		}
+		glBindBuffer(GL_SHADER_STORAGE_BLOCK, _storageBufferMap.at(renderID).buffer);
+		// TODO: Populate data from vertex positions
+		glBindBuffer(GL_SHADER_STORAGE_BLOCK, 0);
 
 		// indices generation
 		if(_indexBufferMap.find(renderID) == _indexBufferMap.end()){
@@ -281,6 +290,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	// static GL4::Buffer *sceneBlockBuff, *renderBlockBuff, *vertexBuff, *indexBuff;
 	if (renderID == SCENE_RENDERID && _blockBufferMap.at(SCENE_RENDERID).renderID == SCENE_RENDERID){ // Scene Target
 		glBindBufferBase(GL_UNIFORM_BUFFER, SCENE_BLOCK_BINDING, _blockBufferMap.at(SCENE_RENDERID).buffer);
+		if(_storageBufferMap.find(SCENE_BLOCK_BINDING) != _storageBufferMap.end()) glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SCENE_BLOCK_BINDING, _storageBufferMap.at(SCENE_RENDERID).buffer);
 		for(unsigned b = 0; b < MAX_TEX_BINDINGS - 1; b++){
 			auto tex2D = std::find_if(_textures.begin(), _textures.end(), [renderID, b](const GL4::Texture& t){ return t.renderID == renderID && t.format == TEX_2D && t.binding == b + 1; });
 			if (tex2D != _textures.end()){
@@ -299,6 +309,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
 		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, EXT_BLOCK_BINDING, _extBlockBufferMap.at(renderID).buffer);
+		if(_storageBufferMap.find(renderID) != _storageBufferMap.end()) glBindBufferBase(GL_SHADER_STORAGE_BLOCK, RENDER_BLOCK_BINDING, _storageBufferMap.at(renderID).buffer);
 
 		// Texture Updates 
 	

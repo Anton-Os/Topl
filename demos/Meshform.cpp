@@ -80,9 +80,6 @@ void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
     Vec3f size = *(actor->getSize());
     Vec3f texScale = Vec3f({ 1.0F, 1.0F, 1.0F });
 
-    _renderer->update(actor); // original object
-    _renderer->draw(actor); // original object
-
     for(unsigned c = 0; c < count; c++){ // inscribed objects
         float inc = 1.0F - ((1.0F / count) * (c + 1));
         actor->setSize(size * inc);
@@ -133,20 +130,19 @@ void Meshform_Demo::loop(double frameTime){
 
 #ifdef RASTERON_H
     _texVShader.setFlip(1);
-    _texVShader.setSlice(1.0f);
-    _texVShader.setAntialiasing(0.001F, 30);
+    _texVShader.setAntialiasing(0.01F, 30);
+    _texVShader.setSlice((_renderer->getFrameCount() % 256) * (1.0F / 256.0));
 #endif
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 
-    /* _renderer->updateScene(&scene);
     for(unsigned a = 0; a < 4; a++)
         for(unsigned o = 0; o < 3; o++) 
-            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3); */
+            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3);
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

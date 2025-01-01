@@ -53,28 +53,19 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 	else {
 		float4 texColor = color_correct(tex.Sample(samp, coords));
 		for(uint a = 0; a < antialiasSteps; a++){
-			/* float f = (antialiasArea / antialiasSteps) * (a + 1);
-			float4 nebrTexColors[(8 * 3) + 2] = {
-				// slice neighbors
-				color_correct(tex.Sample(samp, coords + float3(f, 0.0, 0.0))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, 0.0))), // left and right
-				color_correct(tex.Sample(samp, coords + float3(0.0, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, 0.0))), // top and bottom
-				color_correct(tex.Sample(samp, coords + float3(f, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(-f, -f, 0.0))), // top right and bottom left
-				color_correct(tex.Sample(samp, coords + float3(-f, f, 0.0))), color_correct(tex.Sample(samp, coords + float3(f, -f, 0.0))) // top left and bottom right
-				// back neighbors
-				color_correct(tex.Sample(samp, coords + float3(0.0f, 0.0, -f)))
-				color_correct(tex.Sample(samp, coords + float3(f, 0.0, -f))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, -f))), // left and right
-				color_correct(tex.Sample(samp, coords + float3(0.0, f, -f))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, -f))), // top and bottom
-				color_correct(tex.Sample(samp, coords + float3(f, f, -f))), color_correct(tex.Sample(samp, coords + float3(-f, -f, -f))), // top right and bottom left
-				color_correct(tex.Sample(samp, coords + float3(-f, f, -f))), color_correct(tex.Sample(samp, coords + float3(f, -f, -f))) // top left and bottom right
-				// back neighbors
-				color_correct(tex.Sample(samp, coords + float3(0.0f, 0.0, f)))
-				color_correct(tex.Sample(samp, coords + float3(f, 0.0, f))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, f))), // left and right
-				color_correct(tex.Sample(samp, coords + float3(0.0, f, f))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, f))), // top and bottom
-				color_correct(tex.Sample(samp, coords + float3(f, f, f))), color_correct(tex.Sample(samp, coords + float3(-f, -f, f))), // top right and bottom left
-				color_correct(tex.Sample(samp, coords + float3(-f, f, f))), color_correct(tex.Sample(samp, coords + float3(f, -f, f))) // top left and bottom right
+			float f = (antialiasArea / antialiasSteps) * (a + 1);
+			for(uint l = 0; l < 3; l++){
+				float d = -f + (f * l);
+				float4 nebrTexColors[9] = {
+					color_correct(tex.Sample(samp, coords + float3(0.0, 0.0, d))),
+					color_correct(tex.Sample(samp, coords + float3(f, 0.0, d))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, d))), // left and right
+					color_correct(tex.Sample(samp, coords + float3(0.0, f, d))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, d))), // top and bottom
+					color_correct(tex.Sample(samp, coords + float3(f, f, d))), color_correct(tex.Sample(samp, coords + float3(-f, -f, d))), // top right and bottom left
+					color_correct(tex.Sample(samp, coords + float3(-f, f, d))), color_correct(tex.Sample(samp, coords + float3(f, -f, d))) // top left and bottom right
+				};
+				for(uint n = 0; n < 9; n++) texColor += nebrTexColors[n]; // total
+				texColor *= 1.0 / 9; // average
 			}
-			for(uint n = 0; n < (8 * 3) + 2; n++) texColor += nebrTexColors[n]; // total
-			texColor *= 1.0 / ((8 * 3) + 2); // average */
 		}
 		return texColor;
 	}
@@ -84,7 +75,7 @@ float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(abs(mode) % 10 == 8) return sampleTex3D(input.texcoord, areaTex, areaSampler);
-	else if(abs(mode) % 10 == 9) return sampleTex3D(float3(input.texcoord.x, input.texcoord.y, 0.0), areaTex, areaSampler);
+	else if(abs(mode) % 10 == 9) return sampleTex3D(float3(input.texcoord.x, input.texcoord.y, slice), areaTex, areaSampler);
 	else {
 		if(abs(mode) % 10 == 1) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex1, sampler1);
 		else if(abs(mode) % 10 == 2) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex2, sampler2);
