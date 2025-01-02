@@ -179,11 +179,14 @@ void Topl_Scene::resolvePhysics(FORCE_Type type) {
 				geoActor->updatePos(physActor->integrate(FORCE_Directional, elapseSecs));
 			break;
 			case FORCE_Angular:
-				if(physActor->angularAcceleration != VEC_3F_ZERO) physActor->angle = *(geoActor->getRot());
+				if(physActor->angularVelocity == VEC_3F_ZERO) physActor->angle = *(geoActor->getRot());
         		geoActor->updateRot(physActor->integrate(FORCE_Angular, elapseSecs));
+
+				if(*(geoActor->getRot()) != physActor->angle) // Balancing Force
+					physActor->angularAcceleration = (physActor->angle - *(geoActor->getRot())) * (1.0f / physActor->mass) * (physActor->damping * 0.5);
 			break;
 			case FORCE_Constricting:
-				if(physActor->scale == VEC_3F_ZERO) physActor->scale = *(geoActor->getSize());
+				if(physActor->scaleVelocity == VEC_3F_ZERO) physActor->scale = *(geoActor->getSize());
 				geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
 
 				if(*(geoActor->getSize()) != physActor->scale) // Balancing Force
