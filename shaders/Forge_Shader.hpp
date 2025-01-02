@@ -31,7 +31,7 @@ struct Forge_VertexShader : public Topl_EntryShader {
 		// appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
 
-	void setCtrlMatrix(actor_cptr actor, Mat4x4 matrix){ctrlMatrixMap.insert({ actor, matrix }); }
+	void setCtrlMatrix(actor_cptr actor, Mat4x4 matrix){ ctrlMatrixMap.insert({ actor, matrix }); }
 
 	void setCtrlMatrix(Mat4x4 matrix){ ctrlMatrix = matrix; }
 

@@ -60,12 +60,14 @@ void Kaleidoscope_Demo::loop(double frameTime){
     _renderer->setDrawMode(drawMode);
     _renderer->updateScene(&scene);
     if(getConstruct() != nullptr)
-        for(unsigned a = 0; a < getConstruct()->getActorCount(); a++)
+        for(unsigned a = 0; a < getConstruct()->getActorCount(); a++){
+            // if(_renderer->getFrameCount() % 60 == 0) _forgeVShader.setCtrlMatrix(MAT_4x4_IDENTITY * (float)a); // TODO: Conditionally detect this
             _renderer->draw(getConstruct()->getGeoActor(a));
+        }
 }
 
 MAIN_ENTRY {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

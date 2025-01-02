@@ -38,6 +38,8 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		_antialiasArea = area;
 		_antialiasSteps = steps;
 	}
+
+	// void setTexParams(const Vec3f& scroll, const Vec3f& scale, float s, unsigned f){}
 private:
 	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
 	Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });

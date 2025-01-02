@@ -145,6 +145,14 @@ struct Matrix {
 
     // float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
 
+    Matrix operator* (const float& f){
+        Matrix<r, c> result = Matrix<r, c>();
+        for(unsigned row = 0; row < r; row++)
+            for(unsigned col = 0; col < c; col++)
+                result.data[row][col] = data[row][col] * f;
+        return result;
+    }
+
     Matrix operator* (const Matrix& input) {
         Matrix<r, c> result = Matrix<r, c>();
         for(unsigned row1 = 0; row1 < r; row1++)

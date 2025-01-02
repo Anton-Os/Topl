@@ -21,6 +21,7 @@
 #define PROGRAM_M 0.1f
 #define PROGRAM_OVERLAYS 3
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
+#define PROGRAM_PIPELINES 7
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -118,7 +119,7 @@ protected:
 	Forge_VertexShader _forgeVShader; Forge_PixelShader _forgePShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 
-	Topl_EntryShader* _entryShaders[7] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_forgeVShader };
+	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_forgeVShader };
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_forgePipeline; // for easy reuse
 
     // Options & Properties
@@ -130,6 +131,7 @@ private:
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
     void setPipelines();
+	void setShadersMode(unsigned m){ for(unsigned s = 0; s < PROGRAM_PIPELINES; s++) _entryShaders[s]->setMode(m); }
 
 	// Scenes, Geometry & Targets
 	struct Background {

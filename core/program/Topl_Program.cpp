@@ -108,8 +108,7 @@ void Topl_Program::_onAnyKey(char k){
         }
 
         if(k == (char)0x25 || k == (char)0x27 || k == '-' || k == '_' || k == '+' || k == '='){
-            for(unsigned s = 0; s < 6; s++)
-                _entryShaders[s]->setMode(Topl_Program::shaderMode);
+            setShadersMode(Topl_Program::shaderMode);
             std::cout << "Shader mode is " << std::to_string(Topl_Program::shaderMode) << std::endl;
         }
     }
@@ -246,8 +245,7 @@ void Topl_Program::createOverlays(double size){
 void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode){
     if(pipeline != nullptr){
         Topl_Factory::switchPipeline(_renderer, pipeline);
-        for(unsigned s = 0; s < 6; s++) // TODO: Improve this logic!
-            if(_entryShaders[s]->getFilePath() == pipeline->getEntryShader()->getFilePath()){ _entryShaders[s]->setMode(mode); break; } // find matching pipeline and set mode
+        setShadersMode(mode);
     }
 
     _renderer->setDrawMode(DRAW_Triangles);

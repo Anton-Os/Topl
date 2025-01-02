@@ -657,6 +657,9 @@ void Topl_Renderer_VK::setViewport(const Topl_Viewport* viewport) {
 }
 
 void Topl_Renderer_VK::swapBuffers(double frameTime){ 
+    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
+        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
+
     VkSemaphore waitSemaphores[] = { _imageReadySemaphore };
 	VkSemaphore signalSemaphores[] = { _renderFinishSemaphore };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT }; // { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
@@ -687,6 +690,12 @@ void Topl_Renderer_VK::swapBuffers(double frameTime){
 	presentInfo.pResults = nullptr;
 
 	if(vkQueuePresentKHR(_graphicsQueue, &presentInfo) != VK_SUCCESS) logMessage(MESSAGE_Exclaim, "Queue presentation failure!\n");
+
+    std::cout << "Waiting for fences"  << std::endl;
+    if(_frameIDs > 0){
+        vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(_logicDevice, 1, &_inFlightFence);
+    }
 
 	_flags[DRAWN_BIT] = true;
 }
@@ -732,15 +741,6 @@ void Topl_Renderer_VK::setDrawMode(enum DRAW_Mode mode) {
 }
 
 void Topl_Renderer_VK::draw(const Geo_Actor* actor){
-    if(vkAcquireNextImageKHR(_logicDevice, _swapchain, UINT64_MAX, _imageReadySemaphore, VK_NULL_HANDLE, &_swapImgIdx) != VK_SUCCESS) // Should this be here
-        logMessage(MESSAGE_Exclaim, "Aquire next image failure!\n");
-
-    std::cout << "Waiting for fences"  << std::endl;
-    if(_frameIDs > 0){
-        vkWaitForFences(_logicDevice, 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(_logicDevice, 1, &_inFlightFence);
-    }
-
     if(actor == SCENE_RENDERID) logMessage("Handle scene data!");
     else {
         static VkDeviceSize offsets[] = { 0 };
@@ -768,7 +768,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
                 vkCmdBindVertexBuffers(_commandBuffers[0], 0, 1, &_vertexBufferMap.at(renderID).buffer, offsets);
 
             std::cout << "Frame IDs is " << std::to_string(_frameIDs) << "image index is " << std::to_string(_swapImgIdx) << std::endl;
-            // vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
+            vkCmdDraw(_commandBuffers[0], actor->getMesh()->getVertexCount(), 1, 0, 0);
         }
 
         vkCmdEndRenderPass(_commandBuffers[0]);

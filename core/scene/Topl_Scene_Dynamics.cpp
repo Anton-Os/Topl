@@ -83,7 +83,7 @@ void Topl_Scene::remConnector(const std::string& targetName){
 }
 
 
-void Topl_Scene::resolvePhysics() {
+void Topl_Scene::resolvePhysics(FORCE_Type type) {
 	double elapseSecs = _ticker.getRelSecs();
     // Resolve Link Connections // TODO: Run in a thread
 	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
@@ -174,15 +174,22 @@ void Topl_Scene::resolvePhysics() {
             // (physActor->isGravityEnabled) ? physActor->actingForceCount = 1 : physActor->actingForceCount = 0; // reset forces on physics actor
         }
 
+		switch(type){
+			case FORCE_Directional:
+				geoActor->updatePos(physActor->integrate(FORCE_Directional, elapseSecs));
+			break;
+			case FORCE_Angular:
+				if(physActor->angularAcceleration != VEC_3F_ZERO) physActor->angle = *(geoActor->getRot());
+        		geoActor->updateRot(physActor->integrate(FORCE_Angular, elapseSecs));
+			break;
+			case FORCE_Constricting:
+				if(physActor->scale == VEC_3F_ZERO) physActor->scale = *(geoActor->getSize());
+				geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
 
-        geoActor->updatePos(physActor->integrate(FORCE_Directional, elapseSecs));
-		if(physActor->angularAcceleration != VEC_3F_ZERO) physActor->angle = *(geoActor->getRot());
-        // geoActor->updateRot(physActor->integrate(FORCE_Angular, elapseSecs));
-        if(physActor->scale == VEC_3F_ZERO) physActor->scale = *(geoActor->getSize());
-		// geoActor->updateSize(physActor->integrate(FORCE_Constricting, elapseSecs));
-
-		if(*(geoActor->getSize()) != physActor->scale) // Adding a balancing force
-			physActor->scaleAcceleration = (physActor->scale - *(geoActor->getSize())) * (1.0f / physActor->mass) * (physActor->damping * 0.5);
+				if(*(geoActor->getSize()) != physActor->scale) // Balancing Force
+					physActor->scaleAcceleration = (physActor->scale - *(geoActor->getSize())) * (1.0f / physActor->mass) * (physActor->damping * 0.5);
+			break;
+		}
 	}
 }
 

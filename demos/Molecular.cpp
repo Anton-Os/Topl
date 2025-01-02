@@ -43,8 +43,6 @@ void Molecular_Demo::loop(double frameTime){
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) 
             constructs[m][c].rotate({ ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5F) / 100.0F, 0.0F });
 
-    // _beamsVShader.setMode(Topl_Progam::shaderMode);
-    // Topl_Factory::switchPipeline(_renderer, _beamsPipeline);
     _renderer->updateScene(&scene);
     _renderer->setDrawMode(DRAW_Lines);
     _renderer->drawScene(&scene);
@@ -56,7 +54,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

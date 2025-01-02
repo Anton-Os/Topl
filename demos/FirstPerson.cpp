@@ -78,7 +78,7 @@ void FirstPerson_Demo::init(){
 void FirstPerson_Demo::loop(double frameTime){
     {
 #ifdef TOPL_ENABLE_PHYSICS
-        if(_renderer->getFrameCount() > 60) scene2D.resolvePhysics();
+        if(_renderer->getFrameCount() > 60) scene2D.resolvePhysics(FORCE_Directional);
 #endif
         _texVShader.setMode(0);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);

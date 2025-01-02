@@ -36,6 +36,7 @@ struct Img_Base : public Img_Target {
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
+	// ~Img_Base(){ cleanup(); }
 
     void setColorImage(unsigned color){
 		cleanup();
@@ -80,9 +81,11 @@ protected:
 		}
 	}
 
-    Rasteron_Image* image = NULL; // underlying queue
+    Rasteron_Image* image = NULL;
 #endif
 };
+
+// TODO: Create Extended Image types for Noise, Tiles, Etc...
 
 // Array texture based on multiple layers
 

@@ -74,7 +74,7 @@ public:
 			_indices.push_back(*(refMesh.getIndices() + i) + svCount);
 	}
 
-	void tesselate(unsigned short tessCount){
+	void tesselate(unsigned short tessCount){ // TODO: Include Tesselation for Non-Indexed Mesh
 		if(tessCount == 0) return;
 		unsigned short svCount, siCount;
 
@@ -114,6 +114,15 @@ public:
 		}
 	}
 
+	std::string toString() const {
+		std:: string meshStr = "Vertices: {";
+		for(unsigned v = 0; v < getVertexCount(); v++) meshStr += _vertices[v].position.toString() + ", ";
+		meshStr += (getIndexCount() > 0)? "}\nIndices: {";
+		if(getIndexCount() > 0){
+			for(unsigned i = 0; i < getIndexCount(); i++) meshStr += std::to_string(i) + ", ";
+			meshStr += "}";
+		}
+	}
     Vec3f getOrigin() const {
         Vec3f origin = VEC_3F_ZERO;
         for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
