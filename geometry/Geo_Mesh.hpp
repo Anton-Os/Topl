@@ -114,10 +114,10 @@ public:
 		}
 	}
 
-	std::string toString() const {
+	std::string toString() const { // creates a printed version of a mesh
 		std:: string meshStr = "Vertices: {";
 		for(unsigned v = 0; v < getVertexCount(); v++) meshStr += _vertices[v].position.toString() + ", ";
-		meshStr += (getIndexCount() > 0)? "}\nIndices: {";
+		meshStr += (getIndexCount() > 0)? "}\nIndices: {" : "}";
 		if(getIndexCount() > 0){
 			for(unsigned i = 0; i < getIndexCount(); i++) meshStr += std::to_string(i) + ", ";
 			meshStr += "}";

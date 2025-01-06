@@ -47,7 +47,7 @@ list(APPEND geometry_src
     geometry/meshes/Geo_Surface.cpp
     geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Cone.cpp
-    geometry/meshes/Geo_Orb.cpp
+    geometry/meshes/Geo_Orbitals.cpp
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)

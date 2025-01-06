@@ -37,6 +37,23 @@ private:
 	Shape3D _shape;
 };
 
+class Geo_Torus : public Geo_Mesh {
+public:
+	Geo_Torus(float d) : Geo_Mesh(
+		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
+		0 // ((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
+	){
+		_diameter = d;
+		_shape = { 1.0f, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
+		init();
+	}
+private:
+	void init();
+
+	float _diameter = 0.5F;
+	Shape3D _shape;
+};
+
 struct Geo_TrigOrb : public Geo_Orb {
 	Geo_TrigOrb() : Geo_Orb({ 1.0, 3, 3 }){}
 	Geo_TrigOrb(float radius) : Geo_Orb({ radius, 3, 3 }){}

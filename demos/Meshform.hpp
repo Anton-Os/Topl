@@ -1,5 +1,5 @@
 #include "Geo_Construct.hpp"
-#include "meshes/Geo_Orb.hpp"
+#include "meshes/Geo_Orbitals.hpp"
 
 #include "program/Topl_Program.hpp"
 
@@ -56,12 +56,14 @@ struct Meshform_Demo : public Topl_Program {
     Geo_QuadOrb* quadOrbs[3] = { new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE) };
     Geo_HexOrb* hexOrbs[3] = { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) };
     Geo_DecOrb* decOrbs[3] = { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) };
+    Geo_Torus* torus = new Geo_Torus(0.5F);
 
     Geo_Actor orbActors[3][4] = {
         { trigOrbs[0], quadOrbs[0], hexOrbs[0], decOrbs[0] },
         { trigOrbs[1], quadOrbs[1], hexOrbs[1], decOrbs[1] },
         { trigOrbs[2], quadOrbs[2], hexOrbs[2], decOrbs[2] }
     };
+    Geo_Actor torusActor = Geo_Actor(torus);
 #ifdef RASTERON_H
     Img_Volume volumeImg = Img_Volume(256);
 #endif

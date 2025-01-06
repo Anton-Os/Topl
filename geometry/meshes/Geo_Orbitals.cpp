@@ -1,4 +1,4 @@
-#include "Geo_Orb.hpp"
+#include "Geo_Orbitals.hpp"
 
 void Geo_Orb::init() {
 	unsigned v = 0; // target vertex
@@ -44,4 +44,25 @@ void Geo_Orb::init() {
 
 		// Perform indexing for missing piece?
 	}
+}
+
+void Geo_Torus::init(){
+	unsigned v = 0;
+	float radiusInc, z;
+
+	for(unsigned innerRing = 0; innerRing < _shape.xSegs; innerRing++){
+		radiusInc = _shape.radius + ((_shape.radius * _diameter) * cosf((MATH_PI / _shape.xSegs) * innerRing));
+		z = (_shape.radius * _diameter) * sinf((MATH_PI / _shape.xSegs) * innerRing);
+
+		for(unsigned outerRing = 0; outerRing < _shape.ySegs; outerRing++){
+			float x = radiusInc * cosf((MATH_PI / _shape.ySegs) * outerRing);
+			float y = radiusInc * sinf((MATH_PI / _shape.ySegs) * outerRing);
+			
+			Vec3f pos = Vec3f({ x, y, z });
+			_vertices[v] = Geo_Vertex(pos);
+			v++;
+		}
+	}
+
+	// TODO: Perform Indexing
 }

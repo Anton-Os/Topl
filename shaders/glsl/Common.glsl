@@ -38,7 +38,18 @@ layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
 #define TRACER_STEPS 16
 #define TRACER_PATHS 16
 
+vec4 color_correct(vec4 color){ // switch red and blue color values
+    float t = color.r;
+    color.r = color.b; color.b = t;
+    return color;
+}
+
 #ifdef INCLUDE_TEXTURES
+
+#ifndef SLICE
+#define SLICE 0.0f
+#endif
+
 layout(binding = 0) uniform sampler2D baseTex;
 layout(binding = 1) uniform sampler2D tex1;
 layout(binding = 2) uniform sampler2D tex2;
@@ -48,6 +59,66 @@ layout(binding = 5) uniform sampler2D tex5;
 layout(binding = 6) uniform sampler2D tex6;
 layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
+
+vec4 sampleTex_mode(int m, vec3 texcoord){
+    vec4 color;
+    if(abs(m) % 10 == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
+    else if(abs(m) % 10 == 9) color = color_correct(texture(volumeTex, vec3(texcoord.x, texcoord.y, SLICE))); // volumetric slice
+    else { // select texture
+        if(abs(m) % 10 == 1) color = color_correct(texture(tex1, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 2) color = color_correct(texture(tex2, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 3) color = color_correct(texture(tex3, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 4) color = color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 5) color = color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 6) color = color_correct(texture(tex6, vec2(texcoord.x, texcoord.y)));
+        else if(abs(m) % 10 == 7) color = color_correct(texture(tex7, vec2(texcoord.x, texcoord.y)));
+        else color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
+    }
+    return color;
+}
+
+
+vec4 sampleTex_antialias2D(vec2 coords, sampler2D tex2D, float antialiasArea, float antialiasSteps){
+    if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(texture(tex2D, coords));
+    else { // antialiasing algorithm
+        vec4 texColor = color_correct(texture(tex2D, coords));
+        for(uint a = 0; a < antialiasSteps; a++){
+            float f = (antialiasArea / antialiasSteps) * (a + 1);
+            vec4 nebrTexColors[8] = {
+                color_correct(texture(tex2D, coords + vec2(f, 0.0))), color_correct(texture(tex2D, coords + vec2(-f, 0.0))), // left and right
+                color_correct(texture(tex2D, coords + vec2(0.0, f))), color_correct(texture(tex2D, coords + vec2(0.0, -f))), // top and bottom
+                color_correct(texture(tex2D, coords + vec2(f, f))), color_correct(texture(tex2D, coords + vec2(-f, -f))), // top right and bottom left
+                color_correct(texture(tex2D, coords + vec2(-f, f))), color_correct(texture(tex2D, coords + vec2(f, -f))) // top left and bottom right
+            };
+            for(uint n = 0; n < 8; n++) texColor += nebrTexColors[n]; // total
+            texColor *= 1.0 / 8; // average
+        }
+        return texColor;
+    }
+}
+
+vec4 sampleTex_antialias3D(vec3 coords, sampler3D tex3D, float antialiasArea, float antialiasSteps){
+    if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(texture(tex3D, coords));
+    else {
+        vec4 texColor = color_correct(texture(tex3D, coords));
+        for(uint a = 0; a < antialiasSteps; a++){
+            float f = (antialiasArea / antialiasSteps) * (a + 1);
+            for(uint l = 0; l < 3; l++){
+                float d = -f + (f * l);
+                vec4 nebrTexColors[9] = {
+                    color_correct(texture(tex3D, coords + vec3(0.0, 0.0, d))),
+                    color_correct(texture(tex3D, coords + vec3(f, 0.0, d))), color_correct(texture(tex3D, coords + vec3(-f, 0.0, d))), // left and right
+                    color_correct(texture(tex3D, coords + vec3(0.0, f, d))), color_correct(texture(tex3D, coords + vec3(0.0, -f, d))), // top and bottom
+                    color_correct(texture(tex3D, coords + vec3(f, f, d))), color_correct(texture(tex3D, coords + vec3(-f, -f, d))), // top right and bottom left
+                    color_correct(texture(tex3D, coords + vec3(-f, f, d))), color_correct(texture(tex3D, coords + vec3(f, -f, d))) // top left and bottom right
+                };
+                for(uint n = 0; n < 9; n++) texColor += nebrTexColors[n]; // total
+                    texColor *= 1.0 / 9; // average
+            }
+        }
+        return texColor;
+    }
+}
 #endif
 
 #define COLOR_INC 0.00390625
@@ -146,12 +217,6 @@ vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
 		sqrt(pow(coord.x - p1.x, 2.0) + pow(coord.y - p1.y, 2.0)), // distance between coordinate and point 1 
 		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
 	);
-}
-
-vec4 color_correct(vec4 color){ // switch red and blue color values
-	float t = color.r;
-	color.r = color.b; color.b = t;
-	return color;
 }
 
 // TODO: Include other helper functions

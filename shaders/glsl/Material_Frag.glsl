@@ -50,9 +50,9 @@ void main() {
 	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
 
 	vec3 texVals[3];
-	texVals[0] = vec3(color_correct(texture(tex1, vec2(texcoord.x, texcoord.y))));
-	texVals[1] = vec3(color_correct(texture(tex2, vec2(texcoord.x, texcoord.y))));
-	texVals[2] = vec3(color_correct(texture(tex3, vec2(texcoord.x, texcoord.y))));
+	texVals[0] = vec3(sampleTex_mode((abs(mode) + 1) % 8, texcoord)); // vec3(color_correct(texture(tex1, vec2(texcoord.x, texcoord.y))));
+	texVals[1] = vec3(sampleTex_mode((abs(mode) + 2) % 8, texcoord)); // vec3(color_correct(texture(tex2, vec2(texcoord.x, texcoord.y))));
+	texVals[2] = vec3(sampleTex_mode((abs(mode) + 3) % 8, texcoord)); // vec3(color_correct(texture(tex3, vec2(texcoord.x, texcoord.y))));
 
 	// vec3 lightPos_diffuse = lightPos + (vec3(color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
 	// vec3 lightPos_specular = lightPos + (vec3(color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
