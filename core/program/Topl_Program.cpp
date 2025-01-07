@@ -220,6 +220,10 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_camera.shift({ -0.75F, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
+    // modifiers and overlays
+    _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
+    for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
+    
     for(unsigned short o = 0; o < 3; o++){
         _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
@@ -236,8 +240,8 @@ void Topl_Program::createOverlays(double size){
 #endif
     }
     _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
-    // _overlays.billboard_object.getGeoActor(8)->setSize({ 0.0F, 0.0F, 0.0F }); // permanently hide
-    _overlays.billboard_camera.expandVert(std::make_pair(2, 1), 1);
+    // _overlays.billboard_camera.expandVert(std::make_pair(2, 1), 1);
+
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
 }

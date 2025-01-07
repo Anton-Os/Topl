@@ -28,16 +28,16 @@ void Geo_Orb::init() {
 			stackIndex++;
 			nextIndex++;
 
-			if (stack != 0) { // index all except first stack
+			if (stack != 0 ) { // index all except first stack
 				_indices[i] = stackIndex;
 				_indices[i + 1] = nextIndex;
-				_indices[i + 2] = stackIndex + 1;
+				_indices[i + 2] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
 				i += 3;
 			}
 			if (stack < _shape.xSegs - 1) { // index all except last stack
-				_indices[i] = stackIndex + 1;
+				_indices[i] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
 				_indices[i + 1] = nextIndex;
-				_indices[i + 2] = nextIndex + 1;
+				_indices[i + 2] = nextIndex + 1; // (nextIndex + 1) % _shape.xSegs;
 				i += 3;
 			}
 		}

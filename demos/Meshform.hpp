@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 1
+#define MESHFORM_TESS 3
 #define MESHFORM_INDEX 0
 #define MESHFORM_INC 1.15F // 1.01F
 #define MESHFORM_DEC 0.9F
@@ -56,7 +56,7 @@ struct Meshform_Demo : public Topl_Program {
     Geo_QuadOrb* quadOrbs[3] = { new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE) };
     Geo_HexOrb* hexOrbs[3] = { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) };
     Geo_DecOrb* decOrbs[3] = { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) };
-    Geo_Torus* torus = new Geo_Torus(0.5F);
+    Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 1.0F, 3, 3 }));
 
     Geo_Actor orbActors[3][4] = {
         { trigOrbs[0], quadOrbs[0], hexOrbs[0], decOrbs[0] },

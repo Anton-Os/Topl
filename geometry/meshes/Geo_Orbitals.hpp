@@ -39,12 +39,21 @@ private:
 
 class Geo_Torus : public Geo_Mesh {
 public:
-	Geo_Torus(float d) : Geo_Mesh(
+	Geo_Torus(float diameter) : Geo_Mesh(
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
 		0 // ((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
 	){
-		_diameter = d;
+		_diameter = diameter;
 		_shape = { 1.0f, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
+		init();
+	}
+
+	Geo_Torus(float diameter, Shape3D shape) : Geo_Mesh(
+		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
+		0 // ((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
+	){
+		_diameter = diameter;
+		_shape = shape;
 		init();
 	}
 private:

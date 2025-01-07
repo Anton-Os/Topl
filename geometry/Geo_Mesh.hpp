@@ -82,20 +82,31 @@ public:
 			svCount = getVertexCount(); // start vertex count
 			siCount = getIndexCount(); // start index count
 
-			for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
-				_vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
+			if(siCount > 0){
+				for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
+					_vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
 
-			for(unsigned i = 0; i < siCount; i += 3){
-				unsigned v = (svCount + (i / 3));
-				_indices.push_back(_indices[i]);
-				_indices.push_back(_indices[i + 1]);
-				_indices.push_back(v); // first triangle
-				_indices.push_back(_indices[i + 2]);
-				_indices.push_back(_indices[i + 1]);
-				_indices.push_back(v); // second triangle
-				_indices.push_back(_indices[i]);
-				_indices.push_back(_indices[i + 2]);
-				_indices.push_back(v); // third triangle
+				for(unsigned i = 0; i < siCount; i += 3){
+					unsigned v = (svCount + (i / 3));
+					_indices.push_back(_indices[i]);
+					_indices.push_back(_indices[i + 1]);
+					_indices.push_back(v); // first triangle
+					_indices.push_back(_indices[i + 2]);
+					_indices.push_back(_indices[i + 1]);
+					_indices.push_back(v); // second triangle
+					_indices.push_back(_indices[i]);
+					_indices.push_back(_indices[i + 2]);
+					_indices.push_back(v); // third triangle
+				}
+				for (unsigned i = 0; i < siCount; i++) _indices.erase(_indices.begin());
+			} else {
+				for(unsigned v = 0; v < svCount; v += 3){
+					Geo_Vertex midpoint = Geo_Vertex(Vec3f((_vertices[v + 0].position + _vertices[v + 1].position + _vertices[v + 2].position) * (1.0 / 3.0)));
+					_vertices.push_back(midpoint); _vertices.push_back(_vertices[v]); _vertices.push_back(_vertices[v + 1]); // 1st triangle
+                    _vertices.push_back(midpoint); _vertices.push_back(_vertices[v]); _vertices.push_back(_vertices[v + 2]); // 2nd triangle
+                    _vertices.push_back(midpoint); _vertices.push_back(_vertices[v + 1]); _vertices.push_back(_vertices[v + 2]); // 3rd triangle
+				}
+				for (unsigned v = 0; v < svCount; v++) _vertices.erase(_vertices.begin());
 			}
 		}
 
@@ -140,7 +151,7 @@ public:
 
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 protected:
-	// std::vector<Geo_Pos> _positions;
+	// std::vector<Geo_Pos> _vertices;
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
 
