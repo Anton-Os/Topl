@@ -95,6 +95,8 @@ void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
 void Meshform_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
+    scene.addGeometry("torus", &torusActor);
+    // torusActor.isShown = false;
     for(unsigned m = 0; m < 3; m++){
         orbActors[m][0].setPos({ 0.5F, 0.5F, 0.0F });
         scene.addGeometry("trigOrb" + std::to_string(m), &orbActors[m][0]);
@@ -111,7 +113,6 @@ void Meshform_Demo::init(){
         scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
     }
-    scene.addGeometry("torus", &torusActor);
 
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     Topl_Program::shaderMode = 8;
@@ -130,13 +131,13 @@ void Meshform_Demo::loop(double frameTime){
         if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
     }
 
-    torus->drawMode = DRAW_Lines;
+    // torus->drawMode = DRAW_Lines;
 #ifdef RASTERON_H
     _texVShader.setFlip(0);
     _texVShader.setAntialiasing(0.01F, 30);
     _texVShader.setSlice((_renderer->getFrameCount() % 256) * (1.0F / 256.0));
 #endif
-    // _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 

@@ -71,7 +71,7 @@ struct Phys_Actor { // A physics property that becomes associated to a Geo_Actor
         if((vel.isZero() && acc.isZero())) return VEC_3F_ZERO; // no update
         else {
             vel = (vel + (acc * elapseSecs)) * damping; // calculating velocity
-            Vec3f result = (vel * (float)elapseSecs) + ((acc * pow(elapseSecs, 2))) * 0.5f; // calculating result
+            Vec3f result = (vel * (float)elapseSecs) + (acc * pow(elapseSecs, 2)) * 0.5f; // calculating result
             acc = VEC_3F_ZERO; // resetting acceleration
             return result;
         }

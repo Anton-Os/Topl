@@ -28,7 +28,7 @@ void Geo_Orb::init() {
 			stackIndex++;
 			nextIndex++;
 
-			if (stack != 0 ) { // index all except first stack
+			if (stack != 0) { // index all except first stack
 				_indices[i] = stackIndex;
 				_indices[i + 1] = nextIndex;
 				_indices[i + 2] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
@@ -44,25 +44,54 @@ void Geo_Orb::init() {
 
 		// Perform indexing for missing piece?
 	}
+
+	printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
 }
 
 void Geo_Torus::init(){
 	unsigned v = 0;
-	float radiusInc, z;
 
-	for(unsigned innerRing = 0; innerRing < _shape.xSegs; innerRing++){
-		radiusInc = _shape.radius + ((_shape.radius * _diameter) * cosf((MATH_PI / _shape.xSegs) * innerRing));
-		z = (_shape.radius * _diameter) * sinf((MATH_PI / _shape.xSegs) * innerRing);
+	float x, y, z, xy;
+	float sectorStep = (2 * MATH_PI) / _shape.xSegs;
+	float sideStep = (2 * MATH_PI) / _shape.ySegs;
+	float sectorAngle, sideAngle;
+
+	for(unsigned innerRing = 0; innerRing <= _shape.xSegs; innerRing++){
+		sideAngle = MATH_PI - (innerRing * sideStep);
+		xy = (_shape.radius * _diameter) * cosf(sideAngle);
+		z = (_shape.radius * _diameter) * sinf(sideAngle);
 
 		for(unsigned outerRing = 0; outerRing < _shape.ySegs; outerRing++){
-			float x = radiusInc * cosf((MATH_PI / _shape.ySegs) * outerRing);
-			float y = radiusInc * sinf((MATH_PI / _shape.ySegs) * outerRing);
-			
-			Vec3f pos = Vec3f({ x, y, z });
-			_vertices[v] = Geo_Vertex(pos);
+			sectorAngle = outerRing * sectorStep;
+
+			x = xy * cosf(sectorAngle);
+			y = xy * sinf(sectorAngle);
+
+			x += _shape.radius * cosf(sectorAngle);
+			y += _shape.radius * sinf(sectorAngle);
+
+			_vertices[v] = Geo_Vertex({ x, y, z });
 			v++;
 		}
 	}
 
-	// TODO: Perform Indexing
+	unsigned i = 0;
+
+	for(unsigned innerRing = 0; innerRing <= _shape.xSegs; innerRing++){
+		unsigned idx = innerRing * (_shape.ySegs + 1);
+		unsigned nextIdx = idx + _shape.ySegs + 1;
+
+		for(unsigned outerRing = 0; outerRing < _shape.ySegs; outerRing++){
+			_indices[i + 0] = idx;
+			_indices[i + 1] = nextIdx;
+			_indices[i + 2] = idx + 1;
+			_indices[i + 3] = idx + 1;
+			_indices[i + 4] = nextIdx;
+			_indices[i + 5] = nextIdx + 1;
+			i += 6;
+			idx++; nextIdx++;
+		}
+	}
+
+	printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
 }
