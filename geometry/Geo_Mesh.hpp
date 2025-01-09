@@ -133,6 +133,7 @@ public:
 			for(unsigned i = 0; i < getIndexCount(); i++) meshStr += std::to_string(i) + ", ";
 			meshStr += "}";
 		}
+		return meshStr;
 	}
     Vec3f getOrigin() const {
         Vec3f origin = VEC_3F_ZERO;

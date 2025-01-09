@@ -45,7 +45,7 @@ void Geo_Orb::init() {
 		// Perform indexing for missing piece?
 	}
 
-	printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
+	// printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
 }
 
 void Geo_Torus::init(){
@@ -54,15 +54,14 @@ void Geo_Torus::init(){
 	float x, y, z, xy;
 	float sectorStep = (2 * MATH_PI) / _shape.xSegs;
 	float sideStep = (2 * MATH_PI) / _shape.ySegs;
-	float sectorAngle, sideAngle;
 
 	for(unsigned innerRing = 0; innerRing <= _shape.xSegs; innerRing++){
-		sideAngle = MATH_PI - (innerRing * sideStep);
+		float sideAngle = MATH_PI - (innerRing * sideStep);
 		xy = (_shape.radius * _diameter) * cosf(sideAngle);
 		z = (_shape.radius * _diameter) * sinf(sideAngle);
 
 		for(unsigned outerRing = 0; outerRing < _shape.ySegs; outerRing++){
-			sectorAngle = outerRing * sectorStep;
+			float sectorAngle = outerRing * sectorStep;
 
 			x = xy * cosf(sectorAngle);
 			y = xy * sinf(sectorAngle);
@@ -93,5 +92,5 @@ void Geo_Torus::init(){
 		}
 	}
 
-	printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
+	// printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
 }
