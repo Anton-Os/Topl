@@ -152,6 +152,21 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) { // camera postion and relati
 	return camMatrix;
 }
 
+float4x4 getLookAtMatrix(float3 cPos, float3 lPos, float3 upPos){
+	float3 forward = normalize(lPos - cPos);
+	float3 right = normalize(cross(forward, upPos));
+	float3 up = normalize(cross(right, upPos));
+	
+	float4x4 lookAtMatrix = {
+		right.x, right.y, right.z, -cPos.x,
+		up.x, up.y, up.z, -cPos.y,
+		-forward.x, -forward.y, -forward.z, -cPos.z,
+		0, 0, 0, 1
+	};
+
+	return lookAtMatrix;
+}
+
 float getLineDistance(float2 coord, float2 p1, float2 p2){
 	return abs(((p2.y - p1.y) * coord.x) - ((p2.x - p1.x) * coord.y) + (p2.x * p1.y) - (p2.y * p1.x)) / sqrt(pow(p2.y - p1.y, 2.0) + pow(p2.x - p1.x, 2.0));
 }
