@@ -14,10 +14,10 @@ cbuffer CONST_BLOCK : register(b0) {
 	float3 texScroll; // texture coordinate scrolling
 	float4 texScale; // texture coordinate scaling
 
-    float slice;
     uint flip;
     float antialiasArea;
     uint antialiasSteps;
+	float slice;
 }
 
 struct PS_INPUT {

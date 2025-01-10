@@ -21,25 +21,34 @@ struct Textured_VertexShader : public Topl_EntryShader {
 
 	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genActorBlock(actor, bytes);
-		appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
-		appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
-        alignDataToBytes((uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
-        alignDataToBytes((uint8_t*)&_flip, sizeof(unsigned), NO_PADDING, bytes);
-		alignDataToBytes((uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
-        alignDataToBytes((uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
+		auto paramEntry = std::find_if(texParamMap.begin(), texParamMap.end(), [actor](const std::pair<actor_cptr, TexParams> p){ return p.first == actor; });
+		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scroll : (uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
+		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scale : (uint8_t*)&_texScale, sizeof(Vec3f), bytes);
+        alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.flip : (uint8_t*)&_flip, sizeof(unsigned), NO_PADDING, bytes);
+		alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.first : (uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
+        alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.second : (uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
 	}
 
+	void setFlip(unsigned f){ _flip = f; }
 	void setTexScroll(const Vec3f& s){ _texScroll = s; }
 	void setTexScale(const Vec3f& s){ _texScale = s; }
-    void setSlice(float s){ _slice = s; }
-    void setFlip(unsigned f){ _flip = f; }
 
 	void setAntialiasing(float area, unsigned steps){
 		_antialiasArea = area;
 		_antialiasSteps = steps;
 	}
 
-	// void setTexParams(const Vec3f& scroll, const Vec3f& scale, float s, unsigned f){}
+	void setSlice(float s){ _slice = s; }
+
+	struct TexParams { 
+		unsigned flip;
+		float scroll;
+		float scale;
+		std::pair<float, unsigned> antialias;
+	};
+
+	void setParams(actor_cptr actor, TexParams params){ texParamMap.insert({ actor, params }); }
 private:
 	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
 	Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });
@@ -49,6 +58,8 @@ private:
 
     float _antialiasArea = 0.0F; // area for antialiasing
     unsigned _antialiasSteps = 0; // iterations for antialiasing
+
+	std::map<actor_cptr, TexParams> texParamMap;
 };
 
 struct Textured_VertexShader_GL4 : public Textured_VertexShader {

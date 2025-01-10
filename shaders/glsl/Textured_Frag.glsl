@@ -12,10 +12,10 @@ layout(std140, binding = 0) uniform Block {
 	vec3 texScroll; // texture coordinate scrolling
 	vec4 texScale; // texture coordinate scaling
 
-	float slice;
 	uint flip;
 	float antialiasArea;
 	uint antialiasSteps;
+	float slice;
 };
 
 #define SLICE slice
