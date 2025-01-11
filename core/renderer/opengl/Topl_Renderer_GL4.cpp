@@ -334,14 +334,19 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 		// Draw Call!
         if (_vertexBufferMap.find(renderID) != _vertexBufferMap.end()){
+			unsigned drawCount = (actor->getMesh()->drawMax != 0)? actor->getMesh()->drawMax : 0;
+			if(drawCount == 0) drawCount = (_indexBufferMap.find(renderID) != _indexBufferMap.end())? _indexBufferMap.at(renderID).count : _vertexBufferMap.at(renderID).count;
+
             if(actor->getMesh()->getInstanceCount() <= 1){
-                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElements(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0); // indexed draw
-                else glDrawArrays(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count); // non-indexed draw
+                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElements(_drawMode_GL4, drawCount, GL_UNSIGNED_INT, (void*)actor->getMesh()->drawMin); // indexed draw
+                else glDrawArrays(_drawMode_GL4, actor->getMesh()->drawMin, drawCount); // non-indexed draw
             } else {
-                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElementsInstanced(_drawMode_GL4, _indexBufferMap.at(renderID).count, GL_UNSIGNED_INT, (void*)0, actor->getMesh()->getInstanceCount()); // instanced indexed draw
-                else glDrawArraysInstanced(_drawMode_GL4, 0, _vertexBufferMap.at(renderID).count, actor->getMesh()->getInstanceCount()); // instanced non-indexed draw
+                if (_indexBufferMap.find(renderID) != _indexBufferMap.end()) glDrawElementsInstanced(_drawMode_GL4, drawCount, GL_UNSIGNED_INT, (void*)actor->getMesh()->drawMin, actor->getMesh()->getInstanceCount()); // instanced indexed draw
+                else glDrawArraysInstanced(_drawMode_GL4, actor->getMesh()->drawMin, drawCount, actor->getMesh()->getInstanceCount()); // instanced non-indexed draw
             }
         } else logMessage(MESSAGE_Exclaim, "Corrupt Vertex Buffer!");
+
+		// TODO: Conditionally restore previous draw mode
 
 		// Unbinding
 		glBindVertexArray(0);

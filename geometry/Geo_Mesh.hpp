@@ -151,6 +151,7 @@ public:
 	const Mat4x4* getInstanceData() const { return _instanceData; }
 
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
+	unsigned short drawMin = 0, drawMax = 0; // for partial mesh rendering // Check for range?
 protected:
 	// std::vector<Geo_Pos> _vertices;
 	std::vector<Geo_Vertex> _vertices;
