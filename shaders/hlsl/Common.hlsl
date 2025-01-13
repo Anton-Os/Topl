@@ -53,22 +53,25 @@ Texture2D tex7 : register(t7); SamplerState sampler7 : register(s7);
 Texture3D areaTex : register(t8);
 SamplerState areaSampler : register(s8);
 
-struct TexData {
-	Texture2D texState;
-	SamplerState samplerState;
-};
+float4 color_correct(float4 color){ // switch red and blue color values
+	float t = color[0];
+	color[0] = color[2]; color[2] = t;
+	return color;
+}
 
-TexData getTexDataAt(uint offset){
-	TexData texData;
-	if(offset % 8 == 1){ texData.texState = tex1; texData.samplerState = sampler1; }
-	else if(offset % 8 == 2){ texData.texState = tex2; texData.samplerState = sampler2; }
-	else if(offset % 8 == 3){ texData.texState = tex3; texData.samplerState = sampler3; }
-	else if(offset % 8 == 4){ texData.texState = tex4; texData.samplerState = sampler4; }
-	else if(offset % 8 == 5){ texData.texState = tex5; texData.samplerState = sampler5; }
-	else if(offset % 8 == 6){ texData.texState = tex6; texData.samplerState = sampler6; }
-	else if(offset % 8 == 7){ texData.texState = tex7; texData.samplerState = sampler7; }
-	else { texData.texState = baseTex; texData.samplerState = baseSampler; }
-	return texData;
+float3 color_range(float3 color){ // maps color to +- range
+	return (color - float3(0.5F, 0.5F, 0.5F)) * 2;
+}
+
+float4 sampleTexAt(uint sampleMode, float3 texcoords){
+    if(abs(sampleMode) % 8 == 1) return color_correct(tex1.Sample(sampler1, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 2) return color_correct(tex2.Sample(sampler2, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 3) return color_correct(tex3.Sample(sampler3, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 4) return color_correct(tex4.Sample(sampler4, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 5) return color_correct(tex5.Sample(sampler5, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 6) return color_correct(tex6.Sample(sampler6, float2(texcoords.x, texcoords.y)));
+    else if(abs(sampleMode) % 8 == 7) return color_correct(tex7.Sample(sampler7, float2(texcoords.x, texcoords.y)));
+    else return color_correct(baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y)));
 }
 
 #endif
@@ -177,12 +180,6 @@ float3 getCoordDistances(float2 coord, float2 p1, float2 p2){
 		sqrt(pow(coord.x - p1.x, 2.0) + pow(coord.y - p1.y, 2.0)), // distance between coordinate and point 1 
 		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
 	);
-}
-
-float4 color_correct(float4 color){ // switch red and blue color values
-	float t = color[0];
-	color[0] = color[2]; color[2] = t;
-	return color;
 }
 
 // TODO: Include other helper functions

@@ -1,4 +1,5 @@
 #define INCLUDE_SCENEBLOCK
+#define INCLUDE_EXTBLOCK
 #define IGNORE_INPUTS
 
 #define FLAT_ID 0
@@ -39,8 +40,8 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	float alpha = 1.0f;
 	if(abs(mode) >= 10) alpha -= -input.pos.z * ceil(mode / 10.0);
 
-	if (mode == -1) // indexing mode
-		return getStepColor(primID);
+	if(mode >= 10) return input.vertex_color;
+	else if(mode == -1) return getStepColor(primID); // indexing mode
 	else if(mode < -1){
 		uint target = input.vertex_id;
 		while(target > uint(mode * -1)) target -= uint(mode * -1);

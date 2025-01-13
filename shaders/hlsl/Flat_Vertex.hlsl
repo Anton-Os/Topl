@@ -1,3 +1,4 @@
+#define INCLUDE_EXTBLOCK
 #define INCLUDE_SCENEBLOCK
 
 #include "Common.hlsl"
@@ -31,8 +32,10 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.vertex_pos = output.pos;
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.vertex_id = vertexID;
-	output.vertex_color = float4(input.vert_color, 1.0); // getRandColor(color) - (color / (float)(vertexID + 1));
 	output.texcoord = input.texcoord;
+	if(mode < 10) output.vertex_color = float4(input.vert_color, 1.0);
+	else if(vertexID % mode == 0) output.vertex_color = getStepColor(vertexID);
+	else output.vertex_color = float4(0.0F, 0.0f, 0.0F, 0.5F);
 
 	return output;
 }

@@ -222,6 +222,7 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
     // modifiers and overlays
     _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
+    // _overlays.billboard_object.overlay(5, &_overlays.sizeSlider);
     for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
     
     for(unsigned short o = 0; o < 3; o++){
@@ -240,7 +241,8 @@ void Topl_Program::createOverlays(double size){
 #endif
     }
     _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
-    // _overlays.billboard_camera.expandVert(std::make_pair(2, 1), 1);
+    // _overlays.billboard_object.expandVert(std::make_pair(3, 1), 1);
+    // _texVShader.setParams() // dont forgot to add parameters!
 
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);

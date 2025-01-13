@@ -73,9 +73,11 @@ void main() {
     vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
-    vec4 color_draw;
+    /* vec4 color_draw;
     if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
-    else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase
+    else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase */
+
+    int intersections = 0;
 
     for(uint t = 0; tracerSteps[t].x != 0.0 && tracerSteps[t].y != 0.0 && t < TRACER_STEPS; t++){
         vec2 step1 = ((tracerSteps[t]) + 1.0) - coords;
@@ -84,11 +86,14 @@ void main() {
         float lineDist = getLineDistance(coords, step1, step2);
         vec3 distances = getCoordDistances(coords, step1, step2);
 
-        if(abs(mode) % 10 == 0 && distance(coords, step1) < size) color_out = color_draw;
-        if(abs(mode) % 10 == 1 && intersectLines(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
-        if(abs(mode) % 10 == 2 && intersectSegments(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
-        if(abs(mode) % 10 == 3 && intersectRails(lineDist, size, distances[0], distances[1], distances[2])) color_out = color_draw;
+        if(abs(mode) % 10 == 0 && distance(coords, step1) < size) intersections++; // color_out = color_draw;
+        if(abs(mode) % 10 == 1 && intersectLines(lineDist, size, distances[0], distances[1], distances[2])) intersections++; // color_out = color_draw;
+        if(abs(mode) % 10 == 2 && intersectSegments(lineDist, size, distances[0], distances[1], distances[2])) intersections++; // color_out = color_draw;
+        if(abs(mode) % 10 == 3 && intersectRails(lineDist, size, distances[0], distances[1], distances[2])) intersections++; // color_out = color_draw;
     }
+
+    if(intersections > 0 && mode >= 0) color_out = sampleTexAt(intersections, texcoord);
+    else if(intersections > 0 && mode < 0) color_out = vec4(0.0, 0.0, 0.0, 0.0);
 
     if(abs(mode) >= 10){
         vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);

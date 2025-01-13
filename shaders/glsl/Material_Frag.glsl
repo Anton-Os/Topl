@@ -44,25 +44,22 @@ float calcDiffuse(vec3 light, vec3 vertex) {
 
 void main() {
 	uvec4 modes = getModes(mode);
+	uint t = modes[1];
 	uint intensity = modes[2] + 1;
 
 	vec3 target;
 	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
 
-	vec3 texVals[3];
-	texVals[0] = vec3(sampleTex_mode((abs(mode) + 1) % 8, texcoord)); // vec3(color_correct(texture(tex1, vec2(texcoord.x, texcoord.y))));
-	texVals[1] = vec3(sampleTex_mode((abs(mode) + 2) % 8, texcoord)); // vec3(color_correct(texture(tex2, vec2(texcoord.x, texcoord.y))));
-	texVals[2] = vec3(sampleTex_mode((abs(mode) + 3) % 8, texcoord)); // vec3(color_correct(texture(tex3, vec2(texcoord.x, texcoord.y))));
-
-	// vec3 lightPos_diffuse = lightPos + (vec3(color_correct(texture(tex4, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
-	// vec3 lightPos_specular = lightPos + (vec3(color_correct(texture(tex5, vec2(texcoord.x, texcoord.y)))) - vec3(0.5F, 0.5F, 0.5F));
-
-	color = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y)));
-	vec3 ambient = ((lightVal + texVals[0]) / 2) * (0.25 + (0.05 * intensity));
-	vec3 diffuse = ((lightVal + texVals[1]) / 2) * calcDiffuse(lightPos, target - offset) * 0.5 * intensity;
-	vec3 specular = ((lightVal + texVals[2]) / 2) * calcSpec(lightPos, target, float(1 + intensity));
-
-	// TODO: Calculate light interaction with texture
+	vec3 texVals[8];
+	for(int t = 0; t < 8; t++) texVals[t] = vec3(sampleTexAt((abs(mode) + t) % 8, texcoord));
+	
+	color = vec4(texVals[0], 1.0F);
+	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
+	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));
+	vec3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;
+	vec3 diffuse = diffuseColor * calcDiffuse(lightPos - color_range(texVals[(3 + t) % 8]), (target - offset) - color_range(texVals[(4 + t) % 8])) * 0.5 * intensity;
+	vec3 specColor = (lightVal + texVals[(5 + t) % 8]) / 2;
+	vec3 specular = specColor * calcSpec(lightPos - color_range(texVals[(6 + t) % 8]), target - color_range(texVals[(7 + t) % 8]), float(1 + intensity));
 
 	color *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

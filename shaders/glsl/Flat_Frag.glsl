@@ -2,6 +2,7 @@
 
 #define IGNORE_INPUTS
 #define INCLUDE_SCENEBLOCK
+#define INCLUDE_EXTBLOCK
 
 #define FLAT_ID 0
 #define FLAT_DIRECTIONAL 1
@@ -26,7 +27,7 @@ layout(std140, binding = 0) uniform Block{
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec3 vertex_color;
+layout(location = 1) in vec4 vertex_color;
 layout(location = 2) flat in int id;
 layout(location = 3) in vec3 texcoord;
 
@@ -38,10 +39,10 @@ void main() {
 	uint primID = gl_PrimitiveID;
 	
 	float alpha = 1.0f;
-	if(abs(mode) >= 10) alpha -= -pos.z * ceil(mode / 10.0);
+	// if(abs(mode) >= 10) alpha -= -pos.z * ceil(mode / 10.0);
 
-	if(mode == -1) // indexing mode
-		outColor = getStepColor(id);
+	if(mode >= 10) outColor = vertex_color;
+	else if(mode == -1) outColor = getStepColor(id); // indexing mode
 	else if(mode < -1){
 		uint target = primID;
 		while(target > mode * -1) target -= mode * -1;
@@ -49,7 +50,7 @@ void main() {
 	}
 	else if(mode % 10 == FLAT_DIRECTIONAL) outColor = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, alpha);
 	else if(mode % 10 == FLAT_COORD) outColor = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
-	else if(mode % 10 == FLAT_VERTEX) outColor = vec4(vertex_color, alpha);
+	else if(mode % 10 == FLAT_VERTEX) outColor = vec4(vertex_color.r, vertex_color.g, vertex_color.b, alpha);
 	else if(mode % 10 == FLAT_CAMERA) outColor = vec4(abs(cam_pos.x - pos.x), abs(cam_pos.y - pos.y), abs(cam_pos.z - pos.z), alpha);
 	else if(mode % 10 == FLAT_ANGULAR) outColor = vec4(atan((pos.y - offset.y) / (pos.x - offset.x)), atan((pos.y - offset.y) / (pos.z - offset.z)), atan((pos.x - offset.x) / (pos.z - offset.z)), alpha);
 	else if(mode % 10 == FLAT_TEXCOORD) outColor = vec4(texcoord.x, texcoord.y, texcoord.z, alpha);

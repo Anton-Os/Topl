@@ -44,6 +44,10 @@ vec4 color_correct(vec4 color){ // switch red and blue color values
     return color;
 }
 
+vec3 color_range(vec3 color){ // maps color to +- range
+	return (color - vec3(0.5F, 0.5F, 0.5F)) * 2;
+}
+
 #ifdef INCLUDE_TEXTURES
 
 #ifndef SLICE
@@ -60,7 +64,7 @@ layout(binding = 6) uniform sampler2D tex6;
 layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
 
-vec4 sampleTex_mode(int m, vec3 texcoord){
+vec4 sampleTexAt(int m, vec3 texcoord){
     vec4 color;
     if(abs(m) % 10 == 8) color = color_correct(texture(volumeTex, texcoord)); // volumetric texture
     else if(abs(m) % 10 == 9) color = color_correct(texture(volumeTex, vec3(texcoord.x, texcoord.y, SLICE))); // volumetric slice
@@ -233,5 +237,6 @@ vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
 		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
 	);
 }
+
 
 // TODO: Include other helper functions

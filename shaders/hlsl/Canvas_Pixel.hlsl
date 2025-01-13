@@ -53,6 +53,36 @@ bool intersectLines(float lineDist, float size, float endpointDist, float dist1,
     return lineDist < size && dist1 < endpointDist && dist2 < endpointDist;
 }
 
+bool intersectSegments(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return (abs(dist1 - dist2) * 10) - floor(abs(dist1 - dist2) * 10) < 0.5;
+    else return false;
+}
+
+bool intersectRails(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return cos(lineDist * 100) < 0;
+    else return false;
+}
+
+bool intersectCmp(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return dist1 / lineDist > dist2 / dist1;
+    else return false;
+}
+
+bool intersectTrig(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return sin((dist1 + dist2) * 100) > tan((dist1 + dist2) * 100);
+    else return false;
+}
+
+bool intersectSwirline(float lineDist, float size, float endpointDist, float dist1, float dist2){
+    if(lineDist < size && dist1 < endpointDist && dist2 < endpointDist)
+        return tan(dist1 / dist2) < 0.0;
+    else return false;
+}
+
 bool intersectBlobs(float lineDist, float endpointDist, float dist1, float dist2){
     return lineDist + sin(dist1) * cos(dist2) < tan(endpointDist / (dist1 + dist2)) && dist1 < endpointDist && dist2 < endpointDist;
 }
@@ -61,17 +91,8 @@ bool intersectStreaks(float lineDist, float2 coord, float size, float endpointDi
     return lineDist * distance(cursorPos, coord) < size && dist1 < endpointDist && dist2 < endpointDist;
 }
 
-// Sample Functions
-
-float4 sampleTex(uint sampleMode, float3 texcoords){
-    if(abs(sampleMode) % 8 == 1) return color_correct(tex1.Sample(sampler1, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 2) return color_correct(tex2.Sample(sampler2, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 3) return color_correct(tex3.Sample(sampler3, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 4) return color_correct(tex4.Sample(sampler4, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 5) return color_correct(tex5.Sample(sampler5, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 6) return color_correct(tex6.Sample(sampler6, float2(texcoords.x, texcoords.y)));
-    else if(abs(sampleMode) % 8 == 7) return color_correct(tex7.Sample(sampler7, float2(texcoords.x, texcoords.y)));
-    else return color_correct(baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y)));
+bool intersectPow(float lineDist, float2 coord, float size, float endpointDist, float dist1, float dist2){
+    return pow(lineDist, coord.x) * dist1 > pow(lineDist, coord.y) * dist2 && dist1 < endpointDist && dist2 < endpointDist;
 }
 
 // Main
@@ -97,12 +118,18 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 
         if(abs(mode) % 10 == 0 && distance(coords, step1) < size) intersections++;
         if(abs(mode) % 10 == 1 && intersectLines(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
-        if(abs(mode) % 10 == 2 && intersectBlobs(lineDist, distances[0], distances[1], distances[2])) intersections++;
-        if(abs(mode) % 10 == 3 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 2 && intersectSegments(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 3 && intersectRails(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 4 && intersectCmp(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 5 && intersectTrig(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 6 && intersectSwirline(lineDist, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 7 && intersectBlobs(lineDist, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 8 && intersectPow(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
+        if(abs(mode) % 10 == 9 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
+    
+        if(intersections > 0 && mode >= 0) color_out = getStepColor(intersections) * (1.0 - lineDist); // sampleTexAt(intersections, input.texcoord);
+        else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
     }
-
-    if(intersections > 0 && mode >= 0) color_out = sampleTex(intersections, input.texcoord);
-    else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
 
     // Cursor
 

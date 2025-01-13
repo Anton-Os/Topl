@@ -4,7 +4,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 3
+#define MESHFORM_TESS 0
 #define MESHFORM_INDEX 0
 #define MESHFORM_INC 1.15F // 1.01F
 #define MESHFORM_DEC 0.9F

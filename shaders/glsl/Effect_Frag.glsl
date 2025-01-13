@@ -206,7 +206,6 @@ vec3 retroSet(vec2 coord, vec2 cursor){
 }
 
 
-
 // Recursive Fracals
 
 vec3 recursiveAlgo(vec3 input1, vec3 input2, vec3 input3){

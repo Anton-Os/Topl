@@ -2,6 +2,7 @@
 
 #define INCLUDE_INPUTS
 #define INCLUDE_SCENEBLOCK
+#define INCLUDE_EXTBLOCK
 
 #include "Common.glsl"
 
@@ -15,7 +16,7 @@ layout(std140, binding = 0) uniform Block {
 };
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) out vec3 vert_color_out;
+layout(location = 1) out vec4 vert_color_out;
 layout(location = 2) flat out int id_out;
 layout(location = 3) out vec3 texcoord_out;
 
@@ -29,7 +30,9 @@ void main() {
 	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
-	vert_color_out = vert_color; // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
 	id_out = gl_VertexID;
 	texcoord_out = texcoord;
+	if(mode < 10) vert_color_out = vec4(vert_color, 1.0f); // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
+	else if(gl_VertexID == mode) vert_color_out = getStepColor(gl_VertexID);
+	else vert_color_out = vec4(0.0F, 0.0f, 0.0F, 0.1F);
 }
