@@ -1,10 +1,10 @@
 #include "support_def.h"
 
-struct Img_UI {
+struct Sampler_UI {
 #ifdef RASTERON_H
-	Img_UI(enum MENU_Size s){ size = s; }
+	Sampler_UI(enum MENU_Size s){ size = s; }
 
-	~Img_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
+	~Sampler_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
 
 	virtual void setState(unsigned short index){
 		assert(queue != nullptr);
@@ -14,7 +14,7 @@ struct Img_UI {
 	std::string getName(){ return std::string(queue->prefix); }
 	unsigned short getState(){ return queue->index; }
 
-	Img_Base stateImg;
+    Sampler_2D stateImg;
 protected:
 	MENU_Size size;
 	Rasteron_Queue* queue = nullptr;
@@ -23,26 +23,26 @@ protected:
 
 // Implementation of UI elements
 
-struct Img_Button : public Img_UI {
+struct Sampler_Button : public Sampler_UI {
 #ifdef RASTERON_H
-	Img_Button(enum MENU_Size size) : Img_UI(size){
+	Sampler_Button(enum MENU_Size size) : Sampler_UI(size){
 		queue = loadUI_checkBtn(size); 
-		Img_UI::setState(MENU_None);
+		Sampler_UI::setState(MENU_None);
 	}
 
-	Img_Button(enum MENU_Size size, char* iconName) : Img_UI(size){ 
+	Sampler_Button(enum MENU_Size size, char* iconName) : Sampler_UI(size){ 
 		queue = loadUI_iconBtn(size, iconName);
-		Img_UI::setState(MENU_None);
+		Sampler_UI::setState(MENU_None);
 	}
 #endif
 };
 
-struct Img_Label : public Img_UI {
+struct Sampler_Label : public Sampler_UI {
 #ifdef RASTERON_H
-	Img_Label(enum MENU_Size size, Rasteron_Text textObj) : Img_UI(size){
+	Sampler_Label(enum MENU_Size size, Rasteron_Text textObj) : Sampler_UI(size){
 		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(100, 100), 4);
 		setText(textObj);
-		Img_UI::setState(MENU_None);
+		Sampler_UI::setState(MENU_None);
 	}
 
 	void setText(Rasteron_Text textObj){ // TODO: Make this operation threaded?
@@ -68,7 +68,7 @@ struct Img_Label : public Img_UI {
 			}
 			RASTERON_DEALLOC(textImg);
 
-			Img_UI::setState(MENU_None);
+			Sampler_UI::setState(MENU_None);
 		}
 	}
 
@@ -85,9 +85,9 @@ private:
 #endif
 };
 
-struct Img_Item : public Img_UI {
+struct Sampler_Item : public Sampler_UI {
 #ifdef RASTERON_H
-	Img_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Img_UI(size){ 
+	Sampler_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(size){ 
 		Rasteron_Image* textImg = textImgOp(&text, (unsigned)size); // TODO: Get from menu size
 		Rasteron_Image* backgroundImg;
 		Rasteron_Image* insertImgs[2];
@@ -104,7 +104,7 @@ struct Img_Item : public Img_UI {
 		}
 		for(unsigned b = 0; b < 4; b++) queue_addImg(queue, insertImgs[1], b);
 		// TODO: Modify images to correspond to 4 menu states
-		Img_UI::setState(MENU_None);
+		Sampler_UI::setState(MENU_None);
 
 		RASTERON_DEALLOC(backgroundImg);
 		RASTERON_DEALLOC(textImg);
@@ -114,11 +114,11 @@ struct Img_Item : public Img_UI {
 };
 
 
-struct Img_Dial : public Img_UI {
+struct Sampler_Dial : public Sampler_UI {
 #ifdef RASTERON_H
-	Img_Dial(enum MENU_Size size, unsigned short count) : Img_UI(size){ 
+	Sampler_Dial(enum MENU_Size size, unsigned short count) : Sampler_UI(size){ 
 		queue = loadUI_dial(size, count); 
-		Img_UI::setState(0);
+		Sampler_UI::setState(0);
 	}
 
 	void setState(double x, double y){
@@ -132,16 +132,16 @@ struct Img_Dial : public Img_UI {
 				minDist = sqrt((fabs(indicX - x) * fabs(indicX - x)) + (fabs(indicY - y) * fabs(indicY - y)));
 			}
 		}
-		Img_UI::setState(index);
+		Sampler_UI::setState(index);
 	}
 #endif
 };
 
-struct Img_Slider : public Img_UI {
+struct Sampler_Slider : public Sampler_UI {
 #ifdef RASTERON_H
-	Img_Slider(enum MENU_Size size, unsigned short count) : Img_UI(size){ 
+	Sampler_Slider(enum MENU_Size size, unsigned short count) : Sampler_UI(size){ 
 		queue = loadUI_slider(size, count); 
-		Img_UI::setState(0);
+		Sampler_UI::setState(0);
 	}
 
 	void setState(double x){
@@ -154,7 +154,7 @@ struct Img_Slider : public Img_UI {
 				minDist = sqrt(fabs(sliderX - x) * fabs(sliderX - x));
 			}
 		}
-		Img_UI::setState(index);
+		Sampler_UI::setState(index);
 	}
 #endif
 };

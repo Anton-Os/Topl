@@ -124,7 +124,7 @@ protected:
     puppetSpritePaths spriteImgPaths;
     Geo_Quad2D quads[PUPPET_PARTS];
 #ifdef RASTERON_H  
-    Img_Base spriteImgs[PUPPET_PARTS];
+    Sampler_2D spriteImgs[PUPPET_PARTS];
     Rasteron_Sprite* sprites[PUPPET_PARTS];
 #endif
 };

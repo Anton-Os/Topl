@@ -7,7 +7,7 @@ unsigned short Sandbox_Demo::option = 0;
 static bool isRebuildReq = false;
 static std::vector<Geo_Vertex> sculptPoints;
 static bool isRepaintReq = false;
-static Img_Canvas canvasImg = Img_Canvas((0x00FFFFFF & RAND_COLOR()) | 0x66000000);
+static Sampler_Canvas canvasImg = Sampler_Canvas((0x00FFFFFF & RAND_COLOR()) | 0x66000000);
 static bool isTick = false;
 static bool isModal = false;
 
@@ -124,7 +124,7 @@ void onConfirmAction(float x, float y){
                 case 2: _DEMO->objectMeshes.push_back(new Geo_Volume((vertex_cptr_t)sculptPoints.data(), sculptPoints.size(), 1.0F)); break;
                 default: _DEMO->objectMeshes.push_back(new Geo_Mesh((vertex_cptr_t)sculptPoints.data(), sculptPoints.size())); 
             }
-            _DEMO->objectTextures.push_back(new Img_Base(RAND_COLOR())); // non-textured object
+            _DEMO->objectTextures.push_back(new Sampler_2D(RAND_COLOR())); // non-textured object
             _DEMO->objectPhysics.push_back(nullptr); // non-dynamic object
             _DEMO->objectActors.push_back(new Geo_Actor(_DEMO->objectMeshes.back()));
             for(unsigned n = 0; n < _DEMO->plotGrid.getActorCount(); n++) _DEMO->plotGrid.getGeoActor(n)->setSize(Vec3f({ 1.0F, 1.0F, 1.0F }));
@@ -134,7 +134,7 @@ void onConfirmAction(float x, float y){
         else std::cerr << "Not enough sculpt points!" << std::endl;
     } else if(Sandbox_Demo::mode == SANDBOX_PAINT){
         isRepaintReq = true;
-        if(!_DEMO->objectTextures.empty()) _DEMO->objectTextures.back() = new Img_Base(RAND_COLOR());
+        if(!_DEMO->objectTextures.empty()) _DEMO->objectTextures.back() = new Sampler_2D(RAND_COLOR());
     }
 }
 
@@ -157,29 +157,29 @@ void Sandbox_Demo::init(){
     timeCtrlBillboard.configure(&overlayScene);
 
     std::string fontPath = std::string(FONTS_DIR) + "Tw-Cen-MT.ttf";
-    _labels.push_back(new Img_Label(MENU_XL, { fontPath.c_str(), "[ New Project ]", 0xFF111111, 0xFFEEEEEE }));
+    _labels.push_back(new Sampler_Label(MENU_XL, { fontPath.c_str(), "[ New Project ]", 0xFF111111, 0xFFEEEEEE }));
     modeBillboard.overlay(0, _labels.back());
     // modeBillboard.toggleShow(false);
-    _labels.push_back(new Img_Label(MENU_Large, { fontPath.c_str(), "[ 0:00 ]", 0xFF111111, 0xFFEEEEEE }));
+    _labels.push_back(new Sampler_Label(MENU_Large, { fontPath.c_str(), "[ 0:00 ]", 0xFF111111, 0xFFEEEEEE }));
     timeTextBillboard.overlay(0, _labels.back());
-    _buttons.push_back(new Img_Button(MENU_XL, "fast_forward"));
+    _buttons.push_back(new Sampler_Button(MENU_XL, "fast_forward"));
     timeCtrlBillboard.overlay(0, _buttons.back());
-    _buttons.push_back(new Img_Button(MENU_XL, "play_arrow"));
+    _buttons.push_back(new Sampler_Button(MENU_XL, "play_arrow"));
     timeCtrlBillboard.overlay(1, _buttons.back());
-    _buttons.push_back(new Img_Button(MENU_XL, "fast_rewind"));
+    _buttons.push_back(new Sampler_Button(MENU_XL, "fast_rewind"));
     timeCtrlBillboard.overlay(2, _buttons.back());
-    _sliders.push_back(new Img_Slider(MENU_XL, (unsigned)SANDBOX_SEQUENCE));
+    _sliders.push_back(new Sampler_Slider(MENU_XL, (unsigned)SANDBOX_SEQUENCE));
     timeBillboard.overlay(0, _sliders.back());
     timeBillboard.getGeoActor(0)->pickFunc = std::bind(&Sandbox_Demo::onTimePanePress, this, std::placeholders::_1, std::placeholders::_2);
     for(unsigned p = 0; p < actionsBillboard.getParams()->getGridSize(); p++){
         switch(p){
-            case SANDBOX_MOVE: _buttons.push_back(new Img_Button(MENU_XL, "control_camera")); break;
-            case SANDBOX_ROTATE:_buttons.push_back(new Img_Button(MENU_XL, "flip_camera_android")); break;
-            case SANDBOX_SIZE:  _buttons.push_back(new Img_Button(MENU_XL, "filter_center_focus")); break;
-            case SANDBOX_PANES - SANDBOX_MOVE - 1: _buttons.push_back(new Img_Button(MENU_XL, "gamepad")); break;
-            case SANDBOX_PANES - SANDBOX_ROTATE - 1: _buttons.push_back(new Img_Button(MENU_XL, "crop_rotate")); break;
-            case SANDBOX_PANES - SANDBOX_SIZE - 1: _buttons.push_back(new Img_Button(MENU_XL, "aspect_ratio")); break;
-            default: _buttons.push_back(new Img_Button(MENU_XL, "sort"));
+            case SANDBOX_MOVE: _buttons.push_back(new Sampler_Button(MENU_XL, "control_camera")); break;
+            case SANDBOX_ROTATE:_buttons.push_back(new Sampler_Button(MENU_XL, "flip_camera_android")); break;
+            case SANDBOX_SIZE:  _buttons.push_back(new Sampler_Button(MENU_XL, "filter_center_focus")); break;
+            case SANDBOX_PANES - SANDBOX_MOVE - 1: _buttons.push_back(new Sampler_Button(MENU_XL, "gamepad")); break;
+            case SANDBOX_PANES - SANDBOX_ROTATE - 1: _buttons.push_back(new Sampler_Button(MENU_XL, "crop_rotate")); break;
+            case SANDBOX_PANES - SANDBOX_SIZE - 1: _buttons.push_back(new Sampler_Button(MENU_XL, "aspect_ratio")); break;
+            default: _buttons.push_back(new Sampler_Button(MENU_XL, "sort"));
         }
         actionsBillboard.overlay(p, _buttons.back());
         if(p < 3 || p >= SANDBOX_PANES - 3) actionsBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onActionPanePress, this, std::placeholders::_1, std::placeholders::_2);
@@ -187,8 +187,8 @@ void Sandbox_Demo::init(){
     }
     for(unsigned p = 0; p < sculptBillboard.getParams()->getGridSize(); p++){
         switch(p){
-            case SANDBOX_PANES - 1: _buttons.push_back(new Img_Button(MENU_XL, "folder_open")); break;
-            default: _buttons.push_back(new Img_Button(MENU_XL, "category"));
+            case SANDBOX_PANES - 1: _buttons.push_back(new Sampler_Button(MENU_XL, "folder_open")); break;
+            default: _buttons.push_back(new Sampler_Button(MENU_XL, "category"));
         }
         sculptBillboard.overlay(p, _buttons.back());
         if(p < 3 || p >= SANDBOX_PANES - 1) sculptBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onSculptPanePress, this, std::placeholders::_1, std::placeholders::_2);
@@ -196,15 +196,15 @@ void Sandbox_Demo::init(){
     }
     for(unsigned p = 0; p < paintBillboard.getParams()->getGridSize(); p++){
         switch(p){
-            case SANDBOX_PANES - 1: _buttons.push_back(new Img_Button(MENU_XL, "folder_open")); break;
-            default: _buttons.push_back(new Img_Button(MENU_XL, "brush"));
+            case SANDBOX_PANES - 1: _buttons.push_back(new Sampler_Button(MENU_XL, "folder_open")); break;
+            default: _buttons.push_back(new Sampler_Button(MENU_XL, "brush"));
         }
         paintBillboard.overlay(p, _buttons.back());
         if(p < 3 || p >= SANDBOX_PANES - 1) paintBillboard.getGeoActor(p)->pickFunc = std::bind(&Sandbox_Demo::onPaintPanePress, this, std::placeholders::_1, std::placeholders::_2);
         else paintBillboard.getGeoActor(p)->isShown = false;
     }
     for(unsigned p = 0; p < propsBillboard.getParams()->getGridSize(); p++){
-        _dials.push_back(new Img_Dial(MENU_XL, 4));
+        _dials.push_back(new Sampler_Dial(MENU_XL, 4));
         propsBillboard.overlay(p, _dials.back());
     }
 
@@ -223,11 +223,11 @@ void Sandbox_Demo::init(){
     _renderer->buildScene(&canvasScene);
 
     for(unsigned i = 1; i < 8; i++){ 
-        _images.push_back(new Img_Base(checkeredImgOp({ 1024, 1024 }, { i * 2, i * 2, RAND_COLOR(), RAND_COLOR() })));
+        _images.push_back(new Sampler_2D(checkeredImgOp({ 1024, 1024 }, { i * 2, i * 2, RAND_COLOR(), RAND_COLOR() })));
         canvasScene.addTexture(std::to_string(i), _images.back());
     }
     canvasScene.addTexture("canvas", &canvasImg);
-    sequence_map.insert({ &backdropActor, Img_Sequence((unsigned)SANDBOX_SEQUENCE) });
+    sequence_map.insert({ &backdropActor, Sampler_Array((unsigned)SANDBOX_SEQUENCE) });
 
     _renderer->texturizeScene(&canvasScene);
 }

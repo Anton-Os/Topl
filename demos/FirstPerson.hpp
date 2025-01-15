@@ -94,15 +94,15 @@ struct FirstPerson_Demo : public Topl_Program {
     Geo_Model3D models[5] = { Geo_Model3D("model1", modelPath), Geo_Model3D("model2", modelPath), Geo_Model3D("model3", modelPath), Geo_Model3D("model4", modelPath), Geo_Model3D("model5", modelPath) };
 #endif
 #ifdef RASTERON_H
-    Img_Base floorTex = Img_Base(checkeredImgOp({ 1024, 1024 }, { 20, 20, 0xAAEE3333, 0xAA3333EE }));
-    Img_Base roofTex =  Img_Base(linedImgOp({ 1024, 1024 }, 0xAAFFFF00, color_invert(0xAA00FF00), 10, 0.0));
-    Img_Base pillarTex[4] = { 
-        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAFF0000, color_invert(0xAAFF0000))),
-        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA00FF00, color_invert(0xAA00FF00))),
-        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA0000FF, color_invert(0xAA0000FF))),
-        Img_Base(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAEEEEEE, color_invert(0xAAEEEEEE)))
+    Sampler_2D floorTex = Sampler_2D(checkeredImgOp({ 1024, 1024 }, { 20, 20, 0xAAEE3333, 0xAA3333EE }));
+    Sampler_2D roofTex =  Sampler_2D(linedImgOp({ 1024, 1024 }, 0xAAFFFF00, color_invert(0xAA00FF00), 10, 0.0));
+    Sampler_2D pillarTex[4] = { 
+        Sampler_2D(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAFF0000, color_invert(0xAAFF0000))),
+        Sampler_2D(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA00FF00, color_invert(0xAA00FF00))),
+        Sampler_2D(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAA0000FF, color_invert(0xAA0000FF))),
+        Sampler_2D(gradientImgOp({ 1024, 1024 }, SIDE_Top, 0xAAEEEEEE, color_invert(0xAAEEEEEE)))
     };
-    Img_Base modelTexs[5];
+    Sampler_2D modelTexs[5];
 #endif
 private:
     void onAnyKey(char key);

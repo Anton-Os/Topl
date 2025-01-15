@@ -42,7 +42,7 @@ void FirstPerson_Demo::init(){
             case 1: image = noiseImgOp_tiled({ 1024, 1024 }, { 16, 16, 0xFF44AACC, 0xFFAA44AA }); break;
             case 2: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF5500EE, 0xFF22AAAA }, 4); break;
             case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFF00FF00, 0xFF880088 }, 4); break;
-            default: image = noiseImgOp_value({ 1024, 1024 }, { 8, 8, 0xFFD9A233, 0xFFEE7392 }); break;
+            default: image = noiseImgOp_white({ 1024, 1024 }, 0xFFD9A233, 0xFFEE7392); break;
         }
         modelTexs[m].setImage(image);
         for(unsigned n = 0; n < models[m].getActorCount(); n++) models[m].getImgAt(n)->setImage(image);

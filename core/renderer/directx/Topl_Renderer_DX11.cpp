@@ -388,7 +388,7 @@ void Topl_Renderer_DX11::setConstBufferData(ID3D11Buffer* buffer, unsigned short
 
 #ifdef RASTERON_H
 
-Img_Base Topl_Renderer_DX11::frame() {
+Sampler_2D Topl_Renderer_DX11::frame() {
 	HRESULT result;
 
 	ID3D11Texture2D* framebuff;
@@ -423,7 +423,7 @@ Img_Base Topl_Renderer_DX11::frame() {
 	_deviceCtx->Unmap(framebuffTex, 0);
 	bitSwitch_RB(stageImage->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // flipping red and blue bits
 
-	_frameImage = Img_Base();
+	_frameImage = Sampler_2D();
 	_frameImage.setImage(stageImage);
 
 	RASTERON_DEALLOC(stageImage);
@@ -433,7 +433,7 @@ Img_Base Topl_Renderer_DX11::frame() {
 	return _frameImage;
 }
 
-void Topl_Renderer_DX11::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_DX11::attachTexAt(const Sampler_2D* image, unsigned renderID, unsigned binding) {
 	HRESULT result;
 
 	D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(image->mode);
@@ -487,7 +487,7 @@ void Topl_Renderer_DX11::attachTexAt(const Img_Base* image, unsigned renderID, u
 	texture->Release();
 }
 
-void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
+void Topl_Renderer_DX11::attachTex3D(const Sampler_3D* volumeTex, unsigned renderID) {
 	HRESULT result;
 
     D3D11_SAMPLER_DESC samplerDesc = DX11::genSamplerDesc(volumeTex->mode);
@@ -506,7 +506,7 @@ void Topl_Renderer_DX11::attachTex3D(const Img_Volume* volumeTex, unsigned rende
 	texDesc.CPUAccessFlags = 0;
 	// texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
+	const Sampler_2D* volumeTexImage = volumeTex->getVolumeImg();
 	D3D11_SUBRESOURCE_DATA texData;
 	texData.pSysMem = volumeTexImage->getImage()->data;
 	texData.SysMemPitch = sizeof(uint32_t) * volumeTex->getWidth() * volumeTex->getDepth();

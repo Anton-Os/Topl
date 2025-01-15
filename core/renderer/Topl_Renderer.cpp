@@ -133,7 +133,7 @@ void Topl_Renderer::present() {
 void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 	if(scene->getIsTextured()){
 		for(unsigned t = 0; t < MAX_TEX_BINDINGS; t++){ // unbound textures
-			const Img_Base* texture = scene->getTexture(std::to_string(t + 1));
+			const Sampler_2D* texture = scene->getTexture(std::to_string(t + 1));
 			if(texture != nullptr){
 				if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
 				else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
@@ -146,14 +146,14 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 			unsigned renderID = getRenderID(actor);
 
 			if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
-				const Img_Base* texture = scene->getTexture(actor->getName());
+				const Sampler_2D* texture = scene->getTexture(actor->getName());
 				if(texture != nullptr){
 					if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
 					else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
                     attachTex(texture, renderID);
 				}
 
-				const Img_Volume* volumeTex = scene->getVolumeTex(actor->getName());
+				const Sampler_3D* volumeTex = scene->getVolumeTex(actor->getName());
 				if (volumeTex != nullptr) attachTex3D(volumeTex, renderID); // TODO: Check for tags!
 			} else logMessage(MESSAGE_Exclaim, "Cannot retreive actor or renderID");
 		}
@@ -166,7 +166,7 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 unsigned Topl_Renderer::getPixelAt(float x, float y) {
     PixelPoint pixPoint = { x, y };
 
-    Img_Base image = frame();
+    Sampler_2D image = frame();
     unsigned offset = pixPoint_cursorOffset(pixPoint, image.getImage());
     unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets

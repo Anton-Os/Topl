@@ -3,22 +3,22 @@
 
 #include "support_def.h"
 
-#define DEFAULT_IMG_HEIGHT 256 * 4
-#define DEFAULT_IMG_WIDTH 256 * 4
+#define DEFAULT_SAMPLE_HEIGHT 256 * 4
+#define DEFAULT_SAMPLE_WIDTH 256 * 4
 
 // typedef Rasteron_Image* (*imageCallback)();
 
 enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
-struct Img_Target { // Refresh State
-	Img_Target(TEX_Frmt f){ format = f; }
+struct Sampler_Target { // Refresh State
+    Sampler_Target(TEX_Frmt f){ format = f; }
 
 	char** tag; // must update when out of date
 	TEX_Mode mode = TEX_Wrap;
 protected:
 #ifdef RASTERON_H
-	~Img_Target(){ cleanup(); }
+    ~Sampler_Target(){ cleanup(); }
 	virtual void cleanup(){ /* puts("Img destroyed"); */ }
 #endif
 	TEX_Frmt format;
@@ -26,22 +26,22 @@ protected:
 
 // Base Image wrapper around Rasteron_Image
 
-struct Img_Base : public Img_Target {
-    Img_Base() : Img_Target(TEX_2D){} // Empty Constructor
+struct Sampler_2D : public Sampler_Target {
+    Sampler_2D() : Sampler_Target(TEX_2D){} // Empty Constructor
 #ifdef RASTERON_H // required library for loading images
-    Img_Base(unsigned color) : Img_Target(TEX_2D){ setColorImage(color); } // Solid Constructor
-    Img_Base(const std::string& filePath) : Img_Target(TEX_2D){ setFileImage(filePath); } // File Constructor
-    Img_Base(Rasteron_Text textObj) : Img_Target(TEX_2D){ setTextImage( &textObj); } // Text Constructor
-    Img_Base(Rasteron_Image* refImage) : Img_Target(TEX_2D){ 
+    Sampler_2D(unsigned color) : Sampler_Target(TEX_2D){ setColorImage(color); } // Solid Constructor
+    Sampler_2D(const std::string& filePath) : Sampler_Target(TEX_2D){ setFileImage(filePath); } // File Constructor
+    Sampler_2D(Rasteron_Text textObj) : Sampler_Target(TEX_2D){ setTextImage( &textObj); } // Text Constructor
+    Sampler_2D(Rasteron_Image* refImage) : Sampler_Target(TEX_2D){
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
-	// ~Img_Base(){ cleanup(); }
+    // ~Sampler_2D(){ cleanup(); }
 
     void setColorImage(unsigned color){
 		cleanup();
-		if(image != NULL) std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, c); }, color);
-		else image = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color);
+        if(image != NULL) std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, c); }, color);
+        else image = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, color);
 		tag = &image->name;
     }
     void setFileImage(const std::string& filePath){
@@ -94,12 +94,12 @@ protected:
 
 /* enum LAYER_Property { LAYER_Albedo = 0, LAYER_Height = 1, LAYER_Roughness = 2, LAYER_Opacity = 3, LAYER_Enviornment = 4, LAYER_Shadow = 5, LAYER_Illumination = 6, LAYER_Testing = 7, }; */
 
-struct Img_Sequence : public Img_Base {
+struct Sampler_Array : public Sampler_2D {
 #ifndef RASTERON_H
-	Img_Sequence() : Img_Base(){}
+    Sampler_Array() : Sampler_2D(){}
 #else
-	Img_Sequence() : Img_Base(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), 8); }
-	Img_Sequence(unsigned short count) : Img_Base(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), count); }
+    Sampler_Array() : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), 8); }
+    Sampler_Array(unsigned short count) : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), count); }
 
 	Rasteron_Image* getImage() const {
 		RASTERON_DEALLOC(image);
@@ -126,12 +126,12 @@ private:
 
 // Volume based on slices
 
-struct Img_Volume : public Img_Target { 
-    Img_Volume() : Img_Target(TEX_3D), width(DEFAULT_IMG_WIDTH), height(DEFAULT_IMG_HEIGHT), depth(DEFAULT_IMG_WIDTH) {} // Empty Constructor
+struct Sampler_3D : public Sampler_Target {
+    Sampler_3D() : Sampler_Target(TEX_3D), width(DEFAULT_SAMPLE_WIDTH), height(DEFAULT_SAMPLE_HEIGHT), depth(DEFAULT_SAMPLE_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
-	Img_Volume(unsigned s) : width(s), height(s), depth(s), Img_Target(TEX_3D){ setData(); } // Matching Lengths
-    Img_Volume(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Img_Target(TEX_3D){ setData(); } // Custom Lengths
-	// Img_Volume(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
+    Sampler_3D(unsigned s) : width(s), height(s), depth(s), Sampler_Target(TEX_3D){ setData(); } // Matching Lengths
+    Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Sampler_Target(TEX_3D){ setData(); } // Custom Lengths
+    // Sampler_3D(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
 	
 	void addSlice(ref_image_t refImg, unsigned d){
 		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
@@ -143,7 +143,7 @@ struct Img_Volume : public Img_Target {
 			*(volumeTexImg.getImage()->data + imgOffset + p) = *(refImg->data + p);
     }
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? queue_getImg(queue, d) : nullptr;}
-	const Img_Base* getVolumeImg() const { return &volumeTexImg; }
+    const Sampler_2D* getVolumeImg() const { return &volumeTexImg; }
 
 	unsigned getWidth() const { return width; }
 	unsigned getHeight() const { return height; }
@@ -164,7 +164,7 @@ private:
 		if(queue != nullptr) RASTERON_QUEUE_DEALLOC(queue);
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		for(unsigned f = 0; f < depth; f++){
-			Rasteron_Image* solidImg = solidImgOp({ DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH }, color_level(color, (1.0 / depth) * f));
+            Rasteron_Image* solidImg = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, color_level(color, (1.0 / depth) * f));
 			queue_addImg(queue, solidImg, f);
 			RASTERON_DEALLOC(solidImg);
 		} 
@@ -177,7 +177,7 @@ private:
 		}
 	}
 
-	Img_Base volumeTexImg; // conversion from 3D texture into underlying queue
+    Sampler_2D volumeTexImg; // conversion from 3D texture into underlying queue
 	Rasteron_Queue* queue = nullptr; // underlying queue
 #endif
 	const unsigned width, height, depth;

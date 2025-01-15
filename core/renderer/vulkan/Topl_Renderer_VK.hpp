@@ -26,15 +26,15 @@ public:
 	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders);
     	void genComputePipeline(VK::Pipeline* pipeline, shader_cptr cShader){ if(cShader->getType() == SHDR_Compute) genPipeline(pipeline, nullptr, nullptr, { cShader }); }
 #ifdef RASTERON_H
-	Img_Base frame() override;
+	Sampler_2D frame() override;
 #endif
 	void dispatch(std::vector<Vec3f>* data) override { vkCmdDispatch(_commandBuffers[0], data->size(), data->size(), data->size()); }
 protected:
   	void init(NATIVE_WINDOW window) override;
     void swapBuffers(double frameTime) override;
 #ifdef RASTERON_H
-    void attachTexAt(const Img_Base* imageTex, unsigned renderID, unsigned binding) override;
-	void attachTex3D(const Img_Volume* volumeTex, unsigned id) override;
+    void attachTexAt(const Sampler_2D* imageTex, unsigned renderID, unsigned binding) override;
+	void attachTex3D(const Sampler_3D* volumeTex, unsigned id) override;
 #endif
 
 	VK::Pipeline* _pipeline;

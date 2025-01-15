@@ -780,13 +780,13 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
 
 #ifdef RASTERON_H
 
-Img_Base Topl_Renderer_VK::frame() {
-	_frameImage = Img_Base();
+Sampler_2D Topl_Renderer_VK::frame() {
+	_frameImage = Sampler_2D();
 	// _frameImage.setColorImage(CLEAR_COLOR_CODE);
 	return _frameImage;
 }
 
-void Topl_Renderer_VK::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_VK::attachTexAt(const Sampler_2D* image, unsigned renderID, unsigned binding) {
 	// Create Data
     
     VkImageCreateInfo imageCreateInfo = {};
@@ -807,7 +807,7 @@ void Topl_Renderer_VK::attachTexAt(const Img_Base* image, unsigned renderID, uns
     // Create Image
 }
 
-void Topl_Renderer_VK::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
+void Topl_Renderer_VK::attachTex3D(const Sampler_3D* volumeTex, unsigned renderID) {
 	// Create Data
     
     VkImageCreateInfo imageCreateInfo = {};

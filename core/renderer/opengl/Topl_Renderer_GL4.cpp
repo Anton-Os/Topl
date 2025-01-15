@@ -357,7 +357,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 
 #ifdef RASTERON_H
 
-Img_Base Topl_Renderer_GL4::frame() {
+Sampler_2D Topl_Renderer_GL4::frame() {
     unsigned viewportHeight = Platform::getViewportHeight(_platformCtx);
     unsigned viewportWidth = Platform::getViewportWidth(_platformCtx);
 
@@ -368,13 +368,13 @@ Img_Base Topl_Renderer_GL4::frame() {
 	Rasteron_Image* mirrorImage = mirrorImgOp(flipImage); // mirroring left and right sides
 	bitSwitch_RB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
 
-	_frameImage = Img_Base();
+	_frameImage = Sampler_2D();
 	_frameImage.setImage(mirrorImage);
 	RASTERON_DEALLOC(stageImage); RASTERON_DEALLOC(flipImage); RASTERON_DEALLOC(mirrorImage);
 	return _frameImage;
 }
 
-void Topl_Renderer_GL4::attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) {
+void Topl_Renderer_GL4::attachTexAt(const Sampler_2D* image, unsigned renderID, unsigned binding) {
 	GLuint textureTarget = *(_textureSlots + _textureIndex);
 	_textureIndex++; // increments to next available slot
 
@@ -396,7 +396,7 @@ void Topl_Renderer_GL4::attachTexAt(const Img_Base* image, unsigned renderID, un
         _textures.push_back(GL4::Texture(renderID, (unsigned short)binding, TEX_2D, image->mode, textureTarget)); // multi-texture addition
 }
 
-void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned renderID) {
+void Topl_Renderer_GL4::attachTex3D(const Sampler_3D* volumeTex, unsigned renderID) {
 	GLuint textureTarget = *(_textureSlots + _textureIndex);
 	_textureIndex++; // increments to next available slot
 
@@ -410,7 +410,7 @@ void Topl_Renderer_GL4::attachTex3D(const Img_Volume* volumeTex, unsigned render
 	glActiveTexture(GL_TEXTURE0 + MAX_TEX_BINDINGS);
 	glBindTexture(GL_TEXTURE_3D, textureTarget);
 
-	const Img_Base* volumeTexImage = volumeTex->getVolumeImg();
+	const Sampler_2D* volumeTexImage = volumeTex->getVolumeImg();
     GL4::setTextureProperties(GL_TEXTURE_3D, volumeTex->mode);
 	glTexImage3D(
 		GL_TEXTURE_3D,

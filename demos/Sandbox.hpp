@@ -21,8 +21,8 @@
 #define SANDBOX_EDIT 5
 #define SANDBOX_SEQUENCE 60.0
 
-struct Img_Canvas : public Img_Base {
-    Img_Canvas(unsigned bk) : Img_Base(bk){ 
+struct Sampler_Canvas : public Sampler_2D {
+    Sampler_Canvas(unsigned bk) : Sampler_2D(bk){ 
         tag = &refreshTag;
         background = bk;
     }
@@ -130,7 +130,7 @@ struct Sandbox_Demo : public Topl_Program {
     static unsigned short option;
 
     std::vector<Geo_Mesh*> objectMeshes;
-    std::vector<Img_Base*> objectTextures;
+    std::vector<Sampler_2D*> objectTextures;
     std::vector<Phys_Actor*> objectPhysics;
     std::vector<Geo_Actor*> objectActors;
 
@@ -168,9 +168,9 @@ private:
     void onSculptPanePress(MOUSE_Event event, Geo_Actor* actor);
     void onPaintPanePress(MOUSE_Event event, Geo_Actor* actor);
 
-    std::vector<Img_Base*> _images;
-    std::vector<Img_Button*> _buttons;
-    std::vector<Img_Label*> _labels;
-    std::vector<Img_Dial*> _dials;
-    std::vector<Img_Slider*> _sliders;
+    std::vector<Sampler_2D*> _images;
+    std::vector<Sampler_Button*> _buttons;
+    std::vector<Sampler_Label*> _labels;
+    std::vector<Sampler_Dial*> _dials;
+    std::vector<Sampler_Slider*> _sliders;
 } *_DEMO;

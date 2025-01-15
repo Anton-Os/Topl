@@ -32,9 +32,9 @@ public:
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
 #ifdef RASTERON_H
-        rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_IMG_HEIGHT, DEFAULT_IMG_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
+        rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
         rootImg.addBorder(0.05, 0xFF222222);
-		for(unsigned p = 0; p < _params.getGridSize(); p++) paneImg_map.insert({ &_geoActors.at(p), Img_Base(copyImgOp(rootImg.getImage())) });
+		for(unsigned p = 0; p < _params.getGridSize(); p++) paneSampler_map.insert({ &_geoActors.at(p), Sampler_2D(copyImgOp(rootImg.getImage())) });
 #endif
 	}
 
@@ -45,7 +45,7 @@ public:
 #ifdef RASTERON_H
 		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++)
-			scene->addTexture(getCellName(p + 1), &paneImg_map.at(&_geoActors.at(p))); 
+			scene->addTexture(getCellName(p + 1), &paneSampler_map.at(&_geoActors.at(p))); 
 #endif
 	}
 
@@ -70,8 +70,8 @@ public:
 		_geoActors[index].updateSize({ 0.0F, (float)amount * 0.66F, 0.0F }); // TODO: Figure out exact proportions
 	}
 #ifdef RASTERON_H
-	Img_Base* getImgRoot(){ return getImgAt(_params.getGridSize()); }
-	Img_Base* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneImg_map.at(&_geoActors.at(i)) : &rootImg; }
+	Sampler_2D* getImgRoot(){ return getImgAt(_params.getGridSize()); }
+	Sampler_2D* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneSampler_map.at(&_geoActors.at(i)) : &rootImg; }
 
     void resetState(){ // abstract the loop
 		unsigned i = 0;
@@ -91,11 +91,11 @@ public:
 		for(auto p = paneItemUI_map.begin(); p != paneItemUI_map.end(); p++){
 			if(paneIndex == i){
                 if(p->second->getName().find("dial") != std::string::npos){ // checks for dial match
-                    Img_Dial* dialUI = dynamic_cast<Img_Dial*>(&(*p->second));
+                    Sampler_Dial* dialUI = dynamic_cast<Sampler_Dial*>(&(*p->second));
                     if(dialUI != nullptr) dialUI->setState(x, y);
                 }
                 else if(p->second->getName().find("slider") != std::string::npos){ // checks for slider match
-                    Img_Slider* sliderUI = dynamic_cast<Img_Slider*>(&(*p->second));
+                    Sampler_Slider* sliderUI = dynamic_cast<Sampler_Slider*>(&(*p->second));
                     if(sliderUI != nullptr) sliderUI->setState(x);
                 }
 				getImgAt(i)->setImage(p->second->stateImg.getImage());
@@ -116,7 +116,7 @@ public:
 		}
 	}
 
-	void overlay(unsigned paneIndex, Img_UI* element){ 
+	void overlay(unsigned paneIndex, Sampler_UI* element){ 
 		paneItemUI_map.insert({ getGeoActor(paneIndex), element });
 		getImgAt(paneIndex)->setImage(element->stateImg.getImage());
 	}
@@ -128,9 +128,9 @@ protected:
 	Geo_Quad2D rootMesh = Geo_Quad2D(PANE_SIZE, PANE_Z);
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
 #ifdef RASTERON_H
-	Img_Base rootImg; // root background
-	std::map<const Geo_Actor*, Img_Base> paneImg_map; // for child images
-	std::map<const Geo_Actor*, Img_UI*> paneItemUI_map; // for child UI elements;
+	Sampler_2D rootImg; // root background
+	std::map<const Geo_Actor*, Sampler_2D> paneSampler_map; // for child images
+	std::map<const Geo_Actor*, Sampler_UI*> paneItemUI_map; // for child UI elements;
 	// std::map<const Geo_Actor*, pickerCallback> panesOnPick_map;
 #endif
 };

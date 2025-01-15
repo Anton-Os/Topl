@@ -92,7 +92,7 @@ public:
 #endif
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
 #ifdef RASTERON_H
-	std::map<Geo_Actor*, Img_Sequence> sequence_map; // for dynamically changing textures
+	std::map<Geo_Actor*, Sampler_Array> sequence_map; // for dynamically changing textures
 #endif
     bool isEnable_screencap = true;
 protected:
@@ -140,11 +140,11 @@ private:
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef RASTERON_H
-        Img_Base image = Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp");
+        Sampler_2D image = Sampler_2D(std::string(IMAGES_DIR) + "Background-Action.bmp");
 #endif
 	} _background;
 
-	void createBackground(Img_Base* backgroundTex);
+	void createBackground(Sampler_2D* backgroundTex);
 	void _backgroundCallback(MOUSE_Event event, Geo_Actor* actor);
 
 	struct Editor {
@@ -152,7 +152,7 @@ private:
 		Geo_Actor actor = Geo_Actor("pickerEdit", &mesh);
 #ifdef RASTERON_H
 		std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
-		Img_Base nameImg = Img_Base(0xFF111111); // Img_Base({ fontPath.c_str(), /* actor.getName().c_str() */ "1", 0xFF111111, 0xFFEEEEEE });
+		Sampler_2D nameImg = Sampler_2D(0xFF111111); // Sampler_2D({ fontPath.c_str(), /* actor.getName().c_str() */ "1", 0xFF111111, 0xFFEEEEEE });
 		Geo_Quad2D nameMesh = Geo_Quad2D(0.05F);
 		Geo_Actor nameActor = Geo_Actor("pickerName", &nameMesh);
 		Topl_Scene scene = Topl_Scene(&Topl_Program::camera, { &actor, &nameActor });
@@ -169,10 +169,10 @@ private:
 		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
-		Img_Button button = Img_Button(MENU_Medium);
-        Img_Dial dials[3] = { Img_Dial(MENU_Medium, 4), Img_Dial(MENU_Medium, 4), Img_Dial(MENU_Medium, 4)};
-        Img_Slider slider = Img_Slider(MENU_Medium, 2); Img_Slider sizeSlider = Img_Slider(MENU_Medium, 10);
-		std::map<Geo_Actor*, Img_Button*> button_map;
+		Sampler_Button button = Sampler_Button(MENU_Medium);
+        Sampler_Dial dials[3] = { Sampler_Dial(MENU_Medium, 4), Sampler_Dial(MENU_Medium, 4), Sampler_Dial(MENU_Medium, 4)};
+        Sampler_Slider slider = Sampler_Slider(MENU_Medium, 2); Sampler_Slider sizeSlider = Sampler_Slider(MENU_Medium, 10);
+		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif
 	} _overlays;
 

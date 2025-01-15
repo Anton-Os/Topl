@@ -84,7 +84,7 @@ void Topl_Program::_onAnyKey(char k){
 #ifdef RASTERON_H
         /* else if(k == ';'){
             Rasteron_Image* frameImg = _renderer->frame();
-            writeFileImageRaw("Output", IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
+            writeFileImageRaw("Output", Sampler_Bmp, frameImg->height, frameImg->width, frameImg->data);
             RASTERON_DEALLOC(frameImg);
         } */
 #endif
@@ -162,7 +162,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 
     // Texturing Data Generation
 #ifdef RASTERON_H
-	_invertImage = INVERT_IMG_TRUE; // Imaging Initialization
+    _invertImage = INVERT_IMG_TRUE; // Imaging Initialization
 
 	// ImageSize frameSize = { Platform::getViewportHeight(_platformCtx.window), Platform::getViewportWidth(_platformCtx.window) };
 	ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
@@ -196,13 +196,15 @@ void Topl_Program::setPipelines(){
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
 	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
     _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
-    _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader);
 	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
 	_forgePipeline = Topl_Factory::genPipeline(_backend, &_forgeVShader, &_forgePShader);
 	_flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+#ifndef __linux__
+    _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails!
+#endif
 }
 
-void Topl_Program::createBackground(Img_Base* backgroundTex){
+void Topl_Program::createBackground(Sampler_2D* backgroundTex){
     // _background.mesh.tesselate(3);
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
@@ -234,7 +236,7 @@ void Topl_Program::createOverlays(double size){
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
-                _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Img_Button(MENU_Medium) });
+                _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Sampler_Button(MENU_Medium) });
                 _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
             }
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
@@ -265,7 +267,7 @@ void Topl_Program::cleanup() {
 		std::string frameName = "frame" + std::to_string(f + 1) + ".bmp";
 		std::cout << " Writing frame " << frameName << std::endl;
 		Rasteron_Image* frameImg = queue_getImg(Topl_Program::cachedFrames, f);
-		writeFileImageRaw(frameName.c_str(), IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
+        writeFileImageRaw(frameName.c_str(), IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
 	}
 	if(Topl_Program::cachedFrames != NULL) RASTERON_QUEUE_DEALLOC(Topl_Program::cachedFrames);
 	cleanupFreeType();

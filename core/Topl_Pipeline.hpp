@@ -67,10 +67,9 @@ struct Topl_Pipeline {
 		isReady = true;
 	}
 
-	entry_shader_cptr getEntryShader() const { return _vertexShader; }
+    entry_shader_cptr getEntryShader() const { return _vertexShader; }
 
-	// void setMode(unsigned mode){ if(entryShader != nullptr) entryShader->setMode(mode); }
-	bool isReady; // value for compilation and link status
+    bool isReady = true; // value for compilation and link status // TODO: Should be conditional?
 private:
 	entry_shader_cptr _vertexShader = nullptr;
 	shader_cptr _geomShader = nullptr;

@@ -55,7 +55,7 @@ void Topl_Scene::removeActor(const std::string& name){
 
 #ifdef RASTERON_H
 
-void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
+void Topl_Scene::addTexture(const std::string& name, const Sampler_2D* image) {
     if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
 		_textures[(char)name[0] - '0' - 1].setImage(image->getImage());
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
@@ -66,18 +66,18 @@ void Topl_Scene::addTexture(const std::string& name, const Img_Base* image) {
 	_isTextured = true;
 }
 
-const Img_Base* Topl_Scene::getTexture(const std::string& name) const {
+const Sampler_2D* Topl_Scene::getTexture(const std::string& name) const {
 	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
 		return &_textures[(char)name[0] - '0' - 1]; // unbound texture
 	else if(_textureMap.empty()) return nullptr; // no textures available
 	auto texture_it = std::find_if(
 		_textureMap.begin(), _textureMap.end(),
-		[name](const std::pair<Geo_Actor*, const Img_Base*>& p){ return p.first->getName() == name; }
+		[name](const std::pair<Geo_Actor*, const Sampler_2D*>& p){ return p.first->getName() == name; }
 	);
 	return (texture_it != _textureMap.end())? texture_it->second : nullptr;
 }
 
-void Topl_Scene::addArrayTex(const std::string& name, const Img_Sequence* arrayTex) {
+void Topl_Scene::addArrayTex(const std::string& name, const Sampler_Array* arrayTex) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_arrayTexMap.erase(*actor);
@@ -86,16 +86,16 @@ void Topl_Scene::addArrayTex(const std::string& name, const Img_Sequence* arrayT
 	_isTextured = true;
 }
 
-const Img_Sequence* Topl_Scene::getArrayTex(const std::string& name) const {
+const Sampler_Array* Topl_Scene::getArrayTex(const std::string& name) const {
 	if(_arrayTexMap.empty()) return nullptr; // no textures available
 	auto arrayTex_it = std::find_if(
 		_arrayTexMap.begin(), _arrayTexMap.end(),
-		[name](const std::pair<Geo_Actor*, const Img_Sequence*>& p){ return p.first->getName() == name; }
+		[name](const std::pair<Geo_Actor*, const Sampler_Array*>& p){ return p.first->getName() == name; }
 	);
 	return (arrayTex_it != _arrayTexMap.end())? arrayTex_it->second : nullptr;
 }
 
-void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeTexTex) {
+void Topl_Scene::addVolumeTex(const std::string& name, const Sampler_3D* volumeTexTex) {
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) {
 			_volumeTexMap.erase(*actor);
@@ -104,11 +104,11 @@ void Topl_Scene::addVolumeTex(const std::string& name, const Img_Volume* volumeT
 	_isTextured = true;
 }
 
-const Img_Volume* Topl_Scene::getVolumeTex(const std::string& name) const {
+const Sampler_3D* Topl_Scene::getVolumeTex(const std::string& name) const {
 	if(_volumeTexMap.empty()) return nullptr; // no textures available
 	auto volumeTex_it = std::find_if(
 		_volumeTexMap.begin(), _volumeTexMap.end(),
-		[name](const std::pair<Geo_Actor*, const Img_Volume*>& p){ return p.first->getName() == name; }
+		[name](const std::pair<Geo_Actor*, const Sampler_3D*>& p){ return p.first->getName() == name; }
 	);
 	return (volumeTex_it != _volumeTexMap.end())? volumeTex_it->second : nullptr;
 }

@@ -2,7 +2,7 @@
 
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define FONTS_DIR "${ASSETS_DIR}fonts/"
-#define IMAGES_DIR "${ASSETS_DIR}images/"
+#define IMAGES_DIR "${ASSETS_DIR}sampler/"
 #define MODELS_DIR "${ASSETS_DIR}models/"
 #define RESOURCE_DIR "${ASSETS_DIR}res/"
 #define SHADERS_DIR "${SHADERS_DIR}"

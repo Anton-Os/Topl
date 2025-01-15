@@ -118,7 +118,7 @@ public:
     void texturizeScene(const Topl_Scene* scene); // reloads textures from scene
     virtual void dispatch(std::vector<Vec3f>* data){ }
 #ifdef RASTERON_H
-    virtual Img_Base frame() = 0;
+    virtual Sampler_2D frame() = 0;
 	unsigned getPixelAt(float x, float y);
 #endif
     unsigned long getRenderID(const Geo_Actor* actor);
@@ -129,7 +129,7 @@ protected:
     std::map<unsigned long, const Geo_Actor*> _renderObjMap; // maps each render target to unique id
     std::map<const Geo_Actor*, unsigned long> _renderTargetMap; // maps each object to renderID
     std::map<const Geo_Actor*, std::string> _renderTagMap; // tracks actors to refresh
-    std::map<const Img_Target*, std::string> _texTagMap; // tracks textures to refresh
+    std::map<const Sampler_Target*, std::string> _texTagMap; // tracks textures to refresh
 
     std::bitset<4> _flags; // tracks important states within renderer
     std::thread _threads[4]; // worker threads for allowing concurrent operations
@@ -143,14 +143,14 @@ protected:
     const Topl_Camera* _activeCamera = &_defaultCamera; // camera supplied by userunsigned int numThreads = std::thread::hardware_concurrency();
     Topl_Viewport _activeViewport = Topl_Viewport();
 
-	Img_Base _frameImage; // internal frame container
+    Sampler_2D _frameImage; // internal frame container
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
 #ifdef RASTERON_H
-    virtual void attachTex(const Img_Base* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
-    virtual void attachTexAt(const Img_Base* image, unsigned renderID, unsigned binding) = 0;
-	virtual void attachTex3D(const Img_Volume* volumeTex, unsigned renderID) = 0;
+    virtual void attachTex(const Sampler_2D* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
+    virtual void attachTexAt(const Sampler_2D* image, unsigned renderID, unsigned binding) = 0;
+    virtual void attachTex3D(const Sampler_3D* volumeTex, unsigned renderID) = 0;
 #endif
     Timer_Persist _ticker = Timer_Persist();
 };

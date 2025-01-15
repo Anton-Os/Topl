@@ -41,7 +41,7 @@ void Topl_Program::postloop(){
     static unsigned index = 0;
 
     if(_renderer->getFrameCount() % 60 == 0){
-        Img_Base frameImg = _renderer->frame();
+        Sampler_2D frameImg = _renderer->frame();
         // queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
         // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
         index++;

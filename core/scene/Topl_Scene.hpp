@@ -10,8 +10,8 @@
 #include "Geo_Actor.hpp"
 // #include "Geo_Construct.hpp"
 
-#include "images/Img.h"
-#include "images/Img_UI.h"
+#include "sampler/Sampler.h"
+#include "sampler/Sampler_UI.h"
 
 #ifdef TOPL_ENABLE_PHYSICS
 #include "physics/Phys_Actor.h"
@@ -46,9 +46,9 @@ public:
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
 #ifdef RASTERON_H
-	void addTexture(const std::string& name, const Img_Base* image);
-	void addArrayTex(const std::string& name, const Img_Sequence* arrayTex);
-	void addVolumeTex(const std::string& name, const Img_Volume* volumeTex);
+	void addTexture(const std::string& name, const Sampler_2D* image);
+	void addArrayTex(const std::string& name, const Sampler_Array* arrayTex);
+	void addVolumeTex(const std::string& name, const Sampler_3D* volumeTex);
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	Geo_Actor* getPickActor(unsigned color);
@@ -58,9 +58,9 @@ public:
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 	bool getIsTextured() const { return _isTextured; }
 #ifdef RASTERON_H
-	const Img_Base* getTexture(const std::string& name) const;
-	const Img_Sequence* getArrayTex(const std::string& name) const;
-	const Img_Volume* getVolumeTex(const std::string& name) const;
+	const Sampler_2D* getTexture(const std::string& name) const;
+	const Sampler_Array* getArrayTex(const std::string& name) const;
+	const Sampler_3D* getVolumeTex(const std::string& name) const;
 #endif
 	void removeActor(const std::string& name);
 
@@ -87,19 +87,19 @@ private:
 #endif
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
-	Img_Base _textures[MAX_TEX_BINDINGS] = { 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Grid.png"), 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Pins.png"), 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Frame.png"), 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Canvas.png"),
-		Img_Base(std::string(IMAGES_DIR) + "Background-Squared.png"), 
-		Img_Base(std::string(IMAGES_DIR) + "Background-Circular.png"),
-        Img_Base(std::string(IMAGES_DIR) + "Background-Action.bmp"),
+	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Grid.png"), 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Pins.png"), 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Frame.png"), 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Canvas.png"),
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Squared.png"), 
+		Sampler_2D(std::string(IMAGES_DIR) + "Background-Circular.png"),
+        Sampler_2D(std::string(IMAGES_DIR) + "Background-Action.bmp"),
 	};
-	std::map<Geo_Actor*, const Img_Base*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
-	std::map<Geo_Actor*, const Img_Sequence*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
-	std::map<Geo_Actor*, const Img_Volume*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order
+	std::map<Geo_Actor*, const Sampler_2D*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
+	std::map<Geo_Actor*, const Sampler_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order
+	std::map<Geo_Actor*, const Sampler_3D*> _volumeTexMap; // associates geometry actor to volumeTextric texture // TODO: Reverse order
 #endif
 	Topl_Camera _defaultCamera;
 	Timer_Persist _ticker; // used for internal updates

@@ -2,7 +2,7 @@
 
 #define ASSETS_DIR "F:/Codex/PROJECT/Topl/master/assets/"
 #define FONTS_DIR "F:/Codex/PROJECT/Topl/master/assets/fonts/"
-#define IMAGES_DIR "F:/Codex/PROJECT/Topl/master/assets/images/"
+#define IMAGES_DIR "F:/Codex/PROJECT/Topl/master/assets/sampler/"
 #define MODELS_DIR "F:/Codex/PROJECT/Topl/master/assets/models/"
 #define RESOURCE_DIR "F:/Codex/PROJECT/Topl/master/assets/res/"
 #define SHADERS_DIR "F:/Codex/PROJECT/Topl/master/shaders/"

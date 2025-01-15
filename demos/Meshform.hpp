@@ -65,7 +65,7 @@ struct Meshform_Demo : public Topl_Program {
     };
     Geo_Actor torusActor = Geo_Actor(torus);
 #ifdef RASTERON_H
-    Img_Volume volumeImg = Img_Volume(256);
+    Sampler_3D volumeImg = Sampler_3D(256);
 #endif
 private:
     void onAnyKey(char key);

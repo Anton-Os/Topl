@@ -12,7 +12,7 @@
 #include "Geo_Construct.hpp"
 
 #ifdef RASTERON_H
-unsigned linedImg_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
+unsigned linedSampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
 #endif
 
 class Geo_Model3D : public Geo_Construct {
@@ -53,8 +53,8 @@ public:
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
 #ifdef RASTERON_H
-                _nodeImg_map.insert({ _geoNodes[n], Img_Base() });
-                _nodeImg_map.at(_geoNodes[n]).setColorImage(RAND_COLOR()); // .setImage(modelImg);
+                _nodeSampler_map.insert({ _geoNodes[n], Sampler_2D() });
+                _nodeSampler_map.at(_geoNodes[n]).setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
             }
         }
@@ -64,14 +64,14 @@ public:
         for (unsigned n = 0; n < _geoNodes.size(); n++) {
                 scene->addGeometry(getPrefix() + _geoActors[n].getName(), _geoNodes[n]);
 #ifdef RASTERON_H
-                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeImg_map.at(_geoNodes[n]));
+                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeSampler_map.at(_geoNodes[n]));
 #endif
         }
     }
 
     unsigned getActorCount() const { return _geoNodes.size(); }
     // Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
-	Img_Base* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeImg_map[_geoNodes[i]] : nullptr; }
+	Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeSampler_map[_geoNodes[i]] : nullptr; }
     
     void shift(Vec3f vec) { // replace Geo_Construct shift()
 		for (std::vector<Geo_NodeActor*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
@@ -82,7 +82,7 @@ public:
     }
 protected:
 	std::vector<Geo_NodeActor*> _geoNodes; // geometry nodes only
-    std::map<const Geo_NodeActor*, Img_Base> _nodeImg_map; // child backgrounds
+    std::map<const Geo_NodeActor*, Sampler_2D> _nodeSampler_map; // child backgrounds
 	// TODO: include animation and other relevant data
 private:
     Geo_NodeActor** _nodes = nullptr; // all nodes data
