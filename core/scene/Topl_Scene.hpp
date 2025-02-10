@@ -10,7 +10,7 @@
 #include "Geo_Actor.hpp"
 // #include "Geo_Construct.hpp"
 
-#include "sampler/Sampler.h"
+#include "sampler/Sampler_2D.h"
 #include "sampler/Sampler_UI.h"
 
 #ifdef TOPL_ENABLE_PHYSICS
@@ -87,15 +87,15 @@ private:
 #endif
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
-	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Grid.png"), 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Pins.png"), 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Frame.png"), 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Canvas.png"),
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Squared.png"), 
-		Sampler_2D(std::string(IMAGES_DIR) + "Background-Circular.png"),
-        Sampler_2D(std::string(IMAGES_DIR) + "Background-Action.bmp"),
+	Sampler_File _textures[MAX_TEX_BINDINGS] = { 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Pins.png"), 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Frame.png"), 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Canvas.png"),
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Squared.png"), 
+		Sampler_File(std::string(IMAGES_DIR) + "Background-Circular.png"),
+        Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp"),
 	};
 	std::map<Geo_Actor*, const Sampler_2D*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Sampler_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

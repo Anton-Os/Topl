@@ -73,7 +73,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
     Kaleidoscope_Construct construct3 = Kaleidoscope_Construct(CIRCLE_SEGMENTS);
     Kaleidoscope_Construct construct4 = Kaleidoscope_Construct(3);
 
-    Img_Volume volumeImg = Img_Volume(KALEIDOSCOPE_SLICES);
+    Sampler_3D volumeImg = Sampler_3D(KALEIDOSCOPE_SLICES);
 private:
     void onAnyKey(char key);
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);

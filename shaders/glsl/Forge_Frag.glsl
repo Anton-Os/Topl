@@ -9,11 +9,11 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
-        vec3 offset;
-        vec3 rotation;
-        vec3 scale;
+	vec3 offset;
+	vec3 rotation;
+	vec3 scale;
 
-        mat4 ctrlMatrix;
+	mat4 ctrlMatrix;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {

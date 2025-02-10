@@ -1,3 +1,5 @@
+#ifndef TOPL_SAMPLER_H
+
 #include <string>
 #include <thread>
 
@@ -74,6 +76,8 @@ struct Sampler_2D : public Sampler_Target {
 		}
 	}
 protected:
+	ImageSize getImgSize(){ return ImageSize({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }); }
+	
 	void cleanup() override {
 		if (image != NULL) {
 			RASTERON_DEALLOC(image);
@@ -111,6 +115,8 @@ struct Sampler_Array : public Sampler_2D {
 	void addFrame(ref_image_t refImg, unsigned f){ queue_addImg(queue, refImg, f); }
 
 	Rasteron_Queue* getQueue() const { return queue; } // change this?
+protected:
+	Rasteron_Queue* queue;
 private:
 	void cleanup() override {
 		if (queue != NULL) {
@@ -120,7 +126,6 @@ private:
 	}
 
 	double sequence = 0.0;
-	Rasteron_Queue* queue;
 #endif
 };
 
@@ -182,3 +187,6 @@ private:
 #endif
 	const unsigned width, height, depth;
 };
+
+#define TOPL_SAMPLER_H
+#endif

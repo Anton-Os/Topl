@@ -1,6 +1,6 @@
 #include "support_def.h"
 
-struct Sampler_UI {
+struct Sampler_UI : Sampler_Array {
 #ifdef RASTERON_H
 	Sampler_UI(enum MENU_Size s){ size = s; }
 
@@ -17,7 +17,7 @@ struct Sampler_UI {
     Sampler_2D stateImg;
 protected:
 	MENU_Size size;
-	Rasteron_Queue* queue = nullptr;
+	// Rasteron_Queue* queue = nullptr;
 #endif
 };
 

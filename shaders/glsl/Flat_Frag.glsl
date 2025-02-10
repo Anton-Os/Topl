@@ -2,7 +2,7 @@
 
 #define IGNORE_INPUTS
 #define INCLUDE_SCENEBLOCK
-#define INCLUDE_EXTBLOCK
+// #define INCLUDE_EXTBLOCK
 
 #define FLAT_ID 0
 #define FLAT_DIRECTIONAL 1

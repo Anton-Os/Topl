@@ -2,7 +2,7 @@
 
 #define ASSETS_DIR "F:/Codex/PROJECT/Topl/master/assets/"
 #define FONTS_DIR "F:/Codex/PROJECT/Topl/master/assets/fonts/"
-#define IMAGES_DIR "F:/Codex/PROJECT/Topl/master/assets/sampler/"
+#define IMAGES_DIR "F:/Codex/PROJECT/Topl/master/assets/images/"
 #define MODELS_DIR "F:/Codex/PROJECT/Topl/master/assets/models/"
 #define RESOURCE_DIR "F:/Codex/PROJECT/Topl/master/assets/res/"
 #define SHADERS_DIR "F:/Codex/PROJECT/Topl/master/shaders/"
@@ -18,7 +18,7 @@
     #define RASTERON_ENABLE_FONT // includes font support
     #include "Rasteron.h" // includes Rasteron main modules and features
 #endif
-#if 1
+#if 0
 	#define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>

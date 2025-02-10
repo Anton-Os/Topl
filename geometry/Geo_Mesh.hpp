@@ -56,10 +56,12 @@ public:
 	void modify(vTformCallback callback, Vec3f transform) { // modify position attirbute
 		for (std::vector<Geo_Vertex>::iterator v = _vertices.begin(); v != _vertices.end(); v++)
 			*(&v->position) = callback(v->position, transform);
+		_transformCount++;
 	}
 	void modify(iTformCallback callback, Vec3f transform){
 		for (std::vector<unsigned>::iterator i = _indices.begin(); i != _indices.end(); i++)
 			_vertices[*i] = callback(*i, _vertices[*i].position, transform);
+		_transformCount++;
 	}
 	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
     void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
@@ -159,6 +161,7 @@ protected:
 	std::vector<unsigned> _indices;
 
 	unsigned _tessLevel = 0;
+	unsigned _transformCount = 0;
 	unsigned _instanceCount = 0;
 	Mat4x4* _instanceData = nullptr;
 };

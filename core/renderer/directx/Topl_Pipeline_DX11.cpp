@@ -21,6 +21,7 @@ namespace DX11 {
 			delete shaderFilePath_wchar; // Proper deallocation of the source string
 			return false;
 		}
+
 		delete shaderFilePath_wchar; // Proper deallocation of the source string
 		return true;
 	}
@@ -32,6 +33,7 @@ namespace DX11 {
 		if(!shaderFile.is_open()) return false;
 		else logMessage("Writing shader to path: " + tempFilePath + " text:\n" + shaderText);
 		shaderFile.write(shaderText.c_str(), shaderText.size());
+		// shaderFile.write('\0', sizeof(char));
 		shaderFile.flush();
 
 		compileShader(tempFilePath.c_str(), shaderTarget, blob);

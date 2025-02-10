@@ -21,8 +21,8 @@
 #define SANDBOX_EDIT 5
 #define SANDBOX_SEQUENCE 60.0
 
-struct Sampler_Canvas : public Sampler_2D {
-    Sampler_Canvas(unsigned bk) : Sampler_2D(bk){ 
+struct Sampler_Canvas : public Sampler_Color {
+    Sampler_Canvas(unsigned bk) : Sampler_Color(bk){ 
         tag = &refreshTag;
         background = bk;
     }
