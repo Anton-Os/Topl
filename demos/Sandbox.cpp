@@ -124,7 +124,7 @@ void onConfirmAction(float x, float y){
                 case 2: _DEMO->objectMeshes.push_back(new Geo_Volume((vertex_cptr_t)sculptPoints.data(), sculptPoints.size(), 1.0F)); break;
                 default: _DEMO->objectMeshes.push_back(new Geo_Mesh((vertex_cptr_t)sculptPoints.data(), sculptPoints.size())); 
             }
-            _DEMO->objectTextures.push_back(new Sampler_2D(RAND_COLOR())); // non-textured object
+            _DEMO->objectTextures.push_back(new Sampler_Color(RAND_COLOR())); // non-textured object
             _DEMO->objectPhysics.push_back(nullptr); // non-dynamic object
             _DEMO->objectActors.push_back(new Geo_Actor(_DEMO->objectMeshes.back()));
             for(unsigned n = 0; n < _DEMO->plotGrid.getActorCount(); n++) _DEMO->plotGrid.getGeoActor(n)->setSize(Vec3f({ 1.0F, 1.0F, 1.0F }));
@@ -134,7 +134,7 @@ void onConfirmAction(float x, float y){
         else std::cerr << "Not enough sculpt points!" << std::endl;
     } else if(Sandbox_Demo::mode == SANDBOX_PAINT){
         isRepaintReq = true;
-        if(!_DEMO->objectTextures.empty()) _DEMO->objectTextures.back() = new Sampler_2D(RAND_COLOR());
+        if(!_DEMO->objectTextures.empty()) _DEMO->objectTextures.back() = new Sampler_Color(RAND_COLOR());
     }
 }
 

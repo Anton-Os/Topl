@@ -30,41 +30,27 @@ protected:
 
 struct Sampler_2D : public Sampler_Target {
     Sampler_2D() : Sampler_Target(TEX_2D){} // Empty Constructor
+	// Sampler_2D(const char* name, unsigned width, unsigned height) : Sampler_Target(TEX_2D){}
 #ifdef RASTERON_H // required library for loading images
-    Sampler_2D(unsigned color) : Sampler_Target(TEX_2D){ setColorImage(color); } // Solid Constructor
-    Sampler_2D(const std::string& filePath) : Sampler_Target(TEX_2D){ setFileImage(filePath); } // File Constructor
-    Sampler_2D(Rasteron_Text textObj) : Sampler_Target(TEX_2D){ setTextImage( &textObj); } // Text Constructor
     Sampler_2D(Rasteron_Image* refImage) : Sampler_Target(TEX_2D){
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
 	} // Custom Constructor
     // ~Sampler_2D(){ cleanup(); }
 
-    void setColorImage(unsigned color){
-		cleanup();
-        if(image != NULL) std::thread([this](unsigned c){ image = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, c); }, color);
-        else image = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, color);
-		tag = &image->name;
-    }
-    void setFileImage(const std::string& filePath){
-		cleanup();
-		if(image != NULL) std::thread([this](const std::string& s){ image = loadImgOp(s.c_str()); }, filePath);
-		else image = loadImgOp(filePath.c_str());
-		tag = &image->name;
-    }
-    void setTextImage(Rasteron_Text* textObj){
-		cleanup();
-		if(image != NULL) std::thread([this](Rasteron_Text* t){ image = textImgOp(t, FONT_SIZE_MED); }, textObj);
-		else image = textImgOp(textObj, FONT_SIZE_MED); // TODO: Include padding
-		tag = &image->name;
-    }
     void setImage(ref_image_t refImage){
 		cleanup();
         if(image != NULL) std::thread([this](ref_image_t r){ image = copyImgOp(r); }, refImage);
 		else image = copyImgOp(refImage);
 		tag = &image->name;
     }
-	// TODO: Set other image types?
+	void stageImg(Rasteron_Image* stageImg){
+		cleanup();
+		image = RASTERON_ALLOC(stageImg->name, stageImg->height, stageImg->width);
+		for(unsigned p = 0; p < stageImg->height * stageImg->width; p++) *(image->data + p) = *(stageImg->data + p);
+		RASTERON_DEALLOC(stageImg);
+		tag = &image->name;
+	}
 
     Rasteron_Image* getImage() const { return image; }
 
@@ -85,7 +71,7 @@ protected:
 		}
 	}
 
-    Rasteron_Image* image = NULL;
+    Rasteron_Image* image = solidImgOp(getImgSize(), 0xFFEEEEEE);
 #endif
 };
 
