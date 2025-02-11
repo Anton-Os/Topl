@@ -1,7 +1,7 @@
 // #define INCLUDE_DATASTREAM
 
 #define IGNORE_INPUTS
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 [numthreads(1, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID){

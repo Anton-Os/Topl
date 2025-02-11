@@ -57,13 +57,13 @@ private:
 };
 
 struct Beams_VertexShader_GL4 : public Beams_VertexShader {
-	Beams_VertexShader_GL4() : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl") {}
-	Beams_VertexShader_GL4(unsigned mode) : Beams_VertexShader(genPrefix_glsl() + "Beams_Vertex.glsl", mode) {}
+	Beams_VertexShader_GL4() : Beams_VertexShader(genPrefix_glsl() + "vertex/" + "Beams_Vertex.glsl") {}
+	Beams_VertexShader_GL4(unsigned mode) : Beams_VertexShader(genPrefix_glsl() + "vertex/" + "Beams_Vertex.glsl", mode) {}
 };
 
 struct Beams_VertexShader_DX11 : public Beams_VertexShader {
-	Beams_VertexShader_DX11() : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl") {}
-	Beams_VertexShader_DX11(unsigned mode) : Beams_VertexShader(genPrefix_hlsl() + "Beams_Vertex.hlsl", mode) {}
+	Beams_VertexShader_DX11() : Beams_VertexShader(genPrefix_hlsl() + "vertex/" + "Beams_Vertex.hlsl") {}
+	Beams_VertexShader_DX11(unsigned mode) : Beams_VertexShader(genPrefix_hlsl() + "vertex/" + "Beams_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -74,9 +74,9 @@ struct Beams_PixelShader : public Topl_Shader {
 };
 
 struct Beams_PixelShader_GL4 : public Beams_PixelShader {
-	Beams_PixelShader_GL4() : Beams_PixelShader(genPrefix_glsl() + "Beams_Frag.glsl") {}
+	Beams_PixelShader_GL4() : Beams_PixelShader(genPrefix_glsl() + "pixel/" + "Beams_Frag.glsl") {}
 };
 
 struct Beams_PixelShader_DX11 : public Beams_PixelShader {
-	Beams_PixelShader_DX11() : Beams_PixelShader(genPrefix_hlsl() + "Beams_Pixel.hlsl") {}
+	Beams_PixelShader_DX11() : Beams_PixelShader(genPrefix_hlsl() + "pixel/" + "Beams_Pixel.hlsl") {}
 };

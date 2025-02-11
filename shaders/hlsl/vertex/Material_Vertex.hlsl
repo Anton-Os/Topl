@@ -1,6 +1,6 @@
 #define INCLUDE_BLOCK
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

@@ -55,13 +55,13 @@ protected:
 };
 
 struct Forge_VertexShader_GL4 : public Forge_VertexShader {
-	Forge_VertexShader_GL4() : Forge_VertexShader(genPrefix_glsl() + "Forge_Vertex.glsl") {}
-	Forge_VertexShader_GL4(unsigned mode) : Forge_VertexShader(genPrefix_glsl() + "Forge_Vertex.glsl", mode) {}
+	Forge_VertexShader_GL4() : Forge_VertexShader(genPrefix_glsl() + "vertex/" + "Forge_Vertex.glsl") {}
+	Forge_VertexShader_GL4(unsigned mode) : Forge_VertexShader(genPrefix_glsl() + "vertex/" + "Forge_Vertex.glsl", mode) {}
 };
 
 struct Forge_VertexShader_DX11 : public Forge_VertexShader {
-	Forge_VertexShader_DX11() : Forge_VertexShader(genPrefix_hlsl() + "Forge_Vertex.hlsl") {}
-	Forge_VertexShader_DX11(unsigned mode) : Forge_VertexShader(genPrefix_hlsl() + "Forge_Vertex.hlsl", mode) {}
+	Forge_VertexShader_DX11() : Forge_VertexShader(genPrefix_hlsl() + "vertex/" + "Forge_Vertex.hlsl") {}
+	Forge_VertexShader_DX11(unsigned mode) : Forge_VertexShader(genPrefix_hlsl() + "vertex/" + "Forge_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -72,9 +72,9 @@ struct Forge_PixelShader : public Topl_Shader {
 };
 
 struct Forge_PixelShader_GL4 : public Forge_PixelShader {
-	Forge_PixelShader_GL4() : Forge_PixelShader(genPrefix_glsl() + "Forge_Frag.glsl") {}
+	Forge_PixelShader_GL4() : Forge_PixelShader(genPrefix_glsl() + "pixel/" + "Forge_Frag.glsl") {}
 };
 
 struct Forge_PixelShader_DX11 : public Forge_PixelShader {
-	Forge_PixelShader_DX11() : Forge_PixelShader(genPrefix_hlsl() + "Forge_Pixel.hlsl") {}
+	Forge_PixelShader_DX11() : Forge_PixelShader(genPrefix_hlsl() + "pixel/" + "Forge_Pixel.hlsl") {}
 };

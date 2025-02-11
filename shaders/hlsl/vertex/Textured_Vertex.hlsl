@@ -1,7 +1,7 @@
 #define INCLUDE_SCENEBLOCK
 #define INCLUDE_TEXTURES
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

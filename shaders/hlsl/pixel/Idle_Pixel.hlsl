@@ -1,6 +1,6 @@
 #define INCLUDE_EXTBLOCK
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

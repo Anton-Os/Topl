@@ -1,7 +1,7 @@
 #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

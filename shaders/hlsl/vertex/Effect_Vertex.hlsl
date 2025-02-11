@@ -1,7 +1,6 @@
-#define INCLUDE_TEXTURES
 #define INCLUDE_BLOCK
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 
@@ -13,13 +12,12 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 	int2 screenRes;
 	float2 cursorPos;
-	// double drawSize;
-	float4 tracerSteps[TRACER_STEPS / 2]; // TODO: This needs to be packed
-	float4 tracerPaths[TRACER_STEPS / 2]; // TODO: This needs to be packed
+	float effectSize;
+	uint effectIters;
 }
 
-struct VS_OUTPUT {
-	float4 pos : SV_POSITION;
+struct VS_OUTPUT { 
+	float4 pos : SV_POSITION; 
 	float3 texcoord : TEXCOORD0;
 };
 
@@ -33,6 +31,7 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 
 	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	
 	output.texcoord = input.texcoord;
 
 	return output;

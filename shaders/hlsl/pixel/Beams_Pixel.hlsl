@@ -14,7 +14,7 @@
 
 // #include <Beams>
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

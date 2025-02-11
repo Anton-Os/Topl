@@ -35,13 +35,13 @@ protected:
 };
 
 struct Flat_VertexShader_GL4 : public Flat_VertexShader {
-	Flat_VertexShader_GL4() : Flat_VertexShader(genPrefix_glsl() + "Flat_Vertex.glsl") {}
-	Flat_VertexShader_GL4(unsigned mode) : Flat_VertexShader(genPrefix_glsl() + "Flat_Vertex.glsl", mode) {}
+	Flat_VertexShader_GL4() : Flat_VertexShader(genPrefix_glsl() + "vertex/" + "Flat_Vertex.glsl") {}
+	Flat_VertexShader_GL4(unsigned mode) : Flat_VertexShader(genPrefix_glsl() + "vertex/" + "Flat_Vertex.glsl", mode) {}
 };
 
 struct Flat_VertexShader_DX11 : public Flat_VertexShader {
-	Flat_VertexShader_DX11() : Flat_VertexShader(genPrefix_hlsl() + "Flat_Vertex.hlsl") {}
-	Flat_VertexShader_DX11(unsigned mode) : Flat_VertexShader(genPrefix_hlsl() + "Flat_Vertex.hlsl", mode) {}
+	Flat_VertexShader_DX11() : Flat_VertexShader(genPrefix_hlsl() + "vertex/" + "Flat_Vertex.hlsl") {}
+	Flat_VertexShader_DX11(unsigned mode) : Flat_VertexShader(genPrefix_hlsl() + "vertex/" + "Flat_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -52,9 +52,9 @@ struct Flat_PixelShader : public Topl_Shader {
 };
 
 struct Flat_PixelShader_GL4 : public Flat_PixelShader {
-	Flat_PixelShader_GL4() : Flat_PixelShader(genPrefix_glsl() + "Flat_Frag.glsl") {}
+	Flat_PixelShader_GL4() : Flat_PixelShader(genPrefix_glsl() + "pixel/" + "Flat_Frag.glsl") {}
 };
 
 struct Flat_PixelShader_DX11 : public Flat_PixelShader {
-	Flat_PixelShader_DX11() : Flat_PixelShader(genPrefix_hlsl() + "Flat_Pixel.hlsl") {}
+	Flat_PixelShader_DX11() : Flat_PixelShader(genPrefix_hlsl() + "pixel/" + "Flat_Pixel.hlsl") {}
 };

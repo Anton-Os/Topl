@@ -2,7 +2,7 @@
 #define IGNORE_INPUTS
 #define INCLUDE_TEXTURES
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 

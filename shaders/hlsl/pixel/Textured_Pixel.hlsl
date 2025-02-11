@@ -2,7 +2,7 @@
 #define INCLUDE_SCENEBLOCK
 #define IGNORE_INPUTS
 
-#include "Common.hlsl"
+#include "../Common.hlsl"
 
 // Values
 
