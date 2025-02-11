@@ -170,7 +170,7 @@ private:
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
 		Sampler_Button button = Sampler_Button(MENU_Medium);
-        Sampler_Dial dials[3] = { Sampler_Dial(MENU_Medium, 4), Sampler_Dial(MENU_Medium, 4), Sampler_Dial(MENU_Medium, 4)};
+        Sampler_Dial dials[3] = { Sampler_Dial(MENU_Large, 4), Sampler_Dial(MENU_Large, 4), Sampler_Dial(MENU_Large, 4)};
         Sampler_Slider slider = Sampler_Slider(MENU_Medium, 2); Sampler_Slider sizeSlider = Sampler_Slider(MENU_Medium, 10);
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif

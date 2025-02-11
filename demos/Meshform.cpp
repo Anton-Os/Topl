@@ -47,11 +47,11 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 
 
 void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
-    if(geometryThread != nullptr)
+    /* if(geometryThread != nullptr)
         if(geometryThread->joinable()){
             geometryThread->join();
             delete geometryThread;
-        } else return logMessage(MESSAGE_Exclaim, "Geometry thread still running!");
+        } else return logMessage(MESSAGE_Exclaim, "Geometry thread still running!"); */
 
     geometryThread = new std::thread([this](unsigned tess, std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2, 
         Geo_TrigOrb* tOrbs[3], Geo_QuadOrb* qOrbs[3], Geo_HexOrb* hOrbs[3], Geo_DecOrb* dOrbs[3]){
@@ -72,6 +72,7 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
         }
     }, tessCount, transform1, transform2, trigOrbs, quadOrbs, hexOrbs, decOrbs);
     geometryThread->join(); // TODO: Perform blocking call
+    delete geometryThread;
 
     _renderer->buildScene(&scene);
 }
@@ -147,7 +148,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

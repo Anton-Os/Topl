@@ -77,6 +77,9 @@ typedef const Geo_Vertex* const vertex_cptr_t;
 typedef Vec3f (*vTformCallback)(Vec3f, Vec3f);
 typedef Vec3f (*iTformCallback)(unsigned, Vec3f, Vec3f);
 
+typedef Geo_Vertex (*vertexTransform)(const Geo_Vertex&, unsigned, unsigned);
+typedef Geo_Vertex (*originTransform)(const Geo_Vertex&, const Geo_Vertex&, unsigned, unsigned);
+
 static Vec3f shiftTForm(Vec3f input, Vec3f amount) { return Vec3f({input + amount}); } // shifts vertex by amount
 static Vec3f rotateTForm(Vec3f input, Vec3f degrees){
     Mat3x3 zRotMatrix = Mat3x3({ cos(degrees[0]), sin(degrees[0]), 0, -sin(degrees[0]), cos(degrees[0]), 0, 0, 0, 1.0F });

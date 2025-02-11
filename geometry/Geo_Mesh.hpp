@@ -63,6 +63,20 @@ public:
 			_vertices[*i] = callback(*i, _vertices[*i].position, transform);
 		_transformCount++;
 	}
+	void modify(vertexTransform callback){
+		for (unsigned v = 0; v < _vertices.size(); v++)
+			_vertices[v] = callback(_vertices[v], v / 3, _transformCount);
+		_transformCount++;
+	}
+	void modify(originTransform callback){
+		for (unsigned v = 0; v < _vertices.size(); v += 3){
+			Geo_Vertex midpoint = Geo_Vertex((_vertices[v + 0].position + _vertices[v + 1].position + _vertices[v + 2].position) * (1.0f / 3.0f));
+			_vertices[v + 0] = callback(_vertices[v + 0], midpoint, v / 3, _transformCount);
+			_vertices[v + 1] = callback(_vertices[v + 1], midpoint, v / 3, _transformCount);
+			_vertices[v + 2] = callback(_vertices[v + 2], midpoint, v / 3, _transformCount);
+		}
+		_transformCount++;
+	}
 	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
     void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
 	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
