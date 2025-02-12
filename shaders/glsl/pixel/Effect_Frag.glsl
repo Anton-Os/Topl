@@ -38,8 +38,8 @@ vec3 fractalColors(vec2 coord, vec2 cursor, uint i){
 	else if(mode % 10 == 6) return getRandColor(i) * vec3(dot(coord, cursor), length(coord - cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
 	else if(mode % 10 == 7) return vec3(sin(1.0f / coord.x) + cos(1.0f / coord.y), atan(cursor.x / cursor.y), pow(abs(cursor.x + cursor.y), abs(coord.x * coord.y)));
 	else if(mode % 10 == 8) return vec3(sin(dot(coord, cursor)), cos(dot(-coord, cursor)), tan(sin(coord.x - cursor.x) / cos(coord.y - cursor.y)));
-	else if(mode % 10 == 9) return getCoordDistances(coord, cursor, vec2(0.5f, 0.5f)) * vec3(mod(sinh((coord.x - cursor.x) * i), 1.0), mod(cosh((coord.y - cursor.y) * i), 1.0), mod(tanh((coord.x - cursor.x) * (coord.y - cursor.y) * i), 1.0));
-	// else if(mode % 10 == 8) return vec3(modf(sinh((coord.x - cursor.x) * i), 1.0f), modf(cosh((coord.y - cursor.y) * i), 1.0f), modf(tanh(length(coord - cursor) * i), 1.0f));
+	else if(mode % 10 == 9) return vec3((coord - cursor) * i, dot(coord, cursor) / i); // TODO: Change this!
+	// else if(mode % 10 == 9) return getCoordDistances(coord, cursor, vec2(0.5f, 0.5f)) * vec3(mod(sinh((coord.x - cursor.x) * i), 1.0), mod(cosh((coord.y - cursor.y) * i), 1.0), mod(tanh((coord.x - cursor.x) * (coord.y - cursor.y) * i), 1.0));
 	// else if(mode % 10 == 9) return vec3(abs(noise2(coord - cursor).x), abs(noise2(cursor - coord).y), noise1(float(i) * length(coord - cursor)));
 	else return vec3(coord.x, coord.y, 1.0 / i);
 	// TODO: Include more color options

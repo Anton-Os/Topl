@@ -27,6 +27,20 @@ layout(location = 0) in vec3 texcoord;
 
 layout(location = 0) out vec4 color_out;
 
+// Distance Functions
+
+float getLineDistance(vec2 coord, vec2 p1, vec2 p2){
+	return abs(((p2.y - p1.y) * coord.x) - ((p2.x - p1.x) * coord.y) + (p2.x * p1.y) - (p2.y * p1.x)) / sqrt(pow(p2.y - p1.y, 2.0) + pow(p2.x - p1.x, 2.0));
+}
+
+vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
+	return vec3(
+		sqrt(pow(p2.x - p1.x, 2.0) + pow(p2.y - p1.y, 2.0)), // distance between points 1 and 2
+		sqrt(pow(coord.x - p1.x, 2.0) + pow(coord.y - p1.y, 2.0)), // distance between coordinate and point 1 
+		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
+	);
+}
+
 // Cursor Functions
 
 vec4 cursorDot(vec2 pos, vec2 coord, float radius, vec4 color){

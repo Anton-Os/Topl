@@ -6,6 +6,8 @@
 
 #include "Common.glsl"
 
+#include "Vertex.glsl"
+
 // Values
 
 layout(std140, binding = 0) uniform Block {

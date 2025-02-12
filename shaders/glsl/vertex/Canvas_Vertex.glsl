@@ -5,6 +5,8 @@
 
 #include "Common.glsl"
 
+#include "Vertex.glsl"
+
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock {
