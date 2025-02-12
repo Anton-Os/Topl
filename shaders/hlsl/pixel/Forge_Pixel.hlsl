@@ -46,3 +46,5 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	return float4(r, g, b, 1.0); // solid mode // default
 }
+
+

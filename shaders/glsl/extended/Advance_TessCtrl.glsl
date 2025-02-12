@@ -1,5 +1,7 @@
 #version 440
 
+#define STAGE_TESS_CTRL
+
 // Values
 
 layout(vertices = 3) out;

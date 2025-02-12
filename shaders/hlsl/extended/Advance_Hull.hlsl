@@ -3,6 +3,8 @@
 #define IGNORE_INPUTS
 #define INCLUDE_EXTBLOCK
 
+#define STAGE_TESS_EVAL
+
 #include "../Common.hlsl"
 
 struct HS_INPUT {

@@ -29,61 +29,19 @@ struct PS_INPUT {
 
 float4 color_blend(float4 color1, float4 color2){ return (color1 + color2) / 2; }
 
-float4 sampleTex2D(float2 coords, Texture2D tex, SamplerState samp){
-	if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(tex.Sample(samp, coords));
-	else { // antialiasing algorithm
-		float4 texColor = color_correct(tex.Sample(samp, coords));
-		for(uint a = 0; a < antialiasSteps; a++){
-			float f = (antialiasArea / antialiasSteps) * (a + 1);
-			float4 nebrTexColors[8] = {
-				color_correct(tex.Sample(samp, coords + float2(f, 0.0))), color_correct(tex.Sample(samp, coords + float2(-f, 0.0))), // left and right
-				color_correct(tex.Sample(samp, coords + float2(0.0, f))), color_correct(tex.Sample(samp, coords + float2(0.0, -f))), // top and bottom
-				color_correct(tex.Sample(samp, coords + float2(f, f))), color_correct(tex.Sample(samp, coords + float2(-f, -f))), // top right and bottom left
-				color_correct(tex.Sample(samp, coords + float2(-f, f))), color_correct(tex.Sample(samp, coords + float2(f, -f))) // top left and bottom right
-			};
-			for(uint n = 0; n < 8; n++) texColor += nebrTexColors[n]; // total
-			texColor *= 1.0 / 8; // average
-		}
-		return texColor;
-	}
-}
-
-float4 sampleTex3D(float3 coords, Texture3D tex, SamplerState samp){
-	if(antialiasArea == 0.0 || antialiasSteps == 0) return color_correct(tex.Sample(samp, coords));
-	else {
-		float4 texColor = color_correct(tex.Sample(samp, coords));
-		for(uint a = 0; a < antialiasSteps; a++){
-			float f = (antialiasArea / antialiasSteps) * (a + 1);
-			for(uint l = 0; l < 3; l++){
-				float d = -f + (f * l);
-				float4 nebrTexColors[9] = {
-					color_correct(tex.Sample(samp, coords + float3(0.0, 0.0, d))),
-					color_correct(tex.Sample(samp, coords + float3(f, 0.0, d))), color_correct(tex.Sample(samp, coords + float3(-f, 0.0, d))), // left and right
-					color_correct(tex.Sample(samp, coords + float3(0.0, f, d))), color_correct(tex.Sample(samp, coords + float3(0.0, -f, d))), // top and bottom
-					color_correct(tex.Sample(samp, coords + float3(f, f, d))), color_correct(tex.Sample(samp, coords + float3(-f, -f, d))), // top right and bottom left
-					color_correct(tex.Sample(samp, coords + float3(-f, f, d))), color_correct(tex.Sample(samp, coords + float3(f, -f, d))) // top left and bottom right
-				};
-				for(uint n = 0; n < 9; n++) texColor += nebrTexColors[n]; // total
-				texColor *= 1.0 / 9; // average
-			}
-		}
-		return texColor;
-	}
-}
-
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
-	if(abs(mode) % 10 == 8) return sampleTex3D(input.texcoord, areaTex, areaSampler);
-	else if(abs(mode) % 10 == 9) return sampleTex3D(float3(input.texcoord.x, input.texcoord.y, slice), areaTex, areaSampler);
+	if(abs(mode) % 10 == 8) return antialias3D(input.texcoord, areaTex, areaSampler, antialiasArea, antialiasSteps);
+	else if(abs(mode) % 10 == 9) return antialias3D(float3(input.texcoord.x, input.texcoord.y, slice), areaTex, areaSampler, antialiasArea, antialiasSteps);
 	else {
-		if(abs(mode) % 10 == 1) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex1, sampler1);
-		else if(abs(mode) % 10 == 2) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex2, sampler2);
-		else if(abs(mode) % 10 == 3) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex3, sampler3);
-		else if(abs(mode) % 10 == 4) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex4, sampler4);
-		else if(abs(mode) % 10 == 5) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex5, sampler5);
-		else if(abs(mode) % 10 == 6) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex6, sampler6);
-		else if(abs(mode) % 10 == 7) return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), tex7, sampler7);
-		else return sampleTex2D(float2(input.texcoord.x, input.texcoord.y), baseTex, baseSampler);
+		if(abs(mode) % 10 == 1) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex1, sampler1, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 2) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex2, sampler2, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 3) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex3, sampler3, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 4) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex4, sampler4, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 5) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex5, sampler5, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 6) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex6, sampler6, antialiasArea, antialiasSteps);
+		else if(abs(mode) % 10 == 7) return antialias2D(float2(input.texcoord.x, input.texcoord.y), tex7, sampler7, antialiasArea, antialiasSteps);
+		else return antialias2D(float2(input.texcoord.x, input.texcoord.y), baseTex, baseSampler, antialiasArea, antialiasSteps);
 	}
 }

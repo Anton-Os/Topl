@@ -1,6 +1,9 @@
 // #define INCLUDE_DATASTREAM
 
 #define IGNORE_INPUTS
+
+#define STAGE_COMPUTE
+
 #include "../Common.hlsl"
 
 [numthreads(1, 1, 1)]

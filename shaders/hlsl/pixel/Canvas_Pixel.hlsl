@@ -127,7 +127,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
         if(abs(mode) % 10 == 8 && intersectPow(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
         if(abs(mode) % 10 == 9 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
     
-        if(intersections > 0 && mode >= 0) color_out = getStepColor(intersections) * (1.0 - lineDist); // sampleTexAt(intersections, input.texcoord);
+        if(intersections > 0 && mode >= 0) color_out = getStepColor(intersections) * (1.0 - lineDist); // modalTex(intersections, input.texcoord);
         else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
     }
 

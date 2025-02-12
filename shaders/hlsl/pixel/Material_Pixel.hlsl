@@ -54,7 +54,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float3 texVals[8];
 	for(int o = 0; o < 8; o++){
-		float4 texTarget = sampleTexAt((abs(mode) + o) % 8, input.texcoord);
+		float4 texTarget = modalTex((abs(mode) + o) % 8, input.texcoord);
 		texVals[o] =  float3(texTarget.r, texTarget.g, texTarget.b);
 	}
 

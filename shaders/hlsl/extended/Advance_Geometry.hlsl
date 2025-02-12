@@ -1,6 +1,8 @@
 #define IGNORE_INPUTS
 #define INCLUDE_EXTBLOCK
 
+#define STAGE_GEOMETRY
+
 #include "../Common.hlsl"
 
 #define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream) // TODO: Define this inside Advance_Shader.hpp

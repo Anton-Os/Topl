@@ -51,7 +51,7 @@ void main() {
 	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
 
 	vec3 texVals[8];
-	for(int t = 0; t < 8; t++) texVals[t] = vec3(sampleTexAt((abs(mode) + t) % 8, texcoord));
+	for(int t = 0; t < 8; t++) texVals[t] = vec3(modalTex((abs(mode) + t) % 8, texcoord));
 	
 	color = vec4(texVals[0], 1.0F);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;

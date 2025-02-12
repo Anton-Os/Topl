@@ -1,5 +1,7 @@
 #version 440
 
+#define STAGE_TESS_EVAL
+
 // Values
 
 layout(triangles, equal_spacing, ccw) in;

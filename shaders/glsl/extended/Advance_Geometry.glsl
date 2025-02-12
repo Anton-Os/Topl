@@ -1,18 +1,6 @@
 #version 440
 
-/* in gl_PerVertex
-{
-  vec4 gl_Position;
-  float gl_PointSize;
-  float gl_ClipDistance[];
-} gl_in[];
-
-out gl_PerVertex
-{
-  vec4 gl_Position;
-  float gl_PointSize;
-  float gl_ClipDistance[];
-}; */
+#define STAGE_GEOMETRY
 
 #define GEOM_INPUT layout(points) // TODO: Define this inside Advance_Shader.hpp
 #define GEOM_OUTPUT layout (triangle_strip, max_vertices = 3) // TODO: Define this inside Advance_Shader.hpp
