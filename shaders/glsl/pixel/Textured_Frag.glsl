@@ -22,13 +22,13 @@ layout(std140, binding = 0) uniform Block {
 
 #include "Common.glsl"
 
+#include "Pixel.glsl"
+
 // Values
 
 layout(location = 0) in vec3 texcoord;
 
 layout(location = 0) out vec4 color;
-
-// Functions
 
 // Main
 

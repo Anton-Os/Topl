@@ -6,6 +6,8 @@
 
 #include "Common.glsl"
 
+#include "Pixel.glsl"
+
 #define CURSOR_SIZE 0.05
 
 // Values

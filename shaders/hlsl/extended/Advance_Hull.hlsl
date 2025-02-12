@@ -7,6 +7,8 @@
 
 #include "../Common.hlsl"
 
+#include "../Extended.hlsl"
+
 struct HS_INPUT {
 	float4 pos : SV_POSITION;
 };

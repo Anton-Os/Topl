@@ -16,6 +16,8 @@
 
 #include "Common.glsl"
 
+#include "Pixel.glsl"
+
 // Values
 
 layout(std140, binding = 1) uniform SceneBlock{

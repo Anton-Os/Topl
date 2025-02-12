@@ -36,6 +36,6 @@ void main() {
 	id_out = gl_VertexID;
 	texcoord_out = texcoord;
 	if(mode < 10) vert_color_out = vec4(vert_color, 1.0f); // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
-	else if(gl_VertexID == mode) vert_color_out = getStepColor(gl_VertexID);
+	else if(gl_VertexID == mode) vert_color_out = vec4(1.0F, 1.0f, 1.0F, 1.0F);
 	else vert_color_out = vec4(0.0F, 0.0f, 0.0F, 0.1F); 
 }
