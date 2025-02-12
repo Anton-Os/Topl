@@ -3,7 +3,7 @@
 
 #include "../Common.hlsl"
 
-#include "Vertex.hlsl"
+#include "../Vertex.hlsl"
 
 // Values
 

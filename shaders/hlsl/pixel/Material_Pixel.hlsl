@@ -6,7 +6,7 @@
 
 #include "../Common.hlsl"
 
-#include "Pixel.hlsl"
+#include "../Pixel.hlsl"
 
 // Values
 

@@ -3,7 +3,7 @@
 
 #include "../Common.hlsl"
 
-#include "Pixel.hlsl"
+#include "../Pixel.hlsl"
 
 #define FRACTAL_SIZE 5.0 // max fractal size
 #define FRACTAL_ITER 20 // max fractal iteratons

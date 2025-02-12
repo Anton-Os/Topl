@@ -4,7 +4,7 @@
 
 #include "../Common.hlsl"
 
-#include "Pixel.hlsl"
+#include "../Pixel.hlsl"
 
 #define CURSOR_SIZE 0.05
 
