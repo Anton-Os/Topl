@@ -3,6 +3,8 @@
 
 #include "../Common.hlsl"
 
+#include "Vertex.hlsl"
+
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
@@ -34,7 +36,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 	output.vertex_id = vertexID;
 	output.texcoord = input.texcoord;
 	if(mode < 10) output.vertex_color = float4(input.vert_color, 1.0);
-	else if(vertexID % mode == 0) output.vertex_color = getStepColor(vertexID);
+	else if(vertexID % mode == 0) output.vertex_color = float4(1.0F, 1.0f, 1.0F, 1.0F);
 	else output.vertex_color = float4(0.0F, 0.0f, 0.0F, 0.5F);
 
 	return output;

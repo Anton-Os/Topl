@@ -3,6 +3,8 @@
 
 #include "../Common.hlsl"
 
+#include "Pixel.hlsl"
+
 #define FRACTAL_SIZE 5.0 // max fractal size
 #define FRACTAL_ITER 20 // max fractal iteratons
 
@@ -37,7 +39,8 @@ float3 fractalColors(float2 coord, float2 cursor, uint i){
     else if(abs(mode) % 10 == 6) return getRandColor(i) * float3(length(coord - cursor), dot(coord, cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
     else if(abs(mode) % 10 == 7) return float3(sin(1.0f / coord.y) + cos(1.0f / coord.x), atan(cursor.y / cursor.x), pow(abs(cursor.x + coord.y), abs(coord.x * cursor.y)));
     else if(abs(mode) % 10 == 8) return float3(sin(dot(coord, cursor)), sin(dot(-coord, cursor)), tan(cos(coord.x - cursor.x) / sin(coord.y - cursor.y)));
-    else if(abs(mode) % 10 == 9) return getCoordDistances(coord, cursor, float2(0.5f, 0.5f)) * float3(pow(coord.x - cursor.x, 1.0 / i), pow(i, coord.y - cursor.y), pow(coord.x - cursor.x, coord.y - cursor.y));
+    else if(abs(mode) % 10 == 9) return float3((coord - cursor) * i, dot(coord, cursor) / i);
+	// getCoordDistances(coord, cursor, float2(0.5f, 0.5f)) * float3(pow(coord.x - cursor.x, 1.0 / i), pow(i, coord.y - cursor.y), pow(coord.x - cursor.x, coord.y - cursor.y));
     else return float3(coord.x, coord.y, 1.0 / i);
 	// TODO: Include more color options
 }

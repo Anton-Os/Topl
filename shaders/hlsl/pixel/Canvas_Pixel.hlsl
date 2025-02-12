@@ -4,6 +4,8 @@
 
 #include "../Common.hlsl"
 
+#include "Pixel.hlsl"
+
 #define CURSOR_SIZE 0.05
 
 // Values
@@ -28,6 +30,20 @@ struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 texcoord : TEXCOORD0;
 };
+
+// Distance Functions
+
+float getLineDistance(float2 coord, float2 p1, float2 p2){
+	return abs(((p2.y - p1.y) * coord.x) - ((p2.x - p1.x) * coord.y) + (p2.x * p1.y) - (p2.y * p1.x)) / sqrt(pow(p2.y - p1.y, 2.0) + pow(p2.x - p1.x, 2.0));
+}
+
+float3 getCoordDistances(float2 coord, float2 p1, float2 p2){
+	return float3(
+		sqrt(pow(p2.x - p1.x, 2.0) + pow(p2.y - p1.y, 2.0)), // distance between points 1 and 2
+		sqrt(pow(coord.x - p1.x, 2.0) + pow(coord.y - p1.y, 2.0)), // distance between coordinate and point 1 
+		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
+	);
+}
 
 // Cursor Functions
 

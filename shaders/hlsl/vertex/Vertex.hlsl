@@ -1,7 +1,3 @@
-float sum(float3 data){
-	return abs(data.x) + abs(data.y) + abs(data.z);
-}
-
 float3x3 getRotMatrix(float3 angles) {
 	float3x3 zRotMatrix = { // Roll
 		cos(angles.x), sin(angles.x), 0,

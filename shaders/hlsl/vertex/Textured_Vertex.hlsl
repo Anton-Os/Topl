@@ -3,6 +3,8 @@
 
 #include "../Common.hlsl"
 
+#include "Vertex.hlsl"
+
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {

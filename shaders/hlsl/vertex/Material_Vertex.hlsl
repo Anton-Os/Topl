@@ -2,6 +2,8 @@
 
 #include "../Common.hlsl"
 
+#include "Vertex.hlsl"
+
 // Values
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {

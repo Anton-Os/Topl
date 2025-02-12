@@ -3,6 +3,8 @@
 
 #include "../Common.hlsl"
 
+#include "Vertex.hlsl"
+
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
@@ -58,7 +60,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
 	if(mode >= 0) output.vertex_color = input.vert_color;
-	else output.vertex_color = getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
+	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
 
 	return output;
 }

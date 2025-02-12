@@ -4,6 +4,8 @@
 
 #include "../Common.hlsl"
 
+#include "Pixel.hlsl"
+
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
