@@ -21,15 +21,21 @@ mat3 getRotMatrix(vec3 angles) {
 }
 
 mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
-	return mat4(
-		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
-		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
-		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
+	mat3 rotMatrix = getRotMatrix(angles);
+
+	mat4 camMatrix = mat4(
+		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], -cPos.x,
+		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], -cPos.y,
+		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], -cPos.z,
 		0, 0, 0, 1
 	);
+
+	return camMatrix;
 }
 
 mat4 getLookAtMatrix(vec3 cPos, vec3 lPos, vec3 upPos){
+	// mat4 camMatrix = getCamMatrix(vec4(cPos, 1.0), lPos); // TODO: Compute based on camera value
+	
 	vec3 forward = normalize(lPos - cPos);
 	vec3 right = normalize(cross(forward, upPos));
 	vec3 up = normalize(cross(right, upPos));

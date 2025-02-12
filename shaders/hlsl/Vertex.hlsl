@@ -20,7 +20,7 @@ float3x3 getRotMatrix(float3 angles) {
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
 }
 
-float4x4 getCamMatrix(float4 cPos, float3 angles) { // camera postion and relative look position
+float4x4 getCamMatrix(float4 cPos, float3 angles) {
 	float3x3 rotMatrix = getRotMatrix(angles);
 
 	float4x4 camMatrix = {
@@ -34,6 +34,8 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) { // camera postion and relati
 }
 
 float4x4 getLookAtMatrix(float3 cPos, float3 lPos, float3 upPos){
+	float4x4 camMatrix = getCamMatrix(float4(cPos, 1.0), lPos); // TODO: Compute based on camera value
+
 	float3 forward = normalize(lPos - cPos);
 	float3 right = normalize(cross(forward, upPos));
 	float3 up = normalize(cross(right, upPos));
