@@ -2,6 +2,8 @@
 
 #define STAGE_TESS_EVAL
 
+#include "Extended.glsl"
+
 // Values
 
 layout(triangles, equal_spacing, ccw) in;

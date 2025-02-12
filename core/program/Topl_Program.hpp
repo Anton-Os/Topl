@@ -8,7 +8,7 @@
 #include "Material_Shader.hpp"
 #include "Effect_Shader.hpp"
 #include "Canvas_Shader.hpp"
-#include "Forge_Shader.hpp"
+#include "Pattern_Shader.hpp"
 #include "Advance_Shader.hpp"
 
 #include "constructs/Geo_Billboards.hpp"
@@ -116,11 +116,11 @@ protected:
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
-	Forge_VertexShader _forgeVShader; Forge_PixelShader _forgePShader;
+	Pattern_VertexShader _patternVShader; Pattern_PixelShader _patternPShader;
 	Advance_GeometryShader _geomShader; Advance_TessCtrlShader _tessCtrlShader; Advance_TessEvalShader _tessEvalShader;
 
-	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_forgeVShader };
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_forgePipeline; // for easy reuse
+	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_patternVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_patternPipeline; // for easy reuse
 
     // Options & Properties
 

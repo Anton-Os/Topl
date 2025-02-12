@@ -2,6 +2,8 @@
 
 #define STAGE_TESS_CTRL
 
+#include "Extended.glsl"
+
 // Values
 
 layout(vertices = 3) out;

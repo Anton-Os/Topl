@@ -21,10 +21,12 @@ float3x3 getRotMatrix(float3 angles) {
 }
 
 float4x4 getCamMatrix(float4 cPos, float3 angles) { // camera postion and relative look position
+	float3x3 rotMatrix = getRotMatrix(angles);
+
 	float4x4 camMatrix = {
-		cos(angles.z) * cos(angles.x), -sin(angles.x), sin(angles.z), -cPos.x,
-		sin(angles.x), cos(angles.x) * cos(angles.y), sin(angles.y), -cPos.y,
-		-1.0 * sin(angles.z), -sin(angles.y), cos(angles.y) * cos(angles.z), -cPos.z,
+		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], -cPos.x,
+		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], -cPos.y,
+		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], -cPos.z,
 		0, 0, 0, 1
 	};
 

@@ -2,6 +2,8 @@
 
 #define STAGE_GEOMETRY
 
+#include "Extended.glsl"
+
 #define GEOM_INPUT layout(points) // TODO: Define this inside Advance_Shader.hpp
 #define GEOM_OUTPUT layout (triangle_strip, max_vertices = 3) // TODO: Define this inside Advance_Shader.hpp
 

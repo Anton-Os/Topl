@@ -63,7 +63,7 @@ public:
 			// TODO: Check the include type and replace conditionally based on <> or ""
 
 			startOffset = shaderSrc.find("#include", includeOffset);
-			includeOffset += startOffset + 10; // location of include after the space
+			includeOffset = startOffset + 10; // location of include after the space
 
 			std::string includeStr = "";
 			while(shaderSrc[includeOffset] != '\n' && shaderSrc[includeOffset] != '\0'){

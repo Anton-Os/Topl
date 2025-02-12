@@ -29,7 +29,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
 void Kaleidoscope_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
     unsigned short p = 0;
 
-    _forgeVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
+    _patternVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
 
     p++;
 }
@@ -61,7 +61,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
     _renderer->updateScene(&scene);
     if(getConstruct() != nullptr)
         for(unsigned a = 0; a < getConstruct()->getActorCount(); a++){
-            // if(_renderer->getFrameCount() % 60 == 0) _forgeVShader.setCtrlMatrix(MAT_4x4_IDENTITY * (float)a); // TODO: Conditionally detect this
+            // if(_renderer->getFrameCount() % 60 == 0) _patternVShader.setCtrlMatrix(MAT_4x4_IDENTITY * (float)a); // TODO: Conditionally detect this
             _renderer->draw(getConstruct()->getGeoActor(a));
         }
 }
