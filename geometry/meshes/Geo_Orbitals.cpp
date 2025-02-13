@@ -28,21 +28,23 @@ void Geo_Orb::init() {
 			stackIndex++;
 			nextIndex++;
 
-			if (stack != 0) { // index all except first stack
-				_indices[i] = stackIndex;
-				_indices[i + 1] = nextIndex;
-				_indices[i + 2] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
-				i += 3;
-			}
+			_indices[i] = stackIndex;
+			_indices[i + 1] = nextIndex;
+			_indices[i + 2] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
+			i += 3;
+
 			if (stack < _shape.xSegs - 1) { // index all except last stack
 				_indices[i] = stackIndex + 1; // (stackIndex + 1) % _shape.xSegs;
 				_indices[i + 1] = nextIndex;
 				_indices[i + 2] = nextIndex + 1; // (nextIndex + 1) % _shape.xSegs;
 				i += 3;
+			} else {
+				// missing triangle
+				_indices[i] = _shape.xSegs;
+				_indices[i + 1] = _shape.xSegs + 1;
+				_indices[i + 2] = _shape.xSegs + 2;
 			}
 		}
-
-		// Perform indexing for missing piece?
 	}
 
 	// printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());

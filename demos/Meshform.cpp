@@ -1,5 +1,7 @@
 #include "Meshform.hpp"
 
+static bool isRotating = true;
+
 void Meshform_Demo::onAnyKey(char key){
     static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
     static Vec3f decVec = Vec3f({ MESHFORM_DEC, MESHFORM_DEC, MESHFORM_DEC });
@@ -14,6 +16,8 @@ void Meshform_Demo::onAnyKey(char key){
         case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
     }
+
+    if(isspace(key)) isRotating = !isRotating;
 }
 
 #ifdef RASTERON_H
@@ -125,12 +129,13 @@ void Meshform_Demo::init(){
 }
 
 void Meshform_Demo::loop(double frameTime){
-    for(unsigned a = 0; a < 4; a++){ 
-        Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
-        rotationVec = rotationVec * (0.001 * frameTime);
-        for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
-        if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
-    }
+    for(unsigned a = 0; a < 4; a++)
+        if(isRotating){
+            Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
+            rotationVec = rotationVec * (0.001 * frameTime);
+            for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
+            if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
+        }
 
     // torus->drawMode = DRAW_Lines;
 #ifdef RASTERON_H
