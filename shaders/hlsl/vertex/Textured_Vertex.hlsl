@@ -58,7 +58,7 @@ VS_OUTPUT main(VS_INPUT input) {
 		}
 	}
 
-	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
+	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
 	return output;

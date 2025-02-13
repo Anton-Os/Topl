@@ -49,9 +49,10 @@ void main() {
 
 	float nearestDist = length(nearestPoint - pos);
 
-	float r = sin(nearestPoint.x * mode) * nearestDist / vertex_color.r;
-	float g = cos(nearestPoint.y * mode) * nearestDist / vertex_color.g;
-	float b = tan(nearestPoint.x * mode) * nearestDist / vertex_color.b;
+	float r = sin(nearestPoint.x * abs(mode)) * nearestDist;
+	float g = cos(nearestPoint.y * abs(mode)) * nearestDist;
+	float b = tan(nearestPoint.x * abs(mode)) * nearestDist;
 	
-	outColor = vec4(r, g, b, 1.0); // color shift mode
+	if(mode >= 0) outColor = vec4(r, g, b, 1.0) / vertex_color;
+	else outColor = vec4(r, g, b, 1.0) * vertex_color;
 }

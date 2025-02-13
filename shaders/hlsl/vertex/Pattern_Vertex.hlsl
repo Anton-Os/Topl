@@ -55,7 +55,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
     // output.pos = output.pos * float4(1.0 + cos(timeElapse / 1000.0F), 1.0 + cos(timeElapse / 1000.0F), 1.0 + cos(timeElapse / 1000.0F), 1.0f);
 
-	float4x4 cameraMatrix = getCamMatrix(cam_pos, look_pos);
+	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));

@@ -33,7 +33,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) { // Only output is 
 
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.normal = input.normal;
-	output.pos = mul(transpose(projMatrix), mul(getCamMatrix(cam_pos, look_pos), output.pos + float4(offset, 0.0)));
+	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), output.pos + float4(offset, 0.0)));
 
 	return output;
 }
