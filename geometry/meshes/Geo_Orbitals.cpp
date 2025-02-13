@@ -82,7 +82,7 @@ void Geo_Torus::init(){
 		unsigned idx = innerRing * (_shape.ySegs + 1);
 		unsigned nextIdx = idx + _shape.ySegs + 1;
 
-		for(unsigned outerRing = 0; outerRing < _shape.ySegs; outerRing++){
+		for(unsigned outerRing = 0; outerRing < _shape.ySegs + 1; outerRing++){
 			_indices[i + 0] = idx;
 			_indices[i + 1] = nextIdx;
 			_indices[i + 2] = idx + 1;
