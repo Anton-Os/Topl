@@ -94,7 +94,7 @@ public:
         _geoActors.resize(PUPPET_PARTS);
 #ifdef RASTERON_H
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
-            spriteImgs[p].setFileImage(spriteImgPaths[p].c_str());
+            spriteImgs[p] = Sampler_File(spriteImgPaths[p].c_str());
             sprites[p] = loadSprite(spriteImgs[p].getImage());
             float width = bounds_getWidth(sprites[p]->bounds); float height = bounds_getHeight(sprites[p]->bounds);
             quads[p].scale({ width, height, 0.0f });

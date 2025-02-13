@@ -54,7 +54,7 @@ public:
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
 #ifdef RASTERON_H
                 _nodeSampler_map.insert({ _geoNodes[n], Sampler_2D() });
-                _nodeSampler_map.at(_geoNodes[n]).setColorImage(RAND_COLOR()); // .setImage(modelImg);
+                _nodeSampler_map.at(_geoNodes[n]) = Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
             }
         }
