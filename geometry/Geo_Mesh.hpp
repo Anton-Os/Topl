@@ -69,11 +69,11 @@ public:
 		_transformCount++;
 	}
 	void modify(originTransform callback){
-		for (unsigned v = 0; v < _vertices.size(); v += 3){
-			Geo_Vertex midpoint = Geo_Vertex((_vertices[v + 0].position + _vertices[v + 1].position + _vertices[v + 2].position) * (1.0f / 3.0f));
-			_vertices[v + 0] = callback(_vertices[v + 0], midpoint, v / 3, _transformCount);
-			_vertices[v + 1] = callback(_vertices[v + 1], midpoint, v / 3, _transformCount);
-			_vertices[v + 2] = callback(_vertices[v + 2], midpoint, v / 3, _transformCount);
+		for (unsigned m = 0; m < _vertices.size() / 3; m++){
+			Geo_Vertex midpoint = Geo_Vertex((_vertices[(m * 3) + 0].position + _vertices[(m * 3) + 1].position + _vertices[(m * 3) + 2].position) * (1.0f / 3.0f));
+			_vertices[(m * 3) + 0] = callback(_vertices[(m * 3) + 0], midpoint, m, _transformCount);
+			_vertices[(m * 3) + 1] = callback(_vertices[(m * 3) + 1], midpoint, m, _transformCount);
+			_vertices[(m * 3) + 2] = callback(_vertices[(m * 3) + 2], midpoint, m, _transformCount);
 		}
 		_transformCount++;
 	}
@@ -125,6 +125,8 @@ public:
 				}
 				for (unsigned v = 0; v < svCount; v++) _vertices.erase(_vertices.begin());
 			}
+
+			drawMax = (siCount > 0)? _indices.size() : _vertices.size();
 		}
 
 		_tessLevel += tessCount; // for testing

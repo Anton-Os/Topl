@@ -67,7 +67,7 @@ float4x4 getLookAtMatrix(float3 cPos, float3 lPos){
 		0, 0, 0, 1
 	};
 
-	return lookMatrix * placeMatrix;
+	return getCamMatrix(float4(cPos, 1), lPos); // lookMatrix * placeMatrix;
 }
 
 float getLineDistance(float2 coord, float2 p1, float2 p2){

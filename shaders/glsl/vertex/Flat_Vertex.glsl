@@ -26,7 +26,7 @@ layout(location = 3) out vec3 texcoord_out;
 
 void main() {
 	vec3 angles = getRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f); // * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
+	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
 	// final_pos = final_pos * vec4(1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f);
 
 	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;

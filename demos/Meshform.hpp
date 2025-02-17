@@ -4,11 +4,11 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.45
-#define MESHFORM_TESS 1
+#define MESHFORM_TESS 0
 #define MESHFORM_INDEX 0
-#define MESHFORM_INC 1.01F // 1.15
-#define MESHFORM_DEC 0.9F
-#define MESHFORM_CURVE 0.005F // 0.1F
+#define MESHFORM_INC 1.15F // 1.01
+#define MESHFORM_DEC 0.9F // 0.99
+#define MESHFORM_CURVE 0.1F // 0.005F
 
 #define MESHFORM_GRADIENT 0
 #define MESHFORM_LINES 1
@@ -36,10 +36,6 @@ Vec3f pullTForm(Vec3f target, Vec3f amount){
     Vec3f diffVec = amount - target;
 
     return (diffVec.len() < MESHFORM_SIZE * 3)? target + (amount * 0.33) : target;
-}
-
-Geo_Vertex vertexTForm(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
-    return vertex;
 }
 
 struct Meshform_Demo : public Topl_Program {

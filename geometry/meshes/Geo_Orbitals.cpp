@@ -46,8 +46,6 @@ void Geo_Orb::init() {
 			}
 		}
 	}
-
-	// printf("Vertex count is %d, vertex total is %d, Index count is %d, Index total is %d", v, getVertexCount(), i, getIndexCount());
 }
 
 void Geo_Torus::init(){

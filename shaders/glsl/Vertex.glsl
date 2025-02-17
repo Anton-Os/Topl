@@ -61,3 +61,10 @@ vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
 		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
 	);
 }
+
+/* vec4 getVertex(vec3 input, vec3 translation, vec3 degrees, vec4 size){
+	vec3 rotation = getRotMatrix(degrees) * input;
+	vec4 output = vec4(rotation, 1.0f) * size;
+
+	return output + vec4(offset, 0.0f);
+} */

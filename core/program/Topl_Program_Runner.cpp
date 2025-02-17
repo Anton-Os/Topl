@@ -22,7 +22,7 @@ void Topl_Program::postloop(){
         _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
         _editor.actor.setSize(*Topl_Program::pickerObj->getSize());
         _editor.mesh.drawMode = DRAW_Lines;
-        _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
+        // _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
 #ifdef RASTERON_H
         // std::cout << "Actor name is " << Topl_Program::pickerObj->getName() << std::endl;
         if(Platform::mouseControl.getIsMouseDown().second){
@@ -36,7 +36,7 @@ void Topl_Program::postloop(){
         }
 #endif
     }
-    else _overlays.billboard_object.toggleShow(false);
+    // else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H
     static unsigned index = 0;
 

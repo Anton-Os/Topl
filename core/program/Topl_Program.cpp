@@ -225,6 +225,7 @@ void Topl_Program::createOverlays(double size){
     // modifiers and overlays
     _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
     // _overlays.billboard_object.overlay(5, &_overlays.sizeSlider);
+    for(unsigned b = 0; b < 9; b++) _overlays.billboard_object.overlay(b, &_overlays.objectButtons[b]);
     for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
     
     for(unsigned short o = 0; o < 3; o++){

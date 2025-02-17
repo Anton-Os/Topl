@@ -49,14 +49,7 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 }
 #endif
 
-
 void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
-    /* if(geometryThread != nullptr)
-        if(geometryThread->joinable()){
-            geometryThread->join();
-            delete geometryThread;
-        } else return logMessage(MESSAGE_Exclaim, "Geometry thread still running!"); */
-
     geometryThread = new std::thread([this](unsigned tess, std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2, 
         Geo_TrigOrb* tOrbs[3], Geo_QuadOrb* qOrbs[3], Geo_HexOrb* hOrbs[3], Geo_DecOrb* dOrbs[3]){
         
@@ -80,6 +73,31 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
 
     _renderer->buildScene(&scene);
 }
+
+/* void Meshform_Demo::genShapes(unsigned tessCount, vertexTransform transform1, originTransform transform2){
+    geometryThread = new std::thread([this](unsigned tess, vertexTransform tform1, originTransform tform2, 
+        Geo_TrigOrb* tOrbs[3], Geo_QuadOrb* qOrbs[3], Geo_HexOrb* hOrbs[3], Geo_DecOrb* dOrbs[3]){
+        
+        for(unsigned o = 0; o < 3; o++){ // iterate through all shapes
+            if(tess > 0){
+                tOrbs[o]->tesselate(tess);
+                qOrbs[o]->tesselate(tess);
+                hOrbs[o]->tesselate(tess);
+                dOrbs[o]->tesselate(tess);
+            }
+            if(transform1 != nullptr && transform2 != nullptr && o > 0){
+                tOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
+                qOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
+                hOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
+                dOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
+            }
+        }
+    }, tessCount, transform1, transform2, trigOrbs, quadOrbs, hexOrbs, decOrbs);
+    geometryThread->join(); // TODO: Perform blocking call
+    delete geometryThread;
+
+    _renderer->buildScene(&scene);
+} */
 
 void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
     Vec3f size = *(actor->getSize());
