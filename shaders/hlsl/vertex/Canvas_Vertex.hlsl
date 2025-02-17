@@ -1,5 +1,5 @@
-#define INCLUDE_TEXTURES
 #define INCLUDE_BLOCK
+#define INCLUDE_EXTBLOCK
 
 #include "../Common.hlsl"
 
@@ -27,7 +27,7 @@ struct VS_OUTPUT {
 
 // Main
 
-VS_OUTPUT main(VS_INPUT input) { // Only output is position
+VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
 	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
@@ -36,6 +36,8 @@ VS_OUTPUT main(VS_INPUT input) { // Only output is position
 	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 	output.texcoord = input.texcoord;
+
+	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
 
 	return output;
 }

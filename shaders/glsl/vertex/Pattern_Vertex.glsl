@@ -44,12 +44,8 @@ uint calcCtrlPointIndex(vec3 target){
 }
 
 void main() {
-	vec3 angles = getRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
-	// final_pos = final_pos * vec4(1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f + cos(float(timeElapse)), 1.0f);
-
-	// gl_Position = (final_pos + vec4(offset, 0.0f)) * projMatrix;
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
+	vec4 pos = getVertex(pos_in, offset, rotation, vec4(scale, 1.0 / cam_pos.w));
+	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	ctrl_index_out = calcCtrlPointIndex(pos_out);

@@ -48,7 +48,7 @@ float3 calcNearestPoint(float3 target){ // TODO: Calculate with control matrix
 
 // Main
 
-VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
+VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
 	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
@@ -61,6 +61,8 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID) {
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
 	output.vertex_color = input.vert_color;
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
+
+	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
 
 	return output;
 }

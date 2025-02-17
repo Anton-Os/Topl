@@ -62,5 +62,7 @@ VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
 	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
 
+	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
+
 	return output;
 }

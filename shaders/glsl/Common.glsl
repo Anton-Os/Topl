@@ -62,7 +62,7 @@ layout(binding = 8) uniform sampler3D volumeTex;
 // uniform vec4 nearestVertex[1024];
 
 #ifndef IGNORE_INPUTS
-layout(location = 0) in vec3 pos;
+layout(location = 0) in vec3 pos_in;
 layout(location = 1) in vec3 texcoord;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 vert_color;

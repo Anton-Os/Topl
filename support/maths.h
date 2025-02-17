@@ -170,6 +170,14 @@ struct Matrix {
         return result;
     }
 
+    /* Matrix translation(const VectoXF<r - 1>& input){
+        Matrix<r, c> result = Matrix<r, c>();
+        for(unsigned row = 0; row < r; row++)
+            for(unsigned col = 0; col < c; col++)
+                result[row][col] = (row == col)? 1.0F : (col != c - 1)? 0.0F : input[r];x
+        return result;
+    } */
+
     std::string toString (){
         std::string matStr = "{\n";
         for(unsigned row = 0; row < r; row++)

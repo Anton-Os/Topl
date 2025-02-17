@@ -26,12 +26,10 @@ layout(location = 2) out vec3 normal_out;
 // Main
 
 void main() {
-	vec3 angles = getRotMatrix(rotation) * pos;
-	vec4 final_pos = vec4(angles.x, angles.y, angles.z, 1.0f) * vec4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
+	vec4 pos = getVertex(pos_in, offset, rotation, vec4(scale, 1.0 / cam_pos.w));
+	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	vertex_pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
+	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
 	normal_out = getRotMatrix(rotation) * normal;
-
-	gl_Position = (final_pos + vec4(offset, 0.0f)) * getCamMatrix(cam_pos, look_pos) * projMatrix;
-	pos_out = vec3(final_pos.x, final_pos.y, final_pos.z);
+	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 }
