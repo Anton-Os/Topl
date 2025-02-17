@@ -10,11 +10,11 @@
 #define BRUSH3D_ROT 0.26F
 
 Geo_Vertex vertexTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
-    return Geo_Vertex(vertex.position * (1.0F / invocation)); // test
+    return Geo_Vertex(vertex.position); // test
 }
 
 Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, unsigned primID, unsigned invocation){
-    return Geo_Vertex(vertex.position * (1.0F / primID)); // test
+    return Geo_Vertex(vertex.position); // test
 }
 
 struct Penscape_Demo : public Topl_Program {

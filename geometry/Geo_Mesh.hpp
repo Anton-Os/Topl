@@ -69,11 +69,15 @@ public:
 		_transformCount++;
 	}
 	void modify(originTransform callback){
-		for (unsigned m = 0; m < _vertices.size() / 3; m++){
-			Geo_Vertex midpoint = Geo_Vertex((_vertices[(m * 3) + 0].position + _vertices[(m * 3) + 1].position + _vertices[(m * 3) + 2].position) * (1.0f / 3.0f));
-			_vertices[(m * 3) + 0] = callback(_vertices[(m * 3) + 0], midpoint, m, _transformCount);
-			_vertices[(m * 3) + 1] = callback(_vertices[(m * 3) + 1], midpoint, m, _transformCount);
-			_vertices[(m * 3) + 2] = callback(_vertices[(m * 3) + 2], midpoint, m, _transformCount);
+		bool isIndexed = getIndexCount() > 0;
+		for (unsigned m = 0; m < ((isIndexed)? _indices.size() : _vertices.size()) / 3; m++){
+			unsigned idx1 = (isIndexed)? _indices[(m * 3) + 0] : (m * 3) + 0;
+			unsigned idx2 = (isIndexed)? _indices[(m * 3) + 1] : (m * 3) + 1;
+			unsigned idx3 = (isIndexed)? _indices[(m * 3) + 2] : (m * 3) + 2;
+			Geo_Vertex midpoint = Geo_Vertex((_vertices[idx1].position + _vertices[idx2].position + _vertices[idx3].position) * (1.0f / 3.0f));
+			_vertices[idx1] = callback(_vertices[idx1], midpoint, m, _transformCount);
+			_vertices[idx2] = callback(_vertices[idx2], midpoint, m, _transformCount);
+			_vertices[idx3] = callback(_vertices[idx3], midpoint, m, _transformCount);
 		}
 		_transformCount++;
 	}

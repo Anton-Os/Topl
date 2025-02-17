@@ -13,7 +13,7 @@
 #define MESHFORM_GRADIENT 0
 #define MESHFORM_LINES 1
 #define MESHFORM_CHECKER 2
-// #define MESHFORM_NOISE 2
+#define MESHFORM_NOISE 3
 
 Vec3f rigidTForm(Vec3f target, Vec3f amount){
     static unsigned index = 0; 

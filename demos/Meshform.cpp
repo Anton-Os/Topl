@@ -29,16 +29,15 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
         } else return logMessage(MESSAGE_Exclaim, "Texture thread still running!");
 
     textureThread = new std::thread([this](unsigned short m, unsigned c1, unsigned c2){
-        SIDE_Type side = SIDE_Bottom;
-        ImageSize size = { 256, 256 };
-
+        unsigned width = 1; unsigned height = 1;
         for(unsigned d = 0; d < volumeImg.getDepth(); d++){
+            (d % 2 == 0)? width++ : height++;
             Rasteron_Image* sliceImg;
             switch(m){
-                case MESHFORM_LINES: sliceImg = linedImgOp(size, c1, c2, d, 0.0); break;
-                case MESHFORM_CHECKER: sliceImg = checkeredImgOp(size, { d, d, c1, c2 }); break;
-                // case MESHFORM_NOISE: sliceImg = noiseImgOp_tiled(size, { d, d, c1, c2 }); break;
-                default: sliceImg = solidImgOp(size, colors_blend(c1, c2, d / 256.0)); break;
+                case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
+                case MESHFORM_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
+                case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
+                default: sliceImg = solidImgOp({ 256, 256 }, colors_blend(c1, c2, d / 256.0)); break;
             }
             volumeImg.addSlice(sliceImg, d);
             RASTERON_DEALLOC(sliceImg);
@@ -73,31 +72,6 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
 
     _renderer->buildScene(&scene);
 }
-
-/* void Meshform_Demo::genShapes(unsigned tessCount, vertexTransform transform1, originTransform transform2){
-    geometryThread = new std::thread([this](unsigned tess, vertexTransform tform1, originTransform tform2, 
-        Geo_TrigOrb* tOrbs[3], Geo_QuadOrb* qOrbs[3], Geo_HexOrb* hOrbs[3], Geo_DecOrb* dOrbs[3]){
-        
-        for(unsigned o = 0; o < 3; o++){ // iterate through all shapes
-            if(tess > 0){
-                tOrbs[o]->tesselate(tess);
-                qOrbs[o]->tesselate(tess);
-                hOrbs[o]->tesselate(tess);
-                dOrbs[o]->tesselate(tess);
-            }
-            if(transform1 != nullptr && transform2 != nullptr && o > 0){
-                tOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
-                qOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
-                hOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
-                dOrbs[o]->modify((o % 2 == 1)? tform1 : tform2);
-            }
-        }
-    }, tessCount, transform1, transform2, trigOrbs, quadOrbs, hexOrbs, decOrbs);
-    geometryThread->join(); // TODO: Perform blocking call
-    delete geometryThread;
-
-    _renderer->buildScene(&scene);
-} */
 
 void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
     Vec3f size = *(actor->getSize());

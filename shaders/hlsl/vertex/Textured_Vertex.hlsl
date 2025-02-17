@@ -1,4 +1,5 @@
 #define INCLUDE_SCENEBLOCK
+#define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
 #include "../Common.hlsl"
@@ -29,7 +30,7 @@ struct VS_OUTPUT {
 
 // Main
 
-VS_OUTPUT main(VS_INPUT input) {
+VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
 	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
