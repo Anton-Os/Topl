@@ -44,11 +44,12 @@ struct Sampler_2D : public Sampler_Target {
 		else image = copyImgOp(refImage);
 		tag = &image->name;
     }
-	void stageImg(Rasteron_Image* stageImg){
+	void putImg(Rasteron_Image* targetImg){
 		cleanup();
-		image = RASTERON_ALLOC(stageImg->name, stageImg->height, stageImg->width);
-		for(unsigned p = 0; p < stageImg->height * stageImg->width; p++) *(image->data + p) = *(stageImg->data + p);
-		RASTERON_DEALLOC(stageImg);
+		/* image = RASTERON_ALLOC(targetImg->name, targetImg->height, targetImg->width);
+		for(unsigned p = 0; p < targetImg->height * targetImg->width; p++) *(image->data + p) = *(targetImg->data + p);
+		RASTERON_DEALLOC(targetImg); */
+		image = targetImg;
 		tag = &image->name;
 	}
 

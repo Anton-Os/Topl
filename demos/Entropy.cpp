@@ -37,7 +37,6 @@ void Entropy_Demo::init(){
         scene1.addGeometry("actor_surface" + std::to_string(a), &surface_actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
         physActors[a].damping = 0.995;
-        // physActors[a].mass *= surface_actors[a].getSize()->data[0] / ENTROPIC_SIZE;
         scene1.addPhysics("actor_surface" + std::to_string(a), &physActors[a]);
 #endif
         scene2.addGeometry("actor_conic" + std::to_string(a), &conic_actors[a]);
@@ -49,7 +48,7 @@ void Entropy_Demo::init(){
     _renderer->buildScene(&scene1); _renderer->buildScene(&scene2); _renderer->buildScene(&scene3);
     _renderer->buildScene(&ext_scene1); _renderer->buildScene(&ext_scene2); _renderer->buildScene(&ext_scene3);
 
-    _renderer->isMeshUpdate = false;
+    // _renderer->isMeshUpdate = false;
 }
 
 void Entropy_Demo::loop(double frameTime){

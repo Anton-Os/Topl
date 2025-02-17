@@ -59,12 +59,13 @@ struct Entropy_Demo : public Topl_Program {
                 break;
             }
 
-            // surfaceMeshes[a]->rotate({ 0.1F * (a + 1), 0.1F * (a + 1), 0.1F * (a + 1) });
-
+            surfaceMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
             surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
             surfaceExt_actors[a].setPropsTo(surface_actors[a]);
+            coneMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
             conicExt_actors[a] = Geo_Actor(coneMeshes.back());
             conicExt_actors[a].setPropsTo(conic_actors[a]);
+            volumeMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
             volumeExt_actors[a] = Geo_Actor(volumeMeshes.back());
             volumeExt_actors[a].setPropsTo(volume_actors[a]);
         }
