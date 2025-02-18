@@ -63,9 +63,9 @@ layout(binding = 8) uniform sampler3D volumeTex;
 
 #ifndef IGNORE_INPUTS
 layout(location = 0) in vec3 pos_in;
-layout(location = 1) in vec3 texcoord;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec3 vert_color;
+layout(location = 1) in vec3 texcoord_in;
+layout(location = 2) in vec3 normal_in;
+layout(location = 3) in vec3 vert_color_in;
 // layout(location = 3) in mat3 instanceData;
 #endif
 

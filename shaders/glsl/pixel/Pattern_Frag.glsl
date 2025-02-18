@@ -4,6 +4,8 @@
 // #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
+#define PATTERN_SIZE 0.5
+
 #include "Common.glsl"
 
 #include "Pixel.glsl"
@@ -41,18 +43,20 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
-	if(mode > 0){
-		nearestPoint.x += sin(float(timeElapse) / 1000) * mode * 0.1;
-		nearestPoint.y += cos(float(timeElapse) / 1000) * mode * 0.1;
-		nearestPoint.z += tan(float(timeFrame) / 1000) * mode * 0.1;
-	}
-
 	float nearestDist = length(nearestPoint - pos);
+	float size = abs(mode) * PATTERN_SIZE;
 
-	float r = sin(nearestPoint.x * abs(mode)) * nearestDist;
-	float g = cos(nearestPoint.y * abs(mode)) * nearestDist;
-	float b = tan(nearestPoint.x * abs(mode)) * nearestDist;
+	if(mode > 0){
+		nearestPoint.x += sin(float(timeElapse) / 1000) * size;
+		nearestPoint.y += cos(float(timeElapse) / 1000) * size;
+		nearestPoint.z += tan(float(timeFrame) / 1000) * size;
+	} else nearestPoint *= (float(timeElapse) / 1000) * size;
+
+	float r = sin(nearestPoint.x * abs(mode % 10)) * nearestDist;
+	float g = cos(nearestPoint.y * abs(mode % 10)) * nearestDist;
+	float b = tan(nearestPoint.z * abs(mode % 10)) * nearestDist;
 	
-	if(mode >= 0) outColor = vec4(r, g, b, 1.0) / vertex_color;
-	else outColor = vec4(r, g, b, 1.0) * vertex_color;
+	// if(mode >= 0) 
+	outColor = vec4(r, g, b, 1.0) / vertex_color;
+	// else outColor = vec4(r, g, b, 1.0) * vertex_color;
 }

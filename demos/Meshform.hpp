@@ -56,7 +56,7 @@ struct Meshform_Demo : public Topl_Program {
     Geo_QuadOrb* quadOrbs[3] = { new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE) };
     Geo_HexOrb* hexOrbs[3] = { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) };
     Geo_DecOrb* decOrbs[3] = { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) };
-    Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 10, 10 }));
+    Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 
     Geo_Actor orbActors[3][4] = {
         { trigOrbs[0], quadOrbs[0], hexOrbs[0], decOrbs[0] },

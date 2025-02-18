@@ -81,3 +81,11 @@ float3 getCoordDistances(float2 coord, float2 p1, float2 p2){
 		sqrt(pow(coord.x - p2.x, 2.0) + pow(coord.y - p2.y, 2.0)) // distance between coordinate and point 2
 	);
 }
+
+float4 getVertex(float3 input, float3 translation, float3 degrees, float4 size){
+	float3 rotation = mul(getRotMatrix(degrees), input);
+	float4 pos = float4(rotation, 1.0f) * size;
+	pos += float4(translation, 0.0f);
+
+	return pos;
+}

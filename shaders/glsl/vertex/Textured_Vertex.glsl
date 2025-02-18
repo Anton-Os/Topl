@@ -31,7 +31,7 @@ layout(location = 0) out vec3 texcoord_out;
 void main() {
 	vec4 pos = getVertex(pos_in, offset, rotation, vec4(scale, 1.0 / cam_pos.w));
 
-	texcoord_out = texcoord;
+	texcoord_out = texcoord_in;
 
 	if(flip % 4 != 0){ // performing flip operation
 		if(flip % 4 != 1) texcoord_out.x = 1.0 - texcoord_out.x;
@@ -49,7 +49,7 @@ void main() {
 		else if(uint(floor(abs(mode) / 10)) % 10 == 5) texOffset = texture(tex5, vec2(texcoord_out.x, texcoord_out.y));
 		else if(uint(floor(abs(mode) / 10)) % 10 == 6) texOffset = texture(tex6, vec2(texcoord_out.x, texcoord_out.y));
 		else if(uint(floor(abs(mode) / 10)) % 10 == 7) texOffset = texture(tex7, vec2(texcoord_out.x, texcoord_out.y));
-		else if(uint(floor(abs(mode) / 10)) % 10 == 8) texOffset = texture(volumeTex, texcoord);
+		else if(uint(floor(abs(mode) / 10)) % 10 == 8) texOffset = texture(volumeTex, texcoord_out);
 
 		if(mode >= 0){
 			texcoord_out.x += (texOffset.g - 0.5F) * (floor(abs(mode) / 100.0) + 1);

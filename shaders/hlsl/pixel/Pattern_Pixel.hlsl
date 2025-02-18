@@ -2,6 +2,8 @@
 #define IGNORE_INPUTS
 #define INCLUDE_TEXTURES
 
+#define PATTERN_SIZE 0.5
+
 #include "../Common.hlsl"
 
 #include "../Pixel.hlsl"
@@ -40,14 +42,22 @@ struct PS_INPUT {
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
+	float3 nearestPoint = float3(input.pos.x, input.pos.y, input.pos.z) - input.nearestPoint; 
 	float nearestDist = length(float3(input.pos.x, input.pos.y, input.pos.z) - input.nearestPoint);
+	float size = abs(mode) * PATTERN_SIZE;
 
-    float r = sin(nearestDist * (abs(mode) + 1) / abs(input.nearestPoint.x));
-	float g = cos(nearestDist * (abs(mode) + 1) * abs(input.nearestPoint.y));
-	float b = tan(nearestDist * (abs(mode) + 1) + abs(input.nearestPoint.z));
+    if(mode > 0){
+		nearestPoint.x += sin(float(timeElapse) / 1000) * size;
+		nearestPoint.y += cos(float(timeElapse) / 1000) * size;
+		nearestPoint.z += tan(float(timeFrame) / 1000) * size;
+	} else nearestPoint *= (float(timeElapse) / 1000) * size;
 
-	if(mode >= 0) return float4(r, g, b, 1.0) * float4(input.vertex_color, 1.0);
-	else return float4(r, g, b, 1.0) / float4(input.vertex_color, 1.0);
+	float r = nearestPoint.x * abs(mode % 10) * nearestDist;
+	float g = nearestPoint.y * abs(mode % 10) * nearestDist;
+	float b = nearestPoint.z * abs(mode % 10) * nearestDist;
+
+	// if(mode >= 0) return float4(r, g, b, 1.0) * float4(input.vertex_color, 1.0);
+	return float4(r, g, b, 1.0) / float4(input.vertex_color, 1.0);
 }
 
 

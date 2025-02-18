@@ -28,5 +28,5 @@ void main() {
 	vec4 pos = getVertex(pos_in, offset, rotation, vec4(scale, 1.0 / cam_pos.w));
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
-	texcoord_out = texcoord;
+	texcoord_out = texcoord_in;
 }

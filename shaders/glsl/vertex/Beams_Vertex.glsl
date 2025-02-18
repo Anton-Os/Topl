@@ -30,6 +30,6 @@ void main() {
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
-	normal_out = getRotMatrix(rotation) * normal;
+	normal_out = getRotMatrix(rotation) * normal_in;
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 }
