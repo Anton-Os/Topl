@@ -132,7 +132,7 @@ void Meshform_Demo::loop(double frameTime){
     // torus->drawMode = DRAW_Lines;
 #ifdef RASTERON_H
     _texVShader.setFlip(0);
-    _texVShader.setAntialiasing(0.01F, 30);
+    _texVShader.setAntialiasing(0.005F, 5);
     _texVShader.setSlice((_renderer->getFrameCount() % 256) * (1.0F / 256.0));
 #endif
     _renderer->setDrawMode(DRAW_Triangles);
@@ -145,7 +145,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

@@ -63,4 +63,7 @@ void main() {
 	}
 
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
+#ifdef INCLUDE_EXTBLOCK
+	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
+#endif
 }

@@ -73,7 +73,6 @@ public:
 		return (*cam->getPos() + Vec3f({ Platform::getCursorX(), Platform::getCursorY(), 0.0 }) - Vec3f{ 0.0, 0.0, CAM_DEPTH } ) * (1.0 / *cam->getZoom());  // TODO: Include roll
 	}
 
-	// These should not be static
 	static Topl_Camera camera; // custom camera object
 	static Topl_Timeline timeline;
 	static Vec3f cursorPos;
@@ -132,6 +131,10 @@ private:
 
     void setPipelines();
 	void setShadersMode(unsigned m){ for(unsigned s = 0; s < PROGRAM_PIPELINES; s++) _entryShaders[s]->setMode(m); }
+
+	Vec3f _camPos = *camera.getPos(); 
+	Vec3f _camRot = *camera.getRot(); 
+	float _camZoom = *camera.getZoom();
 
 	// Scenes, Geometry & Targets
 	struct Background {

@@ -14,13 +14,22 @@ void Topl_Program::preloop(){
         Vec3f pickerCoord = coordPicker(&_overlays.scene);
     }
 #endif
+
+    Topl_Program::camera.setPos(_camPos);
+    Topl_Program::camera.setRot(_camRot);
+    Topl_Program::camera.setZoom(_camZoom);
 }
 
 void Topl_Program::postloop(){
-     if(Topl_Program::pickerObj != nullptr){
+    if(isEnable_background){
+        Textured_VertexShader::TexParams params = { 0, 0.0F, *camera.getPos() * -0.1F, Vec3f({ 0.5F, 0.5F, 0.5F }) * (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F)) }; // TODO: Include Rotation?
+        _texVShader.setParams(&_background.actor, params);
+    }
+
+    if(Topl_Program::pickerObj != nullptr){
         _editor.actor.setPos(*Topl_Program::pickerObj->getPos());
         _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
-        _editor.actor.setSize(*Topl_Program::pickerObj->getSize());
+        _editor.actor.setSize(*Topl_Program::pickerObj->getSize() * 0.75F);
         _editor.mesh.drawMode = DRAW_Lines;
         // _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
 #ifdef RASTERON_H
@@ -65,12 +74,12 @@ void Topl_Program::run(){
             if(Platform::mouseControl.getIsMouseDown().second) preloop();
             _renderer->clear(); // clears view to solid color
 
-            if(isEnable_background) renderScene(&_background.scene, _texPipeline, TEX_1); // nullptr, shaderMode);
+            if(isEnable_background) renderScene(&_background.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             Topl_Factory::switchPipeline(_renderer, savedPipeline);
             setShadersMode(Topl_Program::shaderMode);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
-            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
+            if(isEnable_overlays) renderScene(&_overlays.scene, _materialPipeline, 0); // nullptr, shaderMode);
 
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();

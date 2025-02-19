@@ -50,4 +50,7 @@ void main() {
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	ctrl_index_out = calcCtrlPointIndex(pos_out);
 	vert_color_out = vec4(vert_color_in, 0.5); // getStepColor(ctrl_index_out);
+#ifdef INCLUDE_EXTBLOCK
+	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
+#endif
 }

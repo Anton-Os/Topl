@@ -61,12 +61,13 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	}
 
 	float3 color = texVals[0];
-	float3 ambientColor = lightVal * texVals[(1 + t) % 8];
+	float3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
 	float3 ambient = ambientColor * (0.25 + (0.05 * intensity));
-	float3 diffuseColor = lightVal * texVals[(2 + t) % 8];
+	float3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;
 	float3 diffuse = diffuseColor * calcDiffuse(lightPos - color_range(texVals[(3 + t) % 8]), (target - offset) - color_range(texVals[(4 + t) % 8])) * 0.5 * intensity;
-	float3 specularColor = lightVal * texVals[(5 + t) % 8];
+	float3 specularColor = (lightVal + texVals[(5 + t) % 8]) / 2;
 	float3 specular = specularColor * calcSpec(cam_pos - float4(color_range(texVals[(6 + t) % 8]), 1.0), target - color_range(texVals[(7 + t) % 8]), float(intensity + 1) * 0.5);
 
-	return float4((color + abs(ambient + diffuse + specular)) / 2.0, 1.0);
+	// return float4((color + abs(ambient + diffuse + specular)) / 2.0, 1.0);
+	return float4(color * (ambient + diffuse + specular), 1.0f);
 }

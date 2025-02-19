@@ -27,19 +27,16 @@ struct VS_OUTPUT {
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
-	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
+	float4 pos = getVertex(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w));
 
-	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
-	output.vertex_pos = output.pos;
-	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
+	output.vertex_pos = pos;
+	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.vertex_id = vertexID;
 	output.texcoord = input.texcoord;
-	if(mode < 10) output.vertex_color = float4(input.vert_color, 1.0);
-	else if(vertexID % mode == 0) output.vertex_color = float4(1.0F, 1.0f, 1.0F, 1.0F);
+	if(mode < 10 || vertexID % mode == 0) output.vertex_color = float4(input.vert_color, 1.0);
 	else output.vertex_color = float4(0.0F, 0.0f, 0.0F, 0.5F);
-
+#ifdef INCLUDE_EXTBLOCK
 	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
-
+#endif
 	return output;
 }

@@ -74,3 +74,14 @@ layout(location = 3) in vec3 vert_color_in;
 uvec4 getModes(int mode){
 	return uvec4(abs(mode) % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
+
+float sum(vec3 data){
+	return abs(data.x) + abs(data.y) + abs(data.z);
+}
+
+bool nonZeroMatrix(mat4 targetMatrix){
+	for(uint m = 0; m < 4; m++) 
+		for(uint n = 0; n < 4; n++)
+			if(targetMatrix[m][n] != 0.0) return true;
+	return false;
+}

@@ -22,33 +22,45 @@ struct Textured_VertexShader : public Topl_EntryShader {
 	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genActorBlock(actor, bytes);
 		auto paramEntry = std::find_if(texParamMap.begin(), texParamMap.end(), [actor](const std::pair<actor_cptr, TexParams> p){ return p.first == actor; });
+		auto antialiasEntry = std::find_if(antialiasMap.begin(), antialiasMap.end(), [actor](const std::pair<actor_cptr, std::pair<float, unsigned>> p){ return p.first == actor; });
 		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scroll : (uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scale : (uint8_t*)&_texScale, sizeof(Vec3f), bytes);
         alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.flip : (uint8_t*)&_flip, sizeof(unsigned), NO_PADDING, bytes);
-		alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.first : (uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
-        alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.second : (uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
-		alignDataToBytes((uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
+		alignDataToBytes((antialiasEntry != antialiasMap.end())? (uint8_t*)&antialiasEntry->second.first : (uint8_t*)&_antialiasArea, sizeof(unsigned), NO_PADDING, bytes);
+		alignDataToBytes((antialiasEntry != antialiasMap.end())? (uint8_t*)&antialiasEntry->second.second : (uint8_t*)&_antialiasSteps, sizeof(float), NO_PADDING, bytes);
+        // alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.first : (uint8_t*)&_antialiasArea, sizeof(float), NO_PADDING, bytes);
+        // alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.antialias.second : (uint8_t*)&_antialiasSteps, sizeof(unsigned), NO_PADDING, bytes);
+		alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.slice : (uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
 	}
 
 	void setFlip(unsigned f){ _flip = f; }
+	void setSlice(float s){ _slice = s; }
 	void setTexScroll(const Vec3f& s){ _texScroll = s; }
 	void setTexScale(const Vec3f& s){ _texScale = s; }
+
+	struct TexParams { 
+		unsigned flip;
+		float slice;
+		Vec3f scroll;
+		Vec3f scale;
+	};
+
+	void setParams(actor_cptr actor, TexParams params){
+		auto paramEntry = std::find_if(texParamMap.begin(), texParamMap.end(), [actor](const std::pair<actor_cptr, TexParams> p){ return p.first == actor; });
+		if(paramEntry != texParamMap.end()) texParamMap[actor] = params; 
+		else texParamMap.insert({ actor, params });
+	}
 
 	void setAntialiasing(float area, unsigned steps){
 		_antialiasArea = area;
 		_antialiasSteps = steps;
 	}
 
-	void setSlice(float s){ _slice = s; }
-
-	struct TexParams { 
-		unsigned flip;
-		float scroll;
-		float scale;
-		std::pair<float, unsigned> antialias;
-	};
-
-	void setParams(actor_cptr actor, TexParams params){ texParamMap.insert({ actor, params }); }
+	void setAntialiasing(actor_cptr actor, float area, unsigned steps){
+		auto antialiasEntry = std::find_if(antialiasMap.begin(), antialiasMap.end(), [actor](const std::pair<actor_cptr, std::pair<float, unsigned>> p){ return p.first == actor; });
+		if(antialiasEntry != antialiasMap.end()) antialiasMap[actor] = std::make_pair(area, steps); 
+		else antialiasMap.insert({ actor, std::make_pair(area, steps) });
+	}
 private:
 	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
 	Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });
@@ -60,6 +72,7 @@ private:
     unsigned _antialiasSteps = 0; // iterations for antialiasing
 
 	std::map<actor_cptr, TexParams> texParamMap;
+	std::map<actor_cptr, std::pair<float, unsigned>> antialiasMap;
 };
 
 struct Textured_VertexShader_GL4 : public Textured_VertexShader {

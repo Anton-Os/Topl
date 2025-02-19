@@ -51,18 +51,14 @@ float3 calcNearestPoint(float3 target){ // TODO: Calculate with control matrix
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
-	float3 angles = mul(getRotMatrix(rotation), float3(input.pos.x, input.pos.y, input.pos.z));
-	output.pos = float4(angles.x, angles.y, angles.z, 1.0) * float4(scale.x, scale.y, scale.z, 1.0 / cam_pos.w);
-    // output.pos = output.pos * float4(1.0 + cos(timeElapse / 1000.0F), 1.0 + cos(timeElapse / 1000.0F), 1.0 + cos(timeElapse / 1000.0F), 1.0f);
+	float4 pos = getVertex(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w));
 
-	float4x4 cameraMatrix = getLookAtMatrix(cam_pos, look_pos);
-	output.pos = mul(transpose(projMatrix), mul(cameraMatrix, output.pos + float4(offset, 0.0)));
-
+	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
 	output.vertex_color = input.vert_color;
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
-
+#ifdef INCLUDE_EXTBLOCK
 	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
-
+#endif
 	return output;
 }

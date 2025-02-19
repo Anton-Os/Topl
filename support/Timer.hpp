@@ -95,7 +95,7 @@ struct Timer_Dynamic : public Timer_Persist {
 	void setTime(millisec_t time); // set absolute
 	void updateTime(millisec_t time); // increment or decrement time
 	
-	std::pair<double, double> range = std::make_pair(0.0, 60.0);
+	std::pair<double, double> range = std::make_pair(0.0, 1000.0);
 	bool isPaused = false; // start or stop to handle events
 	bool isReversed = false; // TODO: Handle going backwards in time
 };

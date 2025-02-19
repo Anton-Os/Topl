@@ -33,4 +33,7 @@ void main() {
 	texcoord_out = texcoord_in;
 	if(mode < 10 || gl_VertexID == mode) vert_color_out = vec4(vert_color_in, 1.0f); // getRandColor(color - (color / (gl_VertexID + 1))); // getStepColor(gl_VertexID);
 	else vert_color_out = vec4(0.0F, 0.0f, 0.0F, 0.1F); 
+#ifdef INCLUDE_EXTBLOCK
+	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
+#endif
 }

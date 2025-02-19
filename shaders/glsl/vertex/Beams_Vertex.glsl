@@ -29,7 +29,10 @@ void main() {
 	vec4 pos = getVertex(pos_in, offset, rotation, vec4(scale, 1.0 / cam_pos.w));
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
+	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
 	normal_out = getRotMatrix(rotation) * normal_in;
-	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
+#ifdef INCLUDE_EXTBLOCK
+	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
+#endif
 }

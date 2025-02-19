@@ -62,7 +62,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 }
 
 void Topl_Program::_onAnyKey(char k){
-    if(isspace(k) && k != 0x0D) Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
+    if(isspace(k) && k != 0x0D) timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
         switch(tolower(k)){
@@ -70,8 +70,8 @@ void Topl_Program::_onAnyKey(char k){
             case 's': Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
             case 'a': Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
             case 'd': Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
-            case 'x': Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
-            case 'v': Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+            case 'x': Topl_Program::camera.updatePos({ 0.0F, 0.0, -Topl_Program::speed }); break;
+            case 'v': Topl_Program::camera.updatePos({ 0.0F, 0.0, Topl_Program::speed }); break;
             case 'q': Topl_Program::camera.updateRot({ -Topl_Program::speed, 0.0, 0.0 }); break;
             case 'e': Topl_Program::camera.updateRot({ Topl_Program::speed, 0.0, 0.0 }); break;
             case 'r': Topl_Program::camera.updateRot({ 0.0F, -Topl_Program::speed, 0.0 }); break;
@@ -81,6 +81,13 @@ void Topl_Program::_onAnyKey(char k){
             case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed)); break;
             case 'c': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
         }
+
+        if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd') // TODO: Interpolate movement
+            Topl_Program::timeline.addSequence_vec3f(&_camPos, std::make_pair(-5.0F, *(Topl_Program::camera.getPos())));
+        else if(tolower(k) == 'q' || tolower(k) == 'e' || tolower(k) == 'r' || tolower(k) == 'f' || tolower(k) == 't' || tolower(k) == 'g') // TODO: Interpolate rotation
+            Topl_Program::timeline.addSequence_vec3f(&_camRot, std::make_pair(-5.0F, *(Topl_Program::camera.getRot())));
+        else if(tolower(k) == 'z' || tolower(k) == 'c') // TODO: Interpolate zoom
+            Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(-5.0F, *(Topl_Program::camera.getZoom())));
 #ifdef RASTERON_H
         /* else if(k == ';'){
             Rasteron_Image* frameImg = _renderer->frame();

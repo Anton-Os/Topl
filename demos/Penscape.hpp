@@ -10,11 +10,13 @@
 #define BRUSH3D_ROT 0.26F
 
 Geo_Vertex vertexTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
-    return Geo_Vertex(vertex.position); // test
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE });
+    return Geo_Vertex(vertex.position + randVec); // test
 }
 
 Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, unsigned primID, unsigned invocation){
-    return Geo_Vertex(vertex.position); // test
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE });
+    return Geo_Vertex(vertex.position + randVec); // test
 }
 
 struct Penscape_Demo : public Topl_Program {
