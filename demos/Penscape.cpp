@@ -6,10 +6,10 @@ static DRAW_Mode drawMode = DRAW_Triangles;
 
 void Penscape_Demo::onAnyKey(char key){
     switch(tolower(key)){
-        case 'u': drawMode = DRAW_Triangles; break;
+        /* case 'u': drawMode = DRAW_Triangles; break;
         case 'i': drawMode = DRAW_Points; break;
         case 'o': drawMode = DRAW_Lines; break;
-        case 'p': drawMode = DRAW_Fan; break;
+        case 'p': drawMode = DRAW_Fan; break; */
         case 'j': Penscape_Demo::mode = 0; break;
         case 'k': Penscape_Demo::mode = 1; break;
         case 'l': Penscape_Demo::mode = 2; break;
@@ -33,10 +33,10 @@ void Penscape_Demo::init(){
 }
 
 void Penscape_Demo::loop(double frameTime){
-    trigMeshes[mode]->drawMax = (_renderer->getFrameCount() / 6) % trigMeshes[mode]->getIndexCount();
-    quadMeshes[mode]->drawMax = (_renderer->getFrameCount() / 6) % quadMeshes[mode]->getIndexCount();
-    hexMeshes[mode]->drawMax = (_renderer->getFrameCount() / 6) % hexMeshes[mode]->getIndexCount();
-    circleMeshes[mode]->drawMax = (_renderer->getFrameCount() / 6) % circleMeshes[mode]->getIndexCount();
+    trigMeshes[mode]->drawMax = (_renderer->getFrameCount() / 36) % trigMeshes[mode]->getIndexCount();
+    quadMeshes[mode]->drawMax = (_renderer->getFrameCount() / 24) % quadMeshes[mode]->getIndexCount();
+    hexMeshes[mode]->drawMax = (_renderer->getFrameCount() / 12) % hexMeshes[mode]->getIndexCount();
+    circleMeshes[mode]->drawMax = _renderer->getFrameCount() % circleMeshes[mode]->getIndexCount();
     
     _renderer->setDrawMode(drawMode);
     _renderer->updateScene(&scene);
