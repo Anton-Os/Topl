@@ -59,8 +59,8 @@ public:
 		std::string shaderSrc = readFile(_shaderFilePath.c_str());
 
 		unsigned short startOffset = 0, includeOffset = 0;
-		while(shaderSrc.find("#include", includeOffset) != std::string::npos){
-			startOffset = shaderSrc.find("#include", includeOffset);
+		while(shaderSrc.find("#include", startOffset) != std::string::npos){
+			startOffset = shaderSrc.find("#include", startOffset);
 			includeOffset = startOffset + 10; // location of include after the space
 
 			std::string includeStr = "", includeSrc = "";
@@ -75,10 +75,12 @@ public:
 
 				includeSrc = readFile(includeStr.c_str());
 			}
-			else if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr); // read from entry
+			else if(_embedMap.find(includeStr) != _embedMap.end()){ 
+				includeSrc = _embedMap.at(includeStr); // read from entry
+				std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
+			}
 
 			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);
-			includeOffset -= 10;
 		}
 		return shaderSrc;
 	}

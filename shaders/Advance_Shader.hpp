@@ -20,10 +20,8 @@ struct Advance_TessCtrlShader_GL4 : public Advance_TessCtrlShader {
 
 struct Advance_TessCtrlShader_DX11 : public Advance_TessCtrlShader {
 	Advance_TessCtrlShader_DX11() : Advance_TessCtrlShader(genPrefix_hlsl() + "extended/" + "Advance_Hull.hlsl"){
-		/* _embedMap.insert({ "Tess_Ctrl_InOut", 
-			std::string("struct HS_INPUT { float4 pos : SV_POSITION; };")
-			+ "\n" + "struct HS_OUTPUT { float4 pos : SV_POSITION; };"
-		}); */
+		_embedMap.insert({ "Tess_Ctrl_Input", "struct DS_INPUT { float4 pos : SV_POSITION; };" });
+		_embedMap.insert({ "Tess_Ctrl_Output", "struct DS_OUTPUT { float4 pos : SV_POSITION; }; " });
 	}
 };
 
@@ -46,7 +44,10 @@ struct Advance_TessEvalShader_GL4 : public Advance_TessEvalShader {
 };
 
 struct Advance_TessEvalShader_DX11 : public Advance_TessEvalShader {
-	Advance_TessEvalShader_DX11() : Advance_TessEvalShader(genPrefix_hlsl() + "extended/" + "Advance_Domain.hlsl"){ }
+	Advance_TessEvalShader_DX11() : Advance_TessEvalShader(genPrefix_hlsl() + "extended/" + "Advance_Domain.hlsl"){ 
+		_embedMap.insert({ "Tess_Eval_Input", "struct HS_INPUT { float4 pos : SV_POSITION; };" });
+		_embedMap.insert({ "Tess_Eval_Output", "struct HS_OUTPUT { float4 pos : SV_POSITION; }; " });
+	}
 };
 
 // Geometry Shaders
@@ -72,9 +73,8 @@ struct Advance_GeometryShader_GL4 : public Advance_GeometryShader {
 
 struct Advance_GeometryShader_DX11 : public Advance_GeometryShader {
 	Advance_GeometryShader_DX11() : Advance_GeometryShader(genPrefix_hlsl() + "extended/" + "Advance_Geometry.hlsl"){
-		_embedMap.insert({ "Geometry_InOut", 
-			"#define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream)" 
-		});
+		_embedMap.insert({ "Geometry_Main", "#define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream)" });
+		_embedMap.insert({ "Geometry_Output", "struct GS_OUTPUT { float4 pos : SV_POSITION; };" });
 	}
 };
 
