@@ -49,7 +49,7 @@ void main() {
 	if(mode > 0){
 		nearestPoint.x += sin(float(timeElapse) / 1000) * size;
 		nearestPoint.y += cos(float(timeElapse) / 1000) * size;
-		nearestPoint.z += tan(float(timeFrame) / 1000) * size;
+		nearestPoint.z += tan(float(timeElapse) / 1000) * size;
 	} else nearestPoint *= (float(timeElapse) / 1000) * size;
 
 	float r = sin(nearestPoint.x * abs(mode % 10)) * nearestDist;

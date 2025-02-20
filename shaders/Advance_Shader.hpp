@@ -85,12 +85,17 @@ struct Advance_ComputeShader : public Topl_Shader {
 	Advance_ComputeShader(std::string fileName) : Topl_Shader(SHDR_Compute, fileName){ }
 
 	// TODO: Include embedding logic
+	// unsigned threadsCount[3] = { 1, 1, 1 };
 };
 
 struct Advance_ComputeShader_GL4 : public Advance_ComputeShader {
-	Advance_ComputeShader_GL4() : Advance_ComputeShader(genPrefix_glsl() + "extended/" + "Advance_Compute.glsl"){ }
+	Advance_ComputeShader_GL4() : Advance_ComputeShader(genPrefix_glsl() + "extended/" + "Advance_Compute.glsl"){ 
+		_embedMap.insert({ "Compute_Threads", "layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;" });
+	}
 };
 
 struct Advance_ComputeShader_DX11 : public Advance_ComputeShader {
-	Advance_ComputeShader_DX11() : Advance_ComputeShader(genPrefix_hlsl() + "extended/" + "Advance_Compute.hlsl"){ }
+	Advance_ComputeShader_DX11() : Advance_ComputeShader(genPrefix_hlsl() + "extended/" + "Advance_Compute.hlsl"){ 
+		_embedMap.insert({ "Compute_Threads", "[numthreads(1, 1, 1)]" });
+	}
 };

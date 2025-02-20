@@ -187,7 +187,11 @@ void Topl_Program::setPipelines(){
 		_canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
 		_patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
 		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
-		// TODO: Include Advanced shaders
+		for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
+            _geomShaders[p] = Advance_GeometryShader_GL4();
+            _tessCtrlShaders[p] = Advance_TessCtrlShader_GL4();
+            _tessEvalShaders[p] = Advance_TessEvalShader_GL4();
+        }
 	}
 #ifdef _WIN32
 	else if(_backend == BACKEND_DX11){
@@ -198,7 +202,11 @@ void Topl_Program::setPipelines(){
 		_canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
 		_patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
 		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
-		// TODO: Include Advanced shaders
+		for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
+            _geomShaders[p] = Advance_GeometryShader_DX11();
+            _tessCtrlShaders[p] = Advance_TessCtrlShader_DX11();
+            _tessEvalShaders[p] = Advance_TessEvalShader_DX11();
+        }
 	}
 #endif
 	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
@@ -210,6 +218,7 @@ void Topl_Program::setPipelines(){
 #ifndef __linux__
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails!
 #endif
+    // TODO: Include tesselation and geometry shade3r pipelines
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){

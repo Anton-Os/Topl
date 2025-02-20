@@ -7,10 +7,6 @@
 
 #include "Extended.hlsl"
 
-#define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream) // TODO: Define this inside Advance_Shader.hpp
-
-struct GS_OUTPUT { float4 pos : SV_POSITION; }; // must match previous stage
-
 [maxvertexcount(3)]
 // void GSScene(triangleadj GSSceneIn input[6], inout TriangleStream<GS_OUTPUT> outStream) {
 // void main(triangle GS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outStream) {

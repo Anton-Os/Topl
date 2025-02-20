@@ -18,5 +18,7 @@
 #endif
 
 #ifdef STAGE_COMPUTE
-// TODO: Include Compute Data
+
+#include <Compute_Threads>
+
 #endif

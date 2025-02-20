@@ -88,7 +88,7 @@ private:
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
-		Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
+		Sampler_Noise({ 2, 2, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
 		Sampler_File(std::string(IMAGES_DIR) + "Background-Pins.png"), 
 		Sampler_File(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
 		Sampler_File(std::string(IMAGES_DIR) + "Background-Frame.png"), 

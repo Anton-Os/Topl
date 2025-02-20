@@ -2,8 +2,8 @@
 
 #include "Hello.hpp"
 
-// #define TARGET_BACKEND 1 // BACKEND_GL4
-#define TARGET_BACKEND 2 // BACKEND_DX11
+#define TARGET_BACKEND 1 // BACKEND_GL4
+// #define TARGET_BACKEND 2 // BACKEND_DX11
 // #define TARGET_BACKEND 3 // BACKEND_VK
 
 #define FRAME_AVG_TIME 100

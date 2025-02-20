@@ -1,5 +1,8 @@
 #ifdef STAGE_TESS_CTRL
 
+#include <Tess_Ctrl_Input>
+#include <Tess_Ctrl_Output>
+
 #endif
 
 #ifdef STAGE_TESS_EVAL
@@ -10,9 +13,14 @@
 #endif
 
 #ifdef STAGE_GEOMETRY
-// TODO: Include Geometry Data
+
+#include <Geometry_Main>
+#include <Geometry_Output>
+
 #endif
 
 #ifdef STAGE_COMPUTE
-// TODO: Include Compute Data
+
+#include <Compute_Threads>
+
 #endif
