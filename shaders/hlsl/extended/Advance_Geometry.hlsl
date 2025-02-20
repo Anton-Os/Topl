@@ -3,9 +3,9 @@
 
 #define STAGE_GEOMETRY
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Extended.hlsl"
+#include "Extended.hlsl"
 
 #define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream) // TODO: Define this inside Advance_Shader.hpp
 

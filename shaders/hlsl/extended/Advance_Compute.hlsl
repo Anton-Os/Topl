@@ -4,9 +4,9 @@
 
 #define STAGE_COMPUTE
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Extended.hlsl"
+#include "Extended.hlsl"
 
 [numthreads(1, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID){

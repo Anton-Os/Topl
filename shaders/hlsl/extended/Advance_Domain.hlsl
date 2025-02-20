@@ -5,9 +5,9 @@
 
 #define STAGE_TESS_CTRL
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Extended.hlsl"
+#include "Extended.hlsl"
 
 struct DS_INPUT {
 	float4 pos : SV_POSITION;

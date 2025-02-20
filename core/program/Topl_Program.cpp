@@ -38,6 +38,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                 if(actor == billboard->getGeoActor(p)){
 #ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
+                    billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
                     if(o == 0) // handling shader switching
                         switch(p){
                             case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;

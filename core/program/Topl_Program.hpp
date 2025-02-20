@@ -172,13 +172,13 @@ private:
 		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
-		Sampler_Button button = Sampler_Button(MENU_Medium);
-        Sampler_Dial dials[3] = { Sampler_Dial(MENU_Large, 4), Sampler_Dial(MENU_Large, 4), Sampler_Dial(MENU_Large, 4)};
-        Sampler_Slider slider = Sampler_Slider(MENU_Medium, 2); Sampler_Slider sizeSlider = Sampler_Slider(MENU_Medium, 10);
+		Sampler_Button button = Sampler_Button();
+        Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};
+        Sampler_Slider slider = Sampler_Slider(2); Sampler_Slider sizeSlider = Sampler_Slider(10);
 		Sampler_Button objectButtons[9] = {
-			Sampler_Button(MENU_Medium, "pathfinder-divide"), Sampler_Button(MENU_Medium, "pathfinder-exclude"), Sampler_Button(MENU_Medium, "pathfinder-intersect"),
-			Sampler_Button(MENU_Medium, "3d-box-corner"), Sampler_Button(MENU_Medium, "3d-box-expand"), Sampler_Button(MENU_Medium, "3d-box-expand-corners"),
-			Sampler_Button(MENU_Medium, "paginate-filter-1"), Sampler_Button(MENU_Medium, "paginate-filter-2"), Sampler_Button(MENU_Medium, "paginate-filter-3")
+			Sampler_Button("pathfinder-divide"), Sampler_Button("pathfinder-exclude"), Sampler_Button("pathfinder-intersect"),
+			Sampler_Button("3d-box-corner"), Sampler_Button("3d-box-expand"), Sampler_Button("3d-box-expand-corners"),
+			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3")
 		};
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif

@@ -1,13 +1,20 @@
 #ifdef STAGE_TESS_CTRL
-// TODO: Include Tesselation Control Data
+
+#include <Tess_Ctrl_Output>
+
 #endif
 
 #ifdef STAGE_TESS_EVAL
-// TODO: Include Tesselation Evaluation Data
+
+#include <Tess_Eval_Input>
+
 #endif
 
 #ifdef STAGE_GEOMETRY
-// TODO: Include Geometry Data
+
+#include <Geometry_Input>
+#include <Geometry_Output>
+
 #endif
 
 #ifdef STAGE_COMPUTE

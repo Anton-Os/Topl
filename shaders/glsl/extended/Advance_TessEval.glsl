@@ -4,10 +4,6 @@
 
 #include "Extended.glsl"
 
-// Values
-
-layout(triangles, equal_spacing, ccw) in;
-
 // Main
 
 void main(void) {

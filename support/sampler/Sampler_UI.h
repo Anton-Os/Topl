@@ -25,8 +25,18 @@ protected:
 
 struct Sampler_Button : public Sampler_UI {
 #ifdef RASTERON_H
+	Sampler_Button() : Sampler_UI(MENU_Medium){
+		queue = loadUI_checkBtn(MENU_Medium); 
+		Sampler_UI::setState(MENU_None);
+	}
+
 	Sampler_Button(enum MENU_Size size) : Sampler_UI(size){
 		queue = loadUI_checkBtn(size); 
+		Sampler_UI::setState(MENU_None);
+	}
+
+	Sampler_Button(char* iconName) : Sampler_UI(MENU_Medium){ 
+		queue = loadUI_iconBtn(MENU_Medium, iconName);
 		Sampler_UI::setState(MENU_None);
 	}
 
@@ -39,11 +49,19 @@ struct Sampler_Button : public Sampler_UI {
 
 struct Sampler_Label : public Sampler_UI {
 #ifdef RASTERON_H
-	Sampler_Label(enum MENU_Size size, Rasteron_Text textObj) : Sampler_UI(size){
-		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(100, 100), 4);
+	Sampler_Label(Rasteron_Text textObj) : Sampler_UI(MENU_Medium){
+		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(104, 104), 4); // TODO: Make size correct?
 		setText(textObj);
 		Sampler_UI::setState(MENU_None);
 	}
+
+	Sampler_Label(enum MENU_Size size, Rasteron_Text textObj) : Sampler_UI(size){
+		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(104, 104), 4); // TODO: Make size correct?
+		setText(textObj);
+		Sampler_UI::setState(MENU_None);
+	}
+
+	// TODO: Include Paddings Constructors?
 
 	void setText(Rasteron_Text textObj){ // TODO: Make this operation threaded?
 		if(textObj.fontFile != "" && textObj.text != ""){
@@ -85,40 +103,16 @@ private:
 #endif
 };
 
-struct Sampler_Item : public Sampler_UI {
-#ifdef RASTERON_H
-	Sampler_Item(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(size){ 
-		Rasteron_Image* textImg = textImgOp(&text, (unsigned)size); // TODO: Get from menu size
-		Rasteron_Image* backgroundImg;
-		Rasteron_Image* insertImgs[2];
-		if(side != SIDE_Left && side != SIDE_Right){
-			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + textImg->height + image->height, (unsigned)size + image->width ), 4);
-			backgroundImg = solidImgOp({ (unsigned)size + textImg->height + image->height, (unsigned)size + image->width }, bkColor);
-			insertImgs[0] = insertImgOp(image, backgroundImg, 0.0, 0.0);
-			insertImgs[1] = insertImgOp(textImg, insertImgs[0], 0.0, (side == SIDE_Top)? 0.9 : -0.9);
-		} else {
-			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + image->height, (unsigned)size + textImg->width + image->width ), 4);
-			backgroundImg = solidImgOp({ (unsigned)size + image->height, (unsigned)size + textImg->width + image->width }, bkColor);
-			insertImgs[0] = insertImgOp(image, backgroundImg, (side == SIDE_Left)? 0.9 : -0.9, 0.0);
-			insertImgs[1] = insertImgOp(textImg, insertImgs[0], (side == SIDE_Left)? -0.9 : 0.9, 0.0);
-		}
-		for(unsigned b = 0; b < 4; b++) queue_addImg(queue, insertImgs[1], b);
-		// TODO: Modify images to correspond to 4 menu states
-		Sampler_UI::setState(MENU_None);
-
-		RASTERON_DEALLOC(backgroundImg);
-		RASTERON_DEALLOC(textImg);
-		RASTERON_DEALLOC(insertImgs[0]); RASTERON_DEALLOC(insertImgs[1]);
-	}
-#endif
-};
-
-
 struct Sampler_Dial : public Sampler_UI {
 #ifdef RASTERON_H
+	Sampler_Dial(unsigned short count) : Sampler_UI(MENU_Medium){ 
+		queue = loadUI_dial(MENU_Medium, count); 
+		Sampler_UI::setState(MENU_None);
+	}
+
 	Sampler_Dial(enum MENU_Size size, unsigned short count) : Sampler_UI(size){ 
 		queue = loadUI_dial(size, count); 
-		Sampler_UI::setState(0);
+		Sampler_UI::setState(MENU_None);
 	}
 
 	void setState(double x, double y){
@@ -139,9 +133,14 @@ struct Sampler_Dial : public Sampler_UI {
 
 struct Sampler_Slider : public Sampler_UI {
 #ifdef RASTERON_H
+	Sampler_Slider(unsigned short count) : Sampler_UI(MENU_Medium){ 
+		queue = loadUI_slider(MENU_Medium, count); 
+		Sampler_UI::setState(MENU_None); // start positino
+	}
+
 	Sampler_Slider(enum MENU_Size size, unsigned short count) : Sampler_UI(size){ 
 		queue = loadUI_slider(size, count); 
-		Sampler_UI::setState(0);
+		Sampler_UI::setState(MENU_None); // start positino
 	}
 
 	void setState(double x){
@@ -155,6 +154,45 @@ struct Sampler_Slider : public Sampler_UI {
 			}
 		}
 		Sampler_UI::setState(index);
+	}
+#endif
+};
+
+
+struct Sampler_Layout : public Sampler_UI {
+#ifdef RASTERON_H
+	Sampler_Layout(SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(MENU_Medium){ 
+		setLayout(side, text, image, bkColor);
+		Sampler_UI::setState(MENU_None);
+	}
+
+	Sampler_Layout(enum MENU_Size size, SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(size){ 
+		setLayout(side, text, image, bkColor);
+		Sampler_UI::setState(MENU_None);
+	}
+
+	void setLayout(SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor){
+		Rasteron_Image* textImg = textImgOp(&text, (unsigned)size); // TODO: Get from menu size
+		Rasteron_Image* backgroundImg;
+		Rasteron_Image* insertImgs[2];
+		if(side != SIDE_Left && side != SIDE_Right){
+			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + textImg->height + image->height, (unsigned)size + image->width ), 4);
+			backgroundImg = solidImgOp({ (unsigned)size + textImg->height + image->height, (unsigned)size + image->width }, bkColor);
+			insertImgs[0] = insertImgOp(image, backgroundImg, 0.0, 0.0);
+			insertImgs[1] = insertImgOp(textImg, insertImgs[0], 0.0, (side == SIDE_Top)? 0.9 : -0.9);
+		} else {
+			queue = RASTERON_QUEUE_ALLOC("item", RASTERON_SIZE((unsigned)size + image->height, (unsigned)size + textImg->width + image->width ), 4);
+			backgroundImg = solidImgOp({ (unsigned)size + image->height, (unsigned)size + textImg->width + image->width }, bkColor);
+			insertImgs[0] = insertImgOp(image, backgroundImg, (side == SIDE_Left)? 0.9 : -0.9, 0.0);
+			insertImgs[1] = insertImgOp(textImg, insertImgs[0], (side == SIDE_Left)? -0.9 : 0.9, 0.0);
+		}
+		for(unsigned b = 0; b < 4; b++) queue_addImg(queue, insertImgs[1], b);
+		// TODO: Modify images to correspond to 4 menu states
+
+		RASTERON_DEALLOC(backgroundImg);
+		RASTERON_DEALLOC(textImg);
+		RASTERON_DEALLOC(insertImgs[0]); 
+		RASTERON_DEALLOC(insertImgs[1]);
 	}
 #endif
 };

@@ -4,10 +4,6 @@
 
 #include "Extended.glsl"
 
-// Values
-
-layout(vertices = 3) out;
-
 // Main
 
 void main(void) {

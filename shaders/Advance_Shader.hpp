@@ -10,7 +10,12 @@ struct Advance_TessCtrlShader : public Topl_Shader {
 };
 
 struct Advance_TessCtrlShader_GL4 : public Advance_TessCtrlShader {
-	Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader(genPrefix_glsl() + "extended/" + "Advance_TessCtrl.glsl"){}
+	Advance_TessCtrlShader_GL4() : Advance_TessCtrlShader(genPrefix_glsl() + "extended/" + "Advance_TessCtrl.glsl"){
+		_embedMap.insert({ "Tess_Ctrl_Output", "layout(vertices = 3) out;" });
+	}
+	Advance_TessCtrlShader_GL4(std::string outputStr) : Advance_TessCtrlShader(genPrefix_glsl() + "extended/" + "Advance_TessCtrl.glsl"){
+		_embedMap.insert({ "Tess_Ctrl_Output", outputStr });
+	}
 };
 
 struct Advance_TessCtrlShader_DX11 : public Advance_TessCtrlShader {
@@ -27,7 +32,12 @@ struct Advance_TessEvalShader : public Topl_Shader {
 };
 
 struct Advance_TessEvalShader_GL4 : public Advance_TessEvalShader {
-	Advance_TessEvalShader_GL4() : Advance_TessEvalShader(genPrefix_glsl() + "extended/" + "Advance_TessEval.glsl"){ }
+	Advance_TessEvalShader_GL4() : Advance_TessEvalShader(genPrefix_glsl() + "extended/" + "Advance_TessEval.glsl"){ 
+		_embedMap.insert({ "Tess_Eval_Input", "layout(triangles, equal_spacing, ccw) in;" });
+	}
+	Advance_TessEvalShader_GL4(std::string inputStr) : Advance_TessEvalShader(genPrefix_glsl() + "extended/" + "Advance_TessEval.glsl"){ 
+		_embedMap.insert({ "Tess_Eval_Input", inputStr });
+	}
 };
 
 struct Advance_TessEvalShader_DX11 : public Advance_TessEvalShader {
@@ -45,15 +55,19 @@ struct Advance_GeometryShader : public Topl_Shader {
 
 struct Advance_GeometryShader_GL4 : public Advance_GeometryShader {
 	Advance_GeometryShader_GL4() : Advance_GeometryShader(genPrefix_glsl() + "extended/" + "Advance_Geometry.glsl"){
-		_embedMap.insert({ "Entry", 
-			"#define GEOM_INPUT layout(points)\n#define GEOM_OUTPUT layout (triangle_strip, max_vertices = 3)"
-		});
+		_embedMap.insert({ "Geometry_Input", "layout(points) in;" });
+		_embedMap.insert({ "Geometry_Output", "layout (triangle_strip, max_vertices = 3) out;" });
+	}
+
+	Advance_GeometryShader_GL4(std::string inputStr, std::string outputStr) : Advance_GeometryShader(genPrefix_glsl() + "extended/" + "Advance_Geometry.glsl"){
+		_embedMap.insert({ "Geometry_Input", inputStr });
+		_embedMap.insert({ "Geometry_Output", outputStr });
 	}
 };
 
 struct Advance_GeometryShader_DX11 : public Advance_GeometryShader {
 	Advance_GeometryShader_DX11() : Advance_GeometryShader(genPrefix_hlsl() + "extended/" + "Advance_Geometry.hlsl"){
-		_embedMap.insert({ "Entry", 
+		_embedMap.insert({ "Geometry_InOut", 
 			"#define GEOM_MAIN_ENTRY void main(point GS_OUTPUT input[1], inout TriangleStream<GS_OUTPUT> outStream)" 
 		});
 	}

@@ -60,23 +60,25 @@ public:
 
 		unsigned short startOffset = 0, includeOffset = 0;
 		while(shaderSrc.find("#include", includeOffset) != std::string::npos){
-			// TODO: Check the include type and replace conditionally based on <> or ""
-
 			startOffset = shaderSrc.find("#include", includeOffset);
 			includeOffset = startOffset + 10; // location of include after the space
 
-			std::string includeStr = "";
+			std::string includeStr = "", includeSrc = "";
 			while(shaderSrc[includeOffset] != '\n' && shaderSrc[includeOffset] != '\0'){
 				if(shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != '>' && shaderSrc[includeOffset] != ';') includeStr += shaderSrc[includeOffset];
 				includeOffset++;
 			}
 
-			if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
-			else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
+			if(includeStr.substr(includeStr.size() - 4) == "glsl" || includeStr.substr(includeStr.size() - 4) == "hlsl"){ // read from file
+				if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
+				else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
 
-			std::string includeSrc = readFile(includeStr.c_str());
-			if(includeSrc.empty()) if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr);
+				includeSrc = readFile(includeStr.c_str());
+			}
+			else if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr); // read from entry
+
 			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);
+			includeOffset -= 10;
 		}
 		return shaderSrc;
 	}
