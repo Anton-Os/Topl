@@ -1,9 +1,9 @@
 #define INCLUDE_BLOCK
 #define IGNORE_INPUTS
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 #define FRACTAL_SIZE 5.0 // max fractal size
 #define FRACTAL_ITER 20 // max fractal iteratons

@@ -4,9 +4,9 @@
 
 #define PATTERN_SIZE 0.5
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 // Values
 

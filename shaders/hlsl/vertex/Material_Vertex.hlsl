@@ -1,9 +1,9 @@
 #define INCLUDE_BLOCK
 #define INCLUDE_EXTBLOCK
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Vertex.hlsl"
+#include "Vertex.hlsl"
 
 // Values
 

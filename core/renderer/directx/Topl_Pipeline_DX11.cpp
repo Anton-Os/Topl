@@ -5,7 +5,6 @@ namespace DX11 {
 		ID3DBlob* errorBuff;
 		size_t sourceSize;
 
-		// Vertex shader compilation and creation code
 		sourceSize = strlen(shaderFilePath) + 1;
 		wchar_t* shaderFilePath_wchar = new wchar_t[sourceSize];
 		mbstowcs(shaderFilePath_wchar, shaderFilePath, sourceSize); // need proper conversion to wcharhar_t
@@ -35,9 +34,8 @@ namespace DX11 {
 		shaderFile.flush();
 		shaderFile.close();
 
-		compileShader(tempFilePath.c_str(), shaderTarget, blob);
-
-		std::remove(tempFilePath.c_str());
+		if(compileShader(tempFilePath.c_str(), shaderTarget, blob)) std::remove(tempFilePath.c_str()); // remove file on success
+		
 		return true;
 	}
 
@@ -120,14 +118,14 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 
 	// Vertex Shader
     if(vertexShader != nullptr){
-        if(!DX11::compileShader(vertexShader->getFilePath().c_str(), "vs_5_0", &pipeline->vsBlob)) return;
+        if(!DX11::compileShader(vertexShader->getFileSource(), "vs_5_0", &pipeline->vsBlob)) return;
         hr = _device->CreateVertexShader(pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(), NULL, &pipeline->vertexShader);
         if (FAILED(hr)) { pipeline->isReady = false; return; }
     }
 
 	// Pixel Shader
     if(pixelShader != nullptr){
-        if (!DX11::compileShader(pixelShader->getFilePath().c_str(), "ps_5_0", &pipeline->psBlob)) return;
+        if (!DX11::compileShader(pixelShader->getFileSource(), "ps_5_0", &pipeline->psBlob)) return;
         hr = _device->CreatePixelShader(pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),NULL, &pipeline->pixelShader);
         if (FAILED(hr)) { pipeline->isReady = false; return; }
     }

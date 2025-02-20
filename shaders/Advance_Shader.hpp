@@ -19,7 +19,12 @@ struct Advance_TessCtrlShader_GL4 : public Advance_TessCtrlShader {
 };
 
 struct Advance_TessCtrlShader_DX11 : public Advance_TessCtrlShader {
-	Advance_TessCtrlShader_DX11() : Advance_TessCtrlShader(genPrefix_hlsl() + "extended/" + "Advance_Hull.hlsl"){ }
+	Advance_TessCtrlShader_DX11() : Advance_TessCtrlShader(genPrefix_hlsl() + "extended/" + "Advance_Hull.hlsl"){
+		/* _embedMap.insert({ "Tess_Ctrl_InOut", 
+			std::string("struct HS_INPUT { float4 pos : SV_POSITION; };")
+			+ "\n" + "struct HS_OUTPUT { float4 pos : SV_POSITION; };"
+		}); */
+	}
 };
 
 // Evaluation Shaders

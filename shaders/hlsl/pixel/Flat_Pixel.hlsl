@@ -13,9 +13,9 @@
 #define FLAT_RANDOM 8
 #define FLAT_TRIAL 9
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 // Values
 

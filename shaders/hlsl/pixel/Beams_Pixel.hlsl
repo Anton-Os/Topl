@@ -12,9 +12,9 @@
 #define BEAMS_TRAJECTORY 8
 #define BEAMS_TRIAL 9
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 // Values
 

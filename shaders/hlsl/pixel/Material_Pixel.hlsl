@@ -4,9 +4,9 @@
 
 // #include <Beams>
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 // Values
 

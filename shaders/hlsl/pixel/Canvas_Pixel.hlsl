@@ -2,9 +2,9 @@
 #define INCLUDE_BLOCK
 #define IGNORE_INPUTS
 
-#include "../Common.hlsl"
+#include "Common.hlsl"
 
-#include "../Pixel.hlsl"
+#include "Pixel.hlsl"
 
 #define CURSOR_SIZE 0.05
 
