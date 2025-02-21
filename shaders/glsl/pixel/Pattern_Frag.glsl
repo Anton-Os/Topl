@@ -4,7 +4,7 @@
 // #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
-#define PATTERN_SIZE 0.5
+#define PATTERN_SIZE 0.1
 
 #include "Common.glsl"
 
@@ -29,8 +29,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 	double timeFrame;
 	double timeElapse;
 	vec3 ctrlPoints[8];
-	// vec3 lightVal;
-	// vec3 lightPos;
 };
 
 layout(location = 0) in vec3 pos;
@@ -52,10 +50,11 @@ void main() {
 		nearestPoint.z += tan(float(timeElapse) / 1000) * size;
 	} else nearestPoint *= (float(timeElapse) / 1000) * size;
 
+	// TODO: Accomodate different modes
 	float r = sin(nearestPoint.x * abs(mode % 10)) * nearestDist;
 	float g = cos(nearestPoint.y * abs(mode % 10)) * nearestDist;
 	float b = tan(nearestPoint.z * abs(mode % 10)) * nearestDist;
-	
+
 	// if(mode >= 0) 
 	outColor = vec4(r, g, b, 1.0) / vertex_color;
 	// else outColor = vec4(r, g, b, 1.0) * vertex_color;

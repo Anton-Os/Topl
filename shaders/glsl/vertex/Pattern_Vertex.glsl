@@ -26,8 +26,6 @@ layout(std140, binding = 1) uniform SceneBlock {
 	double timeFrame;
 	double timeElapse;
 	vec3 ctrlPoints[8];
-	// vec3 lightVal;
-	// vec3 lightPos;
 };
 
 layout(location = 0) out vec3 pos_out;

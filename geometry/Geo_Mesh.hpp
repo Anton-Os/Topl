@@ -75,6 +75,7 @@ public:
 			unsigned idx2 = (isIndexed)? _indices[(m * 3) + 1] : (m * 3) + 1;
 			unsigned idx3 = (isIndexed)? _indices[(m * 3) + 2] : (m * 3) + 2;
 			Geo_Vertex midpoint = Geo_Vertex((_vertices[idx1].position + _vertices[idx2].position + _vertices[idx3].position) * (1.0f / 3.0f));
+			// Geo_Vertex midpoint = getMidpoint({ _vertices[idx1], _vertices[idx2], _vertices[idx3] }); // TODO: Get this working!
 			_vertices[idx1] = callback(_vertices[idx1], midpoint, m, _transformCount);
 			_vertices[idx2] = callback(_vertices[idx2], midpoint, m, _transformCount);
 			_vertices[idx3] = callback(_vertices[idx3], midpoint, m, _transformCount);
@@ -105,7 +106,8 @@ public:
 
 			if(siCount > 0){
 				for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
-					_vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
+				  _vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
+				  // _vertices.push_back(getMidpoint({ _vertices[_indices[i]], _vertices[_indices[i + 1]], _vertices[_indices[i + 2]] })); // TODO: Get this working!
 
 				for(unsigned i = 0; i < siCount; i += 3){
 					unsigned v = (svCount + (i / 3));

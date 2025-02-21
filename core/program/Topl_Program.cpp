@@ -222,7 +222,7 @@ void Topl_Program::setPipelines(){
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
-    // _background.mesh.tesselate(3);
+    _background.mesh.tesselate(3);
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H

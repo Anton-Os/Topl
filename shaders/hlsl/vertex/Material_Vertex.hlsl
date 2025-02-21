@@ -13,6 +13,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 look_pos;
 	float4x4 projMatrix;
 
+	// float3 texScroll; // texture coordinate scrolling
+	// float4 texScale; // texture coordinate scaling
+
 	float3 lightPos;
 	float3 lightVal;
 }

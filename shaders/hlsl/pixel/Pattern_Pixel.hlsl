@@ -27,8 +27,6 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
     double timeFrame;
 	double timeElapse;
 	float3 ctrlPoints[8];
-	// float3 lightVal;
-	// float3 lightPos;
 }
 
 struct PS_INPUT { 
@@ -52,6 +50,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		nearestPoint.z += abs(tan(float(timeElapse) / 1000)) * (1.0 / size);
 	} else nearestPoint /= (float(timeElapse) / 1000) * size;
 
+	// TODO: Accomodate different modes
 	float r = nearestPoint.x + abs(mode % 10) / nearestDist;
 	float g = nearestPoint.y + abs(mode % 10) / nearestDist;
 	float b = nearestPoint.z + abs(mode % 10) / nearestDist;

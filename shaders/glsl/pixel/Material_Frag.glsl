@@ -16,6 +16,9 @@ layout(std140, binding = 1) uniform SceneBlock{
 	vec3 look_pos;
 	mat4 projMatrix;
 
+	// vec3 texScroll; // texture coordinate scrolling
+	// vec4 texScale; // texture coordinate scaling
+
 	vec3 lightPos;
 	vec3 lightVal;
 };

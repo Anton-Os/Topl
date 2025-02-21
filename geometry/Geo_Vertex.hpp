@@ -89,5 +89,20 @@ static Vec3f rotateTForm(Vec3f input, Vec3f degrees){
 }
 static Vec3f scaleTForm(Vec3f input, Vec3f factor) { return Vec3f({input * factor}); } // scales vertex by factor
 
+static Geo_Vertex getMidpoint(std::initializer_list<Geo_Vertex> points){
+    Geo_Vertex vertex;
+
+    for(auto p = points.begin(); p != points.end(); p++){
+        vertex.position = vertex.position + (*p).position;
+        vertex.normal = /* vertex.normal + */ (*p).normal;
+        vertex.texcoord = /* vertex.texcoord + */ (*p).texcoord;
+        vertex.position = /* vertex.color + */ (*p).color;
+    }
+
+    // return Geo_Vertex(vertex.position * (1.0 / points.size()), vertex.texcoord * (1.0 / points.size()), vertex.normal, vertex.texcoord);
+    // return Geo_Vertex(vertex.position * (1.0 / points.size()), { 0.5F, 0.5F, 0.5F }, vertex.normal, vertex.texcoord);
+    return Geo_Vertex(vertex.position * (1.0 / (float)points.size()));
+}
+
 #define GEO_VERTEX_H
 #endif

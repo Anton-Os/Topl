@@ -143,8 +143,6 @@ struct Matrix {
 
     float data[r][c]{};
 
-    // float& operator () (unsigned short r, unsigned short c) { return data[r][c]; }
-
     Matrix operator* (const float& f){
         Matrix<r, c> result = Matrix<r, c>();
         for(unsigned row = 0; row < r; row++)
@@ -170,13 +168,23 @@ struct Matrix {
         return result;
     }
 
-    /* Matrix translation(const VectoXF<r - 1>& input){
+    Matrix translation(const VectorXF<r - 1>& input){
         Matrix<r, c> result = Matrix<r, c>();
         for(unsigned row = 0; row < r; row++)
             for(unsigned col = 0; col < c; col++)
-                result[row][col] = (row == col)? 1.0F : (col != c - 1)? 0.0F : input[r];x
+                result[row][col] = (row == col)? 1.0F : (col != c - 1)? 0.0F : input[r];
         return result;
-    } */
+    }
+
+    Matrix scale(const VectorXF<r - 1>& input){
+        Matrix<r, c> result = Matrix<r, c>();
+        for(unsigned row = 0; row < r; row++)
+            for(unsigned col = 0; col < c; col++)
+                result[row][col] = (row == r - 1)? 1.0 : (row != col)? 0.0F : input[r]; 
+        return result;
+    }
+
+    // TODO: Include rotation
 
     std::string toString (){
         std::string matStr = "{\n";
