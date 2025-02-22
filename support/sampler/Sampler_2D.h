@@ -45,7 +45,7 @@ struct Sampler_Noise : public Sampler_2D {
 
     Sampler_Noise(ColorGrid colorGrid, unsigned octaves) : Sampler_2D(){
         grid = colorGrid;
-        putImg(noiseImgOp_octave(getImgSize(), grid, octaves));
+        putImg(noiseImgOp_mult(getImgSize(), grid, octaves));
     }
 private:
     ColorGrid grid;

@@ -37,7 +37,7 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
                 case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
                 case MESHFORM_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
                 case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
-                default: sliceImg = solidImgOp({ 256, 256 }, colors_blend(c1, c2, d / 256.0)); break;
+                default: sliceImg = solidImgOp({ 256, 256 }, blend_colors(c1, c2, d / 256.0)); break;
             }
             volumeImg.addSlice(sliceImg, d);
             RASTERON_DEALLOC(sliceImg);

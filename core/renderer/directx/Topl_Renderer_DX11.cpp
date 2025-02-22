@@ -421,7 +421,6 @@ Sampler_2D Topl_Renderer_DX11::frame() {
 		dstOffset += stageImage->width;
 	}
 	_deviceCtx->Unmap(framebuffTex, 0);
-	bitSwitch_RB(stageImage->data, TOPL_WIN_WIDTH * TOPL_WIN_HEIGHT); // flipping red and blue bits
 
 	_frameImage = Sampler_2D();
 	_frameImage.setImage(stageImage);

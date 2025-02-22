@@ -112,7 +112,7 @@ bool intersectPow(float lineDist, vec2 coord, float size, float endpointDist, fl
 // Main
 
 void main() {
-    if(mode < 0) color_out = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // base texture
+    if(mode < 0) color_out = texture(baseTex, vec2(texcoord.x, texcoord.y)); // base texture
     // else color_out = vec4(0.0, 0.0, 0.0, 0.0);
 
     vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor

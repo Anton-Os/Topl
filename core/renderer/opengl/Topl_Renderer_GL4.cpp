@@ -366,7 +366,6 @@ Sampler_2D Topl_Renderer_GL4::frame() {
 
 	Rasteron_Image* flipImage = flipImgOp(stageImage, FLIP_Upside); // flipping image over
 	Rasteron_Image* mirrorImage = mirrorImgOp(flipImage); // mirroring left and right sides
-	bitSwitch_RB(mirrorImage->data, viewportHeight * viewportWidth); // flipping red and blue bits
 
 	_frameImage = Sampler_2D();
 	_frameImage.setImage(mirrorImage);

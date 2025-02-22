@@ -121,7 +121,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
     // Drawing
 
     float4 color_out = float4(0.0, 0.0, 0.0, 0.0); // blank canvas
-    if(mode < 0) color_out = color_correct(baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y))); // full canvas
+    if(mode < 0) color_out = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y)); // full canvas
 
     uint intersections = 0;
 
