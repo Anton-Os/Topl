@@ -23,8 +23,6 @@ struct Flat_VertexShader : public Topl_EntryShader {
 		alignDataToBytes((uint8_t*)&color, sizeof(Vec4f), NO_PADDING, bytes);
 		Topl_EntryShader::genActorBlock(actor, bytes);
 	}
-
-	// void setMode(unsigned short m){ if(m < 3) _mode = m; }
 protected:
 	Vec4f getColor(const Geo_Actor* const actor) const {
 		unsigned colorID = actor->getId();

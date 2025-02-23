@@ -1,8 +1,6 @@
 #include "Topl_Pipeline.hpp"
 
-#define CONSTRUCT_VORNOI 0
-
-#define FORGE_POINTS_MAX 8
+#define PATTERN_POINTS_MAX 8
 
 // Vertex Shaders
 
@@ -37,18 +35,18 @@ struct Pattern_VertexShader : public Topl_EntryShader {
 
 	void setCtrlPoints(std::initializer_list<Vec3f> points){
 		unsigned short idx = 0;
-		for(auto p = points.begin(); p != points.end() && idx < FORGE_POINTS_MAX; p++){
+		for(auto p = points.begin(); p != points.end() && idx < PATTERN_POINTS_MAX; p++){
 			ctrlPoints[idx] = *p;
 			idx++;
 		}
 	}
 
-	void setCtrlPoint(unsigned short index, Vec3f point){ ctrlPoints[index % FORGE_POINTS_MAX] = point; }
+	void setCtrlPoint(unsigned short index, Vec3f point){ ctrlPoints[index % PATTERN_POINTS_MAX] = point; }
 protected:
 	Mat4x4 ctrlMatrix = MAT_4x4_IDENTITY;
 	std::map<actor_cptr, Mat4x4> ctrlMatrixMap;
 
-	Vec3f ctrlPoints[FORGE_POINTS_MAX] = {
+	Vec3f ctrlPoints[PATTERN_POINTS_MAX] = {
 		{ 0.0F, 0.0F, 0.0F }, { 0.25F, 0.25F, 0.0F }, { -0.25F, -0.25F, 0.0F }, { -0.5F, 0.5F, 0.0F },  
 		{ 0.5F, -0.5F, 0.0F }, { 0.75F, 0.75F, 0.0F }, { -0.75F, -0.75F, 0.0F }, { 1.0F, 1.0F, 0.0F },
 	};

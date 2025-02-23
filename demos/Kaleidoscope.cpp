@@ -29,7 +29,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
 void Kaleidoscope_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
     unsigned short p = 0;
 
-    _patternVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
+    // _patternVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
 
     p++;
 }

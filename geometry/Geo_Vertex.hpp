@@ -71,6 +71,7 @@ struct Geo_Vertex : public Geo_Pos {
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;
+typedef const unsigned* const ui_cptr_t;
 
 // Transform Callbacks
 

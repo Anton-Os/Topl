@@ -27,6 +27,7 @@
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0
 #define TIMELINE_END 60.0 // 1 minute will be default end
+#define TIMELINE_FORETELL -0.25
 
 class Topl_Timeline {
 public:
@@ -122,15 +123,16 @@ protected:
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_patternPipeline; // for easy reuse
 
     // Options & Properties
-
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
-	bool isEnable_background = true, isEnable_overlays = true;
+	bool isEnable_background = true, isEnable_overlays = false;
 private:
     void _onAnyKey(char k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
     void setPipelines();
 	void setShadersMode(unsigned m){ for(unsigned s = 0; s < PROGRAM_PIPELINES; s++) _entryShaders[s]->setMode(m); }
+	void updateTimelines();
+	void updatePipelines();
 
 	Vec3f _camPos = *camera.getPos(); 
 	Vec3f _camRot = *camera.getRot(); 

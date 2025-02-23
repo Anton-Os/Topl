@@ -38,7 +38,7 @@ void FirstPerson_Demo::init(){
 
         Rasteron_Image* image;
         switch(m){
-            case 0: image = noiseImgOp_scratch({ 1024, 1024 }, { 16, 16, 0xFF00EE55, 0xFF555533 }); break;
+            case 0: image = noiseImgOp_crossed({ 1024, 1024 }, { 16, 16, 0xFF00EE55, 0xFF555533 }); break;
             case 1: image = noiseImgOp_tiled({ 1024, 1024 }, { 16, 16, 0xFF44AACC, 0xFFAA44AA }); break;
             case 2: image = noiseImgOp_octave({ 1024, 1024 }, { 8, 8, 0xFF5500EE, 0xFF22AAAA }, 4); break;
             case 3: image = noiseImgOp_diff({ 1024, 1024 }, { 8, 8, 0xFF00FF00, 0xFF880088 }, 4); break;

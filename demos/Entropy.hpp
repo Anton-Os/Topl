@@ -59,13 +59,13 @@ struct Entropy_Demo : public Topl_Program {
                 break;
             }
 
-            surfaceMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
+            surfaceMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
             surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
             surfaceExt_actors[a].setPropsTo(surface_actors[a]);
-            coneMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
+            coneMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
             conicExt_actors[a] = Geo_Actor(coneMeshes.back());
             conicExt_actors[a].setPropsTo(conic_actors[a]);
-            volumeMeshes.back()->setInstances({ MAT_4x4_IDENTITY * 1, MAT_4x4_IDENTITY * 2, MAT_4x4_IDENTITY * 3, MAT_4x4_IDENTITY * 4, MAT_4x4_IDENTITY * 5, MAT_4x4_IDENTITY * 6 });
+            volumeMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
             volumeExt_actors[a] = Geo_Actor(volumeMeshes.back());
             volumeExt_actors[a].setPropsTo(volume_actors[a]);
         }

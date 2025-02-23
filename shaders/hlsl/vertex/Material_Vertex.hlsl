@@ -13,8 +13,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float4 look_pos;
 	float4x4 projMatrix;
 
-	// float3 texScroll; // texture coordinate scrolling
-	// float4 texScale; // texture coordinate scaling
+	float3 texScroll; // texture coordinate scrolling
+	float4 texScale; // texture coordinate scaling
 
 	float3 lightPos;
 	float3 lightVal;
@@ -37,7 +37,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.normal = input.normal;
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
-	output.texcoord = input.texcoord;
+	output.texcoord = (input.texcoord - texScroll) * float3(texScale.x, texScale.y, texScale.z);
 #ifdef INCLUDE_EXTBLOCK
 	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
 #endif

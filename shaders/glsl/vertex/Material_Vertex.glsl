@@ -14,8 +14,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	vec3 look_pos;
 	mat4 projMatrix;
 
-	// vec3 texScroll; // texture coordinate scrolling
-	// vec4 texScale; // texture coordinate scaling
+	vec3 texScroll; // texture coordinate scrolling
+	vec4 texScale; // texture coordinate scaling
 
 	vec3 lightPos;
 	vec3 lightVal;
@@ -35,7 +35,7 @@ void main() {
 	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
 	normal_out = getRotMatrix(rotation) * normal_in;
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
-	texcoord_out = texcoord_in;
+	texcoord_out = (texcoord_out + vec3(texScroll)) * vec3(texScale);
 #ifdef INCLUDE_EXTBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif

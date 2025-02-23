@@ -70,17 +70,6 @@ vec4 antialias3D(vec3 coords, sampler3D tex3D, float antialiasArea, float antial
 }
 #endif
 
-/* vec4 getRandColor(vec4 seedColor){
-	vec4 randColor = seedColor * vec4(34.234, 11.559, 81.344, 56.34);
-
-	while(randColor.x > 1.0) randColor.r -= pow(randColor.x, 0.5);213
-	while(randColor.y > 1.0) randColor.g -= pow(randColor.y, 0.5);
-	while(randColor.z > 1.0) randColor.b -= pow(randColor.z, 0.5);
-	while(randColor.a > 1.0) randColor.a -= pow(randColor.a, 0.5);
-
-	return randColor;
-} */
-
 vec3 getRandColor(uint seed){
 	dvec3 randColor = dvec3(double(seed)* 0.325243, double(seed) * 0.953254, double(seed) * 0.563445);
 
@@ -104,4 +93,17 @@ vec4 getStepColor(uint index){
 	else if (index % 6 == 4) return vec4(0.0, 1.0 - attenuation, 1.0 - attenuation, 1.0); // cyan
 	else if (index % 6 == 5) return vec4(1.0 - attenuation, 0.0, 1.0 - attenuation, 1.0); // magenta
 	else return vec4(1.0 - attenuation, 1.0 - attenuation, 1.0 - attenuation, 1.0); // white
+}
+
+float getSpecular(vec3 light, vec3 camera, vec3 vertex, float intensity) {
+	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
+	return max(pow(dot(reflectVec, -normalize(camera)), 1.0), 0);
+	// else return max(pow(dot(reflectVec, -normalize(camera)), intensity), 0);
+}
+
+float getDiffuse(vec3 light, vec3 vertex) {
+	float intensity = dot(normalize(light), normalize(vertex));
+	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
+	float attenuation = 1 / (length(light) * length(light));
+	return intensity * attenuation;
 }

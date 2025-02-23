@@ -1,9 +1,3 @@
-float4 color_correct(float4 color){ // switch red and blue color values
-	float t = color[0];
-	color[0] = color[2]; color[2] = t;
-	return color;
-}
-
 float3 color_range(float3 color){ // maps color to +- range
 	return (color - float3(0.5F, 0.5F, 0.5F)) * 2;
 }
@@ -87,4 +81,16 @@ float4 getStepColor(int id){
 	else if (id % 6 == 4) return float4(0.0, 1.0 - attenuation, 1.0 - attenuation, 1.0); // cyan
 	else if (id % 6 == 5) return float4(1.0 - attenuation, 0.0, 1.0 - attenuation, 1.0); // magenta
 	else return float4(1.0 - attenuation, 1.0 - attenuation, 1.0 - attenuation, 1.0); // white
+}
+
+float getSpecular(float4 camera, float3 vertex, float focus) { // Custom Function
+	float intensity = dot(normalize(float3(camera.x, camera.y, camera.z)), normalize(vertex)) * focus;
+	return max(pow(intensity, 3), 0);
+}
+
+float getDiffuse(float3 light, float3 vertex) {
+	float intensity = dot(normalize(light), normalize(vertex));
+	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
+	float attenuation = 1 / (length(light) * length(light));
+	return intensity * attenuation;
 }

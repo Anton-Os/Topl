@@ -2,7 +2,7 @@
 
 Topl_Timeline Topl_Program::timeline = Topl_Timeline();
 Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
-float Topl_Program::speed = 0.1F;
+float Topl_Program::speed = 0.25F; // 0.1F
 
 unsigned Topl_Program::shaderMode = 0;
 Topl_EntryShader* Topl_Program::activeShader = nullptr;
@@ -83,12 +83,12 @@ void Topl_Program::_onAnyKey(char k){
             case 'c': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
         }
 
-        if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd') // TODO: Interpolate movement
-            Topl_Program::timeline.addSequence_vec3f(&_camPos, std::make_pair(-5.0F, *(Topl_Program::camera.getPos())));
-        else if(tolower(k) == 'q' || tolower(k) == 'e' || tolower(k) == 'r' || tolower(k) == 'f' || tolower(k) == 't' || tolower(k) == 'g') // TODO: Interpolate rotation
-            Topl_Program::timeline.addSequence_vec3f(&_camRot, std::make_pair(-5.0F, *(Topl_Program::camera.getRot())));
-        else if(tolower(k) == 'z' || tolower(k) == 'c') // TODO: Interpolate zoom
-            Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(-5.0F, *(Topl_Program::camera.getZoom())));
+        if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v')
+            Topl_Program::timeline.addSequence_vec3f(&_camPos, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getPos())));
+        else if(tolower(k) == 'q' || tolower(k) == 'e' || tolower(k) == 'r' || tolower(k) == 'f' || tolower(k) == 't' || tolower(k) == 'g')
+            Topl_Program::timeline.addSequence_vec3f(&_camRot, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getRot())));
+        // else if(tolower(k) == 'z' || tolower(k) == 'c')
+        //    Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
 #ifdef RASTERON_H
         /* else if(k == ';'){
             Rasteron_Image* frameImg = _renderer->frame();

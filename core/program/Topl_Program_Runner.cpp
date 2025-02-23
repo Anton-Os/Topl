@@ -14,18 +14,37 @@ void Topl_Program::preloop(){
         Vec3f pickerCoord = coordPicker(&_overlays.scene);
     }
 #endif
+}
+
+void Topl_Program::updatePipelines(){
+    // float timeElapse = (float)timeline.persist_ticker.getAbsSecs();
+    Vec3f scroll = (*camera.getPos() * -Topl_Program::speed); // + Vec3f({ sin((*camera.getRot)[0]), cos((*camera.getRot)[0]), 0.0F }); // TODO: Include rotation
+    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
+
+    if(_renderer->getPipeline() == _texPipeline)  _texVShader.setParams(&_background.actor, { 0, 0.0F, scroll, scale });
+    else if(_renderer->getPipeline() == _materialPipeline) _materialVShader.setTexCoordParams(scroll, scale);
+    else if(_renderer->getPipeline() == _beamsPipeline) _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos() * -1.0, { BEAMS_FLASH_LIGHT.value }));
+    else if(_renderer->getPipeline() == _patternPipeline) 
+        for(unsigned p = 0; p < PATTERN_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
+            Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];
+            _patternVShader.setCtrlPoint(p, Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, (((float)rand() / (float)RAND_MAX) - 0.5F) * 2.0F }));
+            // std::cout << "Adding point " << std::to_string(tracerStep.step.first) << ", " << std::to_string(tracerStep.step.first) << std::endl;
+        }
+}
+
+void Topl_Program::updateTimelines(){
+    if(!Topl_Program::timeline.dynamic_ticker.isPaused) Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 
     Topl_Program::camera.setPos(_camPos);
     Topl_Program::camera.setRot(_camRot);
-    Topl_Program::camera.setZoom(_camZoom);
+    // Topl_Program::camera.setZoom(_camZoom);
+
+    for(auto p = positions_map.begin(); p != positions_map.end(); p++) if(p->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) p->first->setPos(p->second);
+    for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
+    for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 }
 
 void Topl_Program::postloop(){
-    if(isEnable_background){
-        Textured_VertexShader::TexParams params = { 0, 0.0F, *camera.getPos() * -0.1F, Vec3f({ 0.5F, 0.5F, 0.5F }) * (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F)) }; // TODO: Include Rotation?
-        _texVShader.setParams(&_background.actor, params);
-    }
-
     if(Topl_Program::pickerObj != nullptr){
         _editor.actor.setPos(*Topl_Program::pickerObj->getPos());
         _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
@@ -47,13 +66,15 @@ void Topl_Program::postloop(){
     }
     // else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H
-    static unsigned index = 0;
+    if(isEnable_screencap){
+        static unsigned index = 0;
 
-    if(_renderer->getFrameCount() % 60 == 0){
-        Sampler_2D frameImg = _renderer->frame();
-        // queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
-        // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
-        index++;
+        if(_renderer->getFrameCount() % 60 == 0){
+            Sampler_2D frameImg = _renderer->frame();
+            // queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
+            // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+            index++;
+        }
     }
 #endif
 }
@@ -63,23 +84,20 @@ void Topl_Program::run(){
     init();
 
     while (_platform->handleEvents()) {
-        if(!Topl_Program::timeline.dynamic_ticker.isPaused) Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
-
-        for(auto p = positions_map.begin(); p != positions_map.end(); p++) if(p->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) p->first->setPos(p->second);
-        for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
-        for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
+        updateTimelines();
 
         if(_renderer != nullptr){
             Topl_Pipeline* savedPipeline = _renderer->getPipeline();
             if(Platform::mouseControl.getIsMouseDown().second) preloop();
             _renderer->clear(); // clears view to solid color
 
+            if(isCtrl_shader) updatePipelines();
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             Topl_Factory::switchPipeline(_renderer, savedPipeline);
             setShadersMode(Topl_Program::shaderMode);
             loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
             if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
-            // if(isEnable_overlays) renderScene(&_overlays.scene, _materialPipeline, 0); // nullptr, shaderMode);
+            if(isEnable_overlays) renderScene(&_overlays.scene, _materialPipeline, 0); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
             Topl_Factory::switchPipeline(_renderer, savedPipeline);
@@ -146,26 +164,3 @@ Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
     return Topl_Program::pickerCoord;
 }
 #endif
-
-/* void Topl_Program::build_run(const Topl_Scene* scene){
-    _threads[0] = std::thread([this](const Topl_Scene* s){ _renderer->buildScene(s); }, scene);
-    _threads[0].join();
-}
-
-void Topl_Program::update_run(const Topl_Scene* scene){
-    _threads[1] = std::thread([this](const Topl_Scene* s){ _renderer->updateScene(s); }, scene);
-    _threads[1].join();
-}
-
-void Topl_Program::texturize_run(const Topl_Scene* scene){
-    _threads[2] = std::thread([this](const Topl_Scene* s){ _renderer->texturizeScene(s); }, scene);
-    _threads[2].join();
-}
-
-void Topl_Program::draw_run(const Topl_Scene* scene){
-    // for(unsigned t = 0; t < 3; t++)
-    //	if(_threads[t].joinable()) _threads[t].join();
-
-    _threads[3] = std::thread([this](const Topl_Scene* s){ _renderer->drawScene(s); }, scene);
-    _threads[3].join();
-} */

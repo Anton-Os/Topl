@@ -37,21 +37,6 @@ layout(location = 2) in vec3 normal;
 
 layout(location = 0) out vec4 color;
 
-// Functions
-
-float calcSpec(vec3 light, vec3 vertex, float intensity) {
-	vec3 reflectVec = light - (normalize(vertex) * 2 * dot(light, normalize(vertex)));
-	if(mode < 0) return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), 1.0), 0);
-	else return max(pow(dot(reflectVec, -normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z))), intensity), 0);
-}
-
-float calcDiffuse(vec3 light, vec3 vertex) {
-	float intensity = dot(normalize(light), normalize(vertex));
-	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
-	float attenuation = 1 / (length(light) * length(light));
-	return intensity * attenuation;
-}
-
 // Main
 
 void main() {
@@ -67,8 +52,8 @@ void main() {
     else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
 
 	vec3 ambient = lights[0][1] * (0.25 + (0.05 * intensity));
-	vec3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], target - offset) * 0.5 * intensity;
-	vec3 specular = lights[0][1] * calcSpec(lights[0][0], target, float(1 + intensity));
+	vec3 diffuse = lights[0][1] * getDiffuse(lights[0][0], target - offset) * 0.5 * intensity;
+	vec3 specular = lights[0][1] * getSpecular(lights[0][0], vec3(cam_pos), target, float(1 + intensity));
 
 	if(modes[1] >= 3){ // combining lights
         uint count = 2;
@@ -77,8 +62,8 @@ void main() {
 			float attenuation = 1.0 / count;
 			// determining total light
             ambient += (lights[l % 3][1] * (0.25 + (0.05 * intensity))) * attenuation;
-            diffuse += (lights[l % 3][1] * calcDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
-            specular += (lights[l % 3][1] * calcSpec(vec3(cam_pos.x, cam_pos.y, cam_pos.z), target, float(1 + intensity))) * attenuation;
+            diffuse += (lights[l % 3][1] * getDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
+            specular += (lights[l % 3][1] * getSpecular(lights[l][0], vec3(cam_pos), target, float(1 + intensity))) * attenuation;
         }
     }
 

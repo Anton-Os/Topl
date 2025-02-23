@@ -9,11 +9,22 @@ struct Material_VertexShader : public Topl_EntryShader {
 
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genSceneBlock(scene, bytes);
-        // TODO: Set texture properties
+        appendDataToBytes((uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
+		appendDataToBytes((uint8_t*)&_texScale, sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)&light.pos, sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)&light.value, sizeof(Vec3f), bytes);
 	}
+
+	void setTexCoordParams(Vec3f scroll, Vec3f scale){
+		_texScroll = scroll;
+		_texScale = scale;
+	}
+
+	void setLight(const Topl_Light& l){ light = l; }
 protected:
+	Vec3f _texScroll = Vec3f({ 0.0, 0.0, 0.0 });
+	Vec3f _texScale = Vec3f({ 1.0, 1.0, 1.0 });
+
 	Topl_Light light = Topl_Light(Vec3f({ 0.0F, 0.0F, -1.0F }));
 };
 

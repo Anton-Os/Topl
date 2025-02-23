@@ -35,20 +35,6 @@ struct PS_INPUT {
 	float3 normal : NORMAL;
 };
 
-// Functions
-
-float calcSpec(float4 camera, float3 vertex, float focus) { // Custom Function
-	float intensity = dot(normalize(float3(camera.x, camera.y, camera.z)), normalize(vertex)) * focus;
-	return max(pow(intensity, 3), 0);
-}
-
-float calcDiffuse(float3 light, float3 vertex) {
-	float intensity = dot(normalize(light), normalize(vertex));
-	intensity = (intensity + 1.0) * 0.5; // distributes light more evenly
-	float attenuation = 1 / (length(light) * length(light));
-	return intensity * attenuation;
-}
-
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -64,8 +50,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
     else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
 
 	float3 ambient = lights[0][1] * (0.25 + (0.05 * intensity));
-	float3 diffuse = lights[0][1] * calcDiffuse(lights[0][0], target - offset) * 0.5 * intensity;
-	float3 specular = lights[0][1] * calcSpec(cam_pos, target, float(intensity + 1) * 0.5);
+	float3 diffuse = lights[0][1] * getDiffuse(lights[0][0], target - offset) * 0.5 * intensity;
+	float3 specular = lights[0][1] * getSpecular(cam_pos, target, float(intensity + 1) * 0.5);
 
     if(modes[1] >= 3){ // combining lights
         uint count = 2;
@@ -74,8 +60,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 			float attenuation = 1.0 / count;
 			// determining total light
             ambient += (lights[l][1] * (0.25 + (0.05 * intensity))) * attenuation;
-            diffuse += (lights[l][1] * calcDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
-            specular += (lights[l][1] * calcSpec(cam_pos, target, float(intensity + 1) * 0.5)) * attenuation;
+            diffuse += (lights[l][1] * getDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
+            specular += (lights[l][1] * getSpecular(cam_pos, target, float(intensity + 1) * 0.5)) * attenuation;
         }
     }
 
