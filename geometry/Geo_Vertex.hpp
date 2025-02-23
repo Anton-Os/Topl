@@ -2,7 +2,8 @@
 
 #include "support_def.h"
 
-#include "maths.h"
+#include "maths/Vector.h"
+#include "maths/Matrix.h"
 
 // Vertices
 

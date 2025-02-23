@@ -1,6 +1,7 @@
 #ifndef PHYS_H
 
-#include "maths.h"
+#include "maths/Vector.h"
+#include "maths/Matrix.h"
 
 // Physics Force
 

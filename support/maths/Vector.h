@@ -1,7 +1,10 @@
-// #include <string>
+#ifndef MATHS_VECTOR_H
 
-// #define MATH_PI 3.141592653
-// #define MATH_HALF_PI 1.57079633
+#include <cmath>
+#include <string>
+
+#define MATH_PI 3.141592653
+#define MATH_HALF_PI 1.57079633
 
 template <unsigned short n>
 struct VectorXF {
@@ -146,3 +149,6 @@ typedef const Vec4i* const vec4i_cptr_t;
 #define VEC_2F_ONES Vec2f({ 1.0f, 1.0f })
 #define VEC_3F_ONES Vec3f({ 1.0f, 1.0f, 1.0f })
 #define VEC_4F_ONES Vec3f({ 1.0f, 1.0f, 1.0f, 1.0f })
+
+#define MATHS_VECTOR_H
+#endif
