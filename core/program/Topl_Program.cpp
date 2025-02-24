@@ -98,8 +98,10 @@ void Topl_Program::_onAnyKey(char k){
 #endif
     }
     if(Topl_Program::isCtrl_shader){
-        if(k == '-' || k == '_' || k == (char)0x25) Topl_Program::shaderMode--;
-        else if(k == '+' || k == '=' || k == (char)0x27) Topl_Program::shaderMode++;
+        if(k == (char)0x25) Topl_Program::shaderMode--;
+        else if(k == (char)0x26) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0)? 100 : -100;
+        else if(k == (char)0x27) Topl_Program::shaderMode++;
+        else if(k == (char)0x28) Topl_Program::shaderMode *= -1;
         else if(isdigit(k)){
             switch(tolower(k)){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
@@ -115,9 +117,10 @@ void Topl_Program::_onAnyKey(char k){
             }
         }
 
-        if(k == (char)0x25 || k == (char)0x27 || k == '-' || k == '_' || k == '+' || k == '='){
+        if(k == (char)0x25 || k == (char)0x26 || k == (char)0x27 || k == (char)0x28 || k == '-' || k == '_' || k == '+' || k == '='){
             setShadersMode(Topl_Program::shaderMode);
-            std::cout << "Shader mode is " << std::to_string(Topl_Program::shaderMode) << std::endl;
+            if(Topl_Program::shaderMode > 0) std::cout << "Shader mode is " << std::to_string(Topl_Program::shaderMode) << std::endl;
+            else  std::cout << "Shader mode is -" << std::to_string(-1 * Topl_Program::shaderMode) << std::endl;
         }
     }
 }

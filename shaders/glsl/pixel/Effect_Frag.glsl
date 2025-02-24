@@ -26,7 +26,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 
 layout(location = 1) in vec3 texcoord;
 
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec4 color_final;
 
 // Functions
 
@@ -235,17 +235,17 @@ void main() {
 	if(mode >= 0) target = coords - cursor - vec2(cam_pos.x, cam_pos.y);
 	else target = vec2(texcoord.x, texcoord.y) - cursor;
 
-	if(abs(mode) >= 10 && abs(mode) < 20) color = vec4(juliaSet(target * size, cursor), 1.0f);
-	else if(abs(mode) >= 20 && abs(mode) < 30) color = vec4(trigSet((target + vec2(0.5, 0.5)) * size), 1.0f);
-	else if(abs(mode) >= 30 && abs(mode) < 40) color = vec4(powerSet(target * size, cursorPos), 1.0f);
-	else if(abs(mode) >= 40 && abs(mode) < 50) color = vec4(wingSet(target), 1.0f);
-	else if(abs(mode) >= 50 && abs(mode) < 60) color = vec4(stepSet(target, cursorPos), 1.0f);
-	else if(abs(mode) >= 60 && abs(mode) < 70) color = vec4(loopSet(target), 1.0F);
-	else if(abs(mode) >= 70 && abs(mode) < 80) color = vec4(shardSet(target, cursorPos), 1.0f);
-	else if(abs(mode) >= 80 && abs(mode) < 90) color = vec4(sparseSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
-	else if(abs(mode) >= 90 && abs(mode) < 100) color = vec4(retroSet(target, cursor), 1.0f);
-	else if(abs(mode) >= 100) color = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
-	else color = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
+	if(abs(mode) >= 10 && abs(mode) < 20) color_final = vec4(juliaSet(target * size, cursor), 1.0f);
+	else if(abs(mode) >= 20 && abs(mode) < 30) color_final = vec4(trigSet((target + vec2(0.5, 0.5)) * size), 1.0f);
+	else if(abs(mode) >= 30 && abs(mode) < 40) color_final = vec4(powerSet(target * size, cursorPos), 1.0f);
+	else if(abs(mode) >= 40 && abs(mode) < 50) color_final = vec4(wingSet(target), 1.0f);
+	else if(abs(mode) >= 50 && abs(mode) < 60) color_final = vec4(stepSet(target, cursorPos), 1.0f);
+	else if(abs(mode) >= 60 && abs(mode) < 70) color_final = vec4(loopSet(target), 1.0F);
+	else if(abs(mode) >= 70 && abs(mode) < 80) color_final = vec4(shardSet(target, cursorPos), 1.0f);
+	else if(abs(mode) >= 80 && abs(mode) < 90) color_final = vec4(sparseSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
+	else if(abs(mode) >= 90 && abs(mode) < 100) color_final = vec4(retroSet(target, cursor), 1.0f);
+	else if(abs(mode) >= 100) color_final = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
+	else color_final = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 
-	if(color.r == 0.0f && color.g == 0.0f && color.b == 0.0f) color.a = 0.0; // make transparent if not in set
+	if(color_final.r == 0.0f && color_final.g == 0.0f && color_final.b == 0.0f) color_final.a = 0.0; // make transparent if not in set
 }

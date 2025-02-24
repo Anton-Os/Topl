@@ -35,27 +35,32 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) flat in uint ctrl_index;
 layout(location = 2) in vec4 vertex_color;
 
-layout(location = 0) out vec4 outColor;
+layout(location = 0) out vec4 color_final;
+
+// Functions
+
+vec3 colorPattern(vec3 ctrlPoint, vec3 position, vec3 color){
+	float dist = length(ctrlPoint - position);
+	float size = abs(mode) * PATTERN_SIZE;
+
+	if(mode > 0){
+		ctrlPoint.x += sin(float(timeElapse) / 1000) * size;
+		ctrlPoint.y += cos(float(timeElapse) / 1000) * size;
+		ctrlPoint.z += tan(float(timeElapse) / 1000) * size;
+	} else ctrlPoint *= (float(timeElapse) / 1000) * size;
+
+	// TODO: Accomodate different modes
+	float r = sin(ctrlPoint.x * abs(mode % 10)) * dist;
+	float g = cos(ctrlPoint.y * abs(mode % 10)) * dist;
+	float b = tan(ctrlPoint.z * abs(mode % 10)) * dist;
+
+	return vec3(r, g, b) / color;
+}
 
 // Main
 
 void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
-	float nearestDist = length(nearestPoint - pos);
-	float size = abs(mode) * PATTERN_SIZE;
 
-	if(mode > 0){
-		nearestPoint.x += sin(float(timeElapse) / 1000) * size;
-		nearestPoint.y += cos(float(timeElapse) / 1000) * size;
-		nearestPoint.z += tan(float(timeElapse) / 1000) * size;
-	} else nearestPoint *= (float(timeElapse) / 1000) * size;
-
-	// TODO: Accomodate different modes
-	float r = sin(nearestPoint.x * abs(mode % 10)) * nearestDist;
-	float g = cos(nearestPoint.y * abs(mode % 10)) * nearestDist;
-	float b = tan(nearestPoint.z * abs(mode % 10)) * nearestDist;
-
-	// if(mode >= 0) 
-	outColor = vec4(r, g, b, 1.0) / vertex_color;
-	// else outColor = vec4(r, g, b, 1.0) * vertex_color;
+	color_final = vec4(colorPattern(nearestPoint, pos, vec3(vertex_color)), 1.0);
 }

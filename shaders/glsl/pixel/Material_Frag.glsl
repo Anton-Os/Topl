@@ -28,7 +28,7 @@ layout(location = 1) in vec3 vertex_pos;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 texcoord;
 
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec4 color_final;
 
 // Main
 
@@ -43,7 +43,7 @@ void main() {
 	vec3 texVals[8];
 	for(int t = 0; t < 8; t++) texVals[t] = vec3(modalTex((abs(mode) + t) % 8, texcoord));
 	
-	color = vec4(texVals[0], 1.0F);
+	color_final = vec4(texVals[0], 1.0F);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
 	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));
 	vec3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;
@@ -51,5 +51,5 @@ void main() {
 	vec3 specColor = (lightVal + texVals[(5 + t) % 8]) / 2;
 	vec3 specular = specColor * getSpecular(lightPos - color_range(texVals[(6 + t) % 8]), vec3(cam_pos), target - color_range(texVals[(7 + t) % 8]), float(1 + intensity));
 
-	color *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
+	color_final *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

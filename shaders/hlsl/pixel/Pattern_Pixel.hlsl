@@ -35,28 +35,32 @@ struct PS_INPUT {
 	float3 vertex_color: COLOR;
 };
 
+// Functions
+
+float4 colorPattern(float3 ctrlPoint, float3 pos, float3 color){
+	float size = abs(mode) * PATTERN_SIZE;
+	float distance = length(pos - ctrlPoint);
+
+	if(mode > 0){
+		ctrlPoint.x *= abs(sin(float(timeElapse) / 1000)) * (1.0 / size);
+		ctrlPoint.y *= abs(cos(float(timeElapse) / 1000)) * (1.0 / size);
+		ctrlPoint.z += abs(tan(float(timeElapse) / 1000)) * (1.0 / size);
+	} else ctrlPoint /= (float(timeElapse) / 1000) * size;
+
+	float r = ctrlPoint.x + abs(mode % 10) / distance;
+	float g = ctrlPoint.y + abs(mode % 10) / distance;
+	float b = ctrlPoint.z + abs(mode % 10) / distance;
+
+	return float4(r, g, b, 1.0) * float4(color, 1.0);
+}
+
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-	float3 nearestPoint = float3(input.pos.x, input.pos.y, input.pos.z); 
-	float nearestDist = length(float3(input.pos.x, input.pos.y, input.pos.z) - input.nearestPoint);
-	float size = abs(mode) * PATTERN_SIZE;
-
-    if(mode > 0){
-		nearestPoint.x *= abs(sin(float(timeElapse) / 1000)) * (1.0 / size);
-		nearestPoint.y *= abs(cos(float(timeElapse) / 1000)) * (1.0 / size);
-		nearestPoint.z += abs(tan(float(timeElapse) / 1000)) * (1.0 / size);
-	} else nearestPoint /= (float(timeElapse) / 1000) * size;
-
-	// TODO: Accomodate different modes
-	float r = nearestPoint.x + abs(mode % 10) / nearestDist;
-	float g = nearestPoint.y + abs(mode % 10) / nearestDist;
-	float b = nearestPoint.z + abs(mode % 10) / nearestDist;
-
-	// if(mode >= 0) return float4(r, g, b, 1.0) * float4(input.vertex_color, 1.0);
-	return float4(r, g, b, 1.0) * float4(input.vertex_color, 1.0);
+	return colorPattern(input.nearestPoint, input.pos, input.vertex_color);
 }
 
 

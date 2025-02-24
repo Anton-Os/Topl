@@ -9,7 +9,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
         case 'u': drawMode = DRAW_Triangles; break;
         case 'i': drawMode = DRAW_Lines; break;
         case 'o': drawMode = DRAW_Points; break;
-        case 'p': drawMode = DRAW_Strip; break;
+        case 'p': drawMode = DRAW_Strip; brea
         case 'h': Kaleidoscope_Demo::mode = 0; break;
         case 'j': Kaleidoscope_Demo::mode = 1; break;
         case 'k': Kaleidoscope_Demo::mode = 2; break;
