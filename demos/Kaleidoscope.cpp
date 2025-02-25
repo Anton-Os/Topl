@@ -9,7 +9,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
         case 'u': drawMode = DRAW_Triangles; break;
         case 'i': drawMode = DRAW_Lines; break;
         case 'o': drawMode = DRAW_Points; break;
-        case 'p': drawMode = DRAW_Strip; brea
+        case 'p': drawMode = DRAW_Strip; break;
         case 'h': Kaleidoscope_Demo::mode = 0; break;
         case 'j': Kaleidoscope_Demo::mode = 1; break;
         case 'k': Kaleidoscope_Demo::mode = 2; break;
@@ -26,17 +26,8 @@ void Kaleidoscope_Demo::onAnyKey(char key){
     // else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
 }
 
-void Kaleidoscope_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
-    unsigned short p = 0;
-
-    // _patternVShader.setCtrlPoint(p, Vec3f({ cursor.first, cursor.second, 0.0F }));
-
-    p++;
-}
-
 void Kaleidoscope_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyKey, this, std::placeholders::_1));
-    Platform::mouseControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
 
     construct1.configure(&scene);
     construct2.configure(&scene);

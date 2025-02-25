@@ -24,12 +24,12 @@ void Topl_Program::updatePipelines(){
     if(_renderer->getPipeline() == _texPipeline)  _texVShader.setParams(&_background.actor, { 0, 0.0F, scroll, scale });
     else if(_renderer->getPipeline() == _materialPipeline) _materialVShader.setTexCoordParams(scroll, scale);
     else if(_renderer->getPipeline() == _beamsPipeline) _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos() * -1.0, { BEAMS_FLASH_LIGHT.value }));
-    /* else if(_renderer->getPipeline() == _patternPipeline) 
+    else if(_renderer->getPipeline() == _patternPipeline) 
         for(unsigned p = 0; p < PATTERN_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
+            float z = (1.0F / Platform::mouseControl.getTracerSteps()->size()) * p; // (((float)rand() / (float)RAND_MAX) - 0.5F) * 2.0F;
             Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];
-            _patternVShader.setCtrlPoint(p, Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, (((float)rand() / (float)RAND_MAX) - 0.5F) * 2.0F }));
-            // std::cout << "Adding point " << std::to_string(tracerStep.step.first) << ", " << std::to_string(tracerStep.step.first) << std::endl;
-        } */
+            _patternVShader.setCtrlPoint(p, Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, z }));
+        }
 }
 
 void Topl_Program::updateTimelines(){

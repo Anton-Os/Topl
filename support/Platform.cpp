@@ -71,8 +71,6 @@ void Platform::openFileDialog(bool isRead){
 
 	if(SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&fileDialog_win32))))
 		if(SUCCEEDED(fileDialog_win32->Show(NULL))){
-			logMessage("Showing FileDialog object success! ");
-
 			IShellItem* shellItem_win32;
 			if(SUCCEEDED(fileDialog_win32->GetResult(&shellItem_win32))){
 				PWSTR filePath_win32;

@@ -2,8 +2,8 @@
 
 #include "Hello.hpp"
 
-#define TARGET_BACKEND 1 // BACKEND_GL4
-// #define TARGET_BACKEND 2 // BACKEND_DX11
+// #define TARGET_BACKEND 1 // BACKEND_GL4
+#define TARGET_BACKEND 2 // BACKEND_DX11
 // #define TARGET_BACKEND 3 // BACKEND_VK
 
 #define FRAME_AVG_TIME 100
@@ -56,9 +56,8 @@ MAIN_ENTRY {
 	double swapTime = 0.0;
 
 	std::cout << "Scene building" << std::endl;
+	triangle.setInstances({ Mat4x4::scale({ 1.5F, 1.5F, 1.5F }), Mat4x4::scale({ 2.0F, 2.0F, 2.0F }), Mat4x4::scale({ 2.5F, 2.5F, 2.5F }), Mat4x4::scale({ 3.0F, 3.0F, 3.0F }) });
 	scene.addGeometry(&actor);
-    // triangle.instanceCount = 10;
-	// triangle.tessLevel = 10;
 	renderer->buildScene(&scene);
 
 	std::cout << "Rendering loop" << std::endl;

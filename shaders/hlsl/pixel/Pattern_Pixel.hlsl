@@ -2,7 +2,7 @@
 #define IGNORE_INPUTS
 #define INCLUDE_TEXTURES
 
-#define PATTERN_SIZE 0.1
+#define PATTERN_SIZE 0.025
 
 #include "Common.hlsl"
 
@@ -39,27 +39,22 @@ struct PS_INPUT {
 // Functions
 
 float4 coordPattern(float3 ctrlPoint, float3 pos){
-	float size = abs(mode) * PATTERN_SIZE * 100;
-	float3 pattern = float3(pos - ctrlPoint) * size;
+	float dist = length(ctrlPoint - pos);
+	float size = abs(mode % 100) * PATTERN_SIZE;
 
-	return float4(abs(pattern.r) - floor(abs(pattern.r)), abs(pattern.g) - floor(abs(pattern.g)), abs(pattern.b) - floor(abs(pattern.b)), 1.0);
+	return float4(float3(dist * abs(ctrlPoint.r), dist * abs(ctrlPoint.g), dist * abs(ctrlPoint.b)) * size, 1.0);
 }
 
-float4 flashPattern(float3 ctrlPoint, float3 pos, float3 color){
-	float size = abs(mode) * PATTERN_SIZE;
+float4 trigPattern(float3 ctrlPoint, float3 pos, float3 color){
 	float distance = length(pos - ctrlPoint);
+	float size = abs(mode % 100) * PATTERN_SIZE;
 
-	if(mode > 0){
-		ctrlPoint.x *= abs(sin(float(timeElapse) / 1000)) * (1.0 / size);
-		ctrlPoint.y *= abs(cos(float(timeElapse) / 1000)) * (1.0 / size);
-		ctrlPoint.z += abs(tan(float(timeElapse) / 1000)) * (1.0 / size);
-	} else ctrlPoint /= (float(timeElapse) / 1000) * size;
+	if(mode > 0) ctrlPoint *= float3(abs(sin(float(timeElapse) / 1000)), abs(cos(float(timeElapse) / 1000)), abs(tan(float(timeElapse) / 1000))) * (1.0 / size);
+	else ctrlPoint /= (float(timeElapse) / 1000) * size;
 
-	float r = ctrlPoint.x + abs(mode % 10) / distance;
-	float g = ctrlPoint.y + abs(mode % 10) / distance;
-	float b = ctrlPoint.z + abs(mode % 10) / distance;
+	ctrlPoint += float3(abs(mode % 100) / distance, abs(mode % 100) / distance, abs(mode % 100) / distance);
 
-	return float4(r, g, b, 1.0) * float4(color, 1.0);
+	return float4(ctrlPoint * color, 1.0);
 }
 
 // Main
@@ -67,8 +62,11 @@ float4 flashPattern(float3 ctrlPoint, float3 pos, float3 color){
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-	// return coordPattern(input.nearestPoint, input.vertex_pos);
-	return flashPattern(input.nearestPoint, input.vertex_pos, input.vertex_color);
+	float3 relCoord = input.nearestPoint - input.vertex_pos;
+
+	if(abs(mode) > 0 && abs(mode) < 100) return  coordPattern(input.nearestPoint, input.vertex_pos);
+	else if(abs(mode) >= 100 && abs(mode) < 200) return trigPattern(input.nearestPoint, input.vertex_pos, input.vertex_color);
+	else return float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }
 
 

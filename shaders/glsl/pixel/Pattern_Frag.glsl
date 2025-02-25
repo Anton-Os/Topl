@@ -4,7 +4,7 @@
 // #define INCLUDE_EXTBLOCK
 #define INCLUDE_TEXTURES
 
-#define PATTERN_SIZE 0.1
+#define PATTERN_SIZE 0.025
 
 #include "Common.glsl"
 
@@ -42,34 +42,30 @@ layout(location = 0) out vec4 color_final;
 
 vec3 coordPattern(vec3 ctrlPoint, vec3 position){
 	float dist = length(ctrlPoint - position);
-	float size = abs(mode) * PATTERN_SIZE;
+	float size = abs(mode % 100) * PATTERN_SIZE;
 
 	return vec3(dist * abs(ctrlPoint.r), dist  * abs(ctrlPoint.g), dist * abs(ctrlPoint.b)) * size;
 }
 
-vec3 flashPattern(vec3 ctrlPoint, vec3 position, vec3 color){
+vec3 trigPattern(vec3 ctrlPoint, vec3 position, vec3 color){
 	float dist = length(ctrlPoint - position);
-	float size = abs(mode) * PATTERN_SIZE;
+	float size = abs(mode % 100) * PATTERN_SIZE;
 
-	if(mode > 0){
-		ctrlPoint.x += sin(float(timeElapse) / 1000) * size;
-		ctrlPoint.y += cos(float(timeElapse) / 1000) * size;
-		ctrlPoint.z += tan(float(timeElapse) / 1000) * size;
-	} else ctrlPoint *= (float(timeElapse) / 1000) * size;
+	if(mode > 0) ctrlPoint += vec3(sin(float(timeElapse) / 1000), cos(float(timeElapse) / 1000), tan(float(timeElapse) / 1000)) * size;
+	else ctrlPoint *= (float(timeElapse) / 1000) * size;
 
-	// TODO: Accomodate different modes
-	float r = sin(ctrlPoint.x * abs(mode % 10)) * dist;
-	float g = cos(ctrlPoint.y * abs(mode % 10)) * dist;
-	float b = tan(ctrlPoint.z * abs(mode % 10)) * dist;
+	ctrlPoint = vec3(sin(ctrlPoint.x * abs(mode % 100)), cos(ctrlPoint.y * abs(mode % 100)), tan(ctrlPoint.z * abs(mode % 100))) * dist;
 
-	return vec3(r, g, b) / color;
+	return ctrlPoint / color;
 }
 
 // Main
 
 void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
+	vec3 relCoord = nearestPoint - vertex_pos;
 
-	color_final = vec4(coordPattern(nearestPoint, vertex_pos), 1.0);
-	// color_final = vec4(flashPattern(nearestPoint, vertex_pos, vec3(vertex_color)), 1.0);
+	if(abs(mode) > 0 && abs(mode) < 100) color_final = vec4(coordPattern(nearestPoint, vertex_pos), 1.0);  
+	else if(abs(mode) >= 100 && abs(mode) < 200) color_final = vec4(trigPattern(nearestPoint, vertex_pos, vec3(vertex_color)), 1.0);
+	else color_final = vec4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }
