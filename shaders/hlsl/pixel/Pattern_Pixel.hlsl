@@ -2,7 +2,7 @@
 #define IGNORE_INPUTS
 #define INCLUDE_TEXTURES
 
-#define PATTERN_SIZE 0.5
+#define PATTERN_SIZE 0.1
 
 #include "Common.hlsl"
 
@@ -32,12 +32,20 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 struct PS_INPUT { 
 	float4 pos : SV_POSITION; 
 	float3 nearestPoint : POSITION;
+	float3 vertex_pos: POSITION1;
 	float3 vertex_color: COLOR;
 };
 
 // Functions
 
-float4 colorPattern(float3 ctrlPoint, float3 pos, float3 color){
+float4 coordPattern(float3 ctrlPoint, float3 pos){
+	float size = abs(mode) * PATTERN_SIZE * 100;
+	float3 pattern = float3(pos - ctrlPoint) * size;
+
+	return float4(abs(pattern.r) - floor(abs(pattern.r)), abs(pattern.g) - floor(abs(pattern.g)), abs(pattern.b) - floor(abs(pattern.b)), 1.0);
+}
+
+float4 flashPattern(float3 ctrlPoint, float3 pos, float3 color){
 	float size = abs(mode) * PATTERN_SIZE;
 	float distance = length(pos - ctrlPoint);
 
@@ -54,13 +62,13 @@ float4 colorPattern(float3 ctrlPoint, float3 pos, float3 color){
 	return float4(r, g, b, 1.0) * float4(color, 1.0);
 }
 
-
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-	return colorPattern(input.nearestPoint, input.pos, input.vertex_color);
+	// return coordPattern(input.nearestPoint, input.vertex_pos);
+	return flashPattern(input.nearestPoint, input.vertex_pos, input.vertex_color);
 }
 
 

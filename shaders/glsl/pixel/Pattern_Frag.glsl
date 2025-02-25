@@ -33,13 +33,21 @@ layout(std140, binding = 1) uniform SceneBlock {
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) flat in uint ctrl_index;
-layout(location = 2) in vec4 vertex_color;
+layout(location = 2) in vec3 vertex_pos;
+layout(location = 3) in vec4 vertex_color;
 
 layout(location = 0) out vec4 color_final;
 
 // Functions
 
-vec3 colorPattern(vec3 ctrlPoint, vec3 position, vec3 color){
+vec3 coordPattern(vec3 ctrlPoint, vec3 position){
+	float dist = length(ctrlPoint - position);
+	float size = abs(mode) * PATTERN_SIZE;
+
+	return vec3(dist * abs(ctrlPoint.r), dist  * abs(ctrlPoint.g), dist * abs(ctrlPoint.b)) * size;
+}
+
+vec3 flashPattern(vec3 ctrlPoint, vec3 position, vec3 color){
 	float dist = length(ctrlPoint - position);
 	float size = abs(mode) * PATTERN_SIZE;
 
@@ -62,5 +70,6 @@ vec3 colorPattern(vec3 ctrlPoint, vec3 position, vec3 color){
 void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
 
-	color_final = vec4(colorPattern(nearestPoint, pos, vec3(vertex_color)), 1.0);
+	color_final = vec4(coordPattern(nearestPoint, vertex_pos), 1.0);
+	// color_final = vec4(flashPattern(nearestPoint, vertex_pos, vec3(vertex_color)), 1.0);
 }

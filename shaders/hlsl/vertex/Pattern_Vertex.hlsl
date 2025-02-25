@@ -28,7 +28,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 struct VS_OUTPUT { 
 	float4 pos : SV_POSITION; 
-	float3 nearestPoint : POSITION1;	
+	float3 nearestPoint : POSITION;	
+	float3 vertex_pos: POSITION1;
 	float3 vertex_color : COLOR;
 };
 
@@ -53,6 +54,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.nearestPoint = calcNearestPoint(float3(output.pos.x, output.pos.y, output.pos.z));
+	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.vertex_color = input.vert_color;
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
 #ifdef INCLUDE_EXTBLOCK

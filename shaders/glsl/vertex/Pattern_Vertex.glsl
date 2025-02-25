@@ -30,7 +30,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 
 layout(location = 0) out vec3 pos_out;
 layout(location = 1) flat out uint ctrl_index_out;
-layout(location = 2) out vec4 vert_color_out;
+layout(location = 2) out vec3 vert_pos_out;
+layout(location = 3) out vec4 vert_color_out;
 
 uint calcCtrlPointIndex(vec3 target){
 	uint index = 0;
@@ -47,6 +48,7 @@ void main() {
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	ctrl_index_out = calcCtrlPointIndex(pos_out);
+	vert_pos_out = vec3(pos);
 	vert_color_out = vec4(vert_color_in, 0.5); // getStepColor(ctrl_index_out);
 #ifdef INCLUDE_EXTBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
