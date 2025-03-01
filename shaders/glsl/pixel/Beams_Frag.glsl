@@ -58,9 +58,8 @@ void main() {
 	if(modes[1] >= 3){ // combining lights
         uint count = 2;
         if(modes[1] > 6) count = 3;
-        for(uint l = 1; l < count; l++){
+        for(uint l = 1; l < count; l++){ // determining total light
 			float attenuation = 1.0 / count;
-			// determining total light
             ambient += (lights[l % 3][1] * (0.25 + (0.05 * intensity))) * attenuation;
             diffuse += (lights[l % 3][1] * getDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
             specular += (lights[l % 3][1] * getSpecular(lights[l][0], vec3(cam_pos), target, float(1 + intensity))) * attenuation;
@@ -74,7 +73,8 @@ void main() {
 	else if(modes[0] == BEAMS_SPOT) color_final = vec4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0);
 	else if(modes[0] == BEAMS_DEPTH) color_final = vec4(distance(target, vec3(cam_pos)), distance(target, vec3(cam_pos)), distance(target, vec3(cam_pos)), 1.0f);
 	else if(modes[0] == BEAMS_DISTANCE) color_final =  vec4(ambient + (distance(target, vec3(cam_pos)) * diffuse) + specular, 1.0f);
-	else if(modes[0] == BEAMS_TRAJECTORY) color_final = vec4(lights[0][1] * normalize(cross(vec3(cam_pos.x, cam_pos.y, cam_pos.z) - lights[0][0], target)), 1.0);
+	else if(modes[0] == BEAMS_TRAJECTORY) color_final = vec4(ambient + (distance(target, lights[0][0]) * diffuse) + (specular * cross(target, lights[0][0])), 1.0f);
+	// else if(modes[0] == BEAMS_TRAJECTORY) color_final = vec4(lights[0][1] * normalize(cross(vec3(cam_pos.x, cam_pos.y, cam_pos.z) - lights[0][0], target)), 1.0);
 	else if(modes[0] == BEAMS_TRIAL) color_final = vec4(ambient + vec3(sin(specular.r / diffuse.r), cos(diffuse.g / specular.g), tan(diffuse.b + specular.b)), 1.0); 
 	else color_final = vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

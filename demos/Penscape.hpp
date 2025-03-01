@@ -51,29 +51,25 @@ struct Penscape_Demo : public Topl_Program {
 
     static unsigned short mode;
 
-    Geo_Mesh* trigMeshes[3] = { new Geo_Trig3D(BRUSH3D_SIZE), new Geo_TrigCone(BRUSH3D_SIZE), new Geo_TrigOrb(BRUSH3D_SIZE) }; 
-    // Geo_Trig3D* trigMeshBrush = new Geo_Trig3D(BRUSH3D_SIZE / BRUSH3D_SCALE);
+    Geo_Mesh* trigMeshes[3] = { new Geo_Trig3D(BRUSH3D_SIZE), new Geo_TrigCone(BRUSH3D_SIZE), new Geo_TrigOrb(BRUSH3D_SIZE) };
     Geo_Mesh* trigMeshBrushes[3] = {
         new Geo_Trig3D(BRUSH3D_SIZE / BRUSH3D_SCALE),
         new Geo_TrigCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
         new Geo_TrigOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
     };
     Geo_Mesh* quadMeshes[3] = { new Geo_Quad3D(BRUSH3D_SIZE), new Geo_QuadCone(BRUSH3D_SIZE), new Geo_QuadOrb(BRUSH3D_SIZE) }; 
-    // Geo_Quad3D* quadMeshBrush = new Geo_Quad3D(BRUSH3D_SIZE / BRUSH3D_SCALE);
     Geo_Mesh* quadMeshBrushes[3] = {
         new Geo_Quad3D(BRUSH3D_SIZE / BRUSH3D_SCALE),
         new Geo_QuadCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
         new Geo_QuadOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
     };
     Geo_Mesh* hexMeshes[3] = { new Geo_Hex3D(BRUSH3D_SIZE), new Geo_HexCone(BRUSH3D_SIZE), new Geo_HexOrb(BRUSH3D_SIZE) }; 
-    // Geo_Hex3D* hexMeshBrush = new Geo_Hex3D(BRUSH3D_SIZE / BRUSH3D_SCALE);
     Geo_Mesh* hexMeshBrushes[3] = {
         new Geo_Hex3D(BRUSH3D_SIZE / BRUSH3D_SCALE),
         new Geo_HexCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
         new Geo_HexOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
     };
     Geo_Mesh* circleMeshes[3] = { new Geo_Circle3D(BRUSH3D_SIZE), new Geo_CircleCone(BRUSH3D_SIZE), new Geo_Orb(BRUSH3D_SIZE) }; 
-    // Geo_Circle3D* circleMeshBrush = new Geo_Circle3D(BRUSH3D_SIZE / BRUSH3D_SCALE);
     Geo_Mesh* circleMeshBrushes[3] = {
         new Geo_Circle3D(BRUSH3D_SIZE / BRUSH3D_SCALE),
         new Geo_CircleCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),

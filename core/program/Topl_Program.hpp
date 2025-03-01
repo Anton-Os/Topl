@@ -142,7 +142,7 @@ private:
 	// Scenes, Geometry & Targets
 	struct Background {
         Geo_Quad2D mesh = Geo_Quad2D(2.0F);
-        Geo_Actor actor = Geo_Actor("background", &mesh);
+        Geo_Actor actor = Geo_Actor("program_background", &mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef RASTERON_H
@@ -170,18 +170,20 @@ private:
 	struct Overlays {
         Topl_Camera camera;
         Topl_Scene scene = Topl_Scene(&camera);
-		Geo_Billboard billboard_camera = Geo_Billboard("prog_camera", 3, 3, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("prog_object", 3, 3, &scene);
-		Geo_Billboard billboard_shader = Geo_Billboard("prog_shader", 3, 3, &scene);
+		Geo_Billboard billboard_camera = Geo_Billboard("program_camera", 3, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("program_object", 4, 3, &scene);
+		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};
         Sampler_Slider slider = Sampler_Slider(2); Sampler_Slider sizeSlider = Sampler_Slider(10);
 		Sampler_Button objectButtons[9] = {
-			Sampler_Button("pathfinder-divide"), Sampler_Button("pathfinder-exclude"), Sampler_Button("pathfinder-intersect"),
-			Sampler_Button("3d-box-corner"), Sampler_Button("3d-box-expand"), Sampler_Button("3d-box-expand-corners"),
-			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3")
+			// Sampler_Button("pathfinder-divide"), Sampler_Button("pathfinder-exclude"), Sampler_Button("pathfinder-intersect"),
+			// Sampler_Button("3d-box-corner"), Sampler_Button("3d-box-expand"), Sampler_Button("3d-box-expand-corners"),
+			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
+			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
+			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
 		};
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif

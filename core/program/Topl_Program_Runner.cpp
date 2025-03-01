@@ -124,12 +124,13 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
         Geo_Actor* actor = scene->getPickActor(Topl_Program::pickerColor);
         Topl_Program::pickerObj = actor;
         if(actor != nullptr){
-            // std::cout << "Actor is " << actor->getName() << std::endl;
             if(actor->pickFunc != nullptr){
                 if(!Platform::mouseControl.getIsMouseDown().second) actor->pickFunc(MOUSE_Hover, actor);
                 else actor->pickFunc(Platform::mouseControl.getIsMouseDown().first, actor);
             }
-            if(Platform::mouseControl.getIsMouseDown().second) Topl_Program::lastPickerObj = actor;
+            if(Platform::mouseControl.getIsMouseDown().second && actor->getName().find("program_") == std::string::npos) // exclude program objects
+                Topl_Program::lastPickerObj = actor; // only set last picker object if mouse is down and its not a default object
+            if(lastPickerObj != nullptr) std::cout << "Last picked object is " << lastPickerObj->getName() << std::endl;
         }
     }
 

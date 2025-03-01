@@ -52,8 +52,26 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 8: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
                             default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                         }
-                    else switch(p){
-                        default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                    else if(o == 1) 
+                        switch(p){
+                            case 0: Topl_Program::lastPickerObj->updatePos(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 1: Topl_Program::lastPickerObj->updatePos(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 2: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
+                            case 3: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
+                            case 4: Topl_Program::lastPickerObj->updateRot(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 5: Topl_Program::lastPickerObj->updateRot(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 6: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
+                            case 7: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
+                            case 8: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 9: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
+                            case 10: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
+                            case 11: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
+                            default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                        }
+                    else {
+                        char keySim = (p + 1) + '0';
+                        std::cout << "Setting pipeline as " << keySim << std::endl;
+                        Topl_Program::_onAnyKey(keySim); // switch pipelines
                     }
 #endif
                 }
@@ -63,6 +81,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 }
 
 void Topl_Program::_onAnyKey(char k){
+    std::cout << "Key is " << std::to_string(k) << std::endl;
     if(isspace(k) && k != 0x0D) timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
@@ -117,6 +136,8 @@ void Topl_Program::_onAnyKey(char k){
                 case '8': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // geometry stage
                 case '9': Topl_Factory::switchPipeline(_renderer, _longPipeline); break; // tesselation & geometry stages
             }
+
+            if(tolower(k) == '8' || tolower(k) == '9') _renderer->setDrawMode(DRAW_Patch);
         }
 
         if(k == (char)0x25 || k == (char)0x26 || k == (char)0x27 || k == (char)0x28 || k == '-' || k == '_' || k == '+' || k == '='){
@@ -235,7 +256,7 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H
     if(backgroundTex != nullptr){
-        _background.scene.addTexture("background", backgroundTex);
+        _background.scene.addTexture("program_background", backgroundTex);
         for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
     }
 #endif
@@ -248,10 +269,13 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
     // modifiers and overlays
-    _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
-    // _overlays.billboard_object.overlay(5, &_overlays.sizeSlider);
-    for(unsigned b = 0; b < 9; b++) _overlays.billboard_object.overlay(b, &_overlays.objectButtons[b]);
-    for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
+    // _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
+    // for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
+    for(unsigned b = 0; b < 9; b++){ 
+        _overlays.billboard_camera.overlay(b, &_overlays.objectButtons[b]);
+        // _overlays.billboard_object.overlay(b, &_overlays.objectButtons[b]);
+        _overlays.billboard_shader.overlay(b, &_overlays.objectButtons[b]);
+    }
     
     for(unsigned short o = 0; o < 3; o++){
         _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
@@ -268,8 +292,8 @@ void Topl_Program::createOverlays(double size){
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
 #endif
     }
-    _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
-    // _overlays.billboard_object.expandVert(std::make_pair(3, 1), 1);
+    // _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
+    // _overlays.billboard_object.expandVert(std::make_pair(2, 1), 1);
     // _texVShader.setParams() // dont forgot to add parameters!
 
     _renderer->buildScene(&_overlays.scene);

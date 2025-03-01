@@ -60,6 +60,12 @@ private:
     const ref_image_t* seedImg;
 }; 
 
+struct Sampler_Mix : public Sampler_2D {
+    Sampler_Mix(ref_image_t image1, ref_image_t image2){ putImg(blendImgOp(image1, image2)); }
+
+    Sampler_Mix(ref_image_t image1, ref_image_t image2, mixCallback callback){ putImg(mixingImgOp(image1, image2, callback)); }
+};
+
 /* struct Sampler_Insert : public Sampler_2D {
     // TODO: Include body
 }; */
