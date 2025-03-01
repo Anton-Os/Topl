@@ -88,14 +88,14 @@ private:
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
-		Sampler_Noise({ 2, 2, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
-		Sampler_Noise({ 4, 4, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Pins.png"), 
-		Sampler_Noise({ 8, 8, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
-		Sampler_Noise({ 16, 16, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Frame.png"), 
-		Sampler_Noise({ 32, 32, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Canvas.png"),
-		Sampler_Noise({ 64, 64, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Squared.png"), 
-		Sampler_Noise({ 128, 128, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Circular.png"),
-		Sampler_Noise({ 256, 256, RAND_COLOR(), RAND_COLOR() }), //Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp"),
+		Sampler_Noise({ 2, 2, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
+		Sampler_Noise({ 4, 4, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Pins.png"), 
+		Sampler_Noise({ 8, 8, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
+		Sampler_Noise({ 16, 16, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Frame.png"), 
+		Sampler_Noise({ 32, 32, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Canvas.png"),
+		Sampler_Noise({ 64, 64, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Squared.png"), 
+		Sampler_Noise({ 128, 128, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Circular.png"),
+		Sampler_Noise({ 256, 256, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp"),
 	};
 	std::map<Geo_Actor*, const Sampler_2D*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Sampler_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

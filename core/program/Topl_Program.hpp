@@ -121,10 +121,11 @@ protected:
 
 	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_patternVShader };
 	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_patternPipeline; // for easy reuse
+	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
-	bool isEnable_background = true, isEnable_overlays = false;
+	bool isEnable_background = true, isEnable_overlays = true;
 private:
     void _onAnyKey(char k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);

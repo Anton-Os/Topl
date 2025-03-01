@@ -124,7 +124,7 @@ void Meshform_Demo::loop(double frameTime){
     for(unsigned a = 0; a < 4; a++)
         if(isRotating){
             Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
-            rotationVec = rotationVec * (0.001 * frameTime);
+            rotationVec = rotationVec * 0.001;
             for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
             if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
         }
@@ -145,7 +145,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 
     delete(_DEMO);

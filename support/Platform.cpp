@@ -17,8 +17,8 @@ fileCallback Platform::onFileChoose = nullptr;
 
 static bool checkKey(int code){
 	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
-		   code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28; // handles arrows
-		   // code == 189 || code == 187; // handles + and -
+		code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28; // handles arrows
+		// code == 189 || code == 187; // handles + and -
 }
 
 static void addPress(enum MOUSE_Event button){
@@ -45,6 +45,9 @@ struct DropTarget_Win32 : public IDropTarget {
 } dropTarget;
 
 LRESULT handleMenu_win32(WPARAM wParam){
+	static HWND popupWindow;
+	static std::string popupTitleText;
+
 	switch(LOWORD(wParam)){
 		case IDM_NEW: 
 			Platform::openFileDialog(false); // Testing
@@ -56,11 +59,28 @@ LRESULT handleMenu_win32(WPARAM wParam){
 			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
 			logMessage("Menu command: Load\n"); 
 			break;
-		case IDM_TIME: logMessage("Menu command: Timeline\n"); break;
-		case IDM_OBJS: logMessage("Menu command: Objects\n"); break;
-		case IDM_PROPS: logMessage("Menu command: Properties\n"); break;
+		case IDM_TIME: popupTitleText = "Timeline";	break;
+		case IDM_OBJS: popupTitleText = "Objects"; break;
+		case IDM_PIPES: popupTitleText = "Pipelines"; break;
+		case IDM_IMGS: popupTitleText = "Samplers"; break;
 		default: break;
 		// case IDM_FI_CLOSE: logMessage("File close command"); break;
+	}
+
+	if(LOWORD(wParam) == IDM_TIME || LOWORD(wParam) == IDM_OBJS || LOWORD(wParam) == IDM_PIPES || LOWORD(wParam) == IDM_IMGS){ // Menu Interaction
+		logMessage("Menu command: " + popupTitleText + "\n");
+		popupWindow = CreateWindow( // TODO: Remove menu?
+			"Topl",
+			popupTitleText.c_str(),
+			WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME /* |  ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX) */ | WS_VISIBLE,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			175, 300,
+			NULL, NULL, GetModuleHandle(NULL), NULL
+		);
+	}
+
+	switch(HIWORD(wParam)){
+		case BN_CLICKED: logMessage("Button clicked!\n"); break; // TODO: Get LOWORD
 	}
 
 	return 0;

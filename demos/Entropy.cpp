@@ -36,7 +36,7 @@ void Entropy_Demo::init(){
     for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
         scene1.addGeometry("actor_surface" + std::to_string(a), &surface_actors[a]);
 #ifdef TOPL_ENABLE_PHYSICS
-        physActors[a].damping = 0.995;
+        // physActors[a].damping = 0.995;
         scene1.addPhysics("actor_surface" + std::to_string(a), &physActors[a]);
 #endif
         scene2.addGeometry("actor_conic" + std::to_string(a), &conic_actors[a]);
@@ -71,11 +71,11 @@ void Entropy_Demo::loop(double frameTime){
         surface_actors[a].updateSize({ ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), ((float)rand() / (float)RAND_MAX) * ((isInEntropy)? 0.00035F : -0.00035F), 0.0 });
         surface_actors[a].updateRot({((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F, ((float)rand() / (float)RAND_MAX) / 10.0F });
 #endif
-        conic_actors[a].setPropsTo(surface_actors[a]);
-        volume_actors[a].setPropsTo(surface_actors[a]);
-        surfaceExt_actors[a].setPropsTo(surface_actors[a]);
-        conicExt_actors[a].setPropsTo(surface_actors[a]);
-        volumeExt_actors[a].setPropsTo(surface_actors[a]);
+        conic_actors[a].copyParams(surface_actors[a]);
+        volume_actors[a].copyParams(surface_actors[a]);
+        surfaceExt_actors[a].copyParams(surface_actors[a]);
+        conicExt_actors[a].copyParams(surface_actors[a]);
+        volumeExt_actors[a].copyParams(surface_actors[a]);
     }
 
     _renderer->setDrawMode(DRAW_Triangles);

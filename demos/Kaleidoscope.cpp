@@ -10,20 +10,15 @@ void Kaleidoscope_Demo::onAnyKey(char key){
         case 'i': drawMode = DRAW_Lines; break;
         case 'o': drawMode = DRAW_Points; break;
         case 'p': drawMode = DRAW_Strip; break;
-        case 'h': Kaleidoscope_Demo::mode = 0; break;
-        case 'j': Kaleidoscope_Demo::mode = 1; break;
-        case 'k': Kaleidoscope_Demo::mode = 2; break;
-        case 'l': Kaleidoscope_Demo::mode = 3; break;
+        case 'h': setConstruct(0); break;
+        case 'j': setConstruct(1); break;
+        case 'k': setConstruct(2); break;
+        case 'l': setConstruct(3); break;
         case 'v': _DEMO->getConstruct()->rotate({ 0.1F, 0.0F, 0.0F }); break;
         case 'b': _DEMO->getConstruct()->rotate({ -0.1F, 0.0F, 0.0F }); break;
         case 'n': _DEMO->getConstruct()->rotate({ 0.0F, 0.1F, 0.0F }); break;
         case 'm': _DEMO->getConstruct()->rotate({ 0.0F, -0.1F, 0.0F }); break;
-        // case 9: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, 0.1F }); break;
-        // case 0: _DEMO->getConstruct()->rotate({ 0.0F, 0.0F, -0.1F }); break;
-        // default: drawMode = DRAW_Triangles; break;
     }
-    // if(tolower(key) == 'n') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, 0.025F });
-    // else if(tolower(key) == 'm') _DEMO->getConstruct()->shift({ 0.0F, 0.0F, -0.025F });
 }
 
 void Kaleidoscope_Demo::init(){
@@ -36,29 +31,32 @@ void Kaleidoscope_Demo::init(){
 
     _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
+
+    setConstruct(Kaleidoscope_Demo::mode);
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){
-    for(unsigned s = 0; s < construct1.getActorCount(); s++){
-        construct1.getGeoActor(s)->updateRot(Vec3f({ construct1.getSpinFactor(s), 0.0F, 0.0F }));
-        construct2.getGeoActor(s)->updateRot(Vec3f({ construct2.getSpinFactor(s), 0.0F, 0.0F }));
-        construct3.getGeoActor(s)->updateRot(Vec3f({ construct3.getSpinFactor(s), 0.0F, 0.0F }));
-        construct4.getGeoActor(s)->updateRot(Vec3f({ construct4.getSpinFactor(s), 0.0F, 0.0F }));
+    double totalTime = 0.0;
+
+    for(unsigned s = 0; s < _DEMO->getConstruct()->getActorCount(); s++)
+        _DEMO->getConstruct()->getGeoActor(s)->updateRot(Vec3f({ _DEMO->getConstruct()->getSpinFactor(s), 0.0F, 0.0F }));
+
+    if(_renderer->getPipeline() == _patternPipeline){
+        for(unsigned p = 0; p < PATTERN_POINTS_MAX; p++)
+            _patternVShader.setCtrlPoint(p, Vec3f({ 0.0F, 0.0F, -1.0F + ((2.0F / PATTERN_POINTS_MAX) * p) }));
+        for(unsigned s = 0; s < _DEMO->getConstruct()->getActorCount(); s++)
+            _patternVShader.setAlpha(_DEMO->getConstruct()->getGeoActor(s), (totalTime * s) - floor(totalTime * s));
     }
 
-    // _flatVShader.setMode(8);
-    // Topl_Factory::switchPipeline(_renderer, _flatPipeline);
     _renderer->setDrawMode(drawMode);
     _renderer->updateScene(&scene);
-    if(getConstruct() != nullptr)
-        for(unsigned a = 0; a < getConstruct()->getActorCount(); a++){
-            // if(_renderer->getFrameCount() % 60 == 0) _patternVShader.setCtrlMatrix(MAT_4x4_IDENTITY * (float)a); // TODO: Conditionally detect this
-            _renderer->draw(getConstruct()->getGeoActor(a));
-        }
+    _renderer->drawScene(&scene);
+
+    totalTime += frameTime;
 }
 
 MAIN_ENTRY {
-    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Kaleidoscope_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

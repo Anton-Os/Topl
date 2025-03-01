@@ -81,6 +81,8 @@ void Topl_Program::_onAnyKey(char k){
             case 'g': Topl_Program::camera.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
             case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed)); break;
             case 'c': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
+            case '[': case '{': isCtrl_shader = !isCtrl_shader; break;
+            case ']': case '}': isEnable_overlays = !isEnable_overlays; break;
         }
 
         if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v')
@@ -111,9 +113,9 @@ void Topl_Program::_onAnyKey(char k){
                 case '4': Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
                 case '5': Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
                 case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
-                // case '7': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // tesselation stages
-                // case '8': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // geometry stage
-                // case '9': Topl_Factory::switchPipeline(_renderer, _longPipeline); break; // tesselation & geometry stages
+                case '7': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // tesselation stages
+                case '8': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // geometry stage
+                case '9': Topl_Factory::switchPipeline(_renderer, _longPipeline); break; // tesselation & geometry stages
             }
         }
 
@@ -221,7 +223,10 @@ void Topl_Program::setPipelines(){
 #ifndef __linux__
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails!
 #endif
-    // TODO: Include tesselation and geometry shade3r pipelines
+    _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
+    _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
+    _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
+    Topl_Factory::switchPipeline(_renderer, _texPipeline);
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){

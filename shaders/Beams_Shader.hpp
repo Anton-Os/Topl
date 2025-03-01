@@ -30,7 +30,17 @@ struct Beams_VertexShader : public Topl_EntryShader {
 	Beams_VertexShader(std::string name) : Topl_EntryShader(name) { }
 	Beams_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
+	void genActorBlock(actor_cptr actor, blockBytes_t* bytes) const override {
+		// if(isAutoCtrl) setLight(LIGHT_Lamp, Topl_Light(*(actor->getPos()), lampLight.value));
+		Topl_EntryShader::genActorBlock(actor, bytes);
+	}
+
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
+		/* if(isAutoCtrl){
+			setLight(LIGHT_Flash, Topl_Light(*(scene->camera->getPos()), flashLight.value));
+			setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(scene->camera->getRot()))[0]), cos((*(scene->camera->getRot()))[0]), tan((*(scene->camera->getRot()))[1]) }), skyLight.value));
+		} */
+
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		sendLightData(&skyLight, bytes);
 		sendLightData(&flashLight, bytes);
@@ -45,6 +55,8 @@ struct Beams_VertexShader : public Topl_EntryShader {
 		default: break; // not supported
 		}
 	}
+
+	// bool isAutoCtrl = false;
 protected:
 	Topl_Light skyLight = BEAMS_SKY_LIGHT;
 	Topl_Light flashLight = BEAMS_FLASH_LIGHT;

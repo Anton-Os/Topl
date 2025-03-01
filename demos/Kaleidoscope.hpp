@@ -69,6 +69,14 @@ struct Kaleidoscope_Demo : public Topl_Program {
         }
     }
 
+    void setConstruct(unsigned m){
+        mode = m;
+        construct1.toggleShow((m == 0)? true : false);
+        construct2.toggleShow((m == 1)? true : false);
+        construct3.toggleShow((m == 2)? true : false);
+        construct4.toggleShow((m == 3)? true : false);
+    }
+
     Kaleidoscope_Construct construct1 = Kaleidoscope_Construct(6, 32);
     Kaleidoscope_Construct construct2 = Kaleidoscope_Construct(4);
     Kaleidoscope_Construct construct3 = Kaleidoscope_Construct(CIRCLE_SEGMENTS);

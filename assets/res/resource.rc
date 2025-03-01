@@ -13,8 +13,9 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Timeline", IDM_TIME, CHECKED
-        MENUITEM "&Objects", IDM_OBJS, CHECKED
-        MENUITEM "&Properties", IDM_PROPS, CHECKED
+        MENUITEM "&Timeline", IDM_TIME //, CHECKED
+        MENUITEM "&Objects", IDM_OBJS // , CHECKED
+        MENUITEM "&Pipelines", IDM_PIPES // , CHECKED
+        MENUITEM "&Samplers", IDM_IMGS // , CHECKED
     END
 END

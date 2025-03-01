@@ -10,14 +10,22 @@ struct Pattern_VertexShader : public Topl_EntryShader {
 	Pattern_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	void genActorBlock(actor_cptr actor, blockBytes_t* bytes) const {
+		static float alpha;
+		static Mat4x4 matrix = (isAutoCtrl)? Mat4x4::translation(*(actor->getPos())) : ctrlMatrix;
+
 		Topl_EntryShader::genActorBlock(actor, bytes);
 
 		auto matrixEntry = std::find_if(ctrlMatrixMap.begin(), ctrlMatrixMap.end(), [actor](const std::pair<actor_cptr, Mat4x4> p){ return p.first == actor; });
-		appendDataToBytes((matrixEntry != ctrlMatrixMap.end())? (uint8_t*)&matrixEntry->second : (uint8_t*)&ctrlMatrix, sizeof(ctrlMatrix), bytes);
+		auto alphaEntry = std::find_if(alphaValMap.begin(), alphaValMap.end(), [actor](const std::pair<actor_cptr, float> a){ return a.first == actor; });
+		alpha = (alphaEntry != alphaValMap.end())? alphaEntry->second : 1.0F;
+
+		appendDataToBytes((matrixEntry != ctrlMatrixMap.end())? (uint8_t*)&matrixEntry->second : (uint8_t*)&matrix, sizeof(Mat4x4), bytes);
+		appendDataToBytes((uint8_t*)&alpha, sizeof(float), bytes);
 	}
 
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		static Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
+		
         double relMillisecs = dynamic_timer.getRelMillisecs();
         double absMillisecs = dynamic_timer.getAbsMillisecs();
 
@@ -25,11 +33,11 @@ struct Pattern_VertexShader : public Topl_EntryShader {
         alignDataToBytes((uint8_t*)&relMillisecs, sizeof(relMillisecs), NO_PADDING, bytes);
         alignDataToBytes((uint8_t*)&absMillisecs, sizeof(absMillisecs), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&ctrlPoints, sizeof(ctrlPoints), NO_PADDING, bytes);
-		// appendDataToBytes((uint8_t*)&lightPos, sizeof(Vec3f), bytes);
-		// appendDataToBytes((uint8_t*)&lightVal, sizeof(Vec3f), bytes);
 	}
 
 	void setCtrlMatrix(actor_cptr actor, Mat4x4 matrix){ ctrlMatrixMap.insert({ actor, matrix }); }
+
+	void setAlpha(actor_cptr actor, float a){ alphaValMap.insert({ actor, a }); }
 
 	void setCtrlMatrix(Mat4x4 matrix){ ctrlMatrix = matrix; }
 
@@ -42,9 +50,12 @@ struct Pattern_VertexShader : public Topl_EntryShader {
 	}
 
 	void setCtrlPoint(unsigned short index, Vec3f point){ ctrlPoints[index % PATTERN_POINTS_MAX] = point; }
+
+	bool isAutoCtrl = true;
 protected:
 	Mat4x4 ctrlMatrix = MAT_4x4_IDENTITY;
 	std::map<actor_cptr, Mat4x4> ctrlMatrixMap;
+	std::map<actor_cptr, float> alphaValMap;
 
 	Vec3f ctrlPoints[PATTERN_POINTS_MAX] = {
 		{ 0.0F, 0.0F, 0.0F }, { 0.25F, 0.25F, 0.0F }, { -0.25F, -0.25F, 0.0F }, { -0.5F, 0.5F, 0.0F },  

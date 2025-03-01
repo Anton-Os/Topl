@@ -77,7 +77,7 @@ public:
 			}
 			else if(_embedMap.find(includeStr) != _embedMap.end()){ 
 				includeSrc = _embedMap.at(includeStr); // read from entry
-				std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
+				// std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
 			}
 
 			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);

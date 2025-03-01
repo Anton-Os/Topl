@@ -15,6 +15,7 @@ layout(std140, binding = 0) uniform Block {
 	vec3 scale;
 
 	mat4 ctrlMatrix;
+	float alpha;
 };
 
 layout(std140, binding = 1) uniform SceneBlock {

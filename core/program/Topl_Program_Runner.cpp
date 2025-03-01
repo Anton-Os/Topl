@@ -89,22 +89,19 @@ void Topl_Program::run(){
         if(_renderer != nullptr){
             Topl_Pipeline* savedPipeline = _renderer->getPipeline();
             if(Platform::mouseControl.getIsMouseDown().second) preloop();
-            _renderer->clear(); // clears view to solid color
+            _renderer->clear(); 
 
             if(isCtrl_shader) updatePipelines();
+            setShadersMode(Topl_Program::shaderMode);
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             Topl_Factory::switchPipeline(_renderer, savedPipeline);
-            setShadersMode(Topl_Program::shaderMode);
-            loop(Topl_Program::timeline.persist_ticker.getRelMillisecs()); // performs draws and updating
+            loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
             if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
-            if(isEnable_overlays) renderScene(&_overlays.scene, _materialPipeline, 0); // nullptr, shaderMode);
+            if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
             Topl_Factory::switchPipeline(_renderer, savedPipeline);
         }
-        /* if(Topl_Program::lastPickerCoord[0] != Topl_Program::pickerCoord[0] && Topl_Program::lastPickerCoord[1] != Topl_Program::pickerCoord[1])
-            Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
-        */
     }
 
     cleanup();

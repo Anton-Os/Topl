@@ -13,6 +13,7 @@ cbuffer CONST_BLOCK : register(b0) {
     float3 scale;
 
     float4x4 ctrlMatrix;
+	float alpha;
 }
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
