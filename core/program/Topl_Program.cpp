@@ -22,6 +22,7 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
 
 Topl_Camera Topl_Program::camera = Topl_Camera();
+Topl_Pipeline* Topl_Program::_savedPipeline = nullptr;
 
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 	// std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
@@ -41,37 +42,52 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
                     if(o == 0) // handling shader switching
                         switch(p){
-                            case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
-                            case 1: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
-                            case 2: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;
-                            case 3: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
-                            case 4: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
-                            case 5: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
-                            case 6: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ Topl_Program::speed, 0.0, 0.0 }); break;
-                            case 7: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 3.0F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, -0.1f }); break;
-                            case 8: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 0.33F).genProjMatrix()); break; // Topl_Program::camera.updatePos({ 0.0F, 0.0, 0.1f }); break;
+                            case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break;
+                            case 1: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 3.0F).genProjMatrix()); break;
+                            case 2: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 0.33F).genProjMatrix()); break;
+                            case 3: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0F).genProjMatrix()); break;
+                            case 4: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 3.0F).genProjMatrix()); break;
+                            case 5: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 0.33F).genProjMatrix()); break;
+                            case 6: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix()); break;
+                            case 7: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 3.0F).genProjMatrix()); break;
+                            case 8: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 0.33F).genProjMatrix()); break;
                             default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                         }
-                    else if(o == 1) 
-                        switch(p){
-                            case 0: Topl_Program::lastPickerObj->updatePos(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 1: Topl_Program::lastPickerObj->updatePos(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 2: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
-                            case 3: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
-                            case 4: Topl_Program::lastPickerObj->updateRot(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 5: Topl_Program::lastPickerObj->updateRot(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 6: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
-                            case 7: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
-                            case 8: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 9: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed * 0.25F, 0.0F, 0.0F })); break;
-                            case 10: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed * 0.25F, 0.0F })); break;
-                            case 11: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed * 0.25F, 0.0F })); break;
-                            default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                    else if(o == 1){
+                        if(Topl_Program::lastPickerObj != nullptr){
+                            switch(p){
+                                case 0: case 1: case 2: case 3: if(positions_map.find(lastPickerObj) == positions_map.end()) positions_map.insert({ lastPickerObj, *lastPickerObj->getPos() }); break;
+                                case 4: case 5: case 6: case 7: if(rotations_map.find(lastPickerObj) == rotations_map.end()) rotations_map.insert({ lastPickerObj, *lastPickerObj->getRot() }); break;
+                                case 8: case 9: case 10: case 11: if(scales_map.find(lastPickerObj) == scales_map.end()) scales_map.insert({ lastPickerObj, *lastPickerObj->getSize() }); break;
+                            }
+
+                            switch(p){
+                                case 0: Topl_Program::lastPickerObj->updatePos(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 1: Topl_Program::lastPickerObj->updatePos(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 2: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
+                                case 3: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                case 4: Topl_Program::lastPickerObj->updateRot(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 5: Topl_Program::lastPickerObj->updateRot(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 6: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
+                                case 7: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                case 8: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 9: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 10: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
+                                case 11: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                            }
+
+                            switch(p){
+                                case 0: case 1: case 2: case 3: timeline.addSequence_vec3f(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
+                                case 4: case 5: case 6: case 7: timeline.addSequence_vec3f(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
+                                case 8: case 9: case 10: case 11: timeline.addSequence_vec3f(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
+                            }
                         }
+                    }
                     else {
                         char keySim = (p + 1) + '0';
-                        std::cout << "Setting pipeline as " << keySim << std::endl;
                         Topl_Program::_onAnyKey(keySim); // switch pipelines
+                        _savedPipeline = _renderer->getPipeline();
                     }
 #endif
                 }
@@ -185,7 +201,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     _renderer->buildScene(&_editor.scene);
 #ifdef RASTERON_H
     if(isEnable_background) createBackground(&_background.image);
-    if(isEnable_overlays) createOverlays(1.0);
+    if(isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
     // _editor.nameImg.setTextImage({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
     _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
@@ -251,7 +267,7 @@ void Topl_Program::setPipelines(){
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
-    _background.mesh.tesselate(3);
+    _background.mesh.tesselate(PROGRAM_BK_TESS);
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H
@@ -268,14 +284,15 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_camera.shift({ -0.75F, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
+
     // modifiers and overlays
     // _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
     // for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
     for(unsigned b = 0; b < 9; b++){ 
         _overlays.billboard_camera.overlay(b, &_overlays.objectButtons[b]);
-        // _overlays.billboard_object.overlay(b, &_overlays.objectButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.objectButtons[b]);
     }
+    for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
     
     for(unsigned short o = 0; o < 3; o++){
         _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });

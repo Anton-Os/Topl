@@ -139,13 +139,14 @@ void Meshform_Demo::loop(double frameTime){
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 
-    for(unsigned a = 0; a < 4; a++)
+    // renderInscribed(&torusActor, 3);
+    /* for(unsigned a = 0; a < 4; a++)
         for(unsigned o = 0; o < 3; o++) 
-            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3);
+            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3); */
 }
 
 MAIN_ENTRY {
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new Meshform_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

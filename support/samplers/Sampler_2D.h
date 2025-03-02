@@ -2,7 +2,9 @@
 
 #ifdef RASTERON_H
 
-static float valueNoiseMod(float value){ return value; }
+static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 2.0F); }
+
+// Parametric Samplers
 
 struct Sampler_Color : public Sampler_2D {
     Sampler_Color(unsigned color) : Sampler_2D(){ putImg(solidImgOp(getImgSize(), color)); }
@@ -45,11 +47,13 @@ struct Sampler_Noise : public Sampler_2D {
 
     Sampler_Noise(ColorGrid colorGrid, unsigned octaves) : Sampler_2D(){
         grid = colorGrid;
-        putImg(noiseImgOp_rand(getImgSize(), grid, octaves));
+        putImg(noiseImgOp_add(getImgSize(), grid, octaves));
     }
 private:
     ColorGrid grid;
 };
+
+// Combinatino Samplers
 
 struct Sampler_Cellular : public Sampler_2D {
     Sampler_Cellular(ref_image_t refImg, nebrCallback8 callback){
@@ -74,12 +78,16 @@ struct Sampler_Mix : public Sampler_2D {
     // TODO: Include body
 }; */
 
+// Asset Samplers
+
 struct Sampler_File : public Sampler_2D {
     Sampler_File(const std::string& filePath) : Sampler_2D(){ putImg(loadImgOp(filePath.c_str())); }
 };
 
 struct Sampler_Text : public Sampler_2D {
-    Sampler_Text(Rasteron_Text textObj) : Sampler_2D(){ putImg(textImgOp(&textObj, FONT_SIZE_MED)); } // TODO: Include padding
+    Sampler_Text(Rasteron_Text textObj) : Sampler_2D(){ putImg(textImgOp(&textObj, FONT_SIZE_MED)); } // TODO: Include padding?
+
+    Sampler_Text(Rasteron_Message messageObj) : Sampler_2D(){ putImg(messageImgOp(&messageObj, FONT_SIZE_MED)); } // TODO: Include padding
 };
 
 #endif

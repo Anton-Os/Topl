@@ -45,21 +45,21 @@ void Topl_Program::updateTimelines(){
 }
 
 void Topl_Program::postloop(){
-    if(Topl_Program::pickerObj != nullptr){
-        _editor.actor.setPos(*Topl_Program::pickerObj->getPos());
-        _editor.actor.setRot(*Topl_Program::pickerObj->getRot());
-        _editor.actor.setSize(*Topl_Program::pickerObj->getSize() * 0.75F);
+    if(Topl_Program::lastPickerObj != nullptr){
+        _editor.actor.setPos(*Topl_Program::lastPickerObj->getPos());
+        _editor.actor.setRot(*Topl_Program::lastPickerObj->getRot());
+        _editor.actor.setSize(*Topl_Program::lastPickerObj->getSize() * 0.75F);
         _editor.mesh.drawMode = DRAW_Lines;
-        // _overlays.billboard_object.toggleShow(true); // Topl_Program::pickerObj->getName().find("billboard") == std::string::npos);
+        // _overlays.billboard_object.toggleShow(true); // Topl_Program::lastPickerObj->getName().find("billboard") == std::string::npos);
 #ifdef RASTERON_H
-        // std::cout << "Actor name is " << Topl_Program::pickerObj->getName() << std::endl;
+        // std::cout << "Actor name is " << Topl_Program::lastPickerObj->getName() << std::endl;
         if(Platform::mouseControl.getIsMouseDown().second){
-            std::string name = "| " + Topl_Program::pickerObj->getName() + " |";
+            std::string name = "| " + Topl_Program::lastPickerObj->getName() + " |";
             Rasteron_Text text = { _editor.fontPath.c_str(), name.c_str(), 0xFF111111, 0xFFEEEEEE };
             _editor.nameImg = Sampler_Text(text);
             _renderer->texturizeScene(&_editor.scene);
             _editor.nameMesh.drawMode = DRAW_Triangles;
-            _editor.nameActor.setPos(*Topl_Program::pickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::pickerObj->getSize());
+            _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::lastPickerObj->getSize());
             _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
         }
 #endif
@@ -87,20 +87,20 @@ void Topl_Program::run(){
         updateTimelines();
 
         if(_renderer != nullptr){
-            Topl_Pipeline* savedPipeline = _renderer->getPipeline();
+            _savedPipeline = _renderer->getPipeline();
             if(Platform::mouseControl.getIsMouseDown().second) preloop();
             _renderer->clear(); 
 
             if(isCtrl_shader) updatePipelines();
             setShadersMode(Topl_Program::shaderMode);
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
-            Topl_Factory::switchPipeline(_renderer, savedPipeline);
+            Topl_Factory::switchPipeline(_renderer, _savedPipeline);
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
-            if(Topl_Program::pickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
+            if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
-            Topl_Factory::switchPipeline(_renderer, savedPipeline);
+            Topl_Factory::switchPipeline(_renderer, _savedPipeline);
         }
     }
 
