@@ -174,10 +174,11 @@ private:
 	struct Overlays {
         Topl_Camera camera;
         Topl_Scene scene = Topl_Scene(&camera);
+		Geo_Billboard billboard_appbar = Geo_Billboard("program_appbar", 9, 1, &scene);
 		Geo_Billboard billboard_camera = Geo_Billboard("program_camera", 3, 3, &scene);
 		Geo_Billboard billboard_object = Geo_Billboard("program_object", 4, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
-		Geo_Billboard* billboards[3] = { &billboard_camera, &billboard_object, &billboard_shader };
+		Geo_Billboard* billboards[4] = { &billboard_appbar, &billboard_camera, &billboard_object, &billboard_shader };
 #ifdef RASTERON_H
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};

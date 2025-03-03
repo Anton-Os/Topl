@@ -31,7 +31,7 @@ void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
     Geo_Billboard* billboard = nullptr;
-    for(unsigned o = 0; o < 3; o++) 
+    for(unsigned o = 0; o < 4; o++) 
         if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
             billboard = _overlays.billboards[o];
             billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
@@ -40,7 +40,12 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == 0) // handling shader switching
+                    if(o == 0){
+                        _overlays.billboard_camera.toggleShow(p == 5);
+                        _overlays.billboard_object.toggleShow(p == 4);
+                        _overlays.billboard_shader.toggleShow(p == 3);
+                    }
+                    else if(o == 1) // handling shader switching
                         switch(p){
                             case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break;
                             case 1: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 3.0F).genProjMatrix()); break;
@@ -53,7 +58,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 8: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 0.33F).genProjMatrix()); break;
                             default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                         }
-                    else if(o == 1){
+                    else if(o == 2){
                         if(Topl_Program::lastPickerObj != nullptr){
                             switch(p){
                                 case 0: case 1: case 2: case 3: if(positions_map.find(lastPickerObj) == positions_map.end()) positions_map.insert({ lastPickerObj, *lastPickerObj->getPos() }); break;
@@ -281,6 +286,9 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
 }
 
 void Topl_Program::createOverlays(double size){
+    _overlays.billboard_appbar.scale({ 1.5F, 0.15F, 1.0F });
+    _overlays.billboard_appbar.shift({ 0.0F, 0.975F, 0.0F });
+
     _overlays.billboard_camera.shift({ -0.75F, -0.9F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
     _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
@@ -289,14 +297,16 @@ void Topl_Program::createOverlays(double size){
     // _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
     // for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
     for(unsigned b = 0; b < 9; b++){ 
+        // _overlay.billboard_appbar.overlay(b, &_overlays.objectButtons[8 - b]);
+        if(b > 2 && b < 6) _overlays.billboard_appbar.overlay(b, &_overlays.objectButtons[3 - (b - 3)]); else _overlays.billboard_appbar.getGeoActor(b)->isShown = false;
         _overlays.billboard_camera.overlay(b, &_overlays.objectButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.objectButtons[b]);
     }
     for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
     
-    for(unsigned short o = 0; o < 3; o++){
-        _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
-        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, 0.015F, 0.0F });
+    for(unsigned short o = 0; o < 4; o++){
+        if(o != 0) _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
+        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o != 0)? 0.015F : 0.045F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H
@@ -311,7 +321,6 @@ void Topl_Program::createOverlays(double size){
     }
     // _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
     // _overlays.billboard_object.expandVert(std::make_pair(2, 1), 1);
-    // _texVShader.setParams() // dont forgot to add parameters!
 
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);
