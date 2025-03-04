@@ -184,7 +184,7 @@ private:
 #ifdef RASTERON_H
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};
-        Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, 10); // sliders[1] = { Sampler_Slider(2) };
+        Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, (unsigned)TIMELINE_END); // sliders[1] = { Sampler_Slider(2) };
 		// std::pair<Sampler_Button, Sampler_Button> plusMinusButtons = std::make_pair(Sampler_Button("add-square"), Sampler_Button("subtract-square"));
 		Sampler_Button objectButtons[9] = {
 			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),

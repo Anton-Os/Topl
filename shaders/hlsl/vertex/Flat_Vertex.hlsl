@@ -20,6 +20,7 @@ struct VS_OUTPUT {
 	uint vertex_id : VERTEXID;
 	float4 vertex_color : COLOR0;
 	float3 texcoord : TEXCOORD;
+	float3 normal : NORMAL;
 };
 
 // Main
@@ -33,6 +34,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.vertex_id = vertexID;
 	output.texcoord = input.texcoord;
+	output.normal = mul(getRotMatrix(rotation), input.normal);
 	if(mode < 10 || vertexID % mode == 0) output.vertex_color = float4(input.vert_color, 1.0);
 	else output.vertex_color = float4(0.0F, 0.0f, 0.0F, 0.5F);
 #ifdef INCLUDE_EXTBLOCK

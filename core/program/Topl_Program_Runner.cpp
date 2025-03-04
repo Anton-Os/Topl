@@ -19,7 +19,7 @@ void Topl_Program::preloop(){
 void Topl_Program::updatePipelines(){
     // float timeElapse = (float)timeline.persist_ticker.getAbsSecs();
     Vec3f scroll = (*camera.getPos() * -Topl_Program::speed); // + Vec3f({ sin((*camera.getRot)[0]), cos((*camera.getRot)[0]), 0.0F }); // TODO: Include rotation
-    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
+    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * (*(camera.getZoom()) * 0.5F); // (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
 
     if(_renderer->getPipeline() == _texPipeline)  _texVShader.setParams(&_background.actor, { 0, 0.0F, scroll, scale });
     else if(_renderer->getPipeline() == _materialPipeline) _materialVShader.setTexCoordParams(scroll, scale);
@@ -42,6 +42,12 @@ void Topl_Program::updateTimelines(){
     for(auto p = positions_map.begin(); p != positions_map.end(); p++) if(p->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) p->first->setPos(p->second);
     for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
     for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
+
+    if(isEnable_overlays){
+        double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+        _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
+        if(secsElapsed - floor(secsElapsed) < 0.01) _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
+    }
 }
 
 void Topl_Program::postloop(){
@@ -96,7 +102,7 @@ void Topl_Program::run(){
             if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
             Topl_Factory::switchPipeline(_renderer, _savedPipeline);
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
-            if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _materialPipeline, 0); // nullptr, shaderMode);
+            if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();

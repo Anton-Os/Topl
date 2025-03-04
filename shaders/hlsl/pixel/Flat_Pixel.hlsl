@@ -9,9 +9,10 @@
 #define FLAT_CAMERA 4
 #define FLAT_ANGULAR 5
 #define FLAT_TEXCOORD 6
-#define FLAT_SECTIONED 7
-#define FLAT_RANDOM 8
-#define FLAT_TRIAL 9
+#define FLAT_NORMAL 7
+#define FLAT_SECTIONED 8
+#define FLAT_RANDOM 9
+// #define FLAT_TRIAL 9
 
 #include "Common.hlsl"
 
@@ -31,6 +32,7 @@ struct PS_INPUT {
 	float4 vertex_pos : POSITION0;
 	uint vertex_id : VERTEXID;
 	float4 vertex_color : COLOR0;
+	float3 normal : NORMAL;
 	float3 texcoord: TEXCOORD;
 };
 
@@ -55,8 +57,9 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET {
 	else if(mode % 10 == FLAT_CAMERA) return float4(abs(cam_pos.x - input.pos.x), abs(cam_pos.y - input.pos.y), abs(cam_pos.z - input.pos.z), alpha);
 	else if(mode % 10 == FLAT_ANGULAR) return float4(atan(input.vertex_pos.y / input.vertex_pos.z), atan(input.vertex_pos.z / input.vertex_pos.x), atan(input.vertex_pos.x / input.vertex_pos.y), alpha);
 	else if(mode % 10 == FLAT_TEXCOORD) return float4(input.texcoord, alpha);
+	else if(mode % 10 == FLAT_NORMAL) return float4(input.normal, alpha);
 	else if(mode % 10 == FLAT_SECTIONED) return float4(((primID + 1) / 9.0) - floor((primID + 1) / 9.0), ((primID + 1) / 6.0) - floor((primID + 1) / 6.0), ((primID + 1) / 3.0) - floor((primID + 1) / 3.0), alpha);
 	else if(mode % 10 == FLAT_RANDOM) return float4(getRandColor(floor((color.r * color.g * color.b) * 995.49)), alpha);
-	else if(mode % 10 == FLAT_TRIAL) return float4(dot(color, input.vertex_color), dot(float4(input.texcoord, 1.0), input.vertex_pos), dot(rotation, scale), alpha);
+	// else if(mode % 10 == FLAT_TRIAL) return float4(dot(color, input.vertex_color), dot(float4(input.texcoord, 1.0), input.vertex_pos), dot(rotation, scale), alpha);
 	else return color; // solid mode // default
 }

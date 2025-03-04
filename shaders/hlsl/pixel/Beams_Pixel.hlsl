@@ -75,6 +75,6 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	else if(modes[0] == BEAMS_DISTANCE) return float4(ambient + (cam_dist * diffuse) + specular, 1.0f);
 	else if(modes[0] == BEAMS_TRAJECTORY) return float4(ambient + (distance(target, lights[0][0]) * diffuse) + (specular * cross(target, lights[0][0])), 1.0f);
 	// else if(modes[0] == BEAMS_TRAJECTORY) return float4(lights[0][1] * normalize(cross(lights[0][0] - float3(cam_pos.x, cam_pos.y, cam_pos.z), target)), 1.0);
-	else if(modes[0] == BEAMS_TRIAL) return float4(ambient + float3(cos(1.0 / (diffuse.r * specular.r)), sin(1.0 / (specular.g * diffuse.g)), tan(diffuse.b - specular.b)), 1.0);
+	else if(modes[0] == BEAMS_TRIAL) return float4(ambient + float3(cos(1.0 / (diffuse.r + specular.r)), sin(1.0 / (specular.g * diffuse.g)), abs(tan(pow(specular.b, diffuse.b)))), 1.0);
 	else return float4(ambient + diffuse + specular, 1.0);
 }
