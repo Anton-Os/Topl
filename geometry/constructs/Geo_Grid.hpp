@@ -23,6 +23,17 @@ struct Geo_Grid_Params {
 
 	unsigned getGridSize() const { return x.first * y.first * z.first; }
 
+	/* double getProportion(AXIS_Target axis1, AXIS_Target axis2){ // TODO: Include distances?
+		if(axis1 == axis2) return axis2;
+
+		unsigned dividen = (axis1 == AXIS_X)? x.first : (axis1 == AXIS_Y)? y.first : z.first;
+		switch(axis2){
+			case AXIS_X: return (double)dividen / (double)x.first;
+			case AXIS_Y: return (double)dividen / (double)y.first;
+			case AXIS_Z: return (double)dividen / (double)z.first;
+		}
+	} */
+
 	gridSize_pair x = std::make_pair(1, 0.0f); // x axis size and spacing
 	gridSize_pair y = std::make_pair(1, 0.0f); // y axis size and spacing
 	gridSize_pair z = std::make_pair(1, 0.0f); // z axis size and spacing

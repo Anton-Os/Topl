@@ -44,7 +44,8 @@ void main() {
 	uint intensity = modes[2] + 1;
 
 	vec3 target;
-	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
+	if(mode >= 0) target = normal; 
+	else target = vertex_pos; 
 
 	vec3 lights[3][2]; // populated and sorted list of lights
     if(modes[1] % 3 == 1){ lights[0] = flashLight; lights[1] = lampLight; lights[2] = skyLight; }

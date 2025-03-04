@@ -71,14 +71,20 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                                 case 1: Topl_Program::lastPickerObj->updatePos(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
                                 case 2: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
                                 case 3: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
-                                case 4: Topl_Program::lastPickerObj->updateRot(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
-                                case 5: Topl_Program::lastPickerObj->updateRot(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
-                                case 6: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
-                                case 7: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
-                                case 8: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
-                                case 9: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
-                                case 10: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
-                                case 11: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                case 4: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, 0.0F, Topl_Program::speed })); break;
+                                case 5: Topl_Program::lastPickerObj->updatePos(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break;
+                                case 6: Topl_Program::lastPickerObj->updateRot(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 7: Topl_Program::lastPickerObj->updateRot(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 8: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
+                                case 9: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                case 10: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, Topl_Program::speed })); break;
+                                case 11: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break;
+                                case 12: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 13: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
+                                case 14: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
+                                case 15: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
+                                case 16: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, Topl_Program::speed })); break;
+                                case 17: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break;
                                 default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                             }
 
@@ -288,25 +294,25 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
 void Topl_Program::createOverlays(double size){
     _overlays.billboard_appbar.scale({ 1.5F, 0.15F, 1.0F });
     _overlays.billboard_appbar.shift({ 0.0F, 0.975F, 0.0F });
+    _overlays.billboard_timeline.scale({ 1.5F, 0.15F, 1.0F });
+    _overlays.billboard_timeline.shift({ 0.0F, -0.975F, 0.0F });
 
-    _overlays.billboard_camera.shift({ -0.75F, -0.9F, 0.0F });
-    _overlays.billboard_object.shift({ 0.0F, -0.9F, 0.0F });
-    _overlays.billboard_shader.shift({ 0.75F, -0.9F, 0.0F });
+    _overlays.billboard_camera.shift({ -0.278F, -0.865F, 0.0F });
+    _overlays.billboard_object.shift({ 0.0F, -0.865F, 0.0F });
+    _overlays.billboard_shader.shift({ 0.278F, -0.865F, 0.0F });
 
-    // modifiers and overlays
-    // _overlays.billboard_shader.overlay(7, &_overlays.slider); // slider at bottom center of shader billboard
-    // for(unsigned b = 0; b < 3; b++) _overlays.billboard_camera.overlay(b + 6, &_overlays.dials[b]);
+    _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < 9; b++){ 
         // _overlay.billboard_appbar.overlay(b, &_overlays.objectButtons[8 - b]);
-        if(b > 2 && b < 6) _overlays.billboard_appbar.overlay(b, &_overlays.objectButtons[3 - (b - 3)]); else _overlays.billboard_appbar.getGeoActor(b)->isShown = false;
+        if(b > 2 && b < 6) _overlays.billboard_appbar.overlay(b, &_overlays.objectButtons[5 - b]); else _overlays.billboard_appbar.getGeoActor(b)->isShown = false;
         _overlays.billboard_camera.overlay(b, &_overlays.objectButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.objectButtons[b]);
     }
     for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
     
     for(unsigned short o = 0; o < 4; o++){
-        if(o != 0) _overlays.billboards[o]->scale({ 0.5F * (float)size, 0.33F * (float)size, 1.0F });
-        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o != 0)? 0.015F : 0.045F, 0.0F });
+        if(o > 0 && o < PROGRAM_BILLBOARDS) _overlays.billboards[o]->scale({ ((o != 2)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
+        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o > 0 && o < PROGRAM_BILLBOARDS)? 0.015F : 0.045F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H
@@ -316,11 +322,10 @@ void Topl_Program::createOverlays(double size){
                 _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Sampler_Button(MENU_Medium) });
                 _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
             }
+            else _overlays.billboards[o]->getGeoActor(e)->updateSize({ 0.01F, 0.01F, 0.0F });
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);
 #endif
     }
-    // _overlays.billboard_shader.expandHorz(std::make_pair(1, 2), 1);
-    // _overlays.billboard_object.expandVert(std::make_pair(2, 1), 1);
 
     _renderer->buildScene(&_overlays.scene);
     _renderer->texturizeScene(&_overlays.scene);

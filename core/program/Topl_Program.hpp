@@ -23,6 +23,7 @@
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
 #define PROGRAM_PIPELINES 7
 #define PROGRAM_BK_TESS 2
+#define PROGRAM_BILLBOARDS 5
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -176,13 +177,14 @@ private:
         Topl_Scene scene = Topl_Scene(&camera);
 		Geo_Billboard billboard_appbar = Geo_Billboard("program_appbar", 9, 1, &scene);
 		Geo_Billboard billboard_camera = Geo_Billboard("program_camera", 3, 3, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("program_object", 4, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("program_object", 6, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
-		Geo_Billboard* billboards[4] = { &billboard_appbar, &billboard_camera, &billboard_object, &billboard_shader };
+		Geo_Paneboard billboard_timeline = Geo_Paneboard("program_timeline", &scene);
+		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_appbar, &billboard_camera, &billboard_object, &billboard_shader, &billboard_timeline };
 #ifdef RASTERON_H
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};
-        Sampler_Slider slider = Sampler_Slider(2); Sampler_Slider sizeSlider = Sampler_Slider(10);
+        Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, 10); // sliders[1] = { Sampler_Slider(2) };
 		// std::pair<Sampler_Button, Sampler_Button> plusMinusButtons = std::make_pair(Sampler_Button("add-square"), Sampler_Button("subtract-square"));
 		Sampler_Button objectButtons[9] = {
 			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
