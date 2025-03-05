@@ -1,5 +1,9 @@
 #include "program/Topl_Program.hpp"
 
+#define MOV_BTN_CASES case 0: case 1: case 2: case 3: case 4: case 5
+#define ROT_BTN_CASES case 6: case 7: case 8: case 9: case 10: case 11
+#define SIZ_BTN_CASES case 12: case 13: case 14: case 15: case 16: case 17
+
 Topl_Timeline Topl_Program::timeline = Topl_Timeline();
 Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
 float Topl_Program::speed = 0.25F; // 0.1F
@@ -25,7 +29,16 @@ Topl_Camera Topl_Program::camera = Topl_Camera();
 Topl_Pipeline* Topl_Program::_savedPipeline = nullptr;
 
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
-	// std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
+	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
+    /* Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
+    if(lastPath.stepsCount % MAX_PATH_STEPS > 2){ 
+        unsigned short steps = lastPath.stepsCount % MAX_PATH_STEPS;
+        Vec2f cursorVec = Vec2f({ lastPath.steps[steps - 1].first - lastPath.steps[steps - 2].first, lastPath.steps[steps - 1].second - lastPath.steps[steps - 2].second  });
+        if(cursorVec.len() > 0.005 && cursorVec.len() < 0.1){ 
+            if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press) Topl_Program::camera.updatePos({ cursorVec[0], cursorVec[1], 0.0F });
+            else if(event == MOUSE_RightBtn_Drag || event == MOUSE_RightBtn_Press) Topl_Program::camera.updateRot({ cursorVec[0], cursorVec[1], 0.0F });
+        }
+    } */
 }
 
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
@@ -40,11 +53,16 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == 0){
-                        _overlays.billboard_camera.toggleShow(p == 5);
-                        _overlays.billboard_object.toggleShow(p == 4);
-                        _overlays.billboard_shader.toggleShow(p == 3);
-                    }
+                    if(o == 0)
+                        switch(8 - p){
+                            case 0: _overlays.billboard_timeline.toggleShow(); break;
+                            case 1: _overlays.billboard_camera.toggleShow(); break;
+                            case 2: _overlays.billboard_object.toggleShow(); break;
+                            case 3: _overlays.billboard_shader.toggleShow(); break;
+                            case 4: _overlays.billboard_object.toggleShow(); break;
+                            case 5: _overlays.billboard_shader.toggleShow(); break;
+                            default: std::cout << "Perform action for pane " << std::to_string(p) << std::endl;
+                        }
                     else if(o == 1) // handling shader switching
                         switch(p){
                             case 0: Topl_Program::camera.setProjMatrix(Projection(PROJECTION_None, 1.0F).genProjMatrix()); break;
@@ -61,9 +79,9 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                     else if(o == 2){
                         if(Topl_Program::lastPickerObj != nullptr){
                             switch(p){
-                                case 0: case 1: case 2: case 3: if(positions_map.find(lastPickerObj) == positions_map.end()) positions_map.insert({ lastPickerObj, *lastPickerObj->getPos() }); break;
-                                case 4: case 5: case 6: case 7: if(rotations_map.find(lastPickerObj) == rotations_map.end()) rotations_map.insert({ lastPickerObj, *lastPickerObj->getRot() }); break;
-                                case 8: case 9: case 10: case 11: if(scales_map.find(lastPickerObj) == scales_map.end()) scales_map.insert({ lastPickerObj, *lastPickerObj->getSize() }); break;
+                                MOV_BTN_CASES: if(positions_map.find(lastPickerObj) == positions_map.end()) positions_map.insert({ lastPickerObj, *lastPickerObj->getPos() }); break;
+                                ROT_BTN_CASES: if(rotations_map.find(lastPickerObj) == rotations_map.end()) rotations_map.insert({ lastPickerObj, *lastPickerObj->getRot() }); break;
+                                SIZ_BTN_CASES: if(scales_map.find(lastPickerObj) == scales_map.end()) scales_map.insert({ lastPickerObj, *lastPickerObj->getSize() }); break;
                             }
 
                             switch(p){
@@ -89,9 +107,9 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             }
 
                             switch(p){
-                                case 0: case 1: case 2: case 3: timeline.addSequence_vec3f(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
-                                case 4: case 5: case 6: case 7: timeline.addSequence_vec3f(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
-                                case 8: case 9: case 10: case 11: timeline.addSequence_vec3f(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
+                                MOV_BTN_CASES: timeline.addSequence_vec3f(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
+                                ROT_BTN_CASES: timeline.addSequence_vec3f(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
+                                SIZ_BTN_CASES: timeline.addSequence_vec3f(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
                             }
                         }
                     }
@@ -296,6 +314,10 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_appbar.shift({ 0.0F, 0.975F, 0.0F });
     _overlays.billboard_timeline.scale({ 1.5F, 0.15F, 1.0F });
     _overlays.billboard_timeline.shift({ 0.0F, -0.975F, 0.0F });
+    _overlays.billboard_sculpt.scale({ 0.12F, 1.15F, 1.0F });
+    _overlays.billboard_sculpt.shift({ -0.965F, 0.0F, 0.0F });
+    _overlays.billboard_paint.scale({ 0.12F, 1.15F, 1.0F });
+    _overlays.billboard_paint.shift({ 0.965F, 0.0F, 0.0F });
 
     _overlays.billboard_camera.shift({ -0.278F, -0.865F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.865F, 0.0F });
@@ -303,8 +325,9 @@ void Topl_Program::createOverlays(double size){
 
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < 9; b++){ 
-        // _overlay.billboard_appbar.overlay(b, &_overlays.objectButtons[8 - b]);
-        if(b > 2 && b < 6) _overlays.billboard_appbar.overlay(b, &_overlays.objectButtons[5 - b]); else _overlays.billboard_appbar.getGeoActor(b)->isShown = false;
+        _overlays.billboard_appbar.overlay(b, &_overlays.objectButtons[8 - b]);
+        _overlays.billboard_sculpt.overlay(b, &_overlays.objectButtons[b]);
+        _overlays.billboard_paint.overlay(b, &_overlays.objectButtons[b]);
         _overlays.billboard_camera.overlay(b, &_overlays.objectButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.objectButtons[b]);
     }
@@ -319,8 +342,8 @@ void Topl_Program::createOverlays(double size){
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1){
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
-                _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Sampler_Button(MENU_Medium) });
-                _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
+                // _overlays.button_map.insert({ _overlays.billboards[o]->getGeoActor(e), new Sampler_Button(MENU_Medium) });
+                // _overlays.billboards[o]->overlay(e, _overlays.button_map.at(_overlays.billboards[o]->getGeoActor(e)));
             }
             else _overlays.billboards[o]->getGeoActor(e)->updateSize({ 0.01F, 0.01F, 0.0F });
         // if(paneTex != nullptr) for(unsigned t = 1; t < 8; t++) _overlays.scene.addTexture(std::to_string(t), paneTex);

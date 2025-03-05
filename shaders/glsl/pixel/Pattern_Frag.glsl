@@ -67,6 +67,13 @@ vec3 centerPattern(vec3 ctrlPoint, vec3 coords){
 	return vec3(angles.r - floor(angles.r), angles.g - floor(angles.g), angles.b - floor(angles.b)) * abs(mode % 100);
 }
 
+vec3 proximaPattern(uint ctrlIdx, vec3 coords){
+	vec3 relCoord = ctrlPoints[ctrlIdx] - coords;
+	for(uint c = 0; c < 8; c++) if(c != ctrlIdx) relCoord -= (ctrlPoints[c] - coords) * (1.0 / abs(mode % 100));
+
+	return relCoord;
+}
+
 // Main
 
 void main() {
@@ -79,6 +86,7 @@ void main() {
 
 	if(abs(mode) > 0 && abs(mode) < 100) color_final = vec4(coordPattern(nearestPoint, target), 1.0);  
 	else if(abs(mode) >= 100 && abs(mode) < 200) color_final = vec4(trigPattern(nearestPoint, target, vec3(vertex_color)), 1.0);
-	else if(abs(mode) >= 200 && abs(mode) < 300) color_final = vec4(centerPattern(nearestPoint, target), 1.0);  
+	else if(abs(mode) >= 200 && abs(mode) < 300) color_final = vec4(centerPattern(nearestPoint, target), 1.0);
+	else if(abs(mode) >= 300 && abs(mode) < 400) color_final = vec4(proximaPattern(ctrl_index, target), 1.0);  
 	else color_final = vec4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }
