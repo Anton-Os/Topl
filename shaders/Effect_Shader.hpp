@@ -2,6 +2,9 @@
 
 #include "Topl_Pipeline.hpp"
 
+#define EFFECT_SIZE 10.0
+#define EFFECT_ITER 15
+
 #define EFFECT_MODES_MANDLEBROT 0
 #define EFFECT_MODES_JULIA 10
 
@@ -22,8 +25,8 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
-        // alignDataToBytes((uint8_t*)&effectSize, sizeof(effectSize), NO_PADDING, bytes);
-        // alignDataToBytes((uint8_t*)&effectIters, sizeof(effectIters), NO_PADDING, bytes);
+        alignDataToBytes((uint8_t*)&effectSize, sizeof(effectSize), NO_PADDING, bytes);
+        appendDataToBytes((uint8_t*)&effectIters, sizeof(effectIters), bytes); // TODO: See if you can remove padding!
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }
@@ -37,8 +40,8 @@ protected:
 	int width = TOPL_WIN_WIDTH;
 	int height = TOPL_WIN_HEIGHT;
 
-    float effectSize = 5.0;
-    unsigned effectIters = 15;
+    float effectSize = EFFECT_SIZE;
+    unsigned effectIters = EFFECT_ITER;
 };
 
 struct Effect_VertexShader_GL4 : public Effect_VertexShader {

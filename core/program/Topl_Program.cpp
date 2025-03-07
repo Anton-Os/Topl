@@ -30,15 +30,21 @@ Topl_Pipeline* Topl_Program::_savedPipeline = nullptr;
 
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
-    /* Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
+    Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
     if(lastPath.stepsCount % MAX_PATH_STEPS > 2){ 
         unsigned short steps = lastPath.stepsCount % MAX_PATH_STEPS;
         Vec2f cursorVec = Vec2f({ lastPath.steps[steps - 1].first - lastPath.steps[steps - 2].first, lastPath.steps[steps - 1].second - lastPath.steps[steps - 2].second  });
-        if(cursorVec.len() > 0.005 && cursorVec.len() < 0.1){ 
-            if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press) Topl_Program::camera.updatePos({ cursorVec[0], cursorVec[1], 0.0F });
-            else if(event == MOUSE_RightBtn_Drag || event == MOUSE_RightBtn_Press) Topl_Program::camera.updateRot({ cursorVec[0], cursorVec[1], 0.0F });
+        if(cursorVec.len() > 0.005 && cursorVec.len() < 0.25){ // Are thses contraints valid?
+            if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press){ 
+                Topl_Program::camera.updatePos({ cursorVec[0], cursorVec[1], 0.0F });
+                _camPos = *camera.getPos(); 
+            }
+            else if(event == MOUSE_RightBtn_Drag || event == MOUSE_RightBtn_Press){ 
+                Topl_Program::camera.updateRot({ cursorVec[0], cursorVec[1], 0.0F });
+                _camRot = *camera.getRot(); 
+            }
         }
-    } */
+    }
 }
 
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
@@ -296,7 +302,7 @@ void Topl_Program::setPipelines(){
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
-    _background.mesh.tesselate(PROGRAM_BK_TESS);
+    _background.mesh->tesselate(PROGRAM_BK_TESS);
     _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
     _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef RASTERON_H

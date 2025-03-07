@@ -22,7 +22,8 @@
 #define PROGRAM_OVERLAYS 3
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
 #define PROGRAM_PIPELINES 7
-#define PROGRAM_BK_TESS 1
+#define PROGRAM_BK_TESS 3
+#define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 5
 
 // #define MAX_TIMELINE_ATTRIBS 2056
@@ -145,8 +146,13 @@ private:
 
 	// Scenes, Geometry & Targets
 	struct Background {
-        Geo_Quad2D mesh = Geo_Quad2D(2.0F);
-        Geo_Actor actor = Geo_Actor("program_background", &mesh);
+		Geo_Mesh meshes[9] = { 
+			Geo_Quad2D(PROGRAM_BK_SIZE), Geo_Quad2D(PROGRAM_BK_SIZE * 2), Geo_Quad2D(PROGRAM_BK_SIZE * 5),
+			Geo_Hex2D(PROGRAM_BK_SIZE), Geo_Hex2D(PROGRAM_BK_SIZE * 2), Geo_Hex2D(PROGRAM_BK_SIZE * 5),
+			Geo_Circle2D(PROGRAM_BK_SIZE), Geo_Circle2D(PROGRAM_BK_SIZE * 2), Geo_Circle2D(PROGRAM_BK_SIZE * 5)
+		};
+        Geo_Mesh* mesh = &meshes[8];
+        Geo_Actor actor = Geo_Actor("program_background", mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef RASTERON_H

@@ -87,7 +87,7 @@ private:
     void onAnyKey(char key);
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
-    Topl_Scene scene = PROGRAM_SCENE;
+    Topl_Scene scene = Topl_Scene(); // PROGRAM_SCENE;
     // Topl_Scene targetScene;
 
     Flat_VertexShader vertexShader; Flat_PixelShader pixelShader;

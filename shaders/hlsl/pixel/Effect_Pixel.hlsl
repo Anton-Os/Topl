@@ -5,9 +5,6 @@
 
 #include "Pixel.hlsl"
 
-#define FRACTAL_SIZE 5.0 // max fractal size
-#define FRACTAL_ITER 20 // max fractal iteratons
-
 // Values
 
 cbuffer CONST_SCENE_BLOCK : register(b1) {
@@ -21,6 +18,9 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	float effectSize;
 	uint effectIters;
 }
+
+#define FRACTAL_SIZE effectSize
+#define FRACTAL_ITER effectIters
 
 struct PS_INPUT { 
 	float4 pos : SV_POSITION;

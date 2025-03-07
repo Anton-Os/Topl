@@ -1,4 +1,4 @@
-#include "Geo_Orbitals.hpp"
+#include "Geo_Orboid.hpp"
 
 void Geo_Orb::init() {
 	unsigned v = 0; // target vertex

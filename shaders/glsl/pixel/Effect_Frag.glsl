@@ -21,8 +21,8 @@ layout(std140, binding = 1) uniform SceneBlock {
 	uint effectIters;
 };
 
-#define FRACTAL_SIZE 5.0
-#define FRACTAL_ITER 20 // max fractal iteratons
+#define FRACTAL_SIZE effectSize
+#define FRACTAL_ITER effectIters
 
 layout(location = 1) in vec3 texcoord;
 
@@ -234,6 +234,7 @@ void main() {
 	vec2 target;
 	if(mode >= 0) target = coords - cursor - vec2(cam_pos.x, cam_pos.y);
 	else target = vec2(texcoord.x, texcoord.y) - cursor;
+	target += vec2(cam_pos.x, cam_pos.y);
 
 	if(abs(mode) >= 10 && abs(mode) < 20) color_final = vec4(juliaSet(target * size, cursor), 1.0f);
 	else if(abs(mode) >= 20 && abs(mode) < 30) color_final = vec4(trigSet((target + vec2(0.5, 0.5)) * size), 1.0f);
