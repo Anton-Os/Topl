@@ -38,11 +38,7 @@ public:
 	// Topl_Scene(const std::string& filePath) { loadFromFile(filePath); } // File Load Constructor
 	~Topl_Scene() {}
 
-	// void saveToFile(const std::string& fileName); // saves scene data to .tp file
-	// void loadFromFile(const std::string& filePath); // loads scene data from .tp file
-
 	// Basic Operations
-
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
 #ifdef RASTERON_H
@@ -75,6 +71,12 @@ public:
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
 #endif
 	Topl_Camera* camera = &_defaultCamera;
+	const std::string texImgPaths[MAX_TEX_BINDINGS] = {
+		std::string(IMAGES_DIR) + "Background-Grid.png", std::string(IMAGES_DIR) + "Background-Pins.png", 
+		std::string(IMAGES_DIR) + "Background-Trigs.png", std::string(IMAGES_DIR) + "Background-Frame.png", 
+		std::string(IMAGES_DIR) + "Background-Canvas.png", std::string(IMAGES_DIR) + "Background-Squared.png",
+		std::string(IMAGES_DIR) + "Background-Circular.png", std::string(IMAGES_DIR) + "Background-Action.bmp"
+	};
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
 	// std::vector<const Topl_Light*> _lights; // stores all light sources
@@ -88,14 +90,8 @@ private:
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
-		Sampler_Noise({ 2, 2, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Grid.png"), 
-		Sampler_Noise({ 4, 4, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Pins.png"), 
-		Sampler_Noise({ 8, 8, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Trigs.png"), 
-		Sampler_Noise({ 16, 16, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Frame.png"), 
-		Sampler_Noise({ 32, 32, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Canvas.png"),
-		Sampler_Noise({ 64, 64, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Squared.png"), 
-		Sampler_Noise({ 128, 128, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Circular.png"),
-		Sampler_Noise({ 256, 256, RAND_COLOR(), RAND_COLOR()}, 2), //Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp"),
+		Sampler_File(texImgPaths[0]), Sampler_File(texImgPaths[1]), Sampler_File(texImgPaths[2]), Sampler_File(texImgPaths[3]), 
+		Sampler_File(texImgPaths[4]), Sampler_File(texImgPaths[5]), Sampler_File(texImgPaths[6]), Sampler_File(texImgPaths[7]),
 	};
 	std::map<Geo_Actor*, const Sampler_2D*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Sampler_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

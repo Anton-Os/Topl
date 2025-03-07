@@ -19,12 +19,11 @@
 #define NO_PICKER_OBJ nullptr
 #define CACHED_FRAME_COUNT 60
 #define PROGRAM_M 0.1f
-#define PROGRAM_OVERLAYS 3
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
 #define PROGRAM_PIPELINES 7
 #define PROGRAM_BK_TESS 3
 #define PROGRAM_BK_SIZE 5.0F
-#define PROGRAM_BILLBOARDS 5
+#define PROGRAM_BILLBOARDS 7
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -151,7 +150,7 @@ private:
 			Geo_Hex2D(PROGRAM_BK_SIZE), Geo_Hex2D(PROGRAM_BK_SIZE * 2), Geo_Hex2D(PROGRAM_BK_SIZE * 5),
 			Geo_Circle2D(PROGRAM_BK_SIZE), Geo_Circle2D(PROGRAM_BK_SIZE * 2), Geo_Circle2D(PROGRAM_BK_SIZE * 5)
 		};
-        Geo_Mesh* mesh = &meshes[8];
+        Geo_Mesh* mesh = &meshes[0];
         Geo_Actor actor = Geo_Actor("program_background", mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
@@ -179,6 +178,8 @@ private:
 	} _editor;
 
 	struct Overlays {
+		enum BILLBOARD_Type { BILLBOARD_Camera = 0, BILLBOARD_Object = 1, BILLBOARD_Shader = 2, BILLBOARD_Timeline = 3, BILLBOARD_AppBar = 4, BILLBOARD_Sculpt = 5, BILLBOARD_Paint = 6, };
+
         Topl_Camera camera;
         Topl_Scene scene = Topl_Scene(&camera);
 		Geo_Crossboard billboard_appbar = Geo_Crossboard("program_appbar", 9, &scene);
@@ -188,9 +189,9 @@ private:
 		Geo_Billboard billboard_camera = Geo_Billboard("program_camera", 3, 3, &scene);
 		Geo_Billboard billboard_object = Geo_Billboard("program_object", 6, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
-		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_appbar, &billboard_camera, &billboard_object, &billboard_shader, &billboard_timeline };
-		Geo_Billboard* billboard_bars[4] = { &billboard_appbar, &billboard_timeline, &billboard_sculpt, &billboard_paint };
+		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_camera, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
 #ifdef RASTERON_H
+		Sampler_2D textures[8]; // for switching textures
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(8), Sampler_Dial(12)};
         Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, (unsigned)TIMELINE_END); // sliders[1] = { Sampler_Slider(2) };
