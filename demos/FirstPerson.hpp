@@ -106,6 +106,7 @@ struct FirstPerson_Demo : public Topl_Program {
 #endif
 private:
     void onAnyKey(char key);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene2D = PROGRAM_SCENE; 
     Topl_Scene scene3D = PROGRAM_SCENE;

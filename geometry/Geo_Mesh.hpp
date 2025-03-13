@@ -71,6 +71,7 @@ public:
 	void modify(originTransform callback){
 		bool isIndexed = getIndexCount() > 0;
 		for (unsigned m = 0; m < ((isIndexed)? _indices.size() : _vertices.size()) / 3; m++){
+			if(m + 2 > _indices.size() && _indices.size() > 0) break;
 			unsigned idx1 = (isIndexed)? _indices[(m * 3) + 0] : (m * 3) + 0;
 			unsigned idx2 = (isIndexed)? _indices[(m * 3) + 1] : (m * 3) + 1;
 			unsigned idx3 = (isIndexed)? _indices[(m * 3) + 2] : (m * 3) + 2;

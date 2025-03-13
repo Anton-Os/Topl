@@ -168,7 +168,7 @@ unsigned Topl_Renderer::getPixelAt(float x, float y) {
 
     Sampler_2D image = frame();
     unsigned offset = pixPoint_cursorOffset(pixPoint, image.getImage());
-    unsigned color = swap_rb(*(image.getImage()->data + offset));
+    unsigned color = *(image.getImage()->data + offset);
     return color; // return color computed at offsets
 }
 

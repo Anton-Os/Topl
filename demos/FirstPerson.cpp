@@ -13,6 +13,10 @@ void FirstPerson_Demo::onAnyKey(char key){
     }
 }
 
+void FirstPerson_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
+    std::cout << "FirstPerson Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; 
+}
+
 void FirstPerson_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&FirstPerson_Demo::onAnyKey, this, std::placeholders::_1));
 
@@ -24,7 +28,7 @@ void FirstPerson_Demo::init(){
 
     _renderer->setPipeline(_texPipeline);
 
-    scene3D.addGeometry("floor", &floor);
+    scene3D.addGeometry("floor", &floor)
     scene3D.addTexture("floor", &floorTex);
     scene3D.addGeometry("roof", &roof);
     scene3D.addTexture("roof", &roofTex);
@@ -88,7 +92,6 @@ void FirstPerson_Demo::loop(double frameTime){
         _renderer->drawScene(&scene2D);
     }
 
-
     {
         _flatVShader.setMode(FLAT_COORD);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
@@ -115,7 +118,7 @@ void FirstPerson_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new FirstPerson_Demo(argv[0], BACKEND_GL4);
+    _DEMO = new FirstPerson_Demo(argv[0], BACKEND_DX11);
     _DEMO->run();
 
     delete(_DEMO);

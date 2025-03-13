@@ -12,7 +12,7 @@ void Penscape_Demo::onAnyKey(char key){
             for(unsigned m = 0; m < 4; m++)
                 switch(tolower(key)){
                     case 'o': meshes[m]->modify(vertexTform); break;
-                    case 'p': meshes[m]->modify(midpointTform); break;
+                    case 'p': meshes[m]->modify(distanceTform); break;
                     default: meshes[m]->scale({ Vec3f({ ((float)rand() / (float)RAND_MAX) + 0.5F, ((float)rand() / (float)RAND_MAX) + 0.5F, ((float)rand() / (float)RAND_MAX) + 0.5F }) }); break;
                 }
         }

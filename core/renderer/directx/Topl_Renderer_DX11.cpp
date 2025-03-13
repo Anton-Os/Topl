@@ -416,7 +416,7 @@ Sampler_2D Topl_Renderer_DX11::frame() {
 	unsigned pitch = resource.RowPitch / 4; // << 2;
 	for (unsigned r = 0; r < stageImage->height - 1; r++) {
 		for (unsigned c = 0; c < stageImage->width; c++)
-			*(stageImage->data + dstOffset + c) = *(sourceData + srcOffset + c);
+			*(stageImage->data + dstOffset + c) = swap_rb(*(sourceData + srcOffset + c));
 		srcOffset += pitch;
 		dstOffset += stageImage->width;
 	}

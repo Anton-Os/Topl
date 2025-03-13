@@ -19,8 +19,8 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 	uint effectIters;
 }
 
-#define FRACTAL_SIZE effectSize
-#define FRACTAL_ITER effectIters
+#define FRACTAL_SIZE 10.0
+#define FRACTAL_ITER 15
 
 struct PS_INPUT { 
 	float4 pos : SV_POSITION;
@@ -218,6 +218,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float2 target = coords - cursor;
 	if(mode >= 0) target = coords - cursor; 
 	else target = float2(input.texcoord.x, input.texcoord.y) - cursor;
+	target += float2(cam_pos.x, cam_pos.y);
 	target *= FRACTAL_SIZE;
 
     if(abs(mode) >= 10 && abs(mode) < 20) return juliaSet(target, cursor);

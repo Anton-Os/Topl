@@ -38,8 +38,11 @@ void Kaleidoscope_Demo::init(){
 void Kaleidoscope_Demo::loop(double frameTime){
     double totalTime = 0.0;
 
-    for(unsigned s = 0; s < _DEMO->getConstruct()->getActorCount(); s++)
+    for(unsigned s = 0; s < _DEMO->getConstruct()->getActorCount(); s++){
         _DEMO->getConstruct()->getGeoActor(s)->updateRot(Vec3f({ _DEMO->getConstruct()->getSpinFactor(s), 0.0F, 0.0F }));
+        // float zRot = _DEMO->getConstruct()->getGeoActor(s)->getRot()->data[0];
+        // _DEMO->getConstruct()->getGeoActor(s)->updatePos(Vec3f({ 0.0F, 0.0F, sin(zRot) }) * 0.01F);
+    }
 
     if(_renderer->getPipeline() == _patternPipeline){
         for(unsigned p = 0; p < PATTERN_POINTS_MAX; p++)
@@ -49,8 +52,8 @@ void Kaleidoscope_Demo::loop(double frameTime){
     }
 
     _renderer->setDrawMode(drawMode);
-    _renderer->updateScene(&scene);
-    _renderer->drawScene(&scene);
+    // _renderer->updateScene(&scene);
+    renderScene(&scene, nullptr, -Topl_Program::shaderMode); // _renderer->drawScene(&scene);
 
     totalTime += frameTime;
 }

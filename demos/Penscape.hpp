@@ -11,16 +11,22 @@
 #define BRUSH3D_ROT 0.15F
 
 Geo_Vertex vertexTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
-    // Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE });
-    // return Geo_Vertex(vertex.position + randVec); // test
-    return (primID == 0)? vertex : Geo_Vertex(vertex.position * (primID % 3));
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F });
+    return Geo_Vertex(vertex.position + randVec); // test
+    // return (primID == 0)? vertex : Geo_Vertex(vertex.position * (primID % 3));
 }
 
-Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, unsigned primID, unsigned invocation){
-    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE, (((float)rand() / (float)RAND_MAX) - 1.0F) * BRUSH3D_SIZE });
+Geo_Vertex distanceTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
+    float dist = vertex.position.len();
+    return Geo_Vertex(vertex.position * dist); // test
+    // return (primID == 0)? vertex : Geo_Vertex(vertex.position * (primID % 3));
+}
+
+/* Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, unsigned primID, unsigned invocation){
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F });
     return Geo_Vertex(midpoint.position - randVec); // test
     // return (primID != 0)? vertex : Geo_Vertex(midpoint.position);
-}
+} */
 
 struct Penscape_Demo : public Topl_Program {
     Penscape_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Penscape", backend){

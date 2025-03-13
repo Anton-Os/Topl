@@ -14,7 +14,12 @@ enum TEX_Frmt { TEX_2D, TEX_3D };
 enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 
 struct Sampler_Target { // Refresh State
-    Sampler_Target(TEX_Frmt f){ format = f; }
+    Sampler_Target(TEX_Frmt f){ 
+		format = f;
+#ifdef RASTERON_H
+		_invertImage = INVERT_IMG_TRUE; // Imaging Initialization
+#endif
+	}
 
 	char** tag; // must update when out of date
 	TEX_Mode mode = TEX_Wrap;

@@ -54,6 +54,12 @@ void Topl_Program::updateTimelines(){
     if(isEnable_overlays){
         double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
         _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
+        /* if(_renderer->getFrameCount() % 60 == 0){
+            std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
+            _overlays.mediaLabels[2].setText({ _overlays.fontPath.c_str(), minStr.c_str(), 0xFF111111, 0xFFEEEEEE });
+            std::string secsStr = "_" + (((unsigned)secsElapsed % 60) > 10)? std::to_string((unsigned)secsElapsed % 60) : ("0" + std::to_string((unsigned)secsElapsed % 60)) + "_";
+            _overlays.mediaLabels[1].setText({ _overlays.fontPath.c_str(), secsStr.c_str(), 0xFF111111, 0xFFEEEEEE });
+        } */
         if(secsElapsed - floor(secsElapsed) < 0.01) _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
     }
 }
@@ -111,6 +117,7 @@ void Topl_Program::run(){
             Topl_Factory::switchPipeline(_renderer, _savedPipeline);
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
             if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
+            _renderer->setDrawMode(DRAW_Triangles);
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();

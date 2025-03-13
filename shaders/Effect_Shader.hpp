@@ -26,7 +26,7 @@ struct Effect_VertexShader : public Topl_EntryShader {
 		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
         alignDataToBytes((uint8_t*)&effectSize, sizeof(effectSize), NO_PADDING, bytes);
-        appendDataToBytes((uint8_t*)&effectIters, sizeof(effectIters), bytes); // TODO: See if you can remove padding!
+        alignDataToBytes((uint8_t*)&effectIters, sizeof(effectIters), sizeof(unsigned) * 2, bytes); // TODO: See if you can remove padding!
 	}
 
 	void setWidth(int w) { if(w > 0) width = w; }

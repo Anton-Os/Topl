@@ -365,11 +365,11 @@ Sampler_2D Topl_Renderer_GL4::frame() {
 	glReadPixels(0, 0, viewportHeight, viewportWidth, GL_RGBA, GL_UNSIGNED_BYTE, stageImage->data);
 
 	Rasteron_Image* flipImage = flipImgOp(stageImage, FLIP_Upside); // flipping image over
-	Rasteron_Image* mirrorImage = mirrorImgOp(flipImage); // mirroring left and right sides
+	for(unsigned p = 0; p < flipImage->width * flipImage->height; p++) *(flipImage->data + p) = swap_rb(*(flipImage->data + p));
 
-	_frameImage = Sampler_2D();
-	_frameImage.setImage(mirrorImage);
-	RASTERON_DEALLOC(stageImage); RASTERON_DEALLOC(flipImage); RASTERON_DEALLOC(mirrorImage);
+	_frameImage = Sampler_2D(mirrorImgOp(flipImage));
+
+	RASTERON_DEALLOC(stageImage); RASTERON_DEALLOC(flipImage);
 	return _frameImage;
 }
 
