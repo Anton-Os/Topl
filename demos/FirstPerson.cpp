@@ -24,11 +24,11 @@ void FirstPerson_Demo::init(){
     Topl_Program::camera.setPos({ 0.0F, -0.5F, 10.0F });
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 1.0, 1.0, 1.0, 1.0, 10.0, 10.0).genProjMatrix());
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0).genProjMatrix());
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix());
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 1.0F).genProjMatrix());
 
     _renderer->setPipeline(_texPipeline);
 
-    scene3D.addGeometry("floor", &floor)
+    scene3D.addGeometry("floor", &floor);
     scene3D.addTexture("floor", &floorTex);
     scene3D.addGeometry("roof", &roof);
     scene3D.addTexture("roof", &roofTex);
@@ -82,7 +82,7 @@ void FirstPerson_Demo::init(){
 void FirstPerson_Demo::loop(double frameTime){
     {
 #ifdef TOPL_ENABLE_PHYSICS
-        if(_renderer->getFrameCount() > 60) scene2D.resolvePhysics(FORCE_Directional);
+        if(_renderer->getFrameCount() > 600) scene2D.resolvePhysics(FORCE_Directional);
 #endif
         _texVShader.setMode(0);
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
@@ -97,11 +97,11 @@ void FirstPerson_Demo::loop(double frameTime){
         Topl_Factory::switchPipeline(_renderer, _texPipeline);
         // _beamsVShader.setMode((_renderer->getFrameCount() % 120 < 40)? 0 : (_renderer->getFrameCount() % 120 < 80)? 4 : 3);
 #ifdef TOPL_ENABLE_MODELS
-        models[0].rotateAll({ 0.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 1000.0F : (float)frameTime / -1000.0F });
-        models[1].rotateAll({ 0.0F, 0.0F, (float)frameTime / -500.0F });
-        models[2].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
-        models[3].rotateAll({ 0.0F, 0.0F, (float)frameTime / -500.0F });
-        models[4].rotateAll({ 0.0F, 0.0F, (float)frameTime / 500.0F });
+        models[0].rotateAll({ 0.0F, 0.0F, (_renderer->getFrameCount() % 120 < 60)? (float)frameTime / 10000.0F : (float)frameTime / -10000.0F });
+        models[1].rotateAll({ 0.0F, 0.0F, (float)frameTime / -5000.0F });
+        models[2].rotateAll({ 0.0F, 0.0F, (float)frameTime / 5000.0F });
+        models[3].rotateAll({ 0.0F, 0.0F, (float)frameTime / -5000.0F });
+        models[4].rotateAll({ 0.0F, 0.0F, (float)frameTime / 5000.0F });
         // for(unsigned m = 0; m < 5; m++)
         //    models[m].shift({ sin((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F, 0.0F, cos((float)Topl_Program::timeline.persist_ticker.getAbsSecs()) / 10.0F });
 #endif
@@ -109,7 +109,7 @@ void FirstPerson_Demo::loop(double frameTime){
         _texVShader.setMode(0);
         _renderer->setDrawMode(DRAW_Triangles);
 
-        _texVShader.setTexScroll({ 0.0F, _renderer->getFrameCount() * 0.01F, 0.0F });
+        _texVShader.setTexScroll({ 0.0F, _renderer->getFrameCount() * 0.001F, 0.0F });
         _renderer->updateScene(&scene3D);
         _renderer->drawScene(&scene3D);
 

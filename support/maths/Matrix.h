@@ -56,7 +56,7 @@ struct Matrix {
 
     // TODO: Include rotation
 
-    std::string toString (){
+    std::string toString() const {
         std::string matStr = "{\n";
         for(unsigned row = 0; row < r; row++)
             for(unsigned col = 0; col < c; col++){

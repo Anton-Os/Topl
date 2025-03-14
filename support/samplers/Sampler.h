@@ -51,9 +51,6 @@ struct Sampler_2D : public Sampler_Target {
     }
 	void putImg(Rasteron_Image* targetImg){
 		cleanup();
-		/* image = RASTERON_ALLOC(targetImg->name, targetImg->height, targetImg->width);
-		for(unsigned p = 0; p < targetImg->height * targetImg->width; p++) *(image->data + p) = *(targetImg->data + p);
-		RASTERON_DEALLOC(targetImg); */
 		image = targetImg;
 		tag = &image->name;
 	}

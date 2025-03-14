@@ -48,7 +48,7 @@ void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 }
 
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
-    static Projection projection = Projection(PROJECTION_None, 1.0F);
+    static PROJECTION_Type projType = PROJECTION_None; // Projection(PROJECTION_None, 1.0F);
     static float projX = 1.0F, projY = 1.0F, projZ = 1.0F;
 
     std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
@@ -57,7 +57,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
         if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
             std::cout << "Selected billboard at index " << std::to_string(o) << std::endl;
             billboard = _overlays.billboards[o];
-            billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f }));
+            // billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f })); // moving when something is dragged
             for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
                 if(actor == billboard->getGeoActor(p)){
 #ifdef RASTERON_H
@@ -92,14 +92,15 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 5: timeline.dynamic_ticker.setTime(timeline.dynamic_ticker.range.second); break;
                         }
                     else if(o == PROGRAM_Camera){
-                        switch(p){
+                        switch(8 - p){
                             case 0: projX *= 1.25; break; case 1: projY *= 1.25; break; case 2: projZ *= 1.25; break;
-                            case 3: projection = Projection(PROJECTION_None, -projX, projX, -projY, projY, -projZ, projZ); break;
-                            case 4: projection = Projection(PROJECTION_Orthographic, -projX, projX, -projY, projY, -projZ, projZ); break;
-                            case 5: projection = Projection(PROJECTION_Perspective, -projX, projX, -projY, projY, -projZ, projZ); break;
+                            case 3: projType = PROJECTION_None; break;
+                            case 4: projType = PROJECTION_Orthographic; break;
+                            case 5: projType = PROJECTION_Perspective; break;
                             case 6: projX *= 0.75; break; case 7: projY *= 0.75; break; case 8: projZ *= 0.75; break;
                         }
-                        Topl_Program::camera.setProjMatrix(projection.genProjMatrix());
+                        Topl_Program::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix());
+                        std::cout << "Camera position is " << Topl_Program::camera.getPos()->toString() << std::endl << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;;
                     }
                     else if(o == PROGRAM_Object){
                         if(Topl_Program::lastPickerObj != nullptr){
@@ -152,7 +153,10 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 
 void Topl_Program::_onAnyKey(char k){
     std::cout << "Key is " << std::to_string(k) << std::endl;
-    if(isspace(k) && k != 0x0D) timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
+    if(isspace(k) && k != 0x0D){ 
+        for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
+        timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
+    }
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
         switch(tolower(k)){

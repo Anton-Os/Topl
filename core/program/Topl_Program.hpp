@@ -151,8 +151,10 @@ private:
 	struct Background {
 		Geo_Mesh meshes[9] = { 
 			Geo_Quad2D(PROGRAM_BK_SIZE), Geo_Quad2D(PROGRAM_BK_SIZE * 2), Geo_Quad2D(PROGRAM_BK_SIZE * 5),
-			Geo_Hex2D(PROGRAM_BK_SIZE), Geo_Hex2D(PROGRAM_BK_SIZE * 2), Geo_Hex2D(PROGRAM_BK_SIZE * 5),
-			Geo_Circle2D(PROGRAM_BK_SIZE), Geo_Circle2D(PROGRAM_BK_SIZE * 2), Geo_Circle2D(PROGRAM_BK_SIZE * 5)
+			// Geo_Hex2D(PROGRAM_BK_SIZE), Geo_Hex2D(PROGRAM_BK_SIZE * 2), Geo_Hex2D(PROGRAM_BK_SIZE * 5),
+			Geo_Trig2D(PROGRAM_BK_SIZE), Geo_Surface({ PROGRAM_BK_SIZE, 5 }, DEFAULT_Z), Geo_Surface({ PROGRAM_BK_SIZE, 7 }, DEFAULT_Z),
+			// Geo_Circle2D(PROGRAM_BK_SIZE), Geo_Circle2D(PROGRAM_BK_SIZE * 2), Geo_Circle2D(PROGRAM_BK_SIZE * 5)
+			Geo_Hex2D(PROGRAM_BK_SIZE), Geo_Surface({ PROGRAM_BK_SIZE, 8 }, DEFAULT_Z), Geo_Circle2D(PROGRAM_BK_SIZE)
 		};
         Geo_Mesh* mesh = &meshes[0];
         Geo_Actor actor = Geo_Actor("program_background", mesh);
@@ -216,7 +218,7 @@ private:
 			Sampler_Button("color-rolling-brush"), Sampler_Button("design-tool-paper-glue"), Sampler_Button("color-bucket-brush")
 		};
 		Sampler_Button cameraButtons[3] = { Sampler_Button("camera-retro"), Sampler_Button("camera-1"), Sampler_Button("camera-2") };
-		Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "_00_", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "_00_", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "_00_", 0xFF111111, 0xFFEEEEEE }) };
+		Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
 		Sampler_Button mediaButtons[3] = { Sampler_Button("controls-forward"), Sampler_Button("controls-next"), Sampler_Button("controls-rewind") };
 		// Sampler_Label timeLabel = Sampler_Label({ fontPath.c_str(), "0:00:00", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label recordLabel = Sampler_Label({ fontPath.c_str(), "RECORD", 0xFF111111, 0xFFEEEEEE });
