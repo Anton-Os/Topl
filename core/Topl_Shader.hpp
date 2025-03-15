@@ -138,7 +138,6 @@ public:
 		Topl_Camera* camera = scene->camera;
 		// double timeElapse = dynamic_ticker.getAbsSecs();
 
-		// _sceneBlock_bytes.clear();
 		appendDataToBytes((uint8_t*)&_mode, sizeof(int), bytes);
 		// appendDataToBytes((uint8_t*)&timeElapse, sizeof(double), bytes); // TODO: Uncomment this
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getPos() : &_defaultVec), sizeof(Vec3f), 0, bytes);

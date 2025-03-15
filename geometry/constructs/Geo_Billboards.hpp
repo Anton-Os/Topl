@@ -122,7 +122,7 @@ public:
 	}
 #endif
 protected:
-	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.0001F);
+	Geo_Quad2D childMesh = Geo_Quad2D(PANE_SIZE, PANE_Z + 0.000001F);
 	// Geo_Actor childActor = Geo_Actor(&childMesh);
 	float rootBorder = 0.05F;
 	Geo_Quad2D rootMesh = Geo_Quad2D(PANE_SIZE, PANE_Z);

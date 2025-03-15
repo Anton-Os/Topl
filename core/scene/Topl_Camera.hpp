@@ -3,8 +3,8 @@
 
 // Projection
 
-#define PPROJ_A -1.0
-#define PPROJ_Z 5.0
+#define PPROJ_A 1.0F
+#define PPROJ_Z 5.0F
 
 enum PROJECTION_Type {
     PROJECTION_None,
@@ -30,12 +30,18 @@ struct Projection { // Used in Matrix calculations
         nearPlane *= n; farPlane *= f;
     }
 
-    Mat4x4 genProjMatrix(){
+    Mat4x4 genProjMatrix(){ return genProjMatrix(Vec3f({ 0.0F, 0.0F, 0.0F })); }
+
+    Mat4x4 genProjMatrix(Vec3f camPos){
         switch(type){
             case PROJECTION_Orthographic: return genOrthoMatrix();
             case PROJECTION_Perspective: return genPerspectiveMatrix();
-            case PROJECTION_Experimental: return genExperimentalMatrix();
-            default: return MAT_4x4_IDENTITY;
+            case PROJECTION_Experimental: return genHyperspaceMatrix(camPos);
+            default: // Identity Matrix with scaling
+                Mat4x4 matrix = MAT_4x4_IDENTITY;
+                // Mat4x4 matrix = Mat4x4::scale(Vec3f({ (fabs(left) + fabs(right)) / 2.0F, (fabs(top) + fabs(bottom)) / 2.0F, (fabs(nearPlane) + fabs(farPlane)) / 2.0F }));
+                matrix.data[2][2] *= -1.0F; // flip z axis
+                return matrix;
         }
     }
 
@@ -57,20 +63,20 @@ protected:
     }
 
     Mat4x4 genPerspectiveMatrix(){
-        float l = left / (PPROJ_A * -1.0); float r = right / (PPROJ_A * -1.0);
-        float b = bottom / (PPROJ_A * -1.0); float t = top / (PPROJ_A * -1.0);
-        float n = nearPlane / (PPROJ_A / (PPROJ_Z * 0.5F)); 
-        float f = farPlane / (PPROJ_A / (PPROJ_Z * 0.5F)); 
+        float l = left / -PPROJ_A; float r = right / -PPROJ_A;
+        float b = bottom / -PPROJ_A; float t = top / -PPROJ_A;
+        float n = nearPlane; // * -1.0F; 
+        float f = farPlane; // * -1.0F; 
 
         return Mat4x4({ // From OpenGL SuperBible starting page 88
             (2.0f * n) / (r - l), 0.0f, (r + l) / (r - l), 0.0f,
             0.0f, (2.0f * n) / (t - b), (t + b) / (t - b), 0.0f,
-            0.0f, 0.0f, -((f + n) / (f - n)), -((2.0f * n * f) / (farPlane - n)),
-            0.0f, 0.0f, -1.0f, 0.0f
+            0.0f, 0.0f, -((f + n) / (f - n)), ((2.0f * n * f) / (f - n)) * (1.0F / PPROJ_Z),
+            0.0f, 0.0f, 1.0f, 0.0f
         });
     }
 
-    Mat4x4 genExperimentalMatrix(){
+    Mat4x4 genHyperspaceMatrix(Vec3f camPos){
         return Mat4x4({
             (nearPlane - farPlane) / (right - left), 0.0f, 0.0f, 0.0f,
             0.0f, (nearPlane - farPlane) / (top - bottom), 0.0f, 0.0f,
@@ -114,7 +120,8 @@ private:
 	float _zoom = CAM_ZOOM; 
 	Vec3f _pos = Vec3f({ 0.0f, 0.0f, CAM_DEPTH }); // in front of scene
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
-	Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
+    Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
+    // Projection _projection = Projection(PROJECTION_None);
 };
 
 typedef const Topl_Camera* const camera_cptr;
