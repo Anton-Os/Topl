@@ -42,7 +42,7 @@ struct Matrix {
         Matrix<r, c> result = Matrix<r, c>();
         for(unsigned row = 0; row < r; row++)
             for(unsigned col = 0; col < c; col++)
-                result.data[row][col] = (row == col)? 1.0F : (col != c - 1)? 0.0F : input.data[r];
+                result.data[row][col] = (row == col)? 1.0F : (col != c - 1)? 0.0F : input.data[row];
         return result;
     }
 
@@ -50,7 +50,7 @@ struct Matrix {
         Matrix<r, c> result = Matrix<r, c>();
         for(unsigned row = 0; row < r; row++)
             for(unsigned col = 0; col < c; col++)
-                result.data[row][col] = (row == r - 1)? 1.0 : (row != col)? 0.0F : input.data[r]; 
+                result.data[row][col] = (row == r - 1 && col == c - 1)? 1.0 : (row != col)? 0.0F : input.data[row]; 
         return result;
     }
 

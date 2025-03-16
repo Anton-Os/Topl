@@ -71,6 +71,8 @@ struct Sampler_Label : public Sampler_UI {
 			textObjs[3] = { textObj.fontFile, textObj.text, UI_COLOR_DEFAULT, textObj.fgColor };
 
 			Rasteron_Image* textImg = textPadImgOp(&textObj, FONT_SIZE_MED, paddings);
+			RASTERON_QUEUE_DEALLOC(queue);
+			queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(104, 104), 4); // TODO: Make size correct?
 			for(unsigned short t = 0; t < 4; t++){
 				Rasteron_Image* tempImg = copyImgOp(textImg);
 				for(unsigned p = 0; p < textImg->width * textImg->height && t != MENU_None; p++){

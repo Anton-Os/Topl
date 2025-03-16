@@ -5,8 +5,8 @@
 
 #include "support_def.h"
 
-#define DEFAULT_SAMPLE_HEIGHT 256 * 4
-#define DEFAULT_SAMPLE_WIDTH 256 * 4
+#define SAMPLER_HEIGHT 256 * 4
+#define SAMPLER_WIDTH 256 * 4
 
 // typedef Rasteron_Image* (*imageCallback)();
 
@@ -65,7 +65,7 @@ struct Sampler_2D : public Sampler_Target {
 		}
 	}
 protected:
-	ImageSize getImgSize(){ return ImageSize({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }); }
+	ImageSize getImgSize(){ return ImageSize({ SAMPLER_HEIGHT, SAMPLER_WIDTH }); }
 	
 	void cleanup() override {
 		if (image != NULL) {
@@ -91,8 +91,8 @@ struct Sampler_Array : public Sampler_2D {
 #ifndef RASTERON_H
     Sampler_Array() : Sampler_2D(){}
 #else
-    Sampler_Array() : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), 8); }
-    Sampler_Array(unsigned short count) : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), count); }
+    Sampler_Array() : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(SAMPLER_HEIGHT, SAMPLER_WIDTH), 8); }
+    Sampler_Array(unsigned short count) : Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(SAMPLER_HEIGHT, SAMPLER_WIDTH), count); }
 
 	Rasteron_Image* getImage() const {
 		RASTERON_DEALLOC(image);
@@ -121,11 +121,15 @@ private:
 // Volume based on slices
 
 struct Sampler_3D : public Sampler_Target {
-    Sampler_3D() : Sampler_Target(TEX_3D), width(DEFAULT_SAMPLE_WIDTH), height(DEFAULT_SAMPLE_HEIGHT), depth(DEFAULT_SAMPLE_WIDTH) {} // Empty Constructor
+    Sampler_3D() : Sampler_Target(TEX_3D), width(SAMPLER_WIDTH), height(SAMPLER_HEIGHT), depth(SAMPLER_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
     Sampler_3D(unsigned s) : width(s), height(s), depth(s), Sampler_Target(TEX_3D){ setData(); } // Matching Lengths
     Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Sampler_Target(TEX_3D){ setData(); } // Custom Lengths
-    // Sampler_3D(Rasteron_Queue* queue) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->width), depth(queue->frameCount)
+    Sampler_3D(Rasteron_Queue* q) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->height), depth(queue->frameCount), Sampler_Target(TEX_3D){
+		assert(width == height);
+		queue = q;
+		setData();
+	}
 	
 	void addSlice(ref_image_t refImg, unsigned d){
 		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
@@ -158,7 +162,7 @@ private:
 		if(queue != nullptr) RASTERON_QUEUE_DEALLOC(queue);
 		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
 		for(unsigned f = 0; f < depth; f++){
-            Rasteron_Image* solidImg = solidImgOp({ DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH }, color_level(color, (1.0 / depth) * f));
+            Rasteron_Image* solidImg = solidImgOp({ SAMPLER_HEIGHT, SAMPLER_WIDTH }, color_level(color, (1.0 / depth) * f));
 			queue_addImg(queue, solidImg, f);
 			RASTERON_DEALLOC(solidImg);
 		} 

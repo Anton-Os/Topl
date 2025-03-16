@@ -1,7 +1,5 @@
 #include "Penscape.hpp"
 
-unsigned short Penscape_Demo::mode = 0;
-
 static DRAW_Mode drawMode = DRAW_Triangles;
 
 void Penscape_Demo::onAnyKey(char key){

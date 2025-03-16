@@ -1,7 +1,5 @@
 #include "Molecular.hpp"
 
-static short lightMode = 1;
-
 void Molecular_Demo::onAnyKey(char key){
     Topl_Light* targetLight;
     if((Topl_Program::shaderMode / 10) % 3 == 0) targetLight = &skyLight;

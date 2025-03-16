@@ -1,7 +1,5 @@
 #include "Kaleidoscope.hpp"
 
-unsigned short Kaleidoscope_Demo::mode = 2;
-
 static DRAW_Mode drawMode = DRAW_Triangles;
 
 void Kaleidoscope_Demo::onAnyKey(char key){
@@ -10,15 +8,22 @@ void Kaleidoscope_Demo::onAnyKey(char key){
         case 'i': drawMode = DRAW_Lines; break;
         case 'o': drawMode = DRAW_Points; break;
         case 'p': drawMode = DRAW_Strip; break;
-        case 'h': setConstruct(0); break;
-        case 'j': setConstruct(1); break;
-        case 'k': setConstruct(2); break;
-        case 'l': setConstruct(3); break;
+        case 'h': Topl_Program::mode = 0; break;
+        case 'j': Topl_Program::mode = 1; break;
+        case 'k': Topl_Program::mode = 2; break;
+        case 'l': Topl_Program::mode = 3; break;
         case 'v': _DEMO->getConstruct()->rotate({ 0.1F, 0.0F, 0.0F }); break;
         case 'b': _DEMO->getConstruct()->rotate({ -0.1F, 0.0F, 0.0F }); break;
         case 'n': _DEMO->getConstruct()->rotate({ 0.0F, 0.1F, 0.0F }); break;
         case 'm': _DEMO->getConstruct()->rotate({ 0.0F, -0.1F, 0.0F }); break;
     }
+
+    if(tolower(key) == 'h' || tolower(key) == 'j' || tolower(key) == 'k' || tolower(key) == 'l')
+        setConstruct(Topl_Program::mode);
+}
+
+void Kaleidoscope_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
+    if(menu == PROGRAM_AppBar && paneIndex < 4) setConstruct(Topl_Program::mode);
 }
 
 void Kaleidoscope_Demo::init(){
@@ -32,7 +37,7 @@ void Kaleidoscope_Demo::init(){
     _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
 
-    setConstruct(Kaleidoscope_Demo::mode);
+    setConstruct(Topl_Program::mode);
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){

@@ -1,7 +1,5 @@
 #include "Entropy.hpp"
 
-unsigned short Entropy_Demo::mode = 0;
-
 static bool isInEntropy = true;
 static bool isInMotion = true;
 static short lightMode = 10;

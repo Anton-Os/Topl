@@ -29,7 +29,7 @@
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0
 #define TIMELINE_END 60.0 // 1 minute will be default end
-#define TIMELINE_FORETELL -0.25
+#define TIMELINE_FORETELL -0.5
 
 class Topl_Timeline {
 public:
@@ -81,6 +81,7 @@ public:
 	static Vec3f cursorPos;
 	static float speed;
 	static unsigned shaderMode;
+	static unsigned short mode;
 	static Topl_EntryShader* activeShader; // active shader controlled by the pipeline
 	static std::string userInput; // input is added when characters are pressed
 	static bool isCtrl_keys, isCtrl_shader, isCtrl_input; // static bool isCamera_MounseControl;
@@ -161,8 +162,8 @@ private:
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef RASTERON_H
-        Sampler_2D image = Sampler_Gradient(SIDE_Radial, 0xFF111111, 0xFFEEEEEE);
-		// Sampler_File image = Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp");
+        Sampler_2D image = Sampler_Gradient(SIDE_Radial, 0xFF111111, 0xFFEEEEEE); // = Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp");
+		Sampler_3D volumeImg = Sampler_3D(256); // Sampler_3D(SAMPLER_WIDTH, SAMPLER_HEIGHT, 32);
 #endif
 	} _background;
 

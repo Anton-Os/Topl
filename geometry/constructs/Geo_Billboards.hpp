@@ -32,7 +32,7 @@ public:
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
 #ifdef RASTERON_H
-        rootImg.setImage(gradientImgOp(RASTERON_SIZE(DEFAULT_SAMPLE_HEIGHT, DEFAULT_SAMPLE_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
+        rootImg.setImage(gradientImgOp(RASTERON_SIZE(SAMPLER_HEIGHT, SAMPLER_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
         rootImg.addBorder(0.05, 0xFF222222);
 		for(unsigned p = 0; p < _params.getGridSize(); p++) paneSampler_map.insert({ &_geoActors.at(p), Sampler_2D(copyImgOp(rootImg.getImage())) });
 #endif

@@ -55,8 +55,6 @@ struct Penscape_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    static unsigned short mode;
-
     Geo_Mesh* trigMeshes[3] = { new Geo_Trig3D(BRUSH3D_SIZE), new Geo_TrigCone(BRUSH3D_SIZE), new Geo_TrigOrb(BRUSH3D_SIZE) };
     Geo_Mesh* trigMeshBrushes[3] = {
         new Geo_Trig3D(BRUSH3D_SIZE / BRUSH3D_SCALE),

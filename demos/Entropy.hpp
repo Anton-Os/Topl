@@ -74,8 +74,6 @@ struct Entropy_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    static unsigned short mode;
-
     Topl_Scene* getScene(){
         // _renderer->setDrawMode((mode == 0 || mode == 3)? DRAW_Triangles : DRAW_Points);
 

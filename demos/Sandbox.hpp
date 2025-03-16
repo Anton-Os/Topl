@@ -126,7 +126,6 @@ struct Sandbox_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    static unsigned short mode;
     static unsigned short option;
 
     std::vector<Geo_Mesh*> objectMeshes;

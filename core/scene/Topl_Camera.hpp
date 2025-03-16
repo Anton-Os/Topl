@@ -6,12 +6,14 @@
 #define PPROJ_A 1.0F
 #define PPROJ_Z 5.0F
 
+#define CAM_ZOOM 1.0f
+#define CAM_DEPTH -0.99999F
+
 enum PROJECTION_Type {
     PROJECTION_None,
     PROJECTION_Orthographic,
     PROJECTION_Perspective,
-    PROJECTION_Hyperbolic,
-    PROJECTION_Experimental,
+    PROJECTION_Hyperspace,
 };
 
 struct Projection { // Used in Matrix calculations
@@ -36,10 +38,9 @@ struct Projection { // Used in Matrix calculations
         switch(type){
             case PROJECTION_Orthographic: return genOrthoMatrix();
             case PROJECTION_Perspective: return genPerspectiveMatrix();
-            case PROJECTION_Experimental: return genHyperspaceMatrix(camPos);
+            case PROJECTION_Hyperspace: return genHyperspaceMatrix(camPos);
             default: // Identity Matrix with scaling
                 Mat4x4 matrix = MAT_4x4_IDENTITY;
-                // Mat4x4 matrix = Mat4x4::scale(Vec3f({ (fabs(left) + fabs(right)) / 2.0F, (fabs(top) + fabs(bottom)) / 2.0F, (fabs(nearPlane) + fabs(farPlane)) / 2.0F }));
                 matrix.data[2][2] *= -1.0F; // flip z axis
                 return matrix;
         }
@@ -77,19 +78,22 @@ protected:
     }
 
     Mat4x4 genHyperspaceMatrix(Vec3f camPos){
-        return Mat4x4({
-            (nearPlane - farPlane) / (right - left), 0.0f, 0.0f, 0.0f,
-            0.0f, (nearPlane - farPlane) / (top - bottom), 0.0f, 0.0f,
-            0.0f, 0.0f, farPlane - nearPlane,  0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        });
+        Mat4x4 matrix = Mat4x4::scale(Vec3f({ 
+            (fabs(left) + fabs(right)) / 2.0F, 
+            (fabs(top) + fabs(bottom)) / 2.0F, 
+            (fabs(nearPlane) + fabs(farPlane)) / 2.0F }
+        ));
+
+        matrix.data[2][2] *= -1.0F; // flip z axis
+        matrix.data[3][0] = camPos[0];
+        matrix.data[3][1] = camPos[1];
+        matrix.data[3][2] = camPos[2] - CAM_DEPTH;
+        std::cout << "Generating hyperspace matrix from " << camPos.toString() << std::endl;
+        return matrix;
     }
 };
 
 // Camera
-
-#define CAM_ZOOM 1.0f
-#define CAM_DEPTH -0.99F
 
 class Topl_Camera {
 public:
@@ -98,13 +102,13 @@ public:
 		_projMatrix.data[2][2] = -1; // flip z axis
 	}
 	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
-		_projMatrix = Projection(projType).genProjMatrix();
+		_projMatrix = Projection(projType).genProjMatrix(_pos);
 	}
 	Topl_Camera(enum PROJECTION_Type projType, float scaleFactor){ // Sized Bounds
-		_projMatrix = Projection(projType, scaleFactor).genProjMatrix();
+		_projMatrix = Projection(projType, scaleFactor).genProjMatrix(_pos);
 	}
 	Topl_Camera(Projection proj){ // Custom Bounds
-		_projMatrix = proj.genProjMatrix();
+		_projMatrix = proj.genProjMatrix(_pos);
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
 	void updatePos(const Vec3f& vec){ _pos = _pos + vec; }

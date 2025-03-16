@@ -9,6 +9,7 @@ Vec3f Topl_Program::cursorPos = { 0.0F, 0.0F, 0.0F };
 float Topl_Program::speed = 0.25F; // 0.1F
 
 unsigned Topl_Program::shaderMode = 0;
+unsigned short Topl_Program::mode = 0;
 Topl_EntryShader* Topl_Program::activeShader = nullptr;
 bool Topl_Program::isCtrl_keys = true;
 bool Topl_Program::isCtrl_shader = true;
@@ -63,13 +64,13 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == PROGRAM_AppBar) onOverlayUpdate(PROGRAM_AppBar, p);
+                    if(o == PROGRAM_AppBar) mode = 8 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
                     else if(o == PROGRAM_Sculpt){
                         _background.mesh = &_background.meshes[p];
                         if(isEnable_background) createBackground(nullptr);
                     }
                     else if(o == PROGRAM_Paint){ 
-                        ImageSize size = { DEFAULT_SAMPLE_WIDTH, DEFAULT_SAMPLE_HEIGHT };
+                        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
                         for(unsigned t = 0; t < 8; t++){
                             switch(p){
                                 case 0: _overlays.textures[t] = Sampler_Gradient((SIDE_Type)(rand() % 5), RAND_COLOR(), RAND_COLOR()); break; // random gradients
@@ -87,19 +88,20 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         _renderer->texturizeScene(&_overlays.scene);
                     } else if(o == PROGRAM_Media)
                         switch(p){
-                            case 3: timeline.dynamic_ticker.setTime(timeline.dynamic_ticker.range.first); break;
+                            case 3: timeline.dynamic_ticker.setTime(TIMELINE_START); break;
                             case 4: timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; break;
-                            case 5: timeline.dynamic_ticker.setTime(timeline.dynamic_ticker.range.second); break;
+                            case 5: timeline.dynamic_ticker.setTime(TIMELINE_END); break;
                         }
+                    else if(o == PROGRAM_Timeline) timeline.dynamic_ticker.setTime(pickerCoord[0]);
                     else if(o == PROGRAM_Camera){
                         switch(8 - p){
                             case 0: projX *= 1.25; break; case 1: projY *= 1.25; break; case 2: projZ *= 1.25; break;
-                            case 3: projType = PROJECTION_None; break;
-                            case 4: projType = PROJECTION_Orthographic; break;
-                            case 5: projType = PROJECTION_Perspective; break;
+                            case 3: projType = PROJECTION_Orthographic; break;
+                            case 4: projType = PROJECTION_Perspective; break;
+                            case 5: projType = PROJECTION_Hyperspace; break;
                             case 6: projX *= 0.75; break; case 7: projY *= 0.75; break; case 8: projZ *= 0.75; break;
                         }
-                        Topl_Program::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix());
+                        Topl_Program::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Program::camera.getPos()));
                         std::cout << "Camera position is " << Topl_Program::camera.getPos()->toString() << std::endl << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;;
                     }
                     else if(o == PROGRAM_Object){
@@ -144,6 +146,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         Topl_Program::_onAnyKey(keySim); // switch pipelines
                         _savedPipeline = _renderer->getPipeline();
                     }
+                    onOverlayUpdate((PROGRAM_Menu)o, 8 - p);
 #endif
                 }
             }
@@ -154,7 +157,8 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 void Topl_Program::_onAnyKey(char k){
     std::cout << "Key is " << std::to_string(k) << std::endl;
     if(isspace(k) && k != 0x0D){ 
-        for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
+        isEnable_overlays = !isEnable_overlays; 
+        // for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
         timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
     }
 
@@ -175,7 +179,6 @@ void Topl_Program::_onAnyKey(char k){
             case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed)); break;
             case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
             case '[': case '{': isCtrl_shader = !isCtrl_shader; break;
-            case ']': case '}': isEnable_overlays = !isEnable_overlays; break;
         }
 
         if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v' || tolower(k) == 'c')
@@ -319,7 +322,8 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
 #ifdef RASTERON_H
     if(backgroundTex != nullptr){
         _background.scene.addTexture("program_background", backgroundTex);
-        for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
+        // for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
+        _background.scene.addVolumeTex("program_background", &_background.volumeImg);
     }
 #endif
     _renderer->buildScene(&_background.scene);

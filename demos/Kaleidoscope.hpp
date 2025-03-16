@@ -56,8 +56,6 @@ struct Kaleidoscope_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    static unsigned short mode;
-
     Kaleidoscope_Construct* getConstruct(){
         // std::cout << "Mode is " << std::to_string(mode) << std::endl;
         switch(mode % 5){
@@ -86,6 +84,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
 private:
     void onAnyKey(char key);
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = Topl_Scene(); // PROGRAM_SCENE;
     // Topl_Scene targetScene;

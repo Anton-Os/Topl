@@ -1,6 +1,6 @@
 #include "Meshform.hpp"
 
-static bool isRotating = true;
+static bool isRotating = false;
 
 void Meshform_Demo::onAnyKey(char key){
     static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
@@ -17,7 +17,7 @@ void Meshform_Demo::onAnyKey(char key){
         case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
     }
 
-    if(isspace(key)) isRotating = !isRotating;
+    // if(isspace(key)) isRotating = !isRotating;
 }
 
 #ifdef RASTERON_H

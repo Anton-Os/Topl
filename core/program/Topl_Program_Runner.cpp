@@ -19,10 +19,10 @@ void Topl_Program::preloop(){
 void Topl_Program::updatePipelines(){
     float timeElapse = (float)timeline.dynamic_ticker.getAbsSecs();
     Vec3f scroll = (*camera.getPos() * -Topl_Program::speed); // + Vec3f({ sin((*camera.getRot)[0]), cos((*camera.getRot)[0]), 0.0F }); // TODO: Include rotation
-    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * (*(camera.getZoom()) * 0.5F); // (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
+    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * ((1.0F / *(camera.getZoom())) * 0.5F); // (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
     Input_TracerStep tracerStep = (Platform::mouseControl.getTracerSteps()->size() > 0)? (*Platform::mouseControl.getTracerSteps()).back() : Input_TracerStep();
 
-    if(_renderer->getPipeline() == _texPipeline)  _texVShader.setParams(&_background.actor, { 0, 0.0F, scroll, scale });
+    if(_renderer->getPipeline() == _texPipeline) _texVShader.setParams(&_background.actor, { 0, (timeElapse / 10) - floor(timeElapse / 10), scroll, scale });
     else if(_renderer->getPipeline() == _materialPipeline){ 
         _materialVShader.setTexCoordParams(scroll, scale);
         _materialVShader.setLight(Topl_Light(Vec3f({ sin(timeElapse), cos(timeElapse), sin(timeElapse) + cos(timeElapse) })));
@@ -53,14 +53,15 @@ void Topl_Program::updateTimelines(){
 
     if(isEnable_overlays){
         double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
-        _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
-        /* if(_renderer->getFrameCount() % 60 == 0){
-            std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
+        if(secsElapsed < TIMELINE_END) _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
+        if(_renderer->getFrameCount() % 60 == 0){ 
+            /* std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
             _overlays.mediaLabels[2].setText({ _overlays.fontPath.c_str(), minStr.c_str(), 0xFF111111, 0xFFEEEEEE });
             std::string secsStr = "_" + (((unsigned)secsElapsed % 60) > 10)? std::to_string((unsigned)secsElapsed % 60) : ("0" + std::to_string((unsigned)secsElapsed % 60)) + "_";
-            _overlays.mediaLabels[1].setText({ _overlays.fontPath.c_str(), secsStr.c_str(), 0xFF111111, 0xFFEEEEEE });
-        } */
-        if(secsElapsed - floor(secsElapsed) < 0.01) _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
+            _overlays.mediaLabels[1].setText({ _overlays.fontPath.c_str(), secsStr.c_str(), 0xFF111111, 0xFFEEEEEE }); */
+
+            _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
+        }
     }
 }
 
@@ -70,21 +71,20 @@ void Topl_Program::postloop(){
         _editor.actor.setRot(*Topl_Program::lastPickerObj->getRot());
         _editor.actor.setSize(*Topl_Program::lastPickerObj->getSize() * 0.75F);
         _editor.mesh.drawMode = DRAW_Lines;
-        // _overlays.billboard_object.toggleShow(true); // Topl_Program::lastPickerObj->getName().find("billboard") == std::string::npos);
+        _editor.actor.isShown = (!_editor.actor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
+        _editor.nameActor.isShown = (!_editor.nameActor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
+        _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::lastPickerObj->getSize());
+        _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
 #ifdef RASTERON_H
-        // std::cout << "Actor name is " << Topl_Program::lastPickerObj->getName() << std::endl;
         if(Platform::mouseControl.getIsMouseDown().second){
             std::string name = "| " + Topl_Program::lastPickerObj->getName() + " |";
             Rasteron_Text text = { _editor.fontPath.c_str(), name.c_str(), 0xFF111111, 0xFFEEEEEE };
             _editor.nameImg = Sampler_Text(text);
             _renderer->texturizeScene(&_editor.scene);
             _editor.nameMesh.drawMode = DRAW_Triangles;
-            _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::lastPickerObj->getSize());
-            _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
         }
 #endif
     }
-    // else _overlays.billboard_object.toggleShow(false);
 #ifdef RASTERON_H
     if(isEnable_screencap){
         static unsigned index = 0;
