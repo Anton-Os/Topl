@@ -74,6 +74,15 @@ float4 proximaPattern(float3 ctrlPoint, float3 coords){
 	return float4(relCoord, 1.0);
 }
 
+float4 neonPattern(uint ctrlIdx, float3 coords){
+	float3 relCoord = ctrlPoints[ctrlIdx] - coords;
+	float r = pow(abs(relCoord.x), abs(relCoord.y));
+	float g = pow(abs(relCoord.x), abs(relCoord.z));
+	float b = pow(abs(relCoord.z), abs(relCoord.y));
+
+	return float4((relCoord * float3(r, g, b)) / abs(mode % 100), 1.0);
+}
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -89,6 +98,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	else if(abs(mode) >= 100 && abs(mode) < 200) return trigPattern(input.nearestPoint, target, input.vertex_color);
 	else if(abs(mode) >= 200 && abs(mode) < 300) return centerPattern(input.nearestPoint, target);
 	else if(abs(mode) >= 300 && abs(mode) < 400) return proximaPattern(input.nearestPoint, target);
+	else if(abs(mode) >= 400 && abs(mode) < 500) return neonPattern(input.nearestPoint, target);
 	else return float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }
 

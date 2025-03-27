@@ -120,17 +120,22 @@ private:
 
 // Volume based on slices
 
+#define SAMPLER_VOLUME_BACKGROUND 0xAAFFFFFF
+#define SAMPLER_COLOR_QUEUE nullptr
+
 struct Sampler_3D : public Sampler_Target {
     Sampler_3D() : Sampler_Target(TEX_3D), width(SAMPLER_WIDTH), height(SAMPLER_HEIGHT), depth(SAMPLER_WIDTH) {} // Empty Constructor
 #ifdef RASTERON_H
-    Sampler_3D(unsigned s) : width(s), height(s), depth(s), Sampler_Target(TEX_3D){ setData(); } // Matching Lengths
-    Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Sampler_Target(TEX_3D){ setData(); } // Custom Lengths
+    Sampler_3D(unsigned s) : width(s), height(s), depth(s), Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Matching Lengths
+    Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Custom Lengths
     Sampler_3D(Rasteron_Queue* q) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->height), depth(queue->frameCount), Sampler_Target(TEX_3D){
 		assert(width == height);
-		queue = q;
-		setData();
+		setData(q);
 	}
 	
+	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? queue_getImg(queue, d) : nullptr;}
+    const Sampler_2D* getVolumeImg() const { return &volumeTexImg; }
+
 	void addSlice(ref_image_t refImg, unsigned d){
 		if (refImg->height == height && refImg->width == width) queue_addImg(queue, refImg, d);
         else return logMessage("Slice needs to match width and height, got " + std::to_string(refImg->height) + ", " + std::to_string(refImg->width) + " but expected " + std::to_string(height) + ", " + std::to_string(width)); // error
@@ -140,15 +145,25 @@ struct Sampler_3D : public Sampler_Target {
 		for(unsigned p = 0; p < width * depth; p++) 
 			*(volumeTexImg.getImage()->data + imgOffset + p) = *(refImg->data + p);
     }
-	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? queue_getImg(queue, d) : nullptr;}
-    const Sampler_2D* getVolumeImg() const { return &volumeTexImg; }
+	void setColors(unsigned color){ setColors(color, color_invert(color)); }
+	void setColors(unsigned color1, unsigned color2){
+		if(queue != nullptr) RASTERON_QUEUE_DEALLOC(queue);
+		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
+		for(unsigned f = 0; f < depth; f++){
+			Rasteron_Image* colorImg = solidImgOp({ SAMPLER_HEIGHT, SAMPLER_WIDTH }, blend_colors(color1, color2, (1.0 / depth) * f));
+			queue_addImg(queue, colorImg, f);
+			RASTERON_DEALLOC(colorImg);
+		} 
+	}
 
 	unsigned getWidth() const { return width; }
 	unsigned getHeight() const { return height; }
 	unsigned getDepth() const { return depth; }
 private:
-	void setData(){
-		if(queue == nullptr) populate(0xAAFFFFFF);
+	void setData(Rasteron_Queue* q){
+		if(q != SAMPLER_COLOR_QUEUE) queue = q; 
+		else setColors(SAMPLER_VOLUME_BACKGROUND);
+		
 		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
 		for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){
 			Rasteron_Image* sliceImg = queue_getImg(queue, p / (width * depth));
@@ -156,16 +171,6 @@ private:
 		}
 		volumeTexImg.setImage(compositeImg);
 		RASTERON_DEALLOC(compositeImg);
-	}
-
-	void populate(unsigned color){
-		if(queue != nullptr) RASTERON_QUEUE_DEALLOC(queue);
-		queue = RASTERON_QUEUE_ALLOC("volumeTex", RASTERON_SIZE(height, width), depth);
-		for(unsigned f = 0; f < depth; f++){
-            Rasteron_Image* solidImg = solidImgOp({ SAMPLER_HEIGHT, SAMPLER_WIDTH }, color_level(color, (1.0 / depth) * f));
-			queue_addImg(queue, solidImg, f);
-			RASTERON_DEALLOC(solidImg);
-		} 
 	}
 
 	void cleanup() override {

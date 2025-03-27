@@ -64,7 +64,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #ifdef RASTERON_H
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == PROGRAM_AppBar) mode = 8 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
+                    if(o == PROGRAM_AppBar) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
                     else if(o == PROGRAM_Sculpt){
                         _background.mesh = &_background.meshes[p];
                         if(isEnable_background) createBackground(nullptr);
@@ -94,7 +94,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         }
                     else if(o == PROGRAM_Timeline) timeline.dynamic_ticker.setTime(pickerCoord[0]);
                     else if(o == PROGRAM_Camera){
-                        switch(8 - p){
+                        switch(PROGRAM_SUBMENUS - 1 - p){
                             case 0: projX *= 1.25; break; case 1: projY *= 1.25; break; case 2: projZ *= 1.25; break;
                             case 3: projType = PROJECTION_Orthographic; break;
                             case 4: projType = PROJECTION_Perspective; break;
@@ -146,7 +146,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         Topl_Program::_onAnyKey(keySim); // switch pipelines
                         _savedPipeline = _renderer->getPipeline();
                     }
-                    onOverlayUpdate((PROGRAM_Menu)o, 8 - p);
+                    onOverlayUpdate((PROGRAM_Menu)o, PROGRAM_SUBMENUS - 1 - p);
 #endif
                 }
             }
@@ -176,8 +176,8 @@ void Topl_Program::_onAnyKey(char k){
             case 'f': Topl_Program::camera.updateRot({ 0.0F, Topl_Program::speed, 0.0 }); break;
             case 't': Topl_Program::camera.updateRot({ 0.0F, 0.0, -Topl_Program::speed }); break;
             case 'g': Topl_Program::camera.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
-            case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed)); break;
-            case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed)); break;
+            case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed * 0.25F)); break;
+            case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed * 0.25F)); break;
             case '[': case '{': isCtrl_shader = !isCtrl_shader; break;
         }
 
@@ -322,12 +322,12 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
 #ifdef RASTERON_H
     if(backgroundTex != nullptr){
         _background.scene.addTexture("program_background", backgroundTex);
-        // for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
+        for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
         _background.scene.addVolumeTex("program_background", &_background.volumeImg);
     }
 #endif
     _renderer->buildScene(&_background.scene);
-    if(!_background.scene.getIsTextured()) _renderer->texturizeScene(&_background.scene);
+    _renderer->texturizeScene(&_background.scene);
 }
 
 void Topl_Program::createOverlays(double size){
@@ -347,13 +347,13 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
 
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
-    for(unsigned b = 0; b < 9; b++){ 
-        _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[8 - b]);
+    for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
+        _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);
         _overlays.billboard_camera.overlay(b, (b > 2 && b < 6)? (Sampler_UI*)&_overlays.cameraButtons[5 - b] : (Sampler_UI*)&_overlays.dials[b % 3]);
         if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b > 2)? (Sampler_UI*)&_overlays.mediaButtons[b - 3] : (Sampler_UI*)&_overlays.mediaLabels[b]);
         _overlays.billboard_sculpt.overlay(b, &_overlays.sculptButtons[b]);
         _overlays.billboard_paint.overlay(b, &_overlays.paintButtons[b]);
-        _overlays.billboard_shader.overlay(b, &_overlays.numberButtons[b]);
+        _overlays.billboard_shader.overlay(b, &_overlays.pipelineButtons[b]);
     }
     for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
     
@@ -380,7 +380,7 @@ void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int m
         setShadersMode(mode);
     }
 
-    _renderer->setDrawMode(DRAW_Triangles);
+    // _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(scene);
     _renderer->drawScene(scene);
 }

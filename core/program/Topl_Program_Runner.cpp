@@ -34,9 +34,12 @@ void Topl_Program::updatePipelines(){
         if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), { BEAMS_LAMP_LIGHT.value }));
     } else if(_renderer->getPipeline() == _patternPipeline) 
         for(unsigned p = 0; p < PATTERN_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
-            float z = (1.0F / Platform::mouseControl.getTracerSteps()->size()) * p; // (((float)rand() / (float)RAND_MAX) - 0.5F) * 2.0F;
             tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];
-            _patternVShader.setCtrlPoint(p, Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, z }));
+            _patternVShader.setCtrlPoint(p, Vec3f({
+                 (float)tracerStep.step.first + (sin((float)tracerStep.step.first + timeElapse / 100.0F) * 0.05F), 
+                 (float)tracerStep.step.second + (sin((float)tracerStep.step.second + timeElapse / 100.0F) * 0.05F), 
+                 (1.0F / Platform::mouseControl.getTracerSteps()->size()) * p
+            }));
         }
 }
 
