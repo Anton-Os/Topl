@@ -70,22 +70,27 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         if(isEnable_background) createBackground(nullptr);
                     }
                     else if(o == PROGRAM_Paint){ 
-                        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
-                        for(unsigned t = 0; t < 8; t++){
-                            switch(p){
-                                case 0: _overlays.textures[t] = Sampler_Gradient((SIDE_Type)(rand() % 5), RAND_COLOR(), RAND_COLOR()); break; // random gradients
-                                case 1: _overlays.textures[t] = Sampler_2D(linedImgOp(size, RAND_COLOR(), RAND_COLOR(), (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
-                                case 2: _overlays.textures[t] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, RAND_COLOR(), RAND_COLOR() })); break; // lines
-                                case 3: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }); break; // basic noise
-                                case 4: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1); break; // octave noise
-                                case 5: _overlays.textures[t] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() })); break; // tiled noise
-                                case 6: _overlays.textures[t] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // added noise
-                                case 7: _overlays.textures[t] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // subtracted noise
-                                default: _overlays.textures[t] = Sampler_File(_overlays.scene.texImgPaths[t]);
-                            }
-                            _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
+                        if(p != PROGRAM_SUBMENUS - 1){
+                            ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
+                            for(unsigned t = 0; t < 8; t++){
+                                switch(p){
+                                    case 0: _overlays.textures[t] = Sampler_Gradient((SIDE_Type)(rand() % 5), RAND_COLOR(), RAND_COLOR()); break; // random gradients
+                                    case 1: _overlays.textures[t] = Sampler_2D(linedImgOp(size, RAND_COLOR(), RAND_COLOR(), (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
+                                    case 2: _overlays.textures[t] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, RAND_COLOR(), RAND_COLOR() })); break; // lines
+                                    case 3: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }); break; // basic noise
+                                    case 4: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1); break; // octave noise
+                                    case 5: _overlays.textures[t] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() })); break; // tiled noise
+                                    case 6: _overlays.textures[t] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // added noise
+                                    case 7: _overlays.textures[t] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // subtracted noise
+                                    default: _overlays.textures[t] = Sampler_File(_overlays.scene.texImgPaths[t]);
+                                }
+                                _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
+                            } 
+                            _renderer->texturizeScene(&_overlays.scene);
+                        } else {
+                            _background.volumeImg.setColors(RAND_COLOR());
+                            _renderer->texturizeScene(&_background.scene);
                         }
-                        _renderer->texturizeScene(&_overlays.scene);
                     } else if(o == PROGRAM_Media)
                         switch(p){
                             case 3: timeline.dynamic_ticker.setTime(TIMELINE_START); break;
@@ -178,7 +183,6 @@ void Topl_Program::_onAnyKey(char k){
             case 'g': Topl_Program::camera.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
             case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed * 0.25F)); break;
             case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed * 0.25F)); break;
-            case '[': case '{': isCtrl_shader = !isCtrl_shader; break;
         }
 
         if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v' || tolower(k) == 'c')
