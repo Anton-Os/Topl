@@ -208,7 +208,7 @@ void Topl_Program::_onAnyKey(char k){
                 case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
                 case '7': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // tesselation stages
                 case '8': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // geometry stage
-                case '9': Topl_Factory::switchPipeline(_renderer, _longPipeline); break; // tesselation & geometry stages
+                case '9': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break; // switch to long pipeline for tesselation and geometry?
             }
 
             if(tolower(k) == '8' || tolower(k) == '9') _renderer->setDrawMode(DRAW_Patch);
@@ -262,8 +262,8 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     if(isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
     // _editor.nameImg.setTextImage({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
-    _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
-    _renderer->texturizeScene(&_editor.scene);
+    // _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
+    //_renderer->texturizeScene(&_editor.scene);
 
     ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
 	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
@@ -315,7 +315,7 @@ void Topl_Program::setPipelines(){
     _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
     _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
     _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
-    Topl_Factory::switchPipeline(_renderer, _texPipeline);
+    Topl_Factory::switchPipeline(_renderer, _texPipeline); // _texPipeline);
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
@@ -353,7 +353,7 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
         _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);
-        _overlays.billboard_camera.overlay(b, (b > 2 && b < 6)? (Sampler_UI*)&_overlays.cameraButtons[5 - b] : (Sampler_UI*)&_overlays.dials[b % 3]);
+        _overlays.billboard_camera.overlay(b, (b > 2 && b < 6)? (Sampler_UI*)&_overlays.cameraButtons[5 - b] : (b < 3)? (Sampler_UI*)&_overlays.plusButton : (Sampler_UI*)&_overlays.minusButton);
         if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b > 2)? (Sampler_UI*)&_overlays.mediaButtons[b - 3] : (Sampler_UI*)&_overlays.mediaLabels[b]);
         _overlays.billboard_sculpt.overlay(b, &_overlays.sculptButtons[b]);
         _overlays.billboard_paint.overlay(b, &_overlays.paintButtons[b]);

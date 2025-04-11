@@ -1,3 +1,9 @@
+if(NOT DEFINED IGNORE_NATIVELIBS)
+
+if(UNIX AND NOT APPLE) # Unix Specific
+    include(FindX11)
+endif()
+
 # -------------- Core Library ------------- #
 
 list(APPEND support_src
@@ -39,6 +45,8 @@ if(WIN32)
 elseif(UNIX AND NOT APPLE) # Unix Specific
     target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})
 endif()
+
+endif() # IGORE_NATIVELIBS
 
 # -------------- Geometry Library ------------- #
 
@@ -85,7 +93,10 @@ endif()
 
 # -------------- Shared Linking ------------- #
 
+
 if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking targets to Rasteron
-    target_link_libraries(CORELIB PUBLIC Rasteron)
+    if(NOT DEFINED IGNORE_NATIVELIBS)
+        target_link_libraries(CORELIB PUBLIC Rasteron)
+    endif()
     target_link_libraries(GEOLIB PUBLIC Rasteron)
 endif()

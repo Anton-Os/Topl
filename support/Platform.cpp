@@ -18,7 +18,7 @@ fileCallback Platform::onFileChoose = nullptr;
 static bool checkKey(int code){
 	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
 		code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28
-		|| code == '[' || code == '{' || code == ']' || code == '}'; // handles arrows
+		|| code == '[' || code == '{' || code == ']' || code == '}' || code == (char)0xBA || code == (char)0x58/* code == ';' || code == ':' */; // handles arrows
 		// code == 189 || code == 187; // handles + and -
 }
 
@@ -123,6 +123,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case (WM_CHAR): { 
 		if(wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
 		else if(isKeyReady && checkKey(wParam)) Platform::keyControl.addKeyPress(wParam);
+		// else std::cout << "Other pressed: " << (char)wParam << std::endl;
 		isKeyReady = false;
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }

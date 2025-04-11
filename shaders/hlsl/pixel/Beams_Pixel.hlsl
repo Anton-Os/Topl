@@ -71,7 +71,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	else if(modes[0] == BEAMS_SPECULAR) return float4(specular, 1.0f);
 	else if(modes[0] == BEAMS_HIGHLIGHT) return float4(ambient + (lights[0][1] * dot(normalize(float3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target))), 1.0);
 	else if(modes[0] == BEAMS_SPOT) return float4(ambient.r + pow(specular.r, 1.0 / diffuse.r), ambient.g + pow(specular.g, 1.0 / diffuse.g), ambient.b + pow(specular.b, 1.0 / diffuse.b), 1.0);
-	else if(modes[0] == BEAMS_DEPTH) return float4(cam_dist, cam_dist, cam_dist, 1.0f);
+	else if(modes[0] == BEAMS_DEPTH) return float4(float3(cam_dist, cam_dist, cam_dist) * lights[0][1], 1.0f);
 	else if(modes[0] == BEAMS_DISTANCE) return float4(ambient + (cam_dist * diffuse) + specular, 1.0f);
 	else if(modes[0] == BEAMS_TRAJECTORY) return float4(ambient + (distance(target, lights[0][0]) * diffuse) + (specular * cross(target, lights[0][0])), 1.0f);
 	// else if(modes[0] == BEAMS_TRAJECTORY) return float4(lights[0][1] * normalize(cross(lights[0][0] - float3(cam_pos.x, cam_pos.y, cam_pos.z), target)), 1.0);

@@ -31,10 +31,12 @@ layout(location = 0) out vec4 color_final;
 // Functions
 
 vec3 fractalColors(vec2 coord, vec2 cursor, uint i){
+	float dist = pow(distance(coord, cursor), float(FRACTAL_SIZE - i));
+
 	if(mode % 10 == 0) return vec3(1.0f / i, tan(i), 0.05f * i);
 	else if(mode % 10 == 1) return vec3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
 	else if(mode % 10 == 2) return vec3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
-	else if(mode % 10 == 3) return vec3(distance(coord, cursor), distance(coord, vec2(0.5, 0.5)), distance(cursor, vec2(0.5, 0.5)));
+	else if(mode % 10 == 3) return vec3(dist - floor(dist), ceil(dist) - dist, pow(dist, dist));
 	else if(mode % 10 == 4) return vec3(coord.x * i - floor(coord.y * i), ceil(coord.y * i) - coord.x * i, cursor.x * cursor.y * i - floor(cursor.x * cursor.y * i));
 	else if(mode % 10 == 5) return vec3(i / (FRACTAL_ITER * 0.5), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
 	else if(mode % 10 == 6) return getRandColor(i) * vec3(dot(coord, cursor), length(coord - cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
@@ -48,12 +50,13 @@ vec3 fractalColors(vec2 coord, vec2 cursor, uint i){
 }
 
 // Mandlebrot Set
-vec3 mandlebrotSet(vec2 coord){
-	uint i = 0; // iteration count
-        double x = 0; double y = 0;
 
-	while(x * x + y * y <= FRACTAL_SIZE && i < FRACTAL_ITER){
-		double temp = (x * x) - (y * y) + coord.x;
+vec3 mandlebrot(vec2 coord, float f){
+	uint i = 0; // iteration count
+    float x = 0; float y = 0;
+
+	while(pow(x, f) + pow(y, f) <= FRACTAL_SIZE && i < FRACTAL_ITER){
+		float temp = pow(x, f) - pow(y, f) + coord.x;
 		y = (2 * x * y) + coord.y;
 		x = temp;
 		i++;
@@ -63,13 +66,17 @@ vec3 mandlebrotSet(vec2 coord){
 	else return vec3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
+
+vec3 mandlebrotSet(vec2 coord){ return mandlebrot(coord, 2.0); }
+
 // Julia set
-vec3 juliaSet(vec2 coord, vec2 cursor){
+
+vec3 julia(vec2 coord, vec2 cursor, float f){
 	uint i = 0; // iteration count
 
 	while (dot(coord, coord) <= FRACTAL_SIZE && i < FRACTAL_ITER) {
-		double x = (coord.x * coord.x) - (coord.y * coord.y);
-		double y = 2.0 * coord.x * coord.y;
+		float x = pow(coord.x, f) - pow(coord.y, f);
+		float y = 2.0 * coord.x * coord.y;
 		coord = vec2(x, y) + cursor;
 		i++;
 	}
@@ -77,6 +84,8 @@ vec3 juliaSet(vec2 coord, vec2 cursor){
 	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
+
+vec3 juliaSet(vec2 coord, vec2 cursor){ return julia(coord, cursor, 2.0); }
 
 // Trig Set
 vec3 trigSet(vec2 coord){
@@ -245,7 +254,8 @@ void main() {
 	else if(abs(mode) >= 70 && abs(mode) < 80) color_final = vec4(shardSet(target, cursorPos), 1.0f);
 	else if(abs(mode) >= 80 && abs(mode) < 90) color_final = vec4(sparseSet(target, abs((target.x - cursor.x) - (target.y - cursor.y))), 1.0f);
 	else if(abs(mode) >= 90 && abs(mode) < 100) color_final = vec4(retroSet(target, cursor), 1.0f);
-	else if(abs(mode) >= 100) color_final = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
+	// else if(abs(mode) >= 100) color_final = vec4(recursiveAlgo(trigSet(target), wingSet(target), mandlebrotSet(target)), 1.0);
+	else if(abs(mode) >= 100) color_final = vec4(julia(target * size, cursor, 3.0)/*1.0 + (float(abs(mode)) / 100.0f)) */, 1.0);
 	else color_final = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 
 	if(color_final.r == 0.0f && color_final.g == 0.0f && color_final.b == 0.0f) color_final.a = 0.0; // make transparent if not in set

@@ -90,8 +90,10 @@ private:
 	bool _isTextured = false; // sets to true on texture operations
 #ifdef RASTERON_H
 	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
-		Sampler_File(texImgPaths[0]), Sampler_File(texImgPaths[1]), Sampler_File(texImgPaths[2]), Sampler_File(texImgPaths[3]), 
-		Sampler_File(texImgPaths[4]), Sampler_File(texImgPaths[5]), Sampler_File(texImgPaths[6]), Sampler_File(texImgPaths[7]),
+		// Sampler_File(texImgPaths[0]), Sampler_File(texImgPaths[1]), Sampler_File(texImgPaths[2]), Sampler_File(texImgPaths[3]), 
+		// Sampler_File(texImgPaths[4]), Sampler_File(texImgPaths[5]), Sampler_File(texImgPaths[6]), Sampler_File(texImgPaths[7]),
+		Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR()),
+		Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR()), Sampler_Color(RAND_COLOR())
 	};
 	std::map<Geo_Actor*, const Sampler_2D*> _textureMap; // associates geometry actor to single texture // TODO: Reverse order
 	std::map<Geo_Actor*, const Sampler_Array*> _arrayTexMap; // associates geometry actor to multiple 2D textures // TODO: Reverse order

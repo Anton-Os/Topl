@@ -26,32 +26,35 @@ set(SUPPORT_MODELS TRUE CACHE BOOL "Include 3D model loading" FORCE)
 # ------------- Libraries, Engines, and Procedures ------------- #
 
 include("cmake/externalTargets.cmake") # For building dependencies
-include("cmake/findVulkan.cmake") # For locating Vulkan
-
-if(UNIX AND NOT APPLE) # Unix Specific
-    include(FindX11)
-endif()
-
 include("cmake/internalTargets.cmake") # For building core and geometry libraries
+
+if(NOT DEFINED IGNORE_NATIVELIBS)
+include("cmake/findVulkan.cmake") # For locating Vulkan
 include("cmake/engineTargets.cmake") # For building engine specific libraries
 include("cmake/shaderTargets.cmake") # For copying and compiling shaders
 include("cmake/resourceTargets.cmake") # For generating assets compile-time
+endif()
 include("cmake/installTargets.cmake") # For installation procedures
 
 # ------------- Demos and Tests ------------- #
 
 configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
 
+if(NOT DEFINED IGNORE_EXAMPLES)
 add_executable(Hello demos/Hello.cpp)
 add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(FirstPerson demos/FirstPerson.cpp)
 add_executable(Molecular demos/Molecular.cpp)
-add_executable(Meshform demos/Meshform.cpp)
-add_executable(Brush3D demos/Brush3D.cpp)
-add_executable(Kaleidoscope demos/Kaleidoscope.cpp)
 add_executable(Entropy demos/Entropy.cpp)
+add_executable(Meshform demos/Meshform.cpp)
+add_executable(Penscape demos/Penscape.cpp)
+add_executable(Kaleidoscope demos/Kaleidoscope.cpp)
+add_executable(Animatrix demos/Animatrix.cpp)
+add_executable(Meshscape demos/Meshscape.cpp)
+add_executable(Genesis demos/Genesis.cpp)
 
-list(APPEND demo_targets Hello Sandbox FirstPerson Molecular Meshform Brush3D Kaleidoscope Entropy)
+list(APPEND demo_targets Hello Sandbox FirstPerson Molecular Meshform Penscape Kaleidoscope Entropy)
+list(APPEND demo_targets Animatrix Meshscape Genesis)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)
@@ -61,3 +64,4 @@ foreach(target IN ITEMS ${demo_targets})
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")
     endif()
 endforeach()
+endif()

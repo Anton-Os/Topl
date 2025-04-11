@@ -150,5 +150,9 @@ typedef const Vec4i* const vec4i_cptr_t;
 #define VEC_3F_ONES Vec3f({ 1.0f, 1.0f, 1.0f })
 #define VEC_4F_ONES Vec3f({ 1.0f, 1.0f, 1.0f, 1.0f })
 
+#define VEC_2F_RAND Vec2f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX })
+#define VEC_3F_RAND Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX })
+#define VEC_4F_RAND Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX })
+
 #define MATHS_VECTOR_H
 #endif

@@ -1,5 +1,19 @@
 include(ExternalProject)
 
+if(NOT DEFINED IGNORE_NATIVELIBS)
+ExternalProject_Add(GLEW
+    GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
+    GIT_TAG "e9aa3dd0e3e82b4fa656d282ea1f652cf6575296"
+
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+    PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+)
+
+find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
+endif()
+
 if(SUPPORT_TEXTURES)
     if(NOT Rasteron_Install_Path)
         set(Rasteron_Install_Path "${CMAKE_INSTALL_PREFIX}/Rasteron" CACHE PATH "Rasteron install directory")
@@ -15,18 +29,6 @@ if(SUPPORT_TEXTURES)
 endif()
 
 #TODO: Build Rasteron from Submodle or from Git if detected
-
-ExternalProject_Add(GLEW
-        GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"
-        GIT_TAG "e9aa3dd0e3e82b4fa656d282ea1f652cf6575296"
-
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-
-        PREFIX ${EXTERNAL_PROJ_DIR}/GLEW
-        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    )
-
-find_package(GLEW PATHS ${CMAKE_INSTALL_PREFIX}/lib/GLEW)
 
 if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading

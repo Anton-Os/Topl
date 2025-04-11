@@ -120,7 +120,7 @@ private:
 
 // Volume based on slices
 
-#define SAMPLER_VOLUME_BACKGROUND 0xAAFFFFFF
+#define SAMPLER_VOLUME_BACKGROUND 0xFFEEEEEE
 #define SAMPLER_COLOR_QUEUE nullptr
 
 struct Sampler_3D : public Sampler_Target {

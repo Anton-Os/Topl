@@ -21,7 +21,7 @@
 #define PROGRAM_M 0.1f
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
 #define PROGRAM_PIPELINES 7
-#define PROGRAM_BK_TESS 1
+#define PROGRAM_BK_TESS 3
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9

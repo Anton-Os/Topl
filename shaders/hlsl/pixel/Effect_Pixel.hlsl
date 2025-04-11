@@ -30,10 +30,12 @@ struct PS_INPUT {
 // Functions
 
 float3 fractalColors(float2 coord, float2 cursor, uint i){
+	float dist = distance(coord, cursor) * float(1.0 / i);
+
 	if(abs(mode) % 10 == 0) return float3(1.0f / i, tan(i), 0.05f * i);
 	else if(abs(mode) % 10 == 1) return float3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
 	else if(abs(mode) % 10 == 2) return float3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
-	else if(abs(mode) % 10 == 3) return float3(distance(coord - cursor, float2(0.0, 0.0)), distance(cursor, float2(0.0, 0.0)), distance(coord, cursor));
+	else if(abs(mode) % 10 == 3) return float3(dist - floor(dist), ceil(dist) - dist, pow(dist, dist));
 	else if(abs(mode) % 10 == 4) return float3(coord.x * i - floor(coord.x * i), ceil(coord.y * i) - coord.y * i, abs(dot(cursor, coord)) - floor(abs(dot(cursor, coord))));
     else if(abs(mode) % 10 == 5) return float3(i / (FRACTAL_ITER * 0.75), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
     else if(abs(mode) % 10 == 6) return getRandColor(i) * float3(length(coord - cursor), dot(coord, cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
