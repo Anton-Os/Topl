@@ -1,15 +1,19 @@
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
-#include "Geo_Construct.hpp"
+#include "meshes/Geo_Orboid.hpp"
+#include "constructs/Geo_Chain.hpp"
+#include "constructs/Geo_Grid.hpp"
+
 
 #include "program/Topl_Program.hpp"
 
-#define MESHSCAPE_SIZE 0.5F
-#define MESHSCAPE_BRUSHES 4
+#define MESHSCAPE_SIZE 0.25F
+#define MESHSCAPE_BRUSHES 9
 #define MESHSCAPE_NAME "meshscape" + std::to_string(rand() % 9999)
 
 struct Meshscape_Construct : public Geo_Construct {
     Meshscape_Construct(Geo_Mesh* m, std::initializer_list<Vec3f> points) : Geo_Construct(MESHSCAPE_NAME), brushMesh(m){ 
+    // Meshscape_Construct(Geo_Mesh* m, std::vector<Geo_Actor*>& actors) : Geo_Construct(MESHSCAPE_NAME), brushMesh(m){ // TODO: Switch to this!
         for(auto p = points.begin(); p != points.end(); p++) brushPoints.push_back(*p);
         init(); 
     }
@@ -42,6 +46,7 @@ struct Meshscape_Demo : public Topl_Program {
 private:
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
+    void updateConstruct(Geo_Construct* construct);
 
     unsigned short sculptMode;
 
@@ -49,9 +54,15 @@ private:
     Topl_Scene sculptScene = PROGRAM_SCENE;
 
     Geo_Mesh brushMeshes[MESHSCAPE_BRUSHES] = {
-        Geo_Trig3D(MESHSCAPE_SIZE), Geo_Quad3D(MESHSCAPE_SIZE), Geo_Hex3D(MESHSCAPE_SIZE), Geo_Circle3D(MESHSCAPE_SIZE)
+        // Geo_Trig3D(MESHSCAPE_SIZE), Geo_Quad3D(MESHSCAPE_SIZE), Geo_Hex3D(MESHSCAPE_SIZE),
+        // Geo_TrigCone(MESHSCAPE_SIZE), Geo_QuadCone(MESHSCAPE_SIZE), Geo_HexCone(MESHSCAPE_SIZE),
+        Geo_TrigOrb(MESHSCAPE_SIZE), Geo_QuadOrb(MESHSCAPE_SIZE), Geo_HexOrb(MESHSCAPE_SIZE),
+        Geo_OctOrb(MESHSCAPE_SIZE), Geo_DecOrb(MESHSCAPE_SIZE), Geo_Orb(MESHSCAPE_SIZE),
+        Geo_Circle3D(MESHSCAPE_SIZE), Geo_CircleCone(MESHSCAPE_SIZE), Geo_Torus(MESHSCAPE_SIZE)
     };
 
-    std::vector<Meshscape_Construct> constructs;
     std::vector<Geo_Actor*> sculptActors;
+
+    std::vector<Meshscape_Construct> constructs;
+    std::vector<Geo_Grid> grids;
 } *Meshscape;

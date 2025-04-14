@@ -51,10 +51,10 @@ add_executable(Penscape demos/Penscape.cpp)
 add_executable(Kaleidoscope demos/Kaleidoscope.cpp)
 add_executable(Animatrix demos/Animatrix.cpp)
 add_executable(Meshscape demos/Meshscape.cpp)
-add_executable(Genesis demos/Genesis.cpp)
+# add_executable(Genesis demos/Genesis.cpp)
 
 list(APPEND demo_targets Hello Sandbox FirstPerson Molecular Meshform Penscape Kaleidoscope Entropy)
-list(APPEND demo_targets Animatrix Meshscape Genesis)
+list(APPEND demo_targets Animatrix Meshscape) # Genesis)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)
