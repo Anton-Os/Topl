@@ -42,7 +42,10 @@ void Meshscape_Demo::loop(double frameTime){
 }
 
 void Meshscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_Sculpt) sculptMode = paneIndex % MESHSCAPE_BRUSHES;
+    if(menu == PROGRAM_Sculpt){ 
+        sculptMode = paneIndex % MESHSCAPE_BRUSHES;
+        if(sculptActors.size() > 0) onAnyPress(MOUSE_RightBtn_Release, std::make_pair(0.0F, 0.0F)); // simulate right key press
+    }
     else if(menu == PROGRAM_Paint) for(unsigned b = 0; b < MESHSCAPE_BRUSHES; b++) grids[b].toggleShow(b == paneIndex);
 }
 
@@ -70,29 +73,32 @@ void Meshscape_Demo::updateConstruct(Geo_Construct* construct){
 }
 
 void Meshscape_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
-    static unsigned sculptActorCount = 0;
-    
+    Vec3f translation = Vec3f({ 
+        cursor.first + camera.getPos()->data[0], 
+        cursor.second + camera.getPos()->data[1], 
+        brushScroll + camera.getPos()->data[2] + 1.0F 
+    });
+
     if(event == MOUSE_LeftBtn_Release){
         sculptActors.push_back(new Geo_Actor(&brushMeshes[sculptMode]));
-        sculptActors.back()->setPos(Vec3f({ 
-            cursor.first + camera.getPos()->data[0], 
-            cursor.second + camera.getPos()->data[1], 
-            brushScroll + camera.getPos()->data[2] + 1.0F 
-        }));
-        sculptScene.addGeometry(std::string("sculptActor") + std::to_string(sculptActorCount + 1), sculptActors.back());
+        sculptActors.back()->setPos(translation);
+        sculptScene.addGeometry(std::string("sculptActor") + std::to_string(sculptActors.size()), sculptActors.back());
         _renderer->buildScene(&sculptScene); // new geometry added
-
-        sculptActorCount++;
-    } else if(event == MOUSE_RightBtn_Release){
+    } else if(event == MOUSE_RightBtn_Release && !sculptActors.empty()){
         // constructs.push_back(Meshscape_Construct(&brushMeshes[b], { Vec3f({ (b % 2 == 0)? 0.5F : -0.5F, ((b / 2) % 2 == 0)? 0.5F : -0.5F, 0.0F }) }));
-        // constructs.back().configure(&scene);
+        constructs.push_back(Meshscape_Construct(sculptActors));
+        constructs.back().shift(translation);
+        constructs.back().configure(&scene);
+        _renderer->buildScene(&scene);
+        // for(auto s = sculptActors.begin(); s != sculptActors.end(); s++) delete *s;
+        // sculptActors.clear();
     }
 }
 
 // Main
 
 MAIN_ENTRY {
-    Meshscape = new Meshscape_Demo(argv[0], BACKEND_GL4);
+    Meshscape = new Meshscape_Demo(argv[0], BACKEND_DX11);
     Meshscape->run();
 
     delete(Meshscape);

@@ -3,11 +3,9 @@
 void Animatrix_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Animatrix_Demo::onAnyKey, this, std::placeholders::_1));
 
-    isEnable_background = false;
-
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++){
         puppets[p].configure(&scene2D);
-        puppets[p].shift(Vec3f({ -(2.5F / ANIMATRIX_PUPPETS) + ((2.5F / ANIMATRIX_PUPPETS) * p), 0.0F, 0.0F }));
+        puppets[p].shift(Vec3f({ -(2.5F / ANIMATRIX_PUPPETS) + ((2.5F / ANIMATRIX_PUPPETS) * p), (p % 2 == 1)? -0.5F : 0.5F, 0.0F }));
         //for(unsigned a = 0; a < puppets[p].getActorCount(); a++)
         //    _texVShader.setParams(puppets[p].getGeoActor(a), { (unsigned)FLIP_None, 0.0F, Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 1.0F, 1.0F, 1.0F }) });
     }
@@ -34,22 +32,21 @@ void Animatrix_Demo::loop(double frameTime){
 
 void Animatrix_Demo::onAnyKey(char key){
     switch(tolower(key)){
-        case 'a': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ -1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 100.0F); break;
-        case 's': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, -1.0F, 0.0F }) * Topl_Program::speed * 100.0F); break;
-        case 'd': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 100.0F); break;
-        case 'w': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, 1.0F, 0.0F }) * Topl_Program::speed * 100.0F); break;
+        case 'd': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ -1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
+        case 'w': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, -1.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
+        case 'a': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
+        case 's': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, 1.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
     }
 }
 
 void Animatrix_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_AppBar)
-        switch(paneIndex){
-            // TODO: Set parameters appropriately
-        }
+    for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++)
+        if(menu == PROGRAM_AppBar)
+            for(unsigned b = 0; b < PUPPET_PARTS; b++) puppets[p].getPhysActor(b)->mass = 1.0 + (b * 3.0);
 }
 
 MAIN_ENTRY {
-    Animatrix = new Animatrix_Demo(argv[0], BACKEND_DX11);
+    Animatrix = new Animatrix_Demo(argv[0], BACKEND_GL4);
     Animatrix->run();
 
     delete(Animatrix);

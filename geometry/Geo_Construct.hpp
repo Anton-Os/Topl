@@ -34,6 +34,7 @@ public:
     }
     unsigned getActorCount() const { return _geoActors.size(); }
     Geo_Actor* getGeoActor(unsigned short a){ return &_geoActors[a]; }
+    Phys_Actor* getPhysActor(unsigned short a){ return &_physActors[a]; }
     void shift(Vec3f vec){ 
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
     }

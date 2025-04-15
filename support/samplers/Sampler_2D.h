@@ -83,7 +83,7 @@ struct Sampler_Mix : public Sampler_2D {
 struct Sampler_File : public Sampler_2D {
     Sampler_File(const std::string& filePath) : Sampler_2D(){ 
         putImg(loadImgOp(filePath.c_str()));
-        for(unsigned p = 0; p < image->width * image->height; p++) *(image->data + p) = swap_rb(*(image->data + p));
+        // for(unsigned p = 0; p < image->width * image->height; p++) *(image->data + p) = swap_rb(*(image->data + p));
     }
 };
 

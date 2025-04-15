@@ -18,12 +18,12 @@ private:
     std::string getPuppetImgPath(std::string appendageStr){ return std::string(IMAGES_DIR) + "characters/" + appendageStr; }
 
     std::string puppetAssetPaths[ANIMATRIX_PUPPETS][PUPPET_PARTS] = {
-        { getPuppetImgPath("Ghost-Torso.png"), getPuppetImgPath("Ghost-Head.png"),
-          getPuppetImgPath("Ghost-LeftArm.png"), getPuppetImgPath("Ghost-RightArm.png"),
-          getPuppetImgPath("Ghost-LeftLeg.png"), getPuppetImgPath("Ghost-RightLeg.png") },
         { getPuppetImgPath("Angel-Torso.png"), getPuppetImgPath("Angel-Head.png"),
           getPuppetImgPath("Angel-LeftWing.png"), getPuppetImgPath("Angel-RightWing.png"),
           getPuppetImgPath("Angel-LeftLeg.png"), getPuppetImgPath("Angel-RightLeg.png") },
+        { getPuppetImgPath("Ghost-Torso.png"), getPuppetImgPath("Ghost-Head.png"),
+          getPuppetImgPath("Ghost-LeftArm.png"), getPuppetImgPath("Ghost-RightArm.png"),
+          getPuppetImgPath("Ghost-LeftLeg.png"), getPuppetImgPath("Ghost-RightLeg.png") },
         { getPuppetImgPath("Demon-Torso.png"), getPuppetImgPath("Demon-Head.png"),
           getPuppetImgPath("Demon-LeftWing.png"), getPuppetImgPath("Demon-RightWing.png"),
           getPuppetImgPath("Demon-LeftLeg.png"), getPuppetImgPath("Demon-RightLeg.png") }
