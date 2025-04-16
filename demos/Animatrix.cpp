@@ -3,11 +3,13 @@
 void Animatrix_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Animatrix_Demo::onAnyKey, this, std::placeholders::_1));
 
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 5.0F).genProjMatrix());
+
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++){
         puppets[p].configure(&scene2D);
         puppets[p].shift(Vec3f({ -(2.5F / ANIMATRIX_PUPPETS) + ((2.5F / ANIMATRIX_PUPPETS) * p), (p % 2 == 1)? -0.5F : 0.5F, 0.0F }));
-        //for(unsigned a = 0; a < puppets[p].getActorCount(); a++)
-        //    _texVShader.setParams(puppets[p].getGeoActor(a), { (unsigned)FLIP_None, 0.0F, Vec3f({ 0.0F, 0.0F, 0.0F }), Vec3f({ 1.0F, 1.0F, 1.0F }) });
+        // anchors.push_back(Phys_Connector(Vec3f(0.0F, 0.0F, 0.0F), *puppets[p].getGeoActor(PUPPET_Body)->getPos()));
+        // scene2D.addAnchor(&anchors.back(), puppets[p].getGeoActor(PUPPET_Body)->getName(), nullptr);
     }
 
     _renderer->buildScene(&scene2D);
@@ -42,7 +44,9 @@ void Animatrix_Demo::onAnyKey(char key){
 void Animatrix_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++)
         if(menu == PROGRAM_AppBar)
-            for(unsigned b = 0; b < PUPPET_PARTS; b++) puppets[p].getPhysActor(b)->mass = 1.0 + (b * 3.0);
+            for(unsigned b = 0; b < PUPPET_PARTS; b++) puppets[p].getPhysActor(b)->mass = (PHYS_DEFAULT_MASS * (paneIndex + 1)) * 0.33F; // 1.0 + (paneIndex * 3.0);
+        else if(menu == PROGRAM_Sculpt)
+            for(unsigned l = 0; l < PUPPET_LINKS; l++) puppets[p].getPhysLink(l)->kVal = (PHYS_DEFAULT_K / 5) * (paneIndex + 1);
 }
 
 MAIN_ENTRY {

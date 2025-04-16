@@ -5,6 +5,7 @@
 #include "Geo_Construct.hpp"
 
 #define PUPPET_PARTS 6
+#define PUPPET_LINKS 10
 
 enum PUPPET_Part {
     PUPPET_Body = 0,

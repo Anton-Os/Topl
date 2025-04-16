@@ -15,7 +15,7 @@ struct Meshscape_Construct : public Geo_Construct {
     // Meshscape_Construct(Geo_Mesh* m, std::initializer_list<Vec3f> points) : Geo_Construct(MESHSCAPE_NAME), brushMesh(m){ 
     Meshscape_Construct(std::vector<Geo_Actor*>& actors) : Geo_Construct(MESHSCAPE_NAME), brushMesh(actors[0]->getMesh()){ // TODO: Switch to this!
         // for(auto p = points.begin(); p != points.end(); p++) brushPoints.push_back(*p);
-        for(auto a = actors.begin(); a != actors.end(); a++) brushPoints.push_back(*(*a)->getPos());
+        for(auto a = actors.begin(); a != actors.end(); a++) if((*a)->isShown) brushPoints.push_back(*(*a)->getPos());
         init(); 
     }
 

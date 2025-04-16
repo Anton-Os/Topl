@@ -36,6 +36,7 @@ void Meshscape_Demo::init(){
 
 void Meshscape_Demo::loop(double frameTime){
     if(mode > 0) for(unsigned g = 0; g < grids.size(); g++) updateConstruct(&grids[g]);
+    if(mode > 0) for(unsigned c = 0; c < constructs.size(); c++) updateConstruct(&constructs[c]);
 
     renderScene(&scene, nullptr, Topl_Program::shaderMode);
     if(!sculptActors.empty()) renderScene(&sculptScene, nullptr, Topl_Program::shaderMode);
@@ -50,7 +51,7 @@ void Meshscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 }
 
 void Meshscape_Demo::updateConstruct(Geo_Construct* construct){
-    Vec3f transformVec = (VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })) * Vec3f({ 0.01F, 0.01F, 0.01F });
+    Vec3f transformVec = (VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })) * Vec3f({ 0.05F, 0.05F, 0.05F });
 
     if(mode == 1 || mode == 2 || mode == 3)
         switch(mode){
@@ -87,10 +88,10 @@ void Meshscape_Demo::onAnyPress(enum MOUSE_Event event, std::pair<float, float> 
     } else if(event == MOUSE_RightBtn_Release && !sculptActors.empty()){
         // constructs.push_back(Meshscape_Construct(&brushMeshes[b], { Vec3f({ (b % 2 == 0)? 0.5F : -0.5F, ((b / 2) % 2 == 0)? 0.5F : -0.5F, 0.0F }) }));
         constructs.push_back(Meshscape_Construct(sculptActors));
-        constructs.back().shift(translation);
-        constructs.back().configure(&scene);
+        constructs[constructs.size() - 1].shift(translation);
+        constructs[constructs.size() - 1].configure(&scene);
         _renderer->buildScene(&scene);
-        // for(auto s = sculptActors.begin(); s != sculptActors.end(); s++) delete *s;
+        for(auto s = sculptActors.begin(); s != sculptActors.end(); s++) (*s)->isShown = false;
         // sculptActors.clear();
     }
 }
