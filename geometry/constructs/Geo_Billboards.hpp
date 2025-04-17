@@ -67,7 +67,7 @@ public:
 	void expandVert(std::pair<unsigned short, unsigned short> cell, unsigned short amount){
 		unsigned index = (cell.second * _params.x.first) + cell.first;
 		for(unsigned a = 0; a < _params.x.first * _params.y.first; a++) _geoActors[a].isShown = a != index - _params.x.first && a != index + _params.x.first;
-		_geoActors[index].updateSize({ 0.0F, (float)amount * 0.66F, 0.0F }); // TODO: Figure out exact proportions
+		_geoActors[index].updateSize({ 0.0F, (float)amount, 0.0F }); // TODO: Figure out exact proportions
 	}
 #ifdef RASTERON_H
 	Sampler_2D* getImgRoot(){ return getImgAt(_params.getGridSize()); }

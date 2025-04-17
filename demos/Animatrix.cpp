@@ -3,7 +3,7 @@
 void Animatrix_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Animatrix_Demo::onAnyKey, this, std::placeholders::_1));
 
-    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 5.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 4.0F).genProjMatrix());
 
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++){
         puppets[p].configure(&scene2D);
@@ -12,32 +12,38 @@ void Animatrix_Demo::init(){
         // scene2D.addAnchor(&anchors.back(), puppets[p].getGeoActor(PUPPET_Body)->getName(), nullptr);
     }
 
+    floor.setPos({ 0.0F, -1.5F, 0.0F });
+    floor.updateSize({ ANIMATRIX_FLOOR_SIZE, 0.0F, 0.0F });
+    for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].shift(Vec3f({ 
+        ((m % 2 == 0)? -ANIMATRIX_FLOOR_SIZE : ANIMATRIX_FLOOR_SIZE) * 0.25F, 0.0F, (((m / 2) % 2 == 0)? -ANIMATRIX_FLOOR_SIZE : ANIMATRIX_FLOOR_SIZE) * 0.25F
+    }));
+
+    scene3D.addGeometry(&floor);
+    for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].configure(&scene3D);
+
     _renderer->buildScene(&scene2D);
-    // _renderer->buildScene(&scene3D);
+    _renderer->buildScene(&scene3D);
 
     _renderer->texturizeScene(&scene2D);
-    // _renderer->texturizeScene(&scene3D);
+    _renderer->texturizeScene(&scene3D);
 
     shaderMode = 0;
 }
 
 void Animatrix_Demo::loop(double frameTime){
-    // if(_renderer->getFrameCount() > 300 && _renderer->getFrameCount() % 120 == 0)
-    //    for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++)
-    //        scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), (VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F})) * 50.0F);
-
     scene2D.resolvePhysics(FORCE_Directional);
+    for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].rotateAll({ 0.0F, 0.0F, (float)frameTime / 1000.0F });
 
-    renderScene(&scene2D, nullptr, Topl_Program::shaderMode); // _texPipeline, TEX_BASE); 
-    // renderScene(&scene3D, _materialPipeline, Topl_Program::mode); 
+    renderScene(&scene2D, _texPipeline, TEX_BASE); 
+    renderScene(&scene3D, _beamsPipeline, Topl_Program::shaderMode); 
 }
 
 void Animatrix_Demo::onAnyKey(char key){
     switch(tolower(key)){
-        case 'd': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ -1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
-        case 'w': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, -1.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
-        case 'a': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
-        case 's': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, 1.0F, 0.0F }) * Topl_Program::speed * 1000.0F); break;
+        case 'd': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 5000.0F); break;
+        case 'w': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, 1.0F, 0.0F }) * Topl_Program::speed * 5000.0F); break;
+        case 'a': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ -1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 5000.0F); break;
+        case 's': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 0.0F, -1.0F, 0.0F }) * Topl_Program::speed * 5000.0F); break;
     }
 }
 

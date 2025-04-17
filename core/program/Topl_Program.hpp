@@ -194,15 +194,16 @@ private:
 		Geo_Listboard billboard_paint = Geo_Listboard("program_paint_bar", 9, &scene);
 		Geo_Paneboard billboard_timeline = Geo_Paneboard("program_timeline", &scene);
 		Geo_Billboard billboard_media = Geo_Billboard("program_media", 3, 2, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("program_object", 6, 3, &scene);
+		Geo_Billboard billboard_object = Geo_Billboard("program_object", 5, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
 #ifdef RASTERON_H
 		std::string fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf";
 		Sampler_2D textures[8]; // for switching textures
 		Sampler_Button button = Sampler_Button();
-        Sampler_Dial dials[3] = { Sampler_Dial(8), Sampler_Dial(12), Sampler_Dial(16) };
+        Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(4), Sampler_Dial(4) };
         Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, (unsigned)TIMELINE_END); // sliders[1] = { Sampler_Slider(2) };
+		Sampler_Slider sizeSliders[3] = { Sampler_Slider(3), Sampler_Slider(3), Sampler_Slider(3) };
 		// std::pair<Sampler_Button, Sampler_Button> plusMinusButtons = std::make_pair(Sampler_Button("add-square"), Sampler_Button("subtract-square"));
 		Sampler_Button numberButtons[PROGRAM_SUBMENUS] = {
 			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
@@ -229,6 +230,7 @@ private:
 		Sampler_Button mediaButtons[3] = { Sampler_Button("controls-forward"), Sampler_Button("controls-next"), Sampler_Button("controls-rewind") };
 		// Sampler_Label timeLabel = Sampler_Label({ fontPath.c_str(), "0:00:00", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label recordLabel = Sampler_Label({ fontPath.c_str(), "RECORD", 0xFF111111, 0xFFEEEEEE });
+		Sampler_Label axisLabels[3] = { Sampler_Label({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Y |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Z |", 0xFF333333, 0xFFEEEEEE }) };
 		Sampler_Button plusButton = Sampler_Button("add-square"), minusButton = Sampler_Button("subtract-square");
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif

@@ -345,7 +345,6 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_sculpt.shift({ -0.965F, 0.0F, 0.0F });
     _overlays.billboard_paint.scale({ 0.12F, 1.15F, 1.0F });
     _overlays.billboard_paint.shift({ 0.965F, 0.0F, 0.0F });
-
     _overlays.billboard_media.shift({ -0.278F, -0.845F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
@@ -354,13 +353,22 @@ void Topl_Program::createOverlays(double size){
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
         _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);
         _overlays.billboard_camera.overlay(b, (b > 2 && b < 6)? (Sampler_UI*)&_overlays.cameraButtons[5 - b] : (b < 3)? (Sampler_UI*)&_overlays.plusButton : (Sampler_UI*)&_overlays.minusButton);
-        if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b > 2)? (Sampler_UI*)&_overlays.mediaButtons[b - 3] : (Sampler_UI*)&_overlays.mediaLabels[b]);
         _overlays.billboard_sculpt.overlay(b, &_overlays.sculptButtons[b]);
         _overlays.billboard_paint.overlay(b, &_overlays.paintButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.pipelineButtons[b]);
+        if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b > 2)? (Sampler_UI*)&_overlays.mediaButtons[b - 3] : (Sampler_UI*)&_overlays.mediaLabels[b]);
     }
-    for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
-    
+    for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) // _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
+        switch(14 - b){
+            case 0: case 5: case 10: _overlays.billboard_object.overlay(b, &_overlays.axisLabels[b / 5]); break;
+            case 1: case 6: case 11: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
+            case 2: case 7: case 12: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
+            case 3: case 8: case 13: _overlays.billboard_object.overlay(b, &_overlays.dials[0]); break;
+            case 4: case 9: case 14: _overlays.billboard_object.overlay(b, &_overlays.sizeSliders[0]); break;
+        }
+    // _overlays.billboard_object.expandHorz(std::make_pair(0, 1), 1);
+    // _texVShader.setParams(_overlays.billboard_object.getGeoActor(5), { 1, 0.0, VEC_3F_ZERO, VEC_3F_ONES });
+
     for(unsigned short o = 0; o < PROGRAM_BILLBOARDS; o++){
         if(o < PROGRAM_Timeline) _overlays.billboards[o]->scale({ ((o != PROGRAM_Object)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
         if(o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline)? 0.015F : 0.045F, 0.0F });
