@@ -261,9 +261,9 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     if(isEnable_background) createBackground(&_background.image);
     if(isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
-    // _editor.nameImg.setTextImage({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
-    // _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
-    //_renderer->texturizeScene(&_editor.scene);
+    _editor.nameImg = Sampler_Text({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
+    _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
+    _renderer->texturizeScene(&_editor.scene);
 
     ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
 	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);

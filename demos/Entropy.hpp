@@ -60,12 +60,15 @@ struct Entropy_Demo : public Topl_Program {
             }
 
             surfaceMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            surfaceMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
             surfaceExt_actors[a].copyParams(surface_actors[a]);
             coneMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            coneMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             conicExt_actors[a] = Geo_Actor(coneMeshes.back());
             conicExt_actors[a].copyParams(conic_actors[a]);
             volumeMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            volumeMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             volumeExt_actors[a] = Geo_Actor(volumeMeshes.back());
             volumeExt_actors[a].copyParams(volume_actors[a]);
         }

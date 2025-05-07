@@ -31,10 +31,10 @@ private:
     Topl_Scene scene = PROGRAM_SCENE;
 
     Geo_Mesh orbs[9] = {
-        Geo_Orb(GENESIS_SIZE), Geo_Orb(GENESIS_SIZE / 2),
-        Geo_HexOrb(GENESIS_SIZE), Geo_HexOrb(GENESIS_SIZE / 2),
-        Geo_OctOrb(GENESIS_SIZE), Geo_OctOrb(GENESIS_SIZE / 2),
-        Geo_DecOrb(GENESIS_SIZE), Geo_DecOrb(GENESIS_SIZE / 2),
+        Geo_Orb(GENESIS_SIZE), Geo_Orb(GENESIS_SIZE * 2),
+        Geo_HexOrb(GENESIS_SIZE), Geo_HexOrb(GENESIS_SIZE * 2),
+        Geo_OctOrb(GENESIS_SIZE), Geo_OctOrb(GENESIS_SIZE * 2),
+        Geo_DecOrb(GENESIS_SIZE), Geo_DecOrb(GENESIS_SIZE * 2),
         Geo_Torus(GENESIS_SIZE)
     };
 

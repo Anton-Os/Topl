@@ -83,6 +83,7 @@ struct Penscape_Demo : public Topl_Program {
     Geo_Actor brushes3D[3][4];
 private:
     void onAnyKey(char key);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = PROGRAM_SCENE;
 } *_DEMO;

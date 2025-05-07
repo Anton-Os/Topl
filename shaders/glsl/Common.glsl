@@ -1,3 +1,5 @@
+// #extension GL_EXT_debug_printf
+
 #ifdef INCLUDE_BLOCK
 layout(std140, binding = 0) uniform Block {
 	vec3 offset;

@@ -69,6 +69,7 @@ struct Meshform_Demo : public Topl_Program {
 #endif
 private:
     void onAnyKey(char key);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 #ifdef RASTERON_H
     void genTex3D(unsigned short mode, unsigned color1, unsigned color2);
 #endif

@@ -31,6 +31,10 @@ void Penscape_Demo::onAnyKey(char key){
     }
 }
 
+void Penscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
+    // TODO: Add mesh deformations
+}
+
 void Penscape_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Penscape_Demo::onAnyKey, this, std::placeholders::_1));
 

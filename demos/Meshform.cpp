@@ -89,6 +89,10 @@ void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
     _texVShader.setTexScale(texScale);
 }
 
+void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
+    // TODO: Add mesh deformations
+}
+
 void Meshform_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
