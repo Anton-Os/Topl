@@ -75,7 +75,7 @@ private:
 #endif
     void genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2);
 
-    void renderInscribed(Geo_Actor* actor, unsigned short count);
+    void renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count);
 
     Topl_Scene scene = PROGRAM_SCENE;
 

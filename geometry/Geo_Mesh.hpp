@@ -27,6 +27,8 @@ struct Shape3D {
 
 enum DRAW_Mode { DRAW_Default = 0, DRAW_Points = 1, DRAW_Lines = 2, DRAW_Triangles = 3, DRAW_Fan = 4, DRAW_Strip = 5, DRAW_Patch = 6 };
 
+enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shear = 4 };
+
 // Mesh Object
 
 class Geo_Mesh {

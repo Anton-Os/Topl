@@ -73,19 +73,32 @@ void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3
     _renderer->buildScene(&scene);
 }
 
-void Meshform_Demo::renderInscribed(Geo_Actor* actor, unsigned short count){
-    Vec3f size = *(actor->getSize());
+void Meshform_Demo::renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count){
+    Vec3f transform = VEC_3F_RAND; // = *(actor->getSize());
+    switch(type){
+        case TFORM_Shift: transform = *(actor->getPos()); break;
+        case TFORM_Rotate: transform = *(actor->getRot()); break;
+        case TFORM_Scale: transform = *(actor->getSize()); break;
+    }
     Vec3f texScale = Vec3f({ 1.0F, 1.0F, 1.0F });
 
     for(unsigned c = 0; c < count; c++){ // inscribed objects
         float inc = 1.0F - ((1.0F / count) * (c + 1));
-        actor->setSize(size * inc);
+        switch(type){
+            case TFORM_Shift: actor->setPos(transform * inc); break;
+            case TFORM_Rotate: actor->setRot(transform * inc); break;
+            case TFORM_Scale: actor->setSize(transform * inc); break;
+        }
         _texVShader.setTexScale(texScale * inc);
         _renderer->update(actor);
         _renderer->draw(actor);
     }
 
-    actor->setSize(size); 
+    switch(type){
+        case TFORM_Shift: actor->setPos(transform); break;
+        case TFORM_Rotate: actor->setRot(transform); break;
+        case TFORM_Scale: actor->setSize(transform); break;
+    }
     _texVShader.setTexScale(texScale);
 }
 
@@ -143,10 +156,10 @@ void Meshform_Demo::loop(double frameTime){
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 
-    // renderInscribed(&torusActor, 3);
-    /* for(unsigned a = 0; a < 4; a++)
+    renderRecursive(&torusActor, TFORM_Shift, 8);
+    for(unsigned a = 0; a < 4; a++)
         for(unsigned o = 0; o < 3; o++) 
-            if(orbActors[o][a].isShown) renderInscribed(&orbActors[o][a], 3); */
+            if(orbActors[o][a].isShown) renderRecursive(&orbActors[o][a], TFORM_Rotate, 3);
 }
 
 MAIN_ENTRY {

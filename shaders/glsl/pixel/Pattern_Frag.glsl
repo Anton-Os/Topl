@@ -45,7 +45,7 @@ vec3 coordPattern(vec3 ctrlPoint, vec3 coords){
 	float dist = length(ctrlPoint - coords);
 	float size = abs(mode % 100) * PATTERN_SIZE;
 
-	return vec3(dist * abs(ctrlPoint.r), dist  * abs(ctrlPoint.g), dist * abs(ctrlPoint.b)) * size;
+	return vec3(dist * abs(ctrlPoints[ctrl_index].r), dist  * abs(ctrlPoints[ctrl_index].g), dist * abs(ctrlPoints[ctrl_index].b)) * size;
 }
 
 vec3 trigPattern(vec3 ctrlPoint, vec3 coords, vec3 color){
@@ -55,7 +55,7 @@ vec3 trigPattern(vec3 ctrlPoint, vec3 coords, vec3 color){
 	ctrlPoint += vec3(sin(float(timeElapse) / 1000), cos(float(timeElapse) / 1000), tan(float(timeElapse) / 1000)) * size;
 	// else ctrlPoint *= (float(timeElapse) / 1000) * size;
 
-	ctrlPoint = vec3(sin(ctrlPoint.x * abs(mode % 100)), cos(ctrlPoint.y * abs(mode % 100)), tan(ctrlPoint.z * abs(mode % 100))) * dist;
+	ctrlPoint = vec3(sin(ctrlPoints[ctrl_index].x * abs(mode % 100)), cos(ctrlPoints[ctrl_index].y * abs(mode % 100)), tan(ctrlPoints[ctrl_index].z * abs(mode % 100))) * dist;
 
 	return ctrlPoint / color;
 }
@@ -87,6 +87,31 @@ vec3 neonPattern(uint ctrlIdx, vec3 coords){
 	return relCoord * vec3(r, g, b) * (1.0 / (100 - abs(mode % 100)));
 }
 
+vec3 crypticPattern(uint ctrlIdx, vec3 coords){
+	vec3 coord1 = ctrlPoints[ctrlIdx] - coords;
+	vec3 coord2 = ctrlPoints[(ctrlIdx + 1) % 8] - coords;
+	vec3 coord3 = ctrlPoints[abs(ctrlIdx - 1)] - coords;
+
+	return vec3(distance(coord1, coord2), distance(coord2, coord3), distance(coord1, coord3));
+}
+
+vec3 farPattern(uint ctrlIdx, vec3 coords){
+	vec3 nearestPoint = ctrlPoints[ctrlIdx] - coords;
+	vec3 farthestPoint = ctrlPoints[0] - coords;
+	for(uint c = 1; c < 8; c++) 
+		if(c != ctrlIdx && distance(ctrlPoints[c], nearestPoint) > distance(farthestPoint, nearestPoint))
+			farthestPoint = ctrlPoints[c];
+
+	return vec3(abs(farthestPoint.x - nearestPoint.x), abs(farthestPoint.y - nearestPoint.y), abs(farthestPoint.z - nearestPoint.z));
+}
+
+vec3 timePattern(vec3 ctrlPoint, vec3 coords){
+	vec3 relCoord = ctrlPoint - coords;
+	float timeSeq = float((timeElapse / 2500) - floor(timeElapse / 2500)) * 5;
+
+	return vec3(abs(sin(relCoord.x * timeSeq)), abs(cos(relCoord.y * timeSeq)), abs(tan(relCoord.z * timeSeq)));
+}
+
 // Main
 
 void main() {
@@ -101,6 +126,12 @@ void main() {
 	else if(abs(mode) >= 100 && abs(mode) < 200) color_final = vec4(trigPattern(nearestPoint, target, vec3(vertex_color)), 1.0);
 	else if(abs(mode) >= 200 && abs(mode) < 300) color_final = vec4(centerPattern(nearestPoint, target), 1.0);
 	else if(abs(mode) >= 300 && abs(mode) < 400) color_final = vec4(proximaPattern(ctrl_index, target), 1.0);  
-	else if(abs(mode) >= 400 && abs(mode) < 500) color_final = vec4(neonPattern(ctrl_index, target), 1.0);  
-	else color_final = vec4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
+	else if(abs(mode) >= 400 && abs(mode) < 500) color_final = vec4(neonPattern(ctrl_index, target), 1.0);
+	else if(abs(mode) >= 500 && abs(mode) < 600) color_final = vec4(crypticPattern(ctrl_index, target), 1.0);
+	else if(abs(mode) >= 600 && abs(mode) < 700) color_final = vec4(farPattern(ctrl_index, target), 1.0); 
+	else if(abs(mode) >= 700 && abs(mode) < 800) color_final = vec4(timePattern(relCoord, target), 1.0); 
+	else if(abs(mode) >= 800 && abs(mode) < 900) color_final = vec4(sin(ctrlPoints[ctrl_index].x - target.y), cos(abs(ctrlPoints[ctrl_index].y * target.x)), tan(pow(ctrlPoints[ctrl_index].z, target.z)), 1.0);
+	// else color_final = vec4(abs(nearestPoint.x - target.x), abs(nearestPoint.y - target.y), abs(nearestPoint.z - target.z), 1.0);
+	else color_final = vec4(abs(nearestPoint.x - target.x) * sin(float(timeElapse) / 1000), abs(nearestPoint.y - target.y) * cos(float(timeElapse) / 2500), abs(nearestPoint.z - target.z) * tan(float(timeElapse) / 3300), 1.0);
+	// else color_final = vec4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }

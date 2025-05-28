@@ -83,6 +83,32 @@ float4 neonPattern(uint ctrlIdx, float3 coords){
 	return float4((relCoord * float3(r, g, b)) / abs(mode % 100), 1.0);
 }
 
+float4 gradPattern(uint ctrlIdx, float3 coords){
+	float3 relCoord = ctrlPoints[ctrlIdx] - coords;
+	for(uint c = 0; c < 8; c++) if(c != ctrlIdx) relCoord += (ctrlPoints[c] - coords) * abs(cos(c));
+
+	// return float4(relCoord * ((timeElapse * 5) - floor(timeElapse * 5)), 1.0);
+	return float4(relCoord, 1.0);
+}
+
+float4 crossPattern(uint ctrlIdx, float3 coords){
+	float3 coord1 = ctrlPoints[ctrlIdx] - coords;
+	float3 coord2 = ctrlPoints[8 - ctrlIdx - 1] + coords;
+
+	return float4(cross(coord1, coord2), 1.0);
+}
+
+float4 flowPattern(uint ctrlIdx, float3 coords){
+	float3 nearestPoint = ctrlPoints[ctrlIdx] - coords;
+	float3 secondPoint = float3(0.0, 0.0, 0.0);
+	for(uint c = 0; c < 8; c++)
+		if(c != ctrlIdx && distance(ctrlPoints[c] - coords, nearestPoint) < distance(secondPoint, nearestPoint))
+			secondPoint = ctrlPoints[c] - coords;
+
+	if(distance(nearestPoint, secondPoint) < 0.1) return float4(coords, 1.0);
+	else return float4((nearestPoint - secondPoint) * distance(nearestPoint, coords) * 5, 1.0);
+}
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -93,12 +119,20 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	else target = input.pos;
 	
 	float3 relCoord = input.nearestPoint - target;
+	int nearestIdx = -1;
+	for(uint c = 0; c < 8; c++) 
+		if(ctrlPoints[c].x == input.nearestPoint.x && ctrlPoints[c].y == input.nearestPoint.y && ctrlPoints[c].z == input.nearestPoint.z) 
+			nearestIdx = c;
 
 	if(abs(mode) > 0 && abs(mode) < 100) return  coordPattern(input.nearestPoint, target);
 	else if(abs(mode) >= 100 && abs(mode) < 200) return trigPattern(input.nearestPoint, target, input.vertex_color);
 	else if(abs(mode) >= 200 && abs(mode) < 300) return centerPattern(input.nearestPoint, target);
 	else if(abs(mode) >= 300 && abs(mode) < 400) return proximaPattern(input.nearestPoint, target);
-	else if(abs(mode) >= 400 && abs(mode) < 500) return neonPattern(input.nearestPoint, target);
+	else if(abs(mode) >= 400 && abs(mode) < 500 && nearestIdx > -1) return neonPattern(nearestIdx, target);
+	else if(abs(mode) >= 500 && abs(mode) < 600 && nearestIdx > -1) return gradPattern(nearestIdx, target);
+	else if(abs(mode) >= 600 && abs(mode) < 700 && nearestIdx > -1) return crossPattern(nearestIdx, target);
+	else if(abs(mode) >= 700 && abs(mode) < 800 && nearestIdx > -1) return flowPattern(nearestIdx, target);
+	else if(abs(mode) >= 800 && abs(mode) < 900) return float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
 	else return float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }
 

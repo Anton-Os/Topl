@@ -28,6 +28,18 @@ Geo_Vertex distanceTform(const Geo_Vertex& vertex, unsigned primID, unsigned inv
     // return (primID != 0)? vertex : Geo_Vertex(midpoint.position);
 } */
 
+Vec3f getRandTransform(float amount){
+    switch(rand() % 6){
+        case 0: return Vec3f({ amount, 0.0F, 0.0F });
+        case 1: return Vec3f({ -amount, 0.0F, 0.0F });
+        case 2: return Vec3f({ 0.0F, amount, 0.0F });
+        case 3: return Vec3f({ 0.0F, -amount, 0.0F });
+        case 4: return Vec3f({ 0.0F, 0.0F, amount });
+        case 5: return Vec3f({ 0.0F, 0.0F, -amount });
+        default: return VEC_3F_RAND;
+    }
+}
+
 struct Penscape_Demo : public Topl_Program {
     Penscape_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Penscape", backend){
         trigMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
@@ -37,17 +49,17 @@ struct Penscape_Demo : public Topl_Program {
 
         for(unsigned b = 0; b < BRUSH3D_SEGMENTS; b++)
             for(unsigned a = 0; a < 3 * 2; a++){
-                trigMeshBrushes[a % 3]->shift({ 0.0F, 0.0F, BRUSH3D_SHIFT});
-                trigMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
+                trigMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
+                trigMeshBrushes[a % 3]->rotate(getRandTransform(MATH_PI * 2)); // { BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
                 trigMeshes[a % 3]->extend(*trigMeshBrushes[a % 3]);
-                quadMeshBrushes[a % 3]->shift({ 0.0F, 0.0F, BRUSH3D_SHIFT});
-                quadMeshBrushes[a % 3]->rotate({ -BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
+                quadMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
+                quadMeshBrushes[a % 3]->rotate(getRandTransform(MATH_PI * 2)); // { -BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
                 quadMeshes[a % 3]->extend(*quadMeshBrushes[a % 3]);
-                hexMeshBrushes[a % 3]->shift({ 0.0F, 0.0F, BRUSH3D_SHIFT});
-                hexMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, -BRUSH3D_ROT, BRUSH3D_ROT });
+                hexMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
+                hexMeshBrushes[a % 3]->rotate(getRandTransform(MATH_PI * 2)); // { BRUSH3D_ROT, -BRUSH3D_ROT, BRUSH3D_ROT });
                 hexMeshes[a % 3]->extend(*hexMeshBrushes[a % 3]);
-                circleMeshBrushes[a % 3]->shift({ 0.0F, 0.0F, BRUSH3D_SHIFT});
-                circleMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, BRUSH3D_ROT, -BRUSH3D_ROT });
+                circleMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
+                circleMeshBrushes[a % 3]->rotate(getRandTransform(MATH_PI * 2)); // { BRUSH3D_ROT, BRUSH3D_ROT, -BRUSH3D_ROT });
                 circleMeshes[a % 3]->extend(*circleMeshBrushes[a % 3]);
             }
     }
