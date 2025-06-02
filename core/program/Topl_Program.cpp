@@ -363,8 +363,8 @@ void Topl_Program::createOverlays(double size){
             case 0: case 5: case 10: _overlays.billboard_object.overlay(b, &_overlays.axisLabels[b / 5]); break;
             case 1: case 6: case 11: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
             case 2: case 7: case 12: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
-            case 3: case 8: case 13: _overlays.billboard_object.overlay(b, &_overlays.dials[0]); break;
-            case 4: case 9: case 14: _overlays.billboard_object.overlay(b, &_overlays.sizeSliders[0]); break;
+            case 3: case 8: case 13: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
+            case 4: case 9: case 14: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
         }
     // _overlays.billboard_object.expandHorz(std::make_pair(0, 1), 1);
     // _texVShader.setParams(_overlays.billboard_object.getGeoActor(5), { 1, 0.0, VEC_3F_ZERO, VEC_3F_ONES });
