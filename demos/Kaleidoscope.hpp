@@ -56,8 +56,9 @@ struct Kaleidoscope_Demo : public Topl_Program {
         Kaleidoscope_Construct(CIRCLE_SEGMENTS, KALEIDOSCOPE_TESS),
         Kaleidoscope_Construct(std::make_pair(3, CIRCLE_SEGMENTS), -KALEIDOSCOPE_TESS)
     };
-
+#ifdef RASTERON_H
     Sampler_3D volumeImg = Sampler_3D(KALEIDOSCOPE_SLICES);
+#endif
 private:
     void onAnyKey(char key);
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);

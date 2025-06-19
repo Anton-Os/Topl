@@ -315,7 +315,7 @@ void Topl_Program::setPipelines(){
     _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
     _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
     _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
-    Topl_Factory::switchPipeline(_renderer, _texPipeline); // _texPipeline);
+    Topl_Factory::switchPipeline(_renderer, _flatPipeline); // _texPipeline);
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
@@ -348,7 +348,7 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_media.shift({ -0.278F, -0.845F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
-
+#ifdef RASTERON_H
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
         _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);
@@ -366,6 +366,7 @@ void Topl_Program::createOverlays(double size){
             case 3: case 8: case 13: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
             case 4: case 9: case 14: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
         }
+#endif
     // _overlays.billboard_object.expandHorz(std::make_pair(0, 1), 1);
     // _texVShader.setParams(_overlays.billboard_object.getGeoActor(5), { 1, 0.0, VEC_3F_ZERO, VEC_3F_ONES });
 

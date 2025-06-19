@@ -1,6 +1,51 @@
 #include "Meshform.hpp"
 
-static bool isRotating = false;
+static bool isRotating = true;
+
+// Callbacks
+
+Vec3f rigidTForm(Vec3f target, Vec3f amount){
+    static unsigned index = 0; 
+    index++;
+    return (index % 6 * (MESHFORM_TESS + 1) == 0)? target * amount : target;
+}
+
+Vec3f curveTForm(Vec3f target, Vec3f amount){
+    static unsigned index = 0; 
+    index++;
+
+    return Vec3f({
+        target.data[0] * (1.0F + (sinf(fabs(1.0F - amount.data[0]) * index) * MESHFORM_CURVE)),
+        target.data[1] * (1.0F + (sinf(fabs(1.0F - amount.data[1]) * index) * MESHFORM_CURVE)),
+        target.data[2] * (1.0F + (sinf(fabs(1.0F - amount.data[2]) * index) * MESHFORM_CURVE))
+    });
+}
+
+Vec3f pullTForm(Vec3f target, Vec3f amount){
+    Vec3f diffVec = amount - target;
+
+    return (diffVec.len() < MESHFORM_SIZE * 3)? target + (amount * 0.33) : target;
+}
+
+Geo_Vertex vertexTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F });
+    return Geo_Vertex(vertex.position + randVec); // test
+    // return (primID == 0)? vertex : Geo_Vertex(vertex.position * (primID % 3));
+}
+
+Geo_Vertex distanceTform(const Geo_Vertex& vertex, unsigned primID, unsigned invocation){
+    float dist = vertex.position.len();
+    return Geo_Vertex(vertex.position * dist); // test
+    // return (primID == 0)? vertex : Geo_Vertex(vertex.position * (primID % 3));
+}
+
+Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, unsigned primID, unsigned invocation){
+    Vec3f randVec = Vec3f({ (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F, (((float)rand() / (float)RAND_MAX) - 1.0F) * 0.1F });
+    return Geo_Vertex(midpoint.position - randVec); // test
+    // return (primID != 0)? vertex : Geo_Vertex(midpoint.position);
+}
+
+// Class Functions
 
 void Meshform_Demo::onAnyKey(char key){
     static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
@@ -9,15 +54,17 @@ void Meshform_Demo::onAnyKey(char key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
-        case 'j': genShapes(MESHFORM_TESS + 1, std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
+        /* case 'j': genShapes(MESHFORM_TESS + 1, std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
         case 'k': genShapes(MESHFORM_TESS + 1, std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
-        case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break;
+        case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break; */
+#ifdef RASTERON_H
         case 'b': genTex3D(MESHFORM_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
         case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
+#endif
     }
 
-    // if(isspace(key)) isRotating = !isRotating;
+    if(isspace(key)) isRotating = !isRotating;
 }
 
 #ifdef RASTERON_H
@@ -48,29 +95,26 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 }
 #endif
 
-void Meshform_Demo::genShapes(unsigned tessCount, std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
-    geometryThread = new std::thread([this](unsigned tess, std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2, 
-        Geo_TrigOrb* tOrbs[3], Geo_QuadOrb* qOrbs[3], Geo_HexOrb* hOrbs[3], Geo_DecOrb* dOrbs[3]){
-        
-        for(unsigned o = 0; o < 3; o++){ // iterate through all shapes
-            if(tess > 0){
-                tOrbs[o]->tesselate(tess);
-                qOrbs[o]->tesselate(tess);
-                hOrbs[o]->tesselate(tess);
-                dOrbs[o]->tesselate(tess);
-            }
-            if(tform1.first != nullptr && tform2.first != nullptr && o > 0){
-                tOrbs[o]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
-                qOrbs[o]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
-                hOrbs[o]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
-                dOrbs[o]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
-            }
-        }
-    }, tessCount, transform1, transform2, trigOrbs, quadOrbs, hexOrbs, decOrbs);
-    geometryThread->join(); // TODO: Perform blocking call
-    delete geometryThread;
+void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
+    geometryThread = new std::thread([this](Geo_Orb* orbMehes[4][3], std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2){
+            if(tform1.first != nullptr && tform2.first != nullptr)
+                for(unsigned o = 0; o < 4; o++)
+                    for(unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
+                        orbs[o][m]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
+        }, orbs, transform1, transform2
+    );
+    std::cout << "Geometry rebuilding" << std::endl;
+    rebuildGeometry(geometryThread);
+}
 
-    _renderer->buildScene(&scene);
+void Meshform_Demo::rebuildGeometry(std::thread* thread){
+    if(thread != nullptr){
+        thread->join(); // TODO: Perform blocking call
+        delete thread;
+
+        std::cout << "Building scene" << std::endl;
+        _renderer->buildScene(&scene);
+    }
 }
 
 void Meshform_Demo::renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count){
@@ -103,7 +147,21 @@ void Meshform_Demo::renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned 
 }
 
 void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    // TODO: Add mesh deformations
+    if(menu == PROGRAM_AppBar){
+        Vec3f amount = Vec3f({ (paneIndex % 3 == 0)? MESHFORM_AMOUNT : 0.0F, (paneIndex % 3 == 1)? MESHFORM_AMOUNT : 0.0F, (paneIndex % 3 == 2)? MESHFORM_AMOUNT : 0.0F, });
+
+        switch(paneIndex){
+            case 0: case 1: case 2: 
+                genShapes(std::make_pair(rigidTForm, VEC_3F_ONES + amount), std::make_pair(rigidTForm, VEC_3F_ONES - amount));
+            break; // Tesselation & Built-In Functions
+            case 3: case 4: case 5: break; 
+                genShapes(std::make_pair(curveTForm, amount), std::make_pair(curveTForm, amount * -1.0F));
+            break;    // Basic Callback Functions
+            case 6: case 7: case 8: 
+                genShapes(std::make_pair(pullTForm, amount * 0.33F), std::make_pair(pullTForm, amount * 3.0F));
+            break; // Advanced Callback Functions
+        };
+    }
 }
 
 void Meshform_Demo::init(){
@@ -121,11 +179,12 @@ void Meshform_Demo::init(){
         orbActors[m][3].setPos({ -0.5F, 0.5F, 0.0F });
         scene.addGeometry("decOrb" + std::to_string(m), &orbActors[m][3]);
         for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == MESHFORM_INDEX;
-
+#ifdef RASTERON_H
         scene.addVolumeTex("trigOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("quadOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
+#endif
     }
 
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
@@ -162,7 +221,7 @@ void Meshform_Demo::loop(double frameTime){
             if(orbActors[o][a].isShown) renderRecursive(&orbActors[o][a], TFORM_Rotate, 3);
 }
 
-MAIN_ENTRY {
+MAIN_ENTRY{
     _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
     _DEMO->run();
 

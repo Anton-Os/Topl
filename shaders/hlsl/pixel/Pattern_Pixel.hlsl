@@ -100,7 +100,7 @@ float4 crossPattern(uint ctrlIdx, float3 coords){
 
 float4 flowPattern(uint ctrlIdx, float3 coords){
 	float3 nearestPoint = ctrlPoints[ctrlIdx] - coords;
-	float3 secondPoint = float3(0.0, 0.0, 0.0);
+	float3 secondPoint = float3(10000.0, 10000.0, 10000.0);
 	for(uint c = 0; c < 8; c++)
 		if(c != ctrlIdx && distance(ctrlPoints[c] - coords, nearestPoint) < distance(secondPoint, nearestPoint))
 			secondPoint = ctrlPoints[c] - coords;
@@ -120,7 +120,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float3 target;
 	if(mode >= 0) target = input.vertex_pos;
-	else target = input.pos;
+	else target = input.vertex_color;
 	
 	float3 nearestPoint = ctrlPoints[input.ctrl_index];
 

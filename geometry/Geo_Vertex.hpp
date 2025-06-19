@@ -66,9 +66,11 @@ struct Geo_Vertex : public Geo_Pos {
         else return Vec3f({ 1.0F - attenuation, 1.0F - attenuation, 1.0F - attenuation }); // white
     }
 
+    // unsigned segment = 0; // gets recorded when mesh is composite
 	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 }); // indicates texture mapping
     Vec3f normal = Vec3f({ 0.0, 0.0, -1.0 }); // indicates face direction
     Vec3f color = Vec3f({ 1.0, 1.0, 1.0 }); // indicates vertex number
+    // Vec3f tangent = VEC_3F_ZERO; // gets modified based on the previous vertex
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;

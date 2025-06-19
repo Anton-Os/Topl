@@ -54,9 +54,11 @@ void Topl_Program::updateTimelines(){
     for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
     for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
+#ifdef RASTERON_H
     if(isEnable_overlays){
         double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
         if(secsElapsed < TIMELINE_END) _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
+
         if(_renderer->getFrameCount() % 60 == 0){ 
             /* std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
             _overlays.mediaLabels[2].setText({ _overlays.fontPath.c_str(), minStr.c_str(), 0xFF111111, 0xFFEEEEEE });
@@ -66,6 +68,7 @@ void Topl_Program::updateTimelines(){
             _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
         }
     }
+#endif
 }
 
 void Topl_Program::postloop(){
@@ -75,10 +78,11 @@ void Topl_Program::postloop(){
         _editor.actor.setSize(*Topl_Program::lastPickerObj->getSize() * 0.75F);
         _editor.mesh.drawMode = DRAW_Lines;
         _editor.actor.isShown = (!_editor.actor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
-        _editor.nameActor.isShown = (!_editor.nameActor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
-        _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F} )) * *Topl_Program::lastPickerObj->getSize());
-        _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
 #ifdef RASTERON_H
+        _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F })) * *Topl_Program::lastPickerObj->getSize());
+        _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
+        _editor.nameActor.isShown = (!_editor.nameActor.isShown) ? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
+
         if(Platform::mouseControl.getIsMouseDown().second){
             std::string name = "| " + Topl_Program::lastPickerObj->getName() + " |";
             Rasteron_Text text = { _editor.fontPath.c_str(), name.c_str(), 0xFF111111, 0xFFEEEEEE };
@@ -121,7 +125,9 @@ void Topl_Program::run(){
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
             if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->setDrawMode(DRAW_Triangles);
+#ifdef RASTERON_H
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
+#endif
             _renderer->present(); // switches front and back buffer
             if(isEnable_screencap) postloop();
             Topl_Factory::switchPipeline(_renderer, _savedPipeline);

@@ -114,11 +114,22 @@ vec3 crypticPattern(uint ctrlIdx, vec3 coords){
 	return vec3(pow(distance(coord1, coords), m), pow(distance(coord2, coords), m), pow(distance(coord3, coords), m));
 }
 
+vec3 alikePattern(uint ctrlIdx, vec3 coords){
+	vec3 secondPoint = vec3(10000.0, 10000.0, 10000.0);
+	for(uint c = 0; c < 8; c++)
+		if(c != ctrlIdx && distance(coords, ctrlPoints[c]) < distance(coords, secondPoint))
+			secondPoint = ctrlPoints[c] - coords;
+	
+	uint m = (mode % 100) + 1;
+	if(length(ctrlPoints[ctrlIdx] - secondPoint) > 0.01 * m) return (ctrlPoints[ctrlIdx] - secondPoint) * m;
+	else return (secondPoint - ctrlPoints[ctrlIdx]) * m;
+}
+
 vec3 farPattern(uint ctrlIdx, vec3 coords){
 	vec3 nearestPoint = ctrlPoints[ctrlIdx] - coords;
 	vec3 farthestPoint = ctrlPoints[0] - coords;
 	for(uint c = 1; c < 8; c++) 
-		if(c != ctrlIdx && distance(ctrlPoints[c], nearestPoint) > distance(farthestPoint, nearestPoint))
+		if(c != ctrlIdx && distance(coords, nearestPoint) > distance(coords, farthestPoint))
 			farthestPoint = ctrlPoints[c];
 
 	uint m = (mode % 100) + 1;
@@ -153,9 +164,9 @@ void main() {
 	else if(m >= 100 && m < 200) color_final = vec4(trigPattern(nearestPoint, target, vec3(vertex_color)), 1.0);
 	else if(m >= 200 && m < 300) color_final = vec4(centerPattern(nearestPoint, target), 1.0);
 	else if(m >= 300 && m < 400) color_final = vec4(proximaPattern(ctrl_index, target), 1.0);  
-	else if(m >= 400 && m < 500) color_final = vec4(neonPattern1(ctrl_index, target), 1.0);
+	else if(m >= 400 && m < 500) color_final = vec4(alikePattern(ctrl_index, target), 1.0);
 	else if(m >= 500 && m < 600) color_final = vec4(neonPattern2(ctrl_index, target), 1.0); // vec4(crypticPattern(ctrl_index, target), 1.0);
-	else if(m >= 600 && m < 700) color_final = vec4(neonPattern3(ctrl_index, target), 1.0);// vec4(farPattern(ctrl_index, target), 1.0); 
+	else if(m >= 600 && m < 700) color_final = vec4(farPattern(ctrl_index, target), 1.0);// vec4(farPattern(ctrl_index, target), 1.0); 
 	else if(m >= 700 && m < 800) color_final = vec4(timePattern(relCoord, target), 1.0); 
 	else if(m >= 800 && m < 900) color_final = vec4(sin(ctrlPoints[ctrl_index].x - target.y), cos(abs(ctrlPoints[ctrl_index].y * target.x)), tan(pow(ctrlPoints[ctrl_index].z, target.z)), 1.0);
 	// else color_final = vec4(abs(nearestPoint.x - target.x), abs(nearestPoint.y - target.y), abs(nearestPoint.z - target.z), 1.0);

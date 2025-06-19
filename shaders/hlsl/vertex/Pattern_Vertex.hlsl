@@ -29,7 +29,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
 struct VS_OUTPUT { 
 	float4 pos : SV_POSITION; 
-	float3 ctrl_index: INDEX1;
+	uint ctrl_index: INDEX1;
 	float3 vertex_pos: POSITION1;
 	float3 vertex_color : COLOR;
 };
@@ -41,13 +41,9 @@ float3 transformCtrlPoint(float3 target){
 
 uint calcNearestIndex(float3 target){ // TODO: Calculate with control matrix
 	uint index = 0;
-	float3 nearestPoint = ctrlPoints[0]; // transformCtrlPoint(ctrlPoints[0]);
 	for(uint n = 1; n < 8; n++) 
-		// if(length(target - transformCtrlPoint(ctrlPoints[n])) < length(target - nearestPoint)){
-		if(length(transformCtrlPoint(target - ctrlPoints[n])) < length(transformCtrlPoint(target - nearestPoint))){ 
-			nearestPoint = ctrlPoints[n];
-			index = n;
-		}
+		if(length(target - ctrlPoints[n]) < length(target - ctrlPoints[index])) index = n;
+		// if(length(transformCtrlPoint(target - ctrlPoints[n])) < length(transformCtrlPoint(target - nearestPoint))){ 
 	return index;
 }
 
@@ -59,7 +55,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	float4 pos = getVertex(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w));
 
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
-	output.ctrl_index = calcNearestIndex(float3(pos.x, pos.y, pos.z));
+	output.ctrl_index = vertexID % 8; // calcNearestIndex(float3(output.pos.x, output.pos.y, output.pos.z));
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.vertex_color = input.vert_color;
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
