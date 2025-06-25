@@ -25,6 +25,7 @@
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9
+#define PROGRAM_IS_OVERLAY false
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -133,7 +134,7 @@ protected:
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
-	bool isEnable_background = true, isEnable_overlays = true;
+	bool isEnable_background = true, isEnable_overlays = PROGRAM_IS_OVERLAY;
 private:
 	static Topl_Pipeline* _savedPipeline;
 
@@ -197,7 +198,7 @@ private:
 		Geo_Billboard billboard_object = Geo_Billboard("program_object", 5, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
-#ifdef RASTERON_H
+#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
 		std::string fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf";
 		Sampler_2D textures[8]; // for switching textures
 		Sampler_Button button = Sampler_Button();

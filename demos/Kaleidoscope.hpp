@@ -30,13 +30,15 @@ struct Kaleidoscope_Construct : public Geo_Construct {
     }
 
     float getSpinFactor(unsigned short index){ return (index < KALEIDOSCOPE_SLICES)? spinFactors[index] : 0.0F; }
+    float getSizeFactor(unsigned short index){ return (index < KALEIDOSCOPE_SLICES)? sizeFactors[index] : 0.0F; }
 private:
     const std::pair<unsigned short, unsigned short> divisions;
     short tessCount = 0;
 
     // Geo_Surface* meshes[KALEIDOSCOPE_SLICES];
-    Geo_Mesh* meshes[KALEIDOSCOPE_SLICES];
+    Geo_Surface* meshes[KALEIDOSCOPE_SLICES];
     float spinFactors[KALEIDOSCOPE_SLICES];
+    float sizeFactors[KALEIDOSCOPE_SLICES];
 };
 
 struct Kaleidoscope_Demo : public Topl_Program {

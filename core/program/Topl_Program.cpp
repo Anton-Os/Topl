@@ -61,7 +61,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
             // billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f })); // moving when something is dragged
             for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
                 if(actor == billboard->getGeoActor(p)){
-#ifdef RASTERON_H
+#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
                     if(o == PROGRAM_AppBar) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
@@ -216,8 +216,8 @@ void Topl_Program::_onAnyKey(char k){
 
         if(k == (char)0x25 || k == (char)0x26 || k == (char)0x27 || k == (char)0x28 || k == '-' || k == '_' || k == '+' || k == '='){
             setShadersMode(Topl_Program::shaderMode);
-            if(Topl_Program::shaderMode > 0) std::cout << "Shader mode is " << std::to_string(Topl_Program::shaderMode) << std::endl;
-            else  std::cout << "Shader mode is -" << std::to_string(-1 * Topl_Program::shaderMode) << std::endl;
+            unsigned shaderConsoleMode = (Topl_Program::shaderMode > 0)? Topl_Program::shaderMode : Topl_Program::shaderMode * -1;
+            std::cout << "Shader mode is " << ((Topl_Program::shaderMode < 0)? "-" : "") << std::to_string(shaderConsoleMode) << std::endl;
         }
     }
 }
@@ -348,7 +348,7 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_media.shift({ -0.278F, -0.845F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
-#ifdef RASTERON_H
+#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
         _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);

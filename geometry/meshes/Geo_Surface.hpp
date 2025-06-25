@@ -2,6 +2,9 @@
 
 #include "Geo_Mesh.hpp"
 
+// Vec3f* genSurface_vertices(Shape2D shape);
+// unsigned* genSurface_indices();
+
 class Geo_Surface : public Geo_Mesh {
 public:
 	Geo_Surface(Shape2D  shape,float z);

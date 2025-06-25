@@ -2,9 +2,10 @@
 
 #include "Geo_Mesh.hpp"
 
-// See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
+// Vec3f* genOrb_vertices(Shape3D shape);
+// unsigned* genOrb_indices();
 
-class Geo_Orb : public Geo_Mesh {
+class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 public:
 	Geo_Orb() : Geo_Mesh(
 		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
@@ -36,6 +37,9 @@ private:
 
 	Shape3D _shape;
 };
+
+// Vec3f* genTorus_vertices(Shape3D shape);
+// unsigned* genTorus_indices();
 
 class Geo_Torus : public Geo_Mesh {
 public:

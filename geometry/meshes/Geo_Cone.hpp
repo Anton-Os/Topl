@@ -2,6 +2,9 @@
 
 #include "Geo_Mesh.hpp"
 
+// Vec3f* genCone_vertices(Shape2D shape, Vec3f apex);
+// unsigned* genCone_indices();
+
 class Geo_Cone : public Geo_Mesh {
 public:
 	Geo_Cone(Shape2D  shape,Vec3f apex);

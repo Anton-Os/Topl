@@ -27,14 +27,17 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
-	float3 ctrlPoints[8];
+	float3 ctrlPoints[16];
 }
 
 struct PS_INPUT { 
 	float4 pos : SV_POSITION; 
-	uint ctrl_index : INDEX1;
 	float3 vertex_pos: POSITION1;
-	float3 vertex_color: COLOR;
+	float3 vertex_color : COLOR;
+	float3 texcoord: TEXCOORD;
+	uint nearest_idx: INDEX0;
+	uint second_idx : INDEX1; // second closest control point
+	uint farthest_idx : INDEX2; // furthest distance control point
 };
 
 // Functions
@@ -105,8 +108,6 @@ float4 flowPattern(uint ctrlIdx, float3 coords){
 		if(c != ctrlIdx && distance(ctrlPoints[c] - coords, nearestPoint) < distance(secondPoint, nearestPoint))
 			secondPoint = ctrlPoints[c] - coords;
 
-	// if(distance(nearestPoint, secondPoint) < 0.1) return float4(coords, 1.0);
-	//else return float4((nearestPoint - secondPoint) * distance(nearestPoint, coords) * ((abs(mode) % 100) + 1), 1.0);
 	if(abs(length(nearestPoint - secondPoint)) < length(coords))
 		return float4((nearestPoint - secondPoint) * distance(nearestPoint, coords) * ((abs(mode) % 100) + 1), 1.0);
 	else return float4(1.0, 1.0, 1.0, 0.15);
@@ -118,11 +119,15 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	uint m = abs(mode) % 1000;
 	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
 
-	float3 target;
-	if(mode >= 0) target = input.vertex_pos;
-	else target = input.vertex_color;
+	float3 target = input.vertex_pos;
+	// if(mode < 0) target = input.vertex_color;
+	if(mode < 0) target = input.texcoord; // testing
+
+	uint ctrlIdx = input.nearest_idx;
+	if(mode % 3 == 1) ctrlIdx = input.second_idx;
+	else if(mode % 3 == 2) ctrlIdx = input.farthest_idx;
 	
-	float3 nearestPoint = ctrlPoints[input.ctrl_index];
+	float3 nearestPoint = ctrlPoints[ctrlIdx];
 
 	if(mode >= 1000){
 		float2 screenCoords = float2(input.pos.x / (floor(mode / 1000) * 1000.0), input.pos.y / (floor(mode / 1000) * 1000.0)); // adjusted coordinates
@@ -134,16 +139,15 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float3 relCoord = nearestPoint - target;
 
-	// return float4(relCoord, 1.0);
-
 	if(m > 0 && m < 100) return coordPattern(nearestPoint, target);
 	else if(m >= 100 && m < 200) return trigPattern(nearestPoint, target, input.vertex_color);
 	else if(m >= 200 && m < 300) return centerPattern(nearestPoint, target);
 	else if(m >= 300 && m < 400) return proximaPattern(nearestPoint, target);
-	else if(m >= 400 && m < 500) return neonPattern(input.ctrl_index, target);
-	else if(m >= 500 && m < 600) return gradPattern(input.ctrl_index, target);
-	else if(m >= 600 && m < 700) return crossPattern(input.ctrl_index, target);
-	else if(m >= 700 && m < 800) return flowPattern(input.ctrl_index, target);
-	else if(m >= 800 && m < 900) return float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
+	else if(m >= 400 && m < 500) return neonPattern(ctrlIdx, target);
+	else if(m >= 500 && m < 600) return gradPattern(ctrlIdx, target);
+	else if(m >= 600 && m < 700) return crossPattern(ctrlIdx, target);
+	else if(m >= 700 && m < 800) return flowPattern(ctrlIdx, target);
+	else if(m >= 800 && m < 900) return modalTex(ctrlIdx, target);
+	// else if(m >= 800 && m < 900) return float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
 	else return float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 }

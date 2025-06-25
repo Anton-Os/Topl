@@ -32,14 +32,14 @@ endif()
 
 if(SUPPORT_MODELS)
 ExternalProject_Add(Assimp # 3D Model loading
-        GIT_REPOSITORY "https://github.com/assimp/assimp.git"
-        GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
+    GIT_REPOSITORY "https://github.com/assimp/assimp.git"
+    GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
 
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DBUILD_SHARED_LIBS:BOOL=OFF
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DBUILD_SHARED_LIBS:BOOL=OFF
 
-        PREFIX ${EXTERNAL_PROJ_DIR}/Assimp
-        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    )
+    PREFIX ${EXTERNAL_PROJ_DIR}/Assimp
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+)
 endif()
 
 if(NOT SUPPORT_MODELS)

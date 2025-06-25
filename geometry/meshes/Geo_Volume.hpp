@@ -2,9 +2,12 @@
 
 #include "Geo_Mesh.hpp"
 
+// Vec3f* genVolume_vertices(Shape3D shape);
+// unsigned* genVolume_indices();
+
 class Geo_Volume : public Geo_Mesh {
 public:
-	Geo_Volume(Shape2D  shape,float depth);
+	Geo_Volume(Shape2D shape,float depth);
 	Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth);
 
 	float getRadius(){ return _shape.radius; }

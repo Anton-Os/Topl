@@ -3,7 +3,7 @@ project(Topl DESCRIPTION "Topl Graphics Engine")
 
 set (CMAKE_CXX_STANDARD 11)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path")
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
 endif()
 
@@ -17,11 +17,11 @@ if(WIN32)
     # set(RESOURCE_ICON "${RESOURCE_DIR}/TOPL.ico" CACHE FILEPATH "Icon (.ico) file")
 endif()
 
-set(SUPPORT_TEXTURES TRUE CACHE BOOL "Include texturing" FORCE)
-set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations" FORCE)
-set(SUPPORT_MODELS TRUE CACHE BOOL "Include 3D model loading" FORCE)
-# set(SUPPORT_AUDIO ON CAHCE BOOL "Include audio support" FORCE)
-# set(SUPPORT_SAVES ON CACHE BOOL "Include custom saves" FORCE)
+set(SUPPORT_TEXTURES TRUE CACHE BOOL "Include texturing")
+set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations")
+set(SUPPORT_MODELS FALSE CACHE BOOL "Include 3D model loading")
+# set(SUPPORT_AUDIO ON CAHCE BOOL "Include audio support")
+# set(SUPPORT_SAVES ON CACHE BOOL "Include custom saves")
 
 # ------------- Libraries, Engines, and Procedures ------------- #
 
@@ -42,7 +42,7 @@ configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DI
 
 if(NOT DEFINED IGNORE_EXAMPLES)
 add_executable(Hello demos/Hello.cpp)
-add_executable(Sandbox demos/Sandbox.cpp)
+# add_executable(Sandbox demos/Sandbox.cpp)
 add_executable(Molecular demos/Molecular.cpp)
 add_executable(Entropy demos/Entropy.cpp)
 add_executable(Meshform demos/Meshform.cpp)
@@ -50,8 +50,10 @@ add_executable(Penscape demos/Penscape.cpp)
 add_executable(Kaleidoscope demos/Kaleidoscope.cpp)
 add_executable(Animatrix demos/Animatrix.cpp)
 add_executable(Genesis demos/Genesis.cpp)
+add_executable(Traversal demos/Traversal.cpp)
 
-list(APPEND demo_targets Hello Sandbox Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis)
+list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis)
+list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis Traversal)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)

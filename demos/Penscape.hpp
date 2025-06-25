@@ -5,13 +5,15 @@
 #include "program/Topl_Program.hpp"
 
 #define BRUSH3D_SIZE 0.25F
-#define BRUSH3D_SCALE 3
-#define BRUSH3D_SEGMENTS 50
-#define BRUSH3D_SHIFT 0.2F // * ((float)rand() / (float)RAND_MAX)
-#define BRUSH3D_ROT 0.15F
+#define BRUSH3D_SCALE 2
+#define BRUSH3D_ITERS 40
+#define BRUSH3D_SEGMENTS 100
+#define BRUSH3D_SHIFT 0.25F
+#define BRUSH3D_ROT 0.05F
 
 Vec3f getRandTransform(float amount){
-    switch(rand() % 6){
+    return Vec3f({ amount, amount, -amount });
+    /* switch (rand() % 6) {
         case 0: return Vec3f({ amount, 0.0F, 0.0F });
         case 1: return Vec3f({ -amount, 0.0F, 0.0F });
         case 2: return Vec3f({ 0.0F, amount, 0.0F });
@@ -19,7 +21,7 @@ Vec3f getRandTransform(float amount){
         case 4: return Vec3f({ 0.0F, 0.0F, amount });
         case 5: return Vec3f({ 0.0F, 0.0F, -amount });
         default: return VEC_3F_RAND;
-    }
+    } */
 }
 
 struct Penscape_Demo : public Topl_Program {
@@ -80,4 +82,4 @@ private:
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = PROGRAM_SCENE;
-} *_DEMO;
+} *Penscape;

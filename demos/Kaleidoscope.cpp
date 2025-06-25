@@ -19,7 +19,8 @@ void Kaleidoscope_Construct::init() {
         _geoActors.push_back(Geo_Actor(meshes[s]));
         _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((2.0F / KALEIDOSCOPE_SLICES) * s )}));
 
-        spinFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5) * 0.01;
+        spinFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5) * 0.025;
+        sizeFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5);
     }
 }
 
@@ -50,12 +51,18 @@ void Kaleidoscope_Demo::init(){
     _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
 
+    Topl_Program::mode = 8; // test
     for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){
-    for(unsigned s = 0; s < constructs[mode].getActorCount(); s++)
-        constructs[mode].getGeoActor(s)->updateRot(Vec3f({ constructs[mode].getSpinFactor(s), 0.0F, 0.0F }));
+    static double totalTime = 0.0F;
+
+    for (unsigned s = 0; s < constructs[mode].getActorCount(); s++) {
+        constructs[mode].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[mode].getSpinFactor(s) * 2), 0.0F, 0.0F }));
+        float scale = sin(constructs[mode].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
+        constructs[mode].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
+    }
 
     if(_renderer->getPipeline() == _patternPipeline){
         for(unsigned p = 0; p < PATTERN_POINTS_MAX; p++)
@@ -65,6 +72,8 @@ void Kaleidoscope_Demo::loop(double frameTime){
     _renderer->setDrawMode(drawMode);
     // _renderer->updateScene(&scene);
     renderScene(&scene, nullptr, -Topl_Program::shaderMode); // _renderer->drawScene(&scene);
+
+    totalTime += frameTime;
 }
 
 // Main

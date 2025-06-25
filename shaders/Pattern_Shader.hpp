@@ -1,6 +1,6 @@
 #include "Topl_Pipeline.hpp"
 
-#define PATTERN_POINTS_MAX 8
+#define PATTERN_POINTS_MAX 16
 
 // Vertex Shaders
 
