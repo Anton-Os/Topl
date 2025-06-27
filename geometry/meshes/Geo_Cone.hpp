@@ -2,12 +2,12 @@
 
 #include "Geo_Mesh.hpp"
 
-// Vec3f* genCone_vertices(Shape2D shape, Vec3f apex);
-// unsigned* genCone_indices();
+Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex);
+unsigned* genCone_indices(Shape2D shape);
 
 class Geo_Cone : public Geo_Mesh {
 public:
-	Geo_Cone(Shape2D  shape,Vec3f apex);
+	Geo_Cone(Shape2D shape, Vec3f apex);
 	Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex);
 
 	float getRadius() const { return _shape.radius; }

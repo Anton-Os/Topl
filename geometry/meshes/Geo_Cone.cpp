@@ -1,5 +1,70 @@
 #include "Geo_Cone.hpp"
 
+// Functions
+
+Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex){
+	unsigned count = shape.segments + 2;
+	Geo_Vertex* vertexData = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
+
+	*(vertexData) = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }, { 0.0F, 0.0F, -1.0F }, { 1.0F, 1.0F, 1.0F }); // origin
+    *(vertexData + (count - 1)) = Geo_Vertex(apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
+
+	unsigned v;
+	for (v = 1; v < count - 1; v++) {
+		Vec3f pos = Vec3f({ 
+			(float)sin(ANGLE_START(shape.segments) + (v * ANGLE_OFFSET(shape.segments))) * RADIUS_SIZE(shape.radius),
+			(float)cos(ANGLE_START(shape.segments) + (v * ANGLE_OFFSET(shape.segments))) * RADIUS_SIZE(shape.radius),
+			(float)DEFAULT_Z
+		});
+
+		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
+		*(vertexData + v) = Geo_Vertex(pos);
+	}
+
+	return vertexData;
+}
+
+unsigned* genCone_indices(Shape2D shape){
+	unsigned vCount = shape.segments + 2;
+	unsigned iCount = shape.segments * 6;
+	unsigned* indexData = (unsigned*)malloc(iCount * sizeof(unsigned));
+
+	unsigned i; // current index
+	unsigned v = 1; // tracks current vertex
+
+	// Base Indexing
+	for (i = 0; i < (iCount / 2) - 3; i += 3) {
+		*(indexData + i) = 0; // origin
+		*(indexData + i + 1) = v; // target
+		*(indexData + i + 2) = v + 1; // next vertex
+		v++;
+	}
+
+	// special case for last base triangle
+	*(indexData + i) = 0;
+	*(indexData + i + 1) = v;
+	*(indexData + i + 2) = 1;
+
+		// Apex Indexing
+	v = 1; // reset
+
+	for (i = iCount / 2; i < iCount - 3; i += 3) {
+		*(indexData + i) = vCount - 1; // apex
+		*(indexData + i + 1) = v + 1; // next vertex
+		*(indexData + i + 2) = v; // target
+		v++;
+	}
+
+	// special case for last apex triangle
+	*(indexData + i) = vCount - 1;
+	*(indexData + i + 1) = v;
+	*(indexData + i + 2) = 1;
+
+	return indexData;
+}
+
+// Constructors
+
 Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
 	_shape = shape;
 	_apex = apex;

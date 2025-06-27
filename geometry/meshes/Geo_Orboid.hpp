@@ -2,8 +2,8 @@
 
 #include "Geo_Mesh.hpp"
 
-// Vec3f* genOrb_vertices(Shape3D shape);
-// unsigned* genOrb_indices();
+Geo_Vertex* genOrb_vertices(Shape3D shape);
+unsigned* genOrb_indices(Shape3D shape);
 
 class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 public:
@@ -38,8 +38,8 @@ private:
 	Shape3D _shape;
 };
 
-// Vec3f* genTorus_vertices(Shape3D shape);
-// unsigned* genTorus_indices();
+Geo_Vertex* genTorus_vertices(Shape3D shape);
+unsigned* genTorus_indices(Shape3D shape);
 
 class Geo_Torus : public Geo_Mesh {
 public:
@@ -53,8 +53,8 @@ public:
 	}
 
 	Geo_Torus(float diameter, Shape3D shape) : Geo_Mesh(
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6 // index count
+		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
+		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6 // index count
 	){
 		_diameter = diameter;
 		_shape = shape;

@@ -11,7 +11,7 @@
 #define DEFAULT_Z 0.0f // default depth value for objects
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units
-#define MAX_INSTANCES 32
+#define MAX_INSTANCES 26 // one for each surrounding element in a recursive mesh
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
@@ -36,6 +36,8 @@ public:
 	Geo_Mesh(){} // empty constructor
 	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
 	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
+	Geo_Mesh(unsigned v, Geo_Vertex* vertexData){ populate(v, vertexData, 0, nullptr); }
+	Geo_Mesh(unsigned v, Geo_Vertex* vertexData, unsigned i, unsigned* indexData){ populate(v, vertexData, i, indexData); }
 
 	~Geo_Mesh(){ if(_instanceData != nullptr) free(_instanceData); }
 
@@ -181,6 +183,19 @@ public:
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 	unsigned short drawMin = 0, drawMax = 0; // for partial mesh rendering // Check for range?
 protected:
+	void populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned indexCount, unsigned* indexData){
+		if(vertexCount > 0 && vertexData != nullptr){
+			_vertices.resize(vertexCount);
+			for(unsigned v = 0; v < vertexCount; v++) _vertices[v] = *(vertexData + v);
+			free(vertexData);
+		}
+		if(indexCount > 0 && indexData != nullptr){
+			_indices.resize(indexCount);
+			for(unsigned i = 0; i < indexCount; i++) _indices[i] = *(indexData + i);
+			free(indexData);
+		}
+	}
+
 	// std::vector<Geo_Pos> _vertices;
 	std::vector<Geo_Vertex> _vertices;
 	std::vector<unsigned> _indices;
