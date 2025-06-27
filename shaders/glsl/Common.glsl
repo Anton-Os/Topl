@@ -18,7 +18,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
-#define MAX_INSTANCES 3
+#define MAX_INSTANCES 26
 
 layout(std140, binding = 2) uniform ExtBlock {
 	uint vertCount; // count for vertices

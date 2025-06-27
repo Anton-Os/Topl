@@ -1,9 +1,20 @@
 #include "Traversal.hpp"
 
-static unsigned sculptIndex = 0;
+void Traversal_Demo::onAnyKey(char key) {
+    switch (tolower(key)) {
+        case 'i': for (unsigned c = 0; c < 3; c++) corridorActors[c].isShown = c == 0; break;
+        case 'o': for (unsigned c = 0; c < 3; c++) corridorActors[c].isShown = c == 1; break;
+        case 'p': for (unsigned c = 0; c < 3; c++) corridorActors[c].isShown = c == 2; break;
+    }
+}
 
 void Traversal_Demo::init(){
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, TRAVERSAL_DEPTH).genProjMatrix());
+    squareCorridor.tesselate(TRAVERSAL_TESS);
+    hexCorridor.tesselate(TRAVERSAL_TESS);
+    circleCorridor.tesselate(TRAVERSAL_TESS);
+
+    Platform::keyControl.addHandler(std::bind(&Traversal_Demo::onAnyKey, this, std::placeholders::_1));
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 10.0).genProjMatrix());
 
     for (unsigned c = 0; c < 3; c++)
         scene.addGeometry(std::string("corridor") + std::to_string(c + 1), &corridorActors[c]);
@@ -11,13 +22,13 @@ void Traversal_Demo::init(){
 }
 
 void Traversal_Demo::loop(double frameTime){
-    // Topl_Program::camera.updatePos({ 0.0F, 0.0F, (float)frameTime * Topl_Program::speed * 0.001F });
+    for (unsigned c = 0; c < 3; c++) corridorActors[c].updatePos({ 0.0F, 0.0F, (float)frameTime * Topl_Program::speed * -0.0000025F });
 
     renderScene(&scene, nullptr, Topl_Program::shaderMode); 
 }
 
 MAIN_ENTRY {
-    Traversal = new Traversal_Demo(argv[0], BACKEND_DX11);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
     Traversal->run();
 
     delete(Traversal);

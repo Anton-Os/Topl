@@ -68,4 +68,4 @@ private:
 
     std::thread* textureThread = nullptr;
     std::thread* geometryThread = nullptr;
-} *_DEMO;
+} *Entropy;

@@ -52,7 +52,7 @@ void Penscape_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Penscape = new Penscape_Demo(argv[0], BACKEND_DX11);
+    Penscape = new Penscape_Demo(argv[0], BACKEND_GL4);
     Penscape->run();
 
     delete(Penscape);

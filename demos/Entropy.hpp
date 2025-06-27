@@ -15,6 +15,7 @@
 #define ENTROPIC_PROB 0.05
 #define ENTROPIC_SIZE 0.045
 #define ENTROPIC_FORCE 50000.0F
+#define ENTROPIC_RECURSHAPE 0.1F
 
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
@@ -59,15 +60,18 @@ struct Entropy_Demo : public Topl_Program {
                 break;
             }
 
-            surfaceMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            // surfaceMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            setInstances(surfaceMeshes.back());
             surfaceMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
             surfaceExt_actors[a].copyParams(surface_actors[a]);
-            coneMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            // coneMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            setInstances(coneMeshes.back());
             coneMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             conicExt_actors[a] = Geo_Actor(coneMeshes.back());
             conicExt_actors[a].copyParams(conic_actors[a]);
-            volumeMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            // volumeMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
+            setInstances(volumeMeshes.back());
             volumeMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
             volumeExt_actors[a] = Geo_Actor(volumeMeshes.back());
             volumeExt_actors[a].copyParams(volume_actors[a]);
@@ -78,8 +82,6 @@ struct Entropy_Demo : public Topl_Program {
     void loop(double frameTime) override;
 
     Topl_Scene* getScene(){
-        // _renderer->setDrawMode((mode == 0 || mode == 3)? DRAW_Triangles : DRAW_Points);
-
         switch(mode % 6){
             case 1: return &scene2;
             case 2: return &scene3;
@@ -106,8 +108,10 @@ struct Entropy_Demo : public Topl_Program {
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif
 private:
+    void setInstances(Geo_Mesh* mesh);
     void onAnyKey(char key);
 
+    // Topl_Scene scenes[6]; // TODO: Switch to this
     Topl_Scene scene1, scene2, scene3;
     Topl_Scene ext_scene1, ext_scene2, ext_scene3;
-} *_DEMO;
+} *Entropy;

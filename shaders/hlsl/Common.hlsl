@@ -16,7 +16,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 #endif
 
 #ifdef INCLUDE_EXTBLOCK
-#define MAX_INSTANCES 32
+#define MAX_INSTANCES 26
 
 cbuffer CONST_EXT_BLOCK : register(b2) {
 	uint vertCount; // count for vertices

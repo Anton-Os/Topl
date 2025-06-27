@@ -5,28 +5,32 @@ static bool isInMotion = true;
 static short lightMode = 10;
 static short shaderMode = 2;
 
-void Entropy_Demo::onAnyKey(char key){
-    // else if(isdigit(key)) Topl_Program::shaderMode = key - '0';
-    if(isspace(key)) isInMotion = !isInMotion;
-    else switch(tolower(key)){
-        case 'j': Entropy_Demo::mode = 0; break;
-        case 'k': Entropy_Demo::mode = 1; break;
-        case 'l': Entropy_Demo::mode = 2; break;
-        case 'b': Entropy_Demo::mode = 3; break;
-        case 'n': Entropy_Demo::mode = 4; break;
-        case 'm': Entropy_Demo::mode = 5; break;
-    }
-}
+void entropyReset() { isInEntropy = !isInEntropy; }
 
-void entropyReset(){ isInEntropy = !isInEntropy; }
+void Entropy_Demo::onAnyKey(char key){ if(isspace(key)) isInMotion = !isInMotion; }
+
+void Entropy_Demo::setInstances(Geo_Mesh* mesh) {
+    float e = ENTROPIC_RECURSHAPE;
+    mesh->setInstances({
+        Mat4x4::translation({ e, 0.0F, 0.0F}), Mat4x4::translation({ 0.0F, e, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, e }),
+        Mat4x4::translation({ -e, 0.0F, 0.0F}), Mat4x4::translation({ 0.0F, -e, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, -e }),
+        Mat4x4::translation({ e, e, 0.0F}), Mat4x4::translation({ 0.0F, e, e}), Mat4x4::translation({ e, 0.0F, e }),
+        Mat4x4::translation({ -e, -e, 0.0F}), Mat4x4::translation({ 0.0F, -e, -e}), Mat4x4::translation({ -e, 0.0F, -e }),
+        Mat4x4::translation({ e, -e, 0.0F}), Mat4x4::translation({ 0.0F, e, -e}), Mat4x4::translation({ -e, 0.0F, e }),
+        Mat4x4::translation({ -e, e, 0.0F}), Mat4x4::translation({ 0.0F, -e, e}), Mat4x4::translation({ e, 0.0F, -e }),
+        Mat4x4::translation({ -e, e, e }), Mat4x4::translation({ e, -e, e}), Mat4x4::translation({ e, e, -e }),
+        Mat4x4::translation({ -e, -e, e }), Mat4x4::translation({ -e, e, -e}), Mat4x4::translation({ e, -e, -e }),
+        Mat4x4::translation({ -e, -e, -e}), Mat4x4::translation({ e, e, e })
+    });
+}
 
 void Entropy_Demo::init(){
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
     Platform::keyControl.addHandler(std::bind(&Entropy_Demo::onAnyKey, this, std::placeholders::_1));
 
     Topl_Program::timeline.persist_ticker.addPeriodicEvent(10000, entropyReset);
-    Topl_Program::camera.setZoom(2.0);
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 2.0F).genProjMatrix());
+    // Topl_Program::camera.setZoom(2.0);
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Orthographic, 2.0F).genProjMatrix());
 
     scene1.camera = &Topl_Program::camera; scene2.camera = &Topl_Program::camera; scene3.camera = &Topl_Program::camera;
     ext_scene1.camera = &Topl_Program::camera; ext_scene2.camera = &Topl_Program::camera; ext_scene3.camera = &Topl_Program::camera;
@@ -46,7 +50,7 @@ void Entropy_Demo::init(){
     _renderer->buildScene(&scene1); _renderer->buildScene(&scene2); _renderer->buildScene(&scene3);
     _renderer->buildScene(&ext_scene1); _renderer->buildScene(&ext_scene2); _renderer->buildScene(&ext_scene3);
 
-    // _renderer->isMeshUpdate = false;
+    _renderer->isMeshUpdate = true;
 }
 
 void Entropy_Demo::loop(double frameTime){
@@ -84,9 +88,9 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Entropy_Demo(argv[0], BACKEND_DX11);
-    _DEMO->run();
+    Entropy = new Entropy_Demo(argv[0], BACKEND_DX11);
+    Entropy->run();
 
-    delete(_DEMO);
+    delete(Entropy);
     return 0;
 }

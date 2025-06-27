@@ -93,4 +93,4 @@ private:
 
     Topl_Scene scene = PROGRAM_SCENE;
     Topl_Light skyLight = BEAMS_LAMP_LIGHT, flashLight = BEAMS_SKY_LIGHT, lampLight = BEAMS_FLASH_LIGHT;
-} *_DEMO;
+} *Entropy;

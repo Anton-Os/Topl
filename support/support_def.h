@@ -13,7 +13,7 @@
 #if FALSE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 0 && !defined(__ANDROID__)
+#if 1 && !defined(__ANDROID__)
     #define RASTERON_ENABLE_ANIM // includes animation support
     #define RASTERON_ENABLE_FONT // includes font support
     #include "Rasteron.h" // includes Rasteron main modules and features
@@ -24,7 +24,7 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
 #endif
-#if TRUE
+#if ON
     #define TOPL_ENABLE_PHYSICS
 #endif
 

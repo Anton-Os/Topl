@@ -222,9 +222,9 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    _DEMO = new Meshform_Demo(argv[0], BACKEND_GL4);
-    _DEMO->run();
+    Entropy = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Entropy->run();
 
-    delete(_DEMO);
+    delete(Entropy);
     return 0;
 }

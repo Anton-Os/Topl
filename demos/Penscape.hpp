@@ -9,7 +9,7 @@
 #define BRUSH3D_ITERS 40
 #define BRUSH3D_SEGMENTS 100
 #define BRUSH3D_SHIFT 0.25F
-#define BRUSH3D_ROT 0.05F
+#define BRUSH3D_ROT 0.03F
 
 Vec3f getRandTransform(float amount){
     return Vec3f({ amount, amount, -amount });

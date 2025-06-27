@@ -52,9 +52,9 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    _DEMO = new Molecular_Demo(argv[0], BACKEND_DX11);
-    _DEMO->run();
+    Entropy = new Molecular_Demo(argv[0], BACKEND_DX11);
+    Entropy->run();
 
-    delete(_DEMO);
+    delete(Entropy);
     return 0;
 }
