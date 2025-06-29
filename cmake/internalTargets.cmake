@@ -52,6 +52,8 @@ endif() # IGORE_NATIVELIBS
 
 list(APPEND geometry_src
 	# meshes
+    geometry/Geo_Vertex.cpp
+    geometry/Geo_Mesh.cpp
     geometry/meshes/Geo_Surface.cpp
     geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Cone.cpp
