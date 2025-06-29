@@ -12,7 +12,7 @@
 #define BRUSH3D_ROT 0.03F
 
 Vec3f getRandTransform(float amount){
-    return Vec3f({ amount, amount, -amount });
+    return Vec3f({ -amount, amount, -amount });
     /* switch (rand() % 6) {
         case 0: return Vec3f({ amount, 0.0F, 0.0F });
         case 1: return Vec3f({ -amount, 0.0F, 0.0F });

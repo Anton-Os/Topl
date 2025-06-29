@@ -78,9 +78,19 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.vertex_color = input.vert_color;
 	output.texcoord = input.texcoord;
-	output.nearest_idx = calcNearestIndex(output.vertex_pos);
-	output.second_idx = calcSecondIndex(output.vertex_pos);
-	output.farthest_idx = calcFarthestIndex(output.vertex_pos);
+
+	float3 ctrlPos = output.vertex_pos;
+	if(mode >= 1000){
+		float3 change = float3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
+
+		if(floor(mode / 1000) == 1) ctrlPos += change;
+		else if(floor(mode / 1000) == 2) ctrlPos -= change;
+		else ctrlPos *= change;
+	}
+
+	output.nearest_idx = calcNearestIndex(ctrlPos);
+	output.second_idx = calcSecondIndex(ctrlPos);
+	output.farthest_idx = calcFarthestIndex(ctrlPos);
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
 #ifdef INCLUDE_EXTBLOCK
 	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform

@@ -51,6 +51,7 @@ void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     static PROJECTION_Type projType = PROJECTION_None; // Projection(PROJECTION_None, 1.0F);
     static float projX = 1.0F, projY = 1.0F, projZ = 1.0F;
+    static Vec3f pivot = *Topl_Program::camera.getRot();
 
     std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
     Geo_Billboard* billboard = nullptr;
@@ -88,8 +89,10 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             } 
                             _renderer->texturizeScene(&_overlays.scene);
                         } else {
+                            std::cout << "Texturizing volumetric textures" << std::endl;
                             _background.volumeImg.setColors(RAND_COLOR());
                             _renderer->texturizeScene(&_background.scene);
+                            _renderer->texturizeScene(&_overlays.scene);
                         }
                     } else if(o == PROGRAM_Media)
                         switch(p){
@@ -99,15 +102,22 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         }
                     else if(o == PROGRAM_Timeline) timeline.dynamic_ticker.setTime(pickerCoord[0]);
                     else if(o == PROGRAM_Camera){
-                        switch(PROGRAM_SUBMENUS - 1 - p){
+                        unsigned short s = PROGRAM_SUBMENUS - 1 - p;
+                        float m = 0.1;
+                        switch(s){
+                            // case 0: case 1: case 2: pivot = pivot + Vec3f({ (s == 0)? m : 0.0F, (s == 1)? m : 0.0F, (s == 2)? m : 0.0F }); break;
                             case 0: projX *= 1.25; break; case 1: projY *= 1.25; break; case 2: projZ *= 1.25; break;
                             case 3: projType = PROJECTION_Orthographic; break;
                             case 4: projType = PROJECTION_Perspective; break;
                             case 5: projType = PROJECTION_Hyperspace; break;
                             case 6: projX *= 0.75; break; case 7: projY *= 0.75; break; case 8: projZ *= 0.75; break;
+                            // case 6: case 7: case 8: pivot = pivot + Vec3f({ (s == 6)? m : 0.0F, (s == 7)? m : 0.0F, (s == 8)? m : 0.0F });
                         }
                         Topl_Program::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Program::camera.getPos()));
-                        std::cout << "Camera position is " << Topl_Program::camera.getPos()->toString() << std::endl << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;;
+                        // Topl_Program::camera.setRot(pivot);
+                        std::cout << "Camera position is " << Topl_Program::camera.getPos()->toString() 
+                            << ", rotation is " << Topl_Program::camera.getRot()->toString() << std::endl
+                            << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;;
                     }
                     else if(o == PROGRAM_Object){
                         if(Topl_Program::lastPickerObj != nullptr){
@@ -181,8 +191,8 @@ void Topl_Program::_onAnyKey(char k){
             case 'f': Topl_Program::camera.updateRot({ 0.0F, Topl_Program::speed, 0.0 }); break;
             case 't': Topl_Program::camera.updateRot({ 0.0F, 0.0, -Topl_Program::speed }); break;
             case 'g': Topl_Program::camera.updateRot({ 0.0F, 0.0, Topl_Program::speed }); break;
-            case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed * 0.25F)); break;
-            case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed * 0.25F)); break;
+            case 'z': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F + Topl_Program::speed * 0.15F)); break;
+            case 'x': Topl_Program::camera.setZoom(*Topl_Program::camera.getZoom() * (1.0F - Topl_Program::speed * 0.15F)); break;
         }
 
         if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v' || tolower(k) == 'c')

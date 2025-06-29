@@ -129,13 +129,13 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	
 	float3 nearestPoint = ctrlPoints[ctrlIdx];
 
-	if(mode >= 1000){
+	/* if(mode >= 1000){
 		float2 screenCoords = float2(input.pos.x / (floor(mode / 1000) * 1000.0), input.pos.y / (floor(mode / 1000) * 1000.0)); // adjusted coordinates
 		screenCoords = (screenCoords - float2(0.5, 0.5)) * 2.0;
 
 		nearestPoint *= sin(timeElapse / 1000) * floor(mode / 1000);
 		target *= float3(sin(screenCoords.x * (mode % 100)), cos(screenCoords.y * (mode % 100)), tan(screenCoords.x * screenCoords.y * (mode % 100)));
-	}
+	} */
 
 	float3 relCoord = nearestPoint - target;
 

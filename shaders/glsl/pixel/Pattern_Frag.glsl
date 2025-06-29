@@ -143,6 +143,14 @@ vec3 timePattern(vec3 ctrlPoint, vec3 coords){
 	return vec3(abs(sin(relCoord.x * timeSeq)), abs(cos(relCoord.y * timeSeq)), abs(tan(relCoord.z * timeSeq)));
 }
 
+vec3 triPattern(uint ctrlIndices[3], vec3 coords){
+	return vec3(
+		length(ctrlPoints[ctrlIndices[0]] - coords),
+		length(ctrlPoints[ctrlIndices[1]] - coords),
+		length(ctrlPoints[ctrlIndices[2]] - coords)
+	);
+}
+
 // Main
 
 void main() {
@@ -154,11 +162,15 @@ void main() {
 	vec3 nearestPoint = ctrlPoints[ctrl_index];
 	vec3 relCoord = nearestPoint - target;
 
-	if(abs(mode) > 1000){
-		vec2 screenCoords = vec2(gl_FragCoord.x / (floor(mode / 1000) * 1000.0), gl_FragCoord.y / (floor(mode / 1000) * 1000.0)); // adjusted coordinates
-		screenCoords = (screenCoords - vec2(0.5, 0.5)) * 2.0;
-		target /= vec3(screenCoords * (mode % 100), length(screenCoords) * (mode % 100) );
+	if(abs(mode) >= 1000){
+		vec3 change = vec3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
+
+		if(floor(mode / 1000) == 1) target += change;
+		else if(floor(mode / 1000) == 2) target -= change;
+		else target *= change;
 	}
+
+	uint indices[3] = { ctrl_index, (ctrl_index - 1) % 8, (ctrl_index + 1) % 8 };
 
 	if(m > 0 && m < 100) color_final = vec4(coordPattern(nearestPoint, target), 1.0);  
 	else if(m >= 100 && m < 200) color_final = vec4(trigPattern(nearestPoint, target, vec3(vertex_color)), 1.0);
@@ -166,9 +178,11 @@ void main() {
 	else if(m >= 300 && m < 400) color_final = vec4(proximaPattern(ctrl_index, target), 1.0);  
 	else if(m >= 400 && m < 500) color_final = vec4(alikePattern(ctrl_index, target), 1.0);
 	else if(m >= 500 && m < 600) color_final = vec4(crypticPattern(ctrl_index, target), 1.0);
-	else if(m >= 600 && m < 700) color_final = vec4(neonPattern3(ctrl_index, target), 1.0); // vec4(farPattern(ctrl_index, target), 1.0); 
-	else if(m >= 700 && m < 800) color_final = vec4(timePattern(relCoord, target), 1.0); 
-	else if(m >= 800 && m < 900) color_final = vec4(sin(ctrlPoints[ctrl_index].x - target.y / target.y), cos(abs(ctrlPoints[ctrl_index].y * target.x / target.y)), tan(pow(ctrlPoints[ctrl_index].z, tan(target.z * 10))), 1.0);
+	else if(m >= 600 && m < 700) color_final = vec4(triPattern(indices, target), 1.0);
+	else if(m >= 700 && m < 800) color_final = vec4(farPattern(ctrl_index, target), 1.0);
+	else if(m >= 800 && m < 900) color_final = vec4(neonPattern3(ctrl_index, target), 1.0);
+	// else if(m >= 700 && m < 800) color_final = vec4(timePattern(relCoord, target), 1.0); 
+	// else if(m >= 800 && m < 900) color_final = vec4(sin(ctrlPoints[ctrl_index].x - target.y / target.y), cos(abs(ctrlPoints[ctrl_index].y * target.x / target.y)), tan(pow(ctrlPoints[ctrl_index].z, tan(target.z * 10))), 1.0);
 	else color_final = vec4(length(relCoord), length(relCoord), length(relCoord), 1.0);
 	// else color_final = vec4(getRandColor(ctrl_index * (gl_PrimitiveID % 8)), 1.0); // vec4(abs(nearestPoint.x - target.x) * sin(float(timeElapse) / 1000), abs(nearestPoint.y - target.y) * cos(float(timeElapse) / 2500), abs(nearestPoint.z - target.z) * tan(float(timeElapse) / 3300), 1.0);
 	// else color_final = vec4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);

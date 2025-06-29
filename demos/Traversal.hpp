@@ -4,8 +4,8 @@
 #include "program/Topl_Program.hpp"
 
 #define TRAVERSAL_RADIUS 5.0F
-#define TRAVERSAL_DEPTH 100.0F
-#define TRAVERSAL_OBSCACLES 20F
+#define TRAVERSAL_DEPTH 100.0F * 3
+#define TRAVERSAL_OBSCACLES 20
 #define TRAVERSAL_TESS 1
 
 struct Traversal_Demo : public Topl_Program {

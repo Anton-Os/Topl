@@ -3,12 +3,13 @@
 #include "Geo_Mesh.hpp"
 
 Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
+Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
 unsigned* genSurface_indices(Shape2D shape);
 
 class Geo_Surface : public Geo_Mesh {
 public:
 	Geo_Surface(Shape2D  shape,float z);
-	Geo_Surface(vertex_cptr_t points, unsigned short pointCount);
+	Geo_Surface(vertex_cptr_t points, unsigned short pointCount, float z);
 
 	float getRadius(){ return _shape.radius; }
 	unsigned short getSegments(){ return _shape.segments; }

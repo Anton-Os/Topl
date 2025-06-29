@@ -33,12 +33,13 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) {
 	return camMatrix;
 }
 
-/* float4x4 getLookAtMatrix(float3 cPos, float3 lPos, float3 upPos){
-	float4x4 camMatrix = getCamMatrix(float4(cPos, 1.0), lPos); // TODO: Compute based on camera value
+float4x4 getLookAtMatrix(float3 cPos, float3 aRot){
+	float3 lPos = float3(sin(-aRot.y), sin(aRot.x), -cos(aRot.x + aRot.y));
+	float3 uPos = float3(0.0, sin(aRot.z), cos(aRot.z)); // computed up position
 
-	float3 forward = normalize(lPos - cPos);
-	float3 right = normalize(cross(forward, upPos));
-	float3 up = normalize(cross(right, upPos));
+	float3 forward = normalize(lPos);
+	float3 right = normalize(cross(forward, uPos));
+	float3 up = normalize(cross(right, uPos));
 	
 	float4x4 lookAtMatrix = {
 		right.x, right.y, right.z, -cPos.x,
@@ -47,27 +48,16 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) {
 		0, 0, 0, 1
 	};
 
-	return camMatrix;
-} */
-
-float4x4 getLookAtMatrix(float3 cPos, float3 lPos){
-	float3x3 rotMatrix = getRotMatrix(lPos);
-
-	float4x4 placeMatrix = {
+	float4x4 camMatrix = {
 		1, 0, 0, -cPos.x,
 		0, 1, 0, -cPos.y,
 		0, 0, 1, -cPos.z,
 		0, 0, 0, 1
 	};
 
-	float4x4 lookMatrix = {
-		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], 0,
-		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], 0,
-		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], 0,
-		0, 0, 0, 1
-	};
-
-	return getCamMatrix(float4(cPos, 1), lPos); // lookMatrix * placeMatrix;
+	if(aRot.x != 0.0 || aRot.y != 0.0 || aRot.z != 0.0) return mul(lookAtMatrix, camMatrix);
+	else return camMatrix;
+	// return getCamMatrix(float4(cPos, 1), lPos); // lookMatrix * placeMatrix;
 }
 
 float getLineDistance(float2 coord, float2 p1, float2 p2){

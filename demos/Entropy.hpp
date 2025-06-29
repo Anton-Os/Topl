@@ -12,106 +12,49 @@
 #define ENTROPIC_ITERS 1
 #define ENTROPIC_SPAWN 100
 #define ENTROPIC_COUNT 200
+#define ENTROPIC_SCENES 9
 #define ENTROPIC_PROB 0.05
 #define ENTROPIC_SIZE 0.045
 #define ENTROPIC_FORCE 50000.0F
 #define ENTROPIC_RECURSHAPE 0.1F
+#define ENTROPIC_POINTS 6
+#define ENTROPIC_SPREAD 0.5F
 
 struct Entropy_Demo : public Topl_Program {
     Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
-        backdropActor.setPos({ 0.0F, 0.0F, -1.0F });
-
         for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-            switch(a % 4){
-                case ENTROPIC_TRIG: surface_actors[a] = Geo_Actor(&trigs[a / 4]); conic_actors[a] = Geo_Actor(&trigsCones[a / 4]); volume_actors[a] = Geo_Actor(&trigs3D[a / 4]); break;
-                case ENTROPIC_QUAD: surface_actors[a] = Geo_Actor(&quads[a / 4]); conic_actors[a] = Geo_Actor(&quadsCones[a / 4]); volume_actors[a] = Geo_Actor(&quads3D[a / 4]); break;
-                case ENTROPIC_HEX: surface_actors[a] = Geo_Actor(&hexes[a / 4]); conic_actors[a] = Geo_Actor(&hexesCones[a / 4]); volume_actors[a] = Geo_Actor(&hexes3D[a / 4]); break;
-                case ENTROPIC_CIRCLE: surface_actors[a] = Geo_Actor(&circles[a / 4]); conic_actors[a] = Geo_Actor(&circlesCones[a / 4]); volume_actors[a] = Geo_Actor(&circles3D[a / 4]); break;
-            }
-
-            surface_actors[a].setName("actor_surface" + std::to_string(a));
-            surface_actors[a].setPos({ (float)rand() / (float)RAND_MAX - 0.5f, (float)rand() / (float)RAND_MAX - 0.5f, 0.0 });
-            surface_actors[a].setRot({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, });
-            float size = (float)rand() / (float)RAND_MAX * ENTROPIC_SIZE;
-            surface_actors[a].setSize({ (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F, (size > 0.01F)? size : 0.01F });
-            
-            // Extended Geometry & Actors
-
-            switch(a % 4){
-                case ENTROPIC_TRIG: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
-                    coneMeshes.push_back(new Geo_ExtCone({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigsCones[a / 4].getApex(), ENTROPIC_ITERS));
-                    volumeMeshes.push_back(new Geo_Ext3D({ trigs[a / 4].getRadius(), trigs[a / 4].getSegments() }, trigs3D[a / 4].getDepth(), ENTROPIC_ITERS));
-                break;
-                case ENTROPIC_QUAD: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
-                    coneMeshes.push_back(new Geo_ExtCone({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quadsCones[a / 4].getApex(), ENTROPIC_ITERS));
-                    volumeMeshes.push_back(new Geo_Ext3D({ quads[a / 4].getRadius(), quads[a / 4].getSegments() }, quads3D[a / 4].getDepth(), ENTROPIC_ITERS));
-                break;
-                case ENTROPIC_HEX: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
-                    coneMeshes.push_back(new Geo_ExtCone({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexesCones[a / 4].getApex(), ENTROPIC_ITERS));
-                    volumeMeshes.push_back(new Geo_Ext3D({ hexes[a / 4].getRadius(), hexes[a / 4].getSegments() }, hexes3D[a / 4].getDepth(), ENTROPIC_ITERS));
-                break;
-                case ENTROPIC_CIRCLE: 
-                    surfaceMeshes.push_back(new Geo_Ext2D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, DEFAULT_Z, ENTROPIC_ITERS));
-                    coneMeshes.push_back(new Geo_ExtCone({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circlesCones[a / 4].getApex(), ENTROPIC_ITERS));
-                    volumeMeshes.push_back(new Geo_Ext3D({ circles[a / 4].getRadius(), circles[a / 4].getSegments() }, circles3D[a / 4].getDepth(), ENTROPIC_ITERS));
-                break;
-            }
-
-            // surfaceMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
-            setInstances(surfaceMeshes.back());
-            surfaceMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
-            surfaceExt_actors[a] = Geo_Actor(surfaceMeshes.back());
-            surfaceExt_actors[a].copyParams(surface_actors[a]);
-            // coneMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
-            setInstances(coneMeshes.back());
-            coneMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
-            conicExt_actors[a] = Geo_Actor(coneMeshes.back());
-            conicExt_actors[a].copyParams(conic_actors[a]);
-            // volumeMeshes.back()->setInstances({ Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), Mat4x4::translation({ 0.0F, 0.1F, 0.0F}), Mat4x4::translation({ 0.0F, 0.0F, 0.1F}), });
-            setInstances(volumeMeshes.back());
-            volumeMeshes.back()->drawMode = (a % 3 == 0)? DRAW_Triangles : (a % 3 == 1)? DRAW_Lines : DRAW_Points;
-            volumeExt_actors[a] = Geo_Actor(volumeMeshes.back());
-            volumeExt_actors[a].copyParams(volume_actors[a]);
+            createGeometry(a); // basic geometry
+            createExtGeometry(a); // extended geometry
+            createPtGeometry(a); // point geometry
         }
     }
 
     void init() override;
     void loop(double frameTime) override;
 
-    Topl_Scene* getScene(){
-        switch(mode % 6){
-            case 1: return &scene2;
-            case 2: return &scene3;
-            case 3: return &ext_scene1;
-            case 4: return &ext_scene2;
-            case 5: return &ext_scene3;
-            default: return &scene1;
-        }
-    }
-
-    Geo_Quad2D* backdropMesh = new Geo_Quad2D(100.0);
-    Geo_Actor backdropActor = Geo_Actor(backdropMesh);
+    Topl_Scene* getScene(){ return &scenes[mode % ENTROPIC_SCENES]; }
 
     Geo_Trig2D trigs[ENTROPIC_COUNT / 4]; Geo_TrigCone trigsCones[ENTROPIC_COUNT / 4]; Geo_Trig3D trigs3D[ENTROPIC_COUNT / 4];
     Geo_Quad2D quads[ENTROPIC_COUNT / 4]; Geo_QuadCone quadsCones[ENTROPIC_COUNT / 4]; Geo_Quad3D quads3D[ENTROPIC_COUNT / 4];
     Geo_Hex2D hexes[ENTROPIC_COUNT / 4]; Geo_HexCone hexesCones[ENTROPIC_COUNT / 4]; Geo_Hex3D hexes3D[ENTROPIC_COUNT / 4];
     Geo_Circle2D circles[ENTROPIC_COUNT / 4]; Geo_CircleCone circlesCones[ENTROPIC_COUNT / 4]; Geo_Circle3D circles3D[ENTROPIC_COUNT / 4];
-    // Geo_Actor actors[ENTROPIC_COUNT];
-    Geo_Actor surface_actors[ENTROPIC_COUNT]; Geo_Actor conic_actors[ENTROPIC_COUNT]; Geo_Actor volume_actors[ENTROPIC_COUNT];
-
     std::vector<Geo_Ext2D*> surfaceMeshes; std::vector<Geo_ExtCone*> coneMeshes; std::vector<Geo_Ext3D*> volumeMeshes;
-    Geo_Actor surfaceExt_actors[ENTROPIC_COUNT]; Geo_Actor conicExt_actors[ENTROPIC_COUNT]; Geo_Actor volumeExt_actors[ENTROPIC_COUNT];
+    std::vector<Geo_Surface*> surfacePtMeshes; std::vector<Geo_Cone*> conePtMeshes; std::vector<Geo_Volume*> volumePtMeshes;
+
+    Geo_Actor surface_actors[ENTROPIC_COUNT], conic_actors[ENTROPIC_COUNT], volume_actors[ENTROPIC_COUNT];
+    Geo_Actor surfaceExt_actors[ENTROPIC_COUNT], conicExt_actors[ENTROPIC_COUNT], volumeExt_actors[ENTROPIC_COUNT];
+    Geo_Actor surfacePt_actors[ENTROPIC_COUNT], conicPt_actors[ENTROPIC_COUNT], volumePt_actors[ENTROPIC_COUNT];
 #ifdef TOPL_ENABLE_PHYSICS
     Phys_Actor physActors[ENTROPIC_COUNT];
 #endif
 private:
     void setInstances(Geo_Mesh* mesh);
+    void createGeometry(unsigned index);
+    void createExtGeometry(unsigned index);
+    void createPtGeometry(unsigned index);
     void onAnyKey(char key);
 
-    // Topl_Scene scenes[6]; // TODO: Switch to this
-    Topl_Scene scene1, scene2, scene3;
-    Topl_Scene ext_scene1, ext_scene2, ext_scene3;
+    Topl_Scene scenes[ENTROPIC_SCENES] = { PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE, PROGRAM_SCENE };
+    // Topl_Scene scene1, scene2, scene3;
+    // Topl_Scene ext_scene1, ext_scene2, ext_scene3;
 } *Entropy;

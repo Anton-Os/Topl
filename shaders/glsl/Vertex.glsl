@@ -20,23 +20,12 @@ mat3 getRotMatrix(vec3 angles) {
 	return zRotMatrix * yRotMatrix * xRotMatrix;
 }
 
-mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
-	mat3 rotMatrix = getRotMatrix(angles);
+vec3 getLook(vec2 angles){ return vec3(sin(-angles.y), sin(angles.x), -cos(angles.x + angles.y)); }
 
-	mat4 camMatrix = mat4(
-		rotMatrix[0][0], rotMatrix[0][1], rotMatrix[0][2], -cPos.x,
-		rotMatrix[1][0], rotMatrix[1][1], rotMatrix[1][2], -cPos.y,
-		rotMatrix[2][0], rotMatrix[2][1], rotMatrix[2][2], -cPos.z,
-		0, 0, 0, 1
-	);
+mat4 getLookAtMatrix(vec3 cPos, vec2 aRot, vec3 upPos){
+	vec3 lPos = getLook(aRot);
 
-	return camMatrix;
-}
-
-mat4 getLookAtMatrix(vec3 cPos, vec3 lPos, vec3 upPos){
-	// mat4 camMatrix = getCamMatrix(vec4(cPos, 1.0), lPos); // TODO: Compute based on camera value
-	
-	vec3 forward = normalize(lPos - cPos);
+	vec3 forward = normalize(lPos);
 	vec3 right = normalize(cross(forward, upPos));
 	vec3 up = normalize(cross(right, upPos));
 	
@@ -48,6 +37,29 @@ mat4 getLookAtMatrix(vec3 cPos, vec3 lPos, vec3 upPos){
 	);
 
 	return lookAtMatrix;
+}
+
+mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
+	// mat3 orientMatrix = getRotMatrix(angles);
+	vec3 up = vec3(0.0, sin(angles.z), cos(angles.z));
+	mat4 orientMatrix = getLookAtMatrix(vec3(cPos.x, cPos.y), angles, up);
+
+	/* mat4 camMatrix = mat4(
+		orientMatrix[0][0], orientMatrix[0][1], orientMatrix[0][2], -cPos.x,
+		orientMatrix[1][0], orientMatrix[1][1], orientMatrix[1][2], -cPos.y,
+		orientMatrix[2][0], orientMatrix[2][1], orientMatrix[2][2], -cPos.z,
+		0, 0, 0, 1
+	); */
+
+	mat4 camMatrix = mat4(
+		1, 0, 0, -cPos.x,
+		0, 1, 0, -cPos.y,
+		0, 0, 1, -cPos.z,
+		0, 0, 0, 1
+	);
+
+	if(angles.x != 0.0 || angles.y != 0.0 || angles.z != 0.0) return orientMatrix * camMatrix;
+	else return camMatrix;
 }
 
 float getLineDistance(vec2 coord, vec2 p1, vec2 p2){

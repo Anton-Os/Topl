@@ -1,7 +1,7 @@
 #ifndef NATIVE_OS_DEF
 
-#define TOPL_WIN_HEIGHT 1024
-#define TOPL_WIN_WIDTH 1024
+#define TOPL_WIN_HEIGHT 1200
+#define TOPL_WIN_WIDTH 1200
 
 #include "support_def.h"
 

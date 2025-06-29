@@ -145,13 +145,15 @@ public:
 
 	void setInstances(std::initializer_list<Mat4x4> matrices){
 		_instanceCount = matrices.size();
-		if(_instanceData != nullptr) free(_instanceData);
-		_instanceData = (Mat4x4*)malloc(matrices.size() * sizeof(Mat4x4));
-		
-		unsigned instanceOffset = 0;
-		for(auto m = matrices.begin(); m != matrices.end() && instanceOffset < MAX_INSTANCES; m++){
-			*(_instanceData + instanceOffset) = *m;
-			instanceOffset++;
+		// if (_instanceData != nullptr) free(_instanceData);
+		if (_instanceData == nullptr) { // testing
+			_instanceData = (Mat4x4*)malloc(matrices.size() * sizeof(Mat4x4));
+
+			unsigned instanceOffset = 0;
+			for (auto m = matrices.begin(); m != matrices.end() && instanceOffset < MAX_INSTANCES; m++) {
+				*(_instanceData + instanceOffset) = *m;
+				instanceOffset++;
+			}
 		}
 	}
 

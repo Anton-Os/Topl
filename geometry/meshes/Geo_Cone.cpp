@@ -24,6 +24,21 @@ Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex){
 	return vertexData;
 }
 
+Geo_Vertex* genConeP_vertices(vertex_cptr_t points, unsigned c, Vec3f apex) {
+	unsigned count = c + 1;
+	Geo_Vertex* vertexData = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
+
+	*(vertexData + count - 1) = Geo_Vertex(apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
+
+	unsigned short v = 0;
+	for (unsigned p = 0; p < count; p++) {
+		*(vertexData + v) = *(points + p);
+		v++;
+	}
+
+	return vertexData;
+}
+
 unsigned* genCone_indices(Shape2D shape){
 	unsigned vCount = shape.segments + 2;
 	unsigned iCount = shape.segments * 6;
@@ -65,59 +80,12 @@ unsigned* genCone_indices(Shape2D shape){
 
 // Constructors
 
-Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(shape.segments + 2, shape.segments * 6) {
+Geo_Cone::Geo_Cone(Shape2D shape, Vec3f apex) : Geo_Mesh(
+	shape.segments + 2, genCone_vertices(shape, apex),
+	shape.segments * 6, genCone_indices(shape)
+) {
 	_shape = shape;
 	_apex = apex;
-
-    _vertices[0] = Geo_Vertex({ 0.0f, 0.0f, DEFAULT_Z + 0.00001F }, { 0.5f, 0.5f, 0.0f }, { 0.0F, 0.0F, -1.0F }, { 1.0F, 1.0F, 1.0F }); // origin
-    _vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
-
-	unsigned v;
-	for (v = 1; v < _vertices.size() - 1; v++) {
-		Vec3f pos = Vec3f({ 
-			(float)sin(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
-			(float)cos(ANGLE_START(_shape.segments) + (v * ANGLE_OFFSET(_shape.segments))) * RADIUS_SIZE(_shape.radius),
-			(float)DEFAULT_Z
-		});
-
-		// Vec3f normal = Vec3f({ 0.0f, 0.0f, -1.0f }); // base facing normal
-		_vertices[v] = Geo_Vertex(pos);
-	}
-
-	unsigned i; // current index
-	v = 1; // tracks current vertex
-
-	{
-		// Base Indexing
-		for (i = 0; i < (_indices.size() / 2) - 3; i += 3) {
-			_indices[i] = 0; // origin
-			_indices[i + 1] = v; // target
-			_indices[i + 2] = v + 1; // next vertex
-			v++;
-		}
-
-		// special case for last base triangle
-		_indices[i] = 0;
-		_indices[i + 1] = v;
-		_indices[i + 2] = 1;
-	}
-
-	{
-		// Apex Indexing
-		v = 1; // reset
-
-		for (i = _indices.size() / 2; i < _indices.size() - 3; i += 3) {
-			_indices[i] = _vertices.size() - 1; // apex
-			_indices[i + 1] = v + 1; // next vertex
-			_indices[i + 2] = v; // target
-			v++;
-		}
-
-		// special case for last apex triangle
-		_indices[i] = _vertices.size() - 1;
-		_indices[i + 1] = v;
-		_indices[i + 2] = 1;
-	}
 }
 
 Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_Cone(shape, apex){
@@ -158,44 +126,10 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 	// for(unsigned i = 1; i < siCount; i++) _indices[i] = 0; // clear?
 }
 
-Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(pointCount + 1, (pointCount + 2) * 3){
+Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(
+	pointCount + 1, genConeP_vertices(points, pointCount, apex)
+){
 	_apex = apex;
-    _vertices[_vertices.size() - 1] = Geo_Vertex(_apex, { 0.5f, 0.5f, 1.0f }, { 0.0F, 0.0F, 1.0F }, { 1.0F, 1.0F, 1.0F }); // apex
-	
-	unsigned short v = 0;
-	for(unsigned p = 0; p < pointCount; p++){
-		_vertices[v] = *(points + p);
-        // _vertices[v].texcoord = getTexCoord(_vertices[v].position);
-        v++; 
-	}
-
-	v = 0; // reset vertex
-	unsigned short i = 0;
-	while(i < _indices.size() / 3){ // indexing for face
-		if(i % 2 == 0){
-			_indices[i] = v;
-			_indices[i + 1] = v + 1;
-			_indices[i + 2] = v + 2;
-		} else {
-			_indices[i] = v;
-			_indices[i + 1] = v + 2;
-			_indices[i + 2] = v + 3;
-			v += 3;
-		}
-
-		i += 3;
-	}
-
-	v = 0; // reset vertex
-	while(i < _indices.size()){
-		_indices[i] = _vertices.size() - 1; // connect to apex
-		_indices[i + 1] = v;
-		_indices[i + 2] = v + 1;
-		i += 3;
-		v++;
-	}
-
-	// TODO: Indexing connecting to apex
 }
 
 Geo_ExtCone::Geo_ExtCone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex, unsigned short iters) : Geo_Cone(points, pointCount, apex){
