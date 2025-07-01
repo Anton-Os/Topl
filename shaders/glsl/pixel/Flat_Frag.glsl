@@ -8,8 +8,8 @@
 #define FLAT_DIRECTIONAL 1
 #define FLAT_COORD 2
 #define FLAT_VERTEX 3
-#define FLAT_CAMERA 4
-#define FLAT_ANGULAR 5
+#define FLAT_ANGULAR 4
+#define FLAT_TANGENT 5
 #define FLAT_TEXCOORD 6
 #define FLAT_NORMAL 7
 #define FLAT_SECTIONED 8
@@ -34,6 +34,7 @@ layout(location = 1) in vec4 vertex_color;
 layout(location = 2) flat in int id;
 layout(location = 3) in vec3 texcoord;
 layout(location = 4) in vec3 normal;
+layout(location = 5) in vec3 tangent;
 
 layout(location = 0) out vec4 color_final;
 
@@ -55,8 +56,9 @@ void main() {
 	else if(mode % 10 == FLAT_DIRECTIONAL) color_final = vec4((pos.x / 2.0) + 0.5, (pos.y / 2.0) + 0.5, (pos.z / 2.0) + 0.5, alpha);
 	else if(mode % 10 == FLAT_COORD) color_final = vec4((pos.x - offset.x + cam_pos.x) * 2.0 + 0.5, (pos.y - offset.y + cam_pos.y) * 2.0 + 0.5, (pos.z - offset.z) * 2.0 + 0.5, color.a);
 	else if(mode % 10 == FLAT_VERTEX) color_final = vec4(vertex_color.r, vertex_color.g, vertex_color.b, alpha);
-	else if(mode % 10 == FLAT_CAMERA) color_final = vec4(abs(cam_pos.x - pos.x), abs(cam_pos.y - pos.y), abs(cam_pos.z - pos.z), alpha);
+	// else if(mode % 10 == FLAT_CAMERA) color_final = vec4(abs(cam_pos.x - pos.x), abs(cam_pos.y - pos.y), abs(cam_pos.z - pos.z), alpha);
 	else if(mode % 10 == FLAT_ANGULAR) color_final = vec4(atan((pos.y - offset.y) / (pos.x - offset.x)), atan((pos.y - offset.y) / (pos.z - offset.z)), atan((pos.x - offset.x) / (pos.z - offset.z)), alpha);
+	else if(mode % 10 == FLAT_TANGENT) color_final = vec4(tangent, 1.0);
 	else if(mode % 10 == FLAT_TEXCOORD) color_final = vec4(texcoord.x, texcoord.y, texcoord.z, alpha);
 	else if(mode % 10 == FLAT_NORMAL) color_final = vec4(normal.x, normal.y, normal.z, alpha);
 	else if(mode % 10 == FLAT_SECTIONED) color_final = vec4(((id + 1) / 3.0) - floor((id + 1) / 3.0), ((id + 1) / 6.0) - floor((id + 1) / 6.0), ((id + 1) / 9.0) - floor((id + 1) / 9.0), alpha);

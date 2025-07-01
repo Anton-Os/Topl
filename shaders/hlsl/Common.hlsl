@@ -29,10 +29,8 @@ cbuffer CONST_EXT_BLOCK : register(b2) {
 #endif
 
 #ifdef INCLUDE_DATASTREAM
-
 // ByteAddressBuffer feedIn : register(t9); // Buffer feedIn : register(b3) { float3[]; }
 RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) { float3[]; }
-
 #endif
 
 #define TRACER_STEPS 16
@@ -62,7 +60,7 @@ struct VS_INPUT {
 	float3 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
 	float3 vert_color : COLOR;
-	// float3x3 instanceData : INSTANCE;
+	float3 tangent : TANGENT;
 };
 #endif
 

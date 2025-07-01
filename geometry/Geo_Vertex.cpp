@@ -4,23 +4,26 @@ Geo_Vertex::Geo_Vertex(Vec3f p) : Geo_Pos(p){ // position constructor
     normal = getNormal(position);
     texcoord = getTexCoord(position);
     color = getColor();
+    tangent = getTangent(position);
 }
 
 Geo_Vertex::Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c) : Geo_Pos(p) { // full constructor
     texcoord = t;
     normal = n;
     color = c;
+    tangent = VEC_3F_RAND; // random number here
 }
 
 Geo_Vertex::Geo_Vertex(const Geo_Vertex& vertex) : Geo_Pos(vertex.position) { // copy constructor
     texcoord = vertex.texcoord;
     normal = vertex.normal;
     color = vertex.color;
+    tangent = vertex.tangent;
 }
 
 Vec3f Geo_Vertex::getNormal(Vec3f vertexPos){
-    Vec3f normVec = (vertexPos[2] >= 0.0)? Vec3f({ 0.0F, 0.0F, -1.0F }) : Vec3f({ 0.0F, 0.0F, 1.0f });
-    return normVec;
+    if(vertexPos[0] == 0.0 && vertexPos[1] == 0.0 && vertexPos[2] == 0.0) return VEC_3F_ZERO;
+    return (vertexPos[2] >= 0.0)? Vec3f({ 0.0F, 0.0F, 1.0F }) : Vec3f({ 0.0F, 0.0F, -1.0f });
 }
 
 Vec3f Geo_Vertex::getTexCoord(Vec3f vertexPos){ // regular texture coordinates
@@ -48,6 +51,16 @@ Vec3f Geo_Vertex::getColor(){
     else if (vertCount % 6 == 4) return Vec3f({ 0.0, 1.0F - attenuation, 1.0F - attenuation }); // cyan
     else if (vertCount % 6 == 5) return Vec3f({ 1.0F - attenuation, 0.0, 1.0F - attenuation }); // magenta
     else return Vec3f({ 1.0F - attenuation, 1.0F - attenuation, 1.0F - attenuation }); // white
+}
+
+Vec3f Geo_Vertex::getTangent(Vec3f vertexPos) {
+    static Vec3f lastPos = VEC_3F_ZERO;
+
+    Vec3f tangent = vertexPos - lastPos;
+    tangent.normalize();
+
+    lastPos = vertexPos;
+    return tangent;
 }
 
 // Transform Callbacks

@@ -28,12 +28,13 @@ struct Geo_Vertex : public Geo_Pos {
     Vec3f getTexCoord(Vec3f vertexPos);
     Vec3f getTexCoord(unsigned v, float z);
     Vec3f getColor();
+    Vec3f getTangent(Vec3f vertexPos);
 
     // unsigned segment = 0; // gets recorded when mesh is composite
-	Vec3f texcoord = Vec3f({ 0.0, 0.0, 0.0 }); // indicates texture mapping
+	Vec3f texcoord = Vec3f({ 0.5F, 0.5F, 0.0 }); // indicates texture mapping
     Vec3f normal = Vec3f({ 0.0, 0.0, -1.0 }); // indicates face direction
-    Vec3f color = Vec3f({ 1.0, 1.0, 1.0 }); // indicates vertex number
-    // Vec3f tangent = VEC_3F_ZERO; // gets modified based on the previous vertex
+    Vec3f color = VEC_3F_ONES; // indicates vertex number
+    Vec3f tangent = VEC_3F_ZERO; // gets modified based on the previous vertex
 };
 
 typedef const Geo_Vertex* const vertex_cptr_t;

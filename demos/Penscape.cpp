@@ -51,7 +51,7 @@ void Penscape_Demo::loop(double frameTime){
     }
 }
 
-MAIN_ENTRY {
+MAIN_ENTRY{
     Penscape = new Penscape_Demo(argv[0], BACKEND_DX11);
     Penscape->run();
 

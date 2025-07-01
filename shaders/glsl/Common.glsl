@@ -31,10 +31,8 @@ layout(std140, binding = 2) uniform ExtBlock {
 #endif
 
 #ifdef INCLUDE_DATASTREAM
-
 // layout(std140, binding = 3) readonly buffer FeedIn { vec3 data[]; };
 layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
-
 #endif
 
 #define TRACER_STEPS 16
@@ -68,7 +66,7 @@ layout(location = 0) in vec3 pos_in;
 layout(location = 1) in vec3 texcoord_in;
 layout(location = 2) in vec3 normal_in;
 layout(location = 3) in vec3 vert_color_in;
-// layout(location = 3) in mat3 instanceData;
+layout(location = 4) in vec3 tangent_in;
 #endif
 
 // Functions

@@ -42,7 +42,7 @@ mat4 getLookAtMatrix(vec3 cPos, vec2 aRot, vec3 upPos){
 mat4 getCamMatrix(vec4 cPos, vec3 angles) { // placeholder camera
 	// mat3 orientMatrix = getRotMatrix(angles);
 	vec3 up = vec3(0.0, sin(angles.z), cos(angles.z));
-	mat4 orientMatrix = getLookAtMatrix(vec3(cPos.x, cPos.y), angles, up);
+	mat4 orientMatrix = getLookAtMatrix(vec3(cPos.x, cPos.y, cPos.z), vec2(angles.x, angles.y), up);
 
 	/* mat4 camMatrix = mat4(
 		orientMatrix[0][0], orientMatrix[0][1], orientMatrix[0][2], -cPos.x,

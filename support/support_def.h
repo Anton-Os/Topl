@@ -10,7 +10,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#if FALSE
+#if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
 #if 1 && !defined(__ANDROID__)
