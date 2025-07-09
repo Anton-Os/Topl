@@ -32,13 +32,13 @@ void Topl_Program::updatePipelines(){
         _beamsVShader.setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(camera.getRot())).data[0]), cos((*(camera.getRot())).data[0]), tan((*(camera.getRot())).data[1]) }), { BEAMS_SKY_LIGHT.value }));
         _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos(), { BEAMS_FLASH_LIGHT.value }));
         if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), { BEAMS_LAMP_LIGHT.value }));
-    } else if(_renderer->getPipeline() == _patternPipeline) 
-        for(unsigned p = 0; p < PATTERN_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
+    } else if(_renderer->getPipeline() == _fieldPipeline || _renderer->getPipeline() == _patternPipeline)
+        for(unsigned p = 0; p < FIELD_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
             tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];
-            _patternVShader.setCtrlPoint(p, Vec3f({
-                 (float)tracerStep.step.first + (sin((float)tracerStep.step.first + timeElapse / 100.0F) * 0.05F), 
-                 (float)tracerStep.step.second + (sin((float)tracerStep.step.second + timeElapse / 100.0F) * 0.05F), 
-                 (1.0F / Platform::mouseControl.getTracerSteps()->size()) * p
+            if(_renderer->getPipeline() == _fieldPipeline) _fieldVShader.setCtrlPoint(p, Vec3f({
+                (float)tracerStep.step.first + (sin((float)tracerStep.step.first + timeElapse / 100.0F) * 0.05F),
+                (float)tracerStep.step.second + (sin((float)tracerStep.step.second + timeElapse / 100.0F) * 0.05F),
+                DEFAULT_Z
             }));
         }
 }

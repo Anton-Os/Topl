@@ -1,3 +1,11 @@
+struct VS_INPUT {
+	float4 pos : POSITION;
+	float3 texcoord : TEXCOORD;
+	float3 normal : NORMAL;
+	float3 vert_color : COLOR;
+	float3 tangent : TANGENT;
+};
+
 float3x3 getRotMatrix(float3 angles) {
 	float3x3 zRotMatrix = { // Roll
 		cos(angles.x), sin(angles.x), 0,

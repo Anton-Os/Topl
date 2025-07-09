@@ -62,8 +62,6 @@ private:
     void genShapes(std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2);
     void rebuildGeometry(std::thread* thread);
 
-    void renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count);
-
     Topl_Scene scene = PROGRAM_SCENE;
 
     std::thread* textureThread = nullptr;

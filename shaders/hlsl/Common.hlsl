@@ -54,16 +54,6 @@ SamplerState areaSampler : register(s8);
 
 #define COLOR_INC 0.00390625
 
-#ifndef IGNORE_INPUTS
-struct VS_INPUT {
-	float4 pos : POSITION;
-	float3 texcoord : TEXCOORD;
-	float3 normal : NORMAL;
-	float3 vert_color : COLOR;
-	float3 tangent : TANGENT;
-};
-#endif
-
 // Functions
 
 uint4 getModes(int mode){

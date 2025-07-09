@@ -60,15 +60,6 @@ layout(binding = 8) uniform sampler3D volumeTex;
 
 // uniform vec4 controlPoints[64];
 // uniform vec4 nearestVertex[1024];
-
-#ifndef IGNORE_INPUTS
-layout(location = 0) in vec3 pos_in;
-layout(location = 1) in vec3 texcoord_in;
-layout(location = 2) in vec3 normal_in;
-layout(location = 3) in vec3 vert_color_in;
-layout(location = 4) in vec3 tangent_in;
-#endif
-
 // Functions
 
 uvec4 getModes(int mode){

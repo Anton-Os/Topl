@@ -1,3 +1,9 @@
+layout(location = 0) in vec3 pos_in;
+layout(location = 1) in vec3 texcoord_in;
+layout(location = 2) in vec3 normal_in;
+layout(location = 3) in vec3 vert_color_in;
+layout(location = 4) in vec3 tangent_in;
+
 mat3 getRotMatrix(vec3 angles) {
 	mat3 zRotMatrix = mat3( // Roll
 		cos(angles.x), sin(angles.x), 0,

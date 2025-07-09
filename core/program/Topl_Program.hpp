@@ -8,6 +8,7 @@
 #include "Material_Shader.hpp"
 #include "Effect_Shader.hpp"
 #include "Canvas_Shader.hpp"
+#include "Field_Shader.hpp"
 #include "Pattern_Shader.hpp"
 #include "Advance_Shader.hpp"
 
@@ -20,7 +21,7 @@
 #define CACHED_FRAME_COUNT 60
 #define PROGRAM_M 0.1f
 #define PROGRAM_SCENE Topl_Scene(&Topl_Program::camera)
-#define PROGRAM_PIPELINES 7
+#define PROGRAM_PIPELINES 8
 #define PROGRAM_BK_TESS 3
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
@@ -121,11 +122,12 @@ protected:
 	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
+	Field_VertexShader _fieldVShader; Field_PixelShader _fieldPShader;
 	Pattern_VertexShader _patternVShader; Pattern_PixelShader _patternPShader;
 	Advance_GeometryShader _geomShaders[PROGRAM_PIPELINES]; Advance_TessCtrlShader _tessCtrlShaders[PROGRAM_PIPELINES]; Advance_TessEvalShader _tessEvalShaders[PROGRAM_PIPELINES];
 
-	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_patternVShader };
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_patternPipeline; // for easy reuse
+	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_fieldVShader, &_patternVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_fieldPipeline, *_patternPipeline; // for easy reuse
 	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties

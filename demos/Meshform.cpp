@@ -117,35 +117,6 @@ void Meshform_Demo::rebuildGeometry(std::thread* thread){
     }
 }
 
-void Meshform_Demo::renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count){
-    Vec3f transform = VEC_3F_RAND; // = *(actor->getSize());
-    switch(type){
-        case TFORM_Shift: transform = *(actor->getPos()); break;
-        case TFORM_Rotate: transform = *(actor->getRot()); break;
-        case TFORM_Scale: transform = *(actor->getSize()); break;
-    }
-    Vec3f texScale = Vec3f({ 1.0F, 1.0F, 1.0F });
-
-    for(unsigned c = 0; c < count; c++){ // inscribed objects
-        float inc = 1.0F - ((1.0F / count) * (c + 1));
-        switch(type){
-            case TFORM_Shift: actor->setPos(transform * inc); break;
-            case TFORM_Rotate: actor->setRot(transform * inc); break;
-            case TFORM_Scale: actor->setSize(transform * inc); break;
-        }
-        _texVShader.setTexScale(texScale * inc);
-        _renderer->update(actor);
-        _renderer->draw(actor);
-    }
-
-    switch(type){
-        case TFORM_Shift: actor->setPos(transform); break;
-        case TFORM_Rotate: actor->setRot(transform); break;
-        case TFORM_Scale: actor->setSize(transform); break;
-    }
-    _texVShader.setTexScale(texScale);
-}
-
 void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
     if(menu == PROGRAM_AppBar){
         Vec3f amount = Vec3f({ (paneIndex % 3 == 0)? MESHFORM_AMOUNT : 0.0F, (paneIndex % 3 == 1)? MESHFORM_AMOUNT : 0.0F, (paneIndex % 3 == 2)? MESHFORM_AMOUNT : 0.0F, });
@@ -214,11 +185,6 @@ void Meshform_Demo::loop(double frameTime){
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
-
-    renderRecursive(&torusActor, TFORM_Shift, 8);
-    for(unsigned a = 0; a < 4; a++)
-        for(unsigned o = 0; o < 3; o++) 
-            if(orbActors[o][a].isShown) renderRecursive(&orbActors[o][a], TFORM_Rotate, 3);
 }
 
 MAIN_ENTRY{
