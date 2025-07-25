@@ -59,14 +59,14 @@ void Topl_Program::updateTimelines(){
         double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
         if(secsElapsed < TIMELINE_END) _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
 
-        if(_renderer->getFrameCount() % 60 == 0){ 
-            /* std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
+        /*if (_renderer->getFrameCount() % 60 == 0) {
+            std::string minStr = "_" + (((unsigned)secsElapsed / 60) > 10)? std::to_string((unsigned)secsElapsed / 60) : ("0" + std::to_string((unsigned)secsElapsed / 60)) + "_";
             _overlays.mediaLabels[2].setText({ _overlays.fontPath.c_str(), minStr.c_str(), 0xFF111111, 0xFFEEEEEE });
             std::string secsStr = "_" + (((unsigned)secsElapsed % 60) > 10)? std::to_string((unsigned)secsElapsed % 60) : ("0" + std::to_string((unsigned)secsElapsed % 60)) + "_";
-            _overlays.mediaLabels[1].setText({ _overlays.fontPath.c_str(), secsStr.c_str(), 0xFF111111, 0xFFEEEEEE }); */
+            _overlays.mediaLabels[1].setText({ _overlays.fontPath.c_str(), secsStr.c_str(), 0xFF111111, 0xFFEEEEEE });
 
             _renderer->texturizeScene(&_overlays.scene); // TODO: Remove this logic
-        }
+        } */
     }
 #endif
 }

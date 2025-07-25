@@ -1,7 +1,9 @@
 #ifndef GEO_MESH_H
 
+#ifdef __cplusplus
 #include <vector>
 #include <initializer_list>
+#endif
 
 #include "Geo_Vertex.hpp"
 
@@ -31,6 +33,7 @@ enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shea
 
 // Mesh Object
 
+#ifdef __cplusplus
 class Geo_Mesh {
 public:
 	Geo_Mesh(){} // empty constructor
@@ -92,6 +95,7 @@ protected:
 	unsigned _instanceCount = 0;
 	Mat4x4* _instanceData = nullptr;
 };
+#endif
 
 #define GEO_MESH_H
 #endif

@@ -1,4 +1,4 @@
-#ifndef GEO_CONIC_H
+#ifndef GEO_CONE_H
 
 #include "Geo_Mesh.hpp"
 
@@ -6,6 +6,7 @@ Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex);
 Geo_Vertex* genConeP_vertices(vertex_cptr_t points, unsigned c, Vec3f apex);
 unsigned* genCone_indices(Shape2D shape);
 
+#ifdef __cplusplus
 class Geo_Cone : public Geo_Mesh {
 public:
 	Geo_Cone(Shape2D shape, Vec3f apex);
@@ -51,6 +52,7 @@ struct Geo_ExtCone : public Geo_Cone { // expands base into repeating portions
 
 	unsigned short _iters;
 };
+#endif
 
-#define GEO_CONIC_H
+#define GEO_CONE_H
 #endif

@@ -24,7 +24,7 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
 #endif
-#if ON
+#if TRUE
     #define TOPL_ENABLE_PHYSICS
 #endif
 

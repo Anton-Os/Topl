@@ -117,7 +117,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         // Topl_Program::camera.setRot(pivot);
                         std::cout << "Camera position is " << Topl_Program::camera.getPos()->toString() 
                             << ", rotation is " << Topl_Program::camera.getRot()->toString() << std::endl
-                            << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;;
+                            << "Camera projection is " << Topl_Program::camera.getProjMatrix()->toString() << std::endl;
                     }
                     else if(o == PROGRAM_Object){
                         if(Topl_Program::lastPickerObj != nullptr){

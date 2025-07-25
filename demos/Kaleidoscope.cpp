@@ -11,8 +11,9 @@ void Kaleidoscope_Construct::init() {
     for(unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++){
         float z = KALEIDOSCOPE_Z;
 
-        if(tessCount != 0) meshes[s] = new Geo_Ext2D({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, z, (unsigned)abs(tessCount));
-        else meshes[s] = new Geo_Surface({ (float)rand() / (float)RAND_MAX, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs }, z);
+        Shape2D shape = { (float)rand() / (float)RAND_MAX, (minDivs == maxDivs) ? minDivs : (unsigned)(rand() % maxDivs) + minDivs };
+        if(tessCount != 0) meshes[s] = new Geo_Ext2D(shape, z, (unsigned)abs(tessCount));
+        else meshes[s] = new Geo_Surface(shape, z);
         
         if(tessCount <= 0) meshes[s]->tesselate(KALEIDOSCOPE_TESS);
 
@@ -62,11 +63,6 @@ void Kaleidoscope_Demo::loop(double frameTime){
         constructs[mode].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[mode].getSpinFactor(s) * 2), 0.0F, 0.0F }));
         float scale = sin(constructs[mode].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
         constructs[mode].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
-    }
-
-    if(_renderer->getPipeline() == _patternPipeline){
-        for(unsigned p = 0; p < PATTERN_POINTS_MAX; p++)
-            _patternVShader.setCtrlPoint(p, Vec3f({ 0.0F, 0.0F, -1.0F + ((2.0F / PATTERN_POINTS_MAX) * p) }));
     }
 
     _renderer->setDrawMode(drawMode);

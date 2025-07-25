@@ -1,0 +1,39 @@
+#include "Geo_Fractal.hpp"
+
+Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback){
+    unsigned count = shape.xDivs * shape.yDivs * shape.zDivs;
+    Geo_Vertex* all_vertices = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
+
+    unsigned v = 0;
+    for(float x = -shape.radius; x < shape.radius; x += ((shape.radius / 2.0f) / shape.xDivs))
+        for(float y = -shape.radius; y < shape.radius; y += ((shape.radius / 2.0f) / shape.yDivs))
+            for(float z = -shape.radius; z < shape.radius; z += ((shape.radius / 2.0f) / shape.zDivs)){
+                assert(v < count);
+                *(all_vertices + v) = Geo_Vertex(Vec3f({ x, y, z }));
+                v++;
+            }
+
+    unsigned invalidCount = 0;
+    for(v = 0; v < count; v++)
+        if(!callback((*(all_vertices + v)).position)){
+            *(all_vertices + v) = Geo_Vertex(VEC_3F_INV); // invalid vertex
+            invalidCount++;
+        }
+
+    Geo_Vertex* vertices = (Geo_Vertex*)malloc((count - invalidCount) * sizeof(Geo_Vertex));
+    unsigned o = 0;
+    for(v = 0; v < count; v++)
+        if((*(all_vertices + v)).position != VEC_3F_INV){
+            *(vertices + o) = *(all_vertices + v);
+            o++;
+        }
+
+    free(all_vertices);
+    
+    return vertices;
+}
+
+unsigned* genFractal_indices(Geo_Vertex* vertices, unsigned count){
+    // TODO: Implement body
+    return NULL;
+}

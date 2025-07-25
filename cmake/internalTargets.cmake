@@ -27,7 +27,7 @@ if(SUPPORT_PHYSICS)
     list(APPEND core_src core/scene/Topl_Scene_Dynamics.cpp)
 endif()
 
-add_library(CORELIB # Core Library
+add_library(CORELIB # SHARED # Core Library
     ${support_src}
     ${core_src}
 )
@@ -58,12 +58,13 @@ list(APPEND geometry_src
     geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Cone.cpp
     geometry/meshes/Geo_Orboid.cpp
+    geometry/meshes/Geo_Fractal.cpp
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
 endif()
 
-add_library(GEOLIB ${geometry_src}) # Geometry Library
+add_library(GEOLIB STATIC ${geometry_src}) # Geometry Library
 target_include_directories(GEOLIB PRIVATE core support geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>

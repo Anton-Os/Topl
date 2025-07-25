@@ -89,11 +89,17 @@ Geo_Vertex* genTorus_vertices(Shape3D shape, float d){
 		}
 	}
 
+	if (v < count)
+		while (v < count) {
+			*(vertexData + v) = Geo_Vertex(VEC_3F_ZERO);
+			v++;
+		}
+
 	return vertexData;
 }
 
 unsigned* genTorus_indices(Shape3D shape){
-	unsigned vCount = (shape.xSegs + 1) * (shape.ySegs + 1);
+	// unsigned vCount = (shape.xSegs + 1) * (shape.ySegs + 1);
 	unsigned iCount = ((shape.xSegs + 1) * (shape.ySegs + 1)) * 6;
 	unsigned* indexData = (unsigned*)malloc(iCount * sizeof(unsigned));
 
@@ -114,6 +120,12 @@ unsigned* genTorus_indices(Shape3D shape){
 			idx++; nextIdx++;
 		}
 	}
+
+	if (i < iCount)
+		while (i < iCount) {
+			*(indexData + i) = 0;
+			i++;
+		}
 
 	return indexData;
 }
