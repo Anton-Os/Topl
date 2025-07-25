@@ -10,23 +10,8 @@ unsigned* genOrb_indices(Shape3D shape);
 #ifdef __cplusplus
 class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 public:
-	Geo_Orb(float size) : Geo_Mesh(
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)),
-		genOrb_vertices({ size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS }),
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6, // index count
-		genOrb_indices({ size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS })
-	){
-		_shape = { size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
-	}
-
-	Geo_Orb(Shape3D shape) : Geo_Mesh(
-		((shape.xSegs + 1) * (shape.ySegs + 1)), // slices and stacks
-		genOrb_vertices(shape),
-		((shape.xSegs + 1) * (shape.ySegs + 1)) * 6, // index count
-		genOrb_indices(shape)
-	){
-		_shape = shape;
-	}
+	Geo_Orb(float size);
+	Geo_Orb(Shape3D shape);
 
 	float getRadius() const { return _shape.radius; }
 private:
@@ -69,25 +54,8 @@ unsigned* genTorus_indices(Shape3D shape);
 #ifdef __cplusplus
 class Geo_Torus : public Geo_Mesh {
 public:
-	Geo_Torus(float diameter) : Geo_Mesh(
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)), // slices and stacks
-		genTorus_vertices({ 1.0, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS }, diameter),
-		((CIRCLE_SEGMENTS + 1) * (CIRCLE_SEGMENTS + 1)) * 6, // index count
-		genTorus_indices({ 1.0F, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS })
-	) {
-		_diameter = diameter;
-		_shape = { 1.0f, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
-	}
-
-	Geo_Torus(float diameter, Shape3D shape) : Geo_Mesh(
-		((shape.xSegs + 1)* (shape.ySegs + 1)), // slices and stacks
-		genTorus_vertices(shape, diameter),
-		((shape.xSegs + 1)* (shape.ySegs + 1)) * 6, // index count
-		genTorus_indices(shape)
-	) {
-		_diameter = diameter;
-		_shape = shape;
-	}
+	Geo_Torus(float diameter);
+	Geo_Torus(float diameter, Shape3D shape);
 private:
 	float _diameter = 0.5F;
 	Shape3D _shape;

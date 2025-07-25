@@ -30,6 +30,7 @@ struct PS_INPUT {
 	float4 pos : SV_POSITION; 
 	float3 vertex_pos: POSITION1;
 	float3 vertex_color : COLOR;
+	float3 normal: NORMAL;
 	float3 texcoord: TEXCOORD;
 	float3 tangent: TANGENT;
 };
@@ -48,16 +49,19 @@ float4 trialPattern(float3 coords){
 
 // Main
 
-float4 main(PS_INPUT input) : SV_TARGET{
+float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
+	float3 coords = float3(input.pos.x, input.pos.y, input.pos.z);
+
 	// return float4(input.texcoord * input.vertex_color, 1.0);
-	if(mode % 10 == 1) return trialPattern(input.vertex_pos);
-	else if(mode % 10 == 2) return trialPattern(input.vertex_color);
-	else if(mode % 10 == 3) return trialPattern(input.texcoord);
-	else if(mode % 10 == 4) return trialPattern(input.tangent);
-	else if(mode % 10 == 5) return trialPattern(input.vertex_pos - input.texcoord);
-	else if(mode % 10 == 6) return trialPattern(input.tangent * input.vertex_color);
-	else if(mode % 10 == 7) return trialPattern(input.vertex_pos / input.vertex_color);
-	else if(mode % 10 == 8) return trialPattern(input.tangent + input.texcoord);
-	else if(mode % 10 == 9) return trialPattern(float3(input.tangent.x, input.texcoord.y, input.vertex_pos.z));
-	else return trialPattern(float3(input.pos.x, input.pos.y, input.pos.z));
+	if(mode % 10 == 1) coords = input.vertex_pos;
+	else if(mode % 10 == 2) coords = input.vertex_color;
+	else if(mode % 10 == 3) coords = input.normal;
+	else if(mode % 10 == 4) coords = input.tangent;
+	else if(mode % 10 == 5) coords = input.texcoord;
+	else if(mode % 10 == 6) coords = getRandColor(primID);
+	else if(mode % 10 == 7) coords = input.vertex_pos * input.texcoord + input.normal / input.tangent;
+	else if(mode % 10 == 8) coords = float3(pow(input.pos.x, input.texcoord.x), pow(input.pos.y, input.normal.y), pow(input.pos.z, input.tangent.z));
+	else if(mode % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
+
+	return trialPattern(coords);
 }

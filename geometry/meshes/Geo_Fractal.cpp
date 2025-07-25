@@ -1,5 +1,9 @@
 #include "Geo_Fractal.hpp"
 
+// Functions
+
+bool fractalAll(Vec3f input) { return true; } // include all points
+
 Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback){
     unsigned count = shape.xDivs * shape.yDivs * shape.zDivs;
     Geo_Vertex* all_vertices = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
@@ -34,6 +38,24 @@ Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback){
 }
 
 unsigned* genFractal_indices(Geo_Vertex* vertices, unsigned count){
-    // TODO: Implement body
+    unsigned* indices = (unsigned*)malloc(count * sizeof(unsigned));
+
+    for (unsigned i = 0; i < count; i++)
+        *(indices + i) = i; // test index generation
+
     return NULL;
+}
+
+// Constructors
+
+Geo_Fractal::Geo_Fractal(ShapeFractal shape) : Geo_Mesh(
+    shape.getCount(), genFractal_vertices(shape, fractalAll) // TODO: Add indexing
+) {
+    _shape = shape;
+}
+
+Geo_Fractal::Geo_Fractal(ShapeFractal shape, fractalCallback callback) : Geo_Mesh(
+    shape.getCount(), genFractal_vertices(shape, callback) // TODO: Add indexing
+){
+    _shape = shape;
 }

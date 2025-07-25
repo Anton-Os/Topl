@@ -27,6 +27,7 @@ struct VS_OUTPUT {
 	float4 pos : SV_POSITION; 
 	float3 vertex_pos: POSITION1;
 	float3 vertex_color : COLOR;
+	float3 normal: NORMAL;
 	float3 texcoord: TEXCOORD;
 	float3 tangent: TANGENT;
 };
@@ -41,6 +42,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.vertex_color = input.vert_color;
+	output.normal = input.normal;
 	output.texcoord = input.texcoord;
 	output.tangent = input.tangent;
 #ifdef INCLUDE_EXTBLOCK

@@ -1,5 +1,6 @@
 #include "Geo_Construct.hpp"
 #include "meshes/Geo_Orboid.hpp"
+#include "meshes/Geo_Fractal.hpp"
 
 #include "program/Topl_Program.hpp"
 
@@ -42,6 +43,10 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) },
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
+    Geo_Fractal* fractals[4] = {
+        new Geo_Fractal(ShapeFractal({ 1.0, 3, 3, 3 })), new Geo_Fractal(ShapeFractal({ 1.0, 3, 27, 3 })),
+        new Geo_Fractal(ShapeFractal({ 1.0, 3, 3, 27 })), new Geo_Fractal(ShapeFractal({ 1.0, 27, 3, 3 }))
+    };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 
     Geo_Actor orbActors[3][4] = {
@@ -49,6 +54,7 @@ struct Meshform_Demo : public Topl_Program {
         { orbs[0][1], orbs[1][1], orbs[2][1], orbs[3][1] },
         { orbs[0][2], orbs[1][2], orbs[2][2], orbs[3][2] }
     };
+    Geo_Actor fractalActors[4] = { Geo_Actor(fractals[0]), Geo_Actor(fractals[1]), Geo_Actor(fractals[2]), Geo_Actor(fractals[3]) };
     Geo_Actor torusActor = Geo_Actor(torus);
 #ifdef RASTERON_H
     Sampler_3D volumeImg = Sampler_3D(256);

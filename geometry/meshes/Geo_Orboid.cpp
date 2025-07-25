@@ -129,3 +129,43 @@ unsigned* genTorus_indices(Shape3D shape){
 
 	return indexData;
 }
+
+// Constructors
+
+Geo_Orb::Geo_Orb(float size) : Geo_Mesh(
+	((CIRCLE_SEGMENTS + 1)* (CIRCLE_SEGMENTS + 1)),
+	genOrb_vertices({ size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS }),
+	((CIRCLE_SEGMENTS + 1)* (CIRCLE_SEGMENTS + 1)) * 6, // index count
+	genOrb_indices({ size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS })
+) {
+	_shape = { size, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
+}
+
+Geo_Orb::Geo_Orb(Shape3D shape) : Geo_Mesh(
+	((shape.xSegs + 1)* (shape.ySegs + 1)), // slices and stacks
+	genOrb_vertices(shape),
+	((shape.xSegs + 1)* (shape.ySegs + 1)) * 6, // index count
+	genOrb_indices(shape)
+) {
+	_shape = shape;
+}
+
+Geo_Torus::Geo_Torus(float diameter) : Geo_Mesh(
+	((CIRCLE_SEGMENTS + 1)* (CIRCLE_SEGMENTS + 1)), // slices and stacks
+	genTorus_vertices({ 1.0, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS }, diameter),
+	((CIRCLE_SEGMENTS + 1)* (CIRCLE_SEGMENTS + 1)) * 6, // index count
+	genTorus_indices({ 1.0F, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS })
+) {
+	_diameter = diameter;
+	_shape = { 1.0f, CIRCLE_SEGMENTS, CIRCLE_SEGMENTS };
+}
+
+Geo_Torus::Geo_Torus(float diameter, Shape3D shape) : Geo_Mesh(
+	((shape.xSegs + 1)* (shape.ySegs + 1)), // slices and stacks
+	genTorus_vertices(shape, diameter),
+	((shape.xSegs + 1)* (shape.ySegs + 1)) * 6, // index count
+	genTorus_indices(shape)
+) {
+	_diameter = diameter;
+	_shape = shape;
+}
