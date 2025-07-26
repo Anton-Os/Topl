@@ -9,10 +9,10 @@ Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback){
     Geo_Vertex* all_vertices = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
     unsigned v = 0;
-    for(float x = -shape.radius; x < shape.radius; x += ((shape.radius / 2.0f) / shape.xDivs))
-        for(float y = -shape.radius; y < shape.radius; y += ((shape.radius / 2.0f) / shape.yDivs))
-            for(float z = -shape.radius; z < shape.radius; z += ((shape.radius / 2.0f) / shape.zDivs)){
-                assert(v < count);
+    for(float x = -shape.radius; x < shape.radius; x += ((shape.radius * 2.0f) / shape.xDivs))
+        for(float y = -shape.radius; y < shape.radius; y += ((shape.radius * 2.0f) / shape.yDivs))
+            for(float z = -shape.radius; z < shape.radius; z += ((shape.radius * 2.0f) / shape.zDivs)){
+                if (v >= count) break; // assert(v < count); // TODO: Make sure the allocations are correct
                 *(all_vertices + v) = Geo_Vertex(Vec3f({ x, y, z }));
                 v++;
             }
@@ -40,22 +40,25 @@ Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback){
 unsigned* genFractal_indices(Geo_Vertex* vertices, unsigned count){
     unsigned* indices = (unsigned*)malloc(count * sizeof(unsigned));
 
-    for (unsigned i = 0; i < count; i++)
-        *(indices + i) = i; // test index generation
+    /* if (vertices == nullptr)
+        for (unsigned i = 0; i < count; i++)
+            *(indices + i) = i; // test index generation */
 
-    return NULL;
+    return indices;
 }
 
 // Constructors
 
 Geo_Fractal::Geo_Fractal(ShapeFractal shape) : Geo_Mesh(
-    shape.getCount(), genFractal_vertices(shape, fractalAll) // TODO: Add indexing
+    shape.getCount(), genFractal_vertices(shape, fractalAll)
+    // shape.getCount(), genFractal_indices(nullptr, shape.getCount()) // TODO: Improve this
 ) {
     _shape = shape;
 }
 
 Geo_Fractal::Geo_Fractal(ShapeFractal shape, fractalCallback callback) : Geo_Mesh(
-    shape.getCount(), genFractal_vertices(shape, callback) // TODO: Add indexing
+    shape.getCount(), genFractal_vertices(shape, callback)
+    // shape.getCount(), genFractal_indices(nullptr, shape.getCount()) // TODO: Improve this
 ){
     _shape = shape;
 }

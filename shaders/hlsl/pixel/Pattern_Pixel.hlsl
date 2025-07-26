@@ -63,5 +63,5 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(mode % 10 == 8) coords = float3(pow(input.pos.x, input.texcoord.x), pow(input.pos.y, input.normal.y), pow(input.pos.z, input.tangent.z));
 	else if(mode % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
-	return trialPattern(coords);
+	return modalTex((mode / 10) % 10, coords);
 }

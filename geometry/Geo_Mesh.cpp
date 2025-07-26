@@ -137,5 +137,8 @@ void Geo_Mesh::populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned i
         _indices.resize(indexCount);
         for(unsigned i = 0; i < indexCount; i++) _indices[i] = *(indexData + i);
         free(indexData);
+    } else {
+        _indices.resize(vertexCount);
+        for (unsigned i = 0; i < vertexCount; i++) _indices[i] = i;
     }
 }

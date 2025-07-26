@@ -44,8 +44,8 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
     Geo_Fractal* fractals[4] = {
-        new Geo_Fractal(ShapeFractal({ 1.0, 3, 3, 3 })), new Geo_Fractal(ShapeFractal({ 1.0, 3, 27, 3 })),
-        new Geo_Fractal(ShapeFractal({ 1.0, 3, 3, 27 })), new Geo_Fractal(ShapeFractal({ 1.0, 27, 3, 3 }))
+        new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 12, 12, 12 })), new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 24, 24, 24 })),
+        new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 120, 120, 120 })), new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 240, 240, 240 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 
@@ -72,4 +72,4 @@ private:
 
     std::thread* textureThread = nullptr;
     std::thread* geometryThread = nullptr;
-} *Entropy;
+} *Meshform;

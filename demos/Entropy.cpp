@@ -154,9 +154,9 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Entropy = new Entropy_Demo(argv[0], BACKEND_DX11);
-    Entropy->run();
+    Meshform = new Entropy_Demo(argv[0], BACKEND_DX11);
+    Meshform->run();
 
-    delete(Entropy);
+    delete(Meshform);
     return 0;
 }

@@ -162,6 +162,16 @@ void Meshform_Demo::init(){
 #endif
     }
 
+    for (unsigned f = 0; f < 4; f++) {
+        fractals[f]->drawMode = DRAW_Strip;
+        scene.addGeometry("fractal" + std::to_string(f + 1), &fractalActors[f]);
+    }
+
+    fractalActors[0].setPos({ 1.5, 0.0F, 0.0F });
+    fractalActors[1].setPos({ -1.5, 0.0F, 0.0F });
+    fractalActors[2].setPos({ 0.0F, 1.5, 0.0F });
+    fractalActors[3].setPos({ 0.0F, -1.5, 0.0F });
+
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     Topl_Program::shaderMode = 8;
 
@@ -177,6 +187,7 @@ void Meshform_Demo::loop(double frameTime){
             Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
             rotationVec = rotationVec * 0.001;
             for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
+            fractalActors[a].updateRot(rotationVec);
             if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
         }
 
@@ -192,9 +203,9 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Entropy = new Meshform_Demo(argv[0], BACKEND_GL4);
-    Entropy->run();
+    Meshform = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Meshform->run();
 
-    delete(Entropy);
+    delete(Meshform);
     return 0;
 }
