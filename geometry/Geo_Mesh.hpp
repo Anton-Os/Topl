@@ -97,5 +97,7 @@ protected:
 };
 #endif
 
+// TODO: Include functions?
+
 #define GEO_MESH_H
 #endif

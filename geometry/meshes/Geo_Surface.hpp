@@ -2,11 +2,11 @@
 
 #include "Geo_Mesh.hpp"
 
-Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
-Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
-unsigned* genSurface_indices(Shape2D shape);
+// Classes
 
 #ifdef __cplusplus
+extern "C" {
+
 class Geo_Surface : public Geo_Mesh {
 public:
 	Geo_Surface(Shape2D shape, float z);
@@ -51,6 +51,16 @@ struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided porti
 
 	unsigned short _iters;
 };
+#endif
+
+// Functions
+
+Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
+Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
+unsigned* genSurface_indices(Shape2D shape);
+
+#ifdef __cplusplus
+}
 #endif
 
 #define GEO_SURFACE_H

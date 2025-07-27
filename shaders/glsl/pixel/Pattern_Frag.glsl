@@ -84,7 +84,7 @@ void main() {
 	else if(mode % 10 == 5) coords = texcoord;
 	else if(mode % 10 == 6) coords = getRandColor(id);
 	else if(mode % 10 == 7) coords = vertex_pos / texcoord - normal * tangent;
-	else if(mode % 10 == 8) coords = vec3(pow(pos.x, vertex_color.r), pow(pos.y, vertex_pos.y), pow(pos.z, float(id)));
+	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), vertex_color.r), pow(abs(pos.y), vertex_pos.y), pow(abs(pos.z), float(id)));
 	else if(mode % 10 == 9) coords = vec3(sin(texcoord.x * pos.x), cos(normal.y * pos.y), tan(tangent.z * pos.z));
 
 	color_final = vec4(trialPattern3(coords), 1.0);

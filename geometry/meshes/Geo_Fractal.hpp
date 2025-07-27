@@ -2,6 +2,8 @@
 
 #include "Geo_Mesh.hpp"
 
+// Classes
+
 struct ShapeFractal {
     unsigned getCount() { return xDivs * yDivs * zDivs; }
 
@@ -13,12 +15,9 @@ struct ShapeFractal {
 
 typedef bool (*fractalCallback)(Vec3f);
 
-bool fractalAll(Vec3f input);
-
-Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback);
-unsigned* genFractal_indices(Geo_Vertex* vertices, unsigned count);
-
 #ifdef __cplusplus
+extern "C" {
+
 class Geo_Fractal : public Geo_Mesh {
 public:
     Geo_Fractal(ShapeFractal shape);
@@ -26,6 +25,17 @@ public:
 private:
     ShapeFractal _shape;
 };
+#endif
+
+// Functions
+
+bool fractalBall(Vec3f input);
+
+Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback);
+unsigned* genFractal_indices(ShapeFractal shape, unsigned count);
+
+#ifdef __cplusplus
+}
 #endif
 
 #define GEO_FRACTAL_H

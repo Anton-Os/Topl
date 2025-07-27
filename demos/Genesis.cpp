@@ -24,7 +24,6 @@ void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
     if(menu == PROGRAM_AppBar || menu == PROGRAM_Sculpt)
         for(unsigned g = 0; g < 9 * 9; g++)
             grids[g].toggleShow(g == mode + (sculptIndex * 9));
-    
 }
 
 MAIN_ENTRY {

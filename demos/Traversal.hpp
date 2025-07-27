@@ -7,7 +7,7 @@
 #define TRAVERSAL_DEPTH 100.0F * 2
 #define TRAVERSAL_OBSCACLES 20
 #define TRAVERSAL_TESS 1
-#define TRAVERSAL_SPEED 0.00025F
+#define TRAVERSAL_SPEED 0.0001F
 #define TRAVERSAL_CORRIDORS 3
 #define TRAVERSAL_RECURSION 5
 
@@ -20,7 +20,6 @@ private:
     void onAnyKey(char key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
-    // void renderRecursive(Geo_Actor* actor, TFORM_Type type, unsigned short count);
 
     Geo_Quad3D squareCorridor = Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
     Geo_Hex3D hexCorridor = Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);

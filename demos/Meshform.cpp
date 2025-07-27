@@ -69,52 +69,31 @@ void Meshform_Demo::onAnyKey(char key){
 
 #ifdef RASTERON_H
 void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned color2){
-    if(textureThread != nullptr)
-        if(textureThread->joinable()){
-            textureThread->join();
-            delete textureThread;
-        } else return logMessage(MESSAGE_Exclaim, "Texture thread still running!");
-
-    textureThread = new std::thread([this](unsigned short m, unsigned c1, unsigned c2){
-        unsigned width = 1; unsigned height = 1;
-        for(unsigned d = 0; d < volumeImg.getDepth(); d++){
-            (d % 2 == 0)? width++ : height++;
-            Rasteron_Image* sliceImg;
-            switch(m){
-                case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
-                case MESHFORM_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
-                case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
-                default: sliceImg = solidImgOp({ 256, 256 }, blend_colors(c1, c2, d / 256.0)); break;
-            }
-            volumeImg.addSlice(sliceImg, d);
-            RASTERON_DEALLOC(sliceImg);
+    unsigned c1 = color1, c2 = color2;
+    unsigned width = 1; unsigned height = 1;
+    for(unsigned d = 0; d < volumeImg.getDepth(); d++){
+        (d % 2 == 0)? width++ : height++;
+        Rasteron_Image* sliceImg;
+        switch(mode){
+            case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
+            case MESHFORM_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
+            case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
+            default: sliceImg = solidImgOp({ 256, 256 }, blend_colors(c1, c2, d / 256.0)); break;
         }
-    }, mode, color1, color2);
+        volumeImg.addSlice(sliceImg, d);
+        RASTERON_DEALLOC(sliceImg);
+    }
 
     _renderer->texturizeScene(&scene);
 }
 #endif
 
-void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2){
-    geometryThread = new std::thread([this](Geo_Orb* orbMehes[4][3], std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2){
-            if(tform1.first != nullptr && tform2.first != nullptr)
-                for(unsigned o = 0; o < 4; o++)
-                    for(unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
-                        orbs[o][m]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
-        }, orbs, transform1, transform2
-    );
-    std::cout << "Geometry rebuilding" << std::endl;
-    rebuildGeometry(geometryThread);
-}
-
-void Meshform_Demo::rebuildGeometry(std::thread* thread){
-    if(thread != nullptr){
-        thread->join(); // TODO: Perform blocking call
-        delete thread;
-
-        std::cout << "Building scene" << std::endl;
-        _renderer->buildScene(&scene);
-    }
+void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2){
+    if(tform1.first != nullptr && tform2.first != nullptr)
+        for(unsigned o = 0; o < 4; o++)
+            for(unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
+                orbs[o][m]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
+    _renderer->buildScene(&scene);
 }
 
 void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){

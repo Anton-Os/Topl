@@ -2,11 +2,11 @@
 
 #include "Geo_Mesh.hpp"
 
-Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
-Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d);
-unsigned* genVolume_indices(Shape2D shape);
+// Classes
 
 #ifdef __cplusplus
+extern "C" {
+
 class Geo_Volume : public Geo_Mesh {
 public:
 	Geo_Volume(Shape2D shape, float depth);
@@ -52,6 +52,14 @@ struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
 
 	unsigned short _iters;
 };
+#endif
+
+Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
+Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d);
+unsigned* genVolume_indices(Shape2D shape);
+
+#ifdef __cplusplus
+}
 #endif
 
 #define GEO_VOLUME_H

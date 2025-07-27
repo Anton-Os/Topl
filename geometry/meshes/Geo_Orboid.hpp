@@ -2,12 +2,11 @@
 
 #include "Geo_Mesh.hpp"
 
-// Orb
-
-Geo_Vertex* genOrb_vertices(Shape3D shape);
-unsigned* genOrb_indices(Shape3D shape);
-
 #ifdef __cplusplus
+extern "C" {
+
+// Orb Class
+
 class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 public:
 	Geo_Orb(float size);
@@ -44,14 +43,9 @@ struct Geo_DecOrb : public Geo_Orb {
 	Geo_DecOrb() : Geo_Orb({ 1.0, 10, 10 }){}
 	Geo_DecOrb(float radius) : Geo_Orb({ radius, 10, 10 }){}
 };
-#endif
 
-// Torus
+// Torus Class
 
-Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
-unsigned* genTorus_indices(Shape3D shape);
-
-#ifdef __cplusplus
 class Geo_Torus : public Geo_Mesh {
 public:
 	Geo_Torus(float diameter);
@@ -60,6 +54,20 @@ private:
 	float _diameter = 0.5F;
 	Shape3D _shape;
 };
+#endif
+
+// Orb Functions
+
+Geo_Vertex* genOrb_vertices(Shape3D shape);
+unsigned* genOrb_indices(Shape3D shape);
+
+// Torus Functions
+
+Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
+unsigned* genTorus_indices(Shape3D shape);
+
+#ifdef __cplusplus
+}
 #endif
 
 #define GEO_ORBOID_H
