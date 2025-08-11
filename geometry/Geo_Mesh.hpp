@@ -36,13 +36,13 @@ enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shea
 #ifdef __cplusplus
 class Geo_Mesh {
 public:
-	Geo_Mesh(){} // empty constructor
-	Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
-	Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
-	Geo_Mesh(unsigned v, Geo_Vertex* vertexData){ populate(v, vertexData, 0, nullptr); }
-	Geo_Mesh(unsigned v, Geo_Vertex* vertexData, unsigned i, unsigned* indexData){ populate(v, vertexData, i, indexData); }
-	Geo_Mesh(vertex_cptr_t points, unsigned short pointCount);
-    Geo_Mesh(const Geo_Mesh& refMesh);
+	DllExport Geo_Mesh(){} // empty constructor
+	DllExport Geo_Mesh(unsigned v) { _vertices.resize(v); } // vertex only
+	DllExport Geo_Mesh(unsigned v, unsigned i) { _vertices.resize(v); _indices.resize(i); } // vertex and indices constructor
+	DllExport Geo_Mesh(unsigned v, Geo_Vertex* vertexData){ populate(v, vertexData, 0, nullptr); }
+	DllExport Geo_Mesh(unsigned v, Geo_Vertex* vertexData, unsigned i, unsigned* indexData){ populate(v, vertexData, i, indexData); }
+	DllExport Geo_Mesh(vertex_cptr_t points, unsigned short pointCount);
+    DllExport Geo_Mesh(const Geo_Mesh& refMesh);
 
 	~Geo_Mesh(){ 
 		if(_instanceData != nullptr){ 
@@ -51,40 +51,40 @@ public:
 		}
 	}
 
-	void modify(vTformCallback callback, Vec3f transform);
-	void modify(iTformCallback callback, Vec3f transform);
-	void modify(vertexTransform callback);
-	void modify(originTransform callback);
-	void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
-    void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
-	void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
+	DllExport void modify(vTformCallback callback, Vec3f transform);
+	DllExport void modify(iTformCallback callback, Vec3f transform);
+	DllExport void modify(vertexTransform callback);
+	DllExport void modify(originTransform callback);
+	DllExport void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
+    DllExport void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
+	DllExport void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute
 
-	void extend(const Geo_Mesh& refMesh); // extends mesh to include more geometry
-	void tesselate(unsigned short tessCount); // TODO: Include non-indexed tesselation
+	DllExport void extend(const Geo_Mesh& refMesh); // extends mesh to include more geometry
+	DllExport void tesselate(unsigned short tessCount); // TODO: Include non-indexed tesselation
 
-	void setInstances(std::initializer_list<Mat4x4> matrices);
+	DllExport void setInstances(std::initializer_list<Mat4x4> matrices);
 
-	std::string toString() const;
+	DllExport std::string toString() const;
 
-    Vec3f getOrigin() const {
+    DllExport Vec3f getOrigin() const {
         Vec3f origin = VEC_3F_ZERO;
         for(unsigned v = 0; v < getVertexCount(); v++) origin = _vertices[v].position + origin;
         return origin * Vec3f({ 1.0F / getVertexCount(), 1.0F / getVertexCount(), 1.0F / getVertexCount() });
     }
 	// float[6] getBounds(){ return { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }; } // TODO: Compute bounds
-	size_t getVertexCount() const { return _vertices.size(); }
-	vertex_cptr_t getVertices() const { return _vertices.data(); }
-	size_t getIndexCount() const { return _indices.size(); }
-	ui_cptr_t getIndices() const { return _indices.data(); }
+	DllExport size_t getVertexCount() const { return _vertices.size(); }
+	DllExport vertex_cptr_t getVertices() const { return _vertices.data(); }
+	DllExport size_t getIndexCount() const { return _indices.size(); }
+	DllExport ui_cptr_t getIndices() const { return _indices.data(); }
 
-	unsigned getTessLevel() const { return _tessLevel; }
-	unsigned getInstanceCount() const { return _instanceCount; }
-	const Mat4x4* getInstanceData() const { return _instanceData; }
+	DllExport unsigned getTessLevel() const { return _tessLevel; }
+	DllExport unsigned getInstanceCount() const { return _instanceCount; }
+	DllExport const Mat4x4* getInstanceData() const { return _instanceData; }
 
     DRAW_Mode drawMode = DRAW_Default; // by default mesh is drawn
 	unsigned short drawMin = 0, drawMax = 0; // for partial mesh rendering // Check for range?
 protected:
-	void populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned indexCount, unsigned* indexData);
+	DllExport void populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned indexCount, unsigned* indexData);
 
 	// std::vector<Geo_Pos> _vertices;
 	std::vector<Geo_Vertex> _vertices;

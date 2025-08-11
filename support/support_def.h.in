@@ -9,6 +9,8 @@
 
 #define TRUE 1
 #define FALSE 0
+#define ON 1
+#define OFF 0
 
 #if ${Vulkan_FOUND}
     #define TOPL_ENABLE_VULKAN
@@ -26,6 +28,14 @@
 #endif
 #if ${SUPPORT_PHYSICS}
     #define TOPL_ENABLE_PHYSICS
+#endif
+
+#ifdef _WIN32
+#define DllExport __declspec(dllexport)
+#elif defined(__APPLE__)
+#define DllExport __attribute__(( visibility("default") ))
+#else
+#define DllExport
 #endif
 
 #define TOPL_SUPPORT_H

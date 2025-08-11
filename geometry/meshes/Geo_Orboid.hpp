@@ -9,8 +9,8 @@ extern "C" {
 
 class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
 public:
-	Geo_Orb(float size);
-	Geo_Orb(Shape3D shape);
+	DllExport Geo_Orb(float size);
+	DllExport Geo_Orb(Shape3D shape);
 
 	float getRadius() const { return _shape.radius; }
 private:
@@ -48,8 +48,8 @@ struct Geo_DecOrb : public Geo_Orb {
 
 class Geo_Torus : public Geo_Mesh {
 public:
-	Geo_Torus(float diameter);
-	Geo_Torus(float diameter, Shape3D shape);
+	DllExport Geo_Torus(float diameter);
+	DllExport Geo_Torus(float diameter, Shape3D shape);
 private:
 	float _diameter = 0.5F;
 	Shape3D _shape;
@@ -58,13 +58,13 @@ private:
 
 // Orb Functions
 
-Geo_Vertex* genOrb_vertices(Shape3D shape);
-unsigned* genOrb_indices(Shape3D shape);
+DllExport Geo_Vertex* genOrb_vertices(Shape3D shape);
+DllExport unsigned* genOrb_indices(Shape3D shape);
 
 // Torus Functions
 
-Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
-unsigned* genTorus_indices(Shape3D shape);
+DllExport Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
+DllExport unsigned* genTorus_indices(Shape3D shape);
 
 #ifdef __cplusplus
 }

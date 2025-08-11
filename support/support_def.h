@@ -9,6 +9,8 @@
 
 #define TRUE 1
 #define FALSE 0
+#define ON 1
+#define OFF 0
 
 #if TRUE
     #define TOPL_ENABLE_VULKAN
@@ -24,8 +26,16 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
 #endif
-#if TRUE
+#if ON
     #define TOPL_ENABLE_PHYSICS
+#endif
+
+#ifdef _WIN32
+#define DllExport __declspec(dllexport)
+#elif defined(__APPLE__)
+#define DllExport __attribute__(( visibility("default") ))
+#else
+#define DllExport
 #endif
 
 #define TOPL_SUPPORT_H

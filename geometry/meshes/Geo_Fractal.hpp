@@ -20,8 +20,8 @@ extern "C" {
 
 class Geo_Fractal : public Geo_Mesh {
 public:
-    Geo_Fractal(ShapeFractal shape);
-    Geo_Fractal(ShapeFractal shape, fractalCallback callback);
+    DllExport Geo_Fractal(ShapeFractal shape);
+    DllExport Geo_Fractal(ShapeFractal shape, fractalCallback callback);
 private:
     ShapeFractal _shape;
 };
@@ -31,8 +31,8 @@ private:
 
 bool fractalBall(Vec3f input);
 
-Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback);
-unsigned* genFractal_indices(ShapeFractal shape, unsigned count);
+DllExport Geo_Vertex* genFractal_vertices(ShapeFractal shape, fractalCallback callback);
+DllExport unsigned* genFractal_indices(ShapeFractal shape, unsigned count);
 
 #ifdef __cplusplus
 }

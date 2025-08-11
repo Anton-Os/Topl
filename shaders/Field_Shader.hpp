@@ -33,6 +33,9 @@ struct Field_VertexShader : public Topl_EntryShader {
         alignDataToBytes((uint8_t*)&relMillisecs, sizeof(relMillisecs), NO_PADDING, bytes);
         alignDataToBytes((uint8_t*)&absMillisecs, sizeof(absMillisecs), NO_PADDING, bytes);
 		alignDataToBytes((uint8_t*)&ctrlPoints, sizeof(ctrlPoints), NO_PADDING, bytes);
+
+		// for(unsigned c = 0; c < FIELD_POINTS_MAX; c++)
+		//	appendDataToBytes((uint8_t*)&ctrlPoints[c], sizeof(Vec3f), bytes);
 	}
 
 	void setCtrlMatrix(actor_cptr actor, Mat4x4 matrix){ ctrlMatrixMap.insert({ actor, matrix }); }

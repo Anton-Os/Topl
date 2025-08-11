@@ -42,9 +42,7 @@ layout(location = 0) out vec4 color_final;
 	else return coords * (1.0 / vertex_id);
 } */
 
-vec3 trialPattern(vec3 coords){
-	uint m = uint(mode / 10) + 1;
-
+vec3 solidPattern1(vec3 coords, uint m){
 	float r = ((coords.x * 5) - floor(coords.x * 5)) * m; // pow(coords.x, coords.y) * m;
 	float g = ((coords.y * 10) - floor(coords.y * 10)) * m; // pow(coords.y, coords.z) * m;
 	float b = ((coords.z * 50) - floor(coords.z * 50)) * m; // pow(coords.z, coords.x) * m;
@@ -52,9 +50,7 @@ vec3 trialPattern(vec3 coords){
 	return vec3(r, g, b);
 }
 
-vec3 trialPattern2(vec3 coords){
-	uint m = uint(mode / 10) + 1;
-
+vec3 solidPattern2(vec3 coords, uint m){
 	float r = pow(abs(coords.x + coords.z), abs(coords.y)) * m;
 	float g = pow(abs(coords.z - coords.y), abs(coords.x)) * m;
 	float b = pow(abs(coords.y * coords.x), abs(coords.z)) * m;
@@ -62,14 +58,52 @@ vec3 trialPattern2(vec3 coords){
 	return vec3(r, g, b);
 }
 
-vec3 trialPattern3(vec3 coords){
-	uint m = uint(mode / 10) + 1;
-
+vec3 solidPattern3(vec3 coords, uint m){
 	float r = abs(sin(coords.x * 2) + sin(coords.y * 5) + sin(coords.z * 10)) * m;
 	float g = abs(cos(coords.y * 2) * cos(coords.z * 5) * cos(coords.x * 10)) * m;
 	float b = pow(pow(tan(coords.z * 2), tan(coords.z * 5)), tan(coords.y * 10)) * m;
 
 	return vec3(r, g, b);
+}
+
+/* vec3 timePattern4(vec3 coords, uint m){
+	uint i = 0;
+	double t = timeElapse * 0.01;
+	while(length(coords) < (t / m) - floor(t / m) && i < 50){
+		coords.r += coords.g;
+		coords.g *= coords.b;
+		coords.b -= coords.r;
+		i++;
+	}
+
+	return vec3(
+		abs(coords.r) - floor(abs(coords.r)), 
+		abs(coords.g) - floor(abs(coords.g)), 
+		abs(coords.b) - floor(abs(coords.b))
+	);
+}
+
+vec3 timePattern5(vec3 coords, uint m){
+	uint i = 0;
+	double t = timeElapse * 0.01;
+	while(length(coords) < ceil(t / m) - (t / m) && i < 50){
+		coords *= vec3(sin(coords.x * i), cos(coords.y * i), tan(coords.z * i));
+		i++;
+	}
+
+	return vec3(
+		abs(coords.r) - floor(abs(coords.r)), 
+		abs(coords.g) - floor(abs(coords.g)), 
+		abs(coords.b) - floor(abs(coords.b))
+	);
+} */
+
+vec3 texturePattern(vec3 coords, uint m, float i){
+	vec3 intervals = vec3(floor(abs(coords.x * i)), floor(abs(coords.y * i)), floor(abs(coords.z * i))) / i;
+
+	// vec4 texColor = modalTex(int(m), intervals);
+	vec4 texColor = modalTex(int(m), coords + intervals) * vec4(coords - intervals, 1.0);
+	return vec3(texColor) * 2;
 }
 
 // Main
@@ -87,5 +121,27 @@ void main() {
 	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), vertex_color.r), pow(abs(pos.y), vertex_pos.y), pow(abs(pos.z), float(id)));
 	else if(mode % 10 == 9) coords = vec3(sin(texcoord.x * pos.x), cos(normal.y * pos.y), tan(tangent.z * pos.z));
 
-	color_final = vec4(trialPattern3(coords), 1.0);
+	vec3 input = coords;
+
+	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(input, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(input, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(input, uint(mode / 10) + 1), 1.0);
+	// else if(abs(mode / 100) % 10 == 4) color_final = vec4(timePattern4(input, uint(mode / 10) + 1), 1.0);
+	// else if(abs(mode / 100) % 10 == 5) color_final = vec4(timePattern5(input, uint(mode / 10) + 1), 1.0);
+	else color_final = vec4(texturePattern(input, uint(mode / 10) + 1, 10.0), 1.0);
+
+	if(mode >= 0)
+		color_final = vec4(
+			abs(color_final.r) - floor(abs(color_final.r)), 
+			abs(color_final.g) - floor(abs(color_final.g)), 
+			abs(color_final.b) - floor(abs(color_final.b)), 
+			color_final.a
+		);
+	else
+		color_final = vec4(
+			ceil(abs(color_final.r)) - abs(color_final.r),
+			ceil(abs(color_final.g)) - abs(color_final.g),
+			ceil(abs(color_final.b)) - abs(color_final.b),
+			abs(color_final.a)
+		);
 }

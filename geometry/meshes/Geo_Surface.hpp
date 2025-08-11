@@ -9,8 +9,8 @@ extern "C" {
 
 class Geo_Surface : public Geo_Mesh {
 public:
-	Geo_Surface(Shape2D shape, float z);
-	Geo_Surface(vertex_cptr_t points, unsigned short pointCount, float z);
+	DllExport Geo_Surface(Shape2D shape, float z);
+	DllExport Geo_Surface(vertex_cptr_t points, unsigned short pointCount, float z);
 
 	float getRadius(){ return _shape.radius; }
 	unsigned short getSegments(){ return _shape.segments; }
@@ -45,9 +45,9 @@ struct Geo_Circle2D : public Geo_Surface {
 
 struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided portions
     // Geo_Ext2D(Shape2D shape, float z); // one iteration
-    Geo_Ext2D(Shape2D shape, float z, unsigned short iters);
+    DllExport Geo_Ext2D(Shape2D shape, float z, unsigned short iters);
     // Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount); // one iteration
-	Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters);
+	DllExport Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters);
 
 	unsigned short _iters;
 };
@@ -55,9 +55,9 @@ struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided porti
 
 // Functions
 
-Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
-Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
-unsigned* genSurface_indices(Shape2D shape);
+DllExport Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
+DllExport Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
+DllExport unsigned* genSurface_indices(Shape2D shape);
 
 #ifdef __cplusplus
 }

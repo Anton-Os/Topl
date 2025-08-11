@@ -19,10 +19,10 @@ struct Geo_Pos {
 };
 
 struct Geo_Vertex : public Geo_Pos {
-	Geo_Vertex() : Geo_Pos() {} // empty constructor
-    Geo_Vertex(Vec3f p); // position constructor
-    Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c);
-    Geo_Vertex(const Geo_Vertex& vertex);
+	DllExport Geo_Vertex() : Geo_Pos() {} // empty constructor
+    DllExport Geo_Vertex(Vec3f p); // position constructor
+    DllExport Geo_Vertex(Vec3f p, Vec3f t, Vec3f n, Vec3f c);
+    DllExport Geo_Vertex(const Geo_Vertex& vertex);
 
     Vec3f getNormal(Vec3f vertexPos);
     Vec3f getTexCoord(Vec3f vertexPos);

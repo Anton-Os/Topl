@@ -27,7 +27,7 @@ void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
 }
 
 MAIN_ENTRY {
-    Genesis = new Genesis_Demo(argv[0], BACKEND_GL4);
+    Genesis = new Genesis_Demo(argv[0], BACKEND_DX11);
     Genesis->run();
 
     delete(Genesis);

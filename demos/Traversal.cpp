@@ -4,9 +4,9 @@ static float speed = TRAVERSAL_SPEED;
 
 void Traversal_Demo::onAnyKey(char key) {
     switch (tolower(key)) {
-        case 'i': for (unsigned c = 0; c < 3; c++) speed = TRAVERSAL_SPEED; break;
-        case 'o': for (unsigned c = 0; c < 3; c++) speed = TRAVERSAL_SPEED * 10; break;
-        case 'p': for (unsigned c = 0; c < 3; c++) speed = TRAVERSAL_SPEED * 100; break;
+        case 'i': speed = TRAVERSAL_SPEED; break;
+        case 'o': speed = TRAVERSAL_SPEED * 10; break;
+        case 'p': speed = TRAVERSAL_SPEED * 100; break;
     }
 }
 
@@ -19,6 +19,8 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 }
 
 void Traversal_Demo::init(){
+    speed = TRAVERSAL_SPEED;
+
     squareCorridor.tesselate(TRAVERSAL_TESS);
     hexCorridor.tesselate(TRAVERSAL_TESS);
     circleCorridor.tesselate(TRAVERSAL_TESS);
@@ -40,8 +42,11 @@ void Traversal_Demo::init(){
 
 void Traversal_Demo::loop(double frameTime){
     for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
-        for (unsigned r = 1; r < TRAVERSAL_RECURSION; r++)
-            corridorActors[c][r].setPos({ 0.0F, 0.0F, sinf(frameTime * speed * r) * TRAVERSAL_DEPTH});
+        for (unsigned r = 1; r < TRAVERSAL_RECURSION; r++) {
+            corridorActors[c][r].setPos({ 0.0F, 0.0F, sinf(frameTime * speed * r) * TRAVERSAL_DEPTH });
+            if(_renderer->getFrameCount() % 10 == 0)
+                corridorActors[c][r].updateRot({ (frameTime * speed * 0.000001F) / (r % 2 == 0)? (float)r : (float)-r, 0.0F, 0.0F});
+        }
 
     // squareCorridor.drawMin = _renderer->getFrameCount() % squareCorridor.getVertexCount();
     // hexCorridor.drawMin = _renderer->getFrameCount() % hexCorridor.getVertexCount();

@@ -90,9 +90,12 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 
 void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2){
     if(tform1.first != nullptr && tform2.first != nullptr)
-        for(unsigned o = 0; o < 4; o++)
-            for(unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
-                orbs[o][m]->modify((o % 2 == 1)? tform1.first : tform2.first, (o % 2 == 1)? tform1.second : tform2.second);
+        for (unsigned o = 0; o < 4; o++) {
+            fractals[o]->modify(tform1.first, tform1.second);
+            fractals[o]->modify(tform2.first, tform2.second);
+            for (unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
+                orbs[o][m]->modify((o % 2 == 1) ? tform1.first : tform2.first, (o % 2 == 1) ? tform1.second : tform2.second);
+        }
     _renderer->buildScene(&scene);
 }
 
@@ -182,7 +185,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Meshform = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Meshform = new Meshform_Demo(argv[0], BACKEND_DX11);
     Meshform->run();
 
     delete(Meshform);

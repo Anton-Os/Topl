@@ -9,8 +9,8 @@ extern "C" {
 
 class Geo_Cone : public Geo_Mesh {
 public:
-	Geo_Cone(Shape2D shape, Vec3f apex);
-	Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex);
+	DllExport Geo_Cone(Shape2D shape, Vec3f apex);
+	DllExport Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex);
 
 	float getRadius() const { return _shape.radius; }
 	unsigned short getSegments() const { return _shape.segments; }
@@ -56,9 +56,9 @@ struct Geo_ExtCone : public Geo_Cone { // expands base into repeating portions
 
 // Functions
 
-Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex);
-Geo_Vertex* genConeP_vertices(vertex_cptr_t points, unsigned c, Vec3f apex);
-unsigned* genCone_indices(Shape2D shape);
+DllExport Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex);
+DllExport Geo_Vertex* genConeP_vertices(vertex_cptr_t points, unsigned c, Vec3f apex);
+DllExport unsigned* genCone_indices(Shape2D shape);
 
 #ifdef __cplusplus
 } // }

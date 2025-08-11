@@ -64,7 +64,7 @@ if(SUPPORT_MODELS AND Assimp_FOUND)
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
 endif()
 
-add_library(GEOLIB STATIC ${geometry_src}) # Geometry Library
+add_library(GEOLIB SHARED ${geometry_src}) # Geometry Library
 target_include_directories(GEOLIB PRIVATE core support geometry)
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>

@@ -9,8 +9,8 @@ extern "C" {
 
 class Geo_Volume : public Geo_Mesh {
 public:
-	Geo_Volume(Shape2D shape, float depth);
-	Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth);
+	DllExport Geo_Volume(Shape2D shape, float depth);
+	DllExport Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth);
 
 	float getRadius() { return _shape.radius; }
 	unsigned short getSegments() { return _shape.segments; }
@@ -54,9 +54,9 @@ struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
 };
 #endif
 
-Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
-Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d);
-unsigned* genVolume_indices(Shape2D shape);
+DllExport Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
+DllExport Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d);
+DllExport unsigned* genVolume_indices(Shape2D shape);
 
 #ifdef __cplusplus
 }

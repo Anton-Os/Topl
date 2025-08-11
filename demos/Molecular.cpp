@@ -51,10 +51,10 @@ void Molecular_Demo::loop(double frameTime){
                 _renderer->draw(constructs[m][c].getGeoActor(o));
 }
 
-MAIN_ENTRY {
-    Meshform = new Molecular_Demo(argv[0], BACKEND_DX11);
-    Meshform->run();
+MAIN_ENTRY{
+    Molecular = new Molecular_Demo(argv[0], BACKEND_GL4);
+    Molecular->run();
 
-    delete(Meshform);
+    delete(Molecular);
     return 0;
 }
