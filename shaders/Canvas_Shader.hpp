@@ -55,13 +55,13 @@ protected:
 };
 
 struct Canvas_VertexShader_GL4 : public Canvas_VertexShader {
-    Canvas_VertexShader_GL4() : Canvas_VertexShader(genPrefix_glsl() + "vertex/" + "Canvas_Vertex.glsl"){}
-	Canvas_VertexShader_GL4(unsigned mode) : Canvas_VertexShader(genPrefix_glsl() + "vertex/" + "Canvas_Vertex.glsl", mode){}
+    Canvas_VertexShader_GL4() : Canvas_VertexShader(genPrefix_glsl() + "canvas/" + "Canvas_Vertex.glsl"){}
+	Canvas_VertexShader_GL4(unsigned mode) : Canvas_VertexShader(genPrefix_glsl() + "canvas/" + "Canvas_Vertex.glsl", mode){}
 };
 
 struct Canvas_VertexShader_DX11 : public Canvas_VertexShader {
-    Canvas_VertexShader_DX11() : Canvas_VertexShader(genPrefix_hlsl() + "vertex/" + "Canvas_Vertex.hlsl"){}
-	Canvas_VertexShader_DX11(unsigned mode) : Canvas_VertexShader(genPrefix_hlsl() + "vertex/" + "Canvas_Vertex.hlsl", mode){}
+    Canvas_VertexShader_DX11() : Canvas_VertexShader(genPrefix_hlsl() + "canvas/" + "Canvas_Vertex.hlsl"){}
+	Canvas_VertexShader_DX11(unsigned mode) : Canvas_VertexShader(genPrefix_hlsl() + "canvas/" + "Canvas_Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
@@ -72,9 +72,9 @@ struct Canvas_PixelShader : public Topl_Shader {
 };
 
 struct Canvas_PixelShader_GL4 : public Canvas_PixelShader {
-	Canvas_PixelShader_GL4() : Canvas_PixelShader(genPrefix_glsl() + "pixel/" + "Canvas_Frag.glsl") { }
+	Canvas_PixelShader_GL4() : Canvas_PixelShader(genPrefix_glsl() + "canvas/" + "Canvas_Frag.glsl") { }
 };
 
 struct Canvas_PixelShader_DX11 : public Canvas_PixelShader {
-	Canvas_PixelShader_DX11() : Canvas_PixelShader(genPrefix_hlsl() + "pixel/" + "Canvas_Pixel.hlsl") { }
+	Canvas_PixelShader_DX11() : Canvas_PixelShader(genPrefix_hlsl() + "canvas/" + "Canvas_Pixel.hlsl") { }
 };

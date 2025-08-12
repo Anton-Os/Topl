@@ -98,12 +98,20 @@ vec3 timePattern5(vec3 coords, uint m){
 	);
 } */
 
-vec3 texturePattern(vec3 coords, uint m, float i){
+vec3 texturePattern1(vec3 coords, uint m, float i){
 	vec3 intervals = vec3(floor(abs(coords.x * i)), floor(abs(coords.y * i)), floor(abs(coords.z * i))) / i;
 
-	// vec4 texColor = modalTex(int(m), intervals);
-	vec4 texColor = modalTex(int(m), coords + intervals) * vec4(coords - intervals, 1.0);
+	vec4 texColor = modalTex(int(m), coords - intervals) * length(coords - intervals);
 	return vec3(texColor) * 2;
+}
+
+vec3 texturePattern2(vec3 coords, uint m, float i){
+	vec3 intervals1 = vec3(floor(abs(coords.x * i)), floor(abs(coords.y * i)), floor(abs(coords.z * i))) / i;
+	vec3 intervals2 = vec3(floor(abs(intervals1.y * (i * 5))), floor(abs(intervals1.z * (i * 5))), floor(abs(intervals1.x * (i * 5)))) / (i * 5);
+	vec3 intervals3 = vec3(floor(abs(intervals2.z * (i * 10))), floor(abs(intervals2.x * (i * 10))), floor(abs(intervals2.y * (i * 10)))) / (i * 10);
+
+	vec4 texColor = modalTex(int(m), intervals3);
+	return vec3(abs(texColor.r), abs(texColor.g), abs(texColor.b)) * 2;
 }
 
 // Main
@@ -121,14 +129,14 @@ void main() {
 	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), vertex_color.r), pow(abs(pos.y), vertex_pos.y), pow(abs(pos.z), float(id)));
 	else if(mode % 10 == 9) coords = vec3(sin(texcoord.x * pos.x), cos(normal.y * pos.y), tan(tangent.z * pos.z));
 
-	vec3 input = coords;
-
-	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(input, uint(mode / 10) + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(input, uint(mode / 10) + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(input, uint(mode / 10) + 1), 1.0);
-	// else if(abs(mode / 100) % 10 == 4) color_final = vec4(timePattern4(input, uint(mode / 10) + 1), 1.0);
-	// else if(abs(mode / 100) % 10 == 5) color_final = vec4(timePattern5(input, uint(mode / 10) + 1), 1.0);
-	else color_final = vec4(texturePattern(input, uint(mode / 10) + 1, 10.0), 1.0);
+	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(coords, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(coords, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(coords, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 4) color_final = vec4(texturePattern1(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
+	else if(abs(mode / 100) % 10 == 5) color_final = vec4(texturePattern2(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
+	// else if(abs(mode / 100) % 10 == 4) color_final = vec4(timePattern4(coords, uint(mode / 10) + 1), 1.0);
+	// else if(abs(mode / 100) % 10 == 5) color_final = vec4(timePattern5(coords, uint(mode / 10) + 1), 1.0);
+	else color_final = vec4(coords, 1.0);
 
 	if(mode >= 0)
 		color_final = vec4(

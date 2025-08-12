@@ -29,13 +29,13 @@ protected:
 };
 
 struct Material_VertexShader_GL4 : public Material_VertexShader {
-	Material_VertexShader_GL4() : Material_VertexShader(genPrefix_glsl() + "vertex/" + "Material_Vertex.glsl") {}
-	Material_VertexShader_GL4(unsigned mode) : Material_VertexShader(genPrefix_glsl() + "vertex/" + "Material_Vertex.glsl", mode) {}
+	Material_VertexShader_GL4() : Material_VertexShader(genPrefix_glsl() + "material/" + "Material_Vertex.glsl") {}
+	Material_VertexShader_GL4(unsigned mode) : Material_VertexShader(genPrefix_glsl() + "material/" + "Material_Vertex.glsl", mode) {}
 };
 
 struct Material_VertexShader_DX11 : public Material_VertexShader {
-	Material_VertexShader_DX11() : Material_VertexShader(genPrefix_hlsl() + "vertex/" + "Material_Vertex.hlsl") {}
-	Material_VertexShader_DX11(unsigned mode) : Material_VertexShader(genPrefix_hlsl() + "vertex/" + "Material_Vertex.hlsl", mode) {}
+	Material_VertexShader_DX11() : Material_VertexShader(genPrefix_hlsl() + "material/" + "Material_Vertex.hlsl") {}
+	Material_VertexShader_DX11(unsigned mode) : Material_VertexShader(genPrefix_hlsl() + "material/" + "Material_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -46,9 +46,9 @@ struct Material_PixelShader : public Topl_Shader {
 };
 
 struct Material_PixelShader_GL4 : public Material_PixelShader {
-	Material_PixelShader_GL4() : Material_PixelShader(genPrefix_glsl() + "pixel/" + "Material_Frag.glsl") {}
+	Material_PixelShader_GL4() : Material_PixelShader(genPrefix_glsl() + "material/" + "Material_Frag.glsl") {}
 };
 
 struct Material_PixelShader_DX11 : public Material_PixelShader {
-	Material_PixelShader_DX11() : Material_PixelShader(genPrefix_hlsl() + "pixel/" + "Material_Pixel.hlsl") {}
+	Material_PixelShader_DX11() : Material_PixelShader(genPrefix_hlsl() + "material/" + "Material_Pixel.hlsl") {}
 };

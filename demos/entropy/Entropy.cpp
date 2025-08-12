@@ -124,11 +124,11 @@ void Entropy_Demo::loop(double frameTime){
             ((float)rand() / (float)RAND_MAX - 0.5f) * ENTROPIC_FORCE + (surface_actors[a].getPos()->data[1] * ((isInEntropy)? ENTROPIC_FORCE : -ENTROPIC_FORCE)),
             0.0F
         };
-        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForce("surface" + std::to_string(a), force);
-        // if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForces("surface" + std::to_string(a), force, force, VEC_3F_ZERO);
-        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scene1.addForces("surface" + std::to_string(a), force, force, force);
+        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scenes[0].addForce("surface" + std::to_string(a), force);
+        // if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scenes[0].addForces("surface" + std::to_string(a), force, force, VEC_3F_ZERO);
+        if((rand() / (float)RAND_MAX) < ENTROPIC_PROB && isInMotion) scenes[0].addForces("surface" + std::to_string(a), force, force, force);
         // if(physActors[a].actingForceCount > 0) surface_actors[a].updateRot(*(physActors[a].forces));
-        scene1.resolvePhysics(FORCE_Directional);
+        scenes[0].resolvePhysics(FORCE_Directional);
 #else
         surface_actors[a].updatePos({((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, ((float)rand() / (float)RAND_MAX - 0.5f) / 100.0F, 0.0F });
         surface_actors[a].updatePos({ *surface_actors[a].getPos() * ((isInEntropy)? 0.0035F : -0.0035F) });

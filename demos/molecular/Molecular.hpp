@@ -37,19 +37,19 @@ struct Molecular_Construct : Geo_Construct {
         }
 
         for (unsigned n = 1; n < nodeCount; n++) { // Sub Nodes
-            Geo_Actor* refActor = &_geoActors[n];
+            Geo_Actor* refActor = &_geoActors[(n * 2) - 1];
 
             for (unsigned e = 0; e < 3; e++) {
                 Vec3f modVec;
                 switch (e) {
-                    case 0: modVec = Vec3f({ -1.0F, 0.0F, 0.0F }); break;
-                    case 1: modVec = Vec3f({ 0.0F, -1.0F, 0.0F }); break;
-                    case 2: modVec = Vec3f({ 0.0F, 0.0F, -1.0F }); break;
+                    case 0: modVec = Vec3f({ -1.0F, 1.0F, 1.0F }); break;
+                    case 1: modVec = Vec3f({ 1.0F, -1.0F, 1.0F }); break;
+                    case 2: modVec = Vec3f({ 1.0F, 1.0F, -1.0F }); break;
                 }
 
-                // _orbs.push_back(new Geo_QuadOrb(MOLECULAR_SIZE / (n + 1)));
-                // _geoActors.push_back(Geo_Actor(_orbs.back()));
-                // _geoActors.back().setPos(*refActor->getPos() + randVec * modVec);
+                _orbs.push_back(new Geo_QuadOrb(MOLECULAR_SIZE / (n + 1)));
+                _geoActors.push_back(Geo_Actor(_orbs.back()));
+                // _geoActors.back().setPos(*(refActor->getPos()) + (randVec * modVec));
                 // Geo_Vertex lineVertices1[2] = { Geo_Vertex(*refActor->getPos()), Geo_Vertex(*_geoActors.back().getPos())};
                 // _lines.push_back(new Geo_Mesh((vertex_cptr_t)&lineVertices1, 2));
                 // _lines.back()->drawMode = DRAW_Lines;
@@ -59,12 +59,12 @@ struct Molecular_Construct : Geo_Construct {
     }
 
     void configure(Topl_Scene* scene){
-        _physActors.resize(_orbs.size() + 1);
-        _links.resize(_orbs.size());
+        // _physActors.resize(_orbs.size() + 1);
+        // _links.resize(_orbs.size());
 
-        _physActors.front().mass = 10.0F;
+        // _physActors.front().mass = 10.0F;
         scene->addGeometry(getPrefix() + "hub", &_geoActors[0]);
-        scene->addPhysics(getPrefix() + "hub", &_physActors[0]);
+        // scene->addPhysics(getPrefix() + "hub", &_physActors[0]);
         
         for(unsigned m = 1; m < _orbs.size() + 1; m++) {
             scene->addGeometry(getPrefix() + "node" + std::to_string(m), &_geoActors[m]);

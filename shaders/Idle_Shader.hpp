@@ -23,7 +23,7 @@ struct Idle_VertexShader : public Topl_EntryShader {
 };
 
 struct Idle_VertexShader_GL4 : public Idle_VertexShader {
-	Idle_VertexShader_GL4() : Idle_VertexShader(genPrefix_glsl() + "vertex/" + "Idle_Vertex.glsl") {}
+	Idle_VertexShader_GL4() : Idle_VertexShader(genPrefix_glsl() + "idle/" + "Idle_Vertex.glsl") {}
 };
 
 #ifdef __ANDROID__
@@ -41,7 +41,7 @@ struct Idle_VertexShader_GLES : public Idle_VertexShader {
 #endif
 
 struct Idle_VertexShader_DX11 : public Idle_VertexShader {
-	Idle_VertexShader_DX11() : Idle_VertexShader(genPrefix_hlsl() + "vertex/" + "Idle_Vertex.hlsl") {}
+	Idle_VertexShader_DX11() : Idle_VertexShader(genPrefix_hlsl() + "idle/" + "Idle_Vertex.hlsl") {}
 };
 
 // Pixel Shaders
@@ -52,11 +52,11 @@ struct Idle_PixelShader : public Topl_Shader {
 };
 
 struct Idle_PixelShader_GL4 : public Idle_PixelShader {
-	Idle_PixelShader_GL4() : Idle_PixelShader(genPrefix_glsl() + "pixel/" + "Idle_Frag.glsl") {}
+	Idle_PixelShader_GL4() : Idle_PixelShader(genPrefix_glsl() + "idle/" + "Idle_Frag.glsl") {}
 };
 
 struct Idle_PixelShader_DX11 : public Idle_PixelShader {
-	Idle_PixelShader_DX11() : Idle_PixelShader(genPrefix_hlsl() + "pixel/" + "Idle_Pixel.hlsl") { }
+	Idle_PixelShader_DX11() : Idle_PixelShader(genPrefix_hlsl() + "idle/" + "Idle_Pixel.hlsl") { }
 };
 
 

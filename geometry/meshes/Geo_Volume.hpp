@@ -46,9 +46,9 @@ struct Geo_Circle3D : public Geo_Volume {
 
 struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
 	// Geo_Ext3D(Shape2D shape, float depth); // one iteration
-	Geo_Ext3D(Shape2D shape, float depth, unsigned short iters);
+	DllExport Geo_Ext3D(Shape2D shape, float depth, unsigned short iters);
 	// Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth); // one iteration
-	Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth, unsigned short iters);
+	DllExport Geo_Ext3D(vertex_cptr_t points, unsigned short pointCount, float depth, unsigned short iters);
 
 	unsigned short _iters;
 };

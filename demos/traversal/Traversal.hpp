@@ -24,14 +24,12 @@ private:
     Geo_Hex3D hexCorridor = Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
     Geo_Circle3D circleCorridor = Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
 
-    Geo_Actor squareActor = Geo_Actor(&squareCorridor);
-    Geo_Actor hexActor = Geo_Actor(&hexCorridor);
-    Geo_Actor circleActor = Geo_Actor(&circleCorridor);
+    Geo_Actor actors[3] = { Geo_Actor(&squareCorridor), Geo_Actor(&hexCorridor), Geo_Actor(&circleCorridor) };
 
     Geo_Actor corridorActors[TRAVERSAL_CORRIDORS][TRAVERSAL_RECURSION] = {
-        { squareActor, squareActor, squareActor, squareActor, squareActor, squareActor, squareActor, squareActor },
-        { hexActor, hexActor, hexActor, hexActor, hexActor, hexActor, hexActor, hexActor },
-        { circleActor, circleActor, circleActor, circleActor, circleActor, circleActor, circleActor, circleActor },
+        { actors[0], actors[0], actors[0], actors[0], actors[0], actors[0], actors[0], actors[0] },
+        { actors[1], actors[1], actors[1], actors[1], actors[1], actors[1], actors[1], actors[1] },
+        { actors[2], actors[2], actors[2], actors[2], actors[2], actors[2], actors[2], actors[2] },
     };
 
     // Geo_Orb obstacle;

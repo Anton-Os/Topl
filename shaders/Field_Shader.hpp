@@ -67,13 +67,13 @@ protected:
 };
 
 struct Field_VertexShader_GL4 : public Field_VertexShader {
-	Field_VertexShader_GL4() : Field_VertexShader(genPrefix_glsl() + "vertex/" + "Field_Vertex.glsl") {}
-	Field_VertexShader_GL4(unsigned mode) : Field_VertexShader(genPrefix_glsl() + "vertex/" + "Field_Vertex.glsl", mode) {}
+	Field_VertexShader_GL4() : Field_VertexShader(genPrefix_glsl() + "field/" + "Field_Vertex.glsl") {}
+	Field_VertexShader_GL4(unsigned mode) : Field_VertexShader(genPrefix_glsl() + "field/" + "Field_Vertex.glsl", mode) {}
 };
 
 struct Field_VertexShader_DX11 : public Field_VertexShader {
-	Field_VertexShader_DX11() : Field_VertexShader(genPrefix_hlsl() + "vertex/" + "Field_Vertex.hlsl") {}
-	Field_VertexShader_DX11(unsigned mode) : Field_VertexShader(genPrefix_hlsl() + "vertex/" + "Field_Vertex.hlsl", mode) {}
+	Field_VertexShader_DX11() : Field_VertexShader(genPrefix_hlsl() + "field/" + "Field_Vertex.hlsl") {}
+	Field_VertexShader_DX11(unsigned mode) : Field_VertexShader(genPrefix_hlsl() + "field/" + "Field_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -84,9 +84,9 @@ struct Field_PixelShader : public Topl_Shader {
 };
 
 struct Field_PixelShader_GL4 : public Field_PixelShader {
-	Field_PixelShader_GL4() : Field_PixelShader(genPrefix_glsl() + "pixel/" + "Field_Frag.glsl") {}
+	Field_PixelShader_GL4() : Field_PixelShader(genPrefix_glsl() + "field/" + "Field_Frag.glsl") {}
 };
 
 struct Field_PixelShader_DX11 : public Field_PixelShader {
-	Field_PixelShader_DX11() : Field_PixelShader(genPrefix_hlsl() + "pixel/" + "Field_Pixel.hlsl") {}
+	Field_PixelShader_DX11() : Field_PixelShader(genPrefix_hlsl() + "field/" + "Field_Pixel.hlsl") {}
 };

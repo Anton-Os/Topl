@@ -14,12 +14,16 @@ void Animatrix_Demo::init(){
 
     floor.setPos({ 0.0F, -1.5F, 0.0F });
     floor.updateSize({ ANIMATRIX_FLOOR_SIZE, 0.0F, 0.0F });
+#ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].shift(Vec3f({ 
         ((m % 2 == 0)? -ANIMATRIX_FLOOR_SIZE : ANIMATRIX_FLOOR_SIZE) * 0.25F, 0.0F, (((m / 2) % 2 == 0)? -ANIMATRIX_FLOOR_SIZE : ANIMATRIX_FLOOR_SIZE) * 0.25F
     }));
+#endif
 
     scene3D.addGeometry(&floor);
+#ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].configure(&scene3D);
+#endif
 
     _renderer->buildScene(&scene2D);
     _renderer->buildScene(&scene3D);
@@ -32,7 +36,9 @@ void Animatrix_Demo::init(){
 
 void Animatrix_Demo::loop(double frameTime){
     scene2D.resolvePhysics(FORCE_Directional);
+#ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].rotateAll({ 0.0F, 0.0F, (float)frameTime / 1000.0F });
+#endif
 
     renderScene(&scene2D, _texPipeline, TEX_BASE); 
     renderScene(&scene3D, _beamsPipeline, Topl_Program::shaderMode); 

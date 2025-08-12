@@ -27,13 +27,13 @@ protected:
 };
 
 struct Pattern_VertexShader_GL4 : public Pattern_VertexShader {
-	Pattern_VertexShader_GL4() : Pattern_VertexShader(genPrefix_glsl() + "vertex/" + "Pattern_Vertex.glsl") {}
-	Pattern_VertexShader_GL4(unsigned mode) : Pattern_VertexShader(genPrefix_glsl() + "vertex/" + "Pattern_Vertex.glsl", mode) {}
+	Pattern_VertexShader_GL4() : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Pattern_Vertex.glsl") {}
+	Pattern_VertexShader_GL4(unsigned mode) : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Pattern_Vertex.glsl", mode) {}
 };
 
 struct Pattern_VertexShader_DX11 : public Pattern_VertexShader {
-	Pattern_VertexShader_DX11() : Pattern_VertexShader(genPrefix_hlsl() + "vertex/" + "Pattern_Vertex.hlsl") {}
-	Pattern_VertexShader_DX11(unsigned mode) : Pattern_VertexShader(genPrefix_hlsl() + "vertex/" + "Pattern_Vertex.hlsl", mode) {}
+	Pattern_VertexShader_DX11() : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Pattern_Vertex.hlsl") {}
+	Pattern_VertexShader_DX11(unsigned mode) : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Pattern_Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -44,9 +44,9 @@ struct Pattern_PixelShader : public Topl_Shader {
 };
 
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
-	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pixel/" + "Pattern_Frag.glsl") {}
+	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {}
 };
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
-	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pixel/" + "Pattern_Pixel.hlsl") {}
+	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {}
 };
