@@ -114,12 +114,32 @@ vec3 texturePattern2(vec3 coords, uint m, float i){
 	return vec3(abs(texColor.r), abs(texColor.g), abs(texColor.b)) * 2;
 }
 
+vec3 weavePattern1(vec3 coords){
+	vec3 weave = vec3(
+		(coords.x * coords.x) + abs(coords.y * coords.x) + (coords.y * coords.y),
+		(coords.z * coords.z) + abs(coords.z * coords.x) + (coords.x * coords.x),
+		(coords.y * coords.y) + abs(coords.y * coords.z) + (coords.z * coords.z)
+	);
+
+	return weave;
+}
+
+vec3 weavePattern2(vec3 coords, uint m){
+	vec3 weave = vec3(
+		pow(coords.x, m) + abs(coords.y * coords.x * m) + pow(coords.y, m),
+		pow(coords.z, m) + abs(coords.z * coords.x * m) + pow(coords.x, m),
+		pow(coords.y, m) + abs(coords.y * coords.z * m) + pow(coords.z, m)
+	);
+
+	return weave;
+}
+
 // Main
 
 void main() {
 	vec3 coords = pos;
 
-	if(mode % 10 == 1) coords = vertex_pos;
+	if(mode % 10 == 1) coords = vec3(abs(pos.x), abs(pos.y), abs(pos.z));
 	else if(mode % 10 == 2) coords = vec3(vertex_color.r, vertex_color.g, vertex_color.b);
 	else if(mode % 10 == 3) coords = normal;
 	else if(mode % 10 == 4) coords = tangent;
@@ -134,6 +154,10 @@ void main() {
 	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(coords, uint(mode / 10) + 1), 1.0);
 	else if(abs(mode / 100) % 10 == 4) color_final = vec4(texturePattern1(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
 	else if(abs(mode / 100) % 10 == 5) color_final = vec4(texturePattern2(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
+	else if(abs(mode / 100) % 10 == 6) color_final = vec4(weavePattern1(coords), 1.0);
+	else if(abs(mode / 100) % 10 == 7) color_final = vec4(weavePattern2(coords, uint((mode % 100) / 10)), 1.0);
+	else if(abs(mode / 100) % 10 == 8) color_final = vec4(texturePattern1(weavePattern1(coords), uint(mode / 10), (mode % 100) / 5), 1.0);
+	else if(abs(mode / 100) % 10 == 9) color_final = vec4(weavePattern2(texturePattern2(coords, uint(mode / 10), (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
 	// else if(abs(mode / 100) % 10 == 4) color_final = vec4(timePattern4(coords, uint(mode / 10) + 1), 1.0);
 	// else if(abs(mode / 100) % 10 == 5) color_final = vec4(timePattern5(coords, uint(mode / 10) + 1), 1.0);
 	else color_final = vec4(coords, 1.0);

@@ -101,5 +101,6 @@ if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking targets to Rasteron
     if(NOT DEFINED IGNORE_NATIVELIBS)
         target_link_libraries(CORELIB PUBLIC Rasteron)
     endif()
+    # target_include_directories(GEOLIB PRIVATE ${Rasteron_Install_Path}/include/Rasteron)
     target_link_libraries(GEOLIB PUBLIC Rasteron)
 endif()

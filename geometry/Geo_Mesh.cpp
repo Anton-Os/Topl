@@ -1,5 +1,12 @@
 #include "Geo_Mesh.hpp"
 
+// Shape Objects
+
+Shape2D create_shape2D(float radius, unsigned short segs){ return Shape2D({ radius, segs }); }
+
+Shape3D create_shape3D(float radius, unsigned short xSegs, unsigned short ySegs){ return Shape3D({ radius, xSegs, ySegs }); }
+
+// Mesh Object
 
 Geo_Mesh::Geo_Mesh(vertex_cptr_t points, unsigned short pointCount){ // point set constructor
     _vertices.resize(pointCount); 
@@ -34,6 +41,7 @@ void Geo_Mesh::modify(vertexTransform callback){
         _vertices[v] = callback(_vertices[v], v / 3, _transformCount);
     _transformCount++;
 }
+
 void Geo_Mesh::modify(originTransform callback){
     bool isIndexed = getIndexCount() > 0;
     for (unsigned m = 0; m < ((isIndexed)? _indices.size() : _vertices.size()) / 3; m++){

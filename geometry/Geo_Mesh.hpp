@@ -7,7 +7,7 @@
 
 #include "Geo_Vertex.hpp"
 
-// Shape Description
+// Definitions
 
 #define CIRCLE_SEGMENTS 100 // default segments for a circular object
 #define DEFAULT_Z 0.0f // default depth value for objects
@@ -17,19 +17,33 @@
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 
+enum DRAW_Mode { DRAW_Default = 0, DRAW_Points = 1, DRAW_Lines = 2, DRAW_Triangles = 3, DRAW_Fan = 4, DRAW_Strip = 5, DRAW_Patch = 6 };
+
+enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shear = 4 };
+
+// Shape Description
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct Shape2D {
 	float radius;
     unsigned short segments;
 };
+
+DllExport Shape2D create_shape2D(float radius, unsigned short segs);
 
 struct Shape3D {
 	float radius;
 	unsigned short xSegs, ySegs;
 };
 
-enum DRAW_Mode { DRAW_Default = 0, DRAW_Points = 1, DRAW_Lines = 2, DRAW_Triangles = 3, DRAW_Fan = 4, DRAW_Strip = 5, DRAW_Patch = 6 };
+DllExport Shape3D create_shape3D(float radius, unsigned short xSegs, unsigned short ySegs);
 
-enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shear = 4 };
+#ifdef __cplusplus
+}
+#endif
 
 // Mesh Object
 

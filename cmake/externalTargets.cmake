@@ -31,7 +31,7 @@ endif()
 #TODO: Build Rasteron from Submodle or from Git if detected
 
 if(SUPPORT_MODELS)
-ExternalProject_Add(Assimp # 3D Model loading
+ExternalProject_Add(ASSIMP # 3D Model loading
     GIT_REPOSITORY "https://github.com/assimp/assimp.git"
     GIT_TAG "2d2889f73fa1b2ca09ba9f43c9785402d3a7fdd"
 
@@ -46,6 +46,11 @@ if(NOT SUPPORT_MODELS)
     set(Assimp_FOUND 0) # override variable to not found
 else()
     find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
+    if(Assimp_FOUND)
+        message(STATUS "Assimp loading success!")
+    else()
+        message(WARNING "Assimp loading failure")
+    endif()
 endif()
 
 # set(SUPPORT_SAVES ${IS_FALSE} CACHE INT "Allow saving capabilities in .topl format" FORCE)
