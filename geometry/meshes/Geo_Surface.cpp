@@ -22,7 +22,7 @@ Geo_Vertex* genSurface_vertices(Shape2D shape, float z){
 	return vertexData;
 }
 
-Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z) {
+Geo_Vertex* genSurface_vert(vertex_cptr_t points, unsigned c, float z) {
 	unsigned count = c;
 	Geo_Vertex* vertexData = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
@@ -89,7 +89,7 @@ Geo_Ext2D::Geo_Ext2D(Shape2D shape, float z, unsigned short iters) : Geo_Surface
 }
 
 Geo_Surface::Geo_Surface(vertex_cptr_t points, unsigned short pointCount, float z) : Geo_Mesh(
-	pointCount, genSurfaceP_vertices(points, pointCount, z)
+	pointCount, genSurface_vert(points, pointCount, z)
 ){
 	_depth = z;
 }

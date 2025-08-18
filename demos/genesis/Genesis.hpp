@@ -8,18 +8,6 @@
 #define GENESIS_COUNT 5
 #define GENESIS_NAME "genesis" + std::to_string(rand() % 9999)
 
-/* struct Genesis_Construct : Geo_Construct {
-    Genesis_Construct(unsigned short n) : Geo_Construct(GENESIS_NAME), nodeCount(n){ init(); }
-
-    void init() override;
-private:
-    const unsigned short nodeCount;
-
-    Geo_Orb* _hub;
-    std::vector<Geo_Orb*> _nodes;
-    std::vector<Geo_Mesh*> _lines;
-}; */
-
 struct Genesis_Demo : public Topl_Program {
     Genesis_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Genesis", backend){}
 

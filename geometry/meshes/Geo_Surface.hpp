@@ -2,11 +2,15 @@
 
 #include "Geo_Mesh.hpp"
 
-// Classes
-
 #ifdef __cplusplus
 extern "C" {
+#endif
 
+DllExport Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
+DllExport Geo_Vertex* genSurface_vert(vertex_cptr_t points, unsigned c, float z);
+DllExport unsigned* genSurface_indices(Shape2D shape);
+
+#ifdef __cplusplus
 class Geo_Surface : public Geo_Mesh {
 public:
 	DllExport Geo_Surface(Shape2D shape, float z);
@@ -50,16 +54,7 @@ struct Geo_Ext2D : public Geo_Surface { // expands surface into subdivided porti
 	DllExport Geo_Ext2D(vertex_cptr_t points, unsigned short pointCount, unsigned short iters);
 
 	unsigned short _iters;
-};
-#endif
-
-// Functions
-
-DllExport Geo_Vertex* genSurface_vertices(Shape2D shape, float z);
-DllExport Geo_Vertex* genSurfaceP_vertices(vertex_cptr_t points, unsigned c, float z);
-DllExport unsigned* genSurface_indices(Shape2D shape);
-
-#ifdef __cplusplus
+}; 
 }
 #endif
 

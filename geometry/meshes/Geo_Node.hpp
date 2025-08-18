@@ -1,6 +1,5 @@
 #ifndef GEO_NODE_H
 
-
 #include <assimp/scene.h>
 
 #include "Geo_Actor.hpp"
@@ -52,13 +51,13 @@ private:
 #define NO_NODE_COUNT 0
 #define SINGLE_NODE_COUNT 1
 
-class Geo_NodeActor : public Geo_Actor {
+class Geo_Node : public Geo_Actor {
 public:
-	DllExport Geo_NodeActor() : Geo_Actor(){} // Empty Constructor
-    DllExport Geo_NodeActor(const aiScene* scene, const aiNode* node) : Geo_Actor(){ 
+	DllExport Geo_Node() : Geo_Actor(){} // Empty Constructor
+    DllExport Geo_Node(const aiScene* scene, const aiNode* node) : Geo_Actor(){ 
 		if (scene != nullptr && node != nullptr) init(scene, node); 
 	}
-	~Geo_NodeActor() { if(_mesh != nullptr) delete(_mesh);}
+	~Geo_Node() { if(_mesh != nullptr) delete(_mesh);}
 
 	DllExport const Geo_NodeMesh* getMesh() const { return _mesh; }
 private:

@@ -9,6 +9,7 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
+	// uint actorID;
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
@@ -66,38 +67,6 @@ vec3 solidPattern3(vec3 coords, uint m){
 	return vec3(r, g, b);
 }
 
-/* vec3 timePattern4(vec3 coords, uint m){
-	uint i = 0;
-	double t = timeElapse * 0.01;
-	while(length(coords) < (t / m) - floor(t / m) && i < 50){
-		coords.r += coords.g;
-		coords.g *= coords.b;
-		coords.b -= coords.r;
-		i++;
-	}
-
-	return vec3(
-		abs(coords.r) - floor(abs(coords.r)), 
-		abs(coords.g) - floor(abs(coords.g)), 
-		abs(coords.b) - floor(abs(coords.b))
-	);
-}
-
-vec3 timePattern5(vec3 coords, uint m){
-	uint i = 0;
-	double t = timeElapse * 0.01;
-	while(length(coords) < ceil(t / m) - (t / m) && i < 50){
-		coords *= vec3(sin(coords.x * i), cos(coords.y * i), tan(coords.z * i));
-		i++;
-	}
-
-	return vec3(
-		abs(coords.r) - floor(abs(coords.r)), 
-		abs(coords.g) - floor(abs(coords.g)), 
-		abs(coords.b) - floor(abs(coords.b))
-	);
-} */
-
 vec3 texturePattern1(vec3 coords, uint m, float i){
 	vec3 intervals = vec3(floor(abs(coords.x * i)), floor(abs(coords.y * i)), floor(abs(coords.z * i))) / i;
 
@@ -134,6 +103,22 @@ vec3 weavePattern2(vec3 coords, uint m){
 	return weave;
 }
 
+vec4 portalPattern1(vec3 coords, uint m, double t){
+	vec4 texColor1 = modalTex(int(m), coords * sin(float(t)));
+	vec4 texColor2 = modalTex(int(m + 1), coords * cos(float(t)));
+	vec4 texColor3 = modalTex(int(m + 2), coords * tan(float(t)));
+
+	return (texColor1 + texColor2) * texColor3; // TODO: Make this a cool effect
+}
+
+vec4 portalPattern2(vec3 coords, uint m, double t){
+	vec4 texColor1 = modalTex(int(m), coords * sin(float(t)));
+	vec4 texColor2 = modalTex(int(m + 1), coords * cos(float(t)));
+	vec4 texColor3 = modalTex(int(m + 2), coords * tan(float(t)));
+
+	return texColor3 * dot(texColor1, texColor2);
+}
+
 // Main
 
 void main() {
@@ -149,31 +134,29 @@ void main() {
 	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), vertex_color.r), pow(abs(pos.y), vertex_pos.y), pow(abs(pos.z), float(id)));
 	else if(mode % 10 == 9) coords = vec3(sin(texcoord.x * pos.x), cos(normal.y * pos.y), tan(tangent.z * pos.z));
 
-	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(coords, uint(mode / 10) + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(coords, uint(mode / 10) + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(coords, uint(mode / 10) + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 4) color_final = vec4(texturePattern1(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
-	else if(abs(mode / 100) % 10 == 5) color_final = vec4(texturePattern2(coords, uint(mode / 10), (mode % 100) / 5), 1.0);
+	uint m = mode % 10; // uint(id);
+	if(mode < 0) m = uint(id);
+	// double t = timeElapse / 5000.0;
+	double t = sin(float(timeElapse) / 5000.0) * (timeElapse / 30000.0);
+
+	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 4) color_final = vec4(texturePattern1(coords, m, (mode % 100) / 5), 1.0);
+	else if(abs(mode / 100) % 10 == 5) color_final = vec4(texturePattern2(coords, m, (mode % 100) / 5), 1.0);
 	else if(abs(mode / 100) % 10 == 6) color_final = vec4(weavePattern1(coords), 1.0);
 	else if(abs(mode / 100) % 10 == 7) color_final = vec4(weavePattern2(coords, uint((mode % 100) / 10)), 1.0);
-	else if(abs(mode / 100) % 10 == 8) color_final = vec4(texturePattern1(weavePattern1(coords), uint(mode / 10), (mode % 100) / 5), 1.0);
-	else if(abs(mode / 100) % 10 == 9) color_final = vec4(weavePattern2(texturePattern2(coords, uint(mode / 10), (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
-	// else if(abs(mode / 100) % 10 == 4) color_final = vec4(timePattern4(coords, uint(mode / 10) + 1), 1.0);
-	// else if(abs(mode / 100) % 10 == 5) color_final = vec4(timePattern5(coords, uint(mode / 10) + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 8) color_final = portalPattern1(coords, m, t);
+	else if(abs(mode / 100) % 10 == 9) color_final = portalPattern2(coords, m, t);
+	// else if(abs(mode / 100) % 10 == 8) color_final = vec4(texturePattern1(weavePattern1(coords), m, (mode % 100) / 5), 1.0);
+	// else if(abs(mode / 100) % 10 == 9) color_final = vec4(weavePattern2(texturePattern2(coords, m, (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
+	
 	else color_final = vec4(coords, 1.0);
 
-	if(mode >= 0)
-		color_final = vec4(
-			abs(color_final.r) - floor(abs(color_final.r)), 
-			abs(color_final.g) - floor(abs(color_final.g)), 
-			abs(color_final.b) - floor(abs(color_final.b)), 
-			color_final.a
-		);
-	else
-		color_final = vec4(
-			ceil(abs(color_final.r)) - abs(color_final.r),
-			ceil(abs(color_final.g)) - abs(color_final.g),
-			ceil(abs(color_final.b)) - abs(color_final.b),
-			abs(color_final.a)
-		);
+	color_final = vec4(
+		abs(color_final.r) - floor(abs(color_final.r)), 
+		abs(color_final.g) - floor(abs(color_final.g)), 
+		abs(color_final.b) - floor(abs(color_final.b)), 
+		color_final.a
+	);
 }

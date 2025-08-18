@@ -43,12 +43,12 @@ public:
         const aiScene* aiScene = aiImporter.ReadFile(_filePath, aiFlags);
 
         _nodeCount = aiScene->mRootNode->mNumChildren;
-        _nodes = (Geo_NodeActor**)malloc(_nodeCount * sizeof(Geo_NodeActor*));
+        _nodes = (Geo_Node**)malloc(_nodeCount * sizeof(Geo_Node*));
         for (unsigned n = 0; n < _nodeCount; n++) // iterates through all nodes
-            *(_nodes + n) = new Geo_NodeActor(aiScene, aiScene->mRootNode->mChildren[n]);
+            *(_nodes + n) = new Geo_Node(aiScene, aiScene->mRootNode->mChildren[n]);
 
         for (unsigned n = 0; n < _nodeCount; n++) {
-            Geo_NodeActor* currentNode = *(_nodes + n);
+            Geo_Node* currentNode = *(_nodes + n);
             if (currentNode->getMesh()->getMeshCount() > NO_NODE_COUNT) {
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
@@ -74,18 +74,18 @@ public:
 	Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeSampler_map[_geoNodes[i]] : nullptr; }
     
     void shift(Vec3f vec) { // replace Geo_Construct shift()
-		for (std::vector<Geo_NodeActor*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
+		for (std::vector<Geo_Node*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
 			(*n)->updatePos({ vec });
 	}
     void rotateAll(Vec3f angles){ // piecewise rotation of all actors
         for(unsigned g = 0; g < _geoNodes.size(); g++) _geoNodes[g]->updateRot(angles);
     }
 protected:
-	std::vector<Geo_NodeActor*> _geoNodes; // geometry nodes only
-    std::map<const Geo_NodeActor*, Sampler_2D> _nodeSampler_map; // child backgrounds
+	std::vector<Geo_Node*> _geoNodes; // geometry nodes only
+    std::map<const Geo_Node*, Sampler_2D> _nodeSampler_map; // child backgrounds
 	// TODO: include animation and other relevant data
 private:
-    Geo_NodeActor** _nodes = nullptr; // all nodes data
+    Geo_Node** _nodes = nullptr; // all nodes data
     unsigned _nodeCount = 0; // all nodes count
 #else
     void configure(Topl_Scene* scene) override {  }

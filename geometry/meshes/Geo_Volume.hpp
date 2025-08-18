@@ -2,11 +2,15 @@
 
 #include "Geo_Mesh.hpp"
 
-// Classes
-
 #ifdef __cplusplus
 extern "C" {
+#endif
 
+DllExport Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
+DllExport Geo_Vertex* genVolume_vert(vertex_cptr_t points, unsigned c, float d);
+DllExport unsigned* genVolume_indices(Shape2D shape);
+
+#ifdef __cplusplus
 class Geo_Volume : public Geo_Mesh {
 public:
 	DllExport Geo_Volume(Shape2D shape, float depth);
@@ -52,13 +56,7 @@ struct Geo_Ext3D : public Geo_Volume { // expands depthwise into segments
 
 	unsigned short _iters;
 };
-#endif
 
-DllExport Geo_Vertex* genVolume_vertices(Shape2D shape, float d);
-DllExport Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d);
-DllExport unsigned* genVolume_indices(Shape2D shape);
-
-#ifdef __cplusplus
 }
 #endif
 

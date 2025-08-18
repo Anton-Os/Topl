@@ -88,7 +88,7 @@ unsigned* genVolume_indices(Shape2D shape){
 	return indexData;
 }
 
-Geo_Vertex* genVolumeP_vertices(vertex_cptr_t points, unsigned c, float d) {
+Geo_Vertex* genVolume_vert(vertex_cptr_t points, unsigned c, float d) {
 	unsigned count = c * 2;
 	Geo_Vertex* vertexData = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
@@ -129,7 +129,7 @@ Geo_Ext3D::Geo_Ext3D(Shape2D shape, float depth, unsigned short iters) : Geo_Vol
 }
 
 Geo_Volume::Geo_Volume(vertex_cptr_t points, unsigned short pointCount, float depth) : Geo_Mesh(
-	pointCount * 2, genVolumeP_vertices(points, pointCount, _depth)
+	pointCount * 2, genVolume_vert(points, pointCount, _depth)
 ){
 	_depth = depth;
 }

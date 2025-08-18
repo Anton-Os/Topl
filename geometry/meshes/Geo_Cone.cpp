@@ -24,7 +24,7 @@ Geo_Vertex* genCone_vertices(Shape2D shape, Vec3f apex){
 	return vertexData;
 }
 
-Geo_Vertex* genConeP_vertices(vertex_cptr_t points, unsigned c, Vec3f apex) {
+Geo_Vertex* genCone_vert(vertex_cptr_t points, unsigned c, Vec3f apex) {
 	unsigned count = c + 1;
 	Geo_Vertex* vertexData = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
@@ -127,7 +127,7 @@ Geo_ExtCone::Geo_ExtCone(Shape2D shape, Vec3f apex, unsigned short iters) : Geo_
 }
 
 Geo_Cone::Geo_Cone(vertex_cptr_t points, unsigned short pointCount, Vec3f apex) : Geo_Mesh(
-	pointCount + 1, genConeP_vertices(points, pointCount, apex)
+	pointCount + 1, genCone_vert(points, pointCount, apex)
 ){
 	_apex = apex;
 }

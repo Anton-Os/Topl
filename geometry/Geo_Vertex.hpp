@@ -57,7 +57,7 @@ static Vec3f rotateTForm(Vec3f input, Vec3f degrees){
 }
 static Vec3f scaleTForm(Vec3f input, Vec3f factor) { return Vec3f({input * factor}); } // scales vertex by factor
 
-Geo_Vertex getMidpoint(std::initializer_list<Geo_Vertex> points);
+DllExport Geo_Vertex getMidpoint(std::initializer_list<Geo_Vertex> points);
 
 #define GEO_VERTEX_H
 #endif

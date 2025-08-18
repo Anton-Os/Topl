@@ -4,7 +4,19 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
 
+// Orb Functions
+
+DllExport Geo_Vertex* genOrb_vertices(Shape3D shape);
+DllExport unsigned* genOrb_indices(Shape3D shape);
+
+// Torus Functions
+
+DllExport Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
+DllExport unsigned* genTorus_indices(Shape3D shape);
+
+#ifdef __cplusplus
 // Orb Class
 
 class Geo_Orb : public Geo_Mesh { // See https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html for reference
@@ -54,19 +66,7 @@ private:
 	float _diameter = 0.5F;
 	Shape3D _shape;
 };
-#endif
 
-// Orb Functions
-
-DllExport Geo_Vertex* genOrb_vertices(Shape3D shape);
-DllExport unsigned* genOrb_indices(Shape3D shape);
-
-// Torus Functions
-
-DllExport Geo_Vertex* genTorus_vertices(Shape3D shape, float d);
-DllExport unsigned* genTorus_indices(Shape3D shape);
-
-#ifdef __cplusplus
 }
 #endif
 

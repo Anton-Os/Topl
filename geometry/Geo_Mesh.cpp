@@ -1,10 +1,69 @@
 #include "Geo_Mesh.hpp"
 
+// Helper Functions
+
+void free_vertices(Geo_Vertex* vertices){ 
+    free(vertices); 
+    vertices = NULL;
+}
+
+void free_indices(unsigned* indices){ 
+    free(indices); 
+    indices = NULL;
+}
+
 // Shape Objects
 
 Shape2D create_shape2D(float radius, unsigned short segs){ return Shape2D({ radius, segs }); }
 
 Shape3D create_shape3D(float radius, unsigned short xSegs, unsigned short ySegs){ return Shape3D({ radius, xSegs, ySegs }); }
+
+Geo_Vertex* tesselate(Geo_Vertex* vertices, unsigned vertexCount, unsigned short tessCount){
+    Geo_Vertex* tessVertices = (Geo_Vertex*)malloc(vertexCount * sizeof(Geo_Vertex));
+    for(unsigned v = 0; v < vertexCount; v++) *(tessVertices + v) = *(vertices + v); // copying operation
+
+    /* if(tessCount == 0) return;
+    unsigned short svCount, siCount;
+
+    for(unsigned l = 0; l < tessCount; l++){
+        svCount = getVertexCount(); // start vertex count
+        siCount = getIndexCount(); // start index count
+
+        if(siCount > 0){
+            for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
+                _vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
+                // _vertices.push_back(getMidpoint({ _vertices[_indices[i]], _vertices[_indices[i + 1]], _vertices[_indices[i + 2]] })); // TODO: Get this working!
+
+            for(unsigned i = 0; i < siCount; i += 3){
+                unsigned v = (svCount + (i / 3));
+                _indices.push_back(_indices[i]);
+                _indices.push_back(_indices[i + 1]);
+                _indices.push_back(v); // first triangle
+                _indices.push_back(_indices[i + 2]);
+                _indices.push_back(_indices[i + 1]);
+                _indices.push_back(v); // second triangle
+                _indices.push_back(_indices[i]);
+                _indices.push_back(_indices[i + 2]);
+                _indices.push_back(v); // third triangle
+            }
+            for (unsigned i = 0; i < siCount; i++) _indices.erase(_indices.begin());
+        } else {
+            for(unsigned v = 0; v < svCount; v += 3){
+                Geo_Vertex midpoint = Geo_Vertex(Vec3f((_vertices[v + 0].position + _vertices[v + 1].position + _vertices[v + 2].position) * (1.0 / 3.0)));
+                _vertices.push_back(midpoint); _vertices.push_back(_vertices[v]); _vertices.push_back(_vertices[v + 1]); // 1st triangle
+                _vertices.push_back(midpoint); _vertices.push_back(_vertices[v]); _vertices.push_back(_vertices[v + 2]); // 2nd triangle
+                _vertices.push_back(midpoint); _vertices.push_back(_vertices[v + 1]); _vertices.push_back(_vertices[v + 2]); // 3rd triangle
+            }
+            for (unsigned v = 0; v < svCount; v++) _vertices.erase(_vertices.begin());
+        }
+
+        drawMax = (siCount > 0)? _indices.size() : _vertices.size();
+    }
+
+    _tessLevel += tessCount; // for testing */
+
+    return tessVertices;
+}
 
 // Mesh Object
 
@@ -139,7 +198,7 @@ void Geo_Mesh::populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned i
     if(vertexCount > 0 && vertexData != nullptr){
         _vertices.resize(vertexCount);
         for(unsigned v = 0; v < vertexCount; v++) _vertices[v] = *(vertexData + v);
-        free(vertexData);
+        free_vertices(vertexData);
     }
     if(indexCount > 0 && indexData != nullptr){
         _indices.resize(indexCount);

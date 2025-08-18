@@ -1,5 +1,6 @@
 #ifdef INCLUDE_BLOCK
 cbuffer CONST_BLOCK : register(b0) {
+	// uint actorID;
 	float3 offset;
 	float3 rotation;
 	float3 scale;

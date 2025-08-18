@@ -43,6 +43,7 @@ public:
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
 #ifdef RASTERON_H
 	void addTexture(const std::string& name, const Sampler_2D* image);
+	void addTexture(const Sampler_2D* image){ for(auto t = _geoActors.begin(); t != _geoActors.end(); t++) addTexture((*t)->getName(), image); }
 	void addArrayTex(const std::string& name, const Sampler_Array* arrayTex);
 	void addVolumeTex(const std::string& name, const Sampler_3D* volumeTex);
 #endif

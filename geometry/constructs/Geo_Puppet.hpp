@@ -145,7 +145,7 @@ public:
     }
 
     void init() override {
-        // auto headActor = std::find_if(_geoNodes.begin(); _geoNodes.end(); [](const Geo_NodeActor*& nodeActor){ return nodeActor->getName.find("head") != std::string::npos; });
+        // auto headActor = std::find_if(_geoNodes.begin(); _geoNodes.end(); [](const Geo_Node*& nodeActor){ return nodeActor->getName.find("head") != std::string::npos; });
         for(auto a = _geoNodes.begin(); a != _geoNodes.end(); a++){
             if((*a)->getName().find("Head") != std::string::npos || (*a)->getName().find("head") != std::string::npos)
                 actors[PUPPET_Head] = *a; // finding head
@@ -178,7 +178,7 @@ public:
     }
 
 protected:
-    Geo_NodeActor* actors[PUPPET_PARTS]; // TODO: Replace with _geoActors from within construct
+    Geo_Node* actors[PUPPET_PARTS]; // TODO: Replace with _geoActors from within construct
 };
 
 #endif

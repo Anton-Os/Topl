@@ -72,7 +72,7 @@ void Geo_NodeMesh::init(){
 
 // Node Actor
 
-void Geo_NodeActor::init(const aiScene* scene, const aiNode* node) {
+void Geo_Node::init(const aiScene* scene, const aiNode* node) {
 	_sceneRef = scene;
 	_nodeRef = node;
 

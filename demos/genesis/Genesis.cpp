@@ -1,11 +1,11 @@
 #include "Genesis.hpp"
 
+static bool isRotating = true;
+
 static unsigned sculptIndex = 0;
 
 void Genesis_Demo::init(){
-    // chains.push_back(Geo_Chain("genesis_chain", &scene, &orb, VEC_3F_RAND, (rand() % 4) + 2 ));
     for(unsigned g = 0; g < 9 * 9; g++){
-        // for(unsigned s = 0; s < 9; s++){
         Geo_Grid_Params params = Geo_Grid_Params(std::make_pair(GENESIS_COUNT, GENESIS_SIZE));
         grids.push_back(Geo_Grid(std::string("grid") + std::to_string(g), &scene, &orbs[g % 9], params));
         grids.back().toggleShow(g == mode); // grids.back().toggleShow((g * 10) + s == mode);
@@ -15,7 +15,10 @@ void Genesis_Demo::init(){
 }
 
 void Genesis_Demo::loop(double frameTime){
-    // TODO: Include rendering logic
+    Geo_Grid* grid = &grids[mode + (sculptIndex * 9)];
+    for (unsigned g = 0; g < grid->getActorCount(); g++)
+        if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * 0.00001F);
+
     renderScene(&scene, nullptr, Topl_Program::shaderMode); 
 }
 

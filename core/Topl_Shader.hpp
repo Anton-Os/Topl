@@ -149,7 +149,9 @@ public:
 
 	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {
 		if(actor != nullptr) if(actor->shaderFunc != nullptr) actor->shaderFunc();
-		// TODO: Else trigger function to reset actor dependent data
+
+		unsigned id = (actor != nullptr)? actor->getId() : 0;
+		// appendDataToBytes((uint8_t*)(&id), sizeof(unsigned), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);

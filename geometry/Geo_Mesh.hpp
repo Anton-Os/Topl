@@ -27,6 +27,13 @@ enum TFORM_Type { TFORM_Shift = 0, TFORM_Rotate = 1, TFORM_Scale = 3, TFORM_Shea
 extern "C" {
 #endif
 
+// Helper Functions
+
+DllExport void free_vertices(Geo_Vertex* vertices);
+DllExport void free_indices(unsigned* indices);
+
+// Shape and Geometry Functions
+
 struct Shape2D {
 	float radius;
     unsigned short segments;
@@ -41,9 +48,7 @@ struct Shape3D {
 
 DllExport Shape3D create_shape3D(float radius, unsigned short xSegs, unsigned short ySegs);
 
-#ifdef __cplusplus
-}
-#endif
+DllExport Geo_Vertex* tesselate(Geo_Vertex* vertices, unsigned vertexCount, unsigned short tessCount);
 
 // Mesh Object
 
@@ -109,6 +114,8 @@ protected:
 	unsigned _instanceCount = 0;
 	Mat4x4* _instanceData = nullptr;
 };
+
+}
 #endif
 
 // TODO: Include functions?

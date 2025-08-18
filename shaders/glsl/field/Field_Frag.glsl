@@ -13,6 +13,7 @@
 // Values
 
 layout(std140, binding = 0) uniform Block {
+	// uint actorID;
 	vec3 offset;
 	vec3 rotation;
 	vec3 scale;
