@@ -73,7 +73,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                     else if(o == PROGRAM_Paint){ 
                         if(p != PROGRAM_SUBMENUS - 1){
                             ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
-                            for(unsigned t = 0; t < 8; t++){
+                            for(unsigned t = 0; t < 9; t++){
                                 switch(p){
                                     case 0: _overlays.textures[t] = Sampler_Gradient((SIDE_Type)(rand() % 5), RAND_COLOR(), RAND_COLOR()); break; // random gradients
                                     case 1: _overlays.textures[t] = Sampler_2D(linedImgOp(size, RAND_COLOR(), RAND_COLOR(), (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
@@ -85,14 +85,16 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                                     case 7: _overlays.textures[t] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // subtracted noise
                                     default: _overlays.textures[t] = Sampler_File(_overlays.scene.texImgPaths[t]);
                                 }
-                                _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
+                                if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
+                                else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
                             } 
-                            _renderer->texturizeScene(&_overlays.scene);
-                        } else {
-                            std::cout << "Texturizing volumetric textures" << std::endl;
-                            _background.volumeImg.setColors(RAND_COLOR());
                             _renderer->texturizeScene(&_background.scene);
                             _renderer->texturizeScene(&_overlays.scene);
+                        } else {
+                            _background.volumeImg.setColors(RAND_COLOR());
+                            _background.scene.addVolumeTex("program_background", &_background.volumeImg);
+                            _renderer->texturizeScene(&_background.scene);
+                            // _renderer->texturizeScene(&_overlays.scene);
                         }
                     } else if(o == PROGRAM_Media)
                         switch(p){
@@ -178,7 +180,7 @@ void Topl_Program::_onAnyKey(char k){
     }
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
-        switch(tolower(k)){
+        switch(tolower(k)){ // TODO: Add same logic for picked object?
             case 'w': Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
             case 's': Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
             case 'a': Topl_Program::camera.updatePos({ -Topl_Program::speed, 0.0, 0.0 }); break;

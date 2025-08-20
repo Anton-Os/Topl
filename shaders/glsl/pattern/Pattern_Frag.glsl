@@ -48,7 +48,7 @@ vec3 solidPattern1(vec3 coords, uint m){
 	float g = ((coords.y * 10) - floor(coords.y * 10)) * m; // pow(coords.y, coords.z) * m;
 	float b = ((coords.z * 50) - floor(coords.z * 50)) * m; // pow(coords.z, coords.x) * m;
 
-	return vec3(r, g, b);
+	return vec3(abs(r) - floor(abs(r)), abs(g) - floor(abs(g)), abs(b) - floor(abs(b)));
 }
 
 vec3 solidPattern2(vec3 coords, uint m){
@@ -56,7 +56,7 @@ vec3 solidPattern2(vec3 coords, uint m){
 	float g = pow(abs(coords.z - coords.y), abs(coords.x)) * m;
 	float b = pow(abs(coords.y * coords.x), abs(coords.z)) * m;
 
-	return vec3(r, g, b);
+	return vec3(abs(r) - floor(abs(r)), abs(g) - floor(abs(g)), abs(b) - floor(abs(b)));
 }
 
 vec3 solidPattern3(vec3 coords, uint m){
@@ -64,7 +64,7 @@ vec3 solidPattern3(vec3 coords, uint m){
 	float g = abs(cos(coords.y * 2) * cos(coords.z * 5) * cos(coords.x * 10)) * m;
 	float b = pow(pow(tan(coords.z * 2), tan(coords.z * 5)), tan(coords.y * 10)) * m;
 
-	return vec3(r, g, b);
+	return vec3(abs(r) - floor(abs(r)), abs(g) - floor(abs(g)), abs(b) - floor(abs(b)));
 }
 
 vec3 texturePattern1(vec3 coords, uint m, float i){
@@ -124,15 +124,15 @@ vec4 portalPattern2(vec3 coords, uint m, double t){
 void main() {
 	vec3 coords = pos;
 
-	if(mode % 10 == 1) coords = vec3(abs(pos.x), abs(pos.y), abs(pos.z));
-	else if(mode % 10 == 2) coords = vec3(vertex_color.r, vertex_color.g, vertex_color.b);
-	else if(mode % 10 == 3) coords = normal;
-	else if(mode % 10 == 4) coords = tangent;
-	else if(mode % 10 == 5) coords = texcoord;
-	else if(mode % 10 == 6) coords = getRandColor(id);
-	else if(mode % 10 == 7) coords = vertex_pos / texcoord - normal * tangent;
-	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), vertex_color.r), pow(abs(pos.y), vertex_pos.y), pow(abs(pos.z), float(id)));
-	else if(mode % 10 == 9) coords = vec3(sin(texcoord.x * pos.x), cos(normal.y * pos.y), tan(tangent.z * pos.z));
+	if(mode % 10 == 1) coords = vec3(vertex_color);
+	else if(mode % 10 == 2) coords = normal;
+	else if(mode % 10 == 3) coords = tangent;
+	else if(mode % 10 == 4) coords = texcoord;
+	else if(mode % 10 == 5) coords = getRandColor(id);
+	else if(mode % 10 == 6) coords = vertex_pos / texcoord - normal * tangent;
+	else if(mode % 10 == 7) coords = vec3(sin(texcoord.x / pos.x), cos(normal.y / pos.y), tan(tangent.z / pos.z));
+	else if(mode % 10 == 8) coords = vec3(pow(abs(pos.x), abs(vertex_color.r)), pow(abs(pos.y), abs(texcoord.y)), pow(abs(pos.z), float(id)));
+	else if(mode % 10 == 9) coords = vec3(dot(vertex_pos, vec3(vertex_color)), dot(getRandColor(uint(id)), vec3(getStepColor(uint(id)))), dot(texcoord, tangent));
 
 	uint m = mode % 10; // uint(id);
 	if(mode < 0) m = uint(id);

@@ -46,6 +46,7 @@ public:
 	void addTexture(const Sampler_2D* image){ for(auto t = _geoActors.begin(); t != _geoActors.end(); t++) addTexture((*t)->getName(), image); }
 	void addArrayTex(const std::string& name, const Sampler_Array* arrayTex);
 	void addVolumeTex(const std::string& name, const Sampler_3D* volumeTex);
+	void addVolumeTex(const Sampler_3D* volumeTex){ for(auto t = _geoActors.begin(); t != _geoActors.end(); t++) addVolumeTex((*t)->getName(), volumeTex); }
 #endif
 	unsigned getActorCount() const { return _geoActors.size(); }
 	Geo_Actor* getPickActor(unsigned color);
@@ -80,7 +81,6 @@ public:
 	};
 private:
 	std::vector<Geo_Actor*> _geoActors; // stores all geometries
-	// std::vector<const Topl_Light*> _lights; // stores all light sources
 	std::map<Geo_Actor*, pickerCallback> _pickerCallbackMap;
 #ifdef TOPL_ENABLE_PHYSICS
 	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors

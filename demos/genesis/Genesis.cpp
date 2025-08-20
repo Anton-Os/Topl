@@ -17,7 +17,7 @@ void Genesis_Demo::init(){
 void Genesis_Demo::loop(double frameTime){
     Geo_Grid* grid = &grids[mode + (sculptIndex * 9)];
     for (unsigned g = 0; g < grid->getActorCount(); g++)
-        if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * 0.00001F);
+        if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * 0.0000005F);
 
     renderScene(&scene, nullptr, Topl_Program::shaderMode); 
 }

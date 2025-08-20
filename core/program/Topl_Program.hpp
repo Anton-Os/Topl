@@ -202,7 +202,7 @@ private:
 		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
 #if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
 		std::string fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf";
-		Sampler_2D textures[8]; // for switching textures
+		Sampler_2D textures[9]; // for switching textures
 		Sampler_Button button = Sampler_Button();
         Sampler_Dial dials[3] = { Sampler_Dial(4), Sampler_Dial(4), Sampler_Dial(4) };
         Sampler_Slider timeSlider = Sampler_Slider(MENU_XL, (unsigned)TIMELINE_END); // sliders[1] = { Sampler_Slider(2) };

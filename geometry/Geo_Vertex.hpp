@@ -1,5 +1,6 @@
 #ifndef GEO_VERTEX_H
 
+#define IGNORE_RASTER
 #include "support_def.h"
 
 #include "maths/Vector.h"

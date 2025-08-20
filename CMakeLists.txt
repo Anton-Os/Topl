@@ -50,10 +50,10 @@ add_executable(Kaleidoscope demos/kaleidoscope/Kaleidoscope.cpp)
 add_executable(Animatrix demos/animatrix/Animatrix.cpp)
 add_executable(Genesis demos/genesis/Genesis.cpp)
 add_executable(Traversal demos/traversal/Traversal.cpp)
-add_executable(Portalcube demos/portalcube/Portalcube.cpp)
+add_executable(Cubegate demos/Cubegate/Cubegate.cpp)
 
 list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis)
-list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis Traversal Portalcube)
+list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis Traversal Cubegate)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)
