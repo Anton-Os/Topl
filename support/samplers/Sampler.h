@@ -16,7 +16,7 @@ enum TEX_Mode { TEX_Wrap, TEX_Mirror, TEX_Clamp };
 struct Sampler_Target { // Refresh State
     Sampler_Target(TEX_Frmt f){ 
 		format = f;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		_invertImage = INVERT_IMG_TRUE; // Imaging Initialization
 #endif
 	}
@@ -24,7 +24,7 @@ struct Sampler_Target { // Refresh State
 	char** tag; // must update when out of date
 	TEX_Mode mode = TEX_Wrap;
 protected:
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     ~Sampler_Target(){ cleanup(); }
 	virtual void cleanup(){ /* puts("Img destroyed"); */ }
 #endif
@@ -36,7 +36,7 @@ protected:
 struct Sampler_2D : public Sampler_Target {
     Sampler_2D() : Sampler_Target(TEX_2D){} // Empty Constructor
 	// Sampler_2D(const char* name, unsigned width, unsigned height) : Sampler_Target(TEX_2D){}
-#ifdef RASTERON_H // required library for loading images
+#ifdef TOPL_ENABLE_TEXTURES // required library for loading images
     Sampler_2D(Rasteron_Image* refImage) : Sampler_Target(TEX_2D){
 		setImage(refImage);
 		RASTERON_DEALLOC(refImage);
@@ -125,7 +125,7 @@ private:
 
 struct Sampler_3D : public Sampler_Target {
     Sampler_3D() : Sampler_Target(TEX_3D), width(SAMPLER_WIDTH), height(SAMPLER_HEIGHT), depth(SAMPLER_WIDTH) {} // Empty Constructor
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D(unsigned s) : width(s), height(s), depth(s), Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Matching Lengths
     Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Custom Lengths
     Sampler_3D(Rasteron_Queue* q) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->height), depth(queue->frameCount), Sampler_Target(TEX_3D){

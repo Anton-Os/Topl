@@ -21,18 +21,18 @@ typedef void (*shaderCallback)(void);
 class Geo_Actor {
 public:
 	Geo_Actor(){
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		_id = color_unique();
 #endif
 	}
 	Geo_Actor(const Geo_Mesh* mesh) {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		_id = color_unique();
 #endif
 		_mesh = mesh;
 	}
 	Geo_Actor(const std::string& name, const Geo_Mesh* mesh) {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		_id = color_unique();
 #endif
 		_name = name;

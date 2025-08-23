@@ -117,7 +117,7 @@ public:
     unsigned long getFrameCount(){ return _frameIDs; } // gets the frame count
     void texturizeScene(const Topl_Scene* scene); // reloads textures from scene
     virtual void dispatch(std::vector<Vec3f>* data){ }
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     virtual Sampler_2D frame() = 0;
 	unsigned getPixelAt(float x, float y);
 #endif
@@ -147,7 +147,7 @@ protected:
 private:
     virtual void init(NATIVE_WINDOW window) = 0;
 	virtual void swapBuffers(double frameTime) = 0;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     virtual void attachTex(const Sampler_2D* image, unsigned renderID) { attachTexAt(image, renderID, 0); } // attaches to default binding
     virtual void attachTexAt(const Sampler_2D* image, unsigned renderID, unsigned binding) = 0;
     virtual void attachTex3D(const Sampler_3D* volumeTex, unsigned renderID) = 0;

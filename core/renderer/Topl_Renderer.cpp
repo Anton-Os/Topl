@@ -128,7 +128,7 @@ void Topl_Renderer::present() {
     _clearColors = Vec4f({ sin(clearTime), cos(clearTime), tan(clearTime), 1.0F });
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 	if(scene->getIsTextured()){

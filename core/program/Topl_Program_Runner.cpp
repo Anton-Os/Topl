@@ -1,7 +1,7 @@
 #include "program/Topl_Program.hpp"
 
 void Topl_Program::preloop(){
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     if(isEnable_background){
     // if(isEnable_background && _renderer->getFrameCount() % 3 == 0){
         unsigned pickerColor = colorPicker(&_background.scene);
@@ -54,7 +54,7 @@ void Topl_Program::updateTimelines(){
     for(auto r = rotations_map.begin(); r != rotations_map.end(); r++) if(r->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) r->first->setRot(r->second);
     for(auto s = scales_map.begin(); s != scales_map.end(); s++) if(s->first != pickerObj && !Topl_Program::timeline.dynamic_ticker.isPaused) s->first->setSize(s->second);
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     if(isEnable_overlays){
         double secsElapsed = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
         if(secsElapsed < TIMELINE_END) _overlays.billboard_timeline.setState(0, secsElapsed / TIMELINE_END, 0.0F);
@@ -78,7 +78,7 @@ void Topl_Program::postloop(){
         _editor.actor.setSize(*Topl_Program::lastPickerObj->getSize() * 0.75F);
         _editor.mesh.drawMode = DRAW_Lines;
         _editor.actor.isShown = (!_editor.actor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F })) * *Topl_Program::lastPickerObj->getSize());
         _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
         _editor.nameActor.isShown = (!_editor.nameActor.isShown) ? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
@@ -92,7 +92,7 @@ void Topl_Program::postloop(){
         }
 #endif
     }
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     if(isEnable_screencap){
         static unsigned index = 0;
 
@@ -125,7 +125,7 @@ void Topl_Program::run(){
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
             if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
             _renderer->setDrawMode(DRAW_Triangles);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
             if(isEnable_overlays) renderScene(&_overlays.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);
 #endif
             _renderer->present(); // switches front and back buffer
@@ -138,7 +138,7 @@ void Topl_Program::run(){
 }
 
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
     Topl_Pipeline* pipeline = _renderer->getPipeline(); // saving
 

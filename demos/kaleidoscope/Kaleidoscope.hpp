@@ -58,7 +58,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
         Kaleidoscope_Construct(CIRCLE_SEGMENTS, KALEIDOSCOPE_TESS),
         Kaleidoscope_Construct(std::make_pair(3, CIRCLE_SEGMENTS), -KALEIDOSCOPE_TESS)
     };
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D volumeImg = Sampler_3D(KALEIDOSCOPE_SLICES);
 #endif
 private:

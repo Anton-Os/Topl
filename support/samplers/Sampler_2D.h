@@ -1,6 +1,6 @@
 #include "Sampler.h"
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 2.0F); }
 

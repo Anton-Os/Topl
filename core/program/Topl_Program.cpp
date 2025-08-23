@@ -22,7 +22,7 @@ Vec3f Topl_Program::pickerCoord = { 0.0F, 0.0F, 0.0F };
 Vec3f Topl_Program::lastPickerCoord = { 0.0F, 0.0F, 0.0F };
 Geo_Actor* Topl_Program::pickerObj = NO_PICKER_OBJ;
 Geo_Actor* Topl_Program::lastPickerObj = NO_PICKER_OBJ;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 #endif
 
@@ -269,7 +269,7 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 
     setPipelines();
     _renderer->buildScene(&_editor.scene);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     if(isEnable_background) createBackground(&_background.image);
     if(isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
@@ -338,7 +338,7 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
     if(_background.mesh->getTessLevel() < PROGRAM_BK_TESS) _background.mesh->tesselate(PROGRAM_BK_TESS);
     _background.actor.setMesh(_background.mesh);
     if(_background.actor.pickFunc == nullptr) _background.actor.pickFunc = std::bind(&Topl_Program::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     if(backgroundTex != nullptr){
         _background.scene.addTexture("program_background", backgroundTex);
         for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
@@ -390,7 +390,7 @@ void Topl_Program::createOverlays(double size){
         if(o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline)? 0.015F : 0.045F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
             if(e != _overlays.billboards[o]->getActorCount() - 1)
                 _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
@@ -414,7 +414,7 @@ void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int m
 }
 
 void Topl_Program::cleanup() {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	for(unsigned f = 0; f < Topl_Program::cachedFrames->frameCount; f++){ // exports frames
 		std::string frameName = "frame" + std::to_string(f + 1) + ".bmp";
 		std::cout << " Writing frame " << frameName << std::endl;

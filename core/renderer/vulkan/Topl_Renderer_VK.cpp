@@ -778,7 +778,7 @@ void Topl_Renderer_VK::draw(const Geo_Actor* actor){
     }
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 Sampler_2D Topl_Renderer_VK::frame() {
 	_frameImage = Sampler_2D();

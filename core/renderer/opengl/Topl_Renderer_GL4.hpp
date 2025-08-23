@@ -25,7 +25,7 @@ public:
 	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader){ genPipeline(pipeline, vShader, pShader, {}); }
 	void genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr vShader, shader_cptr pShader, std::initializer_list<shader_cptr> shaders);
     void genComputePipeline(GL4::Pipeline* pipeline, shader_cptr cShader){ if(cShader->getType() == SHDR_Compute) genPipeline(pipeline, nullptr, nullptr, { cShader }); }
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_2D frame() override;
 #endif
 #ifndef __ANDROID__
@@ -34,7 +34,7 @@ public:
 protected:
     void init(NATIVE_WINDOW window) override;
     void swapBuffers(double frameTime) override;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     void attachTexAt(const Sampler_2D* imageTex, unsigned renderID, unsigned binding) override;
 	void attachTex3D(const Sampler_3D* volumeTex, unsigned id) override;
 #endif

@@ -386,7 +386,7 @@ void Topl_Renderer_DX11::setConstBufferData(ID3D11Buffer* buffer, unsigned short
 	if(_pipeline->hullShader != nullptr) _deviceCtx->HSSetConstantBuffers(binding, 1, &buffer);
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 Sampler_2D Topl_Renderer_DX11::frame() {
 	HRESULT result;

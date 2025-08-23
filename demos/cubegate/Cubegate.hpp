@@ -22,6 +22,8 @@ struct Cubegate_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
+    void preloop() override;
+
     Geo_Quad2D faceMesh = Geo_Quad2D(CUBEGATE_SIZE);
     Geo_Quad3D cubeMesh = Geo_Quad3D(CUBEGATE_SIZE * 0.66F, CUBEGATE_SIZE * 0.66F);
 
@@ -39,7 +41,7 @@ struct Cubegate_Demo : public Topl_Program {
     Geo_Actor floor = Geo_Actor(&floorMesh);
     Geo_Actor ceiling = Geo_Actor(&floorMesh);
     Geo_Actor walls = Geo_Actor(&wallMesh);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D cubeTex = Sampler_3D(256);
 
     Sampler_2D frontFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
@@ -55,7 +57,7 @@ private:
 
     Topl_Scene scene = PROGRAM_SCENE;
 
-    Topl_Camera worldCamera;
+    Topl_Camera worldCamera = Topl_Camera(PROJECTION_Perspective);
     Topl_Scene worldScenes[CUBEGATE_SCENES] = {
         Topl_Scene(&worldCamera), Topl_Scene(&worldCamera), Topl_Scene(&worldCamera),
         Topl_Scene(&worldCamera), Topl_Scene(&worldCamera), Topl_Scene(&worldCamera)

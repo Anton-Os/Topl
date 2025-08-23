@@ -69,7 +69,7 @@ public:
 	~Topl_Program(){ cleanup(); }
 
 	void run();
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
 	unsigned colorPicker(Topl_Scene* scene); // get solid color to find item
 	Vec3f coordPicker(Topl_Scene* scene); // get relative coordinates within item
@@ -93,11 +93,11 @@ public:
 	static unsigned pickerColor, lastPickerColor; // picker for color
 	static Vec3f pickerCoord, lastPickerCoord;
 	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	static Rasteron_Queue* cachedFrames; // frame capture queue
 #endif
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	std::map<Geo_Actor*, Sampler_Array> sequence_map; // for dynamically changing textures
 #endif
     bool isEnable_screencap = true;
@@ -165,7 +165,7 @@ private:
         Geo_Actor actor = Geo_Actor("program_background", mesh);
         Topl_Camera camera = Topl_Camera();
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         Sampler_2D image = Sampler_Gradient(SIDE_Radial, 0xFF111111, 0xFFEEEEEE); // = Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp");
 		Sampler_3D volumeImg = Sampler_3D(256); // Sampler_3D(SAMPLER_WIDTH, SAMPLER_HEIGHT, 32);
 #endif
@@ -177,7 +177,7 @@ private:
 	struct Editor {
 		Geo_Quad3D mesh = Geo_Quad3D(1.0F);
 		Geo_Actor actor = Geo_Actor("pickerEdit", &mesh);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
 		Sampler_Text nameImg = Sampler_Text({ fontPath.c_str(), /* actor.getName().c_str() */ "1", 0xFF111111, 0xFFEEEEEE });
 		Geo_Quad2D nameMesh = Geo_Quad2D(0.05F);

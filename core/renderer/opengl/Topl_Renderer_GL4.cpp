@@ -355,7 +355,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 	}
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 Sampler_2D Topl_Renderer_GL4::frame() {
     unsigned viewportHeight = Platform::getViewportHeight(_platformCtx);

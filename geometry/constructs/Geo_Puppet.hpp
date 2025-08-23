@@ -74,7 +74,7 @@ struct Geo_Puppet : public Geo_Construct {
 #endif
 };
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 typedef std::string puppetSpritePaths[PUPPET_PARTS]; // list of paths for loading sprites
 
@@ -87,13 +87,13 @@ public:
     }
     // Geo_Puppet2D(const std::string& prefix, const std::string& fileImgs[PUPPET_PARTS], Topl_Scene* scene) : Geo_Puppet(prefix, &actors, scene){}
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     // ~Geo_Puppet2D(){ for(unsigned p = 0; p < PUPPET_PARTS; p++) RASTERON_SPRITE_DEALLOC(sprites[p]); }
 #endif
 
     void init() override {
         _geoActors.resize(PUPPET_PARTS);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
             spriteImgs[p] = Sampler_File(spriteImgPaths[p].c_str());
             sprites[p] = loadSprite(spriteImgs[p].getImage());
@@ -124,7 +124,7 @@ public:
 protected:
     puppetSpritePaths spriteImgPaths;
     Geo_Quad2D quads[PUPPET_PARTS];
-#ifdef RASTERON_H  
+#ifdef TOPL_ENABLE_TEXTURES  
     Sampler_2D spriteImgs[PUPPET_PARTS];
     Rasteron_Sprite* sprites[PUPPET_PARTS];
 #endif

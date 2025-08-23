@@ -11,7 +11,7 @@
 
 #include "Geo_Construct.hpp"
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 unsigned linedSampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
 #endif
 
@@ -52,7 +52,7 @@ public:
             if (currentNode->getMesh()->getMeshCount() > NO_NODE_COUNT) {
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
                 _nodeSampler_map.insert({ _geoNodes[n], Sampler_2D() });
                 _nodeSampler_map.at(_geoNodes[n]) = Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
@@ -63,7 +63,7 @@ public:
     void configure(Topl_Scene* scene) override {
         for (unsigned n = 0; n < _geoNodes.size(); n++) {
                 scene->addGeometry(getPrefix() + _geoActors[n].getName(), _geoNodes[n]);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
                 scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeSampler_map.at(_geoNodes[n]));
 #endif
         }

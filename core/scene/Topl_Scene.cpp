@@ -45,7 +45,7 @@ void Topl_Scene::removeActor(const std::string& name){
 #ifdef TOPL_ENABLE_PHYSICS
 	_physicsMap.erase(actor);
 #endif
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	_textureMap.erase(actor);
 	_arrayTexMap.erase(actor);
 	_volumeTexMap.erase(actor);
@@ -53,7 +53,7 @@ void Topl_Scene::removeActor(const std::string& name){
     static_cast<void>(std::remove(_geoActors.begin(), _geoActors.end(), actor));
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 
 void Topl_Scene::addTexture(const std::string& name, const Sampler_2D* image) {
     if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")

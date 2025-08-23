@@ -14,7 +14,7 @@ void Meshform_Demo::onAnyKey(char key){
         /* case 'j': genShapes(MESHFORM_TESS + 1, std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
         case 'k': genShapes(MESHFORM_TESS + 1, std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
         case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break; */
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         case 'b': genTex3D(MESHFORM_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
         case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
@@ -24,7 +24,7 @@ void Meshform_Demo::onAnyKey(char key){
     if(isspace(key)) isRotating = !isRotating;
 }
 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned color2){
     unsigned c1 = color1, c2 = color2;
     unsigned width = 1; unsigned height = 1;
@@ -93,7 +93,7 @@ void Meshform_Demo::init(){
         orbActors[m][3].setPos({ -0.5F, 0.5F, 0.0F });
         scene.addGeometry("decOrb" + std::to_string(m), &orbActors[m][3]);
         for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == MESHFORM_INDEX;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         scene.addVolumeTex("trigOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("quadOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
@@ -115,7 +115,7 @@ void Meshform_Demo::init(){
     Topl_Program::shaderMode = 8;
 
     _renderer->buildScene(&scene);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     _renderer->texturizeScene(&scene);
 #endif
 }
@@ -131,7 +131,7 @@ void Meshform_Demo::loop(double frameTime){
         }
 
     // torus->drawMode = DRAW_Lines;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     _texVShader.setFlip(0);
     // _texVShader.setAntialiasing(0.001F, 10);
     _texVShader.setSlice((_renderer->getFrameCount() % 256) * (1.0F / 256.0));

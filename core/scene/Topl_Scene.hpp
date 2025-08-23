@@ -41,7 +41,7 @@ public:
 	// Basic Operations
 	void addGeometry(Geo_Actor* actor); // add geometry
 	void addGeometry(const std::string& name, Geo_Actor* actor); // add named geometry
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	void addTexture(const std::string& name, const Sampler_2D* image);
 	void addTexture(const Sampler_2D* image){ for(auto t = _geoActors.begin(); t != _geoActors.end(); t++) addTexture((*t)->getName(), image); }
 	void addArrayTex(const std::string& name, const Sampler_Array* arrayTex);
@@ -55,7 +55,7 @@ public:
 	// unsigned getLightCount() const { return _lights.size(); }
 	// light_cptr getLight(unsigned index) const; // access to light source by index
 	bool getIsTextured() const { return _isTextured; }
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	const Sampler_2D* getTexture(const std::string& name) const;
 	const Sampler_Array* getArrayTex(const std::string& name) const;
 	const Sampler_3D* getVolumeTex(const std::string& name) const;
@@ -89,7 +89,7 @@ private:
     // std::thread _phys_thread;
 #endif
 	bool _isTextured = false; // sets to true on texture operations
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_2D _textures[MAX_TEX_BINDINGS] = { 
 		// Sampler_File(texImgPaths[0]), Sampler_File(texImgPaths[1]), Sampler_File(texImgPaths[2]), Sampler_File(texImgPaths[3]), 
 		// Sampler_File(texImgPaths[4]), Sampler_File(texImgPaths[5]), Sampler_File(texImgPaths[6]), Sampler_File(texImgPaths[7]),

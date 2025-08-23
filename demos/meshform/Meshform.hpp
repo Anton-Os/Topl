@@ -31,7 +31,7 @@ struct Meshform_Demo : public Topl_Program {
     void init() override;
     void preloop() override {
         Topl_Program::preloop();
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         colorPicker(&scene);
 #endif
     }
@@ -56,13 +56,13 @@ struct Meshform_Demo : public Topl_Program {
     };
     Geo_Actor fractalActors[4] = { Geo_Actor(fractals[0]), Geo_Actor(fractals[1]), Geo_Actor(fractals[2]), Geo_Actor(fractals[3]) };
     Geo_Actor torusActor = Geo_Actor(torus);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D volumeImg = Sampler_3D(256);
 #endif
 private:
     void onAnyKey(char key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
     void genTex3D(unsigned short mode, unsigned color1, unsigned color2);
 #endif
     void genShapes(std::pair<vTformCallback, Vec3f> transform1, std::pair<vTformCallback, Vec3f> transform2);

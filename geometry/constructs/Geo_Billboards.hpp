@@ -31,7 +31,7 @@ public:
 		if(rootBorder > 0.0F) rootMesh.scale({ 1.0F + rootBorder, 1.0F + rootBorder, 0.0F });
 		_geoActors[_params.getGridSize()] = Geo_Actor(&rootMesh);
 		childMesh.scale({ (1.0F / _params.x.first) - (rootBorder / 7.5F), (1.0F / _params.y.first) - (rootBorder / 7.5F), 0.0F });
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
         rootImg.setImage(gradientImgOp(RASTERON_SIZE(SAMPLER_HEIGHT, SAMPLER_WIDTH), SIDE_Radial, 0xFF222222, 0xFF444444));
         rootImg.addBorder(0.05, 0xFF222222);
 		for(unsigned p = 0; p < _params.getGridSize(); p++) paneSampler_map.insert({ &_geoActors.at(p), Sampler_2D(copyImgOp(rootImg.getImage())) });
@@ -42,7 +42,7 @@ public:
 		Geo_Grid::configure(scene);
 
 		scene->addGeometry(getPrefix() + "root", &_geoActors.back()); 
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 		scene->addTexture(getPrefix() + "root", &rootImg);
 		for(unsigned p = 0; p < _params.getGridSize(); p++)
 			scene->addTexture(getCellName(p + 1), &paneSampler_map.at(&_geoActors.at(p))); 
@@ -69,7 +69,7 @@ public:
 		for(unsigned a = 0; a < _params.x.first * _params.y.first; a++) _geoActors[a].isShown = a != index - _params.x.first && a != index + _params.x.first;
 		_geoActors[index].updateSize({ 0.0F, (float)amount, 0.0F }); // TODO: Figure out exact proportions
 	}
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_2D* getImgRoot(){ return getImgAt(_params.getGridSize()); }
 	Sampler_2D* getImgAt(unsigned short i){ return (i != _params.getGridSize())? &paneSampler_map.at(&_geoActors.at(i)) : &rootImg; }
 
@@ -127,7 +127,7 @@ protected:
 	float rootBorder = 0.05F;
 	Geo_Quad2D rootMesh = Geo_Quad2D(PANE_SIZE, PANE_Z);
 	Geo_Actor rootActor = Geo_Actor(&rootMesh);
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_2D rootImg; // root background
 	std::map<const Geo_Actor*, Sampler_2D> paneSampler_map; // for child images
 	std::map<const Geo_Actor*, Sampler_UI*> paneItemUI_map; // for child UI elements;

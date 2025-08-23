@@ -1,7 +1,12 @@
 #ifndef GEO_VERTEX_H
 
-#define IGNORE_RASTER
-#include "support_def.h"
+#ifdef _WIN32
+#define DllExport __declspec(dllexport)
+#elif defined(__APPLE__)
+#define DllExport __attribute__(( visibility("default") ))
+#else
+#define DllExport
+#endif
 
 #include "maths/Vector.h"
 #include "maths/Matrix.h"

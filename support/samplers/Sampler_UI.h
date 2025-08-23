@@ -1,7 +1,7 @@
 #include "support_def.h"
 
 struct Sampler_UI : Sampler_Array {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_UI(enum MENU_Size s){ size = s; }
 
 	~Sampler_UI(){ RASTERON_QUEUE_DEALLOC(queue); }
@@ -24,7 +24,7 @@ protected:
 // Implementation of UI elements
 
 struct Sampler_Button : public Sampler_UI {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_Button() : Sampler_UI(MENU_Medium){
 		queue = loadUI_checkBtn(MENU_Medium); 
 		Sampler_UI::setState(MENU_None);
@@ -48,7 +48,7 @@ struct Sampler_Button : public Sampler_UI {
 };
 
 struct Sampler_Label : public Sampler_UI {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_Label(Rasteron_Text textObj) : Sampler_UI(MENU_Medium){
 		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(104, 104), 4); // TODO: Make size correct?
 		setText(textObj);
@@ -106,7 +106,7 @@ private:
 };
 
 struct Sampler_Dial : public Sampler_UI {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_Dial(unsigned short count) : Sampler_UI(MENU_Medium){ 
 		queue = loadUI_dial(MENU_Medium, count); 
 		Sampler_UI::setState(MENU_None);
@@ -134,7 +134,7 @@ struct Sampler_Dial : public Sampler_UI {
 };
 
 struct Sampler_Slider : public Sampler_UI {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_Slider(unsigned short count) : Sampler_UI(MENU_Medium){ 
 		queue = loadUI_slider(MENU_Medium, count); 
 		Sampler_UI::setState(MENU_None); // start positino
@@ -162,7 +162,7 @@ struct Sampler_Slider : public Sampler_UI {
 
 
 struct Sampler_Layout : public Sampler_UI {
-#ifdef RASTERON_H
+#ifdef TOPL_ENABLE_TEXTURES
 	Sampler_Layout(SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(MENU_Medium){ 
 		setLayout(side, text, image, bkColor);
 		Sampler_UI::setState(MENU_None);
