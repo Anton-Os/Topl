@@ -20,7 +20,8 @@
     #define RASTERON_ENABLE_SPACE
     #define RASTERON_ENABLE_ANIM // includes animation support
     #define RASTERON_ENABLE_FONT // includes font support
-    #include "Rasteron.h" // includes Rasteron main modules and features
+    #include "Rasteron.h" // main library for Rasteron
+    #include "Loader.h" // loader library for Rasteron
 #endif
 #if ${Assimp_FOUND}
 	#define TOPL_ENABLE_MODELS

@@ -1,6 +1,13 @@
 #include "Cubegate.hpp"
 
-void Cubegate_Demo::onAnyKey(char key) {} // TODO: Add body
+void Cubegate_Demo::onAnyKey(char key) {
+    switch (key) {
+        case 'a': worldCamera.updatePos({ -Topl_Program::speed, 0.0F, 0.0F }); break;
+        case 's': worldCamera.updatePos({ 0.0F, -Topl_Program::speed, 0.0F }); break;
+        case 'd': worldCamera.updatePos({ Topl_Program::speed, 0.0F, 0.0F }); break;
+        case 'w': worldCamera.updatePos({ 0.0F, Topl_Program::speed, 0.0F }); break;
+    }
+}
 
 void Cubegate_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) {} // TODO: Add body
 
@@ -26,6 +33,8 @@ void Cubegate_Demo::preloop() {
 }
 
 void Cubegate_Demo::init() {
+    Platform::keyControl.addHandler(std::bind(&Cubegate_Demo::onAnyKey, this, std::placeholders::_1));
+
     scene.addGeometry("cube", &cubeActor);
     scene.addGeometry("frontFace", &faceActors[CUBEGATE_Front]);
     scene.addGeometry("backFace", &faceActors[CUBEGATE_Back]);
@@ -67,7 +76,9 @@ void Cubegate_Demo::init() {
             worldScenes[s].addGeometry("ball" + std::to_string(b + 1), &balls[b]);
         worldScenes[s].addGeometry("floor", &floor);
         worldScenes[s].addGeometry("ceiling", &ceiling);
-        worldScenes[s].addGeometry("walls", &walls);
+        // worldScenes[s].addGeometry("walls", &walls);
+
+        _renderer->buildScene(&worldScenes[s]);
 #ifdef TOPL_ENABLE_TEXTURES
         _renderer->texturizeScene(&worldScenes[s]);
 #endif
@@ -76,6 +87,13 @@ void Cubegate_Demo::init() {
 
 void Cubegate_Demo::loop(double frameTime) {
     cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
+
+    /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
+    renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
+    renderScene(&worldScenes[2], _fieldPipeline, Topl_Program::shaderMode);
+    renderScene(&worldScenes[3], _patternPipeline, Topl_Program::shaderMode);
+    renderScene(&worldScenes[4], _materialPipeline, Topl_Program::shaderMode);
+    renderScene(&worldScenes[5], _texPipeline, Topl_Program::shaderMode); */
 
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
