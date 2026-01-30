@@ -12,10 +12,11 @@
 #include "Pattern_Shader.hpp"
 #include "Advance_Shader.hpp"
 
-#include "constructs/Geo_Billboards.hpp"
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
+
+#include "constructs/Geo_Billboards.hpp"
 
 #define NO_PICKER_OBJ nullptr
 #define CACHED_FRAME_COUNT 60
@@ -212,38 +213,30 @@ private:
 			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
 			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
 			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
+			// Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button()
 		};
 		Sampler_Button pipelineButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
-			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
-			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
-			// Sampler_Button("app-window"), Sampler_Button("app-window-edit"), Sampler_Button("app-window-module"),
-			// Sampler_Button("app-window-flash"), Sampler_Button("app-window-star-1"), Sampler_Button("app-window-next"),
-			// Sampler_Button("app-window-flag"), Sampler_Button("app-window-settings"), Sampler_Button("app-window-clock")
+			Sampler_Button("app-window"), Sampler_Button("app-window-edit"), Sampler_Button("app-window-module"),
+			Sampler_Button("app-window-flash"), Sampler_Button("app-window-star-1"), Sampler_Button("app-window-next"),
+			Sampler_Button("app-window-flag"), Sampler_Button("app-window-settings"), Sampler_Button("app-window-clock")
 		};
 		Sampler_Button sculptButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
-			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
-			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
-			// Sampler_Button("tools-hammer"), Sampler_Button("tools-hammer-1"), Sampler_Button("tools-hammer-3"),
-			// Sampler_Button("tools-palette-trowel"), Sampler_Button("tools-flattener-triangle"), Sampler_Button("tools-saw"),
-			//Sampler_Button("tools-pliers"), Sampler_Button("tools-vice-grip"), Sampler_Button("tools-nail-gun")
+			Sampler_Button("tools-hammer"), Sampler_Button("tools-hammer-1"), Sampler_Button("tools-hammer-3"),
+			Sampler_Button("tools-palette-trowel"), Sampler_Button("tools-flattener-triangle"), Sampler_Button("tools-saw"),
+			Sampler_Button("tools-pliers"), Sampler_Button("tools-vice-grip"), Sampler_Button("tools-nail-gun")
 		};
 		Sampler_Button paintButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
-			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
-			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
-			// Sampler_Button("content-pen"), Sampler_Button("content-pen-1"), Sampler_Button("content-pen-3"),
-			// Sampler_Button("content-pen-6"), Sampler_Button("content-ink-pen"), Sampler_Button("design-tool-quill-1"),
-			// Sampler_Button("color-rolling-brush"), Sampler_Button("design-tool-paper-glue"), Sampler_Button("color-bucket-brush")
+			Sampler_Button("content-pen"), Sampler_Button("content-pen-1"), Sampler_Button("content-pen-3"),
+			Sampler_Button("content-pen-6"), Sampler_Button("content-ink-pen"), Sampler_Button("design-tool-quill-1"),
+			Sampler_Button("color-rolling-brush"), Sampler_Button("design-tool-paper-glue"), Sampler_Button("color-bucket-brush")
 		};
-		Sampler_Button cameraButtons[3] = { Sampler_Button(/* "camera-retro" */), Sampler_Button(/* "camera-1" */), Sampler_Button(/* "camera-2" */) };
+		Sampler_Button cameraButtons[3] = { Sampler_Button("camera-retro"), Sampler_Button("camera-1"), Sampler_Button("camera-2") };
 		Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
-		Sampler_Button mediaButtons[3] = { Sampler_Button(/* "controls-forward" */), Sampler_Button(/* "controls-next" */), Sampler_Button(/* "controls-rewind" */) };
+		Sampler_Button mediaButtons[3] = { Sampler_Button("controls-forward"), Sampler_Button("controls-next"), Sampler_Button("controls-rewind") };
 		// Sampler_Label timeLabel = Sampler_Label({ fontPath.c_str(), "0:00:00", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label recordLabel = Sampler_Label({ fontPath.c_str(), "RECORD", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label axisLabels[3] = { Sampler_Label({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Y |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Z |", 0xFF333333, 0xFFEEEEEE }) };
-		Sampler_Button plusButton = Sampler_Button(/* "add-square" */), minusButton = Sampler_Button(/* "subtract-square" */);
+		Sampler_Button plusButton = Sampler_Button("add-square"), minusButton = Sampler_Button("subtract-square");
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif
 	} _overlays;

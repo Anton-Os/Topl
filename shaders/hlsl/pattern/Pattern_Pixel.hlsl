@@ -50,6 +50,7 @@ float4 trialPattern(float3 coords){
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
+	float4 outColor;
 	float3 coords = float3(input.pos.x, input.pos.y, input.pos.z);
 
 	// return float4(input.texcoord * input.vertex_color, 1.0);
@@ -69,7 +70,6 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	float4 dstColor = float4(coords, 0.5);
 	if(mode < 0) dstColor = modalTex(abs(mode / 10) % 10, coords);
 
-	float4 outColor;
 
 	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
 	else if(abs(mode / 100) % 10 == 2) outColor = srcColor - dstColor;
@@ -82,10 +82,5 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
 	else outColor = srcColor;
 
-	return float4(
-		abs(outColor.r) - floor(abs(outColor.r)),
-		abs(outColor.g) - floor(abs(outColor.g)), 
-		abs(outColor.b) - floor(abs(outColor.b)), 
-		outColor.a
-	);
+	return float4(abs(outColor.r), abs(outColor.g), abs(outColor.b), outColor.a);
 }

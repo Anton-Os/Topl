@@ -35,7 +35,7 @@ void Cubegate_Demo::preloop() {
 void Cubegate_Demo::init() {
     Platform::keyControl.addHandler(std::bind(&Cubegate_Demo::onAnyKey, this, std::placeholders::_1));
 
-    scene.addGeometry("cube", &cubeActor);
+    // scene.addGeometry("cube", &cubeActor);
     scene.addGeometry("frontFace", &faceActors[CUBEGATE_Front]);
     scene.addGeometry("backFace", &faceActors[CUBEGATE_Back]);
     scene.addGeometry("topFace", &faceActors[CUBEGATE_Top]);
@@ -49,10 +49,11 @@ void Cubegate_Demo::init() {
     faceActors[CUBEGATE_Top].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
     faceActors[CUBEGATE_Bottom].setPos({ 0.0F, -CUBEGATE_SIZE / 2.0F, 0.0F });
     faceActors[CUBEGATE_Bottom].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
-    faceActors[CUBEGATE_Left ].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
+    faceActors[CUBEGATE_Left ].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
     faceActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
     faceActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
     faceActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+    cubegate.configure(&scene);
 
     _renderer->buildScene(&scene);
 #ifdef TOPL_ENABLE_TEXTURES
@@ -87,6 +88,7 @@ void Cubegate_Demo::init() {
 
 void Cubegate_Demo::loop(double frameTime) {
     cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
+    cubegate.rotate({ (float)frameTime * -0.00000025F, 0.0F, (float)frameTime * 0.00000025F });
 
     /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
@@ -94,6 +96,9 @@ void Cubegate_Demo::loop(double frameTime) {
     renderScene(&worldScenes[3], _patternPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[4], _materialPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[5], _texPipeline, Topl_Program::shaderMode); */
+
+    for (unsigned f = 0; f < CUBEGATE_SCENES; f++)
+        faceActors[f].isShown = false; // f == (_renderer->getFrameCount() / 60) % CUBEGATE_SCENES;
 
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);

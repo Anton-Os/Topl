@@ -43,12 +43,14 @@ void Traversal_Demo::init(){
 void Traversal_Demo::loop(double frameTime){
     static double totalTime = 0.0F;
 
+    Topl_Program::camera.setPos({ 0.0F, 0.0F, sinf((float)totalTime * 0.0000001F) * TRAVERSAL_DEPTH * 2 });
+
     for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
         for (unsigned r = 1; r < TRAVERSAL_RECURSION; r++) {
             corridorActors[c][r].setPos({ 0.0F, 0.0F, sinf(frameTime * speed * r) * TRAVERSAL_DEPTH });
-            corridorActors[c][r].setRot({ sinf((totalTime * 0.000001F) + (speed * c)) * r, 0.0F, 0.0F});
+            // corridorActors[c][r].setRot({ sinf((totalTime * 0.000001F) + (speed * c)) * r, 0.0F, 0.0F});
             // if(_renderer->getFrameCount() % 10 == 0)
-            //    corridorActors[c][r].updateRot({ (frameTime * speed * 0.000001F) / (r % 2 == 0)? (float)r : (float)-r, 0.0F, 0.0F});
+            // corridorActors[c][r].updateRot({ (frameTime * speed * 0.000001F) / (r % 2 == 0)? (float)r : (float)-r, 0.0F, 0.0F});
         }
 
     // squareCorridor.drawMin = _renderer->getFrameCount() % squareCorridor.getVertexCount();
@@ -61,7 +63,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_DX11);
     Traversal->run();
 
     delete(Traversal);

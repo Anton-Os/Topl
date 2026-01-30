@@ -46,8 +46,10 @@ struct PS_INPUT {
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
+	float4 outColor;
+
 	uint m = abs(mode) % 1000;
-	if(timeElapse == 0.0) return float4(1.0, 1.0, 1.0, 0.75); // test
+	if(timeElapse == 0.0) outColor = float4(1.0, 1.0, 1.0, 0.75); // test
 
 	float3 target = input.vertex_pos;
 	// if(mode < 0) target = input.vertex_color;
@@ -69,15 +71,17 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float3 relCoord = nearestPoint - target;
 
-	if(m > 0 && m < 100) return coordField(nearestPoint, target);
-	else if(m >= 100 && m < 200) return trigField(nearestPoint, target, input.vertex_color);
-	else if(m >= 200 && m < 300) return centerField(nearestPoint, target);
-	else if(m >= 300 && m < 400) return proximaField(nearestPoint, target);
-	else if(m >= 400 && m < 500) return neonField(ctrlIdx, target);
-	else if(m >= 500 && m < 600) return gradField(ctrlIdx, target);
-	else if(m >= 600 && m < 700) return crossField(ctrlIdx, target);
-	else if(m >= 700 && m < 800) return flowField(ctrlIdx, target);
-	else if(m >= 800 && m < 900) return modalTex(ctrlIdx, target);
-	// else if(m >= 800 && m < 900) return float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
-	else return float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
+	if(m > 0 && m < 100) outColor = coordField(nearestPoint, target);
+	else if(m >= 100 && m < 200) outColor = trigField(nearestPoint, target, input.vertex_color);
+	else if(m >= 200 && m < 300) outColor = centerField(nearestPoint, target);
+	else if(m >= 300 && m < 400) outColor = proximaField(nearestPoint, target);
+	else if(m >= 400 && m < 500) outColor = neonField(ctrlIdx, target);
+	else if(m >= 500 && m < 600) outColor = gradField(ctrlIdx, target);
+	else if(m >= 600 && m < 700) outColor = crossField(ctrlIdx, target);
+	else if(m >= 700 && m < 800) outColor = flowField(ctrlIdx, target);
+	else if(m >= 800 && m < 900) outColor = modalTex(ctrlIdx, target);
+	// else if(m >= 800 && m < 900) outColor = float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
+	else outColor = float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
+
+	return float4(abs(outColor.r), abs(outColor.g), abs(outColor.b), outColor.a);
 }

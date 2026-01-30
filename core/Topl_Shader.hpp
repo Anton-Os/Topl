@@ -134,7 +134,7 @@ public:
 	const Shader_Type* getInputAtIndex(unsigned index) const { return (index < _inputs.size()) ? &_inputs.at(index) : nullptr; }
 	unsigned short getInputCount() const { return _inputs.size(); }
 
-	virtual void genSceneBlock(scene_cptr scene, blockBytes_t* bytes) const {
+    virtual void genSceneBlock(scene_cptr scene, blockBytes_t* bytes) const {
 		static Timer_Dynamic dynamic_ticker = Timer_Dynamic(0.0);
 		Topl_Camera* camera = scene->camera;
 		// double timeElapse = dynamic_ticker.getAbsSecs();
@@ -144,7 +144,7 @@ public:
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getPos() : &_defaultVec), sizeof(Vec3f), 0, bytes);
 		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getZoom() : &_defaultScalar), sizeof(float), 0, bytes);
 		appendDataToBytes((uint8_t*)((camera != nullptr)? camera->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
-		alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getProjMatrix() : &_defaultMat), sizeof(Mat4x4), 0, bytes);
+        alignDataToBytes((uint8_t*)((camera != nullptr)? camera->getProjMatrix() : &_defaultMat), sizeof(Mat4x4), 0, bytes);
 	}
 
 	virtual void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const {

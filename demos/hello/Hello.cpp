@@ -35,13 +35,13 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
 MAIN_ENTRY {
 #ifndef __ANDROID__
     Platform platform(argv[0], "Hello");
+    std::cout << "Creating window" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
     Platform platform(pApp);
     while(platform.getParentWindow() == nullptr && platform.handleEvents() && !pApp->destroyRequested)
         platform.awaitWindow(); // waiting for window on Android
 #endif
-
     std::cout << "Creating backend" << std::endl;
 #if TARGET_BACKEND==1
 	Hello_Renderer_GL4* renderer = new Hello_Renderer_GL4(platform.getContext());
@@ -78,6 +78,6 @@ MAIN_ENTRY {
         // logFrameRate(f1, f2, f3, f4);
 	}
 
-	if(renderer != nullptr) delete(renderer);
+    if(renderer != nullptr) delete(renderer);
 	// return 0;
 }

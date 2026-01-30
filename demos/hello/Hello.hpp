@@ -11,11 +11,11 @@
 #ifndef __ANDROID__
 struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
     Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
-		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
-		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
-		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
+        // genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
+        // genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
+        // genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
 		genPipeline(&basePipeline, &vertexShader, &pixelShader);
-        genComputePipeline(&calcPipeline, &computeShader);
+        // genComputePipeline(&calcPipeline, &computeShader);
 
         setDrawPipeline(true);
 		setDrawMode(DRAW_Points);

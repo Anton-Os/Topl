@@ -16,6 +16,32 @@ enum CUBEGATE_Face {
     CUBEGATE_Bottom = 3, CUBEGATE_Left = 4, CUBEGATE_Right = 5,
 };
 
+struct Cubegate_Construct : public Geo_Construct {
+    Cubegate_Construct(Geo_Mesh* faceMesh) : Geo_Construct("cubegate", faceMesh, 6) { init(); }
+
+    void init() override {
+        _geoActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });
+        _geoActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -CUBEGATE_SIZE / 2.0F });
+        _geoActors[CUBEGATE_Top].setPos({ 0.0F, CUBEGATE_SIZE / 2.0F, 0.0F });
+        _geoActors[CUBEGATE_Top].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+        _geoActors[CUBEGATE_Bottom].setPos({ 0.0F, -CUBEGATE_SIZE / 2.0F, 0.0F });
+        _geoActors[CUBEGATE_Bottom].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+        _geoActors[CUBEGATE_Left].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
+        _geoActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+        _geoActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
+        _geoActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+    }
+
+    void configure(Topl_Scene* scene) override {
+        scene->addGeometry(getPrefix() + "leftFace", &_geoActors[CUBEGATE_Left]);
+        scene->addGeometry(getPrefix() + "rightFace", &_geoActors[CUBEGATE_Right]);
+        scene->addGeometry(getPrefix() + "topFace", &_geoActors[CUBEGATE_Top]);
+        scene->addGeometry(getPrefix() + "bottomFace", &_geoActors[CUBEGATE_Bottom]);
+        scene->addGeometry(getPrefix() + "frontFace", &_geoActors[CUBEGATE_Front]);
+        scene->addGeometry(getPrefix() + "backFace", &_geoActors[CUBEGATE_Back]);
+    }
+};
+
 struct Cubegate_Demo : public Topl_Program {
     Cubegate_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Cubegate", backend) {}
 
@@ -25,6 +51,8 @@ struct Cubegate_Demo : public Topl_Program {
     void preloop() override;
 
     Geo_Quad2D faceMesh = Geo_Quad2D(CUBEGATE_SIZE);
+    // Geo_Hex2D faceMesh2 = Geo_Hex2D(CUBEGATE_SIZE);
+    // Geo_Circle2D faceMesh3 = Geo_Circle2D(CUBEGATE_SIZE);
     Geo_Quad3D cubeMesh = Geo_Quad3D(CUBEGATE_SIZE * 0.66F, CUBEGATE_SIZE * 0.66F);
 
     Geo_Actor faceActors[6] = { &faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh };
@@ -41,6 +69,8 @@ struct Cubegate_Demo : public Topl_Program {
     Geo_Actor floor = Geo_Actor(&floorMesh);
     Geo_Actor ceiling = Geo_Actor(&floorMesh);
     Geo_Actor walls = Geo_Actor(&wallMesh);
+
+    Cubegate_Construct cubegate = Cubegate_Construct(&faceMesh);
 #ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D cubeTex = Sampler_3D(256);
 

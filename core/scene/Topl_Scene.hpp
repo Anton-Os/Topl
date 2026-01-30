@@ -104,7 +104,7 @@ private:
 	Timer_Persist _ticker; // used for internal updates
 };
 
-typedef const Topl_Scene* const scene_cptr;
+typedef const Topl_Scene* scene_cptr;
 
 
 #define TOPL_SCENE_H
