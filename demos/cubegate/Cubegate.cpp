@@ -13,7 +13,7 @@ void Cubegate_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
 
 void Cubegate_Demo::preloop() {
     Topl_Program::preloop();
-    if (_renderer->getFrameCount() % 60 > 300) {
+    if (_renderer->getFrameCount() / 60 > 300) {
         renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
         frontFaceTex = _renderer->frame();
         renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
@@ -24,9 +24,11 @@ void Cubegate_Demo::preloop() {
         bottomFaceTex = _renderer->frame();
         renderScene(&worldScenes[4], _materialPipeline, Topl_Program::shaderMode);
         leftFaceTex = _renderer->frame();
-        renderScene(&worldScenes[5], _texPipeline, Topl_Program::shaderMode);
+        renderScene(&worldScenes[5], _effectPipeline, Topl_Program::shaderMode);
         rightFaceTex = _renderer->frame();
 #ifdef TOPL_ENABLE_TEXTURES
+        Sampler_2D* cubeGateTextures[6] = { &frontFaceTex, &backFaceTex, &topFaceTex, &bottomFaceTex, &leftFaceTex, &rightFaceTex };
+        cubeGate.setTextures(&scene, cubeGateTextures);
         _renderer->texturizeScene(&scene);
 #endif
     }
@@ -53,7 +55,7 @@ void Cubegate_Demo::init() {
     faceActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
     faceActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
     faceActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
-    cubegate.configure(&scene);
+    cubeGate.configure(&scene);
 
     _renderer->buildScene(&scene);
 #ifdef TOPL_ENABLE_TEXTURES
@@ -67,17 +69,11 @@ void Cubegate_Demo::init() {
 
     _renderer->texturizeScene(&scene);
 #endif
-    for (unsigned b = 0; b < CUBEGATE_BALLS; b++) balls[b].setPos(VEC_3F_RAND);
-    floor.setPos({ 0.0F, -1.0F, 0.0F });
-    ceiling.setPos({ 0.0F, 1.0F, 0.0F });
-    walls.setRot({ 0.0F, MATH_HALF_PI, 0.0F });
-
     for (unsigned s = 0; s < CUBEGATE_SCENES; s++) {
-        for (unsigned b = 0; b < CUBEGATE_BALLS; b++)
+        for (unsigned b = 0; b < CUBEGATE_BALLS; b++) {
             worldScenes[s].addGeometry("ball" + std::to_string(b + 1), &balls[b]);
-        worldScenes[s].addGeometry("floor", &floor);
-        worldScenes[s].addGeometry("ceiling", &ceiling);
-        // worldScenes[s].addGeometry("walls", &walls);
+            balls[b].setPos((VEC_3F_RAND - VEC_3F_ONES * 2));
+        }
 
         _renderer->buildScene(&worldScenes[s]);
 #ifdef TOPL_ENABLE_TEXTURES
@@ -87,21 +83,17 @@ void Cubegate_Demo::init() {
 }
 
 void Cubegate_Demo::loop(double frameTime) {
-    cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
-    cubegate.rotate({ (float)frameTime * -0.00000025F, 0.0F, (float)frameTime * 0.00000025F });
+    // cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
+    cubeGate.rotate({ (float)frameTime * -0.00000025F, 0.0F, (float)frameTime * 0.00000025F });
 
     /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[2], _fieldPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[3], _patternPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[4], _materialPipeline, Topl_Program::shaderMode);
-    renderScene(&worldScenes[5], _texPipeline, Topl_Program::shaderMode); */
+    renderScene(&worldScenes[5], _effectPipeline, Topl_Program::shaderMode); */
 
-    for (unsigned f = 0; f < CUBEGATE_SCENES; f++)
-        faceActors[f].isShown = false; // f == (_renderer->getFrameCount() / 60) % CUBEGATE_SCENES;
-
-    _renderer->updateScene(&scene);
-    _renderer->drawScene(&scene);
+    renderScene(&scene);
 }
 
 MAIN_ENTRY{

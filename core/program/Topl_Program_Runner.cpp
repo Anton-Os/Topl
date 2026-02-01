@@ -120,7 +120,7 @@ void Topl_Program::run(){
 
             if(isCtrl_shader) updatePipelines();
             setShadersMode(Topl_Program::shaderMode);
-            if(isEnable_background) renderScene(&_background.scene, nullptr, shaderMode);
+            if(isEnable_background) renderScene(&_background.scene);
             Topl_Factory::switchPipeline(_renderer, _savedPipeline);
             loop(Topl_Program::timeline.persist_ticker.getAbsMillisecs()); // performs draws and updating
             if(Topl_Program::lastPickerObj != nullptr) renderScene(&_editor.scene, _texPipeline, TEX_BASE); // nullptr, shaderMode);

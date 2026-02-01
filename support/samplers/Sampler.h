@@ -164,7 +164,8 @@ struct Sampler_3D : public Sampler_Target {
 private:
 	void setData(Rasteron_Queue* q){
 		if(q != SAMPLER_COLOR_QUEUE) queue = q; 
-		else setColors(SAMPLER_VOLUME_BACKGROUND);
+		else setColors(RAND_COLOR());
+		// else setColors(SAMPLER_VOLUME_BACKGROUND);
 		
 		Rasteron_Image* compositeImg = RASTERON_ALLOC("composite", height, width * depth);
 		for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){

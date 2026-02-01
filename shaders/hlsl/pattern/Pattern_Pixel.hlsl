@@ -54,22 +54,21 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	float3 coords = float3(input.pos.x, input.pos.y, input.pos.z);
 
 	// return float4(input.texcoord * input.vertex_color, 1.0);
-	if(mode % 10 == 1) coords = input.vertex_pos;
-	else if(mode % 10 == 2) coords = input.vertex_color;
-	else if(mode % 10 == 3) coords = input.normal;
-	else if(mode % 10 == 4) coords = input.tangent;
-	else if(mode % 10 == 5) coords = input.texcoord;
-	else if(mode % 10 == 6) coords = getRandColor(primID);
-	else if(mode % 10 == 7) coords = input.vertex_pos * input.texcoord + input.normal / input.tangent;
-	else if(mode % 10 == 8) coords = float3(pow(input.pos.x, input.texcoord.x), pow(input.pos.y, input.normal.y), pow(input.pos.z, input.tangent.z));
-	else if(mode % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
+	if(abs(mode) % 10 == 1) coords = input.vertex_pos;
+	else if(abs(mode) % 10 == 2) coords = input.vertex_color;
+	else if(abs(mode) % 10 == 3) coords = input.normal;
+	else if(abs(mode) % 10 == 4) coords = input.tangent;
+	else if(abs(mode) % 10 == 5) coords = input.texcoord;
+	else if(abs(mode) % 10 == 6) coords = getRandColor(primID);
+	else if(abs(mode) % 10 == 7) coords = input.vertex_pos * input.texcoord + input.normal / input.tangent;
+	else if(abs(mode) % 10 == 8) coords = float3(pow(input.pos.x, input.texcoord.x), pow(input.pos.y, input.normal.y), pow(input.pos.z, input.tangent.z));
+	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
-	float4 srcColor = modalTex(abs(mode / 10) % 10, coords);
-	if(mode < 0) srcColor = float4(coords, 1.0);
+	float4 srcColor = modalTex(abs(10 - (mode / 10)) % 10, coords);
+	// if(mode < 0) srcColor = float4(coords, 1.0);
 
 	float4 dstColor = float4(coords, 0.5);
-	if(mode < 0) dstColor = modalTex(abs(mode / 10) % 10, coords);
-
+	if(mode < 0) dstColor = modalTex(abs(mode) % 10, coords);
 
 	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
 	else if(abs(mode / 100) % 10 == 2) outColor = srcColor - dstColor;
@@ -82,5 +81,5 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
 	else outColor = srcColor;
 
-	return float4(abs(outColor.r), abs(outColor.g), abs(outColor.b), outColor.a);
+	return float4(abs(outColor.r), abs(outColor.g), abs(outColor.b), 1.0);
 }

@@ -19,7 +19,7 @@ void Genesis_Demo::loop(double frameTime){
     for (unsigned g = 0; g < grid->getActorCount(); g++)
         if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * 0.0000005F);
 
-    renderScene(&scene, nullptr, Topl_Program::shaderMode); 
+    renderScene(&scene); 
 }
 
 void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){

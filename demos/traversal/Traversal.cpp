@@ -5,8 +5,8 @@ static float speed = TRAVERSAL_SPEED;
 void Traversal_Demo::onAnyKey(char key) {
     switch (tolower(key)) {
         case 'i': speed = TRAVERSAL_SPEED; break;
-        case 'o': speed = TRAVERSAL_SPEED * 10; break;
-        case 'p': speed = TRAVERSAL_SPEED * 100; break;
+        case 'o': speed *= 10.0F; break;
+        case 'p': speed /= 10.0F; break;
     }
 }
 
@@ -41,29 +41,31 @@ void Traversal_Demo::init(){
 }
 
 void Traversal_Demo::loop(double frameTime){
-    static double totalTime = 0.0F;
+    static double totalTime = 0.0;
 
-    Topl_Program::camera.setPos({ 0.0F, 0.0F, sinf((float)totalTime * 0.0000001F) * TRAVERSAL_DEPTH * 2 });
+    // Topl_Program::camera.setPos({ 0.0F, 0.0F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH * 2 });
 
     for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
-        for (unsigned r = 1; r < TRAVERSAL_RECURSION; r++) {
-            corridorActors[c][r].setPos({ 0.0F, 0.0F, sinf(frameTime * speed * r) * TRAVERSAL_DEPTH });
-            // corridorActors[c][r].setRot({ sinf((totalTime * 0.000001F) + (speed * c)) * r, 0.0F, 0.0F});
-            // if(_renderer->getFrameCount() % 10 == 0)
-            // corridorActors[c][r].updateRot({ (frameTime * speed * 0.000001F) / (r % 2 == 0)? (float)r : (float)-r, 0.0F, 0.0F});
+        for (unsigned r = 0; r < TRAVERSAL_RECURSION; r++) {
+            float t = sinf((float)totalTime * speed * r);
+            corridorActors[c][r].setPos({ 0.0F, 0.0F, t * TRAVERSAL_DEPTH * 2 });
+            corridorActors[c][r].setRot({ t * (float)MATH_PI * (r % 2 == 0) ? (float)2.0F : (float)-2.0F, 0.0F, 0.0F });
+            float scale = TRAVERSAL_RADIUS - ((1.0F / TRAVERSAL_RECURSION) * r * TRAVERSAL_RADIUS);
+            corridorActors[c][r].setSize({ (float)pow(abs(t), 0.5) * scale, (float)pow(abs(t), 0.5) * scale, scale });
+            // corridorActors[c][r].updateRot({ (frameTime * speed * speed) / (r % 2 == 0) ? (float)r : (float)-r, 0.0F, 0.0F });
         }
 
     // squareCorridor.drawMin = _renderer->getFrameCount() % squareCorridor.getVertexCount();
     // hexCorridor.drawMin = _renderer->getFrameCount() % hexCorridor.getVertexCount();
     // circleCorridor.drawMin = _renderer->getFrameCount() % circleCorridor.getVertexCount();
 
-    renderScene(&scene, nullptr, Topl_Program::shaderMode);
+    renderScene(&scene);
 
     totalTime += frameTime;
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0], BACKEND_DX11);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
     Traversal->run();
 
     delete(Traversal);

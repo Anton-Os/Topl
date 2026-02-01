@@ -40,6 +40,15 @@ struct Cubegate_Construct : public Geo_Construct {
         scene->addGeometry(getPrefix() + "frontFace", &_geoActors[CUBEGATE_Front]);
         scene->addGeometry(getPrefix() + "backFace", &_geoActors[CUBEGATE_Back]);
     }
+
+    void setTextures(Topl_Scene* scene, Sampler_2D* textures[6]) {
+        scene->addTexture(getPrefix() + "leftFace", textures[CUBEGATE_Left]);
+        scene->addTexture(getPrefix() + "rightFace", textures[CUBEGATE_Right]);
+        scene->addTexture(getPrefix() + "topFace", textures[CUBEGATE_Top]);
+        scene->addTexture(getPrefix() + "bottomFace", textures[CUBEGATE_Bottom]);
+        scene->addTexture(getPrefix() + "frontFace", textures[CUBEGATE_Front]);
+        scene->addTexture(getPrefix() + "backFace", textures[CUBEGATE_Back]);
+    }
 };
 
 struct Cubegate_Demo : public Topl_Program {
@@ -70,7 +79,7 @@ struct Cubegate_Demo : public Topl_Program {
     Geo_Actor ceiling = Geo_Actor(&floorMesh);
     Geo_Actor walls = Geo_Actor(&wallMesh);
 
-    Cubegate_Construct cubegate = Cubegate_Construct(&faceMesh);
+    Cubegate_Construct cubeGate = Cubegate_Construct(&faceMesh);
 #ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D cubeTex = Sampler_3D(256);
 

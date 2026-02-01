@@ -67,7 +67,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 
     _renderer->setDrawMode(drawMode);
     // _renderer->updateScene(&scene);
-    renderScene(&scene, nullptr, -Topl_Program::shaderMode); // _renderer->drawScene(&scene);
+    renderScene(&scene); // _renderer->drawScene(&scene);
 
     totalTime += frameTime;
 }

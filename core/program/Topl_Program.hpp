@@ -135,6 +135,7 @@ protected:
 	enum PROGRAM_Menu { PROGRAM_Media = 0, PROGRAM_Object = 1, PROGRAM_Shader = 2, PROGRAM_Timeline = 3, PROGRAM_Camera = 4, PROGRAM_AppBar = 5, PROGRAM_Sculpt = 6, PROGRAM_Paint = 7, };
 
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
+	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
 	bool isEnable_background = true, isEnable_overlays = PROGRAM_IS_OVERLAY;
