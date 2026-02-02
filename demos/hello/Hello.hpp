@@ -21,7 +21,7 @@ struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
 		setDrawMode(DRAW_Points);
 	}
 
-    void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &geoPipeline); }
+    void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &basePipeline); }
 
 	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 

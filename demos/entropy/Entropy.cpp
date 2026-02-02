@@ -154,7 +154,7 @@ void Entropy_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Entropy = new Entropy_Demo(argv[0], BACKEND_DX11);
+    Entropy = new Entropy_Demo(argv[0], BACKEND_GL4);
     Entropy->run();
 
     delete(Entropy);

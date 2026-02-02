@@ -9,7 +9,7 @@
 #define TRAVERSAL_TESS 3
 #define TRAVERSAL_SPEED 0.0000001F
 #define TRAVERSAL_CORRIDORS 3
-#define TRAVERSAL_RECURSION 8
+#define TRAVERSAL_RECURSION 9
 
 struct Traversal_Demo : public Topl_Program {
     Traversal_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Traversal", backend){}
@@ -20,16 +20,26 @@ private:
     void onAnyKey(char key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
-    Geo_Quad3D squareCorridor = Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
-    Geo_Hex3D hexCorridor = Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
-    Geo_Circle3D circleCorridor = Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH);
+    Geo_Quad3D squareCorridors[TRAVERSAL_CORRIDORS] = {
+        Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+    };
+    Geo_Hex3D hexCorridors[TRAVERSAL_CORRIDORS] = {
+        Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+    };
+    Geo_Circle3D circleCorridors[TRAVERSAL_CORRIDORS] = {
+        Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+    };
 
-    Geo_Actor actors[3] = { Geo_Actor(&squareCorridor), Geo_Actor(&hexCorridor), Geo_Actor(&circleCorridor) };
+    Geo_Actor actors[TRAVERSAL_RECURSION] = {
+        Geo_Actor(&squareCorridors[0]), Geo_Actor(&squareCorridors[1]), Geo_Actor(&squareCorridors[2]),
+        Geo_Actor(&hexCorridors[0]), Geo_Actor(&hexCorridors[1]), Geo_Actor(&hexCorridors[2]),
+        Geo_Actor(&circleCorridors[0]), Geo_Actor(&circleCorridors[1]), Geo_Actor(&circleCorridors[2]),
+    };
 
     Geo_Actor corridorActors[TRAVERSAL_CORRIDORS][TRAVERSAL_RECURSION] = {
-        { actors[0], actors[0], actors[0], actors[0], actors[0], actors[0], actors[0], actors[0] },
-        { actors[1], actors[1], actors[1], actors[1], actors[1], actors[1], actors[1], actors[1] },
-        { actors[2], actors[2], actors[2], actors[2], actors[2], actors[2], actors[2], actors[2] },
+        { actors[0], actors[1], actors[2], actors[0], actors[1], actors[2], actors[0], actors[1], actors[2] },
+        { actors[3], actors[4], actors[5], actors[3], actors[4], actors[5], actors[3], actors[4], actors[5] },
+        { actors[6], actors[7], actors[8], actors[6], actors[7], actors[8], actors[6], actors[7], actors[8] },
     };
 
     // Geo_Orb obstacle;

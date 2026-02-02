@@ -43,16 +43,19 @@ void Penscape_Demo::loop(double frameTime){
     _renderer->setDrawMode(drawMode);
 
     for (unsigned t = 0; t < BRUSH3D_ITERS; t++) {
+        float prog = (float)t / (float)BRUSH3D_ITERS;
+
         for (unsigned a = 0; a < 3; a++)
             for (unsigned s = 0; s < 3; s++)
-                brushes3D[a][s].updateRot({ (MATH_PI * 2) / BRUSH3D_ITERS, 0.0F, 0.0F});
+                brushes3D[a][s].updateRot({ (MATH_PI * 2) / BRUSH3D_ITERS, 0.0F, 0.0F });
+                // brushes3D[a][s].updateRot({ (float)pow((MATH_PI * 2) / BRUSH3D_ITERS, 0.95F + (prog / 20)), 0.0F, 0.0F });
         _renderer->updateScene(&scene);
         _renderer->drawScene(&scene);
     }
 }
 
 MAIN_ENTRY{
-    Penscape = new Penscape_Demo(argv[0], BACKEND_GL4);
+    Penscape = new Penscape_Demo(argv[0], BACKEND_DX11);
     Penscape->run();
 
     delete(Penscape);

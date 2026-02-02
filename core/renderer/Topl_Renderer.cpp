@@ -19,13 +19,10 @@ bool Topl_Renderer::buildScene(const Topl_Scene* scene){
     }
 
     // Build Scene
-    std::cout << "Generating shader block data" << std::endl;
     if(!_sceneBlockData.empty()) _sceneBlockData.clear();
-    if(_entryShader != nullptr) std::cout << "Entry shader is empty" << std::endl;
     _entryShader->genSceneBlock(scene, &_sceneBlockData);
 	build(SCENE_RENDERID);
 
-    std::cout << "Building objects" << std::endl;
 	// Build Render Objects
 	for(unsigned g = 0; g < scene->getActorCount(); g++){
 		actor_cptr actor = scene->getGeoActor(g);

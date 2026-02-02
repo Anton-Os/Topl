@@ -138,7 +138,7 @@ protected:
 	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
-	bool isEnable_background = true, isEnable_overlays = PROGRAM_IS_OVERLAY;
+	bool isEnable_background = false, isEnable_overlays = PROGRAM_IS_OVERLAY;
 private:
 	static Topl_Pipeline* _savedPipeline;
 

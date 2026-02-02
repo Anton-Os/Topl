@@ -32,6 +32,7 @@ public:
         _origin = Vec3f({ _origin[0] / _geoActors.size(), _origin[1] / _geoActors.size(), _origin[2] / _geoActors.size() });
         return _origin;
     }
+    // TODO: Set a draw function for all composite meshes?
     unsigned getActorCount() const { return _geoActors.size(); }
     Geo_Actor* getGeoActor(unsigned short a){ return (a < _geoActors.size())? &_geoActors[a] : nullptr; }
 #ifdef TOPL_ENABLE_PHYSICS
@@ -57,6 +58,7 @@ public:
             Geo_Actor* actor =  &_geoActors[a];
             Vec3f actor_pos = *actor->getPos() - getOrigin();
             
+            // TODO: Include proper transformation matrices
             float x = (actor_pos[0] * cos(angles[0])) - (actor_pos[1] * sin(angles[0]));
             float y = (actor_pos[0] * sin(angles[0])) + (actor_pos[1] * cos(angles[0]));
             float z = actor_pos[2];
