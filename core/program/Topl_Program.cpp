@@ -179,6 +179,7 @@ void Topl_Program::_onAnyKey(char k){
         // for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
         timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
     }
+    else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
         switch(tolower(k)){ // TODO: Add same logic for picked object?
@@ -206,10 +207,10 @@ void Topl_Program::_onAnyKey(char k){
         //    Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
     }
     if(Topl_Program::isCtrl_shader){
-        if(k == (char)0x25) Topl_Program::shaderMode--;
-        else if(k == (char)0x26) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0)? 100 : -100;
-        else if(k == (char)0x27) Topl_Program::shaderMode++;
-        else if(k == (char)0x28) Topl_Program::shaderMode *= -1;
+        if (k == (char)0x25) Topl_Program::shaderMode--;
+        else if (k == (char)0x26) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0) ? 100 : -100;
+        else if (k == (char)0x27) Topl_Program::shaderMode++;
+        else if (k == (char)0x28) Topl_Program::shaderMode *= -1;
         else if(isdigit(k)){
             switch(tolower(k)){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
@@ -224,7 +225,7 @@ void Topl_Program::_onAnyKey(char k){
                 case '9': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break; // switch to long pipeline for tesselation and geometry?
             }
 
-            if(tolower(k) == '8' || tolower(k) == '9') _renderer->setDrawMode(DRAW_Patch);
+            // if(tolower(k) == '8' || tolower(k) == '9') _renderer->setDrawMode(DRAW_Patch);
         }
 
         if(k == (char)0x25 || k == (char)0x26 || k == (char)0x27 || k == (char)0x28 || k == '-' || k == '_' || k == '+' || k == '='){
@@ -327,10 +328,10 @@ void Topl_Program::setPipelines(){
 	_patternPipeline = Topl_Factory::genPipeline(_backend, &_patternVShader, &_patternPShader);
 #ifndef __linux__
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails!
-#endif
     _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
     _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
     _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
+#endif
     Topl_Factory::switchPipeline(_renderer, _flatPipeline); // _texPipeline);
 }
 

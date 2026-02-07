@@ -1,11 +1,13 @@
-file(GLOB gl4_shaders ${SHADERS_DIR}/glsl/*.glsl)
-add_custom_target(GL4_ShaderEdit SOURCES ${gl4_shaders})
-add_dependencies(GL4_ShaderEdit GL4_ENGINE)
+file(GLOB_RECURSE glsl_shaders ${SHADERS_DIR}/glsl/*.glsl)
+add_custom_target(GL4_SHADERS SOURCES ${glsl_shaders})
+add_dependencies(GL4_SHADERS GL4_ENGINE)
+set_target_properties(GL4_SHADERS PROPERTIES FOLDER "GL4_TARGETS")
 
 if(WIN32)
-	file(GLOB drx11_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
-	add_custom_target(DX11_ShaderEdit SOURCES ${drx11_shaders})
-	add_dependencies(DX11_ShaderEdit DX11_ENGINE)
+	file(GLOB_RECURSE hlsl_shaders ${SHADERS_DIR}/hlsl/*.hlsl)
+	add_custom_target(DX11_SHADERS SOURCES ${hlsl_shaders})
+	add_dependencies(DX11_SHADERS DX11_ENGINE)
+	set_target_properties(DX11_SHADERS PROPERTIES FOLDER "DX11_TARGETS")
 endif()
 
 if(VK_FOUND) # comiling shaders for vulkan
@@ -25,13 +27,13 @@ if(VK_FOUND) # comiling shaders for vulkan
 	#	endif()
 	# endfunction()
 
-	message(STATUS "Searching inside ${VULKAN_PATH}/Bin/")
+	message(STATUS "Searching for glslc inside ${VULKAN_PATH}/Bin/")
 
     find_file(glslc_exec "glslc" "glslc.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
     # find_file(glslc_exec "glslangValidator" "glslangValidator.exe" PATHS "${VULKAN_PATH}/Bin/") # for compiling shader code into bytecode
 	if(NOT ${glslc_exec} STREQUAL "glslc_exec-NOTFOUND")
 		message("${glslc_exec} executing")
-        foreach(shader IN ITEMS ${gl4_shaders})
+        foreach(shader IN ITEMS ${glsl_shaders})
 			get_filename_component(shader_name ${shader} NAME)
 
 			string(FIND ${shader_name} "Vert" isVertexShader)

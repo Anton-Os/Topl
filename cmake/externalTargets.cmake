@@ -1,5 +1,7 @@
 include(ExternalProject)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 if(NOT DEFINED IGNORE_NATIVELIBS)
 ExternalProject_Add(GLEW
     GIT_REPOSITORY "https://github.com/Anton-Os/GLEW.git"

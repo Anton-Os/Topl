@@ -10,6 +10,7 @@ target_include_directories(GL4_ENGINE INTERFACE
     $<INSTALL_INTERFACE:include/Topl>
 )
 target_link_libraries(GL4_ENGINE PUBLIC GLEW_lib)
+set_target_properties(GL4_ENGINE PROPERTIES FOLDER "GL4_TARGETS")
 # set_target_properties(GL4_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 
 if(UNIX AND NOT APPLE) # Unix Specific
@@ -37,6 +38,7 @@ if(WIN32)
         $<INSTALL_INTERFACE:include/Topl>
     )
     set_target_properties(DX11_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+    set_target_properties(DX11_ENGINE PROPERTIES FOLDER "DX11_TARGETS")
 endif()
 
 # -------------- Vulkan Engine ------------- #
@@ -54,6 +56,7 @@ if(Vulkan_FOUND)
     )
     target_link_libraries(VK_ENGINE PUBLIC ${Vulkan_LIBRARIES})
     # set_target_properties(VK_ENGINE PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+    set_target_properties(VK_ENGINE PROPERTIES FOLDER "VK_TARGETS")
 endif()
 
 

@@ -40,7 +40,7 @@ struct Cubegate_Construct : public Geo_Construct {
         scene->addGeometry(getPrefix() + "frontFace", &_geoActors[CUBEGATE_Front]);
         scene->addGeometry(getPrefix() + "backFace", &_geoActors[CUBEGATE_Back]);
     }
-
+#ifdef TOPL_ENABLE_TEXTURES
     void setTextures(Topl_Scene* scene, Sampler_2D* textures[6]) {
         scene->addTexture(getPrefix() + "leftFace", textures[CUBEGATE_Left]);
         scene->addTexture(getPrefix() + "rightFace", textures[CUBEGATE_Right]);
@@ -49,6 +49,7 @@ struct Cubegate_Construct : public Geo_Construct {
         scene->addTexture(getPrefix() + "frontFace", textures[CUBEGATE_Front]);
         scene->addTexture(getPrefix() + "backFace", textures[CUBEGATE_Back]);
     }
+#endif
 };
 
 struct Cubegate_Demo : public Topl_Program {

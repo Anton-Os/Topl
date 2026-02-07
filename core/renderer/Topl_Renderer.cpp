@@ -125,7 +125,7 @@ void Topl_Renderer::present() {
 	}
 
     float clearTime = _ticker.getAbsSecs();
-    _clearColors = Vec4f({ sin(clearTime), cos(clearTime), tan(clearTime), 1.0F });
+    // _clearColors = Vec4f({ sin(clearTime), cos(clearTime), tan(clearTime), 1.0F });
 }
 
 #ifdef TOPL_ENABLE_TEXTURES

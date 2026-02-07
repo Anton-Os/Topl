@@ -20,6 +20,7 @@ void Animatrix_Demo::init(){
     }));
 #endif
 
+    floorMesh.drawMode = DRAW_Triangles;
     scene3D.addGeometry(&floor);
 #ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].configure(&scene3D);
@@ -40,7 +41,9 @@ void Animatrix_Demo::loop(double frameTime){
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].rotateAll({ 0.0F, 0.0F, (float)frameTime / 1000.0F });
 #endif
 
+    _renderer->setDrawMode(DRAW_Triangles);
     renderScene(&scene2D, _texPipeline, TEX_BASE); 
+    _renderer->setDrawMode(DRAW_Lines);
     renderScene(&scene3D, _beamsPipeline, Topl_Program::shaderMode); 
 }
 

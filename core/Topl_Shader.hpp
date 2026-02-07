@@ -65,7 +65,8 @@ public:
 
 			std::string includeStr = "", includeSrc = "";
 			while(shaderSrc[includeOffset] != '\n' && shaderSrc[includeOffset] != '\0'){
-				if(shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != '>' && shaderSrc[includeOffset] != ';') includeStr += shaderSrc[includeOffset];
+				if (shaderSrc[includeOffset] != '\"' && shaderSrc[includeOffset] != '>' && shaderSrc[includeOffset] != ';') includeStr += shaderSrc[includeOffset];
+				else break;
 				includeOffset++;
 			}
 
@@ -80,7 +81,7 @@ public:
 				// std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
 			}
 
-			shaderSrc.replace(startOffset, includeOffset - startOffset, includeSrc);
+			shaderSrc.replace(startOffset, includeOffset + 1 - startOffset, includeSrc);
 		}
 		return shaderSrc;
 	}

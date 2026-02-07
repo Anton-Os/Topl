@@ -166,16 +166,16 @@ vec3 retroSet(vec2 coord, vec2 cursor){
 
 // Recursive Fracals
 
-vec3 recursiveAlgo(vec3 input1, vec3 input2, vec3 input3){
+vec3 recursiveAlgo(vec3 target1, vec3 target2, vec3 target3){
     uint i = 1;
 
-    while(length(input1 - input2) * dot(input1, input3) < length(input2 - input3) * dot(input1, input2) && i < FRACTAL_ITER){
-        input1 -= input3;
-        input2 += input3;
-        input3 *= dot(input1, input2);
+    while(length(target1 - target2) * dot(target1, target3) < length(target2 - target3) * dot(target1, target2) && i < FRACTAL_ITER){
+        target1 -= target3;
+        target2 += target3;
+        target3 *= dot(target1, target2);
         i++;
     }
 
-    if(i >= FRACTAL_ITER || (input1.r == 0 && input1.g == 0 && input1.b == 0)) return vec3(0, 0, 0);
-    else return fractalColors(vec2(input1.r - input3.b, input1.g + input3.r), vec2(input2.g - input3.r, input2.b + input3.g), i);
+    if(i >= FRACTAL_ITER || (target1.r == 0 && target1.g == 0 && target1.b == 0)) return vec3(0, 0, 0);
+    else return fractalColors(vec2(target1.r - target3.b, target1.g + target3.r), vec2(target2.g - target3.r, target2.b + target3.g), i);
 }

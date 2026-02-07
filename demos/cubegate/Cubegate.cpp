@@ -14,6 +14,7 @@ void Cubegate_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
 void Cubegate_Demo::preloop() {
     Topl_Program::preloop();
     if (_renderer->getFrameCount() / 60 > 300) {
+#ifdef TOPL_ENABLE_TEXTURES
         renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
         frontFaceTex = _renderer->frame();
         renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
@@ -26,7 +27,7 @@ void Cubegate_Demo::preloop() {
         leftFaceTex = _renderer->frame();
         renderScene(&worldScenes[5], _effectPipeline, Topl_Program::shaderMode);
         rightFaceTex = _renderer->frame();
-#ifdef TOPL_ENABLE_TEXTURES
+
         Sampler_2D* cubeGateTextures[6] = { &frontFaceTex, &backFaceTex, &topFaceTex, &bottomFaceTex, &leftFaceTex, &rightFaceTex };
         cubeGate.setTextures(&scene, cubeGateTextures);
         _renderer->texturizeScene(&scene);

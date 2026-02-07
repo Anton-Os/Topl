@@ -2,7 +2,8 @@
 
 std::string readFile(const char* source){
     std::ifstream file = std::ifstream(source, std::ios::in);
-	if(!file.is_open()) return std::string(); // error occured, empty string returned
+
+    if(!file.is_open()) return std::string(); // error occured, empty string returned
 
     // file.ignore(std::numeric_limits<std::streamsize>::max());
     file.clear();

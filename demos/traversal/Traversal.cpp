@@ -21,6 +21,8 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 void Traversal_Demo::init(){
     speed = TRAVERSAL_SPEED;
 
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 2.0F).genProjMatrix());
+
     Platform::keyControl.addHandler(std::bind(&Traversal_Demo::onAnyKey, this, std::placeholders::_1));
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 10.0).genProjMatrix());
 
@@ -51,10 +53,10 @@ void Traversal_Demo::loop(double frameTime){
         for (unsigned r = 0; r < TRAVERSAL_RECURSION; r++) {
             float t = sinf((float)totalTime * speed * r);
             corridorActors[c][r].setPos({ 0.0F, 0.0F, t * TRAVERSAL_DEPTH * 2 });
+            // corridorActors[c][r].updateRot({ (frameTime * speed) / (r % 2 == 0) ? (float)r : (float)-r, 0.0F, 0.0F });
             corridorActors[c][r].setRot({ t * (float)MATH_PI * (r % 2 == 0) ? (float)2.0F : (float)-2.0F, 0.0F, 0.0F });
             float scale = TRAVERSAL_RADIUS - ((1.0F / TRAVERSAL_RECURSION) * r * TRAVERSAL_RADIUS);
             corridorActors[c][r].setSize({ (float)pow(abs(t), 0.5) * scale, (float)pow(abs(t), 0.5) * scale, scale });
-            // corridorActors[c][r].updateRot({ (frameTime * speed * speed) / (r % 2 == 0) ? (float)r : (float)-r, 0.0F, 0.0F });
         }
 
     // squareCorridor.drawMin = _renderer->getFrameCount() % squareCorridor.getVertexCount();

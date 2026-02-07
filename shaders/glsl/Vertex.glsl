@@ -80,8 +80,8 @@ vec3 getCoordDistances(vec2 coord, vec2 p1, vec2 p2){
 	);
 }
 
-vec4 getVertex(vec3 input, vec3 translation, vec3 degrees, vec4 size){
-	vec3 rotation = getRotMatrix(degrees) * input;
+vec4 getVertex(vec3 target, vec3 translation, vec3 degrees, vec4 size){
+	vec3 rotation = getRotMatrix(degrees) * target;
 	vec4 pos = vec4(rotation, 1.0f) * size;
 	pos += vec4(translation, 0.0f);
 
