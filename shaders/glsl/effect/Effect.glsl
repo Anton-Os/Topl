@@ -9,12 +9,12 @@ vec3 mandlebrot(vec2 coord, float f){
 		i++;
 	}
 
-	if(i < FRACTAL_ITER) return fractalColors(vec2(x, y), cursorPos, i);
+	if(i < FRACTAL_ITER) return rgbColors(vec2(x, y), cursorPos, i);
 	else return vec3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
 
-vec3 mandlebrotSet(vec2 coord){ return mandlebrot(coord, 3.0); }
+vec3 mandlebrotSet(vec2 coord){ return mandlebrot(coord, 2.0); }
 
 // Julia set
 
@@ -28,11 +28,11 @@ vec3 julia(vec2 coord, vec2 cursor, float f){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
-vec3 juliaSet(vec2 coord, vec2 cursor){ return julia(coord, cursor, 3.0); }
+vec3 juliaSet(vec2 coord, vec2 cursor){ return julia(coord, cursor, 2.0); }
 
 // Trig Set
 vec3 trigSet(vec2 coord){
@@ -45,7 +45,7 @@ vec3 trigSet(vec2 coord){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursorPos, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursorPos, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -62,7 +62,7 @@ vec3 powerSet(vec2 coord, vec2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -80,7 +80,7 @@ vec3 wingSet(vec2 coord){
         i++;
     }
 
-    if (i < FRACTAL_ITER) return fractalColors(vec2(x, y), cursorPos, i);
+    if (i < FRACTAL_ITER) return rgbColors(vec2(x, y), cursorPos, i);
     return vec3(0, 0, 0);
 }
 
@@ -94,7 +94,7 @@ vec3 stepSet(vec2 coord, vec2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -108,7 +108,7 @@ vec3 loopSet(vec2 coord){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursorPos, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursorPos, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -125,7 +125,7 @@ vec3 shardSet(vec2 coord, vec2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -141,7 +141,7 @@ vec3 sparseSet(vec2 coord, float startMod){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursorPos, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursorPos, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -159,7 +159,7 @@ vec3 retroSet(vec2 coord, vec2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return fractalColors(coord, cursor, i);
+	if (i < FRACTAL_ITER) return rgbColors(coord, cursor, i);
 	return vec3(0, 0, 0); // black color within set
 }
 
@@ -177,5 +177,5 @@ vec3 recursiveAlgo(vec3 target1, vec3 target2, vec3 target3){
     }
 
     if(i >= FRACTAL_ITER || (target1.r == 0 && target1.g == 0 && target1.b == 0)) return vec3(0, 0, 0);
-    else return fractalColors(vec2(target1.r - target3.b, target1.g + target3.r), vec2(target2.g - target3.r, target2.b + target3.g), i);
+    else return rgbColors(vec2(target1.r - target3.b, target1.g + target3.r), vec2(target2.g - target3.r, target2.b + target3.g), i);
 }

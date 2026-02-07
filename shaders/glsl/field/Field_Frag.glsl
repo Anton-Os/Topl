@@ -65,15 +65,15 @@ void main() {
 		vec3 relCoord = nearestPoint - target;
 		uint indices[3] = { ctrl_index, (ctrl_index - 1) % 8, (ctrl_index + 1) % 8 };
 		
-		if(m > 0 && m < 100) target = coordField(nearestPoint, target);  
-		else if(m >= 100 && m < 200) target = trigField(nearestPoint, target, vec3(vertex_color));
-		else if(m >= 200 && m < 300) target = centerField(nearestPoint, target);
-		else if(m >= 300 && m < 400) target = proximaField(ctrl_index, target);  
-		else if(m >= 400 && m < 500) target = alikeField(ctrl_index, target);
-		else if(m >= 500 && m < 600) target = crypticField(ctrl_index, target);
-		else if(m >= 600 && m < 700) target = triField(indices, target);
-		else if(m >= 700 && m < 800) target = farField(ctrl_index, target);
-		else if(m >= 800 && m < 900) target = neonField3(ctrl_index, target);
+		if(m > 0 && m < 100) target = field1(nearestPoint, target);  
+		else if(m >= 100 && m < 200) target = field2(nearestPoint, target, vec3(vertex_color));
+		else if(m >= 200 && m < 300) target = field3(nearestPoint, target);
+		else if(m >= 300 && m < 400) target = field4(ctrl_index, target);  
+		else if(m >= 400 && m < 500) target = field9(ctrl_index, target);
+		else if(m >= 500 && m < 600) target = field8(ctrl_index, target);
+		else if(m >= 600 && m < 700) target = field12(indices, target);
+		else if(m >= 700 && m < 800) target = field10(ctrl_index, target);
+		else if(m >= 800 && m < 900) target = field7(ctrl_index, target);
 		else target = vec3(length(relCoord), length(relCoord), length(relCoord));
 
 		color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);

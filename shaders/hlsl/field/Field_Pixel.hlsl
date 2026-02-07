@@ -71,14 +71,14 @@ float4 main(PS_INPUT input) : SV_TARGET{
 
 	float3 relCoord = nearestPoint - target;
 
-	if(m > 0 && m < 100) outColor = coordField(nearestPoint, target);
-	else if(m >= 100 && m < 200) outColor = trigField(nearestPoint, target, input.vertex_color);
-	else if(m >= 200 && m < 300) outColor = centerField(nearestPoint, target);
-	else if(m >= 300 && m < 400) outColor = proximaField(nearestPoint, target);
-	else if(m >= 400 && m < 500) outColor = neonField(ctrlIdx, target);
-	else if(m >= 500 && m < 600) outColor = gradField(ctrlIdx, target);
-	else if(m >= 600 && m < 700) outColor = crossField(ctrlIdx, target);
-	else if(m >= 700 && m < 800) outColor = flowField(ctrlIdx, target);
+	if(m > 0 && m < 100) outColor = field1(nearestPoint, target);
+	else if(m >= 100 && m < 200) outColor = field2(nearestPoint, target, input.vertex_color);
+	else if(m >= 200 && m < 300) outColor = field3(nearestPoint, target);
+	else if(m >= 300 && m < 400) outColor = field4(nearestPoint, target);
+	else if(m >= 400 && m < 500) outColor = field5(ctrlIdx, target);
+	else if(m >= 500 && m < 600) outColor = field6(ctrlIdx, target);
+	else if(m >= 600 && m < 700) outColor = field7(ctrlIdx, target);
+	else if(m >= 700 && m < 800) outColor = field8(ctrlIdx, target);
 	else if(m >= 800 && m < 900) outColor = modalTex(ctrlIdx, target);
 	// else if(m >= 800 && m < 900) outColor = float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
 	else outColor = float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);

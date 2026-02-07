@@ -29,7 +29,7 @@ struct PS_INPUT {
 
 // Functions
 
-float3 fractalColors(float2 coord, float2 cursor, uint i){
+float3 rgbColors(float2 coord, float2 cursor, uint i){
 	float dist = distance(coord, cursor) * float(1.0 / i);
 
 	if(abs(mode) < 100){

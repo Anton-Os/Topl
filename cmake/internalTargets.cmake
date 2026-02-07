@@ -20,6 +20,7 @@ list(APPEND core_src
     core/program/Topl_Program.cpp
     core/program/Topl_Program_Timeline.cpp
     core/program/Topl_Program_Runner.cpp
+    core/program/Topl_Program_Pipelines.cpp
     core/scene/Topl_Scene.cpp
 )
 

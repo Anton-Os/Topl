@@ -53,22 +53,21 @@ void main() {
 	else if(m == 8) coords = vec3(pow(abs(pos.x), abs(vertex_color.r)), pow(abs(pos.y), abs(texcoord.y)), pow(abs(pos.z), float(id)));
 	else if(m == 9) coords = vec3(dot(vertex_pos, vec3(vertex_color)), dot(getRandColor(uint(id)), vec3(getStepColor(uint(id)))), dot(texcoord, tangent));
 
-	if(mode < 0) m = uint(id);
-	// double t = timeElapse / 5000.0;
-	double t = sin(float(timeElapse) / 5000.0) * (timeElapse / 30000.0);
+	double t = timeElapse / 1000.0;
+	// double t = sin(float(timeElapse) / 5000.0) * (timeElapse / 30000.0);
+	if(mode < 0) coords *= sin(float(t)); // m = uint(id);
 
-	if(abs(mode / 100) % 10 == 1) color_final = vec4(solidPattern1(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 2) color_final = vec4(solidPattern2(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 3) color_final = vec4(solidPattern3(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 4) color_final = vec4(texturePattern1(coords, m, (abs(mode) % 100) / 5), 1.0);
-	else if(abs(mode / 100) % 10 == 5) color_final = vec4(texturePattern2(coords, m, (abs(mode) % 100) / 5), 1.0);
-	else if(abs(mode / 100) % 10 == 6) color_final = vec4(weavePattern1(coords), 1.0);
-	else if(abs(mode / 100) % 10 == 7) color_final = vec4(weavePattern2(coords, uint((abs(mode) % 100) / 10)), 1.0);
-	else if(abs(mode / 100) % 10 == 8) color_final = portalPattern1(coords, m, t);
-	else if(abs(mode / 100) % 10 == 9) color_final = portalPattern2(coords, m, t);
-	// else if(abs(mode / 100) % 10 == 8) color_final = vec4(texturePattern1(weavePattern1(coords), m, (mode % 100) / 5), 1.0);
-	// else if(abs(mode / 100) % 10 == 9) color_final = vec4(weavePattern2(texturePattern2(coords, m, (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
-	
+	if(abs(mode / 100) % 10 == 1) color_final = vec4(pattern1(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 2) color_final = vec4(pattern2(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 3) color_final = vec4(pattern3(coords, m + 1), 1.0);
+	else if(abs(mode / 100) % 10 == 4) color_final = vec4(pattern4(coords, m, 3), 1.0);
+	else if(abs(mode / 100) % 10 == 5) color_final = vec4(pattern5(coords, m, 3), 1.0);
+	else if(abs(mode / 100) % 10 == 6) color_final = vec4(pattern6(coords), 1.0);
+	else if(abs(mode / 100) % 10 == 7) color_final = vec4(pattern7(coords, 3), 1.0);
+	else if(abs(mode / 100) % 10 == 8) color_final = pattern8(coords, m, t);
+	else if(abs(mode / 100) % 10 == 9) color_final = pattern9(coords, m, t);
+	// else if(abs(mode / 100) % 10 == 8) color_final = vec4(pattern4(pattern6(coords), m, (mode % 100) / 5), 1.0);
+	// else if(abs(mode / 100) % 10 == 9) color_final = vec4(pattern7(pattern5(coords, m, (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
 	else color_final = vec4(coords, 1.0);
 
 	color_final = vec4(

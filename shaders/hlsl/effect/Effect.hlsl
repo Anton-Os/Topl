@@ -10,7 +10,7 @@ float4 mandlebrotSet(float2 coord){
 		i++;
 	}
 
-	if(i < FRACTAL_ITER) return float4(fractalColors(float2(x, y), cursorPos, i), 1.0);
+	if(i < FRACTAL_ITER) return float4(rgbColors(float2(x, y), cursorPos, i), 1.0);
 	else return float4(0.0f, 0.0f, 0.0f, 0.0f); // black color within set
 }
 
@@ -25,7 +25,7 @@ float4 juliaSet(float2 coord, float2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursor, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursor, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -47,7 +47,7 @@ float4 trigSet(float2 coord){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursorPos, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -66,7 +66,7 @@ float4 powerSet(float2 coord, float2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursor, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursor, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -82,7 +82,7 @@ float4 wingSet(float2 coord){
         i++;
     }
 
-    if (i < FRACTAL_ITER) return float4(fractalColors(float2(x, y), cursorPos, i), 1.0);
+    if (i < FRACTAL_ITER) return float4(rgbColors(float2(x, y), cursorPos, i), 1.0);
     return float4(0, 0, 0, 0);
 }
 
@@ -96,7 +96,7 @@ float4 stepSet(float2 coord, float2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursor, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursor, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -109,7 +109,7 @@ float4 loopSet(float2 coord){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursorPos, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -124,7 +124,7 @@ float4 shardSet(float2 coord, float2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursor, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursor, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -140,7 +140,7 @@ float4 sparseSet(float2 coord, float startMod){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursorPos, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }
 
@@ -160,6 +160,6 @@ float4 retroSet(float2 coord, float2 cursor){
 		i++;
 	}
 
-	if (i < FRACTAL_ITER) return float4(fractalColors(coord, cursorPos, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursorPos, i), 1.0);
 	return float4(0, 0, 0, 0); // black color within set
 }

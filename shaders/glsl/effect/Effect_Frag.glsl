@@ -30,7 +30,7 @@ layout(location = 0) out vec4 color_final;
 
 // Functions
 
-vec3 fractalColors(vec2 coord, vec2 cursor, uint i){
+vec3 rgbColors(vec2 coord, vec2 cursor, uint i){
 	float dist = pow(distance(coord, cursor), float(FRACTAL_SIZE - i));
 
 	if(abs(mode) < 100){

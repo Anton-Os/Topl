@@ -16,33 +16,6 @@ void Topl_Program::preloop(){
 #endif
 }
 
-void Topl_Program::updatePipelines(){
-    float timeElapse = (float)timeline.dynamic_ticker.getAbsSecs();
-    Vec3f scroll = (*camera.getPos() * -Topl_Program::speed); // + Vec3f({ sin((*camera.getRot)[0]), cos((*camera.getRot)[0]), 0.0F }); // TODO: Include rotation
-    Vec3f scale = Vec3f({ 0.5F, 0.5F, 0.5F }) * ((1.0F / *(camera.getZoom())) * 0.5F); // (1.0F / ((*camera.getZoom() + 4.0F) * 0.1F));
-    Input_TracerStep tracerStep = (Platform::mouseControl.getTracerSteps()->size() > 0)? (*Platform::mouseControl.getTracerSteps()).back() : Input_TracerStep();
-
-    if(_renderer->getPipeline() == _texPipeline) _texVShader.setParams(&_background.actor, { 0, (timeElapse / 10) - floor(timeElapse / 10), scroll, scale });
-    else if(_renderer->getPipeline() == _materialPipeline){ 
-        _materialVShader.setTexCoordParams(scroll, scale);
-        _materialVShader.setLight(Topl_Light(Vec3f({ sin(timeElapse), cos(timeElapse), sin(timeElapse) + cos(timeElapse) })));
-    } else if(_renderer->getPipeline() == _effectPipeline)
-        _effectVShader.setEffect(EFFECT_SIZE - (EFFECT_SIZE / timeElapse), ((unsigned)floor(timeElapse / 5.0) % EFFECT_ITER) + 3);
-    else if(_renderer->getPipeline() == _beamsPipeline){ 
-        _beamsVShader.setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(camera.getRot())).data[0]), cos((*(camera.getRot())).data[0]), tan((*(camera.getRot())).data[1]) }), { BEAMS_SKY_LIGHT.value }));
-        _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos(), { BEAMS_FLASH_LIGHT.value }));
-        if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), { BEAMS_LAMP_LIGHT.value }));
-    } else if(_renderer->getPipeline() == _fieldPipeline || _renderer->getPipeline() == _patternPipeline)
-        for(unsigned p = 0; p < FIELD_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
-            tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];
-            if(_renderer->getPipeline() == _fieldPipeline) _fieldVShader.setCtrlPoint(p, Vec3f({
-                (float)tracerStep.step.first + (sin((float)tracerStep.step.first + timeElapse / 100.0F) * 0.05F),
-                (float)tracerStep.step.second + (sin((float)tracerStep.step.second + timeElapse / 100.0F) * 0.05F),
-                DEFAULT_Z
-            }));
-        }
-}
-
 void Topl_Program::updateTimelines(){
     if(!Topl_Program::timeline.dynamic_ticker.isPaused) Topl_Timeline::seqCallback(Topl_Program::timeline.dynamic_ticker.getAbsSecs());
 
@@ -92,18 +65,6 @@ void Topl_Program::postloop(){
         }
 #endif
     }
-#ifdef TOPL_ENABLE_TEXTURES
-    if(isEnable_screencap){
-        static unsigned index = 0;
-
-        if(_renderer->getFrameCount() % 60 == 0){
-            Sampler_2D frameImg = _renderer->frame();
-            // queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
-            // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
-            index++;
-        }
-    }
-#endif
 }
 
 void Topl_Program::run(){

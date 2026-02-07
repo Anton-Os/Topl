@@ -73,7 +73,6 @@ public:
 			if(includeStr.substr(includeStr.size() - 4) == "glsl" || includeStr.substr(includeStr.size() - 4) == "hlsl"){ // read from file
 				if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
 				else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
-
 				includeSrc = readFile(includeStr.c_str());
 			}
 			else if(_embedMap.find(includeStr) != _embedMap.end()){ 

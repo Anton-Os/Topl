@@ -180,6 +180,14 @@ void Topl_Program::_onAnyKey(char k){
         timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
     }
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
+#ifdef TOPL_ENABLE_TEXTURES
+    else if(k == ';' && isEnable_screencap){
+        Sampler_2D frame = _renderer->frame();
+        // TODO: Save to screenshot
+        / queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
+        // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+    }
+#endif
 
     if(Topl_Program::isCtrl_keys && isalpha(k)){
         switch(tolower(k)){ // TODO: Add same logic for picked object?
@@ -207,10 +215,17 @@ void Topl_Program::_onAnyKey(char k){
         //    Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
     }
     if(Topl_Program::isCtrl_shader){
+#ifdef _WIN32
         if (k == (char)0x25) Topl_Program::shaderMode--;
         else if (k == (char)0x26) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0) ? 100 : -100;
         else if (k == (char)0x27) Topl_Program::shaderMode++;
         else if (k == (char)0x28) Topl_Program::shaderMode *= -1;
+#else // for Linux?
+        if (k == (char)0x69) Topl_Program::shaderMode--;
+        else if (k == (char)0x67) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0)? 100 : -100;
+        else if (k == (char)0x6A) Topl_Program::shaderMode++;
+        else if (k == (char)0x6C) Topl_Program::shaderMode *= -1;
+#endif
         else if(isdigit(k)){
             switch(tolower(k)){
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
@@ -221,11 +236,9 @@ void Topl_Program::_onAnyKey(char k){
                 case '5': Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
                 case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
                 case '7': Topl_Factory::switchPipeline(_renderer, _canvasPipeline/*_geomPipeline */); break;
-                case '8': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break;
-                case '9': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break; // switch to long pipeline for tesselation and geometry?
+                case '8': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
+                case '9': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
             }
-
-            // if(tolower(k) == '8' || tolower(k) == '9') _renderer->setDrawMode(DRAW_Patch);
         }
 
         if(k == (char)0x25 || k == (char)0x26 || k == (char)0x27 || k == (char)0x28 || k == '-' || k == '_' || k == '+' || k == '='){
@@ -284,55 +297,6 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
 #else
     if(isEnable_background) createBackground(nullptr);
 #endif
-}
-
-void Topl_Program::setPipelines(){
-	if(_backend == BACKEND_GL4){
-		_texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
-		_beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
-        _materialVShader = Material_VertexShader_GL4(); _materialPShader = Material_PixelShader_GL4();
-		_effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
-		_canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
-        _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
-		_patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
-		_flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
-		for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
-            _geomShaders[p] = Advance_GeometryShader_GL4();
-            _tessCtrlShaders[p] = Advance_TessCtrlShader_GL4();
-            _tessEvalShaders[p] = Advance_TessEvalShader_GL4();
-        }
-	}
-#ifdef _WIN32
-	else if(_backend == BACKEND_DX11){
-		_texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
-		_beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
-        _materialVShader = Material_VertexShader_DX11(); _materialPShader = Material_PixelShader_DX11();
-		_effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
-		_canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
-        _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();
-		_patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
-		_flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
-		for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
-            _geomShaders[p] = Advance_GeometryShader_DX11();
-            _tessCtrlShaders[p] = Advance_TessCtrlShader_DX11();
-            _tessEvalShaders[p] = Advance_TessEvalShader_DX11();
-        }
-	}
-#endif
-    _flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
-	_texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
-	_beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
-    _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
-	_canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
-    _fieldPipeline = Topl_Factory::genPipeline(_backend, &_fieldVShader, &_fieldPShader);
-	_patternPipeline = Topl_Factory::genPipeline(_backend, &_patternVShader, &_patternPShader);
-#ifndef __linux__
-    _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails!
-    _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
-    _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
-    _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
-#endif
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline); // _texPipeline);
 }
 
 void Topl_Program::createBackground(Sampler_2D* backgroundTex){
