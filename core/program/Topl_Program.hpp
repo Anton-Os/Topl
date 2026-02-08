@@ -63,9 +63,14 @@ private:
 class Topl_Program {
 public:
 #ifndef __ANDROID__
-    Topl_Program(const char* execPath, const char* name, BACKEND_Target backend);
+#ifdef _WIN32
+	Topl_Program(const char* execPath, const char* name) : _backend(BACKEND_DX11) { setup(execPath, name); } // Windows setup
 #else
-	Topl_Program(android_app* app);
+	Topl_Program(const char* execPath, const char* name) : _backend(BACKEND_DX11) { setup(execPath, name); } // Linux setup
+#endif
+	Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) { setup(execPath, name); } // Custom Setup
+#else
+	Topl_Program(android_app* app)  : _backend(BACKEND_GL4){ setup(app); } // Android setup
 #endif
 	~Topl_Program(){ cleanup(); }
 
@@ -145,8 +150,13 @@ private:
     void _onAnyKey(char k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
+#ifndef __ANDROID__
+	void setup(const char* execPath, const char* name);
+#else
+	void setup(android_app* app);
+#endif
+	void setShadersMode(unsigned m) { for (unsigned s = 0; s < PROGRAM_PIPELINES; s++) _entryShaders[s]->setMode(m); }
     void setPipelines();
-	void setShadersMode(unsigned m){ for(unsigned s = 0; s < PROGRAM_PIPELINES; s++) _entryShaders[s]->setMode(m); }
 	void updateTimelines();
 	void updatePipelines();
 

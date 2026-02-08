@@ -21,13 +21,8 @@
 #define ENTROPIC_SPREAD 0.5F
 
 struct Entropy_Demo : public Topl_Program {
-    Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend){
-        for(unsigned a = 0; a < ENTROPIC_COUNT; a++){
-            createGeometry(a); // basic geometry
-            createExtGeometry(a); // extended geometry
-            createPtGeometry(a); // point geometry
-        }
-    }
+    Entropy_Demo(const char* execPath) : Topl_Program(execPath, "Entropy"){}
+    Entropy_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Entropy", backend) {}
 
     void init() override;
     void loop(double frameTime) override;

@@ -11,6 +11,7 @@
 #define ANIMATRIX_FLOOR_SIZE 20.0F
 
 struct Animatrix_Demo : public Topl_Program {
+    Animatrix_Demo(const char* execPath) : Topl_Program(execPath, "Animatrix"){}
     Animatrix_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Animatrix", backend){}
 
     void init() override;

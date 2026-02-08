@@ -28,28 +28,8 @@ Vec3f getRandTransform(float amount){
 }
 
 struct Penscape_Demo : public Topl_Program {
-    Penscape_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Penscape", backend){
-        trigMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
-        quadMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
-        // hexMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
-        circleMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
-
-        for(unsigned b = 0; b < BRUSH3D_SEGMENTS; b++)
-            for(unsigned a = 0; a < 3 * 2; a++){
-                trigMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
-                trigMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
-                trigMeshes[a % 3]->extend(*trigMeshBrushes[a % 3]);
-                quadMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
-                quadMeshBrushes[a % 3]->rotate({ -BRUSH3D_ROT, BRUSH3D_ROT, BRUSH3D_ROT });
-                quadMeshes[a % 3]->extend(*quadMeshBrushes[a % 3]);
-                /* hexMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
-                hexMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, -BRUSH3D_ROT, BRUSH3D_ROT });
-                hexMeshes[a % 3]->extend(*hexMeshBrushes[a % 3]); */
-                circleMeshBrushes[a % 3]->shift(getRandTransform(BRUSH3D_SHIFT)); // { 0.0F, 0.0F, BRUSH3D_SHIFT});
-                circleMeshBrushes[a % 3]->rotate({ BRUSH3D_ROT, BRUSH3D_ROT, -BRUSH3D_ROT });
-                circleMeshes[a % 3]->extend(*circleMeshBrushes[a % 3]);
-            }
-    }
+    Penscape_Demo(const char* execPath) : Topl_Program(execPath, "Penscape"){}
+    Penscape_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Penscape", backend){}
 
     void init() override;
     void loop(double frameTime) override;
@@ -83,6 +63,7 @@ struct Penscape_Demo : public Topl_Program {
 private:
     void onAnyKey(char key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
+    void createBrushes();
 
     Topl_Scene scene = PROGRAM_SCENE;
 } *Penscape;

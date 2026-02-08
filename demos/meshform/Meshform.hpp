@@ -59,6 +59,7 @@ Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, u
 }
 
 struct Meshform_Demo : public Topl_Program {
+    Meshform_Demo(const char* execPath) : Topl_Program(execPath, "Meshform"){}
     Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Meshform", backend){}
 
     void init() override;

@@ -26,6 +26,12 @@ void Entropy_Demo::setInstances(Geo_Mesh* mesh) {
 }
 
 void Entropy_Demo::init(){
+    for (unsigned a = 0; a < ENTROPIC_COUNT; a++) {
+        createGeometry(a); // basic geometry
+        createExtGeometry(a); // extended geometry
+        createPtGeometry(a); // point geometry
+    }
+
     // Platform::mouseControl.addCallback(MOUSE_RightBtn_Press, spawnPress);
     Platform::keyControl.addHandler(std::bind(&Entropy_Demo::onAnyKey, this, std::placeholders::_1));
 

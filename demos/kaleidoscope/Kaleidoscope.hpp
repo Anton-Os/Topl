@@ -25,7 +25,7 @@ struct Kaleidoscope_Construct : public Geo_Construct {
 
     void init() override;
 
-    void configure(Topl_Scene* scene) override{
+    void configure(Topl_Scene* scene) override {
         for(unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++) scene->addGeometry(getPrefix() + "slice" + std::to_string(s), &_geoActors[s]);
     }
 
@@ -42,6 +42,7 @@ private:
 };
 
 struct Kaleidoscope_Demo : public Topl_Program {
+    Kaleidoscope_Demo(const char* execPath) : Topl_Program(execPath, "Kaleidoscope") {}
     Kaleidoscope_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Kaleidoscope", backend){}
 
     void init() override;

@@ -259,25 +259,26 @@ void Topl_Program::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> c
     Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
 }
 
+
 #ifndef __ANDROID__
-Topl_Program::Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) {
+void Topl_Program::setup(const char* execPath, const char* name) {
 #else
-Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
+void Topl_Program::setup(android_app * app) {
 #endif
     srand(time(NULL));
 
-	// Event Handling
+    // Event Handling
 #ifndef __ANDROID__
-	_platform = new Platform(execPath, name);
+    _platform = new Platform(execPath, name);
     _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
     _platform = new Platform(app);
-    while(_platform->getParentWindow() == nullptr && _platform->handleEvents() && !app->destroyRequested)
+    while (_platform->getParentWindow() == nullptr && _platform->handleEvents() && !app->destroyRequested)
         _platform->awaitWindow(); // waiting for window on Android
 #endif
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
-	// _renderer->setCamera(&Topl_Program::camera);
-	_renderer->setDrawMode(DRAW_Triangles);
+    // _renderer->setCamera(&Topl_Program::camera);
+    _renderer->setDrawMode(DRAW_Triangles);
 
     Platform::keyControl.addHandler(std::bind(&Topl_Program::_onAnyKey, this, std::placeholders::_1));
     Platform::mouseControl.addHandler(std::bind(&Topl_Program::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
@@ -285,17 +286,17 @@ Topl_Program::Topl_Program(android_app* app) : _backend(BACKEND_GL4){
     setPipelines();
     _renderer->buildScene(&_editor.scene);
 #ifdef TOPL_ENABLE_TEXTURES
-    if(isEnable_background) createBackground(&_background.image);
-    if(isEnable_overlays) createOverlays(0.85);
+    if (isEnable_background) createBackground(&_background.image);
+    if (isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
     _editor.nameImg = Sampler_Text({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
     _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
     _renderer->texturizeScene(&_editor.scene);
 
     ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
-	Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
+    Topl_Program::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
 #else
-    if(isEnable_background) createBackground(nullptr);
+    if (isEnable_background) createBackground(nullptr);
 #endif
 }
 

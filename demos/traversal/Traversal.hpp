@@ -12,6 +12,7 @@
 #define TRAVERSAL_RECURSION 9
 
 struct Traversal_Demo : public Topl_Program {
+    Traversal_Demo(const char* execPath) : Topl_Program(execPath, "Traversal"){}
     Traversal_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Traversal", backend){}
 
     void init() override;

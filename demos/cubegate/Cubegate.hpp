@@ -53,6 +53,7 @@ struct Cubegate_Construct : public Geo_Construct {
 };
 
 struct Cubegate_Demo : public Topl_Program {
+    Cubegate_Demo(const char* execPath) : Topl_Program(execPath, "Cubegate"){}
     Cubegate_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Cubegate", backend) {}
 
     void init() override;

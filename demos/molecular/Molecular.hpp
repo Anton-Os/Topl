@@ -8,9 +8,7 @@
 #define MOLECULAR_SIZE 0.05F
 
 struct Molecular_Construct : Geo_Construct {
-    Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n * 3) {
-        init();
-    }
+    Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n * 3) { init(); }
 
     void init() override {
         _hub = new Geo_Orb(MOLECULAR_SIZE);
@@ -88,6 +86,7 @@ private:
 };
 
 struct Molecular_Demo : public Topl_Program {
+    Molecular_Demo(const char* execPath) : Topl_Program(execPath, "Molecular"){}
     Molecular_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Molecular", backend){}
 
     void init() override;
