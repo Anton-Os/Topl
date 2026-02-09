@@ -41,7 +41,7 @@ struct Geo_Grid_Params {
 
 // Geometry Grid
 
-class Geo_Grid : public Geo_Construct{
+class Geo_Grid : public Geo_Construct<Geo_Grid>{
 public:
 	Geo_Grid(const std::string& prefix, const Geo_Mesh* mesh, const Geo_Grid_Params& params) 
 	: Geo_Construct(prefix, mesh, params.getGridSize()){ // Non-configured Constuctor

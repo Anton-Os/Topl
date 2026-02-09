@@ -18,7 +18,7 @@ enum PUPPET_Part {
 
 typedef const Geo_Actor* puppetBlocks[PUPPET_PARTS];
 
-struct Geo_Puppet : public Geo_Construct {
+struct Geo_Puppet : public Geo_Construct<Geo_Puppet> {
     Geo_Puppet(const std::string& prefix) : Geo_Construct(prefix){} // default constructor
     Geo_Puppet(const std::string& prefix, puppetBlocks parts) : Geo_Construct(prefix){
         _geoActors.resize(PUPPET_PARTS);
@@ -30,7 +30,7 @@ struct Geo_Puppet : public Geo_Construct {
         configure(scene);
     }
 
-    void init() override { }
+    void init() override { } // should this be overriden if empty?
 
     void configure(Topl_Scene* scene) override {
         scene->addGeometry(getPrefix() + "head", &_geoActors[PUPPET_Head]);

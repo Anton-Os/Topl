@@ -7,8 +7,6 @@
 #define PANE_SIZE 0.5F
 #define PANE_Z 0.0F
 
-// #include <iostream>
-
 class Geo_Billboard : public Geo_Grid {
 public:
 	Geo_Billboard(const std::string& prefix, unsigned short rows, unsigned short columns) : Geo_Grid(prefix, &childMesh, Geo_Grid_Params(

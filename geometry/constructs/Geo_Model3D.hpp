@@ -15,7 +15,7 @@
 unsigned linedSampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
 #endif
 
-class Geo_Model3D : public Geo_Construct {
+class Geo_Model3D : public Geo_Construct<Geo_Model3D> {
 public:
     Geo_Model3D(const std::string& prefix, const std::string& filePath) : Geo_Construct(prefix){ // Non-Configured Constructor
         _filePath = filePath;

@@ -4,7 +4,7 @@
 
 // Geometry Chain
 
-class Geo_Chain : public Geo_Construct {
+class Geo_Chain : public Geo_Construct<Geo_Chain> {
 public:
     Geo_Chain(const std::string& prefix, const Geo_Mesh* mesh, Vec3f direction, unsigned count)
     : Geo_Construct(prefix, mesh, count){ // Non-configured Constructor

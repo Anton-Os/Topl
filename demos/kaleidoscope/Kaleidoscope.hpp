@@ -8,7 +8,7 @@
 #define KALEIDOSCOPE_TESS 1
 #define KALEIDOSCOPE_NAME "kaleidoscope" + std::to_string(rand() % 9999)
 
-struct Kaleidoscope_Construct : public Geo_Construct {
+struct Kaleidoscope_Construct : public Geo_Construct<Kaleidoscope_Construct> {
     Kaleidoscope_Construct(unsigned short div) : Geo_Construct(KALEIDOSCOPE_NAME), divisions(std::make_pair(div, div)){ init(); }
 
     Kaleidoscope_Construct(std::pair<unsigned short, unsigned short> divs) : Geo_Construct(KALEIDOSCOPE_NAME), divisions(divs){ init(); }

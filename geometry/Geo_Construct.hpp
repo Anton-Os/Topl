@@ -9,12 +9,12 @@
 
 // Tree
 
-// template <typename DerivedType>
+template <typename ConstructType>
 class Geo_Construct {
 public:
 	Geo_Construct(const std::string& prefix) { 
         _prefix = prefix; 
-        // static_cast<DerivedType*>(this)->init();
+        // static_cast<ConstructType*>(this)->init();
     }
     Geo_Construct(const std::string& prefix, const Geo_Mesh* mesh, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
@@ -23,7 +23,7 @@ public:
         if(_physActors.empty()) _physActors.resize(count);
 #endif
         for(unsigned g = 0; g < count; g++) _geoActors[g] = Geo_Actor(mesh);
-        // static_cast<DerivedType*>(this)->init();
+        // static_cast<ConstructType*>(this)->init();
     }
     // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshes) // Fixed items constructor
 

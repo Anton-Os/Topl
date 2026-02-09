@@ -16,7 +16,7 @@ enum CUBEGATE_Face {
     CUBEGATE_Bottom = 3, CUBEGATE_Left = 4, CUBEGATE_Right = 5,
 };
 
-struct Cubegate_Construct : public Geo_Construct {
+struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
     Cubegate_Construct(Geo_Mesh* faceMesh) : Geo_Construct("cubegate", faceMesh, 6) { init(); }
 
     void init() override {
