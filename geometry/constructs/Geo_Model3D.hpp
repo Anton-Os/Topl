@@ -17,13 +17,11 @@ unsigned linedSampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 
 
 class Geo_Model3D : public Geo_Construct<Geo_Model3D> {
 public:
-    Geo_Model3D(const std::string& prefix, const std::string& filePath) : Geo_Construct(prefix){ // Non-Configured Constructor
-        _filePath = filePath;
+    Geo_Model3D(const std::string& prefix, const std::string& filePath) : _filePath(filePath), Geo_Construct(prefix){ // Non-Configured Constructor
         init();
     }
 #ifdef TOPL_ENABLE_MODELS
-    Geo_Model3D(const std::string& prefix, const std::string& filePath, Topl_Scene* scene) : Geo_Construct(prefix){ // Configured Constructor
-        _filePath = filePath;
+    Geo_Model3D(const std::string& prefix, const std::string& filePath, Topl_Scene* scene) : _filePath(filePath), Geo_Construct(prefix){ // Configured Constructor
         init();
         configure(scene);
     }

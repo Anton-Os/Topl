@@ -8,6 +8,8 @@
 
 #include "Pixel.hlsl"
 
+#include <Custom_Pattern>
+
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {

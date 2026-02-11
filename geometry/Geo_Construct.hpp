@@ -14,7 +14,9 @@ class Geo_Construct {
 public:
 	Geo_Construct(const std::string& prefix) { 
         _prefix = prefix; 
+        _origin = static_cast<ConstructType*>(this)->getOrigin();
         // static_cast<ConstructType*>(this)->init();
+
     }
     Geo_Construct(const std::string& prefix, const Geo_Mesh* mesh, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
@@ -23,12 +25,13 @@ public:
         if(_physActors.empty()) _physActors.resize(count);
 #endif
         for(unsigned g = 0; g < count; g++) _geoActors[g] = Geo_Actor(mesh);
+        _origin = static_cast<ConstructType*>(this)->getOrigin();
         // static_cast<ConstructType*>(this)->init();
     }
     // Geo_Construct(const std::string& prefix, std::initializer_list<Geo_Mesh*> meshes) // Fixed items constructor
 
     std::string getPrefix(){ return _prefix + "_"; }
-    Vec3f getOrigin(){
+    virtual Vec3f getOrigin(){
         _origin = Vec3f({ 0.0f, 0.0f, 0.0f });
         for(unsigned a = 0; a < _geoActors.size(); a++){
             Geo_Actor* actor =  &_geoActors[a];

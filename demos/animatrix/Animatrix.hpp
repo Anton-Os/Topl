@@ -32,13 +32,14 @@ private:
           getPuppetImgPath("Demon-LeftWing.png"), getPuppetImgPath("Demon-RightWing.png"),
           getPuppetImgPath("Demon-LeftLeg.png"), getPuppetImgPath("Demon-RightLeg.png") }
     };
-
+#ifdef TOPL_ENABLE_TEXTURES
     Geo_Puppet2D puppets[ANIMATRIX_PUPPETS] = { 
       Geo_Puppet2D("puppet1", puppetAssetPaths[0]), // angel
       Geo_Puppet2D("puppet2", puppetAssetPaths[1]), // ghost
       Geo_Puppet2D("puppet3", puppetAssetPaths[2])  // demon
     };
     std::vector<Phys_Connector> anchors;
+#endif
 
     Geo_Mesh floorMesh = Geo_Quad3D(1.0, ANIMATRIX_FLOOR_SIZE);
     Geo_Actor floor = Geo_Actor("floor", &floorMesh);

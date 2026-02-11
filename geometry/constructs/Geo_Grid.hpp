@@ -44,24 +44,12 @@ struct Geo_Grid_Params {
 class Geo_Grid : public Geo_Construct<Geo_Grid>{
 public:
 	Geo_Grid(const std::string& prefix, const Geo_Mesh* mesh, const Geo_Grid_Params& params) 
-	: Geo_Construct(prefix, mesh, params.getGridSize()){ // Non-configured Constuctor
-        _params = params;
-		_origin = Vec3f({
-			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
-			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
-			DEFAULT_Z
-		});
+	: _params(params), Geo_Construct(prefix, mesh, params.getGridSize()){ // Non-configured Constuctor
 		init();
     }
 
     Geo_Grid(const std::string& prefix, Topl_Scene* scene, const Geo_Mesh* mesh, const Geo_Grid_Params& params) 
-	: Geo_Construct(prefix, mesh, params.getGridSize()){ // Configured Constuctor
-        _params = params;
-		_origin = Vec3f({
-			-1.0f * params.x.first * (params.x.second * 0.5f) + (params.x.second / 2),
-			-1.0f * params.y.first * (params.y.second * 0.5f) + (params.y.second / 2),
-			DEFAULT_Z
-		});
+	: _params(params), Geo_Construct(prefix, mesh, params.getGridSize()){ // Configured Constuctor
 		init();
 		configure(scene);
     }
@@ -69,7 +57,16 @@ public:
 	std::string getCellName(unsigned num){ return getPrefix() + "cell" + std::to_string(num); }
 	const Geo_Grid_Params* getParams(){ return &_params; }
 
+	Vec3f getOrigin() override {
+		return Vec3f({
+			-1.0f * _params.x.first * (_params.x.second * 0.5f) + (_params.x.second / 2),
+			-1.0f * _params.y.first * (_params.y.second * 0.5f) + (_params.y.second / 2),
+			DEFAULT_Z
+		});
+	}
+
     void init() override {
+		_origin = getOrigin(); // should this be in base class???
 		Vec3f offset = Vec3f({ 0.0f, 0.0f, 0.0f });
 
 		const unsigned short width = _params.x.first;
@@ -102,9 +99,8 @@ public:
 	void scaleRow(unsigned short row, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling rows with " << std::to_string(c) << ", "; }
 	void scaleCol(unsigned short col, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling cols with " << std::to_string(c) << ", "; }
 	void scaleLen(unsigned short len, double amount){ for(unsigned c = 0; c < _params.getGridSize(); c++) std::cout << "Scaling lens with " << std::to_string(c) << ", "; }
-
 protected:
-    Geo_Grid_Params _params;
+    const Geo_Grid_Params _params;
 };
 
 #define GEO_GRID_H
