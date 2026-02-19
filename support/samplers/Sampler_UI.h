@@ -49,6 +49,7 @@ struct Sampler_Button : public Sampler_UI {
 
 struct Sampler_Label : public Sampler_UI {
 #ifdef TOPL_ENABLE_TEXTURES
+#if RASTERON_ENABLE_FONT
 	Sampler_Label(Rasteron_Text textObj) : Sampler_UI(MENU_Medium){
 		queue = RASTERON_QUEUE_ALLOC("label", RASTERON_SIZE(104, 104), 4); // TODO: Make size correct?
 		setText(textObj);
@@ -102,6 +103,7 @@ private:
 	Rasteron_Text textObjs[4]; // Default, On, Off, and Preselct States
 
 	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
+#endif
 #endif
 };
 
@@ -163,6 +165,7 @@ struct Sampler_Slider : public Sampler_UI {
 
 struct Sampler_Layout : public Sampler_UI {
 #ifdef TOPL_ENABLE_TEXTURES
+#if RASTERON_ENABLE_FONT
 	Sampler_Layout(SIDE_Type side, Rasteron_Text text, Rasteron_Image* image, unsigned bkColor) : Sampler_UI(MENU_Medium){ 
 		setLayout(side, text, image, bkColor);
 		Sampler_UI::setState(MENU_None);
@@ -196,5 +199,6 @@ struct Sampler_Layout : public Sampler_UI {
 		RASTERON_DEALLOC(insertImgs[0]); 
 		RASTERON_DEALLOC(insertImgs[1]);
 	}
+#endif
 #endif
 };

@@ -182,9 +182,9 @@ void Topl_Program::_onAnyKey(char k){
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
 #ifdef TOPL_ENABLE_TEXTURES
     else if(k == ';' && isEnable_screencap){
-        Sampler_2D frame = _renderer->frame();
+        Sampler_2D frameImg = _renderer->frame();
         // TODO: Save to screenshot
-        / queue_addImg(cachedFrames, frameImg.getImage(), index % cachedFrames->frameCount);
+        // queue_addImg(cachedFrames, frameImg.getImage(), 0); // index % cachedFrames->frameCount);
         // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
     }
 #endif
@@ -289,8 +289,10 @@ void Topl_Program::setup(android_app * app) {
     if (isEnable_background) createBackground(&_background.image);
     if (isEnable_overlays) createOverlays(0.85);
     _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
+#if RASTERON_ENABLE_FONT
     _editor.nameImg = Sampler_Text({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
     _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
+#endif
     _renderer->texturizeScene(&_editor.scene);
 
     ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
@@ -382,14 +384,9 @@ void Topl_Program::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int m
 
 void Topl_Program::cleanup() {
 #ifdef TOPL_ENABLE_TEXTURES
-	for(unsigned f = 0; f < Topl_Program::cachedFrames->frameCount; f++){ // exports frames
-		std::string frameName = "frame" + std::to_string(f + 1) + ".bmp";
-		std::cout << " Writing frame " << frameName << std::endl;
-		Rasteron_Image* frameImg = queue_getImg(Topl_Program::cachedFrames, f);
-        writeFileImageRaw(frameName.c_str(), IMG_Bmp, frameImg->height, frameImg->width, frameImg->data);
-	}
-	if(Topl_Program::cachedFrames != NULL) RASTERON_QUEUE_DEALLOC(Topl_Program::cachedFrames);
-	cleanupFreeType();
+#if RASTERON_ENABLE_FONT
+    cleanupFreeType();
+#endif
 #endif
 	delete(_renderer);
 	delete(_platform);

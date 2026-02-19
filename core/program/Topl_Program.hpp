@@ -27,7 +27,7 @@
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9
-#define PROGRAM_IS_OVERLAY true
+#define PROGRAM_IS_OVERLAY false
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -66,7 +66,7 @@ public:
 #ifdef _WIN32
 	Topl_Program(const char* execPath, const char* name) : _backend(BACKEND_DX11) { setup(execPath, name); } // Windows setup
 #else
-	Topl_Program(const char* execPath, const char* name) : _backend(BACKEND_DX11) { setup(execPath, name); } // Linux setup
+    Topl_Program(const char* execPath, const char* name) : _backend(BACKEND_GL4) { setup(execPath, name); } // Linux setup
 #endif
 	Topl_Program(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) { setup(execPath, name); } // Custom Setup
 #else
@@ -191,8 +191,12 @@ private:
 		Geo_Actor actor = Geo_Actor("pickerEdit", &mesh);
 #ifdef TOPL_ENABLE_TEXTURES
 		std::string fontPath = std::string(FONTS_DIR) + "CutiveMono-Regular.ttf";
+#if RASTERON_ENABLE_FONT
 		Sampler_Text nameImg = Sampler_Text({ fontPath.c_str(), /* actor.getName().c_str() */ "1", 0xFF111111, 0xFFEEEEEE });
-		Geo_Quad2D nameMesh = Geo_Quad2D(0.05F);
+#else
+        Sampler_Text nameImg = Sampler_Text();
+#endif
+        Geo_Quad2D nameMesh = Geo_Quad2D(0.05F);
 		Geo_Actor nameActor = Geo_Actor("pickerName", &nameMesh);
 		Topl_Scene scene = Topl_Scene(&Topl_Program::camera, { &actor, &nameActor });
 #else
@@ -227,27 +231,36 @@ private:
 			// Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button(), Sampler_Button()
 		};
 		Sampler_Button pipelineButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("app-window"), Sampler_Button("app-window-edit"), Sampler_Button("app-window-module"),
+			/* Sampler_Button("app-window"), Sampler_Button("app-window-edit"), Sampler_Button("app-window-module"),
 			Sampler_Button("app-window-flash"), Sampler_Button("app-window-star-1"), Sampler_Button("app-window-next"),
-			Sampler_Button("app-window-flag"), Sampler_Button("app-window-settings"), Sampler_Button("app-window-clock")
+			Sampler_Button("app-window-flag"), Sampler_Button("app-window-settings"), Sampler_Button("app-window-clock") */
+			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
+			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
+			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
 		};
 		Sampler_Button sculptButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("tools-hammer"), Sampler_Button("tools-hammer-1"), Sampler_Button("tools-hammer-3"),
+			/*Sampler_Button("tools-hammer"), Sampler_Button("tools-hammer-1"), Sampler_Button("tools-hammer-3"),
 			Sampler_Button("tools-palette-trowel"), Sampler_Button("tools-flattener-triangle"), Sampler_Button("tools-saw"),
-			Sampler_Button("tools-pliers"), Sampler_Button("tools-vice-grip"), Sampler_Button("tools-nail-gun")
+			Sampler_Button("tools-pliers"), Sampler_Button("tools-vice-grip"), Sampler_Button("tools-nail-gun") */
+			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
+			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
+			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
 		};
 		Sampler_Button paintButtons[PROGRAM_SUBMENUS] = {
-			Sampler_Button("content-pen"), Sampler_Button("content-pen-1"), Sampler_Button("content-pen-3"),
+			/* Sampler_Button("content-pen"), Sampler_Button("content-pen-1"), Sampler_Button("content-pen-3"),
 			Sampler_Button("content-pen-6"), Sampler_Button("content-ink-pen"), Sampler_Button("design-tool-quill-1"),
-			Sampler_Button("color-rolling-brush"), Sampler_Button("design-tool-paper-glue"), Sampler_Button("color-bucket-brush")
+			Sampler_Button("color-rolling-brush"), Sampler_Button("design-tool-paper-glue"), Sampler_Button("color-bucket-brush") */
+			Sampler_Button("paginate-filter-1"), Sampler_Button("paginate-filter-2"), Sampler_Button("paginate-filter-3"),
+			Sampler_Button("paginate-filter-4"), Sampler_Button("paginate-filter-5"), Sampler_Button("paginate-filter-6"),
+			Sampler_Button("paginate-filter-7"), Sampler_Button("paginate-filter-8"), Sampler_Button("paginate-filter-9")
 		};
-		Sampler_Button cameraButtons[3] = { Sampler_Button("camera-retro"), Sampler_Button("camera-1"), Sampler_Button("camera-2") };
-		Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
-		Sampler_Button mediaButtons[3] = { Sampler_Button("controls-forward"), Sampler_Button("controls-next"), Sampler_Button("controls-rewind") };
+		Sampler_Button cameraButtons[3] = { Sampler_Button(/* "camera-retro" */), Sampler_Button(/* "camera-1" */), Sampler_Button(/* "camera-2" */) };
+        Sampler_Button mediaButtons[3] = { Sampler_Button(/* "controls-forward" */), Sampler_Button(/* "controls-next" */), Sampler_Button(/* "controls-rewind" */) };
+        Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
 		// Sampler_Label timeLabel = Sampler_Label({ fontPath.c_str(), "0:00:00", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label recordLabel = Sampler_Label({ fontPath.c_str(), "RECORD", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label axisLabels[3] = { Sampler_Label({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Y |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Z |", 0xFF333333, 0xFFEEEEEE }) };
-		Sampler_Button plusButton = Sampler_Button("add-square"), minusButton = Sampler_Button("subtract-square");
+        Sampler_Button plusButton = Sampler_Button(/* "add-square" */), minusButton = Sampler_Button(/* "subtract-square" */);
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif
 	} _overlays;

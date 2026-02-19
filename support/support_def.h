@@ -15,11 +15,8 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 0 && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
+#if 1 && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
     #define TOPL_ENABLE_TEXTURES
-    #define RASTERON_ENABLE_SPACE
-    #define RASTERON_ENABLE_ANIM // includes animation support
-    #define RASTERON_ENABLE_FONT // includes font support
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron
 #endif

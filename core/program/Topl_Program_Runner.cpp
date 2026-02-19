@@ -52,6 +52,7 @@ void Topl_Program::postloop(){
         _editor.mesh.drawMode = DRAW_Lines;
         _editor.actor.isShown = (!_editor.actor.isShown)? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
 #ifdef TOPL_ENABLE_TEXTURES
+#if RASTERON_ENABLE_FONT
         _editor.nameActor.setPos(*Topl_Program::lastPickerObj->getPos() + (Vec3f({ 0.0F, 0.35F, 0.0F })) * *Topl_Program::lastPickerObj->getSize());
         _editor.nameActor.setSize({ _editor.nameImg.getImage()->width * 0.085f, (*_editor.nameActor.getSize()).data[1], (*_editor.nameActor.getSize()).data[2] });
         _editor.nameActor.isShown = (!_editor.nameActor.isShown) ? Topl_Program::pickerObj != nullptr && isEnable_overlays : isEnable_overlays;
@@ -63,6 +64,7 @@ void Topl_Program::postloop(){
             _renderer->texturizeScene(&_editor.scene);
             _editor.nameMesh.drawMode = DRAW_Triangles;
         }
+#endif
 #endif
     }
 }

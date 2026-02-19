@@ -88,9 +88,11 @@ struct Sampler_File : public Sampler_2D {
 };
 
 struct Sampler_Text : public Sampler_2D {
+#if RASTERON_ENABLE_FONT
     Sampler_Text(Rasteron_Text textObj) : Sampler_2D(){ putImg(textImgOp(&textObj, FONT_SIZE_MED)); } // TODO: Include padding?
 
     Sampler_Text(Rasteron_Message messageObj) : Sampler_2D(){ putImg(messageImgOp(&messageObj, FONT_SIZE_MED)); } // TODO: Include padding
+#endif
 };
 
 #endif

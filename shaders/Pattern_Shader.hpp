@@ -49,16 +49,16 @@ struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
-		/* _embedMap.insert({ "Custom_Pattern", 
-			"float4 customPattern(float3 coords){\n
-				uint m = uint(mode / 10) + 1; \n
-				\n
-				float r = abs(sin(coords.x * m) + cos(coords.y * m) + tan(coords.z * m)); \n
-				float g = abs(sin(coords.y * m) * cos(coords.z * m) * tan(coords.x * m)); \n
-				float b = abs(pow(pow(sin(coords.z * m), cos(coords.x * m)), tan(coords.y * m))); \n
-				\n
-				return float4(r, g, b, 1.0); \n
-			}\n"
-		}); */
+		_embedMap.insert({ "Custom_Pattern", 
+			std::string("float4 customPattern(float3 coords){\n")
+				+ "\tuint m = 1; // uint(abs(mode) / 10) + 1; \n"
+				+ "\n"
+				+ "\tfloat r = abs(sin(coords.x * m) + cos(coords.y * m) + tan(coords.z * m)); \n"
+				+ "\tfloat g = abs(sin(coords.y * m) * cos(coords.z * m) * tan(coords.x * m)); \n"
+				+ "\tfloat b = abs(pow(pow(sin(coords.z * m), cos(coords.x * m)), tan(coords.y * m))); \n"
+				+ "\n"
+				+ "\treturn float4(r, g, b, 1.0);"
+			+ "}\n"
+		});
 	}
 };

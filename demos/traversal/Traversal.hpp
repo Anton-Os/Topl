@@ -1,5 +1,5 @@
+#include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Volume.hpp"
-#include "meshes/Geo_Orboid.hpp"
 
 #include "program/Topl_Program.hpp"
 
@@ -8,18 +8,28 @@
 #define TRAVERSAL_OBSCACLES 20
 #define TRAVERSAL_TESS 3
 #define TRAVERSAL_SPEED 0.0000001F
+#define TRAVERSAL_SLICES 100
 #define TRAVERSAL_CORRIDORS 3
 #define TRAVERSAL_RECURSION 9
+#define TRAVERSAL_ALPHA 0xAA000000
 
 struct Traversal_Demo : public Topl_Program {
     Traversal_Demo(const char* execPath) : Topl_Program(execPath, "Traversal"){}
     Traversal_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Traversal", backend){}
+
+    ~Traversal_Demo() {
+        for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++) for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) delete sliceActorPtrs[c][s];
+    }
 
     void init() override;
     void loop(double frameTime) override;
 private:
     void onAnyKey(char key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
+
+    Geo_Quad2D squareSlice = Geo_Quad2D(TRAVERSAL_RADIUS);
+    Geo_Hex2D hexSlice = Geo_Hex2D(TRAVERSAL_RADIUS);
+    Geo_Circle2D circleSlice = Geo_Circle2D(TRAVERSAL_RADIUS);
 
     Geo_Quad3D squareCorridors[TRAVERSAL_CORRIDORS] = {
         Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
@@ -42,9 +52,14 @@ private:
         { actors[3], actors[4], actors[5], actors[3], actors[4], actors[5], actors[3], actors[4], actors[5] },
         { actors[6], actors[7], actors[8], actors[6], actors[7], actors[8], actors[6], actors[7], actors[8] },
     };
-
-    // Geo_Orb obstacle;
-    // Geo_Actor obstacleActors[TRAVERSAL_OBSTACLES];
-
+    
+    Geo_Actor* sliceActorPtrs[TRAVERSAL_CORRIDORS][TRAVERSAL_SLICES];
+#ifdef TOPL_ENABLE_TEXTURES
+    Sampler_2D sliceTextures[TRAVERSAL_CORRIDORS] = {
+        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
+        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
+        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */)
+    };
+#endif
     Topl_Scene scene = PROGRAM_SCENE;
 } *Traversal;
