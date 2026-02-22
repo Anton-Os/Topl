@@ -16,7 +16,6 @@ public:
         _prefix = prefix; 
         _origin = static_cast<ConstructType*>(this)->getOrigin();
         // static_cast<ConstructType*>(this)->init();
-
     }
     Geo_Construct(const std::string& prefix, const Geo_Mesh* mesh, unsigned count){ // Duplicate items constructor
         _prefix = prefix;
@@ -76,6 +75,11 @@ public:
     }
     void scale(Vec3f scaleVec){
         for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].setSize(scaleVec);
+    }
+    void expand(float e) {
+        for (unsigned g = 0; g < _geoActors.size(); g++)
+            _geoActors[g].setPos(*(_geoActors[g].getPos()) * (1.0F + e));
+            // _geoActors[g].updatePos((getOrigin() - *(_geoActors[g].getPos())) * (1.0F + e));
     }
 
     virtual void init() = 0; // function to create elements

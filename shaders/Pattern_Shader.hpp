@@ -50,7 +50,9 @@ struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
 		_embedMap.insert({ "Custom_Pattern", 
-			std::string("float4 customPattern(float3 coords){\n")
+			std::string("#define CUSTOM_PATTERN\n")
+			+ "\n"
+			+ "float4 customPattern(float3 coords){\n"
 				+ "\tuint m = 1; // uint(abs(mode) / 10) + 1; \n"
 				+ "\n"
 				+ "\tfloat r = abs(sin(coords.x * m) + cos(coords.y * m) + tan(coords.z * m)); \n"

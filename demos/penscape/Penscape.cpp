@@ -36,7 +36,7 @@ void Penscape_Demo::onAnyKey(char key){
 }
 
 void Penscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_AppBar)
+    if(menu == PROGRAM_Sculpt)
         for(unsigned a = 0; a < 3; a++)
             for(unsigned s = 0; s < 3; s++)
                 brushes3D[a][s].isShown = Penscape_Demo::mode == (a * 3) + (s % 3);
@@ -79,7 +79,7 @@ void Penscape_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Penscape = new Penscape_Demo(argv[0], BACKEND_DX11);
+    Penscape = new Penscape_Demo(argv[0]);
     Penscape->run();
 
     delete(Penscape);

@@ -31,6 +31,7 @@ private:
     Geo_Hex2D hexSlice = Geo_Hex2D(TRAVERSAL_RADIUS);
     Geo_Circle2D circleSlice = Geo_Circle2D(TRAVERSAL_RADIUS);
 
+    // Geo_Volume3D corridorActors[TRAVERSAL_CORRIDORS][TRAVERSAL_RECURSION] = {}
     Geo_Quad3D squareCorridors[TRAVERSAL_CORRIDORS] = {
         Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
     };

@@ -37,18 +37,6 @@ struct PS_INPUT {
 	float3 tangent: TANGENT;
 };
 
-// Functions
-
-float4 trialPattern(float3 coords){
-	uint m = uint(mode / 10) + 1;
-
-	float r = abs(sin(coords.x * m) + cos(coords.y * m) + tan(coords.z * m));
-	float g = abs(sin(coords.y * m) * cos(coords.z * m) * tan(coords.x * m));
-	float b = abs(pow(pow(sin(coords.z * m), cos(coords.x * m)), tan(coords.y * m)));
-
-	return float4(r, g, b, 1.0); 
-}
-
 // Main
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
@@ -67,10 +55,14 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
 	float4 srcColor = modalTex(abs(10 - (mode / 10)) % 10, coords);
-	// if(mode < 0) srcColor = float4(coords, 1.0);
+	if(mode < 0) srcColor = float4(coords, 1.0);
 
+#ifndef CUSTOM_PATTERN
 	float4 dstColor = float4(coords, 0.5);
-	if(mode < 0) dstColor = modalTex(abs(mode) % 10, coords);
+	// if(mode < 0) dstColor = modalTex(abs(mode) % 10, coords);
+#else
+	float4 dstColor = customPattern(coords);
+#endif
 
 	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
 	else if(abs(mode / 100) % 10 == 2) outColor = srcColor - dstColor;
@@ -81,7 +73,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode / 100) % 10 == 7) outColor = float4(srcColor.r + dstColor.x, srcColor.g - dstColor.g, srcColor.b * dstColor.z, 1.0);
 	else if(abs(mode / 100) % 10 == 8) outColor = float4(cross(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b)), 1.0);
 	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
-	else outColor = srcColor;
+	else outColor = dstColor;
 
 	return float4(abs(outColor.r), abs(outColor.g), abs(outColor.b), 1.0);
 }

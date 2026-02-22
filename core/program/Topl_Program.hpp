@@ -27,7 +27,7 @@
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9
-#define PROGRAM_IS_OVERLAY false
+#define PROGRAM_IS_OVERLAY true
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
@@ -137,13 +137,14 @@ protected:
 	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties
-	enum PROGRAM_Menu { PROGRAM_Media = 0, PROGRAM_Object = 1, PROGRAM_Shader = 2, PROGRAM_Timeline = 3, PROGRAM_Camera = 4, PROGRAM_AppBar = 5, PROGRAM_Sculpt = 6, PROGRAM_Paint = 7, };
+	enum PROGRAM_Menu { PROGRAM_Media = 0, PROGRAM_Object = 1, PROGRAM_Shader = 2, PROGRAM_Timeline = 3, PROGRAM_Camera = 4, PROGRAM_AppBar = 5, PROGRAM_Sculpt = 6, PROGRAM_Paint = 7 };
+	PROGRAM_Menu menuMode = PROGRAM_Shader;
 
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
 	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
-	bool isEnable_background = true, isEnable_overlays = PROGRAM_IS_OVERLAY;
+	bool isEnable_background = false, isEnable_overlays = PROGRAM_IS_OVERLAY;
 private:
 	static Topl_Pipeline* _savedPipeline;
 
@@ -256,11 +257,15 @@ private:
 		};
 		Sampler_Button cameraButtons[3] = { Sampler_Button(/* "camera-retro" */), Sampler_Button(/* "camera-1" */), Sampler_Button(/* "camera-2" */) };
         Sampler_Button mediaButtons[3] = { Sampler_Button(/* "controls-forward" */), Sampler_Button(/* "controls-next" */), Sampler_Button(/* "controls-rewind" */) };
-        Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
+#if RASTERON_ENABLE_FONT
+		Sampler_Label mediaLabels[3] = { Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "|00|", 0xFF111111, 0xFFEEEEEE }) };
 		// Sampler_Label timeLabel = Sampler_Label({ fontPath.c_str(), "0:00:00", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label recordLabel = Sampler_Label({ fontPath.c_str(), "RECORD", 0xFF111111, 0xFFEEEEEE });
 		Sampler_Label axisLabels[3] = { Sampler_Label({ fontPath.c_str(), "| X |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Y |", 0xFF333333, 0xFFEEEEEE }), Sampler_Label({ fontPath.c_str(), "| Z |", 0xFF333333, 0xFFEEEEEE }) };
-        Sampler_Button plusButton = Sampler_Button(/* "add-square" */), minusButton = Sampler_Button(/* "subtract-square" */);
+#else
+		Sampler_Label mediaLabels[3] = { Sampler_Label(), Sampler_Label(), Sampler_Label() }; Sampler_Label recordLabel = Sampler_Label(); Sampler_Label axisLabels[3] = { Sampler_Label(), Sampler_Label(), Sampler_Label() };
+#endif
+		Sampler_Button plusButton = Sampler_Button(/* "add-square" */), minusButton = Sampler_Button(/* "subtract-square" */);
 		std::map<Geo_Actor*, Sampler_Button*> button_map;
 #endif
 	} _overlays;

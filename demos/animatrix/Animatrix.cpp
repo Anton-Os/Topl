@@ -71,7 +71,7 @@ void Animatrix_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 }
 
 MAIN_ENTRY {
-    Animatrix = new Animatrix_Demo(argv[0], BACKEND_GL4);
+    Animatrix = new Animatrix_Demo(argv[0]);
     Animatrix->run();
 
     delete(Animatrix);

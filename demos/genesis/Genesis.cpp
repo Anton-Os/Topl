@@ -1,6 +1,6 @@
 #include "Genesis.hpp"
 
-static bool isRotating = false;
+static bool isRotating = true;
 static bool isPulsing = true;
 
 static unsigned sculptIndex = 0;
@@ -16,26 +16,29 @@ void Genesis_Demo::init(){
 }
 
 void Genesis_Demo::loop(double frameTime){
-    Geo_Grid* grid = &grids[mode + (sculptIndex * 9)];
-    for (unsigned g = 0; g < grid->getActorCount(); g++) {
-        if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * 0.0000005F);
-        if (isPulsing) {
-            grid->getGeoActor(g)->setPos(*grid->getGeoActor(g)->getPos());
-        }
-    }
+    unsigned f = _renderer->getFrameCount();
 
-    renderScene(&scene); 
+    Geo_Grid* grid = &grids[sculptIndex + (mode * 9)];
+    for (unsigned g = 0; g < grid->getActorCount(); g++)
+        if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * GENESIS_ROT);
+
+    if (isPulsing && f > 60)
+        grid->expand(((f / 20) % 2 == 0 ? -GENESIS_PULSE : GENESIS_PULSE) * frameTime);
+
+    renderScene(&scene);
 }
 
 void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_Sculpt) sculptIndex = paneIndex;
-    if(menu == PROGRAM_AppBar || menu == PROGRAM_Sculpt)
-        for(unsigned g = 0; g < 9 * 9; g++)
-            grids[g].toggleShow(g == mode + (sculptIndex * 9));
+    if (menu == PROGRAM_Sculpt) {
+        sculptIndex = paneIndex;
+
+        for (unsigned g = 0; g < 9 * 9; g++)
+          grids[g].toggleShow(g == sculptIndex + (mode * 9));
+    }
 }
 
 MAIN_ENTRY {
-    Genesis = new Genesis_Demo(argv[0], BACKEND_DX11);
+    Genesis = new Genesis_Demo(argv[0]);
     Genesis->run();
 
     delete(Genesis);

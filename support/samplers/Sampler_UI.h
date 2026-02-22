@@ -103,6 +103,8 @@ private:
 	Rasteron_Text textObjs[4]; // Default, On, Off, and Preselct States
 
 	unsigned short paddings[4] = { 0, 0, 0, 0}; // Left, Right, Top, and Bottom paddings
+#else
+	Sampler_Label() : Sampler_UI(MENU_Medium) {}
 #endif
 #endif
 };

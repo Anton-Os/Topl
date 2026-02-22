@@ -57,7 +57,7 @@ void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> tform1, std::pair
 }
 
 void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_AppBar){
+    if(menu == PROGRAM_Sculpt){
         Vec3f amount = Vec3f({ 
             (paneIndex % 3 == 0)? MESHFORM_AMOUNT : 0.0F, 
             (paneIndex % 3 == 1)? MESHFORM_AMOUNT : 0.0F, 

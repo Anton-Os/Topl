@@ -11,7 +11,7 @@ void Traversal_Demo::onAnyKey(char key) {
 }
 
 void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) {
-    if (menu == PROGRAM_AppBar)
+    if (menu == PROGRAM_Sculpt)
         for(unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++) {
             for(unsigned r = 0; r < TRAVERSAL_RECURSION; r++)
                 corridorActors[c][r].isShown = paneIndex / 3 == c && paneIndex % 3 == r % 3;

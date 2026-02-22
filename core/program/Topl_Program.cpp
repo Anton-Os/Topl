@@ -160,8 +160,18 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         }
                     }
                     else if(o == PROGRAM_Shader){
-                        char keySim = (p + 1) + '0';
-                        Topl_Program::_onAnyKey(keySim); // switch pipelines
+                        switch (p) {
+                            case 0: Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
+                            case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
+                            case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
+                            case 3: Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
+                            case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
+                            case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
+                            case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+                            case 7: Topl_Factory::switchPipeline(_renderer, _canvasPipeline/*_geomPipeline */); break;
+                            case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
+                            case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
+                        }
                         _savedPipeline = _renderer->getPipeline();
                     }
                     onOverlayUpdate((PROGRAM_Menu)o, PROGRAM_SUBMENUS - 1 - p);
@@ -180,11 +190,15 @@ void Topl_Program::_onAnyKey(char k){
         timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
     }
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
+    else if (k == ',') menuMode = (menuMode != PROGRAM_Media)? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
+    else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
 #ifdef TOPL_ENABLE_TEXTURES
     else if(k == ';' && isEnable_screencap){
         Sampler_2D frameImg = _renderer->frame();
-        // TODO: Save to screenshot
-        // queue_addImg(cachedFrames, frameImg.getImage(), 0); // index % cachedFrames->frameCount);
+        static unsigned frameNum = 0;
+        writeFileImageRaw("Frame", IMG_Bmp, frameImg.getImage()->height, frameImg.getImage()->width, frameImg.getImage()->data);
+        frameNum++;
+        // queue_addImg(cachedFrames, frameImg.getImage(), 0); // index % cachedFrames->frameCount); // TODO: Encode video queue
         // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
     }
 #endif
@@ -227,7 +241,7 @@ void Topl_Program::_onAnyKey(char k){
         else if (k == (char)0x6C) Topl_Program::shaderMode *= -1;
 #endif
         else if(isdigit(k)){
-            switch(tolower(k)){
+            switch(tolower(k)){ // use the menuMode parameter
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                 case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                 case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;

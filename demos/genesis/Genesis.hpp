@@ -6,6 +6,8 @@
 
 #define GENESIS_SIZE 1.0F
 #define GENESIS_COUNT 5
+#define GENESIS_ROT 0.0000005F
+#define GENESIS_PULSE 0.000001F
 #define GENESIS_NAME "genesis" + std::to_string(rand() % 9999)
 
 struct Genesis_Demo : public Topl_Program {
@@ -20,10 +22,14 @@ private:
     Topl_Scene scene = PROGRAM_SCENE;
 
     Geo_Mesh orbs[9] = {
-        Geo_Orb(GENESIS_SIZE), Geo_Orb(GENESIS_SIZE * 2),
-        Geo_HexOrb(GENESIS_SIZE), Geo_HexOrb(GENESIS_SIZE * 2),
-        Geo_OctOrb(GENESIS_SIZE), Geo_OctOrb(GENESIS_SIZE * 2),
-        Geo_DecOrb(GENESIS_SIZE), Geo_DecOrb(GENESIS_SIZE * 2),
+        Geo_Orb(GENESIS_SIZE), 
+        Geo_Orb(GENESIS_SIZE * 0.75F),
+        Geo_HexOrb(GENESIS_SIZE),
+        Geo_HexOrb(GENESIS_SIZE * 0.75F),
+        Geo_OctOrb(GENESIS_SIZE), 
+        Geo_OctOrb(GENESIS_SIZE * 0.75F),
+        Geo_DecOrb(GENESIS_SIZE), 
+        Geo_DecOrb(GENESIS_SIZE * 0.75F),
         Geo_Torus(GENESIS_SIZE)
     };
 

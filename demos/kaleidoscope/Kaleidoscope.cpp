@@ -41,7 +41,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
 }
 
 void Kaleidoscope_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_AppBar) for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
+    if(menu == PROGRAM_Sculpt) for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
 }
 
 void Kaleidoscope_Demo::init(){
@@ -75,7 +75,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 // Main
 
 MAIN_ENTRY {
-    Kaleidoscope = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    Kaleidoscope = new Kaleidoscope_Demo(argv[0]);
     Kaleidoscope->run();
 
     delete(Kaleidoscope);
