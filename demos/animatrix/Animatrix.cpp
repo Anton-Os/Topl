@@ -63,7 +63,7 @@ void Animatrix_Demo::onAnyKey(char key){
 void Animatrix_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
 #ifdef TOPL_ENABLE_TEXTURES
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++)
-        if(menu == PROGRAM_AppBar)
+        if(menu == PROGRAM_Shaders)
             for(unsigned b = 0; b < PUPPET_PARTS; b++) puppets[p].getPhysActor(b)->mass = (PHYS_DEFAULT_MASS * (paneIndex + 1)) * 0.33F; // 1.0 + (paneIndex * 3.0);
         else if(menu == PROGRAM_Sculpt)
             for(unsigned l = 0; l < PUPPET_LINKS; l++) puppets[p].getPhysLink(l)->kVal = (PHYS_DEFAULT_K / 5) * (paneIndex + 1);

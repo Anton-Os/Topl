@@ -65,7 +65,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == PROGRAM_AppBar) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
+                    if(o == PROGRAM_Params) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
                     else if(o == PROGRAM_Sculpt){
                         _background.mesh = &_background.meshes[p];
                         if(isEnable_background) createBackground(nullptr);
@@ -104,7 +104,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 5: timeline.dynamic_ticker.setTime(TIMELINE_END); break;
                         }
                     else if(o == PROGRAM_Timeline) timeline.dynamic_ticker.setTime(pickerCoord[0]);
-                    else if(o == PROGRAM_Camera){
+                    else if(o == PROGRAM_Scene){
                         unsigned short s = PROGRAM_SUBMENUS - 1 - p;
                         float m = 0.1;
                         switch(s){
@@ -159,7 +159,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             }
                         }
                     }
-                    else if(o == PROGRAM_Shader){
+                    else if(o == PROGRAM_Shaders){
                         switch (p) {
                             case 0: Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                             case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;

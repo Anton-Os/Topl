@@ -137,8 +137,8 @@ protected:
 	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties
-	enum PROGRAM_Menu { PROGRAM_Media = 0, PROGRAM_Object = 1, PROGRAM_Shader = 2, PROGRAM_Timeline = 3, PROGRAM_Camera = 4, PROGRAM_AppBar = 5, PROGRAM_Sculpt = 6, PROGRAM_Paint = 7 };
-	PROGRAM_Menu menuMode = PROGRAM_Shader;
+	enum PROGRAM_Menu { PROGRAM_Media = 0, PROGRAM_Object = 1, PROGRAM_Params = 2, PROGRAM_Timeline = 3, PROGRAM_Scene = 4, PROGRAM_Shaders = 5, PROGRAM_Sculpt = 6, PROGRAM_Paint = 7 };
+	PROGRAM_Menu menuMode = PROGRAM_Shaders;
 
     void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode);
 	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
