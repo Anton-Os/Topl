@@ -1,6 +1,7 @@
 #include "Penscape.hpp"
 
 static DRAW_Mode drawMode = DRAW_Triangles;
+static unsigned brushSegments = BRUSH3D_ITERS;
 
 void Penscape_Demo::createBrushes() {
     trigMeshBrushes[2]->scale({ 1.0F, 1.0F, BRUSH3D_SCALE });
@@ -26,20 +27,22 @@ void Penscape_Demo::createBrushes() {
 }
 
 void Penscape_Demo::onAnyKey(char key){
-    for (unsigned a = 0; a < 3; a++)
-        for (unsigned s = 0; s < 3; s++)
-            switch(tolower(key)) {
-                case 'i': brushes3D[a][s].isShown = a == 0; break;
-                case 'o': brushes3D[a][s].isShown = a == 1; break;
-                case 'p': brushes3D[a][s].isShown = a == 2; break;
-            }
+    // for (unsigned a = 0; a < 3; a++)
+    //      for (unsigned s = 0; s < 3; s++)
+    switch(tolower(key)) {
+    case 'i': drawMode = DRAW_Triangles; break; // brushes3D[a][s].isShown = a == 0; break;
+    case 'o': drawMode = DRAW_Lines; break; // brushes3D[a][s].isShown = a == 1; break;
+    case 'p': drawMode = DRAW_Points; break; // brushes3D[a][s].isShown = a == 2; break;
+    case 'k': if(brushSegments > 0) brushSegments--; break;
+    case 'l': if(brushSegments < BRUSH3D_ITERS) brushSegments++; break;
+    }
 }
 
 void Penscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
     if(menu == PROGRAM_Sculpt)
         for(unsigned a = 0; a < 3; a++)
             for(unsigned s = 0; s < 3; s++)
-                brushes3D[a][s].isShown = Penscape_Demo::mode == (a * 3) + (s % 3);
+                brushes3D[a][s].isShown = paneIndex == (a * 3) + (s % 3);
 }
 
 void Penscape_Demo::init(){
@@ -64,14 +67,15 @@ void Penscape_Demo::init(){
 }
 
 void Penscape_Demo::loop(double frameTime){
+    unsigned f = _renderer->getFrameCount();
     _renderer->setDrawMode(drawMode);
 
-    for (unsigned t = 0; t < BRUSH3D_ITERS; t++) {
-        float prog = (float)t / (float)BRUSH3D_ITERS;
+    for (unsigned t = 0; t < brushSegments; t++) {
+        float prog = (float)t / (float)brushSegments;
 
         for (unsigned a = 0; a < 3; a++)
             for (unsigned s = 0; s < 3; s++)
-                brushes3D[a][s].updateRot({ (MATH_PI * 2) / BRUSH3D_ITERS, 0.0F, 0.0F });
+                brushes3D[a][s].updateRot({ (float)(MATH_PI * 2) / brushSegments, 0.0F, 0.0F});
                 // brushes3D[a][s].updateRot({ (float)pow((MATH_PI * 2) / BRUSH3D_ITERS, 0.95F + (prog / 20)), 0.0F, 0.0F });
         _renderer->updateScene(&scene);
         _renderer->drawScene(&scene);

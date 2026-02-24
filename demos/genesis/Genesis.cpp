@@ -1,11 +1,18 @@
 #include "Genesis.hpp"
 
 static bool isRotating = true;
-static bool isPulsing = true;
+static bool isPulsing = false;
 
 static unsigned sculptIndex = 0;
 
+void Genesis_Demo::onAnyKey(char key) {
+    if (tolower(key) == 'p') isPulsing = !isPulsing;
+    else if (tolower(key) == 'o') isRotating = !isRotating;
+}
+
 void Genesis_Demo::init(){
+    Platform::keyControl.addHandler(std::bind(&Genesis_Demo::onAnyKey, this, std::placeholders::_1));
+    
     for(unsigned g = 0; g < 9 * 9; g++){
         Geo_Grid_Params params = Geo_Grid_Params(std::make_pair(GENESIS_COUNT, GENESIS_SIZE));
         grids.push_back(Geo_Grid(std::string("grid") + std::to_string(g), &scene, &orbs[g % 9], params));
@@ -38,7 +45,7 @@ void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
 }
 
 MAIN_ENTRY {
-    Genesis = new Genesis_Demo(argv[0]);
+    Genesis = new Genesis_Demo(argv[0], BACKEND_GL4);
     Genesis->run();
 
     delete(Genesis);

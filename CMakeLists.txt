@@ -45,7 +45,6 @@ configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DI
 if(NOT DEFINED IGNORE_EXAMPLES)
 add_executable(Hello demos/hello/Hello.cpp)
 add_executable(Molecular demos/molecular/Molecular.cpp)
-add_executable(Entropy demos/entropy/Entropy.cpp)
 add_executable(Meshform demos/meshform/Meshform.cpp)
 add_executable(Penscape demos/penscape/Penscape.cpp)
 add_executable(Kaleidoscope demos/kaleidoscope/Kaleidoscope.cpp)
@@ -54,8 +53,8 @@ add_executable(Genesis demos/genesis/Genesis.cpp)
 add_executable(Traversal demos/traversal/Traversal.cpp)
 add_executable(Cubegate demos/cubegate/Cubegate.cpp)
 
-list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis)
-list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Entropy Animatrix Genesis Traversal Cubegate)
+list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidoscope Animatrix Genesis)
+list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Animatrix Genesis Traversal Cubegate)
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders)

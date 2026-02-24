@@ -27,6 +27,7 @@
 #define PROGRAM_BK_SIZE 5.0F
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9
+#define PROGRAM_IS_BK true
 #define PROGRAM_IS_OVERLAY true
 
 // #define MAX_TIMELINE_ATTRIBS 2056
@@ -144,7 +145,7 @@ protected:
 	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
-	bool isEnable_background = false, isEnable_overlays = PROGRAM_IS_OVERLAY;
+	bool isEnable_background = PROGRAM_IS_BK, isEnable_overlays = PROGRAM_IS_OVERLAY;
 private:
 	static Topl_Pipeline* _savedPipeline;
 

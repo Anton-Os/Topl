@@ -6,7 +6,7 @@
 
 #define GENESIS_SIZE 1.0F
 #define GENESIS_COUNT 5
-#define GENESIS_ROT 0.0000005F
+#define GENESIS_ROT 0.0000002F
 #define GENESIS_PULSE 0.000001F
 #define GENESIS_NAME "genesis" + std::to_string(rand() % 9999)
 
@@ -17,6 +17,7 @@ struct Genesis_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 private:
+    void onAnyKey(char k);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = PROGRAM_SCENE;

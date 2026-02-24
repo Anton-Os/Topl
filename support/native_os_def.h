@@ -44,6 +44,11 @@
 
     void android_proc(android_app *app, int32_t cmd);
 #elif defined(_WIN32)
+    #define TOPL_LEFT_ARROW (char)0x25
+    #define TOPL_UP_ARROW (char)0x26
+    #define TOPL_RIGHT_ARROW (char)0x27
+    #define TOPL_DOWN_ARROW (char)0x28
+
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
     #include <windowsx.h>
@@ -75,6 +80,11 @@
 
     #pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
+    #define TOPL_LEFT_ARROW (char)0x69
+    #define TOPL_UP_ARROW (char)0x67
+    #define TOPL_RIGHT_ARROW (char)0x6A
+    #define TOPL_DOWN_ARROW (char)0x6C
+
     #include<X11/X.h>
     #include<X11/Xlib.h>
 

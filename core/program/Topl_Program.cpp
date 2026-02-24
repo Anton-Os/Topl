@@ -193,7 +193,7 @@ void Topl_Program::_onAnyKey(char k){
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media)? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
 #ifdef TOPL_ENABLE_TEXTURES
-    else if(k == ';' && isEnable_screencap){
+    else if((k == ':' || k == ';') && isEnable_screencap) {
         Sampler_2D frameImg = _renderer->frame();
         static unsigned frameNum = 0;
         writeFileImageRaw("Frame", IMG_Bmp, frameImg.getImage()->height, frameImg.getImage()->width, frameImg.getImage()->data);
@@ -229,17 +229,10 @@ void Topl_Program::_onAnyKey(char k){
         //    Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
     }
     if(Topl_Program::isCtrl_shader){
-#ifdef _WIN32
-        if (k == (char)0x25) Topl_Program::shaderMode--;
-        else if (k == (char)0x26) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0) ? 100 : -100;
-        else if (k == (char)0x27) Topl_Program::shaderMode++;
-        else if (k == (char)0x28) Topl_Program::shaderMode *= -1;
-#else // for Linux?
-        if (k == (char)0x69) Topl_Program::shaderMode--;
-        else if (k == (char)0x67) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0)? 100 : -100;
-        else if (k == (char)0x6A) Topl_Program::shaderMode++;
-        else if (k == (char)0x6C) Topl_Program::shaderMode *= -1;
-#endif
+        if (k == TOPL_LEFT_ARROW) Topl_Program::shaderMode--;
+        else if (k == TOPL_UP_ARROW) Topl_Program::shaderMode += (Topl_Program::shaderMode > 0) ? 100 : -100;
+        else if (k == TOPL_RIGHT_ARROW) Topl_Program::shaderMode++;
+        else if (k == TOPL_DOWN_ARROW) Topl_Program::shaderMode *= -1;
         else if(isdigit(k)){
             switch(tolower(k)){ // use the menuMode parameter
                 case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
