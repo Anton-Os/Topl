@@ -16,6 +16,7 @@
 
 std::string readFile(const char* source);
 std::string readFileBinary(const char* source);
+std::string readUserInput();
 std::string getParentDir(const char* arg);
 // bool checkFileExtension(const char* source, const char* ext);
 float getFloatFromStr(const std::string& source, size_t startOffset); // extracts float from str relative to start offset

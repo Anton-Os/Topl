@@ -31,6 +31,15 @@ std::string readFileBinary(const char* source) {
 	return strStream.str();
 }
 
+std::string readUserInput() {
+    std::string user_input;
+
+    while (user_input.empty()) std::getline(std::cin, user_input);
+
+    std::cout << "User input collected at " << user_input << std::endl;
+    return user_input;
+}
+
 std::string getParentDir(const char* str){
     const char* strEnd = str + strlen(str); // Traverse to the end of the string
     while(strEnd != str && nullptr == strchr("\\/", *(--strEnd)));

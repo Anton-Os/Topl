@@ -58,7 +58,7 @@ void Traversal_Demo::init(){
             sliceActorPtrs[c][s]->setPos({ 0.0F, 0.0F, -(TRAVERSAL_DEPTH / 2.0F) + (s * ((TRAVERSAL_DEPTH * 2) / ((float)TRAVERSAL_SLICES))) });
 
             std::string sliceName = std::string("slice") + std::to_string(c + 1) + "_" + std::to_string(s + 1);
-            // scene.addGeometry(sliceName, sliceActorPtrs[c][s]);
+            scene.addGeometry(sliceName, sliceActorPtrs[c][s]);
 #ifdef TOPL_ENABLE_TEXTURES
             scene.addTexture(sliceName, &sliceTextures[c]);
 #endif

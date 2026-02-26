@@ -98,7 +98,7 @@ void Cubegate_Demo::loop(double frameTime) {
 }
 
 MAIN_ENTRY{
-    Cubegate = new Cubegate_Demo(argv[0], BACKEND_GL4);
+    Cubegate = new Cubegate_Demo(argv[0]);
     Cubegate->run();
 
     delete(Cubegate);

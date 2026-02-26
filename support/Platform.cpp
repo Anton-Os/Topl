@@ -18,8 +18,9 @@ fileCallback Platform::onFileChoose = nullptr;
 static bool checkKey(int code){
 	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
 		code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28
-		|| code == '[' || code == '{' || code == ']' || code == '}' || code == (char)0xBA || code == (char)0x58/* code == ';' || code == ':' */; // handles arrows
-		// code == 189 || code == 187; // handles + and -
+		|| code == '[' || code == '{' || code == ']' || code == '}' || code == (char)0xBA // || code == (char)0x58 || code == ';' || code == ':' || code == '`' || code == '~'; // handles arrows
+		|| code == 186 || code == 192 // handles ; and ` ?
+		|| code == 189 || code == 187; // handles + and - ?
 }
 
 static void addPress(enum MOUSE_Event button){

@@ -8,8 +8,6 @@
 
 #include "Pixel.hlsl"
 
-#include <Custom_Pattern>
-
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
@@ -39,6 +37,8 @@ struct PS_INPUT {
 
 // Main
 
+#include "pattern/Pattern.hlsl"
+
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	float4 outColor;
 	float3 coords = float3(input.pos.x, input.pos.y, input.pos.z);
@@ -54,16 +54,21 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 8) coords = float3(pow(input.pos.x, input.texcoord.x), pow(input.pos.y, input.normal.y), pow(input.pos.z, input.tangent.z));
 	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
-	float4 srcColor = modalTex(abs(10 - (mode / 10)) % 10, coords);
-	if(mode < 0) srcColor = float4(coords, 1.0);
+	float4 srcColor = float4(coords, 1.0); 
+	if(mode < 0) srcColor = modalTex(abs(mode) % 10, coords);
 
-#ifndef CUSTOM_PATTERN
-	float4 dstColor = float4(coords, 0.5);
-	// if(mode < 0) dstColor = modalTex(abs(mode) % 10, coords);
-#else
-	float4 dstColor = customPattern(coords);
-#endif
+	float4 dstColor = srcColor;
+	if(abs(mode / 10) % 10 == 1) dstColor = float4(pattern1(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 2) dstColor = float4(pattern2(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 3) dstColor = float4(pattern3(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 4) dstColor = float4(pattern4(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 5) dstColor = float4(pattern5(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 6) dstColor = float4(pattern6(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 7) dstColor = float4(pattern7(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 8) dstColor = float4(pattern8(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
+	else if(abs(mode / 10) % 10 == 9) dstColor = float4(pattern9(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);
 
+	// Mixing Algorithm
 	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
 	else if(abs(mode / 100) % 10 == 2) outColor = srcColor - dstColor;
 	else if(abs(mode / 100) % 10 == 3) outColor = srcColor * dstColor;

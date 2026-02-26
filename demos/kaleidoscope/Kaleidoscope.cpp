@@ -41,7 +41,7 @@ void Kaleidoscope_Demo::onAnyKey(char key){
 }
 
 void Kaleidoscope_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_Sculpt) for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
+    if(menu == PROGRAM_Sculpt) for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(paneIndex == c);
 }
 
 void Kaleidoscope_Demo::init(){
@@ -52,8 +52,8 @@ void Kaleidoscope_Demo::init(){
     _renderer->setPipeline(_flatPipeline);
     _renderer->buildScene(&scene);
 
-    Topl_Program::mode = 8; // test
-    for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
+    // Topl_Program::mode = 8; // test
+    // for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){

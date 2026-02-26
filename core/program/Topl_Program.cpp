@@ -75,15 +75,16 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
                             for(unsigned t = 0; t < 9; t++){
                                 unsigned short i = t; // (t + p) % 8;
+                                unsigned r = (RAND_COLOR() & 0xFFFFFF) + 0x66000000;
                                 switch(p) {
-                                    case 0: _overlays.textures[i] = Sampler_Gradient((SIDE_Type)(rand() % 5), RAND_COLOR(), RAND_COLOR()); break; // random gradients
-                                    case 1: _overlays.textures[i] = Sampler_2D(linedImgOp(size, RAND_COLOR(), RAND_COLOR(), (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
-                                    case 2: _overlays.textures[i] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, RAND_COLOR(), RAND_COLOR() })); break; // lines
-                                    case 3: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }); break; // basic noise
-                                    case 4: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1); break; // octave noise
-                                    case 5: _overlays.textures[i] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() })); break; // tiled noise
-                                    case 6: _overlays.textures[i] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // added noise
-                                    case 7: _overlays.textures[i] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), RAND_COLOR(), RAND_COLOR() }, (rand() % 4) + 1)); break; // subtracted noise
+                                    case 0: _overlays.textures[i] = Sampler_Gradient((SIDE_Type)(rand() % 5), r, r); break; // random gradients
+                                    case 1: _overlays.textures[i] = Sampler_2D(linedImgOp(size, r, r, (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
+                                    case 2: _overlays.textures[i] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r, r })); break; // lines
+                                    case 3: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }); break; // basic noise
+                                    case 4: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1); break; // octave noise
+                                    case 5: _overlays.textures[i] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r })); break; // tiled noise
+                                    case 6: _overlays.textures[i] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1)); break; // added noise
+                                    case 7: _overlays.textures[i] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1)); break; // subtracted noise
                                     default: _overlays.textures[i] = Sampler_File(_overlays.scene.texImgPaths[t]);
                                 }
                                 if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
@@ -160,7 +161,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         }
                     }
                     else if(o == PROGRAM_Shaders){
-                        switch (p) {
+                        switch (9 - p) {
                             case 0: Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
                             case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                             case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
@@ -168,7 +169,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
                             case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
                             case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
-                            case 7: Topl_Factory::switchPipeline(_renderer, _canvasPipeline/*_geomPipeline */); break;
+                            case 7: Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
                             case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
                             case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
                         }
@@ -183,15 +184,17 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 }
 
 void Topl_Program::_onAnyKey(char k){
-    std::cout << "Key is " << std::to_string(k) << std::endl;
-    if(isspace(k) && k != 0x0D){ 
-        isEnable_overlays = !isEnable_overlays; 
+    // std::cout << "Key is " << std::to_string(k) << std::endl;
+    if (isspace(k) && k != 0x0D) {
+        isEnable_overlays = !isEnable_overlays;
         // for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
         timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Program::userInput += (isalpha(k))? tolower(k) : k;
     }
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
-    else if (k == ',') menuMode = (menuMode != PROGRAM_Media)? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
+    else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
+    else if (k == '`' || k == '~') 
+        std::cout << "Begin input loop in background thread" << std::endl;
 #ifdef TOPL_ENABLE_TEXTURES
     else if((k == ':' || k == ';') && isEnable_screencap) {
         Sampler_2D frameImg = _renderer->frame();
