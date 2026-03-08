@@ -13,6 +13,17 @@
 #define TRAVERSAL_RECURSION 9
 #define TRAVERSAL_ALPHA 0xAA000000
 
+#ifdef TOPL_ENABLE_TEXTURES
+unsigned doorwayCoords(double x, double y) {
+    static unsigned color = (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA;
+
+    if (x > 0.25 && x < 0.75 && y > 0.25 && y < 0.75) return NO_COLOR;
+    else return blend_colors(color, NO_COLOR, sqrt(pow(0.5 - x, 2.0) + pow(0.5 - y, 2.0)));
+
+    if(x == 0.0 && y == 0.0) color = (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA; // new image has started
+}
+#endif
+
 struct Traversal_Demo : public Topl_Program {
     Traversal_Demo(const char* execPath) : Topl_Program(execPath, "Traversal"){}
     Traversal_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Traversal", backend){}
@@ -56,10 +67,11 @@ private:
     
     Geo_Actor* sliceActorPtrs[TRAVERSAL_CORRIDORS][TRAVERSAL_SLICES];
 #ifdef TOPL_ENABLE_TEXTURES
+    std::vector<Sampler_2D> sliceColors;
     Sampler_2D sliceTextures[TRAVERSAL_CORRIDORS] = {
-        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
-        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
-        Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */)
+        Sampler_Map(doorwayCoords), // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
+        Sampler_Map(doorwayCoords), // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
+        Sampler_Map(doorwayCoords) // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */)
     };
 #endif
     Topl_Scene scene = PROGRAM_SCENE;

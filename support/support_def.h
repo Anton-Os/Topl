@@ -1,11 +1,11 @@
 #ifndef TOPL_SUPPORT_H
 
-#define ASSETS_DIR "D:/Codex/PROJECT/Topl/master/assets/"
-#define FONTS_DIR "D:/Codex/PROJECT/Topl/master/assets/fonts/"
-#define IMAGES_DIR "D:/Codex/PROJECT/Topl/master/assets/images/"
-#define MODELS_DIR "D:/Codex/PROJECT/Topl/master/assets/models/"
-#define RESOURCE_DIR "D:/Codex/PROJECT/Topl/master/assets/res/"
-#define SHADERS_DIR "D:/Codex/PROJECT/Topl/master/shaders/"
+#define ASSETS_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/assets/"
+#define FONTS_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/assets/fonts/"
+#define IMAGES_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/assets/images/"
+#define MODELS_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/assets/models/"
+#define RESOURCE_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/assets/res/"
+#define SHADERS_DIR "/run/media/AntonOs/Devbox/Codex/PROJECT/Topl/master/shaders/"
 
 #define TRUE 1
 #define FALSE 0
