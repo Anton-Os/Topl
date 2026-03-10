@@ -24,6 +24,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
+	float2 cursorPos;
 }
 
 struct PS_INPUT { 
@@ -55,7 +56,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
 	float4 srcColor = float4(coords, 1.0); 
-	if(mode < 0) srcColor = modalTex(abs(mode) % 10, coords);
+	if(mode < 0) srcColor = float4(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z, 1.0);
 
 	float4 dstColor = srcColor;
 	if(abs(mode / 10) % 10 == 1) dstColor = float4(pattern1(float3(srcColor.x, srcColor.y, srcColor.z), timeElapse), 1.0);

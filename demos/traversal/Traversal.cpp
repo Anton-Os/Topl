@@ -1,5 +1,6 @@
 #include "Traversal.hpp"
 
+static bool isRotating = true;
 static float speed = TRAVERSAL_SPEED;
 
 void Traversal_Demo::onAnyKey(char key) {
@@ -19,6 +20,12 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
             for (unsigned s = 0; s < TRAVERSAL_SLICES; s++)
                 sliceActorPtrs[c][s]->isShown = paneIndex / 3 == c;
         }
+#ifdef TOPL_ENABLE_TEXTURES
+    else if (menu == PROGRAM_Paint) {
+        for (unsigned t = 0; t < TRAVERSAL_CORRIDORS; t++) sliceTextures[t] = Sampler_Map(doorwayCoords);
+        _renderer->texturizeScene(&scene);
+    }
+#endif
 }
 
 void Traversal_Demo::init(){
@@ -72,6 +79,11 @@ void Traversal_Demo::loop(double frameTime){
 
     Topl_Program::camera.setPos({ 0.0F, 0.0F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH });
 
+    if(isRotating)
+        for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
+            for (unsigned s = 0; s < TRAVERSAL_SLICES; s++)
+                sliceActorPtrs[c][s]->updateRot({ (s % 2 == 0)? 0.01F : -0.01F, 0.0F, 0.0F});
+
     /* for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
         for (unsigned r = 0; r < TRAVERSAL_RECURSION; r++) {
             float t = sinf((float)totalTime * speed * r);
@@ -81,10 +93,6 @@ void Traversal_Demo::loop(double frameTime){
             float scale = TRAVERSAL_RADIUS - ((1.0F / TRAVERSAL_RECURSION) * r * TRAVERSAL_RADIUS);
             corridorActors[c][r].setSize({ (float)pow(abs(t), 0.5) * scale, (float)pow(abs(t), 0.5) * scale, scale });
         } */
-
-    // squareCorridor.drawMin = _renderer->getFrameCount() % squareCorridor.getVertexCount();
-    // hexCorridor.drawMin = _renderer->getFrameCount() % hexCorridor.getVertexCount();
-    // circleCorridor.drawMin = _renderer->getFrameCount() % circleCorridor.getVertexCount();
 
     renderScene(&scene);
 

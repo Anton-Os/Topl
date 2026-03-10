@@ -272,20 +272,16 @@ void Topl_Program::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> c
 
 #ifndef __ANDROID__
 void Topl_Program::setup(const char* execPath, const char* name) {
-#else
-void Topl_Program::setup(android_app * app) {
-#endif
-    srand(time(NULL));
-
-    // Event Handling
-#ifndef __ANDROID__
     _platform = new Platform(execPath, name);
     _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else
+void Topl_Program::setup(android_app * app) {
     _platform = new Platform(app);
     while (_platform->getParentWindow() == nullptr && _platform->handleEvents() && !app->destroyRequested)
         _platform->awaitWindow(); // waiting for window on Android
 #endif
+    srand(time(NULL));
+
     _renderer = Topl_Factory::genRenderer(_backend, _platform);
     // _renderer->setCamera(&Topl_Program::camera);
     _renderer->setDrawMode(DRAW_Triangles);

@@ -23,6 +23,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 
 	double timeFrame;
 	double timeElapse;
+	vec2 cursorPos;
 };
 
 layout(location = 0) in vec3 pos;
@@ -42,6 +43,7 @@ layout(location = 0) out vec4 color_final;
 void main() {
 	vec3 coords = pos;
 	uint m = abs(mode) % 10; // uint(id);
+	float t = float(timeElapse / 1000.0);
 
 	if(m == 1) coords = vec3(vertex_color);
 	else if(m == 2) coords = normal;
@@ -53,9 +55,7 @@ void main() {
 	else if(m == 8) coords = vec3(pow(abs(pos.x), abs(vertex_color.r)), pow(abs(pos.y), abs(texcoord.y)), pow(abs(pos.z), float(id)));
 	else if(m == 9) coords = vec3(dot(vertex_pos, vec3(vertex_color)), dot(getRandColor(uint(id)), vec3(getStepColor(uint(id)))), dot(texcoord, tangent));
 
-	double t = timeElapse / 1000.0;
-	// double t = sin(float(timeElapse) / 5000.0) * (timeElapse / 30000.0);
-	if(mode < 0) coords *= sin(float(t)); // m = uint(id);
+#include <Custom_Pattern> // For influencing the coords values
 
 	if(abs(mode / 100) % 10 == 1) color_final = vec4(pattern1(coords, m + 1), 1.0);
 	else if(abs(mode / 100) % 10 == 2) color_final = vec4(pattern2(coords, m + 1), 1.0);
@@ -70,10 +70,19 @@ void main() {
 	// else if(abs(mode / 100) % 10 == 9) color_final = vec4(pattern7(pattern5(coords, m, (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
 	else color_final = vec4(coords, 1.0);
 
-	color_final = vec4(
-		abs(color_final.r) - floor(abs(color_final.r)), 
-		abs(color_final.g) - floor(abs(color_final.g)), 
-		abs(color_final.b) - floor(abs(color_final.b)), 
-		color_final.a
-	);
+	if(mode >= 0)
+		color_final = vec4(
+			abs(color_final.r) - floor(abs(color_final.r)), 
+			abs(color_final.g) - floor(abs(color_final.g)), 
+			abs(color_final.b) - floor(abs(color_final.b)), 
+			color_final.a
+		);
+	else 
+		color_final = vec4(
+			abs(color_final.r * sin(t)),
+			abs(color_final.g * cos(t)),
+			abs(color_final.b * tan(t)),
+			color_final.a
+		);
+
 }

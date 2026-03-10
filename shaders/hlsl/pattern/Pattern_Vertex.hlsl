@@ -21,6 +21,7 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 
     double timeFrame;
 	double timeElapse;
+	float2 cursorPos;
 }
 
 struct VS_OUTPUT { 

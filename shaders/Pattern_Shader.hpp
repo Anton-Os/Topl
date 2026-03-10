@@ -1,3 +1,5 @@
+#include "Platform.hpp"
+
 #include "Topl_Pipeline.hpp"
 
 // Vertex Shaders
@@ -16,10 +18,12 @@ struct Pattern_VertexShader : public Topl_EntryShader {
 		
         double relMillisecs = dynamic_timer.getRelMillisecs();
         double absMillisecs = dynamic_timer.getAbsMillisecs();
+		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
 
 		Topl_EntryShader::genSceneBlock(scene, bytes);
 		alignDataToBytes((uint8_t*)&relMillisecs, sizeof(relMillisecs), NO_PADDING, bytes);
         alignDataToBytes((uint8_t*)&absMillisecs, sizeof(absMillisecs), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), sizeof(float) * 2, bytes);
 	}
 protected:
 	int width = TOPL_WIN_WIDTH;
@@ -44,14 +48,20 @@ struct Pattern_PixelShader : public Topl_Shader {
 };
 
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
-	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {}
+	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {
+		_embedMap.insert({ "Custom_Pattern",
+			std::string("float xChecker = (abs(coords.x) * 10.0) - floor((abs(coords.x) * 10.0));")
+			+ "float yChecker = (abs(coords.y) * 10.0) - floor((abs(coords.y) * 10.0));"
+			+ "float zChecker = (abs(coords.z) * 10.0) - floor((abs(coords.z) * 10.0));"
+			+ "coords = vec3(xChecker, yChecker, zChecker);"
+		});
+	}
 };
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
 		_embedMap.insert({ "Custom_Pattern", 
-			""
-			// std::string("coords = float3(pow(coords.x, 2), pow(coords.y, 2), pow(coords.z, 2));")
+			std::string("coords = float3(pow(coords.x, 2), pow(coords.y, 2), pow(coords.z, 2));")
 			// std::string("float r = abs(sin(coords.x) + cos(coords.y) + tan(coords.z)); \n")
 			// + std::string("float g = abs(sin(coords.y) * cos(coords.z) * tan(coords.x)); \n")
 			// + std::string("float b = abs(pow(pow(sin(coords.z), cos(coords.x)), tan(coords.y))); \n")

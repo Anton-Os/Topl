@@ -2,6 +2,8 @@
 
 static DRAW_Mode drawMode = DRAW_Triangles;
 
+unsigned short sculptIndex = 0;
+
 // Construct
 
 void Kaleidoscope_Construct::init() {
@@ -33,15 +35,18 @@ void Kaleidoscope_Demo::onAnyKey(char key){
         case 'i': drawMode = DRAW_Lines; break;
         case 'o': drawMode = DRAW_Points; break;
         case 'p': drawMode = DRAW_Strip; break;
-        case 'v': constructs[mode].rotate({ 0.1F, 0.0F, 0.0F }); break;
-        case 'b': constructs[mode].rotate({ -0.1F, 0.0F, 0.0F }); break;
-        case 'n': constructs[mode].rotate({ 0.0F, 0.1F, 0.0F }); break;
-        case 'm': constructs[mode].rotate({ 0.0F, -0.1F, 0.0F }); break;
+        case 'v': constructs[sculptIndex].rotate({ 0.1F, 0.0F, 0.0F }); break;
+        case 'b': constructs[sculptIndex].rotate({ -0.1F, 0.0F, 0.0F }); break;
+        case 'n': constructs[sculptIndex].rotate({ 0.0F, 0.1F, 0.0F }); break;
+        case 'm': constructs[sculptIndex].rotate({ 0.0F, -0.1F, 0.0F }); break;
     }
 }
 
 void Kaleidoscope_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_Sculpt) for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(paneIndex == c);
+    if (menu == PROGRAM_Sculpt) {
+        sculptIndex = paneIndex;
+        for (unsigned c = 0; c < 9; c++) constructs[c].toggleShow(paneIndex == c);
+    }
 }
 
 void Kaleidoscope_Demo::init(){
@@ -59,10 +64,10 @@ void Kaleidoscope_Demo::init(){
 void Kaleidoscope_Demo::loop(double frameTime){
     static double totalTime = 0.0F;
 
-    for (unsigned s = 0; s < constructs[mode].getActorCount(); s++) {
-        constructs[mode].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[mode].getSpinFactor(s) * 2), 0.0F, 0.0F }));
-        float scale = sin(constructs[mode].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
-        constructs[mode].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
+    for (unsigned s = 0; s < constructs[sculptIndex].getActorCount(); s++) {
+        constructs[sculptIndex].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[sculptIndex].getSpinFactor(s) * 2), 0.0F, 0.0F }));
+        float scale = sin(constructs[sculptIndex].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
+        constructs[sculptIndex].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
     }
 
     _renderer->setDrawMode(drawMode);
@@ -75,7 +80,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 // Main
 
 MAIN_ENTRY {
-    Kaleidoscope = new Kaleidoscope_Demo(argv[0]);
+    Kaleidoscope = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     Kaleidoscope->run();
 
     delete(Kaleidoscope);
