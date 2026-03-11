@@ -1,15 +1,11 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.7...3.10)
 project(Topl DESCRIPTION "Topl Graphics Engine")
-
-cmake_policy(SET CMP0035 NEW)
 
 set (CMAKE_CXX_STANDARD 11)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path")
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
 endif()
-
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/" )
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/" )
@@ -27,22 +23,34 @@ set(SUPPORT_MODELS TRUE CACHE BOOL "Include 3D model loading")
 
 # ------------- Libraries, Engines, and Procedures ------------- #
 
-include("cmake/externalTargets.cmake") # For building dependencies
-include("cmake/internalTargets.cmake") # For building core and geometry libraries
+if(ANDROID OR APPLE)
+    set(IGNORE_EXTLIBS TRUE)
+    set(IGNORE_NATIVELIBS TRUE)
+    set(IGNORE_DEMOS TRUE)
+    message("Ignoring additional targets for Android and Apple targets")
+endif()
+
+if(NOT DEFINED IGNORE_EXTLIBS)
+    set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/PROJECTS")
+    include("cmake/externalTargets.cmake") # For building dependencies
+endif()
+
+include("cmake/internalTargets.cmake") # Builds CORELIB and GEOLIB
 
 if(NOT DEFINED IGNORE_NATIVELIBS)
-include("cmake/findVulkan.cmake") # For locating Vulkan
-include("cmake/engineTargets.cmake") # For building engine specific libraries
-include("cmake/shaderTargets.cmake") # For copying and compiling shaders
-include("cmake/resourceTargets.cmake") # For generating assets compile-time
+    include("cmake/findVulkan.cmake") # For locating Vulkan
+    include("cmake/engineTargets.cmake") # For building engine specific libraries
+    include("cmake/shaderTargets.cmake") # For copying and compiling shaders
+    include("cmake/resourceTargets.cmake") # For generating assets compile-time
 endif()
-include("cmake/installTargets.cmake") # For installation procedures
+
+include("cmake/installTargets.cmake") # For installation
 
 # ------------- Demos and Tests ------------- #
 
 configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
 
-if(NOT DEFINED IGNORE_EXAMPLES)
+if(NOT DEFINED IGNORE_DEMOS)
 add_executable(Hello demos/hello/Hello.cpp)
 add_executable(Molecular demos/molecular/Molecular.cpp)
 add_executable(Meshform demos/meshform/Meshform.cpp)

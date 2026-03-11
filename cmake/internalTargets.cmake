@@ -1,14 +1,14 @@
 if(NOT DEFINED IGNORE_NATIVELIBS)
 
-if(UNIX AND NOT APPLE) # Unix Specific
+if(UNIX) # Unix Specific
     include(FindX11)
 endif()
 
 # -------------- Core Library ------------- #
 
 list(APPEND support_src
-	support/IO.cpp
-	support/Controls.cpp
+    support/IO.cpp
+    support/Controls.cpp
     support/Timer.cpp
     support/Platform.cpp
     # core/File3D.cpp
@@ -32,6 +32,7 @@ add_library(CORELIB # SHARED # Core Library
     ${support_src}
     ${core_src}
 )
+
 target_include_directories(CORELIB PRIVATE core support geometry shaders)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 target_include_directories(CORELIB
@@ -50,7 +51,6 @@ endif()
 if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
     target_link_libraries(CORELIB PUBLIC Rasteron)
 endif()
-
 endif() # IGORE_NATIVELIBS
 
 # -------------- Geometry Library ------------- #
@@ -97,3 +97,12 @@ if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
         target_link_libraries(GEOLIB PUBLIC ${ZLIB_LIBRARIES} ${irrXML_lib})
     endif()
 endif()
+
+find_package(CUDAToolkit)
+if(CUDAToolkit_FOUND)
+    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
+else()
+    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
+endif()
+
+

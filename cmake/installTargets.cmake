@@ -1,12 +1,19 @@
 set(Topl_DIR "${CMAKE_INTALL_PREFIX}/lib/Topl")
 
-install(TARGETS CORELIB GEOLIB ${engine_targets}
+if(NOT DEFINED IGORE_NATIVELIBS)
+    set(installTargets GEOLIB)
+else()
+    set(installTargets CORELIB GEOLIB ${engine_targets})
+endif()
+
+install(TARGETS ${installTargets}
     EXPORT Topl
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     FRAMEWORK DESTINATION lib
 )
+
 
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h

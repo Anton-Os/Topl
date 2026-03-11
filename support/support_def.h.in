@@ -21,7 +21,7 @@
     #include "Loader.h" // loader library for Rasteron
 #endif
 #if ${Assimp_FOUND}
-	#define TOPL_ENABLE_MODELS
+    #define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
@@ -29,6 +29,10 @@
 #if ${SUPPORT_PHYSICS}
     #define TOPL_ENABLE_PHYSICS
 #endif
+#if ${SUPPORT_CUDA}
+    #define TOPL_ENABLE_CUDA
+#endif
+
 
 #ifdef _WIN32
 #define DllExport __declspec(dllexport)

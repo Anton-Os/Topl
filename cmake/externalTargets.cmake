@@ -28,6 +28,8 @@ if(SUPPORT_TEXTURES)
     else()
         message(WARNING "Texturing and Image modules cannot load! Build and install Rasteron submodule and point Rasteron_Install_Path variable to the Rasteron install directory")
     endif()
+else()
+    set(Rasteron_FOUND FALSE)
 endif()
 
 #TODO: Build Rasteron from Submodle or from Git if detected
@@ -44,15 +46,15 @@ ExternalProject_Add(ASSIMP # 3D Model loading
 )
 endif()
 
-if(NOT SUPPORT_MODELS)
-    set(Assimp_FOUND 0) # override variable to not found
-else()
+if(SUPPORT_MODELS)
     find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
     if(Assimp_FOUND)
         message(STATUS "Assimp loading success!")
     else()
         message(WARNING "Assimp loading failure")
     endif()
+else()
+    set(Assimp_FOUND FALSE)
 endif()
 
 # set(SUPPORT_SAVES ${IS_FALSE} CACHE INT "Allow saving capabilities in .topl format" FORCE)
