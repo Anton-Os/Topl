@@ -1,12 +1,12 @@
-#include "Geo_Fractal.hpp"
+#include "Geo_Freeform.hpp"
 
 // Functions
 
-bool fractalCull_ball(Vec3f input, double level) { return input.len() < level + 0.05 && input.len() > level - 0.05; }
+bool freeformCull_ball(Vec3f input, double level) { return input.len() < level + 0.05 && input.len() > level - 0.05; }
 
-TrigFractal fractalSpawn_trigs(Vec3f input){
-    float f = FRACTAL_LEVEL * 0.0025;
-    TrigFractal trig; // = TrigFractal({ 3, (Vec3f*)malloc(sizeof(Vec3f) * 3) });
+TrigForm freeformSpawn_trigs(Vec3f input){
+    float f = FREEFORM_LEVEL * 0.0025;
+    TrigForm trig; // = TrigForm({ 3, (Vec3f*)malloc(sizeof(Vec3f) * 3) });
 
     trig.pos1 = input;
     trig.pos2 = input + Vec3f({ sin(input.data[0] * 5) * f, cos(input.data[0] * 5) * f, cos(input.data[2] * 5) * f });
@@ -15,7 +15,7 @@ TrigFractal fractalSpawn_trigs(Vec3f input){
     return trig;
 }
 
-static Geo_Vertex* genFractal_lattice(ShapeFractal shape){
+static Geo_Vertex* genFreeform_lattice(ShapeFreeform shape){
     unsigned count = shape.xDivs * shape.yDivs * shape.zDivs;
     Geo_Vertex* latticeVertices = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
@@ -31,13 +31,13 @@ static Geo_Vertex* genFractal_lattice(ShapeFractal shape){
     return latticeVertices;
 }
 
-Geo_Vertex* genFractal_vertices(ShapeFractal shape, fCullCallback callback){
+Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fCullCallback callback){
     unsigned count = shape.getCount();
-    Geo_Vertex* latticeVertices = genFractal_lattice(shape);
+    Geo_Vertex* latticeVertices = genFreeform_lattice(shape);
 
     unsigned invalidCount = 0;
     for(unsigned v = 0; v < count; v++)
-        if(!callback((*(latticeVertices + v)).position, FRACTAL_LEVEL)){
+        if(!callback((*(latticeVertices + v)).position, FREEFORM_LEVEL)){
             *(latticeVertices + v) = Geo_Vertex(VEC_3F_INV); // invalid vertex
             invalidCount++;
         }
@@ -46,7 +46,7 @@ Geo_Vertex* genFractal_vertices(ShapeFractal shape, fCullCallback callback){
     unsigned o = 0;
     for(unsigned v = 0; v < count; v++)
         if((*(latticeVertices + v)).position != VEC_3F_INV){
-            TrigFractal trig = fractalSpawn_trigs((*(latticeVertices + v)).position);
+            TrigForm trig = freeformSpawn_trigs((*(latticeVertices + v)).position);
             *(vertices + o) = Geo_Vertex(trig.pos1);
             *(vertices + o + 1) = Geo_Vertex(trig.pos2);
             *(vertices + o + 2) = Geo_Vertex(trig.pos3);
@@ -58,7 +58,7 @@ Geo_Vertex* genFractal_vertices(ShapeFractal shape, fCullCallback callback){
     return vertices;
 }
 
-unsigned* genFractal_indices(ShapeFractal shape, unsigned count){
+unsigned* genFreeform_indices(ShapeFreeform shape, unsigned count){
     unsigned* indices = (unsigned*)malloc(count * sizeof(unsigned));
 
     for(unsigned c = 0; c < count; c++) *(indices + c) = rand() % shape.getCount();
@@ -66,14 +66,12 @@ unsigned* genFractal_indices(ShapeFractal shape, unsigned count){
     return indices;
 }
 
-// Constructors
-
-static unsigned getIdxCount(ShapeFractal shape, fCullCallback callback){
-    Geo_Vertex* latticeVertices = genFractal_lattice(shape);
+static unsigned getIdxCount(ShapeFreeform shape, fCullCallback callback){
+    Geo_Vertex* latticeVertices = genFreeform_lattice(shape);
 
     unsigned invalidCount = 0;
     for(unsigned v = 0; v < shape.getCount(); v++)
-        if(!callback((*(latticeVertices + v)).position, FRACTAL_LEVEL)){
+        if(!callback((*(latticeVertices + v)).position, FREEFORM_LEVEL)){
             *(latticeVertices + v) = Geo_Vertex(VEC_3F_INV); // invalid vertex
             invalidCount++;
         }
@@ -83,16 +81,18 @@ static unsigned getIdxCount(ShapeFractal shape, fCullCallback callback){
     return shape.getCount() - invalidCount;
 }
 
-Geo_Fractal::Geo_Fractal(ShapeFractal shape) : Geo_Mesh(
-    getIdxCount(shape, fractalCull_ball), genFractal_vertices(shape, fractalCull_ball)
-    // shape.getCount() / 3, genFractal_indices(shape, shape.getCount() / 3) // TODO: Improve this
+// Constructors
+
+Geo_Freeform::Geo_Freeform(ShapeFreeform shape) : Geo_Mesh(
+    getIdxCount(shape, freeformCull_ball), genFreeform_vertices(shape, freeformCull_ball)
+    // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
 ) {
     _shape = shape;
 }
 
-Geo_Fractal::Geo_Fractal(ShapeFractal shape, fCullCallback callback) : Geo_Mesh(
-    getIdxCount(shape, callback), genFractal_vertices(shape, callback)
-    // shape.getCount() / 3, genFractal_indices(shape, shape.getCount() / 3) // TODO: Improve this
+Geo_Freeform::Geo_Freeform(ShapeFreeform shape, fCullCallback callback) : Geo_Mesh(
+    getIdxCount(shape, callback), genFreeform_vertices(shape, callback)
+    // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
 ){
     _shape = shape;
 }

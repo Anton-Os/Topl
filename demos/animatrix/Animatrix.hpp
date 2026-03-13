@@ -1,7 +1,7 @@
 #include "meshes/Geo_Volume.hpp"
 #include "constructs/Geo_Puppet.hpp"
 #ifdef TOPL_ENABLE_MODELS
-#include "constructs/Geo_Model3D.hpp"
+#include "constructs/Geo_Model.hpp"
 #endif
 
 #include "program/Topl_Program.hpp"

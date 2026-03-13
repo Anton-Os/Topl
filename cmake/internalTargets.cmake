@@ -63,7 +63,7 @@ list(APPEND geometry_src
     geometry/meshes/Geo_Volume.cpp
     geometry/meshes/Geo_Cone.cpp
     geometry/meshes/Geo_Orboid.cpp
-    geometry/meshes/Geo_Fractal.cpp
+    geometry/meshes/Geo_Freeform.cpp
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
     list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)

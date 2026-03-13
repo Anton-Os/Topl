@@ -1,6 +1,6 @@
 #include "Geo_Construct.hpp"
 #include "meshes/Geo_Orboid.hpp"
-#include "meshes/Geo_Fractal.hpp"
+#include "meshes/Geo_Freeform.hpp"
 
 #include "program/Topl_Program.hpp"
 
@@ -77,9 +77,9 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) },
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
-    Geo_Fractal* fractals[4] = {
-        new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 20, 20, 20 })), new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 40, 40, 40 })),
-        new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 60, 60, 60 })), new Geo_Fractal(ShapeFractal({ MESHFORM_SIZE, 80, 80, 80 }))
+    Geo_Freeform* fractals[4] = {
+        new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 20, 20, 20 })), new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 40, 40, 40 })),
+        new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 60, 60, 60 })), new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 80, 80, 80 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 

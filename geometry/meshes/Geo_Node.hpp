@@ -1,4 +1,4 @@
-#ifndef GEO_NODE_H
+#ifndef Geo_Node_H
 
 #include <assimp/scene.h>
 
@@ -14,12 +14,17 @@ enum MESH_Attribute {
 	// MESH_Bone
 };
 
-DllExport unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
-DllExport unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+DllExport unsigned getMeshAttribCount(const aiMesh* mesh, MESH_Attribute attrib); // for singular mesh
+DllExport unsigned getMeshesAttribCount(const std::vector<const aiMesh*>& meshes, MESH_Attribute attrib); // for multiple meshes
+
+// DllExport Geo_Vertex* genModel_vertices(std::string modelPath, unsigned short meshIndex); // TODO: Include functions that are bindable for vertex generation
+// DllExport unsigned* genModel_indices(std::string modelPath, unsigned short meshIndex); // TODO: Include functions that are bindable for index generation
+
+#ifdef __cplusplus
 
 class Geo_NodeMesh : public Geo_Mesh {
 public:
@@ -68,9 +73,11 @@ private:
 	Geo_NodeMesh* _mesh = nullptr;
 };
 
+#endif
+
 #ifdef __cplusplus
 }
 #endif
 
-#define GEO_NODE_H
+#define Geo_Node_H
 #endif
