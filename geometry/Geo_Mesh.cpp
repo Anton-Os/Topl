@@ -1,18 +1,6 @@
 #include "Geo_Mesh.hpp"
 
-// Helper Functions
-
-void free_vertices(Geo_Vertex* vertices){ 
-    free(vertices); 
-    vertices = NULL;
-}
-
-void free_indices(unsigned* indices){ 
-    free(indices); 
-    indices = NULL;
-}
-
-// Shape Objects
+// Shape Object
 
 Shape2D create_shape2D(float radius, unsigned short segs){ return Shape2D({ radius, segs }); }
 
@@ -198,7 +186,8 @@ void Geo_Mesh::populate(unsigned vertexCount, Geo_Vertex* vertexData, unsigned i
     if(vertexCount > 0 && vertexData != nullptr){
         _vertices.resize(vertexCount);
         for(unsigned v = 0; v < vertexCount; v++) _vertices[v] = *(vertexData + v);
-        free_vertices(vertexData);
+        free(vertexData);
+        vertexData = nullptr;
     }
     if(indexCount > 0 && indexData != nullptr){
         _indices.resize(indexCount);

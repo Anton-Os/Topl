@@ -50,10 +50,10 @@ struct Pattern_PixelShader : public Topl_Shader {
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {
 		_embedMap.insert({ "Custom_Pattern",
-			std::string("float xChecker = (abs(coords.x) * 10.0) - floor((abs(coords.x) * 10.0));")
-			+ "float yChecker = (abs(coords.y) * 10.0) - floor((abs(coords.y) * 10.0));"
-			+ "float zChecker = (abs(coords.z) * 10.0) - floor((abs(coords.z) * 10.0));"
-			+ "coords = vec3(xChecker, yChecker, zChecker);"
+			std::string("float xChecker = (abs(coords.x) * m) - floor((abs(coords.x) * m));")
+			+ "float yChecker = (abs(coords.y) * m) - floor((abs(coords.y) * m));"
+			+ "float zChecker = (abs(coords.z) * m) - floor((abs(coords.z) * m));"
+			// + "coords = vec3(xChecker, yChecker, zChecker);"
 		});
 	}
 };
