@@ -29,7 +29,7 @@ void Kaleidoscope_Construct::init() {
 
 // Demo
 
-void Kaleidoscope_Demo::onAnyKey(char key){
+void Kaleidoscope_Demo::onAnyKey(int key){
     switch(tolower(key)){
         case 'u': drawMode = DRAW_Triangles; break;
         case 'i': drawMode = DRAW_Lines; break;

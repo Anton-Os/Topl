@@ -37,6 +37,7 @@ struct Platform {
 
     NATIVE_PLATFORM_CONTEXT* getContext(){ return &_context; }
     NATIVE_WINDOW getParentWindow(){ return _context.window; }
+    const char* getWindowName() { return _winName; }
     static unsigned getViewportWidth(NATIVE_PLATFORM_CONTEXT* context);
     static unsigned getViewportHeight(NATIVE_PLATFORM_CONTEXT* context);
     static float getCursorX(){ return xCursorPos; }

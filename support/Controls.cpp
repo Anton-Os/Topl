@@ -4,7 +4,7 @@
 
 // Keyboard Interaction
 
-void Input_KeyControl::addKeyPress(char keyCode) {
+void Input_KeyControl::addKeyPress(int keyCode) {
 	if (keyCode == '\0') return; // null keycode can be skipped
 	for(std::vector<anyKeyCallback>::iterator m = _anyKeyCallbacks.begin(); m != _anyKeyCallbacks.end(); m++)
 		(*m)(keyCode); // triggers callback
@@ -15,7 +15,7 @@ void Input_KeyControl::addKeyPress(char keyCode) {
         (*function)(keyCode);
 }
 
-void Input_KeyControl::addCallback(char keyCode, keyCallback callback) {
+void Input_KeyControl::addCallback(int keyCode, keyCallback callback) {
 	_keyCallback_map.insert(std::make_pair(keyCode, callback));
 }
 

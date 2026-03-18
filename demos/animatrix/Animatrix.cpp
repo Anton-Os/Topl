@@ -49,7 +49,7 @@ void Animatrix_Demo::loop(double frameTime){
     renderScene(&scene3D, _beamsPipeline, Topl_Program::shaderMode); 
 }
 
-void Animatrix_Demo::onAnyKey(char key){
+void Animatrix_Demo::onAnyKey(int key){
 #ifdef TOPL_ENABLE_TEXTURES
     switch(tolower(key)){
         case 'd': for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++) scene2D.addForce(puppets[p].getGeoActor(PUPPET_Body)->getName(), Vec3f({ 1.0F, 0.0F, 0.0F }) * Topl_Program::speed * 5000.0F); break;

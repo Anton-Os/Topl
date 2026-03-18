@@ -35,7 +35,7 @@ struct Traversal_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 private:
-    void onAnyKey(char key);
+    void onAnyKey(int key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Geo_Quad2D squareSlice = Geo_Quad2D(TRAVERSAL_RADIUS);

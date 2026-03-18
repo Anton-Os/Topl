@@ -17,7 +17,7 @@ struct Genesis_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 private:
-    void onAnyKey(char k);
+    void onAnyKey(int k);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = PROGRAM_SCENE;

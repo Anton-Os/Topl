@@ -94,7 +94,7 @@ struct Meshform_Demo : public Topl_Program {
     Sampler_3D volumeImg = Sampler_3D(256);
 #endif
 private:
-    void onAnyKey(char key);
+    void onAnyKey(int key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 #ifdef TOPL_ENABLE_TEXTURES
     void genTex3D(unsigned short mode, unsigned color1, unsigned color2);

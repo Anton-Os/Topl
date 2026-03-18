@@ -1,6 +1,6 @@
 #include "Molecular.hpp"
 
-void Molecular_Demo::onAnyKey(char key){
+void Molecular_Demo::onAnyKey(int key){
     Topl_Light* targetLight;
     if((Topl_Program::shaderMode / 10) % 3 == 0) targetLight = &skyLight;
     else if((Topl_Program::shaderMode / 10) % 3 == 1) targetLight = &flashLight;

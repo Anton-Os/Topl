@@ -107,7 +107,7 @@ public:
 #ifdef TOPL_ENABLE_TEXTURES
 	std::map<Geo_Actor*, Sampler_Array> sequence_map; // for dynamically changing textures
 #endif
-    bool isEnable_screencap = true;
+    bool isEnable_screencap = true, isEnable_console = true;
 protected:
     virtual void init() = 0;
 	virtual void preloop();
@@ -149,7 +149,7 @@ protected:
 private:
 	static Topl_Pipeline* _savedPipeline;
 
-    void _onAnyKey(char k);
+    void _onAnyKey(int k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
 #ifndef __ANDROID__

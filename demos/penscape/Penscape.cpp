@@ -26,7 +26,7 @@ void Penscape_Demo::createBrushes() {
         }
 }
 
-void Penscape_Demo::onAnyKey(char key){
+void Penscape_Demo::onAnyKey(int key){
     // for (unsigned a = 0; a < 3; a++)
     //      for (unsigned s = 0; s < 3; s++)
     switch(tolower(key)) {

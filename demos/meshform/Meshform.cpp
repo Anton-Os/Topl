@@ -4,7 +4,7 @@ static bool isRotating = true;
 
 // Class Functions
 
-void Meshform_Demo::onAnyKey(char key){
+void Meshform_Demo::onAnyKey(int key){
     static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
     static Vec3f decVec = Vec3f({ MESHFORM_DEC, MESHFORM_DEC, MESHFORM_DEC });
     switch(tolower(key)){

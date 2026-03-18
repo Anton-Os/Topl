@@ -7,6 +7,8 @@
 
 #include "Timer.hpp"
 
+typedef unsigned char key_t; // TODO: Switch to key_t
+
 // Control
 
 struct Input_Control {
@@ -27,16 +29,16 @@ protected:
 // Keys
 
 typedef void (*keyCallback)(void); // Triggers action on a specified keypress
-typedef void (*anyKeyCallback)(char); // Triggers action on any keypress
+typedef void (*anyKeyCallback)(int); // Triggers action on any keypress
 
-typedef std::function<void(char)> keyFunc; // new type for key input
+typedef std::function<void(int)> keyFunc; // new type for key input
 
 class Input_KeyControl : public Input_Control {
 public:
 	Input_KeyControl() : Input_Control(){}
 
-	void addKeyPress(char keyCode);
-	void addCallback(char keyCode, keyCallback callback);
+	void addKeyPress(int keyCode);
+	void addCallback(int keyCode, keyCallback callback);
     void addAnyCallback(anyKeyCallback callback);
 
     void addHandler(keyFunc function);

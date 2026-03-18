@@ -15,14 +15,6 @@ fileCallback Platform::onFileChoose = nullptr;
 
 // bool checkFile(std::string fileName){ return (access(fileName.c_str(), F_OK) == 0)? true : false; }
 
-static bool checkKey(int code){
-	return isalnum(code) || isspace(code) || code == '\r' || // handles most usecases
-		code == (char)0x25 || code == (char)0x26 || code == (char)0x27 || code == (char)0x28
-		|| code == '[' || code == '{' || code == ']' || code == '}' || code == (char)0xBA // || code == (char)0x58 || code == ';' || code == ':' || code == '`' || code == '~'; // handles arrows
-		|| code == 186 || code == 192 // handles ; and ` ?
-		|| code == 189 || code == 187; // handles + and - ?
-}
-
 static void addPress(enum MOUSE_Event button){
 	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
 		? Platform::mouseControl.addPress(button)
@@ -108,24 +100,20 @@ void Platform::openFileDialog(bool isRead){
 }
 
 LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
-	static bool isKeyReady = false;
-
 	switch (message) {
 	case(WM_COMMAND): { return handleMenu_win32(wParam); }
 	case(WM_CREATE): {}
-	case(WM_PAINT): { }
+	case(WM_PAINT): {}
 	// case(WM_SIZE): { printf("Viewport resized to: %d, %d", Platform::getViewportWidth(window), Platform::getViewportHeight(window)); }
-	case(WM_KEYDOWN): { isKeyReady = true; }
+	case(WM_KEYDOWN): {  }
 	case(WM_KEYUP): {}
-	case(WM_MOUSEMOVE):{
-		if(Platform::getCursorX() != INVALID_CURSOR_POS && Platform::getCursorY() != INVALID_CURSOR_POS)
+	case(WM_MOUSEMOVE): {
+		if (Platform::getCursorX() != INVALID_CURSOR_POS && Platform::getCursorY() != INVALID_CURSOR_POS)
 			Platform::mouseControl.addHover(Platform::getCursorX(), Platform::getCursorY());
 	}
-	case (WM_CHAR): { 
-		if(wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
-		else if(isKeyReady && checkKey(wParam)) Platform::keyControl.addKeyPress(wParam);
-		// else std::cout << "Other pressed: " << (char)wParam << std::endl;
-		isKeyReady = false;
+	case (WM_CHAR): if (wParam != 0) {
+		if (wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
+		else Platform::keyControl.addKeyPress((int)wParam);
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addPress(MOUSE_LeftBtn_Release); }

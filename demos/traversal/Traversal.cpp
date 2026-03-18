@@ -3,7 +3,7 @@
 static bool isRotating = true;
 static float speed = TRAVERSAL_SPEED;
 
-void Traversal_Demo::onAnyKey(char key) {
+void Traversal_Demo::onAnyKey(int key) {
     switch (tolower(key)) {
         case 'i': speed = TRAVERSAL_SPEED; break;
         case 'o': speed *= 10.0F; break;

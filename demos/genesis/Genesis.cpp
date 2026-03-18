@@ -5,7 +5,7 @@ static bool isPulsing = false;
 
 static unsigned sculptIndex = 0;
 
-void Genesis_Demo::onAnyKey(char key) {
+void Genesis_Demo::onAnyKey(int key) {
     if (tolower(key) == 'p') isPulsing = !isPulsing;
     else if (tolower(key) == 'o') isRotating = !isRotating;
 }

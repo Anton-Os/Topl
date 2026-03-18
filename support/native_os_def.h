@@ -44,6 +44,7 @@
 
     void android_proc(android_app *app, int32_t cmd);
 #elif defined(_WIN32)
+    #define TOPL_SCREENCAP_K 186 // translates to the ';' key
     #define TOPL_LEFT_ARROW (char)0x25
     #define TOPL_UP_ARROW (char)0x26
     #define TOPL_RIGHT_ARROW (char)0x27
@@ -80,6 +81,7 @@
 
     #pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
+    #define TOPL_SCREENCAP_K 0x0 // should translate to ; key!
     #define TOPL_LEFT_ARROW (char)0x51
     #define TOPL_UP_ARROW (char)0x52
     #define TOPL_RIGHT_ARROW (char)0x53

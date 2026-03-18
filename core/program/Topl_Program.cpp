@@ -183,7 +183,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     _renderer->texturizeScene(&_overlays.scene);
 }
 
-void Topl_Program::_onAnyKey(char k){
+void Topl_Program::_onAnyKey(int k){
     // std::cout << "Key is " << std::to_string(k) << std::endl;
     if (isspace(k) && k != 0x0D) {
         isEnable_overlays = !isEnable_overlays;
@@ -193,19 +193,20 @@ void Topl_Program::_onAnyKey(char k){
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
-    else if (k == '`' || k == '~') 
+    else if (k == '`' && isEnable_console) 
         std::cout << "Begin input loop in background thread" << std::endl;
 #ifdef TOPL_ENABLE_TEXTURES
-    else if((k == ':' || k == ';') && isEnable_screencap) {
+    else if(k == TOPL_SCREENCAP_K && isEnable_screencap) {
         Sampler_2D frameImg = _renderer->frame();
-        static unsigned frameNum = 0;
-        writeFileImageRaw("Frame", IMG_Bmp, frameImg.getImage()->height, frameImg.getImage()->width, frameImg.getImage()->data);
-        frameNum++;
+        static unsigned frameNum = 1;
+        char nameBuff[128];
+        snprintf(nameBuff, 128, "%s-%d.bmp", _platform->getWindowName(), frameNum);
+        writeFileImageRaw(nameBuff, IMG_Bmp, frameImg.getImage()->height, frameImg.getImage()->width, frameImg.getImage()->data);
         // queue_addImg(cachedFrames, frameImg.getImage(), 0); // index % cachedFrames->frameCount); // TODO: Encode video queue
         // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+        frameNum++;
     }
 #endif
-
     if(Topl_Program::isCtrl_keys && isalpha(k)){
         switch(tolower(k)){ // TODO: Add same logic for picked object?
             case 'w': Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
