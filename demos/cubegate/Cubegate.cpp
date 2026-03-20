@@ -1,6 +1,6 @@
 #include "Cubegate.hpp"
 
-void Cubegate_Demo::onAnyKey(int key) {
+void Cubegate_Demo::onAnyKey(keyboard_t key) {
     switch (key) {
         case 'a': worldCamera.updatePos({ -Topl_Program::speed, 0.0F, 0.0F }); break;
         case 's': worldCamera.updatePos({ 0.0F, -Topl_Program::speed, 0.0F }); break;

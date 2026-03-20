@@ -63,7 +63,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
     Sampler_3D volumeImg = Sampler_3D(KALEIDOSCOPE_SLICES);
 #endif
 private:
-    void onAnyKey(int key);
+    void onAnyKey(keyboard_t key);
     void onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 

@@ -183,7 +183,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     _renderer->texturizeScene(&_overlays.scene);
 }
 
-void Topl_Program::_onAnyKey(int k){
+void Topl_Program::_onAnyKey(keyboard_t k){
     // std::cout << "Key is " << std::to_string(k) << std::endl;
     if (isspace(k) && k != 0x0D) {
         isEnable_overlays = !isEnable_overlays;

@@ -109,7 +109,7 @@ struct Molecular_Demo : public Topl_Program {
 
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];
 private:
-    void onAnyKey(int key);
+    void onAnyKey(keyboard_t key);
 
     Topl_Scene scene = PROGRAM_SCENE;
     Topl_Light skyLight = BEAMS_LAMP_LIGHT, flashLight = BEAMS_SKY_LIGHT, lampLight = BEAMS_FLASH_LIGHT;

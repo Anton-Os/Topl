@@ -5,7 +5,7 @@ static bool isPulsing = false;
 
 static unsigned sculptIndex = 0;
 
-void Genesis_Demo::onAnyKey(int key) {
+void Genesis_Demo::onAnyKey(keyboard_t key) {
     if (tolower(key) == 'p') isPulsing = !isPulsing;
     else if (tolower(key) == 'o') isRotating = !isRotating;
 }
@@ -25,7 +25,7 @@ void Genesis_Demo::init(){
 void Genesis_Demo::loop(double frameTime){
     unsigned f = _renderer->getFrameCount();
 
-    Geo_Grid* grid = &grids[sculptIndex + (mode * 9)];
+    Geo_Grid* grid = &grids[sculptIndex + (mode * 9)]; 
     for (unsigned g = 0; g < grid->getActorCount(); g++)
         if(isRotating) grid->getGeoActor(g)->updateRot(VEC_3F_RAND * frameTime * GENESIS_ROT);
 
@@ -45,7 +45,7 @@ void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
 }
 
 MAIN_ENTRY {
-    Genesis = new Genesis_Demo(argv[0]);
+    Genesis = new Genesis_Demo(argv[0], BACKEND_GL4);
     Genesis->run();
 
     delete(Genesis);

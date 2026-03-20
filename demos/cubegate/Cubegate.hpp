@@ -93,7 +93,7 @@ struct Cubegate_Demo : public Topl_Program {
     Sampler_2D rightFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
 #endif
 private:
-    void onAnyKey(int key);
+    void onAnyKey(keyboard_t key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
 
     Topl_Scene scene = PROGRAM_SCENE;

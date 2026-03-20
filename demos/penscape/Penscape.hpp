@@ -61,7 +61,7 @@ struct Penscape_Demo : public Topl_Program {
 
     Geo_Actor brushes3D[3][3];
 private:
-    void onAnyKey(int key);
+    void onAnyKey(keyboard_t key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
     void createBrushes();
 

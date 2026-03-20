@@ -29,7 +29,7 @@ void Kaleidoscope_Construct::init() {
 
 // Demo
 
-void Kaleidoscope_Demo::onAnyKey(int key){
+void Kaleidoscope_Demo::onAnyKey(keyboard_t key){
     switch(tolower(key)){
         case 'u': drawMode = DRAW_Triangles; break;
         case 'i': drawMode = DRAW_Lines; break;
@@ -80,7 +80,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 // Main
 
 MAIN_ENTRY {
-    Kaleidoscope = new Kaleidoscope_Demo(argv[0]);
+    Kaleidoscope = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     Kaleidoscope->run();
 
     delete(Kaleidoscope);

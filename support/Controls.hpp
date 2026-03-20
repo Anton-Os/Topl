@@ -7,7 +7,6 @@
 
 #include "Timer.hpp"
 
-typedef unsigned char key_t; // TODO: Switch to key_t
 
 // Control
 
@@ -28,6 +27,8 @@ protected:
 
 // Keys
 
+typedef unsigned char keyboard_t; // TODO: Switch to keyboard_t
+
 typedef void (*keyCallback)(void); // Triggers action on a specified keypress
 typedef void (*anyKeyCallback)(int); // Triggers action on any keypress
 
@@ -37,8 +38,8 @@ class Input_KeyControl : public Input_Control {
 public:
 	Input_KeyControl() : Input_Control(){}
 
-	void addKeyPress(int keyCode);
-	void addCallback(int keyCode, keyCallback callback);
+	void addKeyPress(keyboard_t keyCode);
+	void addCallback(keyboard_t keyCode, keyCallback callback);
     void addAnyCallback(anyKeyCallback callback);
 
     void addHandler(keyFunc function);

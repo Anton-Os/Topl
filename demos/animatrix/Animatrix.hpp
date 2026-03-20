@@ -17,7 +17,7 @@ struct Animatrix_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 private:
-    void onAnyKey(int key);
+    void onAnyKey(keyboard_t key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
     std::string getPuppetImgPath(std::string appendageStr){ return std::string(IMAGES_DIR) + "characters/" + appendageStr; }
 

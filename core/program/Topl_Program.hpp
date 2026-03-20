@@ -149,7 +149,7 @@ protected:
 private:
 	static Topl_Pipeline* _savedPipeline;
 
-    void _onAnyKey(int k);
+    void _onAnyKey(keyboard_t k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);
 
 #ifndef __ANDROID__

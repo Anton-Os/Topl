@@ -81,7 +81,7 @@
 
     #pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
-    #define TOPL_SCREENCAP_K 0x0 // should translate to ; key!
+    #define TOPL_SCREENCAP_K 59 // should translate to ; key!
     #define TOPL_LEFT_ARROW (char)0x51
     #define TOPL_UP_ARROW (char)0x52
     #define TOPL_RIGHT_ARROW (char)0x53

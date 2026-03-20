@@ -3,7 +3,7 @@
 static bool isRotating = true;
 static float speed = TRAVERSAL_SPEED;
 
-void Traversal_Demo::onAnyKey(int key) {
+void Traversal_Demo::onAnyKey(keyboard_t key) {
     switch (tolower(key)) {
         case 'i': speed = TRAVERSAL_SPEED; break;
         case 'o': speed *= 10.0F; break;
@@ -100,7 +100,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0]);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
     Traversal->run();
 
     delete(Traversal);
