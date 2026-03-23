@@ -52,7 +52,7 @@ void Molecular_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Molecular = new Molecular_Demo(argv[0], BACKEND_GL4);
+    Molecular = new Molecular_Demo(argv[0]);
     Molecular->run();
 
     delete(Molecular);

@@ -29,6 +29,11 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::camera = Topl_Camera();
 Topl_Pipeline* Topl_Program::_savedPipeline = nullptr;
 
+static void background_input_call(std::string& input) {
+    std::getline(std::cin, input);
+    std::cout << "Input received from thread: " << input << std::endl;
+}
+
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
     Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
@@ -184,6 +189,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 }
 
 void Topl_Program::_onAnyKey(keyboard_t k){
+    std::string commandArgs;
     // std::cout << "Key is " << std::to_string(k) << std::endl;
     if (isspace(k) && k != 0x0D) {
         isEnable_overlays = !isEnable_overlays;
@@ -193,10 +199,13 @@ void Topl_Program::_onAnyKey(keyboard_t k){
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
-    else if (k == '`' && isEnable_console) 
-        std::cout << "Begin input loop in background thread" << std::endl;
+    else if (k == '`' && isEnable_console) {
+        std::thread backgroundThread(background_input_call, commandArgs);
+        if (backgroundThread.joinable()) backgroundThread.detach();
+        // std::cout << "Begin input loop in background thread" << std::endl;
+    }
 #ifdef TOPL_ENABLE_TEXTURES
-    else if(k == TOPL_SCREENCAP_K && isEnable_screencap) {
+    else if(k == TOPL_SCREENCAP_KEY && isEnable_screencap) {
         Sampler_2D frameImg = _renderer->frame();
         static unsigned frameNum = 1;
         char nameBuff[128];
@@ -207,7 +216,7 @@ void Topl_Program::_onAnyKey(keyboard_t k){
         frameNum++;
     }
 #endif
-    if(Topl_Program::isCtrl_keys && isalpha(k)){
+    if(Topl_Program::isCtrl_keys && isalpha(k) && k != TOPL_LEFT_ARROW && k != TOPL_UP_ARROW && k != TOPL_DOWN_ARROW && k != TOPL_RIGHT_ARROW){
         switch(tolower(k)){ // TODO: Add same logic for picked object?
             case 'w': Topl_Program::camera.updatePos({ 0.0, Topl_Program::speed, 0.0 }); break;
             case 's': Topl_Program::camera.updatePos({ 0.0, -Topl_Program::speed, 0.0 }); break;
@@ -252,7 +261,7 @@ void Topl_Program::_onAnyKey(keyboard_t k){
             }
         }
 
-        if(k == (char)TOPL_LEFT_ARROW || k == (char)TOPL_UP_ARROW || k == (char)TOPL_DOWN_ARROW || k == (char)TOPL_RIGHT_ARROW || k == '-' || k == '_' || k == '+' || k == '='){
+        if(k == TOPL_LEFT_ARROW || k == TOPL_UP_ARROW || k == TOPL_DOWN_ARROW || k == TOPL_RIGHT_ARROW || k == '-' || k == '_' || k == '+' || k == '='){
             setShadersMode(Topl_Program::shaderMode);
             unsigned shaderConsoleMode = (Topl_Program::shaderMode > 0)? Topl_Program::shaderMode : Topl_Program::shaderMode * -1;
             std::cout << "Shader mode is " << ((Topl_Program::shaderMode < 0)? "-" : "") << std::to_string(shaderConsoleMode) << std::endl;
@@ -326,19 +335,22 @@ void Topl_Program::createBackground(Sampler_2D* backgroundTex){
 }
 
 void Topl_Program::createOverlays(double size){
-    _overlays.billboard_appbar.scale({ 1.5F, 0.15F, 1.0F });
-    _overlays.billboard_appbar.shift({ 0.0F, 0.87F, 0.0F });
-    _overlays.billboard_camera.scale({ 1.5F, 0.15F, 1.0F });
+    _overlays.billboard_appbar.scale({ 1.5F * 0.66, 0.15F * 0.75F, 1.0F });
+    _overlays.billboard_appbar.shift({ 0.0F, 0.9F, 0.0F });
+    _overlays.billboard_camera.scale({ 1.5F * 0.66, 0.15F * 0.75F, 1.0F });
     _overlays.billboard_camera.shift({ 0.0F, 0.97F, 0.0F });
-    _overlays.billboard_timeline.scale({ 1.5F, 0.15F, 1.0F });
-    _overlays.billboard_timeline.shift({ 0.0F, -0.975F, 0.0F });
-    _overlays.billboard_sculpt.scale({ 0.12F, 1.15F, 1.0F });
-    _overlays.billboard_sculpt.shift({ -0.965F, 0.0F, 0.0F });
-    _overlays.billboard_paint.scale({ 0.12F, 1.15F, 1.0F });
-    _overlays.billboard_paint.shift({ 0.965F, 0.0F, 0.0F });
-    _overlays.billboard_media.shift({ -0.278F, -0.845F, 0.0F });
+    _overlays.billboard_timeline.scale({ 1.5F * 0.66F, 0.15F * 0.75, 1.0F });
+    _overlays.billboard_timeline.shift({ 0.15F, -0.97F, 0.0F });
+    _overlays.billboard_sculpt.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
+    _overlays.billboard_sculpt.shift({ -0.975F, 0.0F, 0.0F });
+    _overlays.billboard_paint.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
+    _overlays.billboard_paint.shift({ 0.975F, 0.0F, 0.0F });
+    _overlays.billboard_media.scale({ 0.3F, 0.14F, 1.0F });
+    _overlays.billboard_media.shift({ -0.185F, -0.97F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
+    _overlays.billboard_object.toggleShow(false);
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
+    _overlays.billboard_shader.toggleShow(false);
 #if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
@@ -347,7 +359,7 @@ void Topl_Program::createOverlays(double size){
         _overlays.billboard_sculpt.overlay(b, &_overlays.sculptButtons[b]);
         _overlays.billboard_paint.overlay(b, &_overlays.paintButtons[b]);
         _overlays.billboard_shader.overlay(b, &_overlays.pipelineButtons[b]);
-        if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b > 2)? (Sampler_UI*)&_overlays.mediaButtons[b - 3] : (Sampler_UI*)&_overlays.mediaLabels[b]);
+        if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b <= 2)? (Sampler_UI*)&_overlays.mediaButtons[b] : (Sampler_UI*)&_overlays.mediaLabels[b - 3]);
     }
     for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) // _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
         switch(14 - b){
@@ -362,7 +374,7 @@ void Topl_Program::createOverlays(double size){
     // _texVShader.setParams(_overlays.billboard_object.getGeoActor(5), { 1, 0.0, VEC_3F_ZERO, VEC_3F_ONES });
 
     for(unsigned short o = 0; o < PROGRAM_BILLBOARDS; o++){
-        if(o < PROGRAM_Timeline) _overlays.billboards[o]->scale({ ((o != PROGRAM_Object)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
+        //if(o < PROGRAM_Timeline) _overlays.billboards[o]->scale({ ((o != PROGRAM_Object)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
         if(o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline)? 0.015F : 0.045F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);

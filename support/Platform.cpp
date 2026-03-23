@@ -63,10 +63,11 @@ LRESULT handleMenu_win32(WPARAM wParam){
 
 	if(LOWORD(wParam) == IDM_TIME || LOWORD(wParam) == IDM_OBJS || LOWORD(wParam) == IDM_PIPES || LOWORD(wParam) == IDM_IMGS){ // Menu Interaction
 		logMessage("Menu command: " + popupTitleText + "\n");
+		
 		popupWindow = CreateWindow( // TODO: Remove menu?
 			"Topl",
 			popupTitleText.c_str(),
-			WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME /* |  ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX) */ | WS_VISIBLE,
+			WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME /* |  ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX) */ | WS_VISIBLE | WS_POPUP,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			175, 300,
 			NULL, NULL, GetModuleHandle(NULL), NULL
@@ -113,7 +114,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	case (WM_CHAR): if (wParam != 0) {
 		if (wParam == VK_ESCAPE) std::cout << "Escape pressed" << std::endl;
-		else Platform::keyControl.addKeyPress((int)wParam);
+		else if((lParam >> 30) & 1) Platform::keyControl.addKeyPress((int)wParam);
 	}
 	case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN) addPress(MOUSE_LeftBtn_Press); }
 	case (WM_LBUTTONUP): { if(message == WM_LBUTTONUP) addPress(MOUSE_LeftBtn_Release); }
@@ -159,6 +160,8 @@ void Platform::createWindow(unsigned width, unsigned height){
 		width, height, // TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT,
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
+
+	// SetWindowPos(_context.window, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED);
 
 	ShowWindow(_context.window, 1);
 	UpdateWindow(_context.window);
@@ -340,7 +343,7 @@ bool Platform::handleEvents(){
         switch(event.type){
         case (KeyPress): {
             KeySym keysym = XLookupKeysym(&event.xkey, 0);
-            Platform::keyControl.addKeyPress((char)keysym); // keycode needs to be converted!
+            Platform::keyControl.addKeyPress((unsigned char)keysym); // keycode needs to be converted!
         }
         case (ButtonPress): { // TODO: Detect correct mouse button
             Platform::mouseControl.addPress(MOUSE_RightBtn_Press, Platform::xCursorPos, Platform::yCursorPos);
@@ -393,7 +396,7 @@ bool Platform::getCursorCoords(float* xPos, float* yPos) const {
     unsigned width = windowAttribs.width; // Platform::getViewportWidth(_context.window);
 
     *xPos = ((xChild / (double)width) - 0.5) * 2.0;
-    *yPos = ((yChild / (double)height) - 0.5) * 2.0;
+    *yPos = ((yChild / (double)height) - 0.5) * -2.0;
 
     return true; // check if cursor is in client area!
 }

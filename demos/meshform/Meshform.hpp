@@ -78,8 +78,8 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
     Geo_Freeform* fractals[4] = {
-        new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 20, 20, 20 })), new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 40, 40, 40 })),
-        new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 60, 60, 60 })), new Geo_Freeform(ShapeFractal({ MESHFORM_SIZE, 80, 80, 80 }))
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 40, 40, 40 })),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 60, 60, 60 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 80, 80, 80 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 

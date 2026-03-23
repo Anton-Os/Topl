@@ -214,7 +214,7 @@ private:
 		Geo_Listboard billboard_sculpt = Geo_Listboard("program_sculpt_bar", 9, &scene);
 		Geo_Listboard billboard_paint = Geo_Listboard("program_paint_bar", 9, &scene);
 		Geo_Paneboard billboard_timeline = Geo_Paneboard("program_timeline", &scene);
-		Geo_Billboard billboard_media = Geo_Billboard("program_media", 3, 2, &scene);
+		Geo_Crossboard billboard_media = Geo_Crossboard("program_media", 3, &scene);
 		Geo_Billboard billboard_object = Geo_Billboard("program_object", 5, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };

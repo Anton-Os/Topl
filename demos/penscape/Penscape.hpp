@@ -4,12 +4,15 @@
 
 #include "program/Topl_Program.hpp"
 
-#define BRUSH3D_SIZE 0.25F
-#define BRUSH3D_SCALE 2
-#define BRUSH3D_ITERS 50
-#define BRUSH3D_SEGMENTS 100
-#define BRUSH3D_SHIFT 0.25F
-#define BRUSH3D_ROT 0.05F
+#define PENSCAPE_SIZE 0.25F
+#define PENSCAPE_SCALE 2
+#define PENSCAPE_ITERS 50
+#define PENSCAPE_SEGMENTS 100
+#define PENSCAPE_SHIFT 0.25F
+#define PENSCAPE_ROT 0.03F
+
+// #define PENSCAPE_MESH_INSTANCES Mat4x4::translation(Vec3f({ -0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F}))
+#define PENSCAPE_MESH_INSTANCES Mat4x4::scale(Vec3f({ 1.25F, 1.0F, 1.0F})), Mat4x4::translation(Vec3f({ 1.0F, 1.25F, 1.0F })), Mat4x4::translation(Vec3f({ 1.0F, 1.0F, 1.25F }))
 
 Vec3f getRandTransform(float amount){
     static unsigned invocation = 0;
@@ -34,29 +37,29 @@ struct Penscape_Demo : public Topl_Program {
     void init() override;
     void loop(double frameTime) override;
 
-    Geo_Mesh* trigMeshes[3] = { new Geo_Trig3D(BRUSH3D_SIZE), new Geo_TrigCone(BRUSH3D_SIZE), new Geo_TrigOrb(BRUSH3D_SIZE) };
+    Geo_Mesh* trigMeshes[3] = { new Geo_Trig3D(PENSCAPE_SIZE), new Geo_TrigCone(PENSCAPE_SIZE), new Geo_TrigOrb(PENSCAPE_SIZE) };  
     Geo_Mesh* trigMeshBrushes[3] = {
-        new Geo_Trig3D(BRUSH3D_SIZE / BRUSH3D_SCALE, BRUSH3D_SIZE),
-        new Geo_TrigCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
-        new Geo_TrigOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
+        new Geo_Trig3D(PENSCAPE_SIZE / PENSCAPE_SCALE, PENSCAPE_SIZE),
+        new Geo_TrigCone(PENSCAPE_SIZE / PENSCAPE_SCALE, Vec3f({ 0.0F, 0.0F, PENSCAPE_SIZE })),
+        new Geo_TrigOrb(PENSCAPE_SIZE / PENSCAPE_SCALE)
     };
-    Geo_Mesh* quadMeshes[3] = { new Geo_Quad3D(BRUSH3D_SIZE), new Geo_QuadCone(BRUSH3D_SIZE), new Geo_QuadOrb(BRUSH3D_SIZE) }; 
+    Geo_Mesh* quadMeshes[3] = { new Geo_Quad3D(PENSCAPE_SIZE), new Geo_QuadCone(PENSCAPE_SIZE), new Geo_QuadOrb(PENSCAPE_SIZE) }; 
     Geo_Mesh* quadMeshBrushes[3] = {
-        new Geo_Quad3D(BRUSH3D_SIZE / BRUSH3D_SCALE, BRUSH3D_SIZE),
-        new Geo_QuadCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
-        new Geo_QuadOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
+        new Geo_Quad3D(PENSCAPE_SIZE / PENSCAPE_SCALE, PENSCAPE_SIZE),
+        new Geo_QuadCone(PENSCAPE_SIZE / PENSCAPE_SCALE, Vec3f({ 0.0F, 0.0F, PENSCAPE_SIZE })),
+        new Geo_QuadOrb(PENSCAPE_SIZE / PENSCAPE_SCALE)
     };
-    /* Geo_Mesh* hexMeshes[3] = { new Geo_Hex3D(BRUSH3D_SIZE), new Geo_HexCone(BRUSH3D_SIZE), new Geo_HexOrb(BRUSH3D_SIZE) }; 
+    /* Geo_Mesh* hexMeshes[3] = { new Geo_Hex3D(PENSCAPE_SIZE), new Geo_HexCone(PENSCAPE_SIZE), new Geo_HexOrb(PENSCAPE_SIZE) }; 
     Geo_Mesh* hexMeshBrushes[3] = {
-        new Geo_Hex3D(BRUSH3D_SIZE / BRUSH3D_SCALE, BRUSH3D_SIZE),
-        new Geo_HexCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
-        new Geo_HexOrb(BRUSH3D_SIZE / BRUSH3D_SCALE)
+        new Geo_Hex3D(PENSCAPE_SIZE / PENSCAPE_SCALE, PENSCAPE_SIZE),
+        new Geo_HexCone(PENSCAPE_SIZE / PENSCAPE_SCALE, Vec3f({ 0.0F, 0.0F, PENSCAPE_SIZE })),
+        new Geo_HexOrb(PENSCAPE_SIZE / PENSCAPE_SCALE)
     }; */
-    Geo_Mesh* circleMeshes[3] = { new Geo_Circle3D(BRUSH3D_SIZE), new Geo_CircleCone(BRUSH3D_SIZE), new Geo_Orb(BRUSH3D_SIZE) }; 
+    Geo_Mesh* circleMeshes[3] = { new Geo_Circle3D(PENSCAPE_SIZE), new Geo_CircleCone(PENSCAPE_SIZE), new Geo_Orb(PENSCAPE_SIZE) }; 
     Geo_Mesh* circleMeshBrushes[3] = {
-        new Geo_Circle3D(BRUSH3D_SIZE / BRUSH3D_SCALE, BRUSH3D_SIZE),
-        new Geo_CircleCone(BRUSH3D_SIZE / BRUSH3D_SCALE, Vec3f({ 0.0F, 0.0F, BRUSH3D_SIZE })),
-        new Geo_Orb(BRUSH3D_SIZE / BRUSH3D_SCALE)
+        new Geo_Circle3D(PENSCAPE_SIZE / PENSCAPE_SCALE, PENSCAPE_SIZE),
+        new Geo_CircleCone(PENSCAPE_SIZE / PENSCAPE_SCALE, Vec3f({ 0.0F, 0.0F, PENSCAPE_SIZE })),
+        new Geo_Orb(PENSCAPE_SIZE / PENSCAPE_SCALE)
     };
 
     Geo_Actor brushes3D[3][3];
