@@ -200,9 +200,9 @@ void Topl_Program::_onAnyKey(keyboard_t k){
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
     else if (k == '`' && isEnable_console) {
-        std::thread backgroundThread(background_input_call, commandArgs);
-        if (backgroundThread.joinable()) backgroundThread.detach();
-        // std::cout << "Begin input loop in background thread" << std::endl;
+        // std::thread backgroundThread(background_input_call, commandArgs);
+        // if (backgroundThread.joinable()) backgroundThread.detach();
+        std::cout << "Begin console thread here!" << std::endl;
     }
 #ifdef TOPL_ENABLE_TEXTURES
     else if(k == TOPL_SCREENCAP_KEY && isEnable_screencap) {

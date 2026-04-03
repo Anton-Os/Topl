@@ -49,13 +49,13 @@ void Cubegate_Demo::init() {
     faceActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });
     faceActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -CUBEGATE_SIZE / 2.0F });
     faceActors[CUBEGATE_Top].setPos({ 0.0F, CUBEGATE_SIZE / 2.0F, 0.0F });
-    faceActors[CUBEGATE_Top].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+    faceActors[CUBEGATE_Top].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
     faceActors[CUBEGATE_Bottom].setPos({ 0.0F, -CUBEGATE_SIZE / 2.0F, 0.0F });
-    faceActors[CUBEGATE_Bottom].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+    faceActors[CUBEGATE_Bottom].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
     faceActors[CUBEGATE_Left ].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
-    faceActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+    faceActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
     faceActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
-    faceActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+    faceActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
     cubeGate.configure(&scene);
 
     _renderer->buildScene(&scene);

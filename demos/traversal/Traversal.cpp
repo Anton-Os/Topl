@@ -22,7 +22,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
         }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint) {
-        for (unsigned t = 0; t < TRAVERSAL_CORRIDORS; t++) sliceTextures[t] = Sampler_Map(doorwayCoords);
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(doorwayCoords); // TODO: Modify this with different doorways
         _renderer->texturizeScene(&scene);
     }
 #endif
@@ -59,7 +59,7 @@ void Traversal_Demo::init(){
 
             float scale = TRAVERSAL_RADIUS - ((1.0F / TRAVERSAL_RECURSION) * r * TRAVERSAL_RADIUS);
             corridorActors[c][r].setSize({ scale, scale, scale });
-            // corridorActors[c][r].setRot({ ((float)MATH_HALF_PI / TRAVERSAL_RECURSION) * (float)r, 0.0F, 0.0F });
+            // corridorActors[c][r].setRot({ ((float)(MATH_PI / 2.0F) / TRAVERSAL_RECURSION) * (float)r, 0.0F, 0.0F });
         }
         for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) {
             sliceActorPtrs[c][s]->setPos({ 0.0F, 0.0F, -(TRAVERSAL_DEPTH / 2.0F) + (s * ((TRAVERSAL_DEPTH * 2) / ((float)TRAVERSAL_SLICES))) });
@@ -67,9 +67,14 @@ void Traversal_Demo::init(){
             std::string sliceName = std::string("slice") + std::to_string(c + 1) + "_" + std::to_string(s + 1);
             scene.addGeometry(sliceName, sliceActorPtrs[c][s]);
 #ifdef TOPL_ENABLE_TEXTURES
-            scene.addTexture(sliceName, &sliceTextures[c]);
+            sliceTextures.push_back(new Sampler_Map(doorwayCoords));
+            scene.addTexture(sliceName, sliceTextures.back());
 #endif
         }
+#ifdef TOPL_ENABLE_TEXTURES
+        // TODO: Add scene textures here
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) scene.addTexture(std::to_string(t + 1), &sceneTextures[t]);
+#endif
     }
     _renderer->buildScene(&scene);
 }
@@ -100,7 +105,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
+    Traversal = new Traversal_Demo(argv[0]);
     Traversal->run();
 
     delete(Traversal);

@@ -29,7 +29,7 @@
 #if ON
     #define TOPL_ENABLE_PHYSICS
 #endif
-#if FALSE
+#if TRUE
     #define TOPL_ENABLE_CUDA
 #endif
 

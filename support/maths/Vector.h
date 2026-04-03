@@ -1,10 +1,11 @@
 #ifndef MATHS_VECTOR_H
 
 #include <cmath>
-#include <string>
+// #include <string>
 
-#define MATH_PI 3.141592653
-#define MATH_HALF_PI 1.57079633
+#define MATH_PI 3.141592653 // Radius to Circumference
+
+#define MATH_PHI 1.6180339887 // Golden Ratio
 
 template <unsigned short n>
 struct VectorXF {

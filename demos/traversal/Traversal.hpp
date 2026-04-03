@@ -16,11 +16,10 @@
 #ifdef TOPL_ENABLE_TEXTURES
 unsigned doorwayCoords(double x, double y) {
     static unsigned color = (RAND_COLOR() & 0x00FFFFFF) | TRAVERSAL_ALPHA;
+    if(x == 0 && y == 0) color = (RAND_COLOR() & 0x00FFFFFF) | TRAVERSAL_ALPHA; // new image has started
 
     if (x > 0.25 && x < 0.75 && y > 0.25 && y < 0.75) return NO_COLOR;
     else return blend_colors(color, NO_COLOR, sqrt(pow(0.5 - x, 2.0) + pow(0.5 - y, 2.0)));
-
-    if(x == 0.0 && y == 0.0) color = (RAND_COLOR() & 0x00FFFFFF) | TRAVERSAL_ALPHA; // new image has started
 }
 #endif
 
@@ -29,7 +28,10 @@ struct Traversal_Demo : public Topl_Program {
     Traversal_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Traversal", backend){}
 
     ~Traversal_Demo() {
-        for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++) for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) delete sliceActorPtrs[c][s];
+        for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) {
+            delete sliceTextures[s];
+            for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++) delete sliceActorPtrs[c][s];
+        }
     }
 
     void init() override;
@@ -67,11 +69,9 @@ private:
     
     Geo_Actor* sliceActorPtrs[TRAVERSAL_CORRIDORS][TRAVERSAL_SLICES];
 #ifdef TOPL_ENABLE_TEXTURES
-    std::vector<Sampler_2D> sliceColors;
-    Sampler_2D sliceTextures[TRAVERSAL_CORRIDORS] = {
-        Sampler_Map(doorwayCoords), // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
-        Sampler_Map(doorwayCoords), // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */),
-        Sampler_Map(doorwayCoords) // Sampler_Color(0x11111111 /* (RAND_COLOR() & 0xFFFFFF) | TRAVERSAL_ALPHA */)
+    std::vector<Sampler_2D*> sliceTextures;
+    Sampler_2D sceneTextures[MAX_TEX_BINDINGS] = {
+        Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords)
     };
 #endif
     Topl_Scene scene = PROGRAM_SCENE;

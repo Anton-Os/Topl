@@ -23,11 +23,11 @@ struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
         _geoActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });
         _geoActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -CUBEGATE_SIZE / 2.0F });
         _geoActors[CUBEGATE_Top].setPos({ 0.0F, CUBEGATE_SIZE / 2.0F, 0.0F });
-        _geoActors[CUBEGATE_Top].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+        _geoActors[CUBEGATE_Top].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
         _geoActors[CUBEGATE_Bottom].setPos({ 0.0F, -CUBEGATE_SIZE / 2.0F, 0.0F });
-        _geoActors[CUBEGATE_Bottom].setRot({ 0.0F, MATH_HALF_PI, 0.0F });
+        _geoActors[CUBEGATE_Bottom].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
         _geoActors[CUBEGATE_Left].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
-        _geoActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+        _geoActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
         _geoActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
         _geoActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
     }
