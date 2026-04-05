@@ -1,19 +1,22 @@
 #include "Geo_Freeform.hpp"
 
-// Functions
+// Culling Functions
 
+bool freeformCull_none(Vec3f input, double level) { return true; } // no culling
 bool freeformCull_ball(Vec3f input, double level) { return input.len() < level + 0.05 && input.len() > level - 0.05; }
 
+// Spawning Functions
+
 TrigForm freeformSpawn_trigs(Vec3f input){
-    float f = FREEFORM_LEVEL * 0.0025;
-    TrigForm trig; // = TrigForm({ 3, (Vec3f*)malloc(sizeof(Vec3f) * 3) });
-
-    trig.pos1 = input;
-    trig.pos2 = input + Vec3f({ sin(input.data[0] * 5) * f, cos(input.data[0] * 5) * f, cos(input.data[2] * 5) * f });
-    trig.pos3 = input + Vec3f({ cos(input.data[1] * 5) * f, sin(input.data[1] * 5) * f, -sin(input.data[2] * 5) * f });
-
-    return trig;
+    float f = FREEFORM_LEVEL * 0.25F;
+    return TrigForm({ 
+        input, 
+        input + Vec3f({ sin(input.data[0] * 5) * f, cos(input.data[0] * 3) * f, cos(input.data[2] * 10) * f}),
+        input - Vec3f({ cos(input.data[1] * 3) * f, sin(input.data[1] * 5) * f, -sin(input.data[2] * 10) * f})
+    });
 }
+
+// Generation Functions
 
 static Geo_Vertex* genFreeform_lattice(ShapeFreeform shape){
     unsigned count = shape.xDivs * shape.yDivs * shape.zDivs;
@@ -31,25 +34,25 @@ static Geo_Vertex* genFreeform_lattice(ShapeFreeform shape){
     return latticeVertices;
 }
 
-Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fCullCallback callback){
+Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fSpawnCallback spawnCallback, fCullCallback cullCallback){
     unsigned count = shape.getCount();
     Geo_Vertex* latticeVertices = genFreeform_lattice(shape);
 
-    unsigned invalidCount = 0;
+    // Culling
+    unsigned invalidVertCount = 0;
     for(unsigned v = 0; v < count; v++)
-        if(!callback((*(latticeVertices + v)).position, FREEFORM_LEVEL)){
+        if(!cullCallback((*(latticeVertices + v)).position, FREEFORM_LEVEL)){
             *(latticeVertices + v) = Geo_Vertex(VEC_3F_INV); // invalid vertex
-            invalidCount++;
+            invalidVertCount++;
         }
 
-    Geo_Vertex* vertices = (Geo_Vertex*)malloc((count - invalidCount) * sizeof(Geo_Vertex) * 3);
+    // Spawning
+    Geo_Vertex* vertices = (Geo_Vertex*)malloc((count - invalidVertCount) * sizeof(Geo_Vertex) * 3);
     unsigned o = 0;
     for(unsigned v = 0; v < count; v++)
         if((*(latticeVertices + v)).position != VEC_3F_INV){
-            TrigForm trig = freeformSpawn_trigs((*(latticeVertices + v)).position);
-            *(vertices + o) = Geo_Vertex(trig.pos1);
-            *(vertices + o + 1) = Geo_Vertex(trig.pos2);
-            *(vertices + o + 2) = Geo_Vertex(trig.pos3);
+            TrigForm trig = spawnCallback((*(latticeVertices + v)).position);
+            for (unsigned t = 0; t < 3; t++) *(vertices + o + t) = trig.positions[t];
             o += 3;
         }
 
@@ -61,7 +64,7 @@ Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fCullCallback callback){
 unsigned* genFreeform_indices(ShapeFreeform shape, unsigned count){
     unsigned* indices = (unsigned*)malloc(count * sizeof(unsigned));
 
-    for(unsigned c = 0; c < count; c++) *(indices + c) = rand() % shape.getCount();
+    for(unsigned c = 0; c < count; c++) *(indices + c) = rand() % shape.getCount(); // TODO: Replace this
 
     return indices;
 }
@@ -84,14 +87,14 @@ static unsigned getIdxCount(ShapeFreeform shape, fCullCallback callback){
 // Constructors
 
 Geo_Freeform::Geo_Freeform(ShapeFreeform shape) : Geo_Mesh(
-    getIdxCount(shape, freeformCull_ball), genFreeform_vertices(shape, freeformCull_ball)
+    getIdxCount(shape, freeformCull_none), genFreeform_vertices(shape, freeformSpawn_trigs, freeformCull_ball)
     // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
 ) {
     _shape = shape;
 }
 
-Geo_Freeform::Geo_Freeform(ShapeFreeform shape, fCullCallback callback) : Geo_Mesh(
-    getIdxCount(shape, callback), genFreeform_vertices(shape, callback)
+Geo_Freeform::Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback, fCullCallback cullCallback) : Geo_Mesh(
+    getIdxCount(shape, cullCallback), genFreeform_vertices(shape, spawnCallback, cullCallback)
     // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
 ){
     _shape = shape;

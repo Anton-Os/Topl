@@ -48,6 +48,7 @@ void main() {
 	tangent_out = vec3(cursorPos.x - tangent_in.x, cursorPos.y - tangent_in.y, cursorDist - tangent_in.z); // tangent_in;
 	id_out = gl_VertexID;
 #ifdef INCLUDE_EXTBLOCK
-	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
+	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) 
+		gl_Position = pos * instanceData[gl_InstanceID] * getCamMatrix(cam_pos, look_pos) * projMatrix;
 #endif
 }

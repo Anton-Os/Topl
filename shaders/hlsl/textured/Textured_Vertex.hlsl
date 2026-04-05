@@ -52,9 +52,9 @@ VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 			output.texcoord.y += (texOffset.r - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 			output.texcoord.z += (texOffset.b - 0.5F) * (floor(abs(mode) / 100.0) + 1);
 		} else {
-			output.pos.x *= texOffset.g * (floor(abs(mode) / 100.0) + 1);
-			output.pos.y *= texOffset.r * (floor(abs(mode) / 100.0) + 1);
-			output.pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
+			pos.x *= texOffset.g * (floor(abs(mode) / 100.0) + 1);
+			pos.y *= texOffset.r * (floor(abs(mode) / 100.0) + 1);
+			pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
 		}
 	}
 

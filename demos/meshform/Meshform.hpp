@@ -77,9 +77,9 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) },
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
-    Geo_Freeform* fractals[4] = {
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 40, 40, 40 })),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 60, 60, 60 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 80, 80, 80 }))
+    Geo_Freeform* freeforms[4] = {
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 10, 10, 10 })),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 15, 10, 5 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 
@@ -88,7 +88,7 @@ struct Meshform_Demo : public Topl_Program {
         { orbs[0][1], orbs[1][1], orbs[2][1], orbs[3][1] },
         { orbs[0][2], orbs[1][2], orbs[2][2], orbs[3][2] }
     };
-    Geo_Actor fractalActors[4] = { Geo_Actor(fractals[0]), Geo_Actor(fractals[1]), Geo_Actor(fractals[2]), Geo_Actor(fractals[3]) };
+    Geo_Actor freeformActors[4] = { Geo_Actor(freeforms[0]), Geo_Actor(freeforms[1]), Geo_Actor(freeforms[2]), Geo_Actor(freeforms[3]) };
     Geo_Actor torusActor = Geo_Actor(torus);
 #ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D volumeImg = Sampler_3D(256);

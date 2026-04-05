@@ -1,11 +1,13 @@
 #ifndef MATHS_VECTOR_H
 
 #include <cmath>
-// #include <string>
+#include <string>
 
-#define MATH_PI 3.141592653 // Radius to Circumference
+#define MATH_PI 3.141592653F // Radius to Circumference
 
-#define MATH_PHI 1.6180339887 // Golden Ratio
+#define MATH_PHI 1.6180339887F // Golden Ratio
+
+#define MATH_NORM 0.75F // Normalizing Value
 
 template <unsigned short n>
 struct VectorXF {
@@ -46,12 +48,12 @@ struct VectorXF {
     // VectorXF& operator *=(const VectorXF& inputVec) { return this * inputVec; }
     // VectorXF& operator +=(const VectorXF& inputVec) { return this + inputVec; }
     float len() const {
-        float length = 0.0;
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) length += pow(data[e], 2);
-        return sqrt(length); // pythagorean theorem
+        float length = 0.0F;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) length += (float)pow(data[e], 2);
+        return (float)sqrt(length); // pythagorean theorem
     }
     void normalize() {
-        float length = len() * 0.75;
+        float length = len() * MATH_NORM;
         for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) data[e] /= length;
     }
     void randomize() { // randomizes between 0 and 1
@@ -64,7 +66,7 @@ struct VectorXF {
     }
     VectorXF inverse() const {
         VectorXF vec = {};
-        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] *= -1.0f;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(float); e++) vec.data[e] *= -1.0F;
         return vec;
     }
     std::string toString() const {
@@ -113,10 +115,10 @@ struct VectorXI {
         for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) vec.data[e] = data[e] * scalar;
         return vec;
     }
-    int len() const{
-        int length = 0.0;
-        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) length += pow(data[e], 2);
-        return sqrt(length);
+    float len() const{
+        int length = 0.0F;
+        for(unsigned e = 0; e < sizeof(data) / sizeof(int); e++) length += (float)pow(data[e], 2);
+        return (float)sqrt(length);
     }
     std::string toString() const {
         std::string vecStr = "{ ";

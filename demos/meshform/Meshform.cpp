@@ -11,9 +11,9 @@ void Meshform_Demo::onAnyKey(keyboard_t key){
         case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
         case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
         case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
-        /* case 'j': genShapes(MESHFORM_TESS + 1, std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
-        case 'k': genShapes(MESHFORM_TESS + 1, std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
-        case 'l': genShapes(MESHFORM_TESS + 1, std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break; */
+        case 'j': genShapes(std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
+        case 'k': genShapes(std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
+        case 'l': genShapes(std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break;
 #ifdef TOPL_ENABLE_TEXTURES
         case 'b': genTex3D(MESHFORM_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
         case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
@@ -48,8 +48,8 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 void Meshform_Demo::genShapes(std::pair<vTformCallback, Vec3f> tform1, std::pair<vTformCallback, Vec3f> tform2){
     if(tform1.first != nullptr && tform2.first != nullptr)
         for (unsigned o = 0; o < 4; o++) {
-            fractals[o]->modify(tform1.first, tform1.second);
-            fractals[o]->modify(tform2.first, tform2.second);
+            freeforms[o]->modify(tform1.first, tform1.second);
+            freeforms[o]->modify(tform2.first, tform2.second);
             for (unsigned m = 1; m < 3; m++) // no tranform for first shape, transforms 1 and 2 for other shapes
                 orbs[o][m]->modify((o % 2 == 1) ? tform1.first : tform2.first, (o % 2 == 1) ? tform1.second : tform2.second);
         }
@@ -102,14 +102,14 @@ void Meshform_Demo::init(){
     }
 
     for (unsigned f = 0; f < 4; f++) {
-        fractals[f]->drawMode = DRAW_Strip;
-        scene.addGeometry("fractal" + std::to_string(f + 1), &fractalActors[f]);
+        freeforms[f]->drawMode = DRAW_Strip;
+        scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
     }
 
-    fractalActors[0].setPos({ 1.5, 0.0F, 0.0F });
-    fractalActors[1].setPos({ -1.5, 0.0F, 0.0F });
-    fractalActors[2].setPos({ 0.0F, 1.5, 0.0F });
-    fractalActors[3].setPos({ 0.0F, -1.5, 0.0F });
+    freeformActors[0].setPos({ 1.5, 0.0F, 0.0F });
+    freeformActors[1].setPos({ -1.5, 0.0F, 0.0F });
+    freeformActors[2].setPos({ 0.0F, 1.5, 0.0F });
+    freeformActors[3].setPos({ 0.0F, -1.5, 0.0F });
 
     Topl_Factory::switchPipeline(_renderer, _texPipeline);
     Topl_Program::shaderMode = 8;
@@ -126,7 +126,7 @@ void Meshform_Demo::loop(double frameTime){
             Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
             rotationVec = rotationVec * 0.001;
             for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
-            fractalActors[a].updateRot(rotationVec);
+            freeformActors[a].updateRot(rotationVec);
             if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
         }
 
@@ -142,7 +142,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Meshform = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Meshform = new Meshform_Demo(argv[0]);
     Meshform->run();
 
     delete(Meshform);
