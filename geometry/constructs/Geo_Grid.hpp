@@ -9,15 +9,12 @@ typedef std::pair<unsigned short, float> gridSize_pair;
 struct Geo_Grid_Params {
 	Geo_Grid_Params() {}
 	Geo_Grid_Params(gridSize_pair size){ // Uniform Grid
-		// assert(size.first() > 0);
     	x = size; y = size; z = size;
 	}
 	Geo_Grid_Params(gridSize_pair xSize, gridSize_pair ySize){ // Square Grid
-		// assert(size.first() > 0);
 		x = xSize; y = ySize;
 	}
 	Geo_Grid_Params(gridSize_pair xSize, gridSize_pair ySize, gridSize_pair zSize){ // Cube Grid
-		// assert(xSize.first() > 0 && ySize.first() > 0 && zSize.first() > 0);
     	x = xSize; y = ySize; z = zSize;
 	}
 

@@ -3,8 +3,8 @@
 Input_KeyControl Platform::keyControl = Input_KeyControl(); // explicit definition of KeyControl class
 Input_MouseControl Platform::mouseControl = Input_MouseControl(); // explicit definition of MouseControl class
 
-float Platform::xCursorPos = INVALID_CURSOR_POS;
-float Platform::yCursorPos = INVALID_CURSOR_POS;
+float Platform::xCursorPos = BAD_CURSOR_POS;
+float Platform::yCursorPos = BAD_CURSOR_POS;
 
 char Platform::inputStr[1024] = "";
 bool Platform::isUserInput = false;
@@ -16,7 +16,7 @@ fileCallback Platform::onFileChoose = nullptr;
 // bool checkFile(std::string fileName){ return (access(fileName.c_str(), F_OK) == 0)? true : false; }
 
 static void addPress(enum MOUSE_Event button){
-	(Platform::getCursorX() == INVALID_CURSOR_POS || Platform::getCursorY() == INVALID_CURSOR_POS)
+	(Platform::getCursorX() == BAD_CURSOR_POS || Platform::getCursorY() == BAD_CURSOR_POS)
 		? Platform::mouseControl.addPress(button)
 		: Platform::mouseControl.addPress(button, Platform::getCursorX(), Platform::getCursorY());
 }
@@ -109,7 +109,7 @@ LRESULT CALLBACK eventProc(HWND window, UINT message, WPARAM wParam, LPARAM lPar
 	case(WM_KEYDOWN): {  }
 	case(WM_KEYUP): {}
 	case(WM_MOUSEMOVE): {
-		if (Platform::getCursorX() != INVALID_CURSOR_POS && Platform::getCursorY() != INVALID_CURSOR_POS)
+		if (Platform::getCursorX() != BAD_CURSOR_POS && Platform::getCursorY() != BAD_CURSOR_POS)
 			Platform::mouseControl.addHover(Platform::getCursorX(), Platform::getCursorY());
 	}
 	case (WM_CHAR): if (wParam != 0) {

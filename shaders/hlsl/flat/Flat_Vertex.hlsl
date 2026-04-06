@@ -40,7 +40,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	if(mode < 10 || vertexID % mode == 0) output.vertex_color = float4(input.vert_color, 1.0);
 	else output.vertex_color = float4(0.0F, 0.0f, 0.0F, 0.5F);
 #ifdef INCLUDE_EXTBLOCK
-	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
+	// if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
 #endif
 	return output;
 }

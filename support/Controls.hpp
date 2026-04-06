@@ -52,7 +52,7 @@ private:
 
 // Mouse
 
-#define INVALID_CURSOR_POS -10.0f // indicates that cursor is off the screen
+#define BAD_CURSOR_POS -10.0f // indicates that cursor is off the screen
 #define MAX_CURSOR_BOUND 1.0f
 #define MIN_CURSOR_BOUND -1.0f
 

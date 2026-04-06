@@ -34,7 +34,7 @@ VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.texcoord = input.texcoord;
 #ifdef INCLUDE_EXTBLOCK
-	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
+	// if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
 #endif
 	return output;
 }

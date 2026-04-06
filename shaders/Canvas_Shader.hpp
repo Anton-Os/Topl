@@ -36,11 +36,11 @@ protected:
 				Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - t - 1];
 				steps[t] = Vec2f({ tracerStep.step.first, tracerStep.step.second });
 			}
-			else steps[t] = VEC_2F_ZERO; // Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
+			else steps[t] = VEC_2F_ZERO; // Vec2f({ BAD_CURSOR_POS, BAD_CURSOR_POS });
 		alignDataToBytes((uint8_t*)&steps[0], sizeof(Vec2f) * 8, NO_PADDING, bytes);
 
 		static Vec2f paths[CANVAS_PATHS];
-		for(unsigned short t = 0; t < CANVAS_PATHS; t++) paths[t] = VEC_2F_ZERO; // Vec2f({ INVALID_CURSOR_POS, INVALID_CURSOR_POS });
+		for(unsigned short t = 0; t < CANVAS_PATHS; t++) paths[t] = VEC_2F_ZERO; // Vec2f({ BAD_CURSOR_POS, BAD_CURSOR_POS });
 		if(Platform::mouseControl.getTracerPaths()->size() > 0){
 			Input_TracerPath tracerPath = Platform::mouseControl.getTracerPaths()->back();
 			for(unsigned short t = 0; t < tracerPath.stepsCount && t < CANVAS_PATHS; t++)

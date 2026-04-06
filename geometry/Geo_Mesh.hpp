@@ -52,6 +52,11 @@ DllExport Geo_Vertex* tesselate(Geo_Vertex* vertices, unsigned vertexCount, unsi
 
 // Mesh Object
 
+struct Geo_Meshlet { // Meshlet only contains positions and count
+	unsigned count;
+	Vec3f* positions;
+};
+
 #ifdef __cplusplus
 class Geo_Mesh {
 public:

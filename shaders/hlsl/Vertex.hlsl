@@ -53,6 +53,7 @@ float4x4 getLookAtMatrix(float3 cPos, float3 aRot){
 		right.x, right.y, right.z, -cPos.x,
 		up.x, up.y, up.z, -cPos.y,
 		-forward.x, -forward.y, -forward.z, -cPos.z,
+		// -dot(right, cPos), -dot(up, cPos), dot(forward, cPos), 1.0
 		0, 0, 0, 1
 	};
 
@@ -65,7 +66,6 @@ float4x4 getLookAtMatrix(float3 cPos, float3 aRot){
 
 	if(aRot.x != 0.0 || aRot.y != 0.0 || aRot.z != 0.0) return mul(lookAtMatrix, camMatrix);
 	else return camMatrix;
-	// return getCamMatrix(float4(cPos, 1), lPos); // lookMatrix * placeMatrix;
 }
 
 float getLineDistance(float2 coord, float2 p1, float2 p2){
@@ -84,6 +84,9 @@ float4 getVertex(float3 input, float3 translation, float3 degrees, float4 size){
 	float3 rotation = mul(getRotMatrix(degrees), input);
 	float4 pos = float4(rotation, 1.0f) * size;
 	pos += float4(translation, 0.0f);
-
+/* #ifdef INCLUDE_EXTBLOCK
+	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) // perform instance transform
+		pos = mul(instanceData[instanceID], pos);
+#endif */
 	return pos;
 }

@@ -22,14 +22,14 @@ struct ShapeFreeform {
 struct TrigForm { Vec3f positions[3]; };
 
 typedef bool (*fCullCallback)(Vec3f, double); // for culling freeform lattice
-typedef TrigForm (*fSpawnCallback)(Vec3f); // for spawning vertices
+typedef TrigForm (*fSpawnCallback)(Vec3f, unsigned); // for spawning vertices
 
 // Cull Functions
 bool freeformCull_none(Vec3f input, double level);
 bool freeformCull_ball(Vec3f input, double level);
 
 // Spawn Functions
-TrigForm freeformSpawn_trigs(Vec3f input);
+TrigForm freeformSpawn_test(Vec3f input, unsigned count);
 
 // Generative Functionis
 DllExport Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fCullCallback callback);

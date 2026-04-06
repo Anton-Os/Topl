@@ -55,8 +55,8 @@ struct Platform {
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){
-        xCursorPos = INVALID_CURSOR_POS;
-		yCursorPos = INVALID_CURSOR_POS;
+        xCursorPos = BAD_CURSOR_POS;
+		yCursorPos = BAD_CURSOR_POS;
     }
     
     NATIVE_PLATFORM_CONTEXT _context;

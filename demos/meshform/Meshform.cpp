@@ -68,7 +68,7 @@ void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
             case 0: case 1: case 2: 
                 genShapes(std::make_pair(rigidTForm, VEC_3F_ONES + amount), std::make_pair(rigidTForm, VEC_3F_ONES - amount));
             break; // Tesselation & Built-In Functions
-            case 3: case 4: case 5: break; 
+            case 3: case 4: case 5:
                 genShapes(std::make_pair(curveTForm, amount), std::make_pair(curveTForm, amount * -1.0F));
             break;    // Basic Callback Functions
             case 6: case 7: case 8: 
@@ -102,8 +102,11 @@ void Meshform_Demo::init(){
     }
 
     for (unsigned f = 0; f < 4; f++) {
-        freeforms[f]->drawMode = DRAW_Strip;
+        // freeforms[f]->drawMode = DRAW_Strip;
         scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
+#ifdef TOPL_ENABLE_TEXTURES
+        scene.addVolumeTex("freeform" + std::to_string(f + 1), &volumeImg);
+#endif
     }
 
     freeformActors[0].setPos({ 1.5, 0.0F, 0.0F });
