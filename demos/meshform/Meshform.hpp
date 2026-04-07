@@ -17,7 +17,7 @@
 #define MESHFORM_CHECKER 2
 #define MESHFORM_NOISE 3
 
-#include "Transforms.h"
+#include "Meshform_Transforms.h"
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath) : Topl_Program(execPath, "Meshform"){}
@@ -39,8 +39,8 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
     Geo_Freeform* freeforms[4] = {
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 10, 10, 10 })),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE / 2.0F, 15, 10, 5 }))
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 10, 5 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 

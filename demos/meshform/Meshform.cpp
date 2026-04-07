@@ -102,7 +102,7 @@ void Meshform_Demo::init(){
     }
 
     for (unsigned f = 0; f < 4; f++) {
-        // freeforms[f]->drawMode = DRAW_Strip;
+        freeforms[f]->drawMode = DRAW_Lines;
         scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
 #ifdef TOPL_ENABLE_TEXTURES
         scene.addVolumeTex("freeform" + std::to_string(f + 1), &volumeImg);

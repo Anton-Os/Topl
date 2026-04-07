@@ -22,7 +22,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
         }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint) {
-        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(doorwayCoords); // TODO: Modify this with different doorways
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(radialCoords); // TODO: Modify this with different doorways
         _renderer->texturizeScene(&scene);
     }
 #endif

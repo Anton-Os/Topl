@@ -8,27 +8,7 @@ bool freeformCull_ball(Vec3f input, double level) { return input.len() < level +
 // Spawning Functions
 
 TrigForm freeformSpawn_test(Vec3f input, unsigned count){
-    static unsigned v = 0;
-    float f = FREEFORM_LEVEL * 0.25F;
-    v == (count == 0)? 0 : v + 1;
-
-    /* return TrigForm({
-        input, 
-        input + Vec3f({ sin(input.data[0] * 5) * f, cos(input.data[0] * 3) * f, cos(input.data[2] * 10) * f}),
-        input - Vec3f({ cos(input.data[0] * 3) * f, sin(input.data[1] * 5) * f, -sin(input.data[2] * 10) * f})
-    }); */
-
-    return TrigForm({
-        input,
-        input + Vec3f({ sin(input.len() * 5) * f, cos(input.len() * 3) * f, cos(input.len() * 10) * f}),
-        input - Vec3f({ cos(input.len() * 3) * f, sin(input.len() * 5) * f, -sin(input.len() * 10) * f})
-    });
-
-    /* return TrigForm({
-        input,
-        input + Vec3f({ input.data[0] + (v % 2 == 0)? 0.0F : f, input.data[2] + (v % 3 == 0)? f : 0.0F, input.data[1] + (v % 4 == 0)? -f : f }),
-        input - Vec3f({ input.data[1] + (v % 5 == 0)? f : 0.0F, input.data[0] + (v % 6 == 0)? 0.0F : f, input.data[1] + (v % 7 == 0)? -f : f })
-    }); */
+    return TrigForm({ input, input * FREEFORM_LEVEL, input * FREEFORM_LEVEL * FREEFORM_LEVEL });
 }
 
 // Generation Functions
@@ -38,12 +18,13 @@ static Geo_Vertex* genFreeform_lattice(ShapeFreeform shape, fCullCallback cullCa
     Geo_Vertex* latticeVertices = (Geo_Vertex*)malloc(count * sizeof(Geo_Vertex));
 
     unsigned v = 0, b = 0; // tracks total vertices and invalid
-    for(float x = -shape.radius; x < shape.radius; x += ((shape.radius * 2.0f) / shape.xDivs))
-        for(float y = -shape.radius; y < shape.radius; y += ((shape.radius * 2.0f) / shape.yDivs))
-            for(float z = -shape.radius; z < shape.radius; z += ((shape.radius * 2.0f) / shape.zDivs)){
+    for(float x = -shape.radius * 0.5F; x < shape.radius * 0.5F; x += shape.radius / shape.xDivs)
+        for(float y = -shape.radius * 0.5F; y < shape.radius * 0.5F; y += shape.radius / shape.yDivs)
+            for(float z = -shape.radius * 0.5F; z < shape.radius * 0.5F; z += shape.radius / shape.zDivs){
                 if (v >= count) break; // assert(v < count); // TODO: Make sure the allocations are correct
                 
-                if (cullCallback((*(latticeVertices + v)).position, FREEFORM_LEVEL)) *(latticeVertices + v) = Geo_Vertex(Vec3f({ x, y, z })); // regular lattice
+                if (cullCallback((*(latticeVertices + v)).position, FREEFORM_LEVEL)) 
+                    *(latticeVertices + v) = Geo_Vertex(Vec3f({ x, y, z })); // regular lattice
                 else {
                     *(latticeVertices + v) = VEC_3F_BAD;
                     b++; // bad vertex increment

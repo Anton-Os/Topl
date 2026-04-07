@@ -11,19 +11,19 @@ void Penscape_Demo::createBrushes() {
 
     for (unsigned b = 0; b < PENSCAPE_SEGMENTS; b++)
         for (unsigned a = 0; a < 3 * 2; a++) {
-            trigMeshBrushes[a % 3]->shift(getRandTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
+            trigMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             trigMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, PENSCAPE_ROT, PENSCAPE_ROT });
             trigMeshes[a % 3]->extend(*trigMeshBrushes[a % 3]);
             trigMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
-            quadMeshBrushes[a % 3]->shift(getRandTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
+            quadMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             quadMeshBrushes[a % 3]->rotate({ -PENSCAPE_ROT, PENSCAPE_ROT, PENSCAPE_ROT });
             quadMeshes[a % 3]->extend(*quadMeshBrushes[a % 3]);
             quadMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
-            /* hexMeshBrushes[a % 3]->shift(getRandTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
+            /* hexMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             hexMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, -PENSCAPE_ROT, PENSCAPE_ROT });
             hexMeshes[a % 3]->extend(*hexMeshBrushes[a % 3]); 
             hexMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });*/
-            circleMeshBrushes[a % 3]->shift(getRandTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
+            circleMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             circleMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, PENSCAPE_ROT, -PENSCAPE_ROT });
             circleMeshes[a % 3]->extend(*circleMeshBrushes[a % 3]);
             circleMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });

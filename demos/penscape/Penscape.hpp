@@ -14,21 +14,7 @@
 // #define PENSCAPE_MESH_INSTANCES Mat4x4::translation(Vec3f({ -0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F}))
 #define PENSCAPE_MESH_INSTANCES Mat4x4::scale(Vec3f({ 1.25F, 1.0F, 1.0F})), Mat4x4::translation(Vec3f({ 1.0F, 1.25F, 1.0F })), Mat4x4::translation(Vec3f({ 1.0F, 1.0F, 1.25F }))
 
-Vec3f getRandTransform(float amount){
-    static unsigned invocation = 0;
-
-    switch (invocation % 6) {
-        case 0: return Vec3f({ amount, 0.0F, 0.0F });
-        case 1: return Vec3f({ -amount, 0.0F, 0.0F });
-        case 2: return Vec3f({ 0.0F, amount, 0.0F });
-        case 3: return Vec3f({ 0.0F, -amount, 0.0F });
-        case 4: return Vec3f({ 0.0F, 0.0F, amount });
-        case 5: return Vec3f({ 0.0F, 0.0F, -amount });
-        default: return Vec3f({ -amount, -amount, -amount });
-    }
-
-    invocation++;
-}
+#include "Penscape_Transforms.h"
 
 struct Penscape_Demo : public Topl_Program {
     Penscape_Demo(const char* execPath) : Topl_Program(execPath, "Penscape"){}
