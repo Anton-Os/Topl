@@ -23,7 +23,9 @@ struct Traversal_Demo : public Topl_Program {
 
     ~Traversal_Demo() {
         for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) {
+#ifdef TOPL_ENABLE_TEXTURES
             delete sliceTextures[s];
+#endif
             for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++) delete sliceActorPtrs[c][s];
         }
     }

@@ -1,11 +1,11 @@
 #ifndef TOPL_SUPPORT_H
 
-#define ASSETS_DIR "D:/Codex/PROJECT/Topl/master/assets/"
-#define FONTS_DIR "D:/Codex/PROJECT/Topl/master/assets/fonts/"
-#define IMAGES_DIR "D:/Codex/PROJECT/Topl/master/assets/images/"
-#define MODELS_DIR "D:/Codex/PROJECT/Topl/master/assets/models/"
-#define RESOURCE_DIR "D:/Codex/PROJECT/Topl/master/assets/res/"
-#define SHADERS_DIR "D:/Codex/PROJECT/Topl/master/shaders/"
+#define ASSETS_DIR "Z:/PROJECT/Topl/master/assets/"
+#define FONTS_DIR "Z:/PROJECT/Topl/master/assets/fonts/"
+#define IMAGES_DIR "Z:/PROJECT/Topl/master/assets/images/"
+#define MODELS_DIR "Z:/PROJECT/Topl/master/assets/models/"
+#define RESOURCE_DIR "Z:/PROJECT/Topl/master/assets/res/"
+#define SHADERS_DIR "Z:/PROJECT/Topl/master/shaders/"
 
 #define TRUE 1
 #define FALSE 0
@@ -15,7 +15,7 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 1 && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
+#if FALSE && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
     #define TOPL_ENABLE_TEXTURES
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron

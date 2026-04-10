@@ -84,9 +84,15 @@ float4 getVertex(float3 input, float3 translation, float3 degrees, float4 size){
 	float3 rotation = mul(getRotMatrix(degrees), input);
 	float4 pos = float4(rotation, 1.0f) * size;
 	pos += float4(translation, 0.0f);
-/* #ifdef INCLUDE_EXTBLOCK
-	if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) // perform instance transform
-		pos = mul(instanceData[instanceID], pos);
-#endif */
+
 	return pos;
+}
+
+float4 getVertexInstance(float3 input, float3 translation, float3 degrees, float4 size, uint instanceID){
+#ifdef INCLUDE_EXTBLOCK
+	if(instanceID > 0 && instanceID < MAX_INSTANCES) 
+		if(nonZeroMatrix(instanceData[instanceID]))
+			return mul(instanceData[instanceID], getVertex(input, translation, degrees, size));
+#endif
+	return getVertex(input, translation, degrees, size);
 }

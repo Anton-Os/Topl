@@ -76,6 +76,9 @@ public:
 	~Topl_Program(){ cleanup(); }
 
 	void run();
+#ifdef TOPL_ENABLE_AUDIO
+	void run(std::string audioPathStr); // Add audio effect for shaders
+#endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
 	unsigned colorPicker(Topl_Scene* scene); // get solid color to find item

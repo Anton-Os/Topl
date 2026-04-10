@@ -16,7 +16,7 @@ struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
         _geoActors[CUBEGATE_Left].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
         _geoActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
         _geoActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
-        _geoActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, MATH_HALF_PI });
+        _geoActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
     }
 
     void configure(Topl_Scene* scene) override {

@@ -5,7 +5,7 @@
 
 #define KALEIDOSCOPE_Z 0.5F
 #define KALEIDOSCOPE_SLICES 256 / 4
-#define KALEIDOSCOPE_TESS 2
+#define KALEIDOSCOPE_TESS 1
 #define KALEIDOSCOPE_NAME "kaleidoscope" + std::to_string(rand() % 9999)
 
 #include "Kaleidoscope_Construct.h"

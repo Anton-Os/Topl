@@ -92,7 +92,10 @@ void Meshform_Demo::init(){
         scene.addGeometry("hexOrb" + std::to_string(m), &orbActors[m][2]);
         orbActors[m][3].setPos({ -0.5F, 0.5F, 0.0F });
         scene.addGeometry("decOrb" + std::to_string(m), &orbActors[m][3]);
-        for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == MESHFORM_INDEX;
+        for (unsigned a = 0; a < 4; a++) {
+            orbActors[m][a].isShown = m == MESHFORM_INDEX;
+            // if (MESHFORM_TESS > 0) orbs[a][m]->tesselate(MESHFORM_TESS);
+        }
 #ifdef TOPL_ENABLE_TEXTURES
         scene.addVolumeTex("trigOrb" + std::to_string(m), &volumeImg);
         scene.addVolumeTex("quadOrb" + std::to_string(m), &volumeImg);
@@ -103,6 +106,7 @@ void Meshform_Demo::init(){
 
     for (unsigned f = 0; f < 4; f++) {
         freeforms[f]->drawMode = DRAW_Lines;
+        // if(MESHFORM_TESS > 0) freeforms[f]->tesselate(MESHFORM_TESS);
         scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
 #ifdef TOPL_ENABLE_TEXTURES
         scene.addVolumeTex("freeform" + std::to_string(f + 1), &volumeImg);

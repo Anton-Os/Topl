@@ -73,7 +73,7 @@ uint calcFarthestIndex(float3 target){ // TODO: Calculate with control matrix
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
-	float4 pos = getVertex(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w));
+	float4 pos = getVertexInstance(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w), instanceID);
 
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
@@ -94,8 +94,5 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.second_idx = calcSecondIndex(ctrlPos);
 	output.farthest_idx = calcFarthestIndex(ctrlPos);
 	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
-#ifdef INCLUDE_EXTBLOCK
-	// if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
-#endif
 	return output;
 }

@@ -32,14 +32,12 @@ struct VS_OUTPUT {
 VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID) {
 	VS_OUTPUT output;
 
-	float4 pos = getVertex(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w));
+	float4 pos = getVertexInstance(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w), instanceID);
 
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.normal = input.normal;
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.texcoord = (input.texcoord - texScroll) * float3(texScale.x, texScale.y, texScale.z);
-#ifdef INCLUDE_EXTBLOCK
-	// if(instanceID > 0 && instanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[instanceID])) output.pos = mul(instanceData[instanceID], output.pos); // instanced transform
-#endif
+
 	return output;
 }

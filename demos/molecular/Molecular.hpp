@@ -7,7 +7,7 @@
 #define MOLECULAR_LENGTH 20.0F
 #define MOLECULAR_SIZE 0.05F
 
-#incldue "Molecular_Construct.h"
+#include "Molecular_Construct.h"
 
 struct Molecular_Demo : public Topl_Program {
     Molecular_Demo(const char* execPath) : Topl_Program(execPath, "Molecular"){}

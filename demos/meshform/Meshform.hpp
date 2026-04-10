@@ -5,7 +5,7 @@
 #include "program/Topl_Program.hpp"
 
 #define MESHFORM_SIZE 0.5
-#define MESHFORM_TESS 0
+#define MESHFORM_TESS 1
 #define MESHFORM_INDEX 0
 #define MESHFORM_AMOUNT 0.25F
 #define MESHFORM_INC 1.15F // 1.01
@@ -40,7 +40,7 @@ struct Meshform_Demo : public Topl_Program {
     };
     Geo_Freeform* freeforms[4] = {
         new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 10, 5 }))
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
     };
     Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
 

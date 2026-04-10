@@ -39,12 +39,12 @@ void Cubegate_Demo::init() {
     Platform::keyControl.addHandler(std::bind(&Cubegate_Demo::onAnyKey, this, std::placeholders::_1));
 
     // scene.addGeometry("cube", &cubeActor);
-    scene.addGeometry("frontFace", &faceActors[CUBEGATE_Front]);
+    /* scene.addGeometry("frontFace", &faceActors[CUBEGATE_Front]);
     scene.addGeometry("backFace", &faceActors[CUBEGATE_Back]);
     scene.addGeometry("topFace", &faceActors[CUBEGATE_Top]);
     scene.addGeometry("bottomFace", &faceActors[CUBEGATE_Bottom]);
     scene.addGeometry("leftFace", &faceActors[CUBEGATE_Left]);
-    scene.addGeometry("rightFace", &faceActors[CUBEGATE_Right]);
+    scene.addGeometry("rightFace", &faceActors[CUBEGATE_Right]); */
 
     faceActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });
     faceActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -CUBEGATE_SIZE / 2.0F });
@@ -85,7 +85,7 @@ void Cubegate_Demo::init() {
 
 void Cubegate_Demo::loop(double frameTime) {
     // cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
-    cubeGate.rotate({ (float)frameTime * -0.00000025F, 0.0F, (float)frameTime * 0.00000025F });
+    cubeGate.rotate({ 0.0F, 0.0F, (float)frameTime * -0.00000005F });
 
     /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);

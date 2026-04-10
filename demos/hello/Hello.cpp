@@ -19,6 +19,7 @@ static Topl_Scene scene = Topl_Scene();
 
 // Hello Main Loop
 
+
 static void logFrameRate(double f1, double f2, double f3, double f4){
     static unsigned frameCount = 0;
     static double frameTotal = 0.0;
@@ -59,6 +60,8 @@ MAIN_ENTRY {
 	triangle.setInstances({ Mat4x4::scale({ 1.5F, 1.5F, 1.5F }), Mat4x4::scale({ 2.0F, 2.0F, 2.0F }), Mat4x4::scale({ 2.5F, 2.5F, 2.5F }), Mat4x4::scale({ 3.0F, 3.0F, 3.0F }) });
 	scene.addGeometry(&actor);
 	renderer->buildScene(&scene);
+
+	// TODO: Include background input thread
 
 	std::cout << "Rendering loop" << std::endl;
 	while(platform.handleEvents()){

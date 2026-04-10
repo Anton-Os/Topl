@@ -55,6 +55,12 @@ float3 rgbColors(float2 coord, float2 cursor, uint i){
 	}
 }
 
+float3 immerseColors(float2 coord, float2 cursor, float f, uint i){
+	float dist = distance(coord, cursor) * float(1.0 / i);
+
+	return float3(coord, 1.0 / i); // TODO: Modify this
+}
+
 #include "effect/Effect.hlsl"
 
 // Main

@@ -80,7 +80,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 // Main
 
 MAIN_ENTRY {
-    Kaleidoscope = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
+    Kaleidoscope = new Kaleidoscope_Demo(argv[0]);
     Kaleidoscope->run();
 
     delete(Kaleidoscope);
