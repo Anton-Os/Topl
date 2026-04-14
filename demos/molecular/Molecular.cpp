@@ -23,7 +23,11 @@ void Molecular_Demo::init(){
 
     for(unsigned m = 0; m < 3; m++)
         for(unsigned c = 0; c < MOLECULAR_CONSTRUCTS; c++) {
-            constructs[m][c].shift(Vec3f({ (float)rand() / (float)RAND_MAX - 0.5F, (float)rand() / (float)RAND_MAX - 0.5F - (m * 0.5F + 1.0F), 0.0F }));
+            constructs[m][c].shift(Vec3f({ 
+                ((float)rand() / (float)RAND_MAX - 0.5F) * MOLECULAR_SIZE,
+                ((float)rand() / (float)RAND_MAX - 0.5F) * MOLECULAR_SIZE,
+                ((float)rand() / (float)RAND_MAX - 0.5F) * MOLECULAR_SIZE 
+            }));
             constructs[m][c].configure(&scene);
             if(c < MOLECULAR_CONSTRUCTS - 1){
                 construct_links[c].preset(constructs[m][c].getOrigin(), constructs[m][c + 1].getOrigin());

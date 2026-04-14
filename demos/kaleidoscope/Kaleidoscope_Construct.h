@@ -13,7 +13,26 @@ struct Kaleidoscope_Construct : public Geo_Construct<Kaleidoscope_Construct> {
         init();
     }
 
-    void init() override;
+    void init() override {
+        unsigned short minDivs = (divisions.first < divisions.second) ? divisions.first : divisions.second;
+        unsigned short maxDivs = (divisions.first < divisions.second) ? divisions.second : divisions.first;
+
+        for (unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++) {
+            float z = KALEIDOSCOPE_Z;
+
+            Shape2D shape = { (float)rand() / (float)RAND_MAX, (minDivs == maxDivs) ? minDivs : (unsigned)(rand() % maxDivs) + minDivs };
+            if (tessCount != 0) meshes[s] = new Geo_Ext2D(shape, z, (unsigned)abs(tessCount));
+            else meshes[s] = new Geo_Surface(shape, z);
+
+            if (tessCount <= 0) meshes[s]->tesselate(KALEIDOSCOPE_TESS);
+
+            _geoActors.push_back(Geo_Actor(meshes[s]));
+            _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((2.0F / KALEIDOSCOPE_SLICES) * s) }));
+
+            spinFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5) * 0.025;
+            sizeFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5);
+        }
+    }
 
     void configure(Topl_Scene* scene) override {
         for(unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++) scene->addGeometry(getPrefix() + "slice" + std::to_string(s), &_geoActors[s]);

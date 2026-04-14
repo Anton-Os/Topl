@@ -1,3 +1,5 @@
+#include "Geo_Construct.hpp"
+
 struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
     Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n * 3) { init(); }
 
@@ -23,28 +25,19 @@ struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
             }
 
             randVec = randVec + ((VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })) * 2);
+            // randVec = (VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })) * MOLECULAR_LENGTH;
         }
 
         for (unsigned n = 1; n < nodeCount; n++) { // Sub Nodes
             Geo_Actor* refActor = &_geoActors[(n * 2) - 1];
 
             for (unsigned e = 0; e < 3; e++) {
-                Vec3f modVec;
-                switch (e) {
-                    case 0: modVec = Vec3f({ -1.0F, 1.0F, 1.0F }); break;
-                    case 1: modVec = Vec3f({ 1.0F, -1.0F, 1.0F }); break;
-                    case 2: modVec = Vec3f({ 1.0F, 1.0F, -1.0F }); break;
-                }
-
                 _orbs.push_back(new Geo_QuadOrb(MOLECULAR_SIZE / (n + 1)));
                 _geoActors.push_back(Geo_Actor(_orbs.back()));
-                // _geoActors.back().setPos(*(refActor->getPos()) + (randVec * modVec));
-                // Geo_Vertex lineVertices1[2] = { Geo_Vertex(*refActor->getPos()), Geo_Vertex(*_geoActors.back().getPos())};
-                // _lines.push_back(new Geo_Mesh((vertex_cptr_t)&lineVertices1, 2));
-                // _lines.back()->drawMode = DRAW_Lines;
-                // _geoActors.push_back(Geo_Actor(_lines.back()));
             }
         }
+
+        // shift((VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })));
     }
 
     void configure(Topl_Scene* scene){

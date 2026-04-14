@@ -60,11 +60,10 @@ struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
-		_embedMap.insert({ "Custom_Pattern", 
-			std::string("if(coords.x < 0.0) coords.x = pow(coords.y, 5); else coords.x = pow(coords.z, 1.0 / 5); \n")
-			+ "if(coords.y < 0.0) coords.y = pow(coords.z, 5); else coords.y = pow(coords.x, 1.0 / 5); \n"
-			+ "if(coords.z < 0.0) coords.z = pow(coords.x, 5); else coords.z = pow(coords.y, 1.0 / 5); \n"
-	
+		_embedMap.insert({ "Custom_Pattern", ""
+			/* std::string("coords.x = abs(offset.x) * sin(t / 1000) * length(offset - coords); \n")
+			+ "coords.y = abs(offset.y) * cos(t / 1000) * length(offset - coords); \n"
+			+ "coords.x = abs(offset.z) * tan(t / 1000) * length(offset - coords); \n" */
 			// std::string("coords = float3(pow(coords.x, 2), pow(coords.y, 2), pow(coords.z, 2));")
 			// std::string("float r = abs(sin(coords.x) + cos(coords.y) + tan(coords.z)); \n")
 			// + std::string("float g = abs(sin(coords.y) * cos(coords.z) * tan(coords.x)); \n")

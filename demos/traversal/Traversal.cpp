@@ -31,7 +31,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 void Traversal_Demo::init(){
     speed = TRAVERSAL_SPEED;
 
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 2.0F).genProjMatrix());
+    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 2.0F).genProjMatrix());
 
     Platform::keyControl.addHandler(std::bind(&Traversal_Demo::onAnyKey, this, std::placeholders::_1));
     // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 10.0).genProjMatrix());
@@ -82,7 +82,7 @@ void Traversal_Demo::init(){
 void Traversal_Demo::loop(double frameTime){
     static double totalTime = 0.0;
 
-    Topl_Program::camera.setPos({ 0.0F, 0.0F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH });
+    Topl_Program::camera.setPos({ 0.0F, 0.01F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH });
 
     if(isRotating)
         for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "Hello.hpp"
 
@@ -17,8 +18,13 @@ std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 
 static Topl_Scene scene = Topl_Scene();
 
-// Hello Main Loop
+static bool background_input_call(std::string& input) {
+	std::getline(std::cin, input);
+	std::cout << "Input received from thread: " << input << std::endl;
+	return true;
+}
 
+// Hello Main Loop
 
 static void logFrameRate(double f1, double f2, double f3, double f4){
     static unsigned frameCount = 0;
@@ -60,11 +66,19 @@ MAIN_ENTRY {
 	triangle.setInstances({ Mat4x4::scale({ 1.5F, 1.5F, 1.5F }), Mat4x4::scale({ 2.0F, 2.0F, 2.0F }), Mat4x4::scale({ 2.5F, 2.5F, 2.5F }), Mat4x4::scale({ 3.0F, 3.0F, 3.0F }) });
 	scene.addGeometry(&actor);
 	renderer->buildScene(&scene);
-
-	// TODO: Include background input thread
+	
+	std::thread backgroundThread;
+	std::string commandArgs = "";
 
 	std::cout << "Rendering loop" << std::endl;
 	while(platform.handleEvents()){
+		
+		if (!backgroundThread.joinable() && commandArgs.empty()) {
+			commandArgs = "PLACEHOLDER";
+			backgroundThread = std::thread(background_input_call, commandArgs);
+		}
+		// if (backgroundThread.joinable()) backgroundThread.detach();
+
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();

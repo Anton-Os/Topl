@@ -31,7 +31,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 
 	float4 pos = getVertexInstance(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w), instanceID);
 
-	output.vertex_pos = pos;
+	output.vertex_pos = pos - float4(offset, 0.0);
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 	output.vertex_id = vertexID;
 	output.normal = mul(getRotMatrix(rotation), input.normal);
