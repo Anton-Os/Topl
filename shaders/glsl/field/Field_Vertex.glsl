@@ -1,7 +1,6 @@
 #version 440
 
 // #define INCLUDE_EXTBLOCK
-#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 

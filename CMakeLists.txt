@@ -18,7 +18,7 @@ endif()
 set(SUPPORT_TEXTURES TRUE CACHE BOOL "Include texturing")
 set(SUPPORT_PHYSICS TRUE CACHE BOOL "Include physics calculations")
 set(SUPPORT_MODELS TRUE CACHE BOOL "Include 3D model loading")
-# set(SUPPORT_AUDIO ON CACHE BOOL "Include audio support")
+set(SUPPORT_AUDIO TRUE CACHE BOOL "Include audio support")
 # set(SUPPORT_SAVES ON CACHE BOOL "Include custom saves")
 
 # ------------- Libraries, Engines, and Procedures ------------- #

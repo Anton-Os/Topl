@@ -1,5 +1,4 @@
 #define INCLUDE_EXTBLOCK
-#define INCLUDE_TEXTURES
 
 #include "Common.hlsl"
 
@@ -41,7 +40,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	float4 pos = getVertexInstance(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w), instanceID);
 
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
-	output.vertex_pos = float3(pos.x, pos.y, pos.z) - offset;
+	output.vertex_pos = input.pos - offset;
 	output.vertex_color = input.vert_color;
 	output.normal = input.normal;
 	output.texcoord = input.texcoord;

@@ -52,6 +52,9 @@ public:
 #ifdef _WIN32
 		std::replace(_shaderFilePath.begin(), _shaderFilePath.end(), '/', '\\');
 #endif
+#ifdef TOPL_ENABLE_TEXTURES
+		embed("Enable_Textures", "#define INCLUDE_TEXTURES");
+#endif
 	}
 	enum SHDR_Type getType() const { return _shaderType; }
 	std::string getFilePath() const { return _shaderFilePath; }

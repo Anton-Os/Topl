@@ -60,7 +60,8 @@ struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
-		_embedMap.insert({ "Custom_Pattern", ""
+		_embedMap.insert({ "Custom_Pattern", "if(!getInBound(sin(coords.x) + cos(coords.y) + tan(coords.z), 0.25)) coords *= float3(0, 0, 0);"
+			// "if(coords.x + coords.y + coords.z > -0.1 && coords.x + coords.y + coords.z < 0.1) coords *= -1.0;"
 			/* std::string("coords.x = abs(offset.x) * sin(t / 1000) * length(offset - coords); \n")
 			+ "coords.y = abs(offset.y) * cos(t / 1000) * length(offset - coords); \n"
 			+ "coords.x = abs(offset.z) * tan(t / 1000) * length(offset - coords); \n" */

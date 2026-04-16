@@ -1,6 +1,5 @@
 #version 440
 
-#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -55,15 +54,16 @@ void main() {
 	else if(m == 8) coords = vec3(pow(abs(pos.x), abs(vertex_color.r)), pow(abs(pos.y), abs(texcoord.y)), pow(abs(pos.z), float(id)));
 	else if(m == 9) coords = vec3(dot(vertex_pos, vec3(vertex_color)), dot(getRandColor(uint(id)), vec3(getStepColor(uint(id)))), dot(texcoord, tangent));
 
-	if(abs(mode / 100) % 10 == 1) color_final = vec4(pattern1(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 2) color_final = vec4(pattern2(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 3) color_final = vec4(pattern3(coords, m + 1), 1.0);
-	else if(abs(mode / 100) % 10 == 4) color_final = vec4(pattern4(coords, m, 3), 1.0);
-	else if(abs(mode / 100) % 10 == 5) color_final = vec4(pattern5(coords, m, 3), 1.0);
-	else if(abs(mode / 100) % 10 == 6) color_final = vec4(pattern6(coords, m), 1.0);
-	else if(abs(mode / 100) % 10 == 7) color_final = vec4(pattern7(coords, 3), 1.0);
-	else if(abs(mode / 100) % 10 == 8) color_final = pattern8(coords, m, t);
-	else if(abs(mode / 100) % 10 == 9) color_final = pattern9(coords, m, t);
+#include <Custom_Pattern>
+	if(abs(mode / 10) % 10 == 1) color_final = vec4(pattern1(coords, (abs(mode) / 100) + 1), 1.0);
+	else if(abs(mode / 10) % 10 == 2) color_final = vec4(pattern2(coords, (abs(mode) / 100) + 1), 1.0);
+	else if(abs(mode / 10) % 10 == 3) color_final = vec4(pattern3(coords, (abs(mode) / 100) + 1), 1.0);
+	else if(abs(mode / 10) % 10 == 4) color_final = vec4(pattern4(coords, abs(mode) / 100, 3), 1.0);
+	else if(abs(mode / 10) % 10 == 5) color_final = vec4(pattern5(coords, abs(mode) / 100, 3), 1.0);
+	else if(abs(mode / 10) % 10 == 6) color_final = vec4(pattern6(coords, abs(mode) / 100), 1.0);
+	else if(abs(mode / 10) % 10 == 7) color_final = vec4(pattern7(coords, 3), 1.0);
+	else if(abs(mode / 10) % 10 == 8) color_final = vec4(pattern8(coords, (abs(mode) / 100) + 1, t), 1.0);
+	else if(abs(mode / 10) % 10 == 9) color_final = vec4(pattern9(coords, (abs(mode) / 100) + 1, t), 1.0);
 	// else if(abs(mode / 100) % 10 == 8) color_final = vec4(pattern4(pattern6(coords), m, (mode % 100) / 5), 1.0);
 	// else if(abs(mode / 100) % 10 == 9) color_final = vec4(pattern7(pattern5(coords, m, (mode % 100) / 5), uint((mode % 100) / 10)), 1.0);
 	else color_final = vec4(coords, 1.0);

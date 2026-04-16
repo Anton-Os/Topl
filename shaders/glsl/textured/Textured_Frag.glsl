@@ -1,6 +1,5 @@
 #version 440
 
-#define INCLUDE_TEXTURES
 #define INCLUDE_SCENEBLOCK
 #define IGNORE_INPUTS
 
@@ -34,6 +33,7 @@ layout(location = 0) out vec4 color_final;
 // Main
 
 void main() {
+#ifdef INCLUDE_TEXTURES
 	if(abs(mode) % 10 == 8) color_final = antialias3D(texcoord, volumeTex, antialiasArea, antialiasSteps);
 	else if(abs(mode) % 10 == 9) color_final = antialias3D(vec3(texcoord.x, texcoord.y, slice), volumeTex, antialiasArea, antialiasSteps);
 	else { // select texture
@@ -46,6 +46,8 @@ void main() {
 		else if(abs(mode) % 10 == 7) color_final = antialias2D(vec2(texcoord.x, texcoord.y), tex7, antialiasArea, antialiasSteps);
 		else color_final = antialias2D(vec2(texcoord.x, texcoord.y), baseTex, antialiasArea, antialiasSteps); // base texture
 	}
-
+#else
+	color_final = vec4(1.0, 0.0, 0.0, 1.0);
+#endif
 	if (color_final.a < 0.05) discard; // blending fix
 }

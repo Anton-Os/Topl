@@ -2,7 +2,6 @@
 
 #define INCLUDE_BLOCK
 #define IGNORE_INPUTS
-#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -34,8 +33,10 @@ layout(location = 0) out vec4 color_final;
 // Main
 
 void main() {
+#ifdef INCLUDE_TEXTURES
     if(mode < 0) color_final = texture(baseTex, vec2(texcoord.x, texcoord.y)); // base texture
     // else color_final = vec4(0.0, 0.0, 0.0, 0.0);
+#endif
 
     vec2 cursor = (cursorPos * 0.5f) + 0.5f; // adjusted cursor
     vec2 coords = vec2(gl_FragCoord.x / screenRes.x, gl_FragCoord.y / screenRes.y); // adjusted coordinates
@@ -66,8 +67,11 @@ void main() {
         if(abs(mode) % 10 == 9 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++; // color_final = color_draw;
     }
 
+#ifdef INCLUDE_TEXTURES
     if(intersections > 0 && mode >= 0) color_final = modalTex(intersections, texcoord);
-    else if(intersections > 0 && mode < 0) color_final = vec4(0.0, 0.0, 0.0, 0.0);
+    else
+#endif
+    if(intersections > 0 && mode < 0) color_final = vec4(0.0, 0.0, 0.0, 0.0);
 
     if(abs(mode) >= 10){
         vec4 color_cursor = vec4(0.0, 0.0, 0.0, 0.0);

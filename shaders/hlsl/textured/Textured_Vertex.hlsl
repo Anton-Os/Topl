@@ -1,6 +1,5 @@
 #define INCLUDE_SCENEBLOCK
 #define INCLUDE_EXTBLOCK
-#define INCLUDE_TEXTURES
 
 #include "Common.hlsl"
 
@@ -35,7 +34,7 @@ VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 
 	float4 pos = getVertexInstance(input.pos, offset, rotation, float4(scale, 1.0 / cam_pos.w), instanceID);
 	output.texcoord = (input.texcoord - texScroll) * float3(texScale.x, texScale.y, texScale.z);
-
+#ifdef INCLUDE_TEXTURES
 	if(abs(mode) >= 10){
 		float4 texOffset = baseTex.SampleLevel(baseSampler, float2(output.texcoord.x, output.texcoord.y), 0);
 		if(floor(abs(mode) / 10.0) % 10 == 1) texOffset = tex1.SampleLevel(sampler1, float2(output.texcoord.x, output.texcoord.y), 0);
@@ -57,7 +56,7 @@ VS_OUTPUT main(VS_INPUT input, uint instanceID : SV_InstanceID) {
 			pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
 		}
 	}
-
+#endif
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
 
 	return output;

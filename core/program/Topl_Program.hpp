@@ -42,9 +42,11 @@ public:
 
 	template<typename T> void addSequence(T var, std::pair<millisec_t, T> target);
 	// template<class T> void addSequence(T var, std::pair<millisec_t, T> target); // try to templatize this
-	void addSequence_vec3f(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
-	void addSequence_float(float* var, std::pair<millisec_t, float> target);
-	void addSequence_double(double* var, std::pair<millisec_t, double> target);
+	void addSequence(Vec3f* vec, std::pair<millisec_t, Vec3f> target);
+	void addPeriodic(Vec3f* vec, std::pair<millisec_t, Vec3f> target, unsigned short reps); // the target will oscillate between two values 
+	void addSequence(float* var, std::pair<millisec_t, float> target);
+	void addPeriodic(float* var, std::pair<millisec_t, float> target, unsigned short reps); // the target will oscillate between two values 
+	void addSequence(double* var, std::pair<millisec_t, double> target);
 
 	Timer_Dynamic dynamic_ticker = Timer_Dynamic(TIMELINE_START); // variably incrementing
 	Timer_Persist persist_ticker; // constantly incrementing
@@ -77,7 +79,11 @@ public:
 
 	void run();
 #ifdef TOPL_ENABLE_AUDIO
-	void run(std::string audioPathStr); // Add audio effect for shaders
+	void run(std::string audioPathStr){
+		run();
+		play(audioPathStr, 0); // plays a looped sequence
+	}
+	void play(std::string audioPathStr, unsigned short reps); // number of repitions
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }

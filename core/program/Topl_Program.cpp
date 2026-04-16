@@ -29,11 +29,6 @@ Rasteron_Queue* Topl_Program::cachedFrames = NULL;
 Topl_Camera Topl_Program::camera = Topl_Camera();
 Topl_Pipeline* Topl_Program::_savedPipeline = nullptr;
 
-static void background_input_call(std::string& input) {
-    std::getline(std::cin, input);
-    std::cout << "Input received from thread: " << input << std::endl;
-}
-
 void Topl_Program::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
 	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
     Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
@@ -159,9 +154,9 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             }
 
                             switch(p){
-                                MOV_BTN_CASES: timeline.addSequence_vec3f(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
-                                ROT_BTN_CASES: timeline.addSequence_vec3f(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
-                                SIZ_BTN_CASES: timeline.addSequence_vec3f(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
+                                MOV_BTN_CASES: timeline.addSequence(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
+                                ROT_BTN_CASES: timeline.addSequence(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
+                                SIZ_BTN_CASES: timeline.addSequence(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
                             }
                         }
                     }
@@ -235,11 +230,11 @@ void Topl_Program::_onAnyKey(keyboard_t k){
         }
 
         if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v' || tolower(k) == 'c')
-            Topl_Program::timeline.addSequence_vec3f(&_camPos, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getPos())));
+            Topl_Program::timeline.addSequence(&_camPos, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getPos())));
         else if(tolower(k) == 'q' || tolower(k) == 'e' || tolower(k) == 'r' || tolower(k) == 'f' || tolower(k) == 't' || tolower(k) == 'g')
-            Topl_Program::timeline.addSequence_vec3f(&_camRot, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getRot())));
+            Topl_Program::timeline.addSequence(&_camRot, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getRot())));
         // else if(tolower(k) == 'z' || tolower(k) == 'c')
-        //    Topl_Program::timeline.addSequence_float(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
+        //    Topl_Program::timeline.addSequence(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Program::camera.getZoom())));
     }
     if(Topl_Program::isCtrl_shader){
         if (k == TOPL_LEFT_ARROW) Topl_Program::shaderMode--;

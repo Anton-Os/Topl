@@ -123,7 +123,7 @@ public:
 private:
 	float _zoom = CAM_ZOOM; 
 	Vec3f _pos = Vec3f({ 0.0f, 0.0f, CAM_DEPTH }); // in front of scene
-	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
+	Vec3f _rotation = Vec3f({ 0.0f, 0.01f, 0.0f }); // default pointing forward
     Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
     // Projection _projection = Projection(PROJECTION_None);
 };

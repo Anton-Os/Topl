@@ -2,7 +2,6 @@
 
 #define IGNORE_INPUTS
 // #define INCLUDE_EXTBLOCK
-#define INCLUDE_TEXTURES
 
 #define FIELD_SIZE 0.025
 

@@ -1,5 +1,4 @@
 #define INCLUDE_BLOCK
-#define INCLUDE_TEXTURES
 #define IGNORE_INPUTS
 
 // #include <Beams>
@@ -30,6 +29,21 @@ struct PS_INPUT {
 	float3 texcoord : TEXCOORD;
 };
 
+// Functions
+
+float4 color_gradient(float3 texcoord, float angle){
+	float2 transform = float2(texcoord.x, texcoord.y);
+
+	float2x2 rotMatrix = {
+		cos(angle), -sin(angle),
+		sin(angle), cos(angle)
+	};
+
+	transform = mul(rotMatrix, transform);
+	return float4(transform.x, transform.y, length(transform), 0.5) * 2;
+}
+
+
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
@@ -40,12 +54,16 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float3 target;
 	if(mode >= 0) target = input.normal; else target = input.vertex_pos;
 
-	Texture2D textures[8 - 1] = { tex1, tex2, tex3, tex4, tex5, tex6, tex7 }; // TODO: Change order?
-	SamplerState samplers[8 - 1] = { sampler1, sampler2, sampler3, sampler4, sampler5, sampler6, sampler7 }; // TODO: Change order?
+	// Texture2D textures[8 - 1] = { tex1, tex2, tex3, tex4, tex5, tex6, tex7 }; // TODO: Change order?
+	// SamplerState samplers[8 - 1] = { sampler1, sampler2, sampler3, sampler4, sampler5, sampler6, sampler7 }; // TODO: Change order?
 
 	float3 texVals[8];
 	for(int o = 0; o < 8; o++){
+#ifdef INCLUDE_TEXTURES
 		float4 texTarget = modalTex((abs(mode) + o) % 8, input.texcoord);
+#else
+		float4 texTarget = color_gradient(input.texcoord, abs(mode) * o * (3.141592653 / 10));
+#endif
 		texVals[o] =  float3(texTarget.r, texTarget.g, texTarget.b);
 	}
 

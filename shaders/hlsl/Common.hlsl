@@ -37,6 +37,8 @@ RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) {
 #define TRACER_STEPS 16
 #define TRACER_PATHS 16
 
+#include <Enable_Textures>
+
 #ifdef INCLUDE_TEXTURES
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
@@ -60,6 +62,8 @@ SamplerState areaSampler : register(s8);
 uint4 getModes(int mode){
 	return uint4(abs(mode) % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
+
+bool getInBound(float val, float cmp){ return val > -cmp && val < cmp; }
 
 bool nonZeroMatrix(float4x4 targetMatrix){
 	for(uint m = 0; m < 4; m++) 

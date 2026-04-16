@@ -38,6 +38,10 @@ namespace DX11 {
 		return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
 	}
 
+	/* bool createStorageBuff(ID3D11Device** device, ID3D11Buffer** cBuff, const blockBytes_t* const blockBytes) {
+		// return createBuff(device, cBuff, sizeof(uint8_t) * blockBytes->size(), D3D11_USAGE_DEFAULT, D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE, D3D11_CPU_ACCESS_WRITE, blockBytes->data());
+	} */
+
 	D3D11_VIEWPORT createViewport(const Topl_Viewport* const vp) {
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -268,6 +272,11 @@ void Topl_Renderer_DX11::build(const Geo_Actor* actor){
 			_extBlockBufferMap.insert({ renderID, DX11::Buffer(renderID, BUFF_Ext_Block, meshBlockBuff) });
 		}
 		if (!_flags[BUILD_BIT]) return logMessage(MESSAGE_Exclaim, "Mesh Buffer creation failed"); // Error
+
+		// storage buffer
+		/*ID3D11Buffer* storageBuff = nullptr;
+		if(_storageBufferMap.find(renderID) != _storageBufferMap.end())
+			_flags[BUILD_BIT] = DX11::createStorageBuff() */
 
 		// indices generation
 		ID3D11Buffer* indexBuff = nullptr;

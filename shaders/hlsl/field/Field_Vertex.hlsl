@@ -1,5 +1,4 @@
 #define INCLUDE_EXTBLOCK
-#define INCLUDE_TEXTURES
 
 #include "Common.hlsl"
 

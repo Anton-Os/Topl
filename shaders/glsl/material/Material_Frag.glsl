@@ -1,7 +1,6 @@
 #version 440
 
 #define INCLUDE_BLOCK
-#define INCLUDE_TEXTURES
 #define IGNORE_INPUTS
 
 #include "Common.glsl"
@@ -41,8 +40,9 @@ void main() {
 	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
 
 	vec3 texVals[8];
+#ifdef INCLUDE_TEXTURES
 	for(int t = 0; t < 8; t++) texVals[t] = vec3(modalTex((abs(mode) + t) % 8, texcoord));
-	
+#endif
 	color_final = vec4(texVals[0], 1.0F);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
 	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));

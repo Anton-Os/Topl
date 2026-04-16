@@ -1,7 +1,6 @@
 #version 440
 
 #define INCLUDE_SCENEBLOCK
-#define INCLUDE_TEXTURES
 
 #include "Common.glsl"
 
@@ -41,6 +40,7 @@ void main() {
 
 	texcoord_out = (texcoord_out + texScroll) * vec3(texScale);
 	
+#ifdef INCLUDE_TEXTURES
 	if(abs(mode) >= 10){
 		vec4 texOffset = texture(baseTex, vec2(texcoord_out.x, texcoord_out.y));
 		if(uint(floor(abs(mode) / 10)) % 10 == 1) texOffset = texture(tex1, vec2(texcoord_out.x, texcoord_out.y));
@@ -62,7 +62,7 @@ void main() {
 			pos.z *= texOffset.b * (floor(abs(mode) / 100.0) + 1);
 		}
 	}
-
+#endif
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 #ifdef INCLUDE_EXTBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];

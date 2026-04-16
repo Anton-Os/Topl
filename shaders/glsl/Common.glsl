@@ -39,6 +39,8 @@ layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
 #define TRACER_STEPS 16
 #define TRACER_PATHS 16
 
+#include <Enable_Textures>
+
 #ifdef INCLUDE_TEXTURES
 
 #ifndef SLICE
@@ -66,6 +68,8 @@ layout(binding = 8) uniform sampler3D volumeTex;
 uvec4 getModes(int mode){
 	return uvec4(abs(mode) % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);
 }
+
+bool getInBound(float val, float cmp){ return val > -cmp && val < cmp; }
 
 float sum(vec3 data){
 	return abs(data.x) + abs(data.y) + abs(data.z);

@@ -1,6 +1,5 @@
 #version 440
 
-#define INCLUDE_TEXTURES
 #define INCLUDE_BLOCK
 
 #include "Common.glsl"
