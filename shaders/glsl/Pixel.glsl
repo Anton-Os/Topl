@@ -1,10 +1,10 @@
-vec4 color_correct(vec4 color){ // switch red and blue color values
+vec4 correct_effect(vec4 color){ // switch red and blue color values
     float t = color.r;
     color.r = color.b; color.b = t;
     return color;
 }
 
-vec3 color_range(vec3 color){ // maps color to +- range
+vec3 range_effect(vec3 color){ // maps color to +- range
 	return (color - vec3(0.5F, 0.5F, 0.5F)) * 2;
 }
 

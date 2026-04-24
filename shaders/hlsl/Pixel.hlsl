@@ -1,4 +1,4 @@
-float3 color_range(float3 color){ // maps color to +- range
+float3 range_effect(float3 color){ // maps color to +- range
 	return (color - float3(0.5F, 0.5F, 0.5F)) * 2;
 }
 

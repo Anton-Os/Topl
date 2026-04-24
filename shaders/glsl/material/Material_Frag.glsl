@@ -36,20 +36,23 @@ void main() {
 	uint t = modes[1];
 	uint intensity = modes[2] + 1;
 
-	vec3 target;
-	if(mode >= 0) target = normal; else target = vertex_pos; // set target conditionally
+	vec3 target = normal;
+	if(mode < 0) target = vertex_pos; // set target conditionally
 
 	vec3 texVals[8];
 #ifdef INCLUDE_TEXTURES
 	for(int t = 0; t < 8; t++) texVals[t] = vec3(modalTex((abs(mode) + t) % 8, texcoord));
+#else
+	// for(int t = 0; t < 8; t++) texVals[t] = vec3(getRandColor(uint(mode) * t).r, getStepColor(uint(mode) * t).g, texcoord.z * t * uint(mode));
+	for(int t = 0; t < 8; t++) texVals[t] = smoothstep(vec3(getRandColor(uint(abs(mode) + 1) * (t + 1))), vec3(getStepColor(uint(abs(mode) + 1) * (t + 1))), target);
 #endif
 	color_final = vec4(texVals[0], 1.0F);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
 	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));
 	vec3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;
-	vec3 diffuse = diffuseColor * getDiffuse(lightPos - color_range(texVals[(3 + t) % 8]), (target - offset) - color_range(texVals[(4 + t) % 8])) * 0.5 * intensity;
+	vec3 diffuse = diffuseColor * getDiffuse(lightPos - range_effect(texVals[(3 + t) % 8]), (target - offset) - range_effect(texVals[(4 + t) % 8])) * 0.5 * intensity;
 	vec3 specColor = (lightVal + texVals[(5 + t) % 8]) / 2;
-	vec3 specular = specColor * getSpecular(lightPos - color_range(texVals[(6 + t) % 8]), vec3(cam_pos), target - color_range(texVals[(7 + t) % 8]), float(1 + intensity));
+	vec3 specular = specColor * getSpecular(lightPos - range_effect(texVals[(6 + t) % 8]), vec3(cam_pos), target - range_effect(texVals[(7 + t) % 8]), float(1 + intensity));
 
 	color_final *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
 }

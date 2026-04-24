@@ -40,6 +40,7 @@ void Kaleidoscope_Demo::init(){
 
 void Kaleidoscope_Demo::loop(double frameTime){
     static double totalTime = 0.0F;
+    isEnable_background = false;
 
     for (unsigned s = 0; s < constructs[sculptIndex].getActorCount(); s++) {
         constructs[sculptIndex].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[sculptIndex].getSpinFactor(s) * 2), 0.0F, 0.0F }));

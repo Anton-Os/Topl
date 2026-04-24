@@ -43,7 +43,7 @@ void main() {
     float size = CURSOR_SIZE * (floor(abs(mode) / 100.0) + 1);
 
     /* vec4 color_draw;
-    if(mode >= 0) color_draw = color_correct(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
+    if(mode >= 0) color_draw = correct_effect(texture(baseTex, vec2(texcoord.x, texcoord.y))); // draw
     else color_draw = vec4(0.0, 0.0, 0.0, 0.0); // erase */
 
     int intersections = 0;

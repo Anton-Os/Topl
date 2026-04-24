@@ -19,9 +19,10 @@ enum AXIS_Target { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
 
 struct Geo_Pos {
     Geo_Pos() {}
-    Geo_Pos(Vec3f p){ position = p; } // position constructor
+    Geo_Pos(Vec3f p) { position = p; } // position constructor
 
     Vec3f position = Vec3f({ 0.0, 0.0, 0.0 });
+    // Vec4f tpos = Vec4f({ 0.0, 0.0, 0.0, 0.0 }); // timed position constructor
 };
 
 struct Geo_Vertex : public Geo_Pos {
