@@ -4,7 +4,10 @@ enum CUBEGATE_Face {
 };
 
 struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
-    Cubegate_Construct(Geo_Mesh* faceMesh) : Geo_Construct("cubegate", faceMesh, 6) { init(); }
+    Cubegate_Construct(Geo_Mesh* faceMesh) : Geo_Construct("cubegate", faceMesh, 6) { 
+        if (CUBEGATE_TESS > 0) faceMesh->tesselate(CUBEGATE_TESS);
+        init(); 
+    }
 
     void init() override {
         _geoActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });

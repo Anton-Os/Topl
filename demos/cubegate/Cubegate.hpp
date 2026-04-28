@@ -10,11 +10,12 @@
 #define CUBEGATE_FLOORSIZE 10.0F
 #define CUBEGATE_BALLS 8
 #define CUBEGATE_SCENES 6
+#define CUBEGATE_TESS 3
 
 #include "Cubegate_Construct.h"
 
 struct Cubegate_Demo : public Topl_Program {
-    Cubegate_Demo(const char* execPath) : Topl_Program(execPath, "Cubegate"){}
+    Cubegate_Demo(const char* execPath) : Topl_Program(execPath, "Cubegate"){ }
     Cubegate_Demo(const char* execPath, BACKEND_Target backend) : Topl_Program(execPath, "Cubegate", backend) {}
 
     void init() override;

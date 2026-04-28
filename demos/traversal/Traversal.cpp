@@ -1,6 +1,6 @@
 #include "Traversal.hpp"
 
-static bool isRotating = true;
+static bool isRotating = false;
 static float speed = TRAVERSAL_SPEED;
 
 void Traversal_Demo::onAnyKey(keyboard_t key) {
@@ -8,6 +8,7 @@ void Traversal_Demo::onAnyKey(keyboard_t key) {
         case 'i': speed = TRAVERSAL_SPEED; break;
         case 'o': speed *= 10.0F; break;
         case 'p': speed /= 10.0F; break;
+        case 'l': isRotating = !isRotating; break;
     }
 }
 
@@ -31,10 +32,9 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 void Traversal_Demo::init(){
     speed = TRAVERSAL_SPEED;
 
-    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 2.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 3.0F).genProjMatrix());
 
     Platform::keyControl.addHandler(std::bind(&Traversal_Demo::onAnyKey, this, std::placeholders::_1));
-    // Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 10.0).genProjMatrix());
 
     for (unsigned s = 0; s < TRAVERSAL_SLICES; s++) {
         // squareSlice.drawMode = DRAW_Points;
@@ -105,7 +105,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0]);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
     Traversal->run();
 
     delete(Traversal);

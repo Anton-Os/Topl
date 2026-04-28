@@ -14,11 +14,11 @@ void Penscape_Demo::createBrushes() {
             trigMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             trigMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, PENSCAPE_ROT, PENSCAPE_ROT });
             trigMeshes[a % 3]->extend(*trigMeshBrushes[a % 3]);
-            trigMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
+            // trigMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
             quadMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             quadMeshBrushes[a % 3]->rotate({ -PENSCAPE_ROT, PENSCAPE_ROT, PENSCAPE_ROT });
             quadMeshes[a % 3]->extend(*quadMeshBrushes[a % 3]);
-            quadMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
+            // quadMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
             /* hexMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             hexMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, -PENSCAPE_ROT, PENSCAPE_ROT });
             hexMeshes[a % 3]->extend(*hexMeshBrushes[a % 3]); 
@@ -26,7 +26,7 @@ void Penscape_Demo::createBrushes() {
             circleMeshBrushes[a % 3]->shift(getStepTransform(PENSCAPE_SHIFT)); // { 0.0F, 0.0F, PENSCAPE_SHIFT});
             circleMeshBrushes[a % 3]->rotate({ PENSCAPE_ROT, PENSCAPE_ROT, -PENSCAPE_ROT });
             circleMeshes[a % 3]->extend(*circleMeshBrushes[a % 3]);
-            circleMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
+            // circleMeshes[a % 3]->setInstances({ PENSCAPE_MESH_INSTANCES });
         }
 }
 
@@ -78,9 +78,10 @@ void Penscape_Demo::loop(double frameTime){
         float prog = (float)t / (float)brushSegments;
 
         for (unsigned a = 0; a < 3; a++)
-            for (unsigned s = 0; s < 3; s++)
-                brushes3D[a][s].updateRot({ (float)(MATH_PI * 2) / brushSegments, 0.0F, 0.0F});
-                // brushes3D[a][s].updateRot({ (float)pow((MATH_PI * 2) / PENSCAPE_ITERS, 0.95F + (prog / 20)), 0.0F, 0.0F });
+            for (unsigned s = 0; s < 3; s++) {
+                if(t == 0) brushes3D[a][s].setRot(VEC_3F_ZERO);
+                else brushes3D[a][s].updateRot({ (float)(MATH_PI * 2) / brushSegments, 0.0F, 0.0F });
+            }
         _renderer->updateScene(&scene);
         _renderer->drawScene(&scene);
     }

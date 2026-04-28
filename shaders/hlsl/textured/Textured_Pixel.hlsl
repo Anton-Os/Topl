@@ -28,12 +28,21 @@ struct PS_INPUT {
 
 // Functions
 
-float4 blend_effect(float4 color1, float4 color2){ return (color1 + color2) / 2; }
+// float4 blend_effect(float4 color1, float4 color2){ return (color1 + color2) / 2; }
 
 float4 checker_effect(float3 texcoord, uint tileCount){
 	uint c = (tileCount + 1) * 2;
-	if(fmod(floor(texcoord.x * c), 2.0) != fmod(floor(texcoord.y * c), 2.0)) // return float4(1, 1, 1, 1);
-		return float4(getRandColor(uint(floor(texcoord.x * c))).r, getRandColor(uint(floor(texcoord.y * c))).g, getRandColor(uint(floor(texcoord.z * c))).b, 1.0);
+	float4 color = float4(getRandColor(uint(floor(texcoord.x * c)) + (uint(floor(texcoord.y * c)) * 10) + (uint(floor(texcoord.z * c)) * 100)), 1.0);
+
+	if(fmod(floor(texcoord.x * c), 2.0) != fmod(floor(texcoord.y * c), 2.0)) return color;
+	else return float4(0, 0, 0, 0.5); 
+}
+
+float4 lined_effect(float3 texcoord, uint lineCount){
+	uint l = (lineCount + 1) * 2;
+	float4 color = float4(getRandColor(uint(floor(texcoord.x * l)) + (uint(floor(texcoord.y * l)) * 10) + (uint(floor(texcoord.z * l)) * 100)), 1.0);
+
+	if((texcoord.x * l) - floor(texcoord.x * l) < 0.5) return color;
 	else return float4(0, 0, 0, 0.5); 
 }
 
@@ -54,6 +63,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 		else return antialias2D(float2(input.texcoord.x, input.texcoord.y), baseTex, baseSampler, antialiasArea, antialiasSteps);
 	}
 #else
-	return checker_effect(input.texcoord, uint(abs(mode)));
+	if(mode > 0) return checker_effect(input.texcoord, uint(abs(mode)));
+	else return lined_effect(input.texcoord, uint(abs(mode)));
 #endif
 }

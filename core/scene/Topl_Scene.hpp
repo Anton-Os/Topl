@@ -65,6 +65,7 @@ public:
 	// Dynaimc Operations
 #ifdef TOPL_ENABLE_PHYSICS
 	void resolvePhysics(FORCE_Type type); // iterates through all physics objects and applies forces 
+	void resolvePhysics(){ resolvePhysics(FORCE_Directional); }
 	void addForce(const std::string& name, const Vec3f& vec);
 	void addForces(const std::string& name, const Vec3f& posVec, const Vec3f& angleVec, const Vec3f& sizeVec);
 	void addPhysics(const std::string& name, Phys_Actor* physActor);

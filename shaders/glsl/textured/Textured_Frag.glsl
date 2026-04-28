@@ -41,6 +41,15 @@ vec4 glass_effect(vec3 texcoord, uint size){
 	return vec4(pow(color.x, 1.0 - coord.x), pow(color.y, 1.0 - coord.y), pow(color.z, 1.0 - coord.z), length(coord - color));
 }
 
+vec4 dot_effect(vec3 texcoord, uint size){
+	uint s = (size + 1) * 2;
+	vec3 coord = vec3((texcoord.x * s) - floor(texcoord.x * s), (texcoord.y * s) - floor(texcoord.y * s), (texcoord.z * s) - floor(texcoord.z * s));
+	vec3 color = getRandColor(uint(floor(texcoord.x * s)) + (uint(floor(texcoord.y * s)) * 10) + (uint(floor(texcoord.z * s)) * 100));
+
+	if(length(coord - vec3(0.5)) < 0.25) return vec4(pow(color.x, 1.0 - coord.x), pow(color.y, 1.0 - coord.y), pow(color.z, 1.0 - coord.z), length(coord - color));
+	else return vec4(0.0, 0.0, 0.0, 0.0);
+}
+
 void main() {
 #ifdef INCLUDE_TEXTURES
 	if(abs(mode) % 10 == 8) color_final = antialias3D(texcoord, volumeTex, antialiasArea, antialiasSteps);
@@ -57,7 +66,8 @@ void main() {
 	}
 #else
 	// color_final = vec4(1.0, 0.0, 0.0, 1.0);
-	color_final = glass_effect(texcoord, uint(abs(mode)));
+	if(mode > 0) color_final = glass_effect(texcoord, uint(abs(mode)));
+	else color_final = dot_effect(texcoord, uint(abs(mode)));
 #endif
 	if (color_final.a < 0.05) discard; // blending fix
 }

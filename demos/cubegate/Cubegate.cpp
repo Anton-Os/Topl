@@ -85,7 +85,7 @@ void Cubegate_Demo::init() {
 
 void Cubegate_Demo::loop(double frameTime) {
     // cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
-    cubeGate.rotate({ 0.0F, 0.0F, (float)frameTime * -0.00000001F });
+    cubeGate.rotate({ (float)frameTime * -0.00000001F, 0.0F, 0.0F });
 
     /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);

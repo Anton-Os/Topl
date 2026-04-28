@@ -4,6 +4,7 @@
 
 #define MOLECULAR_CONSTRUCTS 12
 #define MOLECULAR_LENGTH 20.0F
+#define MOLECULAR_FORCE 2000.0F
 #define MOLECULAR_SIZE 0.05F
 
 #include "Molecular_Construct.h"
@@ -33,6 +34,7 @@ struct Molecular_Demo : public Topl_Program {
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];
 private:
     void onAnyKey(keyboard_t key);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex);
 
     Topl_Scene scene = PROGRAM_SCENE;
     Topl_Light skyLight = BEAMS_LAMP_LIGHT, flashLight = BEAMS_SKY_LIGHT, lampLight = BEAMS_FLASH_LIGHT;

@@ -1,5 +1,8 @@
 #include "Geo_Mesh.hpp"
 
+void free_vertices(Geo_Vertex* vertices){ free(vertices); }
+void free_indices(unsigned* indices){ free(indices); }
+
 // Shape Object
 
 Shape2D create_shape2D(float radius, unsigned short segs){ return Shape2D({ radius, segs }); }
@@ -125,8 +128,7 @@ void Geo_Mesh::tesselate(unsigned short tessCount){ // TODO: Include Tesselation
 
         if(siCount > 0){
             for(unsigned i = 0; i < siCount; i += 3) // determining tesselated vertices
-                _vertices.push_back(Geo_Vertex(Vec3f((_vertices[_indices[i]].position + _vertices[_indices[i + 1]].position + _vertices[_indices[i + 2]].position) * (1.0 / 3.0))));
-                // _vertices.push_back(getMidpoint({ _vertices[_indices[i]], _vertices[_indices[i + 1]], _vertices[_indices[i + 2]] })); // TODO: Get this working!
+                _vertices.push_back(getMidpoint({ _vertices[_indices[i]], _vertices[_indices[i + 1]], _vertices[_indices[i + 2]] })); // TODO: Get this working!
 
             for(unsigned i = 0; i < siCount; i += 3){
                 unsigned v = (svCount + (i / 3));

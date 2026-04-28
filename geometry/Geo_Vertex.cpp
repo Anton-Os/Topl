@@ -70,9 +70,9 @@ Geo_Vertex getMidpoint(std::initializer_list<Geo_Vertex> points){
 
     for(auto p = points.begin(); p != points.end(); p++){
         vertex.position = vertex.position + (*p).position;
-        vertex.normal = /* vertex.normal + */ (*p).normal;
-        vertex.texcoord = /* vertex.texcoord + */ (*p).texcoord;
-        vertex.position = /* vertex.color + */ (*p).color;
+        vertex.normal = vertex.normal + (*p).normal;
+        vertex.texcoord = vertex.texcoord + (*p).texcoord;
+        vertex.color = vertex.color + (*p).color;
     }
 
     // return Geo_Vertex(vertex.position * (1.0 / points.size()), vertex.texcoord * (1.0 / points.size()), vertex.normal, vertex.texcoord);

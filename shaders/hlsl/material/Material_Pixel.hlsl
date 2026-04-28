@@ -31,7 +31,7 @@ struct PS_INPUT {
 
 // Functions
 
-float4 color_gradient(float3 texcoord, float angle){
+float4 splash_effect(float3 texcoord, float angle){
 	float2 transform = float2(texcoord.x, texcoord.y);
 
 	float2x2 rotMatrix = {
@@ -40,7 +40,7 @@ float4 color_gradient(float3 texcoord, float angle){
 	};
 
 	transform = mul(rotMatrix, transform);
-	return float4(transform.x, transform.y, length(transform), 0.5) * 2;
+	return float4(abs(transform.x - texcoord.y), abs(transform.y - texcoord.x), length(transform) + texcoord.z, 0.5) * 2;
 }
 
 
@@ -62,7 +62,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 #ifdef INCLUDE_TEXTURES
 		float4 texTarget = modalTex((abs(mode) + o) % 8, input.texcoord);
 #else
-		float4 texTarget = color_gradient(input.texcoord, abs(mode) * o * (3.141592653 / 10));
+		// float4 texTarget = splash_effect(input.texcoord, abs(mode) * o * (3.141592653 / 8));
+		float4 texTarget = splash_effect(input.texcoord, abs(mode) * (3.141592653 / 16));
 #endif
 		texVals[o] =  float3(texTarget.r, texTarget.g, texTarget.b);
 	}

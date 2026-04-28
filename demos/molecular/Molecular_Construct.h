@@ -1,7 +1,12 @@
 #include "Geo_Construct.hpp"
 
+static unsigned short constructCount = 0;
+
 struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
-    Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(rand() % 999)), nodeCount(n * 3) { init(); }
+    Molecular_Construct(unsigned short n) : Geo_Construct("Molecular" + std::to_string(constructCount + 1)), nodeCount(n * 3) { 
+        constructCount++;
+        init(); 
+    }
 
     void init() override {
         _hub = new Geo_Orb(MOLECULAR_SIZE);
@@ -41,24 +46,26 @@ struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
     }
 
     void configure(Topl_Scene* scene){
-        // _physActors.resize(_orbs.size() + 1);
-        // _links.resize(_orbs.size());
+        _physActors.resize(_orbs.size() + 1);
+        _links.resize(_orbs.size());
 
         // _physActors.front().mass = 10.0F;
         scene->addGeometry(getPrefix() + "hub", &_geoActors[0]);
-        // scene->addPhysics(getPrefix() + "hub", &_physActors[0]);
+        scene->addPhysics(getPrefix() + "hub", &_physActors[0]);
         
         for(unsigned m = 1; m < _orbs.size() + 1; m++) {
             scene->addGeometry(getPrefix() + "node" + std::to_string(m), &_geoActors[m]);
-            /* _physActors[m].addForce({10.0F, 10.0F, 10.0F});
             scene->addPhysics(getPrefix() + "node" + std::to_string(m), &_physActors[m]);
+
             _links[m - 1] = Phys_Connector(*_geoActors[m].getPos(), *_geoActors.front().getPos());
-            scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub"); */
+            scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub");
         }
 
         for(unsigned l = _lines.size() + 1; l < _geoActors.size(); l++)
             scene->addGeometry(getPrefix() + "line" + std::to_string(l), &_geoActors[l]);
     }
+
+    void addForce(Vec3f force) { _physActors[0].addForce(force); }
 
 private:
     const unsigned short nodeCount;

@@ -38,7 +38,9 @@ void Animatrix_Demo::init(){
 }
 
 void Animatrix_Demo::loop(double frameTime){
-    scene2D.resolvePhysics(FORCE_Directional);
+#ifdef TOPL_ENABLE_PHYSICS
+    scene2D.resolvePhysics();
+#endif
 #ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].rotateAll({ 0.0F, 0.0F, (float)frameTime / 1000.0F });
 #endif

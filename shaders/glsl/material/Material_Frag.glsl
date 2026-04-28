@@ -31,22 +31,27 @@ layout(location = 0) out vec4 color_final;
 
 // Main
 
+vec3 cloud_effect(vec3 texcoord, float angle){
+	return vec3(abs(sin(texcoord.x + angle)), abs(cos(texcoord.y + angle)), abs(tan(texcoord.z + angle)));
+}
+
 void main() {
 	uvec4 modes = getModes(mode);
 	uint t = modes[1];
 	uint intensity = modes[2] + 1;
+	float a = 1.0 / intensity;
 
 	vec3 target = normal;
 	if(mode < 0) target = vertex_pos; // set target conditionally
 
 	vec3 texVals[8];
 #ifdef INCLUDE_TEXTURES
-	for(int t = 0; t < 8; t++) texVals[t] = vec3(modalTex((abs(mode) + t) % 8, texcoord));
+	for(int v = 0; v < 8; v++) texVals[v] = vec3(modalTex((abs(mode) + v) % 8, texcoord));
 #else
-	// for(int t = 0; t < 8; t++) texVals[t] = vec3(getRandColor(uint(mode) * t).r, getStepColor(uint(mode) * t).g, texcoord.z * t * uint(mode));
-	for(int t = 0; t < 8; t++) texVals[t] = smoothstep(vec3(getRandColor(uint(abs(mode) + 1) * (t + 1))), vec3(getStepColor(uint(abs(mode) + 1) * (t + 1))), target);
+	// for(int t = 0; t < 8; t++) texVals[t] = smoothstep(vec3(getRandColor(uint(abs(mode) + 1) * (t + 1))), vec3(getStepColor(uint(abs(mode) + 1) * (t + 1))), target);
+	for(int v = 0; v < 8; v++) texVals[v] = cloud_effect(texcoord * (t + 1), float(abs(mode) * (PI / 8) * v));
 #endif
-	color_final = vec4(texVals[0], 1.0F);
+	color_final = vec4(texVals[0], a);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
 	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));
 	vec3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;

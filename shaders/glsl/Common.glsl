@@ -59,6 +59,9 @@ layout(binding = 8) uniform sampler3D volumeTex;
 
 #endif
 
+#define TWO_PI 6.283185307
+#define PI 3.141592653
+#define HALF_PI 1.570796327
 #define COLOR_INC 0.00390625
 
 // uniform vec4 controlPoints[64];
