@@ -65,12 +65,22 @@ public:
             Geo_Actor* actor =  &_geoActors[a];
             Vec3f actor_pos = *actor->getPos() - getOrigin();
             
-            // TODO: Include proper transformation matrices
-            float x = (actor_pos[0] * cos(angles[0])) - (actor_pos[1] * sin(angles[0]));
-            float y = (actor_pos[0] * sin(angles[0])) + (actor_pos[1] * cos(angles[0]));
-            float z = actor_pos[2];
-            actor_pos = Vec3f({ x, y, z });
-            actor->setPos(getOrigin() + actor_pos);
+            float x = actor_pos[0]; float y = actor_pos[1]; float z = actor_pos[2];
+
+            if (angles[0] != 0.0) {
+                x = (x * cos(angles[0])) - (y * sin(angles[0]));
+                y = (x * sin(angles[0])) + (y * cos(angles[0]));
+            }
+            if(angles[1] != 0.0) {
+                y = (y * cos(angles[1])) - (z * sin(angles[1]));
+                z = (y * sin(angles[1])) + (z * cos(angles[1]));
+            }
+            if (angles[2] != 0.0) {
+                x = (x * cos(angles[2])) - (z * sin(angles[2]));
+                z = (x * sin(angles[2])) + (z * cos(angles[2]));
+            }
+
+            actor->setPos(getOrigin() + Vec3f({ x, y, z }));
         }
     }
     void scale(Vec3f scaleVec){

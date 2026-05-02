@@ -1,11 +1,12 @@
 #include <iostream>
 #include <thread>
+#include <functional>  // for std::ref
 
 #include "Hello.hpp"
 
-#define TARGET_BACKEND 1 // BACKEND_GL4
-// #define TARGET_BACKEND 2 // BACKEND_DX11
-// #define TARGET_BACKEND 3 // BACKEND_VK
+#define TARGET_BACKEND BACKEND_GL4
+// #define TARGET_BACKEND BACKEND_DX11
+// #define TARGET_BACKEND BACKEND_VK
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -17,6 +18,10 @@ static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 
 static Topl_Scene scene = Topl_Scene();
+
+static void background_empty_call(){
+	std::cout << "Thread output check" << std::endl;
+}
 
 static bool background_input_call(std::string& input) {
 	std::getline(std::cin, input);
@@ -50,11 +55,11 @@ MAIN_ENTRY {
         platform.awaitWindow(); // waiting for window on Android
 #endif
     std::cout << "Creating backend" << std::endl;
-#if TARGET_BACKEND==1
+#if TARGET_BACKEND==BACKEND_GL4
 	Hello_Renderer_GL4* renderer = new Hello_Renderer_GL4(platform.getContext());
-#elif defined(_WIN32) && TARGET_BACKEND==2
+#elif defined(_WIN32) && TARGET_BACKEND==BACKEND_DX11
 	Hello_Renderer_DX11* renderer = new Hello_Renderer_DX11(platform.getContext());
-#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND==3
+#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND==BACKEND_VK
 	Hello_Renderer_VK* renderer = new Hello_Renderer_VK(platform.getContext());
 #endif
 
@@ -75,14 +80,15 @@ MAIN_ENTRY {
 		
 		if (!backgroundThread.joinable() && commandArgs.empty()) {
 			commandArgs = "PLACEHOLDER";
-			backgroundThread = std::thread(background_input_call, commandArgs);
+			// backgroundThread = std::thread(background_empty_call);
+			backgroundThread = std::thread(background_input_call, std::ref(commandArgs));
 		}
 		// if (backgroundThread.joinable()) backgroundThread.detach();
 
 		double f1 = _ticker.getRelMillisecs();
 		renderer->clear();
 		double f2 = _ticker.getRelMillisecs();
-#if !defined(__ANDROID__) && TARGET_BACKEND!=3
+#if !defined(__ANDROID__) && TARGET_BACKEND!=BACKEND_VK
 		renderer->setDrawPipeline(false);
 		renderer->dispatch(&calcPoints);
 		renderer->setDrawPipeline(true);

@@ -9,7 +9,7 @@ struct VS_INPUT {
 float3x3 getRotMatrix(float3 angles) {
 	float3x3 zRotMatrix = { // Roll
 		cos(angles.x), sin(angles.x), 0,
-		-1 * sin(angles.x), cos(angles.x), 0,
+		-sin(angles.x), cos(angles.x), 0,
 		0, 0, 1
 	};
 
@@ -22,7 +22,7 @@ float3x3 getRotMatrix(float3 angles) {
 	float3x3 yRotMatrix = { // Yaw
 		cos(angles.z), 0, sin(angles.z),
 		0, 1, 0,
-		-1.0 * sin(angles.z), 0, cos(angles.z)
+		-sin(angles.z), 0, cos(angles.z)
 	};
 
 	return mul(mul(zRotMatrix, yRotMatrix), xRotMatrix);
