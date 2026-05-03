@@ -37,16 +37,17 @@ struct VS_OUTPUT {
 	uint farthest_idx : INDEX2; // furthest distance control point
 };
 
-float3 getCtrlPoint(uint index){
+float3 getCtrlPt(uint index){
 	// float4 transformPoint = mul(ctrlMatrix, float4(target, 1.0));
 	float3 ctrlPoint = (ctrlPoints[index] * scale) + offset;
-	return mul(getRotMatrix(rotation), ctrlPoint);
+	return ctrlPoint - float3(cam_pos.x, cam_pos.y, cam_pos.z);
+	// return mul(getRotMatrix(rotation), ctrlPoint - float3(cam_pos.x, cam_pos.y, cam_pos.z));
 }
 
 uint calcNearestIndex(float3 target){ // TODO: Calculate with control matrix
 	uint index = 0;
 	for(uint n = 1; n < 8; n++) 
-		if(length(target - getCtrlPoint(n)) < length(target - getCtrlPoint(index))) index = n;
+		if(length(target - getCtrlPt(n)) < length(target - getCtrlPt(index))) index = n;
 	return index;
 }
 
@@ -56,14 +57,14 @@ uint calcSecondIndex(float3 target){ // TODO: Calculate with control matrix
 	uint index = 0;
 	if(index == nearIdx) index++; // avoids overriding closest point
 	for(uint n = 1; n < 8; n++) 
-		if(length(target - getCtrlPoint(n)) < length(target - getCtrlPoint(index)) && n != nearIdx) index = n;
+		if(length(target - getCtrlPt(n)) < length(target - getCtrlPt(index)) && n != nearIdx) index = n;
 	return index;
 }
 
 uint calcFarthestIndex(float3 target){ // TODO: Calculate with control matrix
 	uint index = 0;
 	for(uint n = 1; n < 8; n++) 
-		if(length(target - getCtrlPoint(n)) > length(target - getCtrlPoint(index))) index = n;
+		if(length(target - getCtrlPt(n)) > length(target - getCtrlPt(index))) index = n;
 	return index;
 }
 

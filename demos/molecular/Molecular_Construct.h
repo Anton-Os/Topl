@@ -58,7 +58,9 @@ struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
             scene->addPhysics(getPrefix() + "node" + std::to_string(m), &_physActors[m]);
 
             _links[m - 1] = Phys_Connector(*_geoActors[m].getPos(), *_geoActors.front().getPos());
-            scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub");
+            // _links[m - 1].kVal = PHYS_DEFAULT_K / 50;
+            if (m == 1) // for testing
+                scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub");
         }
 
         for(unsigned l = _lines.size() + 1; l < _geoActors.size(); l++)

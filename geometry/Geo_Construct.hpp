@@ -46,18 +46,10 @@ public:
     Phys_Actor* getPhysActor(unsigned short a){ return (a < _physActors.size())? &_physActors[a] : nullptr; }
     Phys_Connector* getPhysLink(unsigned short l){ return (l < _links.size())? &_links[l] : nullptr; }
 #endif
-    void shift(Vec3f vec){ 
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec);
-    }
-    void toggleShow(){
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = !_geoActors[g].isShown;
-    }
-    void toggleShow(bool isShown){
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = isShown;
-    }
-    void rotateAll(Vec3f angles){ // piecewise rotation of all actors
-        for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updateRot(angles);
-    }
+    void shift(Vec3f vec){ for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updatePos(vec); }
+    void toggleShow(){ for (unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = !_geoActors[g].isShown;  }
+    void toggleShow(bool isShown){ for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].isShown = isShown; }
+    void rotateAll(Vec3f angles){ for(unsigned g = 0; g < _geoActors.size(); g++) _geoActors[g].updateRot(angles); }
 	void rotate(Vec3f angles){ // full rotation around origin
         rotateAll(angles);
 

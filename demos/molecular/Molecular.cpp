@@ -42,11 +42,6 @@ void Molecular_Demo::init(){
                 ((float)rand() / (float)RAND_MAX - 0.5F) * MOLECULAR_SIZE 
             }));
             constructs[m][c].configure(&scene);
-            /* if (c > 0) {
-                construct_links[c - 1].preset(constructs[m][c - 1].getOrigin(), constructs[m][c].getOrigin());
-                construct_links[c].kVal = PHYS_DEFAULT_K / 10;
-                scene.addLink(&construct_links[c - 1], constructs[m][c - 1].getPrefix() + "hub",  constructs[m][c].getPrefix() + "hub");
-            } */
         }
 
     _renderer->buildScene(&scene);

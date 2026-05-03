@@ -49,18 +49,19 @@ struct Pattern_PixelShader : public Topl_Shader {
 
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {
-		_embedMap.insert({ "Custom_Pattern",
-			std::string("float xChecker = (abs(coords.x) * m) - floor((abs(coords.x) * m));")
-			+ "float yChecker = (abs(coords.y) * m) - floor((abs(coords.y) * m));"
-			+ "float zChecker = (abs(coords.z) * m) - floor((abs(coords.z) * m));"
-			// + "coords = vec3(xChecker, yChecker, zChecker);"
+		_embedMap.insert({ "Custom_Pattern", std::string("m = abs(mode) / 100; \n")
+			+ "float xc = (abs(coords.x) * m) - floor((abs(coords.x) * m)); \n"
+			+ "float yc = (abs(coords.y) * m) - floor((abs(coords.y) * m)); \n"
+			+ "float zc = (abs(coords.z) * m) - floor((abs(coords.z) * m)); \n"
+			+ "if(m > 0) coords = cross(coords, vec3(xc, yc, zc));"
 		});
 	}
 };
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
-		_embedMap.insert({ "Custom_Pattern", "if(!getInBound(sin(coords.x) + cos(coords.y) + tan(coords.z), 0.25)) coords *= float3(0, 0, 0);"
+		_embedMap.insert({ "Custom_Pattern", std::string("if(abs(mode) / 100 > 0){ \n")
+			+ "if(!getInBound(sin(coords.x) + cos(coords.y) + tan(coords.z), pow(0.5, fmod(abs(mode) / 100, 10.0)))) coords *= float3(0, 0, 0); \n"
 			// "if(coords.x + coords.y + coords.z > -0.1 && coords.x + coords.y + coords.z < 0.1) coords *= -1.0;"
 			/* std::string("coords.x = abs(offset.x) * sin(t / 1000) * length(offset - coords); \n")
 			+ "coords.y = abs(offset.y) * cos(t / 1000) * length(offset - coords); \n"
@@ -70,6 +71,7 @@ struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
 			// + std::string("float g = abs(sin(coords.y) * cos(coords.z) * tan(coords.x)); \n")
 			// + std::string("float b = abs(pow(pow(sin(coords.z), cos(coords.x)), tan(coords.y))); \n")
 			// + std::string("coords = float3(r, g, b) * abs(sin(t / 100));")
+			+ "} \n"
 		});
 	}
 };

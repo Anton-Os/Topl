@@ -183,6 +183,13 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     _renderer->texturizeScene(&_overlays.scene);
 }
 
+void Topl_Program::getInput(){
+    std::getline(std::cin, userInput);
+    std::cout << "Input received from thread: " << userInput << std::endl;
+    // TODO: Parse user input here
+    userInput = ""; // erasing data
+}
+
 void Topl_Program::_onAnyKey(keyboard_t k){
     std::string commandArgs;
     // std::cout << "Key is " << std::to_string(k) << std::endl;
@@ -195,9 +202,8 @@ void Topl_Program::_onAnyKey(keyboard_t k){
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
     else if (k == '`' && isEnable_console) {
-        // std::thread backgroundThread(background_input_call, commandArgs);
-        // if (backgroundThread.joinable()) backgroundThread.detach();
-        std::cout << "Begin console thread here!" << std::endl;
+        std::cout << "Begin console thread!" << std::endl;
+        if(!backgroundThread.joinable()) backgroundThread = std::thread(&Topl_Program::getInput, this); // thread is spawned here but conditionally joined in Runner loop
     }
 #ifdef TOPL_ENABLE_TEXTURES
     else if(k == TOPL_SCREENCAP_KEY && isEnable_screencap) {

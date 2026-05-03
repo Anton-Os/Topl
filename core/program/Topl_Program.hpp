@@ -123,6 +123,7 @@ protected:
     virtual void loop(millisec_t frameTime) = 0;
 	virtual void postloop();
 
+	void getInput();
 	void cleanup();
 
 	// Rendering
@@ -157,6 +158,7 @@ protected:
 	bool isEnable_background = PROGRAM_IS_BK, isEnable_overlays = PROGRAM_IS_OVERLAY;
 private:
 	static Topl_Pipeline* _savedPipeline;
+	std::thread backgroundThread;
 
     void _onAnyKey(keyboard_t k);
     void _onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor);

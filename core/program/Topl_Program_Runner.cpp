@@ -75,6 +75,7 @@ void Topl_Program::run(){
 
     while (_platform->handleEvents()) {
         updateTimelines();
+        if(backgroundThread.joinable() && userInput != "") backgroundThread.join();
 
         if(_renderer != nullptr){
             _savedPipeline = _renderer->getPipeline();

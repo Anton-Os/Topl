@@ -4,7 +4,7 @@
 
 #define MOLECULAR_CONSTRUCTS 12
 #define MOLECULAR_LENGTH 20.0F
-#define MOLECULAR_FORCE 2000.0F
+#define MOLECULAR_FORCE 5000.0F
 #define MOLECULAR_SIZE 0.05F
 
 #include "Molecular_Construct.h"
