@@ -2,19 +2,16 @@ vec3 field1(vec3 ctrlPoint, vec3 coords){
 	float dist = length(ctrlPoint - coords);
 	float size = abs(mode % 100) * FIELD_SIZE;
 
-	return vec3(dist * abs(ctrlPoints[ctrl_index].r), dist * abs(ctrlPoints[ctrl_index].g), dist * abs(ctrlPoints[ctrl_index].b)) * size;
+	return vec3(dist * abs(ctrlPoint.r), dist * abs(ctrlPoint.g), dist * abs(ctrlPoint.b)) * size;
 }
 
-vec3 field2(vec3 ctrlPoint, vec3 coords, vec3 color){
-	float dist = length(ctrlPoint - coords);
-	float size = abs(mode % 100) * FIELD_SIZE;
-
-	ctrlPoint += vec3(sin(float(timeElapse) / 1000), cos(float(timeElapse) / 1000), tan(float(timeElapse) / 1000)) * size;
-	// else ctrlPoint *= (float(timeElapse) / 1000) * size;
-
-	ctrlPoint = vec3(sin(ctrlPoints[ctrl_index].x * abs(mode % 100)), cos(ctrlPoints[ctrl_index].y * abs(mode % 100)), tan(ctrlPoints[ctrl_index].z * abs(mode % 100))) * dist;
-
-	return ctrlPoint / color;
+vec3 field2(uint ctrlIndices[3], vec3 coords){
+	uint m = (mode % 10) + ((mode / 100) * 10) + 1;
+	return vec3(
+		length(ctrlPoints[ctrlIndices[0]] - coords),
+		length(ctrlPoints[ctrlIndices[1]] - coords),
+		length(ctrlPoints[ctrlIndices[2]] - coords)
+	) * m;
 }
 
 vec3 field3(vec3 ctrlPoint, vec3 coords){
@@ -67,7 +64,7 @@ vec3 field8(uint ctrlIdx, vec3 coords){
 	vec3 coord2 = ctrlPoints[(ctrlIdx + 1) % 8] - coords;
 	vec3 coord3 = ctrlPoints[(ctrlIdx - 1) % 8] - coords;
 
-	uint m = (mode % 100) + 1;
+	uint m = (mode % 10) + ((mode / 100) * 10) + 1;
 	return vec3(pow(distance(coord1, coords), m), pow(distance(coord2, coords), m), pow(distance(coord3, coords), m));
 }
 
@@ -77,7 +74,7 @@ vec3 field9(uint ctrlIdx, vec3 coords){
 		if(c != ctrlIdx && distance(coords, ctrlPoints[c]) < distance(coords, secondPoint))
 			secondPoint = ctrlPoints[c] - coords;
 	
-	uint m = (mode % 100) + 1;
+	uint m = (mode % 10) + ((mode / 100) * 10) + 1;
 	if(length(ctrlPoints[ctrlIdx] - secondPoint) > 0.01 * m) return (ctrlPoints[ctrlIdx] - secondPoint) * m;
 	else return (secondPoint - ctrlPoints[ctrlIdx]) * m;
 }
@@ -89,21 +86,26 @@ vec3 field10(uint ctrlIdx, vec3 coords){
 		if(c != ctrlIdx && distance(coords, nearestPoint) > distance(coords, farthestPoint))
 			farthestPoint = ctrlPoints[c];
 
-	uint m = (mode % 100) + 1;
+	uint m = (mode % 10) + ((mode / 100) * 10) + 1;
 	return vec3(abs(farthestPoint.x - nearestPoint.x), abs(farthestPoint.y - nearestPoint.y), abs(farthestPoint.z - nearestPoint.z)) * m;
 }
 
 vec3 field11(vec3 ctrlPoint, vec3 coords){
 	vec3 relCoord = ctrlPoint - coords;
-	float timeSeq = float((timeElapse / 2500) - floor(timeElapse / 2500)) * ((mode % 100) + 1);
+	uint m = (mode % 10) + ((mode / 100) * 10) + 1;
+	float timeSeq = float((timeElapse / 2500) - floor(timeElapse / 2500)) * m;
 
 	return vec3(abs(sin(relCoord.x * timeSeq)), abs(cos(relCoord.y * timeSeq)), abs(tan(relCoord.z * timeSeq)));
 }
 
-vec3 field12(uint ctrlIndices[3], vec3 coords){
-	return vec3(
-		length(ctrlPoints[ctrlIndices[0]] - coords),
-		length(ctrlPoints[ctrlIndices[1]] - coords),
-		length(ctrlPoints[ctrlIndices[2]] - coords)
-	);
+vec3 field12(vec3 ctrlPoint, vec3 coords, vec3 color){
+	float dist = length(ctrlPoint - coords);
+	float size = abs(mode % 100) * FIELD_SIZE;
+
+	ctrlPoint += vec3(sin(float(timeElapse) / 1000), cos(float(timeElapse) / 1000), tan(float(timeElapse) / 1000)) * size;
+	// else ctrlPoint *= (float(timeElapse) / 1000) * size;
+
+	ctrlPoint = vec3(sin(ctrlPoint.x * abs(mode % 100)), cos(ctrlPoint.y * abs(mode % 100)), tan(ctrlPoint.z * abs(mode % 100))) * dist;
+
+	return ctrlPoint / color;
 }

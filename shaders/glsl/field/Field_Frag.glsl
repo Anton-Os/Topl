@@ -33,10 +33,12 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) flat in uint ctrl_index;
-layout(location = 2) in vec3 vertex_pos;
-layout(location = 3) in vec4 vertex_color;
-layout(location = 4) in vec3 tangent;
+layout(location = 1) flat in uint near_index;
+layout(location = 2) flat in uint second_index;
+layout(location = 3) flat in uint far_index;
+layout(location = 4) in vec3 vertex_pos;
+layout(location = 5) in vec4 vertex_color;
+layout(location = 6) in vec3 tangent;
 
 layout(location = 0) out vec4 color_final;
 
@@ -47,10 +49,11 @@ layout(location = 0) out vec4 color_final;
 void main() {
 	vec3 target;
 	if(mode >= 0) target = vertex_pos;
-	else target = tangent;
+	else target = pos;
 
-	uint m = abs(mode) % 1000;
-	vec3 nearestPoint = ctrlPoints[ctrl_index];
+	uint m = abs(mode) / 10;
+	uint target_idx = near_index;
+	vec3 ctrlPoint = ctrlPoints[target_idx];
 
 	/* if(abs(mode) >= 1000){
 		vec3 change = vec3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
@@ -60,21 +63,21 @@ void main() {
 		else target *= change;
 	} */
 
-	for(uint r = 0; r < (abs(mode) / 1000) + 1; r++){
-		vec3 relCoord = nearestPoint - target;
-		uint indices[3] = { ctrl_index, (ctrl_index - 1) % 8, (ctrl_index + 1) % 8 };
-		
-		if(m > 0 && m < 100) target = field1(nearestPoint, target);  
-		else if(m >= 100 && m < 200) target = field2(nearestPoint, target, vec3(vertex_color));
-		else if(m >= 200 && m < 300) target = field3(nearestPoint, target);
-		else if(m >= 300 && m < 400) target = field4(ctrl_index, target);  
-		else if(m >= 400 && m < 500) target = field9(ctrl_index, target);
-		else if(m >= 500 && m < 600) target = field8(ctrl_index, target);
-		else if(m >= 600 && m < 700) target = field12(indices, target);
-		else if(m >= 700 && m < 800) target = field10(ctrl_index, target);
-		else if(m >= 800 && m < 900) target = field7(ctrl_index, target);
-		else target = vec3(length(relCoord), length(relCoord), length(relCoord));
+	// for(uint r = 0; r < (abs(mode) / 1000) + 1; r++){
+	vec3 relCoord = ctrlPoint - target;
+	uint indices[3] = { near_index, second_index, far_index };
+	
+	if(m % 10 == 1) target = field1(ctrlPoint, target);  
+	else if(m % 10 == 2) target = field2(indices, target);
+	else if(m % 10 == 3) target = field3(ctrlPoint, target);
+	else if(m % 10 == 4) target = field4(target_idx, target);  
+	else if(m % 10 == 5) target = field7(target_idx, target);
+	else if(m % 10 == 6) target = field8(target_idx, target);
+	else if(m % 10 == 7) target = field9(target_idx, target);
+	else if(m % 10 == 8) target = field10(target_idx, target);
+	else if(m % 10 == 9) target = field12(ctrlPoint, target, vec3(vertex_color));
+	else target = vec3(length(relCoord), length(relCoord), length(relCoord));
 
-		color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);
-	}
+	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);
+	// }
 }

@@ -30,10 +30,12 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 
 layout(location = 0) out vec3 pos_out;
-layout(location = 1) flat out uint ctrl_index_out;
-layout(location = 2) out vec3 vert_pos_out;
-layout(location = 3) out vec4 vert_color_out;
-layout(location = 4) out vec3 tangent_out;
+layout(location = 1) flat out uint near_index_out;
+layout(location = 2) flat out uint second_index_out;
+layout(location = 3) flat out uint far_index_out;
+layout(location = 4) out vec3 vert_pos_out;
+layout(location = 5) out vec4 vert_color_out;
+layout(location = 6) out vec3 tangent_out;
 
 vec3 getCtrlPoint(uint index){
 	vec3 ctrlPoint = (ctrlPoints[index] * scale) + offset;
@@ -69,9 +71,9 @@ void main() {
 	gl_Position = pos * getCamMatrix(cam_pos, look_pos) * projMatrix;
 
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
-	if(mode % 3 == 1) ctrl_index_out = calcSecondIndex(pos_out);
-	else if(mode % 3 == 2) ctrl_index_out = calcFarthestIndex(pos_out);
-	else ctrl_index_out = calcNearestIndex(pos_out);
+	near_index_out = calcNearestIndex(pos_out);
+	second_index_out = calcSecondIndex(pos_out);
+	far_index_out = calcFarthestIndex(pos_out);
 	vert_pos_out = vec3(pos);
 	vert_color_out = vec4(vert_color_in, 0.5); // getStepColor(ctrl_index_out);
 	tangent_out = tangent_in;
