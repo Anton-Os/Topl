@@ -15,7 +15,7 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if FALSE && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
+#if 1 && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
     #define TOPL_ENABLE_TEXTURES
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron
@@ -32,7 +32,7 @@
 #if TRUE
     #define TOPL_ENABLE_CUDA
 #endif
-#if TRUE
+#if OFF
     #define TOPL_ENABLE_AUDIO
 #endif
 
