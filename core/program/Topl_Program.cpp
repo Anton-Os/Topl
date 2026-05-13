@@ -346,8 +346,8 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_sculpt.shift({ -0.975F, 0.0F, 0.0F });
     _overlays.billboard_paint.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
     _overlays.billboard_paint.shift({ 0.975F, 0.0F, 0.0F });
-    _overlays.billboard_media.scale({ 0.3F, 0.14F, 1.0F });
-    _overlays.billboard_media.shift({ -0.185F, -0.97F, 0.0F });
+    _overlays.billboard_media.scale({ 0.3F, 0.105F, 1.0F });
+    _overlays.billboard_media.shift({ -0.187F, -0.968F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
     _overlays.billboard_object.toggleShow(false);
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
@@ -376,8 +376,10 @@ void Topl_Program::createOverlays(double size){
 
     for(unsigned short o = 0; o < PROGRAM_BILLBOARDS; o++){
         //if(o < PROGRAM_Timeline) _overlays.billboards[o]->scale({ ((o != PROGRAM_Object)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
-        if(o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline)? 0.015F : 0.045F, 0.0F });
-        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
+        if (o != PROGRAM_Timeline && o != PROGRAM_Media) {
+            _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
+            if (o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline) ? 0.015F : 0.045F, 0.0F });
+        }
         _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Program::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
 #ifdef TOPL_ENABLE_TEXTURES
         for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
