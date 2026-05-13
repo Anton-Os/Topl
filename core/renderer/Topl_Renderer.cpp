@@ -148,8 +148,8 @@ void Topl_Renderer::texturizeScene(const Topl_Scene* scene) {
 			if(actor != nullptr && renderID != INVALID_RENDERID){ // bound textures
 				const Sampler_2D* texture = scene->getTexture(actor->getName());
 				if(texture != nullptr){
-					if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
-					else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
+					// if(_texTagMap.find(texture) == _texTagMap.end()) _texTagMap[texture] = std::string(*texture->tag); // saves current tag
+					// else if(_texTagMap[texture] == std::string(*texture->tag)) continue; // match so continue loop
                     attachTex(texture, renderID);
 				}
 

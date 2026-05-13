@@ -44,7 +44,6 @@ void Animatrix_Demo::loop(double frameTime){
 #ifdef TOPL_ENABLE_MODELS
     for(unsigned m = 0; m < ANIMATRIX_MODELS; m++) models[m].rotateAll({ 0.0F, 0.0F, (float)frameTime / 1000.0F });
 #endif
-
     _renderer->setDrawMode(DRAW_Triangles);
     renderScene(&scene2D, _texPipeline, TEX_BASE); 
     _renderer->setDrawMode(DRAW_Lines);
@@ -73,7 +72,7 @@ void Animatrix_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 }
 
 MAIN_ENTRY {
-    Animatrix = new Animatrix_Demo(argv[0]);
+    Animatrix = new Animatrix_Demo(argv[0], BACKEND_GL4);
     Animatrix->run();
 
     delete(Animatrix);

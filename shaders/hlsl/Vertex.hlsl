@@ -70,11 +70,11 @@ float4x4 getCamMatrix(float4 cPos, float3 angles) {
 
 float4x4 getLookAtMatrix(float3 cPos, float3 aRot){
 	float3 lPos = cPos + float3(sin(-aRot.y), sin(aRot.x), cos(aRot.x + aRot.y));
-	float3 uPos = float3(0.0, sin(aRot.z), cos(aRot.z)); // computed up position
+	float3 uPos = float3(0.0, -sin(aRot.z), cos(aRot.z)); // computed up position
 
 	float3 forward = normalize(lPos);
 	float3 right = normalize(cross(forward, uPos));
-	float3 up = normalize(cross(right, uPos));
+	float3 up = -normalize(cross(right, uPos));
 	
 	float4x4 lookAtMatrix = {
 		right.x, right.y, right.z, -cPos.x,
