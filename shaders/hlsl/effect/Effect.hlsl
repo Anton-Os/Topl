@@ -11,7 +11,7 @@ float4 mandlebrotSet(float2 coord){
 	}
 
 	// if(i < FRACTAL_ITER) return float4(rgbColors(float2(x, y), cursorPos, i), 1.0);
-	if (i < FRACTAL_ITER) return float4(dynamicColors(coord, cursorPos, (x * x + y * y) / FRACTAL_SIZE, i), 1.0);
+	if (i < FRACTAL_ITER) return float4(rgbColors(coord, cursorPos, i), 1.0); // (x * x + y * y) / FRACTAL_SIZE
 	else return float4(0.0f, 0.0f, 0.0f, 0.0f); // black color within set
 }
 

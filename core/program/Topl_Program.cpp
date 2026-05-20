@@ -74,18 +74,18 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                         // if(p != PROGRAM_SUBMENUS - 1){
                             ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
                             for(unsigned t = 0; t < 9; t++){
-                                unsigned short i = t; // (t + p) % 8;
-                                unsigned r = (RAND_COLOR() & 0xFFFFFF) + 0x66000000;
+                                unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x66000000;
+                                unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x66000000;
                                 switch(p) {
-                                    case 0: _overlays.textures[i] = Sampler_Gradient((SIDE_Type)(rand() % 5), r, r); break; // random gradients
-                                    case 1: _overlays.textures[i] = Sampler_2D(linedImgOp(size, r, r, (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
-                                    case 2: _overlays.textures[i] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r, r })); break; // lines
-                                    case 3: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }); break; // basic noise
-                                    case 4: _overlays.textures[i] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1); break; // octave noise
-                                    case 5: _overlays.textures[i] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r })); break; // tiled noise
-                                    case 6: _overlays.textures[i] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1)); break; // added noise
-                                    case 7: _overlays.textures[i] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r, r }, (rand() % 4) + 1)); break; // subtracted noise
-                                    default: _overlays.textures[i] = Sampler_File(_overlays.scene.texImgPaths[t]);
+                                    case 0: _overlays.textures[t] = Sampler_Gradient((SIDE_Type)(rand() % 5), r1, r2); break; // random gradients
+                                    case 1: _overlays.textures[t] = Sampler_2D(linedImgOp(size, r1, r2, (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
+                                    case 2: _overlays.textures[t] = Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 })); break; // lines
+                                    case 3: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }); break; // basic noise
+                                    case 4: _overlays.textures[t] = Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1); break; // octave noise
+                                    case 5: _overlays.textures[t] = Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 })); break; // tiled noise
+                                    case 6: _overlays.textures[t] = Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // added noise
+                                    case 7: _overlays.textures[t] = Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // subtracted noise
+                                    default: _overlays.textures[t] = Sampler_File(_overlays.scene.texImgPaths[t]);
                                 }
                                 if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
                                 else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
@@ -346,7 +346,7 @@ void Topl_Program::createOverlays(double size){
     _overlays.billboard_sculpt.shift({ -0.975F, 0.0F, 0.0F });
     _overlays.billboard_paint.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
     _overlays.billboard_paint.shift({ 0.975F, 0.0F, 0.0F });
-    _overlays.billboard_media.scale({ 0.3F, 0.105F, 1.0F });
+    _overlays.billboard_media.scale({ 0.3F, 0.108F, 1.0F });
     _overlays.billboard_media.shift({ -0.187F, -0.968F, 0.0F });
     _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
     _overlays.billboard_object.toggleShow(false);

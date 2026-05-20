@@ -5,8 +5,8 @@
 
 #include "support_def.h"
 
-#define SAMPLER_HEIGHT 256 * 4
-#define SAMPLER_WIDTH 256 * 4
+#define SAMPLER_HEIGHT 1024
+#define SAMPLER_WIDTH 1024
 
 // typedef Rasteron_Image* (*imageCallback)();
 
@@ -52,6 +52,7 @@ struct Sampler_2D : public Sampler_Target {
 	void putImg(Rasteron_Image* targetImg){
 		cleanup();
 		image = targetImg;
+		// writeFileImageRaw_bmp(targetImg->name, targetImg->height, targetImg->width, targetImg->data); // test
 		tag = &image->name;
 	}
 

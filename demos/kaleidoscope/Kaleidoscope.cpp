@@ -36,6 +36,8 @@ void Kaleidoscope_Demo::init(){
 
     // Topl_Program::mode = 8; // test
     // for(unsigned c = 0; c < 9; c++) constructs[c].toggleShow(Topl_Program::mode == c);
+
+    onOverlayUpdate(PROGRAM_Sculpt, 0); // sets default mode to hide other geometry
 }
 
 void Kaleidoscope_Demo::loop(double frameTime){

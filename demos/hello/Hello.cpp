@@ -45,8 +45,9 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
 }
 
 MAIN_ENTRY {
+	std::cout << "Creating platform" << std::endl;
 #ifndef __ANDROID__
-    Platform platform(argv[0], "Hello");
+	Platform platform(argv[0], "Hello");
     std::cout << "Creating window" << std::endl;
 	platform.createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
 #else

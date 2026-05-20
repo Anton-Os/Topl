@@ -47,12 +47,12 @@ struct Cubegate_Demo : public Topl_Program {
 #ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D cubeTex = Sampler_3D(256);
 
-    Sampler_2D frontFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D backFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D topFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D bottomFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D leftFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D rightFaceTex = Sampler_Color((RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D frontFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D backFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D topFaceTex = Sampler_Gradient(SIDE_Top, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D bottomFaceTex = Sampler_Gradient(SIDE_Bottom, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D leftFaceTex = Sampler_Gradient(SIDE_Left , (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D rightFaceTex = Sampler_Gradient(SIDE_Right, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
 #endif
 private:
     void onAnyKey(keyboard_t key);

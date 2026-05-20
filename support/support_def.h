@@ -32,7 +32,7 @@
 #if TRUE
     #define TOPL_ENABLE_CUDA
 #endif
-#if OFF
+#if ON
     #define TOPL_ENABLE_AUDIO
 #endif
 
