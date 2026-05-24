@@ -58,18 +58,19 @@ public:
             Vec3f actor_pos = *actor->getPos() - getOrigin();
             
             float x = actor_pos[0]; float y = actor_pos[1]; float z = actor_pos[2];
+            float a1 = angles[0]; float a3 = angles[0]; float a2 = angles[2];
 
-            if (angles[0] != 0.0) {
-                x = (x * cos(angles[0])) - (y * sin(angles[0]));
-                y = (x * sin(angles[0])) + (y * cos(angles[0]));
+            if (a1 != 0.0) {
+                x = (x * cos(a1)) - (y * sin(a1));
+                y = (x * sin(a1)) + (y * cos(a1));
             }
-            if(angles[1] != 0.0) {
-                y = (y * cos(angles[1])) - (z * sin(angles[1]));
-                z = (y * sin(angles[1])) + (z * cos(angles[1]));
+            if(a2 != 0.0) {
+                y = (y * cos(a2)) - (z * sin(a2));
+                z = (y * sin(a2)) + (z * cos(a2));
             }
-            if (angles[2] != 0.0) {
-                x = (x * cos(angles[2])) - (z * sin(angles[2]));
-                z = (x * sin(angles[2])) + (z * cos(angles[2]));
+            if (a3 != 0.0) {
+                x = (x * cos(a3)) - (z * sin(a3));
+                z = (x * sin(a3)) + (z * -cos(a3));
             }
 
             actor->setPos(getOrigin() + Vec3f({ x, y, z }));

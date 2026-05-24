@@ -149,7 +149,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Meshform = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Meshform = new Meshform_Demo(argv[0]);
     Meshform->run();
 
     delete(Meshform);

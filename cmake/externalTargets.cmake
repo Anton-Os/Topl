@@ -54,21 +54,21 @@ else()
 endif()
 
 if(SUPPORT_AUDIO)
-    ExternalProject_Add(JUCE
-        GIT_REPOSITORY "https://github.com/juce-framework/JUCE.git"
-        GIT_TAG "501c07674e1ad693085a7e7c398f205c2677f5da"
+    ExternalProject_Add(miniaudio
+        GIT_REPOSITORY "https://github.com/mackron/miniaudio.git"
+        GIT_TAG "9634bedb5b5a2ca38c1ee7108a9358a4e233f14d"
 
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 
-        PREFIX ${EXTERNAL_PROJ_DIR}/JUCE
+        PREFIX ${EXTERNAL_PROJ_DIR}/miniaudio
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-    find_package(JUCE PATHS ${CMAKE_INSTALL_PREFIX}/lib/JUCE)
-    if(JUCE_FOUND)
-        message(STATUS "JUCE loading success!")
+    find_package(miniaudio PATHS ${CMAKE_INSTALL_PREFIX}/lib/miniaudio)
+    if(miniaudio_FOUND)
+        message(STATUS "miniaudio loading success!")
     else()
-        message(WARNING "JUCE loading failure, audio playback non-functional")
+        message(WARNING "miniaudio loading failure, audio playback non-functional")
     endif()
 endif()
 

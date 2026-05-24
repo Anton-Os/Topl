@@ -1,24 +1,27 @@
+#include "Geo_Construct.hpp"
+
 enum CUBEGATE_Face {
     CUBEGATE_Front = 0, CUBEGATE_Back = 1, CUBEGATE_Top = 2,
     CUBEGATE_Bottom = 3, CUBEGATE_Left = 4, CUBEGATE_Right = 5,
 };
 
 struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
-    Cubegate_Construct(Geo_Mesh* faceMesh) : Geo_Construct("cubegate", faceMesh, 6) { 
+    Cubegate_Construct(Geo_Surface* faceMesh) : Geo_Construct(CUBEGATE_NAME, faceMesh, 6) { 
+        surface = faceMesh;
         if (CUBEGATE_TESS > 0) faceMesh->tesselate(CUBEGATE_TESS);
         init(); 
     }
 
     void init() override {
-        _geoActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, CUBEGATE_SIZE / 2.0F });
-        _geoActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -CUBEGATE_SIZE / 2.0F });
-        _geoActors[CUBEGATE_Top].setPos({ 0.0F, CUBEGATE_SIZE / 2.0F, 0.0F });
+        _geoActors[CUBEGATE_Front].setPos({ 0.0F, 0.0F, surface->getRadius() / 2.0F });
+        _geoActors[CUBEGATE_Back].setPos({ 0.0F, 0.0F, -surface->getRadius() / 2.0F });
+        _geoActors[CUBEGATE_Top].setPos({ 0.0F, surface->getRadius() / 2.0F, 0.0F });
         _geoActors[CUBEGATE_Top].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
-        _geoActors[CUBEGATE_Bottom].setPos({ 0.0F, -CUBEGATE_SIZE / 2.0F, 0.0F });
+        _geoActors[CUBEGATE_Bottom].setPos({ 0.0F, -surface->getRadius() / 2.0F, 0.0F });
         _geoActors[CUBEGATE_Bottom].setRot({ 0.0F, (MATH_PI / 2.0F), 0.0F });
-        _geoActors[CUBEGATE_Left].setPos({ -CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
+        _geoActors[CUBEGATE_Left].setPos({ -surface->getRadius() / 2.0F, 0.0F, 0.0F });
         _geoActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
-        _geoActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
+        _geoActors[CUBEGATE_Right].setPos({ surface->getRadius() / 2.0F, 0.0F, 0.0F });
         _geoActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
     }
 
@@ -40,4 +43,6 @@ struct Cubegate_Construct : public Geo_Construct<Cubegate_Construct> {
         scene->addTexture(getPrefix() + "backFace", textures[CUBEGATE_Back]);
     }
 #endif
+
+    Geo_Surface* surface;
 };

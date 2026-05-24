@@ -9,7 +9,11 @@ void Cubegate_Demo::onAnyKey(keyboard_t key) {
     }
 }
 
-void Cubegate_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) {} // TODO: Add body
+void Cubegate_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ 
+    if (menu == PROGRAM_Sculpt)
+        for (unsigned c = 0; c < 9; c++)
+            cubeGates[c].toggleShow(c == paneIndex);
+} 
 
 void Cubegate_Demo::preloop() {
     Topl_Program::preloop();
@@ -56,17 +60,20 @@ void Cubegate_Demo::init() {
     faceActors[CUBEGATE_Left].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
     faceActors[CUBEGATE_Right].setPos({ CUBEGATE_SIZE / 2.0F, 0.0F, 0.0F });
     faceActors[CUBEGATE_Right].setRot({ 0.0F, 0.0F, (MATH_PI / 2.0F) });
-    cubeGate.configure(&scene);
+    // cubeGate.configure(&scene);
+    for (unsigned c = 0; c < 9; c++) cubeGates[c].configure(&scene);
 
     _renderer->buildScene(&scene);
 #ifdef TOPL_ENABLE_TEXTURES
-    scene.addTexture("frontFace", &frontFaceTex);
-    scene.addTexture("backFace", &backFaceTex);
-    scene.addTexture("topFace", &topFaceTex);
-    scene.addTexture("bottomFace", &bottomFaceTex);
-    scene.addTexture("leftFace", &leftFaceTex);
-    scene.addTexture("rightFace", &rightFaceTex);
-    scene.addVolumeTex("cube", &cubeTex);
+    for (unsigned c = 5; c < 9; c++) {
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Front)->getName(), &frontFaceTex);
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Back)->getName(), &backFaceTex);
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Top)->getName(), &topFaceTex);
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Bottom)->getName(), &bottomFaceTex);
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Left)->getName(), &leftFaceTex);
+        scene.addTexture(cubeGates[c].getGeoActor(CUBEGATE_Right)->getName(), &rightFaceTex);
+        for(unsigned f = 0; f < 6; f++) scene.addVolumeTex(cubeGates[c].getGeoActor(f)->getName(), &cubeTex);
+    }
 
     _renderer->texturizeScene(&scene);
 #endif
@@ -84,8 +91,10 @@ void Cubegate_Demo::init() {
 }
 
 void Cubegate_Demo::loop(double frameTime) {
+    float f = (float)frameTime * -0.00000001F;
     // cubeActor.updateRot({ 0.0F, 0.0F, (float)frameTime * 0.00000025F });
-    cubeGate.rotate({ 0.0F, 0.0F, (float)frameTime * -0.00000001F });
+    // cubeGate.rotate({ 0.0F, 0.0F, (float)frameTime * -0.00000001F });
+    for (unsigned c = 0; c < 9; c++) cubeGates[c].rotate({ (c % 3 == 2)? f : 0.0f , (c % 3 == 1)? f : 0.0f , (c % 3 == 0)? f : 0.0f });
 
     /* renderScene(&worldScenes[0], _flatPipeline, Topl_Program::shaderMode);
     renderScene(&worldScenes[1], _beamsPipeline, Topl_Program::shaderMode);
@@ -98,7 +107,7 @@ void Cubegate_Demo::loop(double frameTime) {
 }
 
 MAIN_ENTRY{
-    Cubegate = new Cubegate_Demo(argv[0]);
+    Cubegate = new Cubegate_Demo(argv[0], BACKEND_GL4);
     Cubegate->run();
 
     delete(Cubegate);
