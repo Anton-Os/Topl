@@ -98,11 +98,4 @@ if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
     endif()
 endif()
 
-find_package(CUDAToolkit)
-if(CUDAToolkit_FOUND)
-    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
-else()
-    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
-endif()
-
 

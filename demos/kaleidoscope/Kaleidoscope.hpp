@@ -39,7 +39,7 @@ private:
     Topl_Scene scene = Topl_Scene(); // PROGRAM_SCENE;
     // Topl_Scene targetScene;
 
-    Flat_VertexShader vertexShader; Flat_PixelShader pixelShader;
+    Colored_VertexShader vertexShader; Colored_PixelShader pixelShader;
     Advance_TessCtrlShader tessCtrlShader;
     Advance_TessEvalShader tessEvalShader;
     Topl_Pipeline* tessPipeline;

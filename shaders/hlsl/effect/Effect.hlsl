@@ -1,5 +1,35 @@
-// Mandlebrot Set
-float4 mandlebrotSet(float2 coord){
+// Color functions
+
+float3 rgbColors(float2 coord, float2 cursor, uint i){
+	float dist = distance(coord, cursor) * float(1.0 / i);
+
+	if(abs(mode) % 10 == 0) return float3(1.0f / i, tan(i), 0.05f * i);
+	else if(abs(mode) % 10 == 1) return float3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
+	else if(abs(mode) % 10 == 2) return float3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
+	else if(abs(mode) % 10 == 3) return float3(dist - floor(dist), ceil(dist) - dist, pow(dist, dist));
+	else if(abs(mode) % 10 == 4) return float3(coord.x * i - floor(coord.x * i), ceil(coord.y * i) - coord.y * i, abs(dot(cursor, coord)) - floor(abs(dot(cursor, coord))));
+	else if(abs(mode) % 10 == 5) return float3(i / (FRACTAL_ITER * 0.75), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
+	else if(abs(mode) % 10 == 6) return getRandColor(i) * float3(length(coord - cursor), dot(coord, cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y)));
+	else if(abs(mode) % 10 == 7) return float3(sin(1.0f / coord.y) + cos(1.0f / coord.x), atan(cursor.y / cursor.x), pow(abs(cursor.x + coord.y), abs(coord.x * cursor.y)));
+	else if(abs(mode) % 10 == 8) return float3(sin(dot(coord, cursor)), sin(dot(-coord, cursor)), tan(cos(coord.x - cursor.x) / sin(coord.y - cursor.y)));
+	else if(abs(mode) % 10 == 9) return float3((coord - cursor) * i, dot(coord, cursor) / i); // TODO: Change this!
+	// getCoordDistances(coord, cursor, float2(0.5f, 0.5f)) * float3(pow(coord.x - cursor.x, 1.0 / i), pow(i, coord.y - cursor.y), pow(coord.x - cursor.x, coord.y - cursor.y));
+	else return float3(coord.x, coord.y, 1.0 / i);
+}
+
+float3 dynamicColors(float2 coord, float2 cursor, float f, uint i){
+	float dist = distance(coord, cursor) * float(1.0 / i);
+
+	float r = (coord.x - cursor.x) * (f / i); 
+	float g = (coord.y - cursor.y) * (f / i); 
+	float b = dist * float(i);
+
+	return float3(r, g, b) * ((abs(mode) % 10) + 1); // TODO: Modify this
+}
+
+// Fractal functions
+
+float4 mandlebrotSet(float2 coord){ // Mandlebrot Set
 	uint i = 0; // iteration count
 	double x = 0; double y = 0;
 
@@ -15,8 +45,7 @@ float4 mandlebrotSet(float2 coord){
 	else return float4(0.0f, 0.0f, 0.0f, 0.0f); // black color within set
 }
 
-// Julia set
-float4 juliaSet(float2 coord, float2 cursor){
+float4 juliaSet(float2 coord, float2 cursor){ // Julia set
 	uint i = 0; // iteration count
 
 	while (dot(coord, coord) <= FRACTAL_SIZE && i < FRACTAL_ITER) {
@@ -30,8 +59,7 @@ float4 juliaSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Trig set
-float4 trigSet(float2 coord){
+float4 trigSet(float2 coord){ // Trig set
 	uint i = 0; // iteration count
 
 	/* while (atan(coord.x) + tan(coord.y) <= FRACTAL_SIZE && i < FRACTAL_ITER) {
@@ -52,8 +80,7 @@ float4 trigSet(float2 coord){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Power Set
-float4 powerSet(float2 coord, float2 cursor){
+float4 powerSet(float2 coord, float2 cursor){ // Power Set
 	uint i = 0; // iteration count
 	coord += float2(0.5, 0.5);
 	cursor += float2(0.5, 0.5);
@@ -71,8 +98,7 @@ float4 powerSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Wing Set
-float4 wingSet(float2 coord){
+float4 wingSet(float2 coord){ // Wing Set
     uint i = 1;
 	coord = float2(abs(coord.x + 0.5), abs(coord.y + 0.5));
     float x = coord.x; float y = coord.y;
@@ -87,8 +113,7 @@ float4 wingSet(float2 coord){
     return float4(0, 0, 0, 0);
 }
 
-// Step Set
-float4 stepSet(float2 coord, float2 cursor){
+float4 stepSet(float2 coord, float2 cursor){ // Step Set
 	uint i = 1; // iteration count
 
 	while(((coord.y * (1.0 / coord.x)) - floor(coord.y * (1.0 / coord.x))) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -101,8 +126,7 @@ float4 stepSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Loop Set
-float4 loopSet(float2 coord){
+float4 loopSet(float2 coord){ // Loop Set
 	uint i = 1;
 
 	while(length(coord) * atan(coord.y / coord.x) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -114,8 +138,7 @@ float4 loopSet(float2 coord){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Shard Set
-float4 shardSet(float2 coord, float2 cursor){
+float4 shardSet(float2 coord, float2 cursor){ // Shard Set
 	uint i = 1; // iteration count
 
 	while(distance(coord, cursor) * atan((coord.x - cursor.x) / (coord.y - cursor.y)) < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -129,8 +152,7 @@ float4 shardSet(float2 coord, float2 cursor){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Sparse Set
-float4 sparseSet(float2 coord, float startMod){
+float4 sparseSet(float2 coord, float startMod){ // Sparse Set
 	uint i = 1; // iteration count
 	float m = startMod;
 
@@ -145,8 +167,7 @@ float4 sparseSet(float2 coord, float startMod){
 	return float4(0, 0, 0, 0); // black color within set
 }
 
-// Retro Set
-float4 retroSet(float2 coord, float2 cursor){
+float4 retroSet(float2 coord, float2 cursor){ // Retro Set
 	uint i = 1;
 	float2 points[5] = { float2(0.0, 0.0), float2(1.0, -1.0), float2(1.0, 1.0), float2(-0.1, 1.0), float2(-1.0, -1.0) };
 	float2 nearestPoint = points[0];

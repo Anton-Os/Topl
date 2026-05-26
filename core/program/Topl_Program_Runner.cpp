@@ -106,8 +106,8 @@ void Topl_Program::run(){
 unsigned Topl_Program::colorPicker(Topl_Scene* scene){
     Topl_Pipeline* pipeline = _renderer->getPipeline(); // saving
 
-    _flatVShader.setMode(FLAT_ID);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline);
+    _coloredVShader.setMode(COLORED_ID);
+    Topl_Factory::switchPipeline(_renderer, _coloredPipeline);
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(scene);
     _renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles
@@ -137,8 +137,8 @@ unsigned Topl_Program::colorPicker(Topl_Scene* scene){
 Vec3f Topl_Program::coordPicker(Topl_Scene* scene){
     Topl_Pipeline* pipeline = _renderer->getPipeline(); // saving
 
-    _flatVShader.setMode(FLAT_COORD);
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline); // TODO: Switch back to previous pipeline?
+    _coloredVShader.setMode(COLORED_COORD);
+    Topl_Factory::switchPipeline(_renderer, _coloredPipeline); // TODO: Switch back to previous pipeline?
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(scene);
     _renderer->drawScene(scene); // TODO: Make sure to draw actors as triangles

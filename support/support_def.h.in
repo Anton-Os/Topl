@@ -29,9 +29,9 @@
 #if ${SUPPORT_PHYSICS}
     #define TOPL_ENABLE_PHYSICS
 #endif
-#if ${SUPPORT_CUDA}
+/* #if ${SUPPORT_CUDA}
     #define TOPL_ENABLE_CUDA
-#endif
+#endif */
 #if ${SUPPORT_AUDIO}
     #define TOPL_ENABLE_AUDIO
 #endif

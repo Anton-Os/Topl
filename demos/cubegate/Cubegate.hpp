@@ -23,7 +23,6 @@ struct Cubegate_Demo : public Topl_Program {
 
     void preloop() override;
 
-    Geo_Quad2D faceMesh = Geo_Quad2D(CUBEGATE_SIZE);
     Geo_Quad2D faceMeshes[9] = {
         Geo_Quad2D(CUBEGATE_SIZE), Geo_Quad2D(CUBEGATE_SIZE * 0.9), Geo_Quad2D(CUBEGATE_SIZE * 0.8),
         Geo_Quad2D(CUBEGATE_SIZE * 0.7), Geo_Quad2D(CUBEGATE_SIZE * 0.6), Geo_Quad2D(CUBEGATE_SIZE * 0.5),
@@ -33,7 +32,7 @@ struct Cubegate_Demo : public Topl_Program {
     // Geo_Circle2D faceMesh3 = Geo_Circle2D(CUBEGATE_SIZE);
     Geo_Quad3D cubeMesh = Geo_Quad3D(CUBEGATE_SIZE * 0.66F, CUBEGATE_SIZE * 0.66F);
 
-    Geo_Actor faceActors[6] = { &faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh };
+    // Geo_Actor faceActors[6] = {&faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh, &faceMesh};
     Geo_Actor cubeActor = Geo_Actor(&cubeMesh);
 
     Geo_Orb orbMesh = Geo_Orb(CUBEGATE_ORBSIZE);
@@ -48,7 +47,6 @@ struct Cubegate_Demo : public Topl_Program {
     Geo_Actor ceiling = Geo_Actor(&floorMesh);
     Geo_Actor walls = Geo_Actor(&wallMesh);
 
-    Cubegate_Construct cubeGate = Cubegate_Construct(&faceMesh); // TODO: Include multiple cubes
     Cubegate_Construct cubeGates[9] = {
         Cubegate_Construct(&faceMeshes[0]), Cubegate_Construct(&faceMeshes[1]), Cubegate_Construct(&faceMeshes[2]),
         Cubegate_Construct(&faceMeshes[3]), Cubegate_Construct(&faceMeshes[4]), Cubegate_Construct(&faceMeshes[5]),
@@ -57,12 +55,12 @@ struct Cubegate_Demo : public Topl_Program {
 #ifdef TOPL_ENABLE_TEXTURES
     Sampler_3D cubeTex = Sampler_3D(256);
 
-    Sampler_2D frontFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D backFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D topFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D bottomFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D leftFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
-    Sampler_2D rightFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000, (RAND_COLOR() & 0xFFFFFF) | 0xAA000000);
+    Sampler_2D frontFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
+    Sampler_2D backFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
+    Sampler_2D topFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
+    Sampler_2D bottomFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
+    Sampler_2D leftFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
+    Sampler_2D rightFaceTex = Sampler_Gradient(SIDE_Radial, (RAND_COLOR() & 0xFFFFFF) | 0xDD000000, (RAND_COLOR() & 0xFFFFFF) | 0x22000000);
 #endif
 private:
     void onAnyKey(keyboard_t key);

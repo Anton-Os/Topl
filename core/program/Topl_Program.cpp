@@ -162,7 +162,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                     }
                     else if(o == PROGRAM_Shaders){
                         switch (9 - p) {
-                            case 0: Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
+                            case 0: Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
                             case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                             case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
                             case 3: Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
@@ -249,7 +249,7 @@ void Topl_Program::_onAnyKey(keyboard_t k){
         else if (k == TOPL_DOWN_ARROW) Topl_Program::shaderMode *= -1;
         else if(isdigit(k)){
             switch(tolower(k)){ // use the menuMode parameter
-                case '0': Topl_Factory::switchPipeline(_renderer, _flatPipeline); break;
+                case '0': Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
                 case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
                 case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
                 case '3': Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;

@@ -2,7 +2,7 @@
 
 #include "Topl_Factory.hpp"
 
-#include "Flat_Shader.hpp"
+#include "Colored_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
 #include "Material_Shader.hpp"
@@ -136,15 +136,15 @@ protected:
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Material_VertexShader _materialVShader; Material_PixelShader _materialPShader;
-	Flat_VertexShader _flatVShader; Flat_PixelShader _flatPShader;
+	Colored_VertexShader _coloredVShader; Colored_PixelShader _coloredPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
 	Field_VertexShader _fieldVShader; Field_PixelShader _fieldPShader;
 	Pattern_VertexShader _patternVShader; Pattern_PixelShader _patternPShader;
 	Advance_GeometryShader _geomShaders[PROGRAM_PIPELINES]; Advance_TessCtrlShader _tessCtrlShaders[PROGRAM_PIPELINES]; Advance_TessEvalShader _tessEvalShaders[PROGRAM_PIPELINES];
 
-	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_flatVShader, &_effectVShader, &_canvasVShader, &_fieldVShader, &_patternVShader };
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_flatPipeline, *_effectPipeline, *_canvasPipeline, *_fieldPipeline, *_patternPipeline; // for easy reuse
+	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_coloredVShader, &_effectVShader, &_canvasVShader, &_fieldVShader, &_patternVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_coloredPipeline, *_effectPipeline, *_canvasPipeline, *_fieldPipeline, *_patternPipeline; // for easy reuse
 	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties

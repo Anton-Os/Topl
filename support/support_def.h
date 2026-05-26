@@ -29,9 +29,9 @@
 #if ON
     #define TOPL_ENABLE_PHYSICS
 #endif
-#if TRUE
+/* #if TRUE
     #define TOPL_ENABLE_CUDA
-#endif
+#endif */
 #if ON
     #define TOPL_ENABLE_AUDIO
 #endif

@@ -71,7 +71,7 @@ void Penscape_Demo::init(){
 }
 
 void Penscape_Demo::loop(double frameTime){
-    unsigned f = _renderer->getFrameCount();
+    float f = _renderer->getFrameCount() * 0.01F;
     _renderer->setDrawMode(drawMode);
 
     for (unsigned t = 0; t < brushSegments; t++) {
@@ -79,7 +79,7 @@ void Penscape_Demo::loop(double frameTime){
 
         for (unsigned a = 0; a < 3; a++)
             for (unsigned s = 0; s < 3; s++) {
-                if(t == 0) brushes3D[a][s].setRot(VEC_3F_ZERO);
+                if(t == 0) brushes3D[a][s].setRot({ -f, f, f });
                 else brushes3D[a][s].updateRot({ (float)(MATH_PI * 2) / brushSegments, 0.0F, 0.0F });
             }
         _renderer->updateScene(&scene);
@@ -88,7 +88,7 @@ void Penscape_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Penscape = new Penscape_Demo(argv[0]);
+    Penscape = new Penscape_Demo(argv[0], BACKEND_GL4);
     Penscape->run();
 
     delete(Penscape);

@@ -9,7 +9,7 @@ void Topl_Program::setPipelines(){
         _canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
         _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
         _patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
-        _flatVShader = Flat_VertexShader_GL4(); _flatPShader = Flat_PixelShader_GL4();
+        _coloredVShader = Colored_VertexShader_GL4(); _coloredPShader = Colored_PixelShader_GL4();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_GL4();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_GL4();
@@ -25,7 +25,7 @@ void Topl_Program::setPipelines(){
         _canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
         _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();
         _patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
-        _flatVShader = Flat_VertexShader_DX11(); _flatPShader = Flat_PixelShader_DX11();
+        _coloredVShader = Colored_VertexShader_DX11(); _coloredPShader = Colored_PixelShader_DX11();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_DX11();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_DX11();
@@ -33,7 +33,7 @@ void Topl_Program::setPipelines(){
         }
     }
 #endif
-    _flatPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader);
+    _coloredPipeline = Topl_Factory::genPipeline(_backend, &_coloredVShader, &_coloredPShader);
     _texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
     _beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
     _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
@@ -42,11 +42,11 @@ void Topl_Program::setPipelines(){
     _patternPipeline = Topl_Factory::genPipeline(_backend, &_patternVShader, &_patternPShader);
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails
 #ifndef __linux__!
-    _geomPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0] }); // flat shader for now
-    _tessPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
-    _longPipeline = Topl_Factory::genPipeline(_backend, &_flatVShader, &_flatPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
+    _geomPipeline = Topl_Factory::genPipeline(_backend, &_coloredVShader, &_coloredPShader, { &_geomShaders[0] }); // flat shader for now
+    _tessPipeline = Topl_Factory::genPipeline(_backend, &_coloredVShader, &_coloredPShader, { &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
+    _longPipeline = Topl_Factory::genPipeline(_backend, &_coloredVShader, &_coloredPShader, { &_geomShaders[0], &_tessCtrlShaders[0], &_tessEvalShaders[0] }); // flat shader for now
 #endif
-    Topl_Factory::switchPipeline(_renderer, _flatPipeline); // _texPipeline);
+    Topl_Factory::switchPipeline(_renderer, _coloredPipeline); // _texPipeline);
 }
 
 void Topl_Program::updatePipelines(){

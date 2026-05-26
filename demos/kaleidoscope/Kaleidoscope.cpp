@@ -26,12 +26,12 @@ void Kaleidoscope_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIn
     }
 }
 
-void Kaleidoscope_Demo::init(){
+void Kaleidoscope_Demo::init(){ 
     Platform::keyControl.addHandler(std::bind(&Kaleidoscope_Demo::onAnyKey, this, std::placeholders::_1));
 
     for(unsigned c = 0; c < 9; c++) constructs[c].configure(&scene);
 
-    _renderer->setPipeline(_flatPipeline);
+    _renderer->setPipeline(_coloredPipeline);
     _renderer->buildScene(&scene);
 
     // Topl_Program::mode = 8; // test
@@ -45,9 +45,9 @@ void Kaleidoscope_Demo::loop(double frameTime){
     // isEnable_background = false;
 
     for (unsigned s = 0; s < constructs[sculptIndex].getActorCount(); s++) {
-        constructs[sculptIndex].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[sculptIndex].getSpinFactor(s) * 2), 0.0F, 0.0F }));
-        float scale = sin(constructs[sculptIndex].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
-        constructs[sculptIndex].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
+        constructs[sculptIndex].getGeoActor(s)->updateRot(Vec3f({ sin(constructs[sculptIndex].getSpinFactor(s)), 0.0F, 0.0F }));
+        // float scale = sin(constructs[sculptIndex].getSizeFactor(s) * totalTime * 0.000001) * 0.35F;
+        // constructs[sculptIndex].getGeoActor(s)->setSize(Vec3f({ 1.0F + scale, 1.0F + scale, 1.0F + scale }));
     }
 
     _renderer->setDrawMode(drawMode);
@@ -60,7 +60,7 @@ void Kaleidoscope_Demo::loop(double frameTime){
 // Main
 
 MAIN_ENTRY {
-    Kaleidoscope = new Kaleidoscope_Demo(argv[0]);
+    Kaleidoscope = new Kaleidoscope_Demo(argv[0], BACKEND_GL4);
     Kaleidoscope->run();
 
     delete(Kaleidoscope);

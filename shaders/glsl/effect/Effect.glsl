@@ -1,4 +1,27 @@
-vec3 mandlebrot(vec2 coord, float f){
+// Color functions
+
+vec3 rgbColors(vec2 coord, vec2 cursor, uint i){
+	float dist = pow(distance(coord, cursor), float(FRACTAL_SIZE - i));
+
+	if(mode % 10 == 0) return vec3(1.0f / i, tan(i), 0.05f * i);
+	else if(mode % 10 == 1) return vec3(getRandColor(i).r, getRandColor(i).g, getRandColor(i).b);
+	else if(mode % 10 == 2) return vec3(pow(coord.x, i), pow(coord.y, 1.0 / i), pow(coord.x, coord.y));
+	else if(mode % 10 == 3) return vec3(dist - floor(dist), ceil(dist) - dist, pow(dist, dist));
+	else if(mode % 10 == 4) return vec3(coord.x * i - floor(coord.y * i), ceil(coord.y * i) - coord.x * i, cursor.x * cursor.y * i - floor(cursor.x * cursor.y * i));
+	else if(mode % 10 == 5) return vec3(i / (FRACTAL_ITER * 0.5), (coord.x + coord.y) / FRACTAL_SIZE, ((coord.x - cursor.x) * (coord.y - cursor.y)) / FRACTAL_SIZE);
+	else if(mode % 10 == 6) return vec3(dot(coord, cursor), length(coord - cursor), smoothstep(0.0, 1.0, pow(coord.x - cursor.x, coord.y - cursor.y))) * getRandColor(i);
+	else if(mode % 10 == 7) return vec3(sin(1.0f / coord.x) + cos(1.0f / coord.y), atan(cursor.x / cursor.y), pow(abs(cursor.x + cursor.y), abs(coord.x * coord.y)));
+	else if(mode % 10 == 8) return vec3(sin(dot(coord, cursor)), cos(dot(-coord, cursor)), tan(sin(coord.x - cursor.x) / cos(coord.y - cursor.y)));
+	else if(mode % 10 == 9) return vec3((coord - cursor) * i, dot(coord, cursor) / i); // TODO: Change this!
+	// else if(mode % 10 == 9) return getCoordDistances(coord, cursor, vec2(0.5f, 0.5f)) * vec3(mod(sinh((coord.x - cursor.x) * i), 1.0), mod(cosh((coord.y - cursor.y) * i), 1.0), mod(tanh((coord.x - cursor.x) * (coord.y - cursor.y) * i), 1.0));
+	// else if(mode % 10 == 9) return vec3(abs(noise2(coord - cursor).x), abs(noise2(cursor - coord).y), noise1(float(i) * length(coord - cursor)));
+	else return vec3(coord.x, coord.y, 1.0 / i);
+	// TODO: Include more color options
+}
+
+// Fractal functions
+
+vec3 mandlebrot(vec2 coord, float f){ // Mandlebrot function
 	uint i = 0; // iteration count
     float x = 0; float y = 0;
 
@@ -13,12 +36,9 @@ vec3 mandlebrot(vec2 coord, float f){
 	else return vec3(0.0f, 0.0f, 0.0f); // black color within set
 }
 
-
 vec3 mandlebrotSet(vec2 coord){ return mandlebrot(coord, 2.0); }
 
-// Julia set
-
-vec3 julia(vec2 coord, vec2 cursor, float f){
+vec3 julia(vec2 coord, vec2 cursor, float f){ // Julia function
 	uint i = 0; // iteration count
 
 	while (dot(coord, coord) <= FRACTAL_SIZE && i < FRACTAL_ITER) {
@@ -34,8 +54,7 @@ vec3 julia(vec2 coord, vec2 cursor, float f){
 
 vec3 juliaSet(vec2 coord, vec2 cursor){ return julia(coord, cursor, 2.0); }
 
-// Trig Set
-vec3 trigSet(vec2 coord){
+vec3 trigSet(vec2 coord){ // Trig Set
 	uint i = 0; // iteration count
 
 	while(abs(sin(coord.x) + cos(coord.y)) * abs(1.0 / (coord.x * coord.y)) < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -49,8 +68,7 @@ vec3 trigSet(vec2 coord){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Power set
-vec3 powerSet(vec2 coord, vec2 cursor){
+vec3 powerSet(vec2 coord, vec2 cursor){ // Power set
 	uint i = 0; // iteration count
 
 	// while(pow(pow(abs(coord.x + coord.y), abs(coord.x - coord.y)), (float(i) + abs(coord.x * coord.y))) < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -66,8 +84,7 @@ vec3 powerSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Wing Set
-vec3 wingSet(vec2 coord){
+vec3 wingSet(vec2 coord){ // Wing Set
     uint i = 1;
 	coord = vec2(abs(coord.x), abs(coord.y));
     float x = coord.x; float y = coord.y;
@@ -84,8 +101,7 @@ vec3 wingSet(vec2 coord){
     return vec3(0, 0, 0);
 }
 
-// Step Set
-vec3 stepSet(vec2 coord, vec2 cursor){
+vec3 stepSet(vec2 coord, vec2 cursor){ // Step Set
 	uint i = 1; // iteration count
 
 	while(((coord.y * (1.0 / coord.x)) - floor(coord.y * (1.0 / coord.x))) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -98,8 +114,7 @@ vec3 stepSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Loop Set
-vec3 loopSet(vec2 coord){
+vec3 loopSet(vec2 coord){ // Loop Set
 	uint i = 1;
 
 	while(length(coord) * atan(coord.y / coord.x) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -112,8 +127,7 @@ vec3 loopSet(vec2 coord){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Shard Set
-vec3 shardSet(vec2 coord, vec2 cursor){
+vec3 shardSet(vec2 coord, vec2 cursor){ // Shard Set
 	uint i = 1; // iteration count
 
 	while(length(coord - cursor) * (abs(coord.x - cursor.x) + abs(coord.y - cursor.y)) * i < FRACTAL_SIZE && i < FRACTAL_ITER){
@@ -129,8 +143,7 @@ vec3 shardSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Sparse Set
-vec3 sparseSet(vec2 coord, float startMod){
+vec3 sparseSet(vec2 coord, float startMod){ // Sparse Set
 	uint i = 1;
 	float m = startMod;
 
@@ -145,8 +158,7 @@ vec3 sparseSet(vec2 coord, float startMod){
 	return vec3(0, 0, 0); // black color within set
 }
 
-// Retro Set
-vec3 retroSet(vec2 coord, vec2 cursor){
+vec3 retroSet(vec2 coord, vec2 cursor){ // Retro Set
 	uint i = 1;
 	vec2 points[5] = { vec2(0.0, 0.0), vec2(1.0, -1.0), vec2(1.0, 1.0), vec2(-0.1, 1.0), vec2(-1.0, -1.0) };
 	vec2 nearestPoint = points[uint(floor(dot(coord, cursor) * 100)) % 5];
@@ -163,8 +175,7 @@ vec3 retroSet(vec2 coord, vec2 cursor){
 	return vec3(0, 0, 0); // black color within set
 }
 
-
-// Recursive Fracals
+// Recursive functions
 
 vec3 recursiveAlgo(vec3 target1, vec3 target2, vec3 target3){
     uint i = 1;
