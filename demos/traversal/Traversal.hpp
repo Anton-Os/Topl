@@ -67,7 +67,7 @@ private:
 #ifdef TOPL_ENABLE_TEXTURES
     std::vector<Sampler_2D*> sliceTextures;
     Sampler_2D sceneTextures[MAX_TEX_BINDINGS] = {
-        Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords), Sampler_Map(doorwayCoords)
+        Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords)
     };
 #endif
     Topl_Scene scene = PROGRAM_SCENE;

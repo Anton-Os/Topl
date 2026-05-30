@@ -7,10 +7,15 @@ static bool isRotating = true;
 void Meshform_Demo::onAnyKey(keyboard_t key){
     static Vec3f incVec = Vec3f({ MESHFORM_INC, MESHFORM_INC, MESHFORM_INC });
     static Vec3f decVec = Vec3f({ MESHFORM_DEC, MESHFORM_DEC, MESHFORM_DEC });
-    switch(tolower(key)){
-        case 'i': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; break;
-        case 'o': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; break;
-        case 'p': for(unsigned m = 0; m < 3; m++) for(unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; break;
+
+    if (tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p')
+        for (unsigned m = 0; m < 3; m++) 
+            switch(tolower(key)) {
+                case 'i': for (unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 0; torusActors[m].isShown = m == 0; break;
+                case 'o': for (unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 1; torusActors[m].isShown = m == 1; break;
+                case 'p': for (unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == 2; torusActors[m].isShown = m == 2; break;
+            }
+    else switch(tolower(key)){
         case 'j': genShapes(std::make_pair(nullptr, decVec), std::make_pair(nullptr, incVec)); break;
         case 'k': genShapes(std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
         case 'l': genShapes(std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break;
@@ -28,8 +33,9 @@ void Meshform_Demo::onAnyKey(keyboard_t key){
 void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned color2){
     unsigned c1 = color1, c2 = color2;
     unsigned width = 1; unsigned height = 1;
-    for(unsigned d = 0; d < volumeImg.getDepth(); d++){
+    for(unsigned d = 0; d < volume.getDepth(); d++){
         (d % 2 == 0)? width++ : height++;
+        if (width > 16) width = 1; if (height > 16) height = 1;
         Rasteron_Image* sliceImg;
         switch(mode){
             case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
@@ -37,7 +43,7 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
             case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
             default: sliceImg = solidImgOp({ 256, 256 }, blend_colors(c1, c2, d / 256.0)); break;
         }
-        volumeImg.addSlice(sliceImg, d);
+        volume.addSlice(sliceImg, d);
         RASTERON_DEALLOC(sliceImg);
     }
 
@@ -65,42 +71,43 @@ void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
         });
 
         switch(paneIndex){
-            case 0: case 1: case 2: 
-                genShapes(std::make_pair(rigidTForm, VEC_3F_ONES + amount), std::make_pair(rigidTForm, VEC_3F_ONES - amount));
-            break; // Tesselation & Built-In Functions
-            case 3: case 4: case 5:
-                genShapes(std::make_pair(curveTForm, amount), std::make_pair(curveTForm, amount * -1.0F));
-            break;    // Basic Callback Functions
-            case 6: case 7: case 8: 
-                genShapes(std::make_pair(pullTForm, amount * 0.33F), std::make_pair(pullTForm, amount * 3.0F));
-            break; // Advanced Callback Functions
+            case 0: case 1: case 2: genShapes(std::make_pair(rigidTForm, VEC_3F_ONES + amount), std::make_pair(rigidTForm, VEC_3F_ONES - amount));break;
+            case 3: case 4: case 5: genShapes(std::make_pair(curveTForm, amount), std::make_pair(curveTForm, amount * -1.0F)); break; // Basic Callback Functions
+            case 6: case 7: case 8: genShapes(std::make_pair(pullTForm, amount * 0.33F), std::make_pair(pullTForm, amount * 3.0F)); break; // Advanced Callback Functions
         };
+    }
+    else if (menu == PROGRAM_Paint && isEnable_overlays) {
+        for (unsigned d = 0; d < volume.getDepth(); d++) {
+            const Sampler_2D* targetTex = getOverlaysScene()->getTexture(std::to_string((d % 8) + 1));
+            if (targetTex != nullptr) volume.addSlice(resizeImgOp({ 256, 256 }, targetTex->getImage()), d);
+        }
+        _renderer->texturizeScene(&scene);
     }
 }
 
 void Meshform_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Meshform_Demo::onAnyKey, this, std::placeholders::_1));
 
-    scene.addGeometry("torus", &torusActor);
     // torusActor.isShown = false;
     for(unsigned m = 0; m < 3; m++){
+        scene.addGeometry("torus" + std::to_string(m + 1), &torusActors[m]);
+        torusActors[m].setRot({0.0F, MATH_PI / 2.0F, 0.0F});
+
         orbActors[m][0].setPos({ 0.5F, 0.5F, 0.0F });
-        scene.addGeometry("trigOrb" + std::to_string(m), &orbActors[m][0]);
+        scene.addGeometry("trigOrb" + std::to_string(m + 1), &orbActors[m][0]);
         orbActors[m][1].setPos({ -0.5F, -0.5F, 0.0F });
-        scene.addGeometry("quadOrb" + std::to_string(m), &orbActors[m][1]);
+        scene.addGeometry("quadOrb" + std::to_string(m + 1), &orbActors[m][1]);
         orbActors[m][2].setPos({ 0.5F, -0.5F, 0.0F });
-        scene.addGeometry("hexOrb" + std::to_string(m), &orbActors[m][2]);
+        scene.addGeometry("hexOrb" + std::to_string(m + 1), &orbActors[m][2]);
         orbActors[m][3].setPos({ -0.5F, 0.5F, 0.0F });
-        scene.addGeometry("decOrb" + std::to_string(m), &orbActors[m][3]);
-        for (unsigned a = 0; a < 4; a++) {
-            orbActors[m][a].isShown = m == MESHFORM_INDEX;
-            // if (MESHFORM_TESS > 0) orbs[a][m]->tesselate(MESHFORM_TESS);
-        }
+        scene.addGeometry("decOrb" + std::to_string(m + 1), &orbActors[m][3]);
+        // for (unsigned a = 0; a < 4; a++) orbActors[m][a].isShown = m == MESHFORM_INDEX;
 #ifdef TOPL_ENABLE_TEXTURES
-        scene.addVolumeTex("trigOrb" + std::to_string(m), &volumeImg);
-        scene.addVolumeTex("quadOrb" + std::to_string(m), &volumeImg);
-        scene.addVolumeTex("hexOrb" + std::to_string(m), &volumeImg);
-        scene.addVolumeTex("decOrb" + std::to_string(m), &volumeImg);
+        scene.addVolumeTex("torus" + std::to_string(m + 1), &volume);
+        scene.addVolumeTex("trigOrb" + std::to_string(m + 1), &volume);
+        scene.addVolumeTex("quadOrb" + std::to_string(m + 1), &volume);
+        scene.addVolumeTex("hexOrb" + std::to_string(m + 1), &volume);
+        scene.addVolumeTex("decOrb" + std::to_string(m + 1), &volume);
 #endif
     }
 
@@ -109,7 +116,7 @@ void Meshform_Demo::init(){
         // if(MESHFORM_TESS > 0) freeforms[f]->tesselate(MESHFORM_TESS);
         scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
 #ifdef TOPL_ENABLE_TEXTURES
-        scene.addVolumeTex("freeform" + std::to_string(f + 1), &volumeImg);
+        scene.addVolumeTex("freeform" + std::to_string(f + 1), &volume);
 #endif
     }
 
@@ -128,20 +135,22 @@ void Meshform_Demo::init(){
 }
 
 void Meshform_Demo::loop(double frameTime){
-    for(unsigned a = 0; a < 4; a++)
-        if(isRotating){
-            Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
-            rotationVec = rotationVec * 0.001;
-            for(unsigned o = 0; o < 3; o++) orbActors[o][a].updateRot(rotationVec);
-            freeformActors[a].updateRot(rotationVec);
-            if(a == 0) torusActor.updateRot(rotationVec * -1.0F);
+    if (isRotating)
+        for (unsigned m = 0; m < 3; m++) {
+            torusActors[m].updateRot({ 0.0F, 0.0F, (float)frameTime * 0.0000001F * (m + 1)});
+            for (unsigned a = 0; a < 4; a++) {
+                Vec3f rotationVec = Vec3f({ (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX });
+                rotationVec = rotationVec * 0.001;
+                orbActors[m][a].updateRot(rotationVec);
+                freeformActors[a].updateRot(rotationVec);
+            }
         }
 
     // torus->drawMode = DRAW_Lines;
 #ifdef TOPL_ENABLE_TEXTURES
     _texVShader.setFlip(0);
     // _texVShader.setAntialiasing(0.001F, 10);
-    _texVShader.setSlice((_renderer->getFrameCount() % 256) * (1.0F / 256.0));
+    _texVShader.setSlice((_renderer->getFrameCount() % 1024) * (1.0F / 1024.0));
 #endif
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(&scene);

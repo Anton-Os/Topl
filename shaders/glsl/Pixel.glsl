@@ -10,7 +10,7 @@ vec3 range_effect(vec3 color){ // maps color to +- range
 
 #ifdef INCLUDE_TEXTURES
 
-vec4 modalTex(int m, vec3 texcoord){
+vec4 modalTex(uint m, vec3 texcoord){
     vec4 color;
     if(abs(m) % 10 == 8) color = texture(volumeTex, texcoord); // volumetric texture
     else if(abs(m) % 10 == 9) color = texture(volumeTex, vec3(texcoord.x, texcoord.y, SLICE)); // volumetric slice

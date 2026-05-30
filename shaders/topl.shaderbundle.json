@@ -7,13 +7,13 @@
         "type": "fragment",
         "file": "Topl/shaders/glsl/pixel/Idle_Frag.glsl"
     },
-    "Colored_Vertex": {
+    "Colorcode_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Colored_Vertex.glsl"
+        "file": "Topl/shaders/glsl/vertex/Colorcode_Vertex.glsl"
     },
-    "Colored_Frag": {
+    "Colorcode_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Colored_Frag.glsl"
+        "file": "Topl/shaders/glsl/pixel/Colorcode_Frag.glsl"
     },
     "Textured_Vertex": {
         "type": "vertex",

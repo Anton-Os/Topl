@@ -42,7 +42,11 @@ struct Meshform_Demo : public Topl_Program {
         new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
         new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
     };
-    Geo_Torus* torus = new Geo_Torus(0.5F, Shape3D({ 0.25F, 20, 20 }));
+    Geo_Torus* toruses[3] = {
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 20, 20})),
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 10, 10})),
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 80, 80})),
+    };
 
     Geo_Actor orbActors[3][4] = {
         { orbs[0][0], orbs[1][0], orbs[2][0], orbs[3][0] },
@@ -50,9 +54,9 @@ struct Meshform_Demo : public Topl_Program {
         { orbs[0][2], orbs[1][2], orbs[2][2], orbs[3][2] }
     };
     Geo_Actor freeformActors[4] = { Geo_Actor(freeforms[0]), Geo_Actor(freeforms[1]), Geo_Actor(freeforms[2]), Geo_Actor(freeforms[3]) };
-    Geo_Actor torusActor = Geo_Actor(torus);
+    Geo_Actor torusActors[3] = { Geo_Actor(toruses[0]), Geo_Actor(toruses[1]), Geo_Actor(toruses[2]) };
 #ifdef TOPL_ENABLE_TEXTURES
-    Sampler_3D volumeImg = Sampler_3D(256);
+    Sampler_3D volume = Sampler_3D(256);
 #endif
 private:
     void onAnyKey(keyboard_t key);

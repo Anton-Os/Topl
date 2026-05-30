@@ -33,13 +33,27 @@ struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 vertex_pos : POSITION;
 	float3 normal : NORMAL;
+	float3 texcoord : TEXCOORD;
 };
+
+uint getLightCount(uint mode){ // used for determining how many lights to combine
+    uint count = 1;
+    if(mode >= 3) count = 2;
+    if(mode >= 6) count = 3;
+    return count;
+}
+
+#ifdef INCLUDE_TEXTURES
+#include "beams/Textured.hlsl"
+#else
+#include "beams/Flat.hlsl"
+#endif
 
 // Main
 
 float4 main(PS_INPUT input) : SV_TARGET{
     uint4 modes = getModes(mode);
-	uint intensity = modes[2] + 1;
+	uint intensity = modes[3] + 1;
 
 	float3 target;
 	if(mode >= 0) target = input.normal; 
@@ -51,20 +65,16 @@ float4 main(PS_INPUT input) : SV_TARGET{
     else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
 
 	float cam_dist = distance(target, float3(cam_pos.x, cam_pos.y, cam_pos.z));
-	float3 ambient = lights[0][1] * (0.25 + (0.05 * intensity));
-	float3 diffuse = lights[0][1] * getDiffuse(lights[0][0], target - offset) * 0.5 * intensity;
-	float3 specular = lights[0][1] * getSpecular(cam_pos, target, float(intensity + 1) * 0.5);
-
-    if(modes[1] >= 3){ // combining lights
-        uint count = 2;
-        if(modes[1] >= 6) count = 3;
-        for(uint l = 1; l < count; l++){ // determining total light
-			float attenuation = 1.0 / count;
-            ambient += (lights[l][1] * (0.25 + (0.05 * intensity))) * attenuation;
-            diffuse += (lights[l][1] * getDiffuse(lights[l][0], target - offset) * 0.5 * intensity) * attenuation;
-            specular += (lights[l][1] * getSpecular(cam_pos, target, float(intensity + 1) * 0.5)) * attenuation;
-        }
-    }
+#ifdef INCLUDE_TEXTURES
+	float4 texTarget = modalTex(modes[3], input.texcoord);
+	float3 ambient = (texTarget.rgb + getAmbient_sampled(lights, intensity)) * 0.5;
+	float3 diffuse = getDiffuse_sampled(lights, target, intensity);
+	float3 specular = getSpecular_sampled(lights, target, intensity);
+#else
+	float3 ambient = getAmbient_flat(lights, intensity);
+	float3 diffuse = getDiffuse_flat(lights, target, intensity);
+	float3 specular = getSpecular_flat(lights, target, intensity);
+#endif
 
 	if(modes[0] == BEAMS_AMBIENT) return float4(ambient, 1.0f);
 	else if(modes[0] == BEAMS_DIFFUSE) return float4(diffuse, 1.0f);

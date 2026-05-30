@@ -22,6 +22,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 layout(location = 0) out vec3 pos_out;
 layout(location = 1) out vec3 vertex_pos_out;
 layout(location = 2) out vec3 normal_out;
+layout(location = 3) out vec3 texcoord_out;
 
 // Main
 
@@ -32,6 +33,7 @@ void main() {
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
 	normal_out = getRotMatrix(rotation) * normal_in;
+	texcoord_out = texcoord_in;
 #ifdef INCLUDE_EXTBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif

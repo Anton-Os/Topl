@@ -2,7 +2,7 @@
 
 #include "Topl_Factory.hpp"
 
-#include "Colored_Shader.hpp"
+#include "Colorcode_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
 #include "Material_Shader.hpp"
@@ -136,7 +136,7 @@ protected:
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Material_VertexShader _materialVShader; Material_PixelShader _materialPShader;
-	Colored_VertexShader _coloredVShader; Colored_PixelShader _coloredPShader;
+	Colorcode_VertexShader _coloredVShader; Colorcode_PixelShader _coloredPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
 	Field_VertexShader _fieldVShader; Field_PixelShader _fieldPShader;
@@ -155,7 +155,10 @@ protected:
 	void renderScene(Topl_Scene* scene){ renderScene(scene, nullptr, shaderMode); }
 	virtual void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){ std::cout << "Pane " << std::to_string((int)menu) << " pressed, index " << std::to_string(paneIndex) << std::endl; }
 
-	bool isEnable_background = PROGRAM_IS_BK, isEnable_overlays = PROGRAM_IS_OVERLAY;
+	bool isEnable_background = PROGRAM_IS_BK;
+	Topl_Scene* getBackgroundScene() { return (isEnable_background) ? &_background.scene : nullptr; }
+	bool isEnable_overlays = PROGRAM_IS_OVERLAY;
+	Topl_Scene* getOverlaysScene() { return (isEnable_overlays)? &_overlays.scene : nullptr; }
 private:
 	static Topl_Pipeline* _savedPipeline;
 	std::thread backgroundThread;
@@ -192,7 +195,7 @@ private:
         Topl_Scene scene = Topl_Scene(&camera, { &actor });
 #ifdef TOPL_ENABLE_TEXTURES
         Sampler_2D image = Sampler_Gradient(SIDE_Radial, 0xFF111111, 0xFFEEEEEE); // = Sampler_File(std::string(IMAGES_DIR) + "Background-Action.bmp");
-		Sampler_3D volumeImg = Sampler_3D(256); // Sampler_3D(SAMPLER_WIDTH, SAMPLER_HEIGHT, 32);
+		Sampler_3D volume = Sampler_3D(256); // Sampler_3D(SAMPLER_WIDTH, SAMPLER_HEIGHT, 32);
 #endif
 	} _background;
 

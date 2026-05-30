@@ -29,7 +29,7 @@ struct Kaleidoscope_Demo : public Topl_Program {
         Kaleidoscope_Construct(std::make_pair(3, CIRCLE_SEGMENTS), -KALEIDOSCOPE_TESS)
     };
 #ifdef TOPL_ENABLE_TEXTURES
-    Sampler_3D volumeImg = Sampler_3D(KALEIDOSCOPE_SLICES);
+    Sampler_3D volume = Sampler_3D(KALEIDOSCOPE_SLICES);
 #endif
 private:
     void onAnyKey(keyboard_t key);
@@ -39,7 +39,7 @@ private:
     Topl_Scene scene = Topl_Scene(); // PROGRAM_SCENE;
     // Topl_Scene targetScene;
 
-    Colored_VertexShader vertexShader; Colored_PixelShader pixelShader;
+    Colorcode_VertexShader vertexShader; Colorcode_PixelShader pixelShader;
     Advance_TessCtrlShader tessCtrlShader;
     Advance_TessEvalShader tessEvalShader;
     Topl_Pipeline* tessPipeline;

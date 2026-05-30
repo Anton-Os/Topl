@@ -9,7 +9,7 @@ void Topl_Program::setPipelines(){
         _canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
         _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
         _patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
-        _coloredVShader = Colored_VertexShader_GL4(); _coloredPShader = Colored_PixelShader_GL4();
+        _coloredVShader = Colorcode_VertexShader_GL4(); _coloredPShader = Colorcode_PixelShader_GL4();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_GL4();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_GL4();
@@ -25,7 +25,7 @@ void Topl_Program::setPipelines(){
         _canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
         _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();
         _patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
-        _coloredVShader = Colored_VertexShader_DX11(); _coloredPShader = Colored_PixelShader_DX11();
+        _coloredVShader = Colorcode_VertexShader_DX11(); _coloredPShader = Colorcode_PixelShader_DX11();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_DX11();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_DX11();

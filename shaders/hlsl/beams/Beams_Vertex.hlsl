@@ -22,6 +22,7 @@ struct VS_OUTPUT {
 	float4 pos : SV_POSITION;
 	float3 vertex_pos : POSITION; // vertex position
 	float3 normal : NORMAL;
+	float3 texcoord: TEXCOORD;
 };
 
 // Main
@@ -34,6 +35,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.vertex_pos = float3(output.pos.x, output.pos.y, output.pos.z);
 	output.normal = mul(getRotMatrix(rotation), input.normal);
 	output.pos = mul(transpose(projMatrix), mul(getLookAtMatrix(cam_pos, look_pos), pos));
+	output.texcoord = input.texcoord;
 
 	return output;
 }

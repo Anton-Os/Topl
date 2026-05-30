@@ -23,7 +23,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
         }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint) {
-        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(radialCoords); // TODO: Modify this with different doorways
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(doorwayCoords); // TODO: Modify this with different doorways
         _renderer->texturizeScene(&scene);
     }
 #endif
@@ -49,9 +49,9 @@ void Traversal_Demo::init(){
         hexCorridors[c].drawMode = DRAW_Triangles;
         circleCorridors[c].drawMode = DRAW_Triangles;
         if (c > 0) {
-            squareCorridors[c].tesselate(c);
-            hexCorridors[c].tesselate(c);
-            circleCorridors[c].tesselate(c);
+            squareCorridors[c].tesselate(c * 2);
+            hexCorridors[c].tesselate(c * 2);
+            circleCorridors[c].tesselate(c * 2);
         }
         for (unsigned r = 0; r < TRAVERSAL_RECURSION; r++) {
             std::string corridorName = std::string("corridor") + std::to_string(c + 1) + "_" + std::to_string(r + 1);
@@ -77,27 +77,19 @@ void Traversal_Demo::init(){
 #endif
     }
     _renderer->buildScene(&scene);
+    _renderer->texturizeScene(&scene);
 }
 
 void Traversal_Demo::loop(double frameTime){
     static double totalTime = 0.0;
 
-    Topl_Program::camera.setPos({ 0.0F, 0.01F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH });
+    Topl_Program::camera.setPos({ 0.0F, 0.01F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH * 0.5F });
+    Topl_Program::camera.setRot({ (sinf((float)totalTime * speed) > 0.0)? MATH_PI : -MATH_PI * 2, 0.0F, 0.0F });
 
     if(isRotating)
         for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
             for (unsigned s = 0; s < TRAVERSAL_SLICES; s++)
                 sliceActorPtrs[c][s]->updateRot({ (s % 2 == 0)? 0.01F : -0.01F, 0.0F, 0.0F});
-
-    /* for (unsigned c = 0; c < TRAVERSAL_CORRIDORS; c++)
-        for (unsigned r = 0; r < TRAVERSAL_RECURSION; r++) {
-            float t = sinf((float)totalTime * speed * r);
-            corridorActors[c][r].setPos({ 0.0F, 0.0F, t * TRAVERSAL_DEPTH * 2 });
-            // corridorActors[c][r].updateRot({ (frameTime * speed) / (r % 2 == 0) ? (float)r : (float)-r, 0.0F, 0.0F });
-            corridorActors[c][r].setRot({ t * (float)MATH_PI * (r % 2 == 0) ? (float)2.0F : (float)-2.0F, 0.0F, 0.0F });
-            float scale = TRAVERSAL_RADIUS - ((1.0F / TRAVERSAL_RECURSION) * r * TRAVERSAL_RADIUS);
-            corridorActors[c][r].setSize({ (float)pow(abs(t), 0.5) * scale, (float)pow(abs(t), 0.5) * scale, scale });
-        } */
 
     renderScene(&scene);
 
