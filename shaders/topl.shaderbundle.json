@@ -23,13 +23,13 @@
         "type": "fragment",
         "file": "Topl/shaders/glsl/pixel/Textured_Frag.glsl"
     },
-    "Material_Vertex": {
+    "Spectral_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Material_Vertex.glsl"
+        "file": "Topl/shaders/glsl/vertex/Spectral_Vertex.glsl"
     },
-    "Material_Frag": {
+    "Spectral_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Material_Frag.glsl"
+        "file": "Topl/shaders/glsl/pixel/Spectral_Frag.glsl"
     },
     "Beams_Vertex": {
         "type": "vertex",

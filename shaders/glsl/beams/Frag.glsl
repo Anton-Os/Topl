@@ -34,11 +34,7 @@ uint getLightCount(uint mode){ // used for determining how many lights to combin
     return count;
 }
 
-#ifdef INCLUDE_TEXTURES
-#include "beams/Textured.glsl"
-#else
-#include "beams/Flat.glsl"
-#endif
+#include "beams/Beams.glsl"
 
 // Main
 
@@ -65,7 +61,7 @@ void main() {
 	vec3 specular = getSpecular_flat(lights, target, intensity);
 #endif
 
-	if(modes[0]== 0) color_final = vec4(ambient, 1.0f);
+	if(modes[0]== 1) color_final = vec4(ambient, 1.0f);
 	else if(modes[0] == 2) color_final = vec4(diffuse, 1.0f);
 	else if(modes[0] == 3) color_final = vec4(specular, 1.0f);
 	else if(modes[0] == 4) color_final = vec4(lights[0][1] * dot(normalize(vec3(cam_pos.x, cam_pos.y, cam_pos.z)), normalize(target)), 1.0);

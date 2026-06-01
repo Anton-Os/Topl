@@ -4,7 +4,7 @@ void Topl_Program::setPipelines(){
     if(_backend == BACKEND_GL4){
         _texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
         _beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
-        _materialVShader = Material_VertexShader_GL4(); _materialPShader = Material_PixelShader_GL4();
+        _materialVShader = Spectral_VertexShader_GL4(); _materialPShader = Spectral_PixelShader_GL4();
         _effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
         _canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
         _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
@@ -20,7 +20,7 @@ void Topl_Program::setPipelines(){
     else if(_backend == BACKEND_DX11){
         _texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
         _beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
-        _materialVShader = Material_VertexShader_DX11(); _materialPShader = Material_PixelShader_DX11();
+        _materialVShader = Spectral_VertexShader_DX11(); _materialPShader = Spectral_PixelShader_DX11();
         _effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
         _canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
         _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();

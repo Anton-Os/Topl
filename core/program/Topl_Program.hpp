@@ -5,7 +5,7 @@
 #include "Colorcode_Shader.hpp"
 #include "Textured_Shader.hpp"
 #include "Beams_Shader.hpp"
-#include "Material_Shader.hpp"
+#include "Spectral_Shader.hpp"
 #include "Effect_Shader.hpp"
 #include "Canvas_Shader.hpp"
 #include "Field_Shader.hpp"
@@ -135,7 +135,7 @@ protected:
 
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
-	Material_VertexShader _materialVShader; Material_PixelShader _materialPShader;
+	Spectral_VertexShader _materialVShader; Spectral_PixelShader _materialPShader;
 	Colorcode_VertexShader _coloredVShader; Colorcode_PixelShader _coloredPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
 	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
