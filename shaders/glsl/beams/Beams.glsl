@@ -1,9 +1,9 @@
-#ifdef INCLUDE_TEXTURES // Textured Lighting
+#ifdef INCLUDE_TEXTURES
 
 vec3 getAmbient_sampled(vec3 lights[3][2], vec3 texcoords, uint intensity){
     vec4 texColor = modalTex((abs(mode / 100)) % 10, texcoords);
     float i = intensity / 10.0;
-    return smoothstep(texColor.rgb, lights[0][1], vec3(i, i, i));
+    return smoothstep(texColor.rgb, lights[0][1], vec3(float(intensity / 10.0), float(intensity / 5.0), float(intensity / 2.0)));
 }
 
 vec3 getDiffuse_sampled(vec3 lights[3][2], vec3 coords, uint intensity){

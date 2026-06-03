@@ -17,7 +17,7 @@
 #define MESHFORM_CHECKER 2
 #define MESHFORM_NOISE 3
 
-#include "Meshform_Transforms.h"
+#include "Transforms.h"
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath) : Topl_Program(execPath, "Meshform"){}

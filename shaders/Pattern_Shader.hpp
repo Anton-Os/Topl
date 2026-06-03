@@ -31,13 +31,13 @@ protected:
 };
 
 struct Pattern_VertexShader_GL4 : public Pattern_VertexShader {
-	Pattern_VertexShader_GL4() : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Pattern_Vertex.glsl") {}
-	Pattern_VertexShader_GL4(unsigned mode) : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Pattern_Vertex.glsl", mode) {}
+	Pattern_VertexShader_GL4() : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Vertex.glsl") {}
+	Pattern_VertexShader_GL4(unsigned mode) : Pattern_VertexShader(genPrefix_glsl() + "pattern/" + "Vertex.glsl", mode) {}
 };
 
 struct Pattern_VertexShader_DX11 : public Pattern_VertexShader {
-	Pattern_VertexShader_DX11() : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Pattern_Vertex.hlsl") {}
-	Pattern_VertexShader_DX11(unsigned mode) : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Pattern_Vertex.hlsl", mode) {}
+	Pattern_VertexShader_DX11() : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Vertex.hlsl") {}
+	Pattern_VertexShader_DX11(unsigned mode) : Pattern_VertexShader(genPrefix_hlsl() + "pattern/" + "Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -48,7 +48,7 @@ struct Pattern_PixelShader : public Topl_Shader {
 };
 
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
-	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Pattern_Frag.glsl") {
+	Pattern_PixelShader_GL4() : Pattern_PixelShader(genPrefix_glsl() + "pattern/" + "Frag.glsl") {
 		_embedMap.insert({ "Custom_Pattern", std::string("m = abs(mode) / 100; \n")
 			+ "float xc = (abs(coords.x) * m) - floor((abs(coords.x) * m)); \n"
 			+ "float yc = (abs(coords.y) * m) - floor((abs(coords.y) * m)); \n"
@@ -59,7 +59,7 @@ struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
 };
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
-	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pattern_Pixel.hlsl") {
+	Pattern_PixelShader_DX11() : Pattern_PixelShader(genPrefix_hlsl() + "pattern/" + "Pixel.hlsl") {
 		_embedMap.insert({ "Custom_Pattern", std::string("if(abs(mode) / 100 > 0){ \n")
 			+ "if(!getInBound(sin(coords.x) + cos(coords.y) + tan(coords.z), pow(0.5, fmod(abs(mode) / 100, 10.0)))) coords *= float3(0, 0, 0); \n"
 			// "if(coords.x + coords.y + coords.z > -0.1 && coords.x + coords.y + coords.z < 0.1) coords *= -1.0;"

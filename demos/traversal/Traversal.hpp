@@ -14,7 +14,7 @@
 #define TRAVERSAL_ALPHA 0xAA000000
 
 #ifdef TOPL_ENABLE_TEXTURES
-#include "Traversal_Samplers.h"
+#include "Samplers.h"
 #endif
 
 struct Traversal_Demo : public Topl_Program {

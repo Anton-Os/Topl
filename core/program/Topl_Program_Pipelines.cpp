@@ -62,9 +62,12 @@ void Topl_Program::updatePipelines(){
     } else if(_renderer->getPipeline() == _effectPipeline)
         _effectVShader.setEffect(EFFECT_SIZE - (EFFECT_SIZE / timeElapse), ((unsigned)floor(timeElapse / 5.0) % EFFECT_ITER) + 3);
     else if(_renderer->getPipeline() == _beamsPipeline){
-        _beamsVShader.setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(camera.getRot())).data[0]), cos((*(camera.getRot())).data[0]), tan((*(camera.getRot())).data[1]) }), { BEAMS_SKY_LIGHT.value }));
-        _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos(), { BEAMS_FLASH_LIGHT.value }));
-        if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), { BEAMS_LAMP_LIGHT.value }));
+        Vec3f skylightColor = BEAMS_SKY_LIGHT.value * abs(sin(timeElapse));
+        Vec3f flashlightColor = BEAMS_FLASH_LIGHT.value * abs(cos(timeElapse));
+        Vec3f lamplightColor = BEAMS_LAMP_LIGHT.value * abs(tan(timeElapse));
+        _beamsVShader.setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(camera.getRot())).data[0]), cos((*(camera.getRot())).data[0]), 0.0F }), skylightColor ));
+        _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos(), flashlightColor ));
+        if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), lamplightColor));
     } else if(_renderer->getPipeline() == _fieldPipeline || _renderer->getPipeline() == _patternPipeline)
         for(unsigned p = 0; p < FIELD_POINTS_MAX && p < Platform::mouseControl.getTracerSteps()->size(); p++){
             tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - p - 1];

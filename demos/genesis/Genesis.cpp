@@ -10,6 +10,15 @@ void Genesis_Demo::onAnyKey(keyboard_t key) {
     else if (tolower(key) == 'o') isRotating = !isRotating;
 }
 
+void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) {
+    if (menu == PROGRAM_Sculpt) {
+        sculptIndex = paneIndex;
+
+        for (unsigned g = 0; g < 9 * 9; g++)
+            grids[g].toggleShow(g == sculptIndex + (mode * 9));
+    }
+}
+
 void Genesis_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Genesis_Demo::onAnyKey, this, std::placeholders::_1));
     
@@ -21,7 +30,6 @@ void Genesis_Demo::init(){
 
     _renderer->buildScene(&scene);
 }
-
 void Genesis_Demo::loop(double frameTime){
     unsigned f = _renderer->getFrameCount();
 
@@ -35,17 +43,8 @@ void Genesis_Demo::loop(double frameTime){
     renderScene(&scene);
 }
 
-void Genesis_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if (menu == PROGRAM_Sculpt) {
-        sculptIndex = paneIndex;
-
-        for (unsigned g = 0; g < 9 * 9; g++)
-          grids[g].toggleShow(g == sculptIndex + (mode * 9));
-    }
-}
-
 MAIN_ENTRY {
-    Genesis = new Genesis_Demo(argv[0]);
+    Genesis = new Genesis_Demo(argv[0], BACKEND_GL4);
     Genesis->run();
 
     delete(Genesis);

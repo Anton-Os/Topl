@@ -8,7 +8,7 @@
 #define KALEIDOSCOPE_TESS 1
 #define KALEIDOSCOPE_NAME "kaleidoscope" + std::to_string(rand() % 9999)
 
-#include "Kaleidoscope_Construct.h"
+#include "Construct.h"
 
 struct Kaleidoscope_Demo : public Topl_Program {
     Kaleidoscope_Demo(const char* execPath) : Topl_Program(execPath, "Kaleidoscope") {}

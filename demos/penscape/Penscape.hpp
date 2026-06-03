@@ -14,7 +14,7 @@
 // #define PENSCAPE_MESH_INSTANCES Mat4x4::translation(Vec3f({ -0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.25F, 0.0F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F})), Mat4x4::translation(Vec3f({ 0.0F, 0.25F, 0.0F}))
 #define PENSCAPE_MESH_INSTANCES Mat4x4::scale(Vec3f({ 1.25F, 1.0F, 1.0F})), Mat4x4::translation(Vec3f({ 1.0F, 1.25F, 1.0F })), Mat4x4::translation(Vec3f({ 1.0F, 1.0F, 1.25F }))
 
-#include "Penscape_Transforms.h"
+#include "Transforms.h"
 
 struct Penscape_Demo : public Topl_Program {
     Penscape_Demo(const char* execPath) : Topl_Program(execPath, "Penscape"){}
