@@ -11,11 +11,11 @@ BEGIN
         MENUITEM "&New", IDM_NEW
         MENUITEM "&Load", IDM_LOAD
     END
-    POPUP "&View"
+    POPUP "&Sound"
     BEGIN
-        MENUITEM "&Timeline", IDM_TIME //, CHECKED
-        MENUITEM "&Objects", IDM_OBJS // , CHECKED
-        MENUITEM "&Pipelines", IDM_PIPES // , CHECKED
-        MENUITEM "&Samplers", IDM_IMGS // , CHECKED
+        MENUITEM "&Sound1", IDM_SOUND1 //, CHECKED
+        MENUITEM "&Sound2", IDM_SOUND2 // , CHECKED
+        MENUITEM "&Sound3", IDM_SOUND3 // , CHECKED
+        MENUITEM "&Sound4", IDM_SOUND4 // , CHECKED
     END
 END

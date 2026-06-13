@@ -2,10 +2,11 @@
 
 #include "program/Topl_Program.hpp"
 
-#define MOLECULAR_CONSTRUCTS 12
-#define MOLECULAR_LENGTH 20.0F
-#define MOLECULAR_FORCE 5000.0F
-#define MOLECULAR_SIZE 0.025F
+#define MOLECULAR_CONSTRUCTS 9
+#define MOLECULAR_LENGTH 0.5F
+#define MOLECULAR_PULSE 0.0000005F
+#define MOLECULAR_FORCE 1000.0F
+#define MOLECULAR_SIZE 0.05F
 
 #include "Construct.h"
 
@@ -19,16 +20,13 @@ struct Molecular_Demo : public Topl_Program {
     Molecular_Construct constructs[3][MOLECULAR_CONSTRUCTS] = {
         { Molecular_Construct(2), Molecular_Construct(3), Molecular_Construct(4),
           Molecular_Construct(5), Molecular_Construct(6), Molecular_Construct(7),
-          Molecular_Construct(8), Molecular_Construct(9), Molecular_Construct(10),
-          Molecular_Construct(11), Molecular_Construct(12), Molecular_Construct(16) },
-        { Molecular_Construct(2), Molecular_Construct(3), Molecular_Construct(4),
-          Molecular_Construct(5), Molecular_Construct(6), Molecular_Construct(7),
-          Molecular_Construct(8), Molecular_Construct(9), Molecular_Construct(10),
-          Molecular_Construct(11), Molecular_Construct(12), Molecular_Construct(16) },
-        { Molecular_Construct(2), Molecular_Construct(3), Molecular_Construct(4),
-          Molecular_Construct(5), Molecular_Construct(6), Molecular_Construct(7),
-          Molecular_Construct(8), Molecular_Construct(9), Molecular_Construct(10),
-          Molecular_Construct(11), Molecular_Construct(12), Molecular_Construct(16) }
+          Molecular_Construct(8), Molecular_Construct(9), Molecular_Construct(10), },
+        { Molecular_Construct(2, 2), Molecular_Construct(3, 2), Molecular_Construct(4, 2),
+          Molecular_Construct(5, 2), Molecular_Construct(6, 2), Molecular_Construct(7, 2),
+          Molecular_Construct(8, 2), Molecular_Construct(9, 2), Molecular_Construct(10, 2), },
+        { Molecular_Construct(2, 4), Molecular_Construct(3, 4), Molecular_Construct(4, 4),
+          Molecular_Construct(5, 4), Molecular_Construct(6, 4), Molecular_Construct(7, 4),
+          Molecular_Construct(8, 4), Molecular_Construct(9, 4), Molecular_Construct(10, 4), }
     };
 
     Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];

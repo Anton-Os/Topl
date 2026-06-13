@@ -25,6 +25,8 @@ public:
 	DllExport Geo_Orb(Shape3D shape);
 
 	float getRadius() const { return _shape.radius; }
+	unsigned short getXSegs() const { return _shape.xSegs; }
+	unsigned short getYSegs() const { return _shape.ySegs; }
 private:
 	void init();
 

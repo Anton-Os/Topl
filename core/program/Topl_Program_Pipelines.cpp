@@ -58,13 +58,14 @@ void Topl_Program::updatePipelines(){
     if(_renderer->getPipeline() == _texPipeline) _texVShader.setParams(&_background.actor, { 0, (timeElapse / 10) - floor(timeElapse / 10), scroll, scale });
     else if(_renderer->getPipeline() == _materialPipeline){
         _materialVShader.setTexCoordParams(scroll, scale);
-        _materialVShader.setLight(Topl_Light(Vec3f({ sin(timeElapse), cos(timeElapse), sin(timeElapse) + cos(timeElapse) })));
+        // _materialVShader.setLight(Topl_Light(Vec3f({ sin(timeElapse), cos(timeElapse), sin(timeElapse) + cos(timeElapse) })));
+        _materialVShader.setLight(Topl_Light(Vec3f({ 0.0F, 0.0F, sin(timeElapse) })));
     } else if(_renderer->getPipeline() == _effectPipeline)
         _effectVShader.setEffect(EFFECT_SIZE - (EFFECT_SIZE / timeElapse), ((unsigned)floor(timeElapse / 5.0) % EFFECT_ITER) + 3);
     else if(_renderer->getPipeline() == _beamsPipeline){
         Vec3f skylightColor = BEAMS_SKY_LIGHT.value * abs(sin(timeElapse));
-        Vec3f flashlightColor = BEAMS_FLASH_LIGHT.value * abs(cos(timeElapse));
-        Vec3f lamplightColor = BEAMS_LAMP_LIGHT.value * abs(tan(timeElapse));
+        Vec3f flashlightColor = BEAMS_FLASH_LIGHT.value * abs(cos(timeElapse / 2));
+        Vec3f lamplightColor = BEAMS_LAMP_LIGHT.value * abs(tan(timeElapse / 3));
         _beamsVShader.setLight(LIGHT_Sky, Topl_Light(Vec3f({ sin((*(camera.getRot())).data[0]), cos((*(camera.getRot())).data[0]), 0.0F }), skylightColor ));
         _beamsVShader.setLight(LIGHT_Flash, Topl_Light(*camera.getPos(), flashlightColor ));
         if(Platform::mouseControl.getTracerSteps()->size() > 0) _beamsVShader.setLight(LIGHT_Lamp, Topl_Light(Vec3f({ (float)tracerStep.step.first, (float)tracerStep.step.second, 0.0F }), lamplightColor));

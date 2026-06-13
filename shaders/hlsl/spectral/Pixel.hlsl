@@ -60,7 +60,7 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float3 texVals[8];
 	for(int o = 0; o < 8; o++){
 #ifdef INCLUDE_TEXTURES
-		float4 texTarget = modalTex((abs(mode) + o) % 8, input.texcoord);
+		float4 texTarget = modalTex(abs(mode) + o, input.texcoord);
 #else
 		// float4 texTarget = splash_effect(input.texcoord, abs(mode) * o * (3.141592653 / 8));
 		float4 texTarget = splash_effect(input.texcoord, abs(mode) * (3.141592653 / 16));

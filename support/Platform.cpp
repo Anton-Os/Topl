@@ -53,15 +53,15 @@ LRESULT handleMenu_win32(WPARAM wParam){
 			if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
 			logMessage("Menu command: Load\n"); 
 			break;
-		case IDM_TIME: popupTitleText = "Timeline";	break;
-		case IDM_OBJS: popupTitleText = "Objects"; break;
-		case IDM_PIPES: popupTitleText = "Pipelines"; break;
-		case IDM_IMGS: popupTitleText = "Samplers"; break;
+		case IDM_SOUND1: popupTitleText = "Sound1";	break;
+		case IDM_SOUND2: popupTitleText = "Sound2"; break;
+		case IDM_SOUND3: popupTitleText = "Sound3"; break;
+		case IDM_SOUND4: popupTitleText = "Sound4"; break;
 		default: break;
 		// case IDM_FI_CLOSE: logMessage("File close command"); break;
 	}
 
-	if(LOWORD(wParam) == IDM_TIME || LOWORD(wParam) == IDM_OBJS || LOWORD(wParam) == IDM_PIPES || LOWORD(wParam) == IDM_IMGS){ // Menu Interaction
+	/* if(LOWORD(wParam) == IDM_SOUND1 || LOWORD(wParam) == IDM_SOUND2 || LOWORD(wParam) == IDM_SOUND3 || LOWORD(wParam) == IDM_SOUND4){ // Menu Interaction
 		logMessage("Menu command: " + popupTitleText + "\n");
 		
 		popupWindow = CreateWindow( // TODO: Remove menu?
@@ -72,7 +72,7 @@ LRESULT handleMenu_win32(WPARAM wParam){
 			175, 300,
 			NULL, NULL, GetModuleHandle(NULL), NULL
 		);
-	}
+	} */
 
 	switch(HIWORD(wParam)){
 		case BN_CLICKED: logMessage("Button clicked!\n"); break; // TODO: Get LOWORD

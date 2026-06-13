@@ -82,13 +82,13 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.tangent = input.tangent;
 
 	float3 ctrlPos = output.vertex_pos;
-	if(mode >= 1000){
+	/* if(mode >= 1000){
 		float3 change = float3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
 
 		if(floor(mode / 1000) == 1) ctrlPos += change;
 		else if(floor(mode / 1000) == 2) ctrlPos -= change;
 		else ctrlPos *= change;
-	}
+	} */
 
 	output.nearest_idx = calcNearestIndex(ctrlPos);
 	output.second_idx = calcSecondIndex(ctrlPos);

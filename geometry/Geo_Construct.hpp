@@ -82,7 +82,10 @@ public:
     void expand(float e) {
         for (unsigned g = 0; g < _geoActors.size(); g++)
             _geoActors[g].setPos(*(_geoActors[g].getPos()) * (1.0F + e));
-            // _geoActors[g].updatePos((getOrigin() - *(_geoActors[g].getPos())) * (1.0F + e));
+    }
+    void expand(Vec3f scaleVec) {
+        for (unsigned g = 0; g < _geoActors.size(); g++)
+            _geoActors[g].setPos(*(_geoActors[g].getPos()) * (VEC_3F_ONES + scaleVec));
     }
 
     virtual void init() = 0; // function to create elements

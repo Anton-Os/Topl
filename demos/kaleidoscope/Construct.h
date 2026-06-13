@@ -30,7 +30,7 @@ struct Kaleidoscope_Construct : public Geo_Construct<Kaleidoscope_Construct> {
             _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((2.0F / KALEIDOSCOPE_SLICES) * s) }));
 
             spinFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5) * 0.025;
-            sizeFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5);
+            sizeFactors[s] = (1.0 / KALEIDOSCOPE_SLICES) * (s + 1);
         }
     }
 

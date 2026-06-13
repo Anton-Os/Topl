@@ -7,15 +7,11 @@ bool freeformCull_ball(Vec3f input, double level) { return input.len() < level +
 
 // Spawning Functions
 
-TrigForm freeformSpawn_test(Vec3f input, unsigned count) {
-    return TrigForm({ input, input * FREEFORM_LEVEL, input * FREEFORM_LEVEL * FREEFORM_LEVEL });
-}
-
 Geo_Meshlet freeformSpawn_lines(Vec3f input, unsigned count) {
     Geo_Meshlet lineMeshlet;
     lineMeshlet.count = 2;
-    lineMeshlet.positions = (Vec3f*)malloc(sizeof(Vec3f) * 2);
-    for (unsigned p = 0; p < 2; p++) *(lineMeshlet.positions + p) = input * ((p == 0)? 1.0F : (p * FREEFORM_LEVEL));
+    lineMeshlet.positions = (Vec3f*)malloc(sizeof(Vec3f) * 2); // this needs to be free
+    for (unsigned p = 0; p < 2; p++) *(lineMeshlet.positions + p) = input * ((p == 0)? 1.0F : (1.0F / (p + 1)));
     return lineMeshlet;
 }
 
@@ -56,15 +52,9 @@ Geo_Vertex* genFreeform_vertices(ShapeFreeform shape, fSpawnCallback spawnCallba
             invalidVertCount++;
         }
 
-    // Spawning
-    // Geo_Vertex* vertices = (Geo_Vertex*)malloc((count - invalidVertCount) * sizeof(Geo_Vertex) * 3);
     std::vector<Geo_Vertex> vertices;
-    // unsigned o = 0;
     for(unsigned v = 0; v < count; v++)
         if((*(latticeVertices + v)).position != VEC_3F_BAD){
-            // TrigForm trig = spawnCallback((*(latticeVertices + v)).position, count - invalidVertCount);
-            // for (unsigned t = 0; t < 3; t++) *(vertices + o + t) = trig.positions[t];
-            // o += 3;
             Geo_Meshlet meshlet = spawnCallback((*(latticeVertices + v)).position, count - invalidVertCount);
             for (unsigned c = 0; c < meshlet.count; c++) vertices.push_back(Geo_Vertex(*(meshlet.positions + c)));
             free(meshlet.positions); // make sure to deallocate memory
@@ -106,6 +96,7 @@ Geo_Freeform::Geo_Freeform(ShapeFreeform shape) : Geo_Mesh(
     getIdxCount(shape, freeformCull_none), genFreeform_vertices(shape, freeformSpawn_lines, freeformCull_none)
     // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
 ) {
+    drawMode = DRAW_Lines;
     _shape = shape;
 }
 

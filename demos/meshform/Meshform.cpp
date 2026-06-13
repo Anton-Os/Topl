@@ -76,6 +76,7 @@ void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
             case 6: case 7: case 8: genShapes(std::make_pair(pullTForm, amount * 0.33F), std::make_pair(pullTForm, amount * 3.0F)); break; // Advanced Callback Functions
         };
     }
+#ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint && isEnable_overlays) {
         for (unsigned d = 0; d < volume.getDepth(); d++) {
             const Sampler_2D* targetTex = getOverlaysScene()->getTexture(std::to_string((d % 8) + 1));
@@ -83,6 +84,7 @@ void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
         }
         _renderer->texturizeScene(&scene);
     }
+#endif
 }
 
 void Meshform_Demo::init(){
@@ -112,7 +114,7 @@ void Meshform_Demo::init(){
     }
 
     for (unsigned f = 0; f < 4; f++) {
-        freeforms[f]->drawMode = DRAW_Lines;
+        // freeforms[f]->drawMode = DRAW_Lines;
         // if(MESHFORM_TESS > 0) freeforms[f]->tesselate(MESHFORM_TESS);
         scene.addGeometry("freeform" + std::to_string(f + 1), &freeformActors[f]);
 #ifdef TOPL_ENABLE_TEXTURES

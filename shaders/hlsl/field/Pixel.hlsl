@@ -66,15 +66,6 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	// else if(mode % 3 == 2) ctrlIdx = input.farthest_idx; */
  	
 	float3 nearestPoint = ctrlPoints[input.nearest_idx];
-
-	/* if(mode >= 1000){
-		float2 screenCoords = float2(input.pos.x / (floor(mode / 1000) * 1000.0), input.pos.y / (floor(mode / 1000) * 1000.0)); // adjusted coordinates
-		screenCoords = (screenCoords - float2(0.5, 0.5)) * 2.0;
-
-		nearestPoint *= sin(timeElapse / 1000) * floor(mode / 1000);
-		coords *= float3(sin(screenCoords.x * (mode % 100)), cos(screenCoords.y * (mode % 100)), tan(screenCoords.x * screenCoords.y * (mode % 100)));
-	} */
-
 	float3 relCoord = nearestPoint - coords;
 
 	if(m % 10 == 1) outColor = field1(nearestPoint, coords);
@@ -89,5 +80,10 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	// else if(m >= 800 && m < 900) outColor = float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
 	else outColor = float4(abs(relCoord.x) - floor(abs(relCoord.x)), abs(relCoord.y) - floor(abs(relCoord.y)), abs(relCoord.z) - floor(abs(relCoord.z)), 1.0);
 
-	return float4(abs(outColor.r) - floor(outColor.r), abs(outColor.g) - floor(outColor.g), abs(outColor.b) - floor(outColor.b), outColor.a);
+	outColor = float4(abs(outColor.r) - floor(outColor.r), abs(outColor.g) - floor(outColor.g), abs(outColor.b) - floor(outColor.b), outColor.a); // clamp
+#ifdef INCLUDE_TEXTURES
+	// outColor = smoothstep(outColor, modalTex(mode / 1000, outColor.rgb), float4(relCoord, 0.5)); // modulate with texture
+	outColor *= modalTex(mode / 100, outColor.rgb);
+#endif
+	return outColor;
 }

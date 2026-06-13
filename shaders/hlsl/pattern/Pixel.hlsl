@@ -58,7 +58,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	float4 outColor;
 	float3 coords = input.vertex_pos; // float3(input.pos.x, input.pos.y, input.pos.z);
 
-	// return float4(input.texcoord * input.vertex_color, 1.0);
+	// return float4(input.texcoord * input.vertex_color, 1.0); 
 	if(abs(mode) % 10 == 1) coords = float3(input.pos.x, input.pos.y, input.pos.z);
 	else if(abs(mode) % 10 == 2) coords = input.vertex_color;
 	else if(abs(mode) % 10 == 3) coords = input.normal;
@@ -78,15 +78,15 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	// if(mode < 0) dstColor = float4(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z, 1.0); // test
 
 	// Mixing Algorithm
-	if(abs(mode / 1000) % 10 == 1) outColor = srcColor + dstColor;
-	else if(abs(mode / 1000) % 10 == 2) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length((offset + coords) * 0.5)); // srcColor - dstColor;
-	else if(abs(mode / 1000) % 10 == 3) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset * coords)); // srcColor * dstColor;
-	else if(abs(mode / 1000) % 10 == 4) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset / coords)); // srcColor / dstColor;
-	else if(abs(mode / 1000) % 10 == 5) outColor = float4(sin(srcColor.r * dstColor.r), cos(srcColor.g * dstColor.g), tan(srcColor.b * dstColor.b), 1.0);
-	else if(abs(mode / 1000) % 10 == 6) outColor = float4(pow(srcColor.r, dstColor.x), pow(srcColor.g, dstColor.y), pow(srcColor.b, dstColor.z), 1.0);
-	else if(abs(mode / 1000) % 10 == 7) outColor = float4(srcColor.r + dstColor.x, srcColor.g - dstColor.g, srcColor.b * dstColor.z, 1.0);
-	else if(abs(mode / 1000) % 10 == 8) outColor = float4(cross(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b)), 1.0);
-	else if(abs(mode / 1000) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
+	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
+	else if(abs(mode / 100) % 10 == 2) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length((offset + coords) * 0.5)); // srcColor - dstColor;
+	else if(abs(mode / 100) % 10 == 3) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset * coords)); // srcColor * dstColor;
+	else if(abs(mode / 100) % 10 == 4) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset / coords)); // srcColor / dstColor;
+	else if(abs(mode / 100) % 10 == 5) outColor = float4(sin(srcColor.r * dstColor.r), cos(srcColor.g * dstColor.g), tan(srcColor.b * dstColor.b), 1.0);
+	else if(abs(mode / 100) % 10 == 6) outColor = float4(pow(srcColor.r, dstColor.x), pow(srcColor.g, dstColor.y), pow(srcColor.b, dstColor.z), 1.0);
+	else if(abs(mode / 100) % 10 == 7) outColor = float4(srcColor.r + dstColor.x, srcColor.g - dstColor.g, srcColor.b * dstColor.z, 1.0);
+	else if(abs(mode / 100) % 10 == 8) outColor = float4(cross(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b)), 1.0);
+	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
 	else outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset - coords));
 
 	return outColor;

@@ -1,18 +1,20 @@
-float3 range_effect(float3 color){ // maps color to +- range
+      float3 range_effect(float3 color){ // maps color to +- range
 	return (color - float3(0.5F, 0.5F, 0.5F)) * 2;
 }
 
 #ifdef INCLUDE_TEXTURES
 
 float4 modalTex(uint sampleMode, float3 texcoords){
-    if(abs(sampleMode) % 8 == 1) return tex1.Sample(sampler1, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 2) return tex2.Sample(sampler2, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 3) return tex3.Sample(sampler3, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 4) return tex4.Sample(sampler4, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 5) return tex5.Sample(sampler5, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 6) return tex6.Sample(sampler6, float2(texcoords.x, texcoords.y));
-    else if(abs(sampleMode) % 8 == 7) return tex7.Sample(sampler7, float2(texcoords.x, texcoords.y));
-    else return baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y));
+    if(abs(sampleMode) % 10 == 1) return tex1.Sample(sampler1, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 2) return tex2.Sample(sampler2, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 3) return tex3.Sample(sampler3, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 4) return tex4.Sample(sampler4, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 5) return tex5.Sample(sampler5, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 6) return tex6.Sample(sampler6, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 7) return tex7.Sample(sampler7, float2(texcoords.x, texcoords.y));
+    else if(abs(sampleMode) % 10 == 8) return areaTex.Sample(areaSampler, texcoords);
+	else if(abs(sampleMode) % 10 == 9) return areaTex.Sample(areaSampler, float3(texcoords.x, texcoords.y, 0.0F));
+	else return baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y));
 }
 
 float4 antialias2D(float2 coords, Texture2D tex, SamplerState samp, float antialiasArea, float antialiasSteps){
