@@ -41,4 +41,17 @@ Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, u
     // return (primID != 0)? vertex : Geo_Vertex(midpoint.position);
 }
 
-// TODO: Include Freeform Generation functions
+// Freeform Functions
+
+Geo_Meshlet spawn_quads(Vec3f input, unsigned count) {
+    Geo_Meshlet meshlet;
+    meshlet.count = 6;
+    meshlet.positions = (Vec3f*)malloc(sizeof(Vec3f) * meshlet.count); // this needs to be free
+    *(meshlet.positions + 0) = input + Vec3f({ 0.05F, 0.05F, 0.05f });
+    *(meshlet.positions + 1) = input + Vec3f({ 0.05F, -0.05F, -0.05f });
+    *(meshlet.positions + 2) = input + Vec3f({ -0.05F, 0.05F, 0.0f });
+    *(meshlet.positions + 3) = input + Vec3f({ -0.05F, -0.05F, 0.0f });
+    *(meshlet.positions + 4) = input + Vec3f({ 0.05F, 0.05F, 0.05f });
+    *(meshlet.positions + 5) = input + Vec3f({ -0.05F, -0.05F, -0.05f });
+    return meshlet;
+}

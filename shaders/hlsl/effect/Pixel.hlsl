@@ -28,6 +28,7 @@ struct PS_INPUT {
 };
 
 #include "effect/Effect.hlsl"
+#include "effect/Fractal.hlsl"
 
 // Main
 
@@ -42,17 +43,23 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	target += float2(cam_pos.x, cam_pos.y);
 	target *= FRACTAL_SIZE;
 
-    if(m >= 10 && m < 20) return juliaSet(target, cursor);
-	else if(m >= 20 && m < 30) return trigSet(target);
-	else if(m >= 30 && m < 40) return powerSet(target, cursorPos);
-    else if(m >= 40 && m < 50) return wingSet(target);
-    else if(m >= 50 && m < 60) return stepSet(target, cursorPos);
-	else if(m >= 60 && m < 70) return loopSet(target);
-	else if(m >= 70 && m < 80) return shardSet(target, cursorPos);
-	else if(m >= 80 && m < 90) return sparseSet(target, distance(coords, cursor));
-	else if(m >= 90 && m < 100) return retroSet(target, cursor);
-	// else if(abs(mode) >= 100 && abs(mode) < 110) return juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
-	// else if(abs(mode) >= 110 && abs(mode) < 120) return trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));
-	// else if(abs(mode) >= 120 && abs(mode) < 130) return stepSet(float2(wingSet(target).r * wingSet(target).b, wingSet(target).g / wingSet(target).b), cursor);
-    else return mandlebrotSet(target);
+	float4 outColor;
+    if(m >= 10 && m < 20) outColor = juliaSet(target, cursor);
+	else if(m >= 20 && m < 30) outColor = trigSet(target);
+	else if(m >= 30 && m < 40) outColor = powerSet(target, cursorPos);
+    else if(m >= 40 && m < 50) outColor = wingSet(target);
+    else if(m >= 50 && m < 60) outColor = stepSet(target, cursorPos);
+	else if(m >= 60 && m < 70) outColor = loopSet(target);
+	else if(m >= 70 && m < 80) outColor = shardSet(target, cursorPos);
+	else if(m >= 80 && m < 90) outColor = sparseSet(target, distance(coords, cursor));
+	else if(m >= 90 && m < 100) outColor = retroSet(target, cursor);
+	// else if(abs(mode) >= 100 && abs(mode) < 110) outColor = juliaSet(float2(mandlebrotSet(target).r, mandlebrotSet(target).g), cursor);
+	// else if(abs(mode) >= 110 && abs(mode) < 120) outColor = trigSet(float2(tan(powerSet(target, cursor).r), 1.0 / tan(powerSet(target, cursor).g)));
+	// else if(abs(mode) >= 120 && abs(mode) < 130) outColor = stepSet(float2(wingSet(target).r * wingSet(target).b, wingSet(target).g / wingSet(target).b), cursor);
+    else outColor = mandlebrotSet(target);
+
+#ifdef INCLUDE_TEXTURES
+	outColor *= modalTex(abs(mode / 100), input.texcoord);
+#endif
+	return outColor;
 }

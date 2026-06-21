@@ -56,4 +56,8 @@ void main() {
 	else color_final = vec4(mandlebrotSet(target * size), 1.0f); // fractal mode
 
 	if(color_final.r == 0.0f && color_final.g == 0.0f && color_final.b == 0.0f) color_final.a = 0.0; // make transparent if not in set
+
+#ifdef INCLUDE_TEXTURES
+	// color_final *= modalTex(abs(mode / 100), texcoord);
+#endif
 }

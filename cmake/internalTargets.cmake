@@ -35,6 +35,7 @@ add_library(CORELIB # SHARED # Core Library
 
 target_include_directories(CORELIB PRIVATE core support geometry shaders)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+set_target_properties(CORELIB PROPERTIES FOLDER "Libraries")
 target_include_directories(CORELIB
     INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
@@ -50,6 +51,11 @@ endif()
 
 if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
     target_link_libraries(CORELIB PUBLIC Rasteron)
+endif()
+
+if(SUPPORT_AUDIO)
+    target_include_directories(CORELIB PRIVATE ${miniaudio_h})
+    target_link_libraries(CORELIB PUBLIC ${miniaudio_lib})
 endif()
 endif() # IGORE_NATIVELIBS
 
@@ -71,6 +77,7 @@ endif()
 
 add_library(GEOLIB SHARED ${geometry_src}) # Geometry Library
 target_include_directories(GEOLIB PRIVATE core support geometry)
+set_target_properties(GEOLIB PROPERTIES FOLDER "Libraries")
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>

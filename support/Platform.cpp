@@ -67,7 +67,7 @@ LRESULT handleMenu_win32(WPARAM wParam){
 		popupWindow = CreateWindow( // TODO: Remove menu?
 			"Topl",
 			popupTitleText.c_str(),
-			WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME /* |  ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX) */ | WS_VISIBLE | WS_POPUP,
+			WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME, // |  ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX) | WS_VISIBLE | WS_POPUP,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			175, 300,
 			NULL, NULL, GetModuleHandle(NULL), NULL

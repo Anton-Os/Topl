@@ -64,12 +64,15 @@ if(SUPPORT_AUDIO)
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
-    find_package(miniaudio PATHS ${CMAKE_INSTALL_PREFIX}/lib/miniaudio)
-    if(miniaudio_FOUND)
-        message(STATUS "miniaudio loading success!")
-    else()
-        message(WARNING "miniaudio loading failure, audio playback non-functional")
-    endif()
+    # TODO: Check CUDA for cuFFT support?
+
+    set(miniaudio_h "${CMAKE_INSTALL_PREFIX}/include/miniaudio")
+    find_library(miniaudio_lib NAMES miniaudio PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+
+    message(STATUS "miniaudio library is ${miniaudio_lib} and header is ${miniaudio_h}")
+else()
+    set(miniaudio_lib "")
+    set(miniaudio_h "")
 endif()
 
 # set(SUPPORT_SAVES ${IS_FALSE} CACHE INT "Allow saving capabilities in .topl format" FORCE)

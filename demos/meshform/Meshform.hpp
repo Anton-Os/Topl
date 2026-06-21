@@ -17,7 +17,7 @@
 #define MESHFORM_CHECKER 2
 #define MESHFORM_NOISE 3
 
-#include "Transforms.h"
+#include "Functions.h"
 
 struct Meshform_Demo : public Topl_Program {
     Meshform_Demo(const char* execPath) : Topl_Program(execPath, "Meshform"){}
@@ -39,8 +39,12 @@ struct Meshform_Demo : public Topl_Program {
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
     Geo_Freeform* freeforms[4] = {
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
+        // new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
+        //new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 }), spawn_quads),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 }), spawn_quads),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 }), spawn_quads),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }), spawn_quads)
     };
     Geo_Torus* toruses[3] = {
         new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 20, 20})),

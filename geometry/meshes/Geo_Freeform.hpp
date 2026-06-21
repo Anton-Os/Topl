@@ -31,7 +31,6 @@ bool freeformCull_ball(Vec3f input, double level);
 
 // Spawn Functions
 TrigForm freeformSpawn_test(Vec3f input, unsigned count);
-
 Geo_Meshlet freeformSpawn_lines(Vec3f input, unsigned count);
 
 // Generative Functionis
@@ -43,6 +42,7 @@ DllExport unsigned* genFreeform_indices(ShapeFreeform shape, unsigned count);
 class Geo_Freeform : public Geo_Mesh {
 public:
     DllExport Geo_Freeform(ShapeFreeform shape);
+    DllExport Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback);
     DllExport Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback, fCullCallback callback);
 private:
     ShapeFreeform _shape;

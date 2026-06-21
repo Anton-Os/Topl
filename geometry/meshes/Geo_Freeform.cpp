@@ -100,6 +100,13 @@ Geo_Freeform::Geo_Freeform(ShapeFreeform shape) : Geo_Mesh(
     _shape = shape;
 }
 
+Geo_Freeform::Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback) : Geo_Mesh(
+    getIdxCount(shape, freeformCull_none), genFreeform_vertices(shape, spawnCallback, freeformCull_none)
+    // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this
+) {
+    _shape = shape;
+}
+
 Geo_Freeform::Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback, fCullCallback cullCallback) : Geo_Mesh(
     getIdxCount(shape, cullCallback), genFreeform_vertices(shape, spawnCallback, cullCallback)
     // shape.getCount() / 3, genFreeform_indices(shape, shape.getCount() / 3) // TODO: Improve this

@@ -83,4 +83,8 @@ void main() {
 			color_final.a
 		);
 
+#ifdef INCLUDE_TEXTURES
+	color_final *= modalTex(abs(mode / 100), texcoord);
+#endif
+	if (color_final.a < 0.05 || length(color_final.rgb) < 0.05) discard;
 }

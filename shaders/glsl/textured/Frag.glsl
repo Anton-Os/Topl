@@ -69,5 +69,5 @@ void main() {
 	if(mode > 0) color_final = glass_effect(texcoord, uint(abs(mode)));
 	else color_final = dot_effect(texcoord, uint(abs(mode)));
 #endif
-	if (color_final.a < 0.05) discard; // blending fix
+	if (color_final.a < 0.05 || length(color_final.rgb) < 0.05) discard; // blending fix
 }

@@ -62,8 +62,8 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
 
 	/* uint ctrlIdx = input.nearest_idx;
-	// if(mode % 3 == 1) ctrlIdx = input.second_idx;
-	// else if(mode % 3 == 2) ctrlIdx = input.farthest_idx; */
+	if(mode % 3 == 1) ctrlIdx = input.second_idx;
+	else if(mode % 3 == 2) ctrlIdx = input.farthest_idx; */
  	
 	float3 nearestPoint = ctrlPoints[input.nearest_idx];
 	float3 relCoord = nearestPoint - coords;
@@ -83,7 +83,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	outColor = float4(abs(outColor.r) - floor(outColor.r), abs(outColor.g) - floor(outColor.g), abs(outColor.b) - floor(outColor.b), outColor.a); // clamp
 #ifdef INCLUDE_TEXTURES
 	// outColor = smoothstep(outColor, modalTex(mode / 1000, outColor.rgb), float4(relCoord, 0.5)); // modulate with texture
-	outColor *= modalTex(mode / 100, outColor.rgb);
+	outColor *= modalTex(abs(mode / 100), input.texcoord);
 #endif
 	return outColor;
 }

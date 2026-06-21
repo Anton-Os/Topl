@@ -38,7 +38,7 @@ layout(location = 2) flat in uint second_index;
 layout(location = 3) flat in uint far_index;
 layout(location = 4) in vec3 vertex_pos;
 layout(location = 5) in vec4 vertex_color;
-layout(location = 6) in vec3 tangent;
+layout(location = 6) in vec3 texcoord;
 
 layout(location = 0) out vec4 color_final;
 
@@ -80,4 +80,8 @@ void main() {
 
 	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);
 	// }
+#ifdef INCLUDE_TEXTURES
+	color_final *= modalTex(abs(mode / 100), texcoord);
+#endif
+	if (color_final.a < 0.05 || length(color_final.rgb) < 0.05) discard;
 }

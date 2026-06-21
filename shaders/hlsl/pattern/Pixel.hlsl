@@ -89,5 +89,8 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
 	else outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset - coords));
 
+#ifdef INCLUDE_TEXTURES
+	outColor *= modalTex(abs(mode / 100), input.texcoord);
+#endif
 	return outColor;
 }
