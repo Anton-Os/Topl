@@ -19,10 +19,6 @@ std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 
 static Topl_Scene scene = Topl_Scene();
 
-static void background_empty_call(){
-	std::cout << "Thread output check" << std::endl;
-}
-
 static bool background_input_call(std::string& input) {
 	std::getline(std::cin, input);
 	std::cout << "Input received from thread: " << input << std::endl;
@@ -76,6 +72,21 @@ MAIN_ENTRY {
 	std::thread backgroundThread;
 	std::string commandArgs = "";
 
+#ifdef TOPL_ENABLE_AUDIO // Audio Playback Support
+	ma_result result;
+	ma_engine audioEngine;
+
+	result = ma_engine_init(NULL, &audioEngine);
+	if (result != MA_SUCCESS) return -1;
+
+	std::string soundFilePath = std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3";
+#ifdef _WIN32
+	std::replace(soundFilePath.begin(), soundFilePath.end(), '/', '\\');
+#endif
+	result = ma_engine_play_sound(&audioEngine, soundFilePath.c_str(), NULL);
+	if (result != MA_SUCCESS) return -1;
+#endif
+
 	std::cout << "Rendering loop" << std::endl;
 	while(platform.handleEvents()){
 		
@@ -101,6 +112,10 @@ MAIN_ENTRY {
         double f4 = _ticker.getRelMillisecs();
         // logFrameRate(f1, f2, f3, f4);
 	}
+
+#ifdef TOPL_ENABLE_AUDIO
+	ma_engine_uninit(&audioEngine); // Audio Cleanup
+#endif
 
     if(renderer != nullptr) delete(renderer);
 	// return 0;

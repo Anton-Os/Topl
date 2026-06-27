@@ -5,6 +5,7 @@
 #define IMAGES_DIR "Z:/PROJECT/Topl/master/assets/images/"
 #define MODELS_DIR "Z:/PROJECT/Topl/master/assets/models/"
 #define RESOURCE_DIR "Z:/PROJECT/Topl/master/assets/res/"
+#define AUDIO_DIR "Z:/PROJECT/Topl/master/assets/audio/"
 #define SHADERS_DIR "Z:/PROJECT/Topl/master/shaders/"
 
 #define TRUE 1

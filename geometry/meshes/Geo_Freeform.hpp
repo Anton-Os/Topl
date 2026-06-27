@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#define FREEFORM_LEVEL 0.25F
+// #define FREEFORM_LEVEL 0.25F
 
 struct ShapeFreeform {
     unsigned getCount() { return xDivs * yDivs * zDivs; }
@@ -46,7 +46,6 @@ public:
     DllExport Geo_Freeform(ShapeFreeform shape, fSpawnCallback spawnCallback, fCullCallback callback);
 private:
     ShapeFreeform _shape;
-    double _level = FREEFORM_LEVEL;
 };
 
 }

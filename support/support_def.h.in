@@ -5,6 +5,7 @@
 #define IMAGES_DIR "${ASSETS_DIR}images/"
 #define MODELS_DIR "${ASSETS_DIR}models/"
 #define RESOURCE_DIR "${ASSETS_DIR}res/"
+#define AUDIO_DIR "${ASSETS_DIR}audio/"
 #define SHADERS_DIR "${SHADERS_DIR}"
 
 #define TRUE 1

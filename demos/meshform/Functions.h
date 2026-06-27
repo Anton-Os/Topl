@@ -43,15 +43,24 @@ Geo_Vertex midpointTform(const Geo_Vertex& vertex, const Geo_Vertex& midpoint, u
 
 // Freeform Functions
 
-Geo_Meshlet spawn_quads(Vec3f input, unsigned count) {
+bool cull_ball(Vec3f input, double level){ 
+    // std::cout << "cull_ball: " << input.toString() << " and level is " << std::to_string(level) << std::endl;
+    return true; // TODO: Modify this
+}
+
+Geo_Meshlet spawn_randTrigs(Vec3f input, unsigned count) {
     Geo_Meshlet meshlet;
-    meshlet.count = 6;
+    meshlet.count = 9;
+    Vec3f randVec = (VEC_3F_RAND - Vec3f({ 0.5F, 0.5F, 0.5F })) * Vec3f({ 0.05F, 0.05F, 0.05F });
     meshlet.positions = (Vec3f*)malloc(sizeof(Vec3f) * meshlet.count); // this needs to be free
-    *(meshlet.positions + 0) = input + Vec3f({ 0.05F, 0.05F, 0.05f });
-    *(meshlet.positions + 1) = input + Vec3f({ 0.05F, -0.05F, -0.05f });
-    *(meshlet.positions + 2) = input + Vec3f({ -0.05F, 0.05F, 0.0f });
-    *(meshlet.positions + 3) = input + Vec3f({ -0.05F, -0.05F, 0.0f });
-    *(meshlet.positions + 4) = input + Vec3f({ 0.05F, 0.05F, 0.05f });
-    *(meshlet.positions + 5) = input + Vec3f({ -0.05F, -0.05F, -0.05f });
+    *(meshlet.positions + 0) = (randVec.data[0] < 0.0)? input : (input * 1.1F);
+    *(meshlet.positions + 1) = input + randVec;
+    *(meshlet.positions + 2) = input - randVec;
+    *(meshlet.positions + 3) = (randVec.data[1] < 0.0)? input : (input * 1.2F);
+    *(meshlet.positions + 4) = input + (randVec * (Vec3f({ 1.0F, -1.0F, 1.0F })));
+    *(meshlet.positions + 5) = input - (randVec * (Vec3f({ -1.0F, 1.0F, 1.0F })));
+    *(meshlet.positions + 6) = (randVec.data[2] < 0.0)? input : (input * 1.3F);
+    *(meshlet.positions + 7) = input + (randVec * (Vec3f({ 1.0F, 1.0F, -1.0F })));
+    *(meshlet.positions + 8) = input - (randVec * (Vec3f({ -1.0F, -1.0F, 1.0F })));
     return meshlet;
 }
