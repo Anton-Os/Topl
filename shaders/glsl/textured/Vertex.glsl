@@ -18,9 +18,9 @@ layout(std140, binding = 0) uniform Block {
 	vec4 texScale; // texture coordinate scaling
 
 	uint flip;
+	float slice;
 	float antialiasArea;
 	uint antialiasSteps;
-	float slice;
 };
 
 layout(location = 0) out vec3 texcoord_out;

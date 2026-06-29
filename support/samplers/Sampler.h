@@ -133,6 +133,7 @@ struct Sampler_3D : public Sampler_Target {
 		assert(width == height);
 		setData(q);
 	}
+	/* Sampler_3D(std::string directory) {} */ // TODO:: Load all images in directory and add to queue
 	
 	Rasteron_Image* getSlice(unsigned d) const { return (d < depth) ? queue_getImg(queue, d) : nullptr;}
     const Sampler_2D* getVolumeImg() const { return &volumeTexImg; }

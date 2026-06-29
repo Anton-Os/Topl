@@ -138,12 +138,12 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                                 case 9: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
                                 case 10: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, Topl_Program::speed })); break;
                                 case 11: Topl_Program::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break;
-                                case 12: Topl_Program::lastPickerObj->updateSize(Vec3f({ Topl_Program::speed, 0.0F, 0.0F })); break;
+                                /* case 12: Topl_Program::lastPickerObj->updateSize(Vec3f({Topl_Program::speed, 0.0F, 0.0F})); break;
                                 case 13: Topl_Program::lastPickerObj->updateSize(Vec3f({ -Topl_Program::speed, 0.0F, 0.0F })); break;
                                 case 14: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Program::speed, 0.0F })); break;
                                 case 15: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Program::speed, 0.0F })); break;
                                 case 16: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, Topl_Program::speed })); break;
-                                case 17: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break;
+                                case 17: Topl_Program::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, -Topl_Program::speed })); break; */
                                 default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
                             }
 

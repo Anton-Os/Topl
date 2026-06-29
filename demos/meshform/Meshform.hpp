@@ -41,10 +41,10 @@ struct Meshform_Demo : public Topl_Program {
     Geo_Freeform* freeforms[4] = {
         // new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
         //new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 20 }), spawn_randTrigs, cull_ball),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 40 }), spawn_randTrigs, cull_ball),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 100 }), spawn_randTrigs, cull_ball),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 100, 100, 200 }), spawn_randTrigs, cull_ball)
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 20 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 10 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }), spawn_randTrigs)
     };
     Geo_Torus* toruses[3] = {
         new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 20, 20})),

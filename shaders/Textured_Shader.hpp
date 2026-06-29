@@ -26,9 +26,9 @@ struct Textured_VertexShader : public Topl_EntryShader {
 		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scroll : (uint8_t*)&_texScroll, sizeof(Vec3f), bytes);
 		appendDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.scale : (uint8_t*)&_texScale, sizeof(Vec3f), bytes);
         alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.flip : (uint8_t*)&_flip, sizeof(unsigned), NO_PADDING, bytes);
+        alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.slice : (uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
 		alignDataToBytes((antialiasEntry != antialiasMap.end())? (uint8_t*)&antialiasEntry->second.first : (uint8_t*)&_antialiasArea, sizeof(unsigned), NO_PADDING, bytes);
 		alignDataToBytes((antialiasEntry != antialiasMap.end())? (uint8_t*)&antialiasEntry->second.second : (uint8_t*)&_antialiasSteps, sizeof(float), NO_PADDING, bytes);
-        alignDataToBytes((paramEntry != texParamMap.end())? (uint8_t*)&paramEntry->second.slice : (uint8_t*)&_slice, sizeof(float), NO_PADDING, bytes);
 	}
 
 	void setFlip(unsigned f){ _flip = f; }

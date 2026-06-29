@@ -1,10 +1,6 @@
 #define INCLUDE_SCENEBLOCK
 #define IGNORE_INPUTS
 
-#include "Common.hlsl"
-
-#include "Pixel.hlsl"
-
 // Values
 
 cbuffer CONST_BLOCK : register(b0) {
@@ -16,15 +12,21 @@ cbuffer CONST_BLOCK : register(b0) {
 	float4 texScale; // texture coordinate scaling
 
     uint flip;
+	float slice;
     float antialiasArea;
     uint antialiasSteps;
-	float slice;
 }
 
 struct PS_INPUT {
 	float4 pos : SV_POSITION;
 	float3 texcoord : TEXCOORD0;
 };
+
+#define SLICE slice
+
+#include "Common.hlsl"
+
+#include "Pixel.hlsl"
 
 // Functions
 

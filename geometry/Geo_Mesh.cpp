@@ -86,13 +86,13 @@ void Geo_Mesh::modify(iTformCallback callback, Vec3f transform){
     _transformCount++;
 }
 
-void Geo_Mesh::modify(vertexTransform callback){
+void Geo_Mesh::modify(tTFormCallback callback){
     for (unsigned v = 0; v < _vertices.size(); v++)
         _vertices[v] = callback(_vertices[v], v / 3, _transformCount);
     _transformCount++;
 }
 
-void Geo_Mesh::modify(originTransform callback){
+void Geo_Mesh::modify(oTformCallback callback){
     bool isIndexed = getIndexCount() > 0;
     for (unsigned m = 0; m < ((isIndexed)? _indices.size() : _vertices.size()) / 3; m++){
         if(m + 2 > _indices.size() && _indices.size() > 0) break;

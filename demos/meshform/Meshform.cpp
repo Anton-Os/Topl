@@ -56,8 +56,20 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
 #endif
 
 void Meshform_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex){
-    if(menu == PROGRAM_Sculpt){
-        // TODO: Apply transforms
+    if (menu == PROGRAM_Sculpt) {
+        for (unsigned o = 0; o < 4; o++)
+            switch (paneIndex) {
+                case 0: freeforms[o]->scale(Vec3f({ 1.25F, 1.25F, 1.25F })); break;
+                case 1: freeforms[o]->scale(Vec3f({ 0.75F, 0.75F, 0.75F })); break;
+                case 2: freeforms[o]->rotate(Vec3f({ MATH_PI / 2.0F, 0.0F, 0.0F })); break;
+                case 3: freeforms[o]->rotate(Vec3f({ 0.0F, MATH_PI / 2.0F, 0.0F })); break;
+                case 4: freeforms[o]->rotate(Vec3f({ 0.0F, 0.0F, MATH_PI / 2.0F })); break;
+                case 5: freeforms[o]->modify(pullTForm, Vec3f({ 0.25F, 0.25F, 0.25F })); break;
+                case 6: freeforms[o]->modify(rigidIForm, Vec3f({ 1.25F, 1.25F, 1.25F })); break;
+                case 7: freeforms[o]->modify(distanceTform); break;
+                case 8: freeforms[o]->modify(midpointTform); break;
+            }
+        _renderer->buildScene(&scene);
     }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint && isEnable_overlays) {
@@ -75,11 +87,6 @@ void Meshform_Demo::init(){
 
     // torusActor.isShown = false;
     for(unsigned m = 0; m < 3; m++){
-        if(m > 0) {
-            // for (unsigned o = 0; o < 4; o++) orbs[m][o]->tesselate(m);
-            // toruses[m]->tesselate(m);
-        }
-
         scene.addGeometry("torus" + std::to_string(m + 1), &torusActors[m]);
         torusActors[m].setRot({0.0F, MATH_PI / 2.0F, 0.0F});
         
@@ -145,9 +152,9 @@ void Meshform_Demo::loop(double frameTime){
 
     // torus->drawMode = DRAW_Lines;
 #ifdef TOPL_ENABLE_TEXTURES
-    _texVShader.setFlip(0);
-    // _texVShader.setAntialiasing(0.001F, 10);
-    _texVShader.setSlice((_renderer->getFrameCount() % 1024) * (1.0F / 1024.0));
+    _texVShader.setFlip((_renderer->getFrameCount() / 120) % 4);
+    _texVShader.setSlice((_renderer->getFrameCount() % 5000) * (1.0F / 5000.0));
+    _texVShader.setAntialiasing(0.005F, 5);
 #endif
     _renderer->setDrawMode(DRAW_Triangles);
     _renderer->updateScene(&scene);

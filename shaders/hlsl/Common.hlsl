@@ -40,6 +40,11 @@ RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) {
 #include <Enable_Textures>
 
 #ifdef INCLUDE_TEXTURES
+
+#ifndef SLICE
+#define SLICE 0.0f
+#endif
+
 Texture2D baseTex : register(t0);
 SamplerState baseSampler : register(s0);
 

@@ -16,9 +16,9 @@ cbuffer CONST_BLOCK : register(b0) {
 	float4 texScale; // texture coordinate scaling
 
     uint flip;
+	float slice;
     float antialiasArea;
     uint antialiasSteps;
-	float slice;
 }
 
 struct VS_OUTPUT {

@@ -77,8 +77,8 @@ public:
 
 	DllExport void modify(vTformCallback callback, Vec3f transform);
 	DllExport void modify(iTformCallback callback, Vec3f transform);
-	DllExport void modify(vertexTransform callback);
-	DllExport void modify(originTransform callback);
+	DllExport void modify(tTFormCallback callback);
+	DllExport void modify(oTformCallback callback);
 	DllExport void shift(Vec3f transform) { modify(shiftTForm, transform); } // shifts position attribute
     DllExport void rotate(Vec3f transform) { modify(rotateTForm, transform); } // rotates position attribute
 	DllExport void scale(Vec3f transform) { modify(scaleTForm, transform); } // scales position attribute

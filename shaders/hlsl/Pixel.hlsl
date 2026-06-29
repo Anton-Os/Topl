@@ -13,7 +13,7 @@ float4 modalTex(uint sampleMode, float3 texcoords){
     else if(abs(sampleMode) % 10 == 6) return tex6.Sample(sampler6, float2(texcoords.x, texcoords.y));
     else if(abs(sampleMode) % 10 == 7) return tex7.Sample(sampler7, float2(texcoords.x, texcoords.y));
     else if(abs(sampleMode) % 10 == 8) return areaTex.Sample(areaSampler, texcoords);
-	else if(abs(sampleMode) % 10 == 9) return areaTex.Sample(areaSampler, float3(texcoords.x, texcoords.y, 0.0F));
+	else if(abs(sampleMode) % 10 == 9) return areaTex.Sample(areaSampler, float3(texcoords.x, texcoords.y, SLICE));
 	else return baseTex.Sample(baseSampler, float2(texcoords.x, texcoords.y));
 }
 
