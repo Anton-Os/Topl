@@ -12,16 +12,16 @@ vec3 range_effect(vec3 color){ // maps color to +- range
 
 vec4 modalTex(uint m, vec3 texcoord){
     vec4 color;
-    if(abs(m) % 10 == 8) color = texture(volumeTex, texcoord); // volumetric texture
-    else if(abs(m) % 10 == 9) color = texture(volumeTex, vec3(texcoord.x, texcoord.y, SLICE)); // volumetric slice
+    if(m % 10 == 8) color = texture(volumeTex, texcoord); // volumetric texture
+    else if(m % 10 == 9) color = texture(volumeTex, vec3(texcoord.x, texcoord.y, SLICE)); // volumetric slice
     else { // select texture
-        if(abs(m) % 10 == 1) color = texture(tex1, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 2) color = texture(tex2, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 3) color = texture(tex3, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 4) color = texture(tex4, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 5) color = texture(tex5, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 6) color = texture(tex6, vec2(texcoord.x, texcoord.y));
-        else if(abs(m) % 10 == 7) color = texture(tex7, vec2(texcoord.x, texcoord.y));
+        if(m % 10 == 1) color = texture(tex1, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 2) color = texture(tex2, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 3) color = texture(tex3, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 4) color = texture(tex4, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 5) color = texture(tex5, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 6) color = texture(tex6, vec2(texcoord.x, texcoord.y));
+        else if(m % 10 == 7) color = texture(tex7, vec2(texcoord.x, texcoord.y));
         else color = texture(baseTex, vec2(texcoord.x, texcoord.y)); // base texture
     }
     return color;

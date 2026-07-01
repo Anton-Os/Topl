@@ -1,4 +1,6 @@
+#ifdef TOPL_ENABLE_AUDIO
 #include <miniaudio/miniaudio.h>
+#endif
 
 #include "Topl_Factory.hpp"
 

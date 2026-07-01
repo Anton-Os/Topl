@@ -11,6 +11,7 @@
 
 typedef void (*resizeCallback)(unsigned, unsigned);
 typedef void (*fileCallback)(bool, const char*);
+typedef void (*menuCallback)(unsigned short);
 
 bool checkFile(std::string fileName);
 
@@ -52,6 +53,7 @@ struct Platform {
 
     static resizeCallback onResize;
     static fileCallback onFileChoose;
+    static menuCallback onMenuSelect;
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){

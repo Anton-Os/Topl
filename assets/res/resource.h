@@ -1,8 +1,8 @@
-#define IDI_ICON 101
+#define IDI_ICON 1
 
-#define IDC_MENU 200
-#define IDM_NEW 201
-#define IDM_LOAD 202
+#define IDC_MENU 100
+#define IDM_NEW 101
+#define IDM_LOAD 102
 
 #define IDM_SOUND1 211
 #define IDM_SOUND2 212
