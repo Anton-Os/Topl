@@ -274,6 +274,24 @@ void Topl_Program::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> c
     Topl_Program::lastPickerCoord = Topl_Program::pickerCoord;
 }
 
+#ifdef TOPL_ENABLE_AUDIO
+void Topl_Program::menuSelect(unsigned short menuID) {
+    switch (menuID) {
+    case 201: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
+    case 202: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
+    case 203: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
+    case 204: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
+    default: std::cout << "Menu ID: " << std::to_string(menuID) << std::endl;
+    }
+}
+
+void Topl_Program::play(std::string audioPathStr) {
+    ma_engine audioEngine;
+    if(ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
+    if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
+    ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
+}
+#endif 
 
 #ifndef __ANDROID__
 void Topl_Program::setup(const char* execPath, const char* name) {
@@ -293,6 +311,9 @@ void Topl_Program::setup(android_app * app) {
 
     Platform::keyControl.addHandler(std::bind(&Topl_Program::_onAnyKey, this, std::placeholders::_1));
     Platform::mouseControl.addHandler(std::bind(&Topl_Program::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
+#ifdef TOPL_ENABLE_AUDIO
+    Platform::onMenuSelect = std::bind(&Topl_Program::menuSelect, this, std::placeholders::_1);
+#endif
 
     setPipelines();
     _renderer->buildScene(&_editor.scene);

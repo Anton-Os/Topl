@@ -9,9 +9,9 @@
 #include "IO.hpp"
 #include "Controls.hpp"
 
-typedef void (*resizeCallback)(unsigned, unsigned);
+/* typedef void (*resizeCallback)(unsigned, unsigned);
 typedef void (*fileCallback)(bool, const char*);
-typedef void (*menuCallback)(unsigned short);
+typedef void (*menuCallback)(unsigned short); */
 
 bool checkFile(std::string fileName);
 
@@ -51,9 +51,12 @@ struct Platform {
     static char inputStr[1024];
     static bool isUserInput;
 
-    static resizeCallback onResize;
-    static fileCallback onFileChoose;
-    static menuCallback onMenuSelect;
+    // static resizeCallback onResize;
+    // static fileCallback onFileChoose;
+    // static menuCallback onMenuSelect;
+    static std::function<void(unsigned, unsigned)> onResize; // TOOD: Implement this
+    static std::function<void(bool, const char*)> onFileChoose; // TODO: Implement this
+    static std::function<void(unsigned short)> onMenuSelect; // TODO: Implement this
 private:
     bool getCursorCoords(float* xPos, float* yPos) const; // returns true within client area and false outside
     void resetCursor(){

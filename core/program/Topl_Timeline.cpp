@@ -1,4 +1,4 @@
-#include "program/Topl_Program.hpp"
+#include "program/Topl_Timeline.hpp"
 
 std::map<Vec3f*, std::map<millisec_t, Vec3f>> Topl_Timeline::vec3f_map = std::map<Vec3f*, std::map<millisec_t, Vec3f>>();
 std::map<float*, std::map<millisec_t, float>> Topl_Timeline::float_map = std::map<float*, std::map<millisec_t, float>>();
@@ -85,8 +85,8 @@ void Topl_Timeline::addSequence(T var, std::pair<millisec_t, T> target){
 void Topl_Timeline::addSequence(Vec3f* var, std::pair<millisec_t, Vec3f> target){
 	// addSequence(var, target);
 	auto sequence = std::find_if(Topl_Timeline::vec3f_map.begin(), Topl_Timeline::vec3f_map.end(), [var](const std::pair<Vec3f*, std::map<millisec_t, Vec3f>>& p){ return p.first == var; });
-	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs(); // current time
-	else if(target.first < 0.0F) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs() + fabs(target.first); // future time
+	if(target.first == TIMELINE_AT) target.first = dynamic_ticker.getAbsSecs(); // current time
+	else if(target.first < 0.0F) target.first = dynamic_ticker.getAbsSecs() + fabs(target.first); // future time
 
 	if(sequence != Topl_Timeline::vec3f_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
@@ -106,7 +106,7 @@ void Topl_Timeline::addPeriodic(Vec3f* var, std::pair<millisec_t, Vec3f> target,
 void Topl_Timeline::addSequence(float* var, std::pair<millisec_t, float> target){
 	// addSequence(var, target);
 	auto sequence = std::find_if(Topl_Timeline::float_map.begin(), Topl_Timeline::float_map.end(), [var](const std::pair<float*, std::map<millisec_t, float>>& p){ return p.first == var; });
-	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+	if(target.first == TIMELINE_AT) target.first = dynamic_ticker.getAbsSecs();
 
 	if(sequence != Topl_Timeline::float_map.end()) sequence->second.insert({ target.first, target.second });
 	else {
@@ -126,7 +126,7 @@ void Topl_Timeline::addPeriodic(float* var, std::pair<millisec_t, float> target,
 void Topl_Timeline::addSequence(double* var, std::pair<millisec_t, double> target){
 	// addSequence(var, target);
 	auto sequence = std::find_if(Topl_Timeline::double_map.begin(), Topl_Timeline::double_map.end(), [var](const std::pair<double*, std::map<millisec_t, double>>& p){ return p.first == var; });
-	if(target.first == TIMELINE_AT) target.first = Topl_Program::timeline.dynamic_ticker.getAbsSecs();
+	if(target.first == TIMELINE_AT) target.first = dynamic_ticker.getAbsSecs();
 
 	if(sequence != Topl_Timeline::double_map.end()) sequence->second.insert({ target.first, target.second });
 	else {

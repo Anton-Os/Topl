@@ -1,8 +1,8 @@
+#include "Topl_Factory.hpp"
+
 #ifdef TOPL_ENABLE_AUDIO
 #include <miniaudio/miniaudio.h>
 #endif
-
-#include "Topl_Factory.hpp"
 
 #include "meshes/Geo_Surface.hpp"
 

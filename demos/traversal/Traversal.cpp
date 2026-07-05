@@ -97,7 +97,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0]);
+    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
     Traversal->run();
 
     delete(Traversal);

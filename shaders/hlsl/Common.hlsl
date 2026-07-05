@@ -19,13 +19,15 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 #ifdef INCLUDE_EXTBLOCK
 #define MAX_INSTANCES 26
 
-cbuffer CONST_EXT_BLOCK : register(b2) {
+cbuffer CONST_EXT_BLOCK : register(b2) { // TODO: Change this to time and audio block
+	// double time; // duration in milliseconds
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
 	uint tessLevel; // levels of tesselation
 
     float4x4 instanceData[MAX_INSTANCES];
+	// Include audio data including pitch and volume at different hertz ranges
 }
 #endif
 
