@@ -286,10 +286,7 @@ void Topl_Program::menuSelect(unsigned short menuID) {
 }
 
 void Topl_Program::play(std::string audioPathStr) {
-    ma_engine audioEngine;
-    if(ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
     if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
-    ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
 }
 #endif 
 
@@ -313,6 +310,7 @@ void Topl_Program::setup(android_app * app) {
     Platform::mouseControl.addHandler(std::bind(&Topl_Program::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
 #ifdef TOPL_ENABLE_AUDIO
     Platform::onMenuSelect = std::bind(&Topl_Program::menuSelect, this, std::placeholders::_1);
+    if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
 #endif
 
     setPipelines();
@@ -424,6 +422,9 @@ void Topl_Program::cleanup() {
 #if RASTERON_ENABLE_FONT
     cleanupFreeType();
 #endif
+#endif
+#ifdef TOPL_ENABLE_AUDIO
+    ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
 #endif
 	delete(_renderer);
 	delete(_platform);

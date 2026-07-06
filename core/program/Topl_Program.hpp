@@ -49,6 +49,7 @@ public:
 #ifdef TOPL_ENABLE_AUDIO
 	void menuSelect(unsigned short index);
 	void play(std::string audioPathStr); // TODO: Add number of repitions
+	ma_engine audioEngine;
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
