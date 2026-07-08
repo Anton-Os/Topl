@@ -153,7 +153,7 @@ struct Sampler_3D : public Sampler_Target {
 		std::string texName = "volumeTex_" + std::to_string(color1) + "," + std::to_string(color2);
 		queue = RASTERON_QUEUE_ALLOC(texName.c_str(), RASTERON_SIZE(height, width), depth);
 		for(unsigned f = 0; f < depth; f++){
-			Rasteron_Image* colorImg = solidImgOp({ SAMPLER_HEIGHT, SAMPLER_WIDTH }, blend_colors(color1, color2, (1.0 / depth) * f));
+			Rasteron_Image* colorImg = solidImgOp({ width, height }, blend_colors(color1, color2, (1.0 / depth) * f));
 			queue_addImg(queue, colorImg, f);
 			RASTERON_DEALLOC(colorImg);
 		}

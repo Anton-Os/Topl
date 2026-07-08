@@ -49,7 +49,8 @@ public:
 #ifdef TOPL_ENABLE_AUDIO
 	void menuSelect(unsigned short index);
 	void play(std::string audioPathStr); // TODO: Add number of repitions
-	ma_engine audioEngine;
+	ma_engine audioEngine; // for aplayback
+	ma_decoder audioDecoder; // for analysis
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
@@ -77,11 +78,9 @@ public:
 	static Vec3f getCoordDiff(){ return lastPickerCoord - pickerCoord; }
 #ifdef TOPL_ENABLE_TEXTURES
 	static Rasteron_Queue* cachedFrames; // frame capture queue
+	// std::map<Geo_Actor*, Sampler_Array> sequence_map; // for dynamically changing textures
 #endif
 	std::map<Geo_Actor*, Vec3f> positions_map, rotations_map, scales_map; // for dynamic orientation changes
-#ifdef TOPL_ENABLE_TEXTURES
-	std::map<Geo_Actor*, Sampler_Array> sequence_map; // for dynamically changing textures
-#endif
     bool isEnable_screencap = true, isEnable_console = true;
 protected:
     virtual void init() = 0;

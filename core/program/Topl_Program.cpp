@@ -89,7 +89,13 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             }
                             if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
                             else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
-                        } 
+                        }
+                        unsigned volumeColor = RAND_COLOR();
+                        for (unsigned s = 0; s < _background.volume.getDepth(); s++) {
+                            Rasteron_Image* sliceImg = solidImgOp({ 256, 256 }, blend_colors(volumeColor, color_invert(volumeColor), (1.0 / _background.volume.getDepth()) * s)); // resizeImgOp({ 256, 256 }, _overlays.textures[0].getImage());
+                            _background.volume.addSlice(sliceImg, s);
+                            RASTERON_DEALLOC(sliceImg);
+                        }
                         _renderer->texturizeScene(&_background.scene);
                         _renderer->texturizeScene(&_overlays.scene);
                     } else if(o == PROGRAM_Media)

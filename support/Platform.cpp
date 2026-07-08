@@ -10,7 +10,7 @@ char Platform::inputStr[1024] = "";
 bool Platform::isUserInput = false;
 // resizeCallback Platform::onResize = nullptr;
 // fileCallback Platform::onFileChoose = nullptr;
-std::function<void(unsigned short)> Platform::onMenuSelect = [](unsigned short menuID) { std::cout << "Menu ID: " << std::to_string(menuID) << std::endl; };
+std::function<void(unsigned short)> Platform::onMenuSelect = [](unsigned short) { };
 
 #ifdef _WIN32
 
