@@ -14,14 +14,16 @@ unsigned radialCoords(double x, double y) {
     else return blend_colors(color, NO_COLOR, sqrt(pow(0.5 - x, 2.0) + pow(0.5 - y, 2.0)));
 }
 
-unsigned trialCoords(double x, double y) {
+unsigned skewCoords(double x, double y) {
     static unsigned color = (RAND_COLOR() & 0x00FFFFFF) | TRAVERSAL_ALPHA;
-    static float xOff = ((float)rand() / (float)RAND_MAX);
-    static float yOff = (float)rand() / (float)RAND_MAX;
+    static float xOff = (((float)rand() / (float)RAND_MAX) - 0.5F) * TRAVERSAL_SKEW;
+    static float yOff = (((float)rand() / (float)RAND_MAX) - 0.5F) * TRAVERSAL_SKEW;
     if (x == 0 && y == 0) {
         color = (RAND_COLOR() & 0x00FFFFFF) | TRAVERSAL_ALPHA; // new image has started
-        xOff = (float)rand() / (float)RAND_MAX;
-        yOff = (float)rand() / (float)RAND_MAX;
+        float xSkew = (((float)rand() / (float)RAND_MAX) - 0.5F) * TRAVERSAL_SKEW;
+        float ySkew = (((float)rand() / (float)RAND_MAX) - 0.5F) * TRAVERSAL_SKEW;
+        if(xOff > -TRAVERSAL_SKEW || xOff < TRAVERSAL_SKEW) xOff += xSkew; else xOff = xSkew;
+        if(yOff > -TRAVERSAL_SKEW || yOff < TRAVERSAL_SKEW) yOff += ySkew; else yOff = ySkew;
     }
 
     if (x + xOff > 0.25 && x + xOff < 0.75 && y + yOff > 0.25 && y + yOff < 0.75) return NO_COLOR;

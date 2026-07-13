@@ -12,7 +12,7 @@
 #define CUBEGATE_TESS 0
 #define CUBEGATE_NAME "cubegate" + std::to_string(rand() % 9999)
 
-#include "Construct.h"
+#include "Cubegate_Construct.h"
 
 struct Cubegate_Demo : public Topl_Program {
     Cubegate_Demo(const char* execPath) : Topl_Program(execPath, "Cubegate"){ }

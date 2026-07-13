@@ -23,7 +23,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
         }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint) {
-        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(doorwayCoords); // TODO: Modify this with different doorways
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Sampler_Map(skewCoords); // TODO: Modify this with different doorways
         _renderer->texturizeScene(&scene);
     }
 #endif
@@ -67,7 +67,7 @@ void Traversal_Demo::init(){
             std::string sliceName = std::string("slice") + std::to_string(c + 1) + "_" + std::to_string(s + 1);
             scene.addGeometry(sliceName, sliceActorPtrs[c][s]);
 #ifdef TOPL_ENABLE_TEXTURES
-            sliceTextures.push_back(new Sampler_Map(doorwayCoords));
+            sliceTextures.push_back(new Sampler_Map(skewCoords));
             scene.addTexture(sliceName, sliceTextures.back());
 #endif
         }
@@ -97,7 +97,7 @@ void Traversal_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY{
-    Traversal = new Traversal_Demo(argv[0], BACKEND_GL4);
+    Traversal = new Traversal_Demo(argv[0]);
     Traversal->run();
 
     delete(Traversal);

@@ -11,10 +11,11 @@
 #define TRAVERSAL_SLICES 300
 #define TRAVERSAL_CORRIDORS 3
 #define TRAVERSAL_RECURSION 9
+#define TRAVERSAL_SKEW 0.15
 #define TRAVERSAL_ALPHA 0xAA000000
 
 #ifdef TOPL_ENABLE_TEXTURES
-#include "Samplers.h"
+#include "Traversal_Samplers.h"
 #endif
 
 struct Traversal_Demo : public Topl_Program {
@@ -42,13 +43,13 @@ private:
 
     // Geo_Volume3D corridorActors[TRAVERSAL_CORRIDORS][TRAVERSAL_RECURSION] = {}
     Geo_Quad3D squareCorridors[TRAVERSAL_CORRIDORS] = {
-        Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+        Geo_Quad3D(TRAVERSAL_RADIUS * 3, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS * 2, TRAVERSAL_DEPTH), Geo_Quad3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
     };
     Geo_Hex3D hexCorridors[TRAVERSAL_CORRIDORS] = {
-        Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+        Geo_Hex3D(TRAVERSAL_RADIUS * 3, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS * 2, TRAVERSAL_DEPTH), Geo_Hex3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
     };
     Geo_Circle3D circleCorridors[TRAVERSAL_CORRIDORS] = {
-        Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
+        Geo_Circle3D(TRAVERSAL_RADIUS * 3, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS * 2, TRAVERSAL_DEPTH), Geo_Circle3D(TRAVERSAL_RADIUS, TRAVERSAL_DEPTH)
     };
 
     Geo_Actor actors[TRAVERSAL_RECURSION] = {
@@ -67,7 +68,7 @@ private:
 #ifdef TOPL_ENABLE_TEXTURES
     std::vector<Sampler_2D*> sliceTextures;
     Sampler_2D sceneTextures[MAX_TEX_BINDINGS] = {
-        Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords), Sampler_Map(trialCoords)
+        Sampler_Map(skewCoords), Sampler_Map(skewCoords), Sampler_Map(skewCoords), Sampler_Map(skewCoords), Sampler_Map(skewCoords), Sampler_Map(skewCoords), Sampler_Map(skewCoords)
     };
 #endif
     Topl_Scene scene = PROGRAM_SCENE;
