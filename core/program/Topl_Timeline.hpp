@@ -5,10 +5,6 @@
 #include "Timer.hpp"
 #include "maths/Vector.h"
 
-#ifdef TOPL_ENABLE_AUDIO
-#include <miniaudio/miniaudio.h>
-#endif
-
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start
 #define TIMELINE_AT -1.0

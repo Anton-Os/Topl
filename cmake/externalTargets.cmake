@@ -64,12 +64,28 @@ if(SUPPORT_AUDIO)
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
 
+    ExternalProject_Add(kissfft
+        GIT_REPOSITORY "https://github.com/mborgerding/kissfft.git"
+        GIT_TAG "6398d8a1d0c92486b5ece8a456fd5e6a97ad1f08"
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+        PREFIX ${EXTERNAL_PROJ_DIR}/kissfft
+        CONFIGURE_COMMAND "" # Manual Configure?
+        BUILD_COMMAND "" # Manual Build?
+        INSTALL_COMMAND "" # Manual Install?
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+
     # TODO: Check CUDA for cuFFT support?
 
     set(miniaudio_h "${CMAKE_INSTALL_PREFIX}/include/miniaudio")
     find_library(miniaudio_lib NAMES miniaudio PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+    # find_file(kissfft_header NAMES kiss_fft.h PATHS ${EXTERNAL_PROJ_DIR}/kissfft/src/kissfft ${CMAKE_INSTALL_PREFIX}/include/kissfft)
+    # find_file(kissfft_src NAMES kiss_fft.c PATHS ${EXTERNAL_PROJ_DIR}/kissfft/src/kissfft)
 
     message(STATUS "miniaudio library is ${miniaudio_lib} and header is ${miniaudio_h}")
+    message(STATUS "kissfft directory is ${EXTERNAL_PROJ_DIR}/kissfft")    
 else()
     set(miniaudio_lib "")
     set(miniaudio_h "")

@@ -1,5 +1,12 @@
 #include "program/Topl_Program.hpp"
 
+#ifdef TOPL_ENABLE_AUDIO
+// #define static static inline
+#include <kissfft/kiss_fft.c> // includes source for kissfft
+#include <kissfft/kiss_fftr.c> // includes source for kissfft
+// #undef static
+#endif
+
 #define MOV_BTN_CASES case 0: case 1: case 2: case 3: case 4: case 5
 #define ROT_BTN_CASES case 6: case 7: case 8: case 9: case 10: case 11
 #define SIZ_BTN_CASES case 12: case 13: case 14: case 15: case 16: case 17
@@ -292,7 +299,13 @@ void Topl_Program::menuSelect(unsigned short menuID) {
 }
 
 void Topl_Program::play(std::string audioPathStr) {
+    static unsigned long long audioFramesRead;
+    if(audioData.empty()) audioData.assign(PROGRAM_AUDIO_FRAMES, 0.0F);
     if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
+    if(ma_decoder_init_file(audioPathStr.c_str(), NULL, &audioDecoder) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio decoder failed to initialize");
+    if(ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), PROGRAM_AUDIO_FRAMES, &audioFramesRead) != MA_SUCCESS);
+    kiss_fftr(fftConfig, audioData.data(), fftOutput);
+    ma_decoder_uninit(&audioDecoder);
 }
 #endif 
 
@@ -431,6 +444,7 @@ void Topl_Program::cleanup() {
 #endif
 #ifdef TOPL_ENABLE_AUDIO
     ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
+    kiss_fft_free(&fftConfig);
 #endif
 	delete(_renderer);
 	delete(_platform);

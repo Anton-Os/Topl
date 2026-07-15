@@ -1,5 +1,12 @@
 #include "Platform.hpp"
 
+#ifdef TOPL_ENABLE_AUDIO
+#include <miniaudio/miniaudio.h>
+
+#include <kissfft/kiss_fft.h> // includes header for kissfft
+#include <kissfft/kiss_fftr.h> // includes header for kissfft
+#endif
+
 #include "Topl_Factory.hpp"
 #include "program/Topl_Timeline.hpp"
 
@@ -30,6 +37,7 @@
 #define PROGRAM_SUBMENUS 9
 #define PROGRAM_IS_BK true
 #define PROGRAM_IS_OVERLAY true
+#define PROGRAM_AUDIO_FRAMES 4096
 
 class Topl_Program {
 public:
@@ -49,8 +57,11 @@ public:
 #ifdef TOPL_ENABLE_AUDIO
 	void menuSelect(unsigned short index);
 	void play(std::string audioPathStr); // TODO: Add number of repitions
-	ma_engine audioEngine; // for aplayback
+	ma_engine audioEngine; // for playback
 	ma_decoder audioDecoder; // for analysis
+	std::vector<float> audioData; // for capture
+	kiss_fftr_cfg fftConfig = kiss_fftr_alloc(PROGRAM_AUDIO_FRAMES, false, NULL, NULL);
+	kiss_fft_cpx fftOutput[PROGRAM_AUDIO_FRAMES];
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }

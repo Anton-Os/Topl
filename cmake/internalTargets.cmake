@@ -56,6 +56,7 @@ endif()
 if(SUPPORT_AUDIO)
     target_include_directories(CORELIB PRIVATE ${miniaudio_h})
     target_link_libraries(CORELIB PUBLIC ${miniaudio_lib})
+    target_include_directories(CORELIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src) # for header only build
 endif()
 endif() # IGORE_NATIVELIBS
 
