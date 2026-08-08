@@ -3,7 +3,7 @@
 void Animatrix_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Animatrix_Demo::onAnyKey, this, std::placeholders::_1));
 
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 4.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Topl_Projection(PROJECTION_Perspective, 4.0F).genProjMatrix());
 
 #ifdef TOPL_ENABLE_TEXTURES
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++){

@@ -1,12 +1,12 @@
 #ifndef TOPL_SUPPORT_H
 
-#define ASSETS_DIR "Z:/PROJECT/Topl/master/assets/"
-#define FONTS_DIR "Z:/PROJECT/Topl/master/assets/fonts/"
-#define IMAGES_DIR "Z:/PROJECT/Topl/master/assets/images/"
-#define MODELS_DIR "Z:/PROJECT/Topl/master/assets/models/"
-#define RESOURCE_DIR "Z:/PROJECT/Topl/master/assets/res/"
-#define AUDIO_DIR "Z:/PROJECT/Topl/master/assets/audio/"
-#define SHADERS_DIR "Z:/PROJECT/Topl/master/shaders/"
+#define ASSETS_DIR "Z:/PROJECT/Topl/develop/assets/"
+#define FONTS_DIR "Z:/PROJECT/Topl/develop/assets/fonts/"
+#define IMAGES_DIR "Z:/PROJECT/Topl/develop/assets/images/"
+#define MODELS_DIR "Z:/PROJECT/Topl/develop/assets/models/"
+#define RESOURCE_DIR "Z:/PROJECT/Topl/develop/assets/res/"
+#define AUDIO_DIR "Z:/PROJECT/Topl/develop/assets/audio/"
+#define SHADERS_DIR "Z:/PROJECT/Topl/develop/shaders/"
 
 #define TRUE 1
 #define FALSE 0
@@ -16,12 +16,12 @@
 #if TRUE
     #define TOPL_ENABLE_VULKAN
 #endif
-#if 1 && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
+#if FALSE && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
     #define TOPL_ENABLE_TEXTURES
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron
 #endif
-#if 1
+#if FALSE
     #define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>
@@ -30,11 +30,16 @@
 #if ON
     #define TOPL_ENABLE_PHYSICS
 #endif
-/* #if TRUE
+/* #if 
     #define TOPL_ENABLE_CUDA
 #endif */
 #if ON
-    #define TOPL_ENABLE_AUDIO
+#ifndef TOPL_ENABLE_AUDIO // ensures only one audio library is enabled
+    #include <miniaudio/miniaudio.h> // Audio Library
+    #include <kissfft/kiss_fft.h> // FFT Library
+    #include <kissfft/kiss_fftr.h> // FFT Library
+#endif
+#define TOPL_ENABLE_AUDIO
 #endif
 
 

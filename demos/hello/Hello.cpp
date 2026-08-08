@@ -31,7 +31,7 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
     static unsigned frameCount = 0;
     static double frameTotal = 0.0;
 
-    frameCount++;
+    frameCount++; 
     frameTotal += f1 + f2 + f3 + f4;
 
     std::cout << "Frame times: "
@@ -75,6 +75,7 @@ MAIN_ENTRY {
 #ifdef TOPL_ENABLE_AUDIO // Audio Playback Support
 	ma_result result;
 	ma_engine audioEngine;
+	ma_decoder audioDecoder;
 
 	result = ma_engine_init(NULL, &audioEngine);
 	if (result != MA_SUCCESS) return -1;

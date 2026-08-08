@@ -52,7 +52,7 @@ void Penscape_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex)
 void Penscape_Demo::init(){
     Platform::keyControl.addHandler(std::bind(&Penscape_Demo::onAnyKey, this, std::placeholders::_1));
 
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 5.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Topl_Projection(PROJECTION_Perspective, 5.0F).genProjMatrix());
 
     createBrushes();
     for(unsigned a = 0; a < 3; a++){

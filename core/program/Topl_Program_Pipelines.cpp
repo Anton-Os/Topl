@@ -6,7 +6,7 @@ void Topl_Program::setPipelines(){
         _beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
         _materialVShader = Spectral_VertexShader_GL4(); _materialPShader = Spectral_PixelShader_GL4();
         _effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
-        _canvasVShader = Canvas_VertexShader_GL4(); _canvasPShader = Canvas_PixelShader_GL4();
+        _drawVShader = Draw_VertexShader_GL4(); _drawPShader = Draw_PixelShader_GL4();
         _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
         _patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
         _coloredVShader = Colorcode_VertexShader_GL4(); _coloredPShader = Colorcode_PixelShader_GL4();
@@ -22,7 +22,7 @@ void Topl_Program::setPipelines(){
         _beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
         _materialVShader = Spectral_VertexShader_DX11(); _materialPShader = Spectral_PixelShader_DX11();
         _effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
-        _canvasVShader = Canvas_VertexShader_DX11(); _canvasPShader = Canvas_PixelShader_DX11();
+        _drawVShader = Draw_VertexShader_DX11(); _drawPShader = Draw_PixelShader_DX11();
         _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();
         _patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
         _coloredVShader = Colorcode_VertexShader_DX11(); _coloredPShader = Colorcode_PixelShader_DX11();
@@ -37,7 +37,7 @@ void Topl_Program::setPipelines(){
     _texPipeline = Topl_Factory::genPipeline(_backend, &_texVShader, &_texPShader);
     _beamsPipeline = Topl_Factory::genPipeline(_backend, &_beamsVShader, &_beamsPShader);
     _materialPipeline = Topl_Factory::genPipeline(_backend, &_materialVShader, &_materialPShader);
-    _canvasPipeline = Topl_Factory::genPipeline(_backend, &_canvasVShader, &_canvasPShader);
+    _drawPipeline = Topl_Factory::genPipeline(_backend, &_drawVShader, &_drawPShader);
     _fieldPipeline = Topl_Factory::genPipeline(_backend, &_fieldVShader, &_fieldPShader);
     _patternPipeline = Topl_Factory::genPipeline(_backend, &_patternVShader, &_patternPShader);
     _effectPipeline = Topl_Factory::genPipeline(_backend, &_effectVShader, &_effectPShader); // TODO: Figure out why this fails

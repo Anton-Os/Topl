@@ -1,24 +1,17 @@
 #include "Platform.hpp"
 
-#ifdef TOPL_ENABLE_AUDIO
-#include <miniaudio/miniaudio.h>
-
-#include <kissfft/kiss_fft.h> // includes header for kissfft
-#include <kissfft/kiss_fftr.h> // includes header for kissfft
-#endif
-
 #include "Topl_Factory.hpp"
-#include "program/Topl_Timeline.hpp"
+#include "Topl_Timeline.hpp"
 
-#include "Colorcode_Shader.hpp"
-#include "Textured_Shader.hpp"
-#include "Beams_Shader.hpp"
-#include "Spectral_Shader.hpp"
-#include "Effect_Shader.hpp"
-#include "Canvas_Shader.hpp"
-#include "Field_Shader.hpp"
-#include "Pattern_Shader.hpp"
-#include "Advance_Shader.hpp"
+#include "colorcode/Colorcode_Shader.hpp"
+#include "textured/Textured_Shader.hpp"
+#include "beams/Beams_Shader.hpp"
+#include "spectral/Spectral_Shader.hpp"
+#include "effect/Effect_Shader.hpp"
+#include "draw/Draw_Shader.hpp"
+#include "field/Field_Shader.hpp"
+#include "pattern/Pattern_Shader.hpp"
+#include "advance/Advance_Shader.hpp"
 
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
@@ -114,13 +107,13 @@ protected:
 	Spectral_VertexShader _materialVShader; Spectral_PixelShader _materialPShader;
 	Colorcode_VertexShader _coloredVShader; Colorcode_PixelShader _coloredPShader;
 	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
-	Canvas_VertexShader _canvasVShader; Canvas_PixelShader _canvasPShader;
+	Draw_VertexShader _drawVShader; Draw_PixelShader _drawPShader;
 	Field_VertexShader _fieldVShader; Field_PixelShader _fieldPShader;
 	Pattern_VertexShader _patternVShader; Pattern_PixelShader _patternPShader;
 	Advance_GeometryShader _geomShaders[PROGRAM_PIPELINES]; Advance_TessCtrlShader _tessCtrlShaders[PROGRAM_PIPELINES]; Advance_TessEvalShader _tessEvalShaders[PROGRAM_PIPELINES];
 
-	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_coloredVShader, &_effectVShader, &_canvasVShader, &_fieldVShader, &_patternVShader };
-	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_coloredPipeline, *_effectPipeline, *_canvasPipeline, *_fieldPipeline, *_patternPipeline; // for easy reuse
+	Topl_EntryShader* _entryShaders[PROGRAM_PIPELINES] = { &_texVShader, &_beamsVShader, &_materialVShader, &_coloredVShader, &_effectVShader, &_drawVShader, &_fieldVShader, &_patternVShader };
+	Topl_Pipeline *_texPipeline, *_beamsPipeline, *_materialPipeline, *_coloredPipeline, *_effectPipeline, *_drawPipeline, *_fieldPipeline, *_patternPipeline; // for easy reuse
 	Topl_Pipeline *_geomPipeline, *_tessPipeline, *_longPipeline;
 
     // Options & Properties

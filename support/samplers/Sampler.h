@@ -5,8 +5,8 @@
 
 #include "support_def.h"
 
-#define SAMPLER_HEIGHT 1024
-#define SAMPLER_WIDTH 1024
+#define SAMPLER_HEIGHT 1300 // 1024
+#define SAMPLER_WIDTH 1300 // 1024
 
 // typedef Rasteron_Image* (*imageCallback)();
 

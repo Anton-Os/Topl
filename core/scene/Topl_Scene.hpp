@@ -77,7 +77,7 @@ public:
 	const std::string texImgPaths[MAX_TEX_BINDINGS] = {
 		std::string(IMAGES_DIR) + "Background-Grid.png", std::string(IMAGES_DIR) + "Background-Pins.png", 
 		std::string(IMAGES_DIR) + "Background-Trigs.png", std::string(IMAGES_DIR) + "Background-Frame.png", 
-		std::string(IMAGES_DIR) + "Background-Canvas.png", std::string(IMAGES_DIR) + "Background-Squared.png",
+		std::string(IMAGES_DIR) + "Background-Draw.png", std::string(IMAGES_DIR) + "Background-Squared.png",
 		std::string(IMAGES_DIR) + "Background-Circular.png", std::string(IMAGES_DIR) + "Background-Action.bmp"
 	};
 private:

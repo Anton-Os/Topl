@@ -17,7 +17,7 @@ list(APPEND support_src
 list(APPEND core_src
     core/Topl_Factory.cpp
     core/renderer/Topl_Renderer.cpp
-    core/program/Topl_Timeline.cpp
+    core/Topl_Timeline.cpp
     core/program/Topl_Program.cpp
     core/program/Topl_Program_Runner.cpp
     core/program/Topl_Program_Pipelines.cpp
@@ -25,7 +25,7 @@ list(APPEND core_src
 )
 
 if(SUPPORT_PHYSICS)
-    list(APPEND core_src core/scene/Topl_Scene_Dynamics.cpp)
+    list(APPEND core_src core/scene/Topl_Scene_Physics.cpp)
 endif()
 
 add_library(CORELIB # SHARED # Core Library
@@ -77,7 +77,7 @@ if(SUPPORT_MODELS AND Assimp_FOUND)
 endif()
 
 add_library(GEOLIB SHARED ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core support geometry)
+target_include_directories(GEOLIB PRIVATE core support geometry shaders)
 set_target_properties(GEOLIB PROPERTIES FOLDER "Libraries")
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>

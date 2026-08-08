@@ -32,19 +32,19 @@ endif()
 
 if(NOT DEFINED IGNORE_EXTLIBS)
     set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/PROJECTS")
-    include("cmake/externalTargets.cmake") # For building dependencies
+    include("scripts/externalTargets.cmake") # For building dependencies
 endif()
 
-include("cmake/internalTargets.cmake") # Builds CORELIB and GEOLIB
+include("scripts/internalTargets.cmake") # Builds CORELIB and GEOLIB
 
 if(NOT DEFINED IGNORE_NATIVELIBS)
-    include("cmake/findVulkan.cmake") # For locating Vulkan
-    include("cmake/engineTargets.cmake") # For building engine specific libraries
-    include("cmake/shaderTargets.cmake") # For copying and compiling shaders
-    include("cmake/resourceTargets.cmake") # For generating assets compile-time
+    include("scripts/findVulkan.cmake") # For locating Vulkan
+    include("scripts/engineTargets.cmake") # For building engine specific libraries
+    include("scripts/shaderTargets.cmake") # For copying and compiling shaders
+    include("scripts/resourceTargets.cmake") # For generating assets compile-time
 endif()
 
-include("cmake/installTargets.cmake") # For installation
+include("scripts/installTargets.cmake") # For installation
 
 # ------------- Demos and Tests ------------- #
 

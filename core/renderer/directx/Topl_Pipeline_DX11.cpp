@@ -26,7 +26,7 @@ namespace DX11 {
 	}
 
 	bool compileShader(std::string shaderText, LPCSTR shaderTarget, ID3DBlob** blob){
-		std::string tempFilePath = std::string(SHADERS_DIR) + "hlsl/" + "Shader.hlsl";
+		std::string tempFilePath = std::string(SHADERS_DIR) + "_hlsl/" + "Shader.hlsl";
 		std::replace(tempFilePath.begin(), tempFilePath.end(), '/', '\\'); // replacing forward and backward slashes
 		std::ofstream shaderFile = std::ofstream(tempFilePath.c_str(), std::ios::out);
 		if(!shaderFile.is_open()) return false;

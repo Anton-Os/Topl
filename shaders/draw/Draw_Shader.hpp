@@ -9,10 +9,10 @@
 
 // Vertex Shaders
 
-struct Canvas_VertexShader : public Topl_EntryShader {
-	Canvas_VertexShader() : Topl_EntryShader(){}
-	Canvas_VertexShader(std::string name) : Topl_EntryShader(name) { }
-	Canvas_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
+struct Draw_VertexShader : public Topl_EntryShader {
+	Draw_VertexShader() : Topl_EntryShader(){}
+	Draw_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Draw_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
 		Vec2i screenRes = Vec2i({ width, height });
@@ -54,27 +54,27 @@ protected:
 	double drawSize = 0.05;
 };
 
-struct Canvas_VertexShader_GL4 : public Canvas_VertexShader {
-    Canvas_VertexShader_GL4() : Canvas_VertexShader(genPrefix_glsl() + "canvas/" + "Vertex.glsl"){}
-	Canvas_VertexShader_GL4(unsigned mode) : Canvas_VertexShader(genPrefix_glsl() + "canvas/" + "Vertex.glsl", mode){}
+struct Draw_VertexShader_GL4 : public Draw_VertexShader {
+    Draw_VertexShader_GL4() : Draw_VertexShader(genPrefix_glsl() + "draw/" + "Vertex.glsl"){}
+	Draw_VertexShader_GL4(unsigned mode) : Draw_VertexShader(genPrefix_glsl() + "draw/" + "Vertex.glsl", mode){}
 };
 
-struct Canvas_VertexShader_DX11 : public Canvas_VertexShader {
-    Canvas_VertexShader_DX11() : Canvas_VertexShader(genPrefix_hlsl() + "canvas/" + "Vertex.hlsl"){}
-	Canvas_VertexShader_DX11(unsigned mode) : Canvas_VertexShader(genPrefix_hlsl() + "canvas/" + "Vertex.hlsl", mode){}
+struct Draw_VertexShader_DX11 : public Draw_VertexShader {
+    Draw_VertexShader_DX11() : Draw_VertexShader(genPrefix_hlsl() + "draw/" + "Vertex.hlsl"){}
+	Draw_VertexShader_DX11(unsigned mode) : Draw_VertexShader(genPrefix_hlsl() + "draw/" + "Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
 
-struct Canvas_PixelShader : public Topl_Shader {
-	Canvas_PixelShader() : Topl_Shader(){}
-	Canvas_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
+struct Draw_PixelShader : public Topl_Shader {
+	Draw_PixelShader() : Topl_Shader(){}
+	Draw_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct Canvas_PixelShader_GL4 : public Canvas_PixelShader {
-	Canvas_PixelShader_GL4() : Canvas_PixelShader(genPrefix_glsl() + "canvas/" + "Frag.glsl") { }
+struct Draw_PixelShader_GL4 : public Draw_PixelShader {
+	Draw_PixelShader_GL4() : Draw_PixelShader(genPrefix_glsl() + "draw/" + "Frag.glsl") { }
 };
 
-struct Canvas_PixelShader_DX11 : public Canvas_PixelShader {
-	Canvas_PixelShader_DX11() : Canvas_PixelShader(genPrefix_hlsl() + "canvas/" + "Pixel.hlsl") { }
+struct Draw_PixelShader_DX11 : public Draw_PixelShader {
+	Draw_PixelShader_DX11() : Draw_PixelShader(genPrefix_hlsl() + "draw/" + "Pixel.hlsl") { }
 };

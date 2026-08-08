@@ -1,4 +1,4 @@
-#include "program/Topl_Timeline.hpp"
+#include "Topl_Timeline.hpp"
 
 std::map<Vec3f*, std::map<millisec_t, Vec3f>> Topl_Timeline::vec3f_map = std::map<Vec3f*, std::map<millisec_t, Vec3f>>();
 std::map<float*, std::map<millisec_t, float>> Topl_Timeline::float_map = std::map<float*, std::map<millisec_t, float>>();
@@ -6,15 +6,63 @@ std::map<double*, std::map<millisec_t, double>> Topl_Timeline::double_map = std:
 
 template<typename T> 
 void Topl_Timeline::updateSequence(T map, millisec_t time){
-	for(auto f = map.begin(); f != map.end(); f++){
-		auto seq_start = f->second.begin();
-		auto seq_end = f->second.rbegin();
+	for (auto& entry : storage) {
+        T* var = entry.first;
+        auto& seq = entry.second;
 
-		// TODO: iterate through map and determine new value
-	}
+        auto seq_start = seq.begin();
+        auto seq_end   = seq.rbegin();
+
+        if (seq.size() > 2) {
+            auto b = std::next(seq_start);
+            while (b != seq.end() && m > b->first) { seq_start = b; ++b; }
+
+            auto t = std::next(seq_end);
+            while (t != seq.rend() && m < t->first) { seq_end = t; ++t; }
+        }
+
+        double prog = (m - seq_start->first) / (seq_end->first - seq_start->first);
+
+        if (m > seq_end->first) *var = seq_end->second;
+        else if (m < seq_start->first) *var = seq_start->second;
+        else *var = seq_start->second + ((seq_end->second - seq_start->second) * prog);
+    }
+}
+
+template<typename T> void Topl_Timeline::addSequence(T* var, std::pair<millisec_t, T> target){
+	auto& storage = TimelineStorage<T>::map;
+
+    // Fix time semantics
+    if (target.first == TIMELINE_AT)
+        target.first = dynamic_ticker.getAbsSecs();
+    else if (target.first < 0.0F)
+        target.first = dynamic_ticker.getAbsSecs() + std::abs(target.first);
+
+    auto it = storage.find(var);
+
+    if (it != storage.end()) {
+        it->second.insert({ target.first, target.second });
+    } else {
+        storage[var] = std::map<millisec_t, T>();
+        storage[var].insert({ TIMELINE_START, *var });
+        storage[var].insert({ target.first, target.second });
+    }
+}
+
+template<typename T> void Topl_Timeline::addPeriodic(T* var, std::pair<millisec_t, T> target, unsigned short reps){
+	for (unsigned r = 0; r < reps; r++) {
+        if (r > 0) addSequence(var, { target.first * (r * 2), *var });
+        addSequence(var, { target.first * ((r * 2) + 1), target.second });
+    }
 }
 
 void Topl_Timeline::seqCallback(double m){
+	// updateSequence(TimelineStorage<Vec3f>::map, m);
+    // updateSequence(TimelineStorage<float>::map, m);
+    // updateSequence(TimelineStorage<double>::map, m);
+
+	// TODO: Remove all the code below for unecessary duplication
+
 	for(auto f = Topl_Timeline::vec3f_map.begin(); f != vec3f_map.end(); f++){
 		std::map<millisec_t, Vec3f>::iterator seq_start = f->second.begin();
 		std::map<millisec_t, Vec3f>::reverse_iterator seq_end = f->second.rbegin();
@@ -71,15 +119,6 @@ void Topl_Timeline::seqCallback(double m){
 		else *(f->first) = seq_start->second + ((seq_end->second - seq_start->second) * prog);
 		// else *(f->first) = r->second + ((m - r->first) * ((s->second - r->second) / (s->first - r->first)));
 	}
-}
-
-template<typename T>
-void Topl_Timeline::addSequence(T var, std::pair<millisec_t, T> target){
-	/* if(std::is_same(var, Vec3f)) logMessage("vec3f sequence detected");
-	if(std::is_same(var, float)) logMessage("float sequence detected");
-	if(std::is_same(var, double)) logMessage("double sequence detected");
-	if(std::is_same(var, int)) logMessage("int sequence detected"); */
-	// TODO: Implement body
 }
 
 void Topl_Timeline::addSequence(Vec3f* var, std::pair<millisec_t, Vec3f> target){

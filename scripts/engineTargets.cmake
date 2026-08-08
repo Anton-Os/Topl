@@ -4,7 +4,7 @@ add_library(GL4_ENGINE
     core/renderer/opengl/Topl_Pipeline_GL4.cpp
     core/renderer/opengl/Topl_Renderer_GL4.cpp
 )
-target_include_directories(GL4_ENGINE PRIVATE core support geometry)
+target_include_directories(GL4_ENGINE PRIVATE core support geometry shaders)
 target_include_directories(GL4_ENGINE INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
@@ -32,7 +32,7 @@ if(WIN32)
         core/renderer/directx/Topl_Pipeline_DX11.cpp
         core/renderer/directx/Topl_Renderer_DX11.cpp
     )
-    target_include_directories(DX11_ENGINE PRIVATE core support geometry)
+    target_include_directories(DX11_ENGINE PRIVATE core support geometry shaders)
     target_include_directories(DX11_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>
@@ -49,7 +49,7 @@ if(Vulkan_FOUND)
         core/renderer/vulkan/Topl_Renderer_VK.cpp
     )
     target_include_directories(VK_ENGINE PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_include_directories(VK_ENGINE PRIVATE core support geometry)
+    target_include_directories(VK_ENGINE PRIVATE core support geometry shaders)
     target_include_directories(VK_ENGINE INTERFACE
         $<BUILD_INTERFACE:${interfaceHeaders}>
         $<INSTALL_INTERFACE:include/Topl>

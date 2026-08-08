@@ -43,7 +43,7 @@ if(SUPPORT_MODELS)
         PREFIX ${EXTERNAL_PROJ_DIR}/Assimp
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     )
-    find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/cmake/assimp-5.0)
+    find_package(Assimp PATHS ${CMAKE_INSTALL_PREFIX}/lib/scripts/assimp-5.0)
     if(Assimp_FOUND)
         message(STATUS "Assimp loading success!")
     else()

@@ -1,17 +1,27 @@
 # Topl
 
-An extensible rendering framework in the making, using OpenGL 4.4 and DirectX 11 as graphics backends. Windows is supported with a Linux port in progress.
+An experimental C++ graphics engine in the making, using OpenGL 4.4 and DirectX 11 as graphics backends with a Vulkan port in progress. Windows and Linux are the target platforms, with bindings being cross-compiled for Flutter and mobile devices
 
-![Topl Logo](./assets/images/Topl-Main.png "Topl Logo")
+Topl can be used to create a wide range of rendering applications ranging from animation, modeling, photogrammetry, gaming, and simulations. Audio functionality and FFT analysis coming soon!
 
-The Rasteron submodule is required for loading textures, clone the latest version on git: https://github.com/Anton-Os/Rasteron.git
+### Enviornment
 
-I aim to keep dependencies to a bare minimum and have set out to write as much as possible from scratch. GLEW and Assimp are built by the project.
+I aim to keep external dependencies to a bare minimum with this project:
+
+1. GLEW to support OpenGL
+2. ASSIMP for optional 3D model support
+3. miniaudio and kissfft for optional audio playback and analysis
 
 *See BUILDING.md for building instructions*
 
-Topl can be used to create a wide range of rendering applications.
+### Project Structure:
 
-Animation, modeling, photogrammetry, gaming, and simulation projects are in the works!
-
-*See INFO.md for more details*
+1. **core/** contains main engine components
+2. **geometry/** contains functionality used to generate constructs and meshes
+3. **support/** contains helper modules for working with files, timing, maths, media, and OS-specific features
+4. **Rasteron** submodule for texture functionality and overlayed UI support
+5. **Droidl** submodule for porting the engine to the Android platform
+6. **demos/** contain demos showcasing the runtime functionality
+7. **shaders/** contains pre-built pipeline and shader code 
+8. **assets/** contains fonts, images, models, and other resources
+9. **scripts/** contains build scripts used in the project

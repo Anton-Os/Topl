@@ -30,7 +30,7 @@ struct PS_INPUT {
 	float3 texcoord : TEXCOORD0;
 };
 
-#include "canvas/Canvas.hlsl"
+#include "draw/Draw.hlsl"
 
 // Main
 
@@ -41,9 +41,9 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 
     // Drawing
 
-    float4 color_out = float4(0.0, 0.0, 0.0, 0.0); // blank canvas
+    float4 color_out = float4(0.0, 0.0, 0.0, 0.0); // blank draw
 #ifdef INCLUDE_TEXTURES
-    if(mode < 0) color_out = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y)); // full canvas
+    if(mode < 0) color_out = baseTex.Sample(baseSampler, float2(input.texcoord.x, input.texcoord.y)); // full draw
 #endif
 
     uint intersections = 0;
@@ -67,7 +67,7 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
         if(abs(mode) % 10 == 9 && intersectStreaks(lineDist, coords, size, distances[0], distances[1], distances[2])) intersections++;
     
         if(intersections > 0 && mode >= 0) color_out = getStepColor(intersections) * (1.0 - lineDist); // modalTex(intersections, input.texcoord);
-        else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase canvas
+        else if(intersections > 0 && mode < 0) color_out = float4(0.0, 0.0, 0.0, 0.0); // erase draw
     }
 
     // Cursor

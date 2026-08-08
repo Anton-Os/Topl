@@ -92,8 +92,9 @@ protected:
 	std::string _shaderFilePath; // make into const type!
 	std::map<std::string, std::string> _embedMap;
 
-	std::string genPrefix_glsl() const { return "glsl/"; }
-	std::string genPrefix_hlsl() const { return "hlsl/"; }
+	virtual std::string genPrefix() const { return ""; } // override this in derived classes
+	std::string genPrefix_glsl() const { return "_glsl/"; }
+	std::string genPrefix_hlsl() const { return "_hlsl/"; }
 
 	void assignDataToBytes(const uint8_t* data_ptr, size_t dataSize, std::vector<uint8_t>* targetBytes) const {
 		targetBytes->clear();
@@ -115,6 +116,14 @@ protected:
 	}
 
 	void embed(const std::string& embedTag, const std::string& embedStr){ _embedMap.insert({ embedTag, embedStr }); }
+};
+
+class Topl_Shader_GL4 : public Topl_Shader {
+	// TODO: Include prefix and embeddings for shader blocks
+};
+
+class Topl_Shader_DX11 : public Topl_Shader {
+	// TODO: Include prefix and embeddings for shader blocks
 };
 
 // Entry shader contains inputs and functionality to pass uniform blocks
@@ -158,9 +167,11 @@ public:
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getPos() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getRot() : &_defaultVec), sizeof(Vec3f), bytes);
 		appendDataToBytes((uint8_t*)((actor != nullptr)? actor->getSize() : &_defaultVec), sizeof(Vec3f), bytes);
+		
+		const Geo_Mesh* const mesh = (actor != nullptr)? actor->getMesh() : nullptr; // TODO: See if mesh data can be passed here
 	}
 
-	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
+	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const { // TODO: Replace this with audio or "capture" data block
 		unsigned vertexCount = mesh->getVertexCount();
 		unsigned instanceCount = mesh->getInstanceCount();
 		unsigned tessLevel = mesh->getTessLevel();

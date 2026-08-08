@@ -16,16 +16,16 @@ enum PROJECTION_Type {
     PROJECTION_Hyperspace,
 };
 
-struct Projection { // Used in Matrix calculations
-    Projection(){}
-    Projection(PROJECTION_Type p){ type = p; }
-    Projection(PROJECTION_Type p, float s){
+struct Topl_Projection { // Used in Matrix calculations
+    Topl_Projection(){}
+    Topl_Projection(PROJECTION_Type p){ type = p; }
+    Topl_Projection(PROJECTION_Type p, float s){
         type = p;
         left *= s; right *= s;
         bottom *= s; top *= s;
         nearPlane *= s; farPlane *= s;
     }
-    Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f){
+    Topl_Projection(PROJECTION_Type p, float l, float r, float b, float t, float n, float f){
         type = p;
         left *= l; right *= r;
         bottom *= b; top *= t;
@@ -102,12 +102,12 @@ public:
 		_projMatrix.data[2][2] = -1; // flip z axis
 	}
 	Topl_Camera(enum PROJECTION_Type projType){ // Regular Bounds
-		_projMatrix = Projection(projType).genProjMatrix(_pos);
+		_projMatrix = Topl_Projection(projType).genProjMatrix(_pos);
 	}
 	Topl_Camera(enum PROJECTION_Type projType, float scaleFactor){ // Sized Bounds
-		_projMatrix = Projection(projType, scaleFactor).genProjMatrix(_pos);
+		_projMatrix = Topl_Projection(projType, scaleFactor).genProjMatrix(_pos);
 	}
-	Topl_Camera(Projection proj){ // Custom Bounds
+	Topl_Camera(Topl_Projection proj){ // Custom Bounds
 		_projMatrix = proj.genProjMatrix(_pos);
 	}
 	void setPos(const Vec3f& pos){ _pos = pos; }
@@ -125,7 +125,7 @@ private:
 	Vec3f _pos = Vec3f({ 0.0f, 0.01f, CAM_DEPTH }); // in front of scene
 	Vec3f _rotation = Vec3f({ 0.0f, 0.0f, 0.0f }); // default pointing forward
     Mat4x4 _projMatrix = MAT_4x4_IDENTITY;
-    // Projection _projection = Projection(PROJECTION_None);
+    // Topl_Projection _projection = Projection(PROJECTION_None);
 };
 
 typedef const Topl_Camera* const camera_cptr;

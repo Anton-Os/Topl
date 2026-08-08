@@ -11,11 +11,15 @@ BEGIN
         MENUITEM "&New", IDM_NEW
         MENUITEM "&Load", IDM_LOAD
     END
-    POPUP "&Sound"
+    POPUP "&Tones"
     BEGIN
-        MENUITEM "&Sound1", IDM_SOUND1 //, CHECKED
-        MENUITEM "&Sound2", IDM_SOUND2 // , CHECKED
-        MENUITEM "&Sound3", IDM_SOUND3 // , CHECKED
-        MENUITEM "&Sound4", IDM_SOUND4 // , CHECKED
+        MENUITEM "&Tone1", IDM_TONES1 //, CHECKED
+        MENUITEM "&Tone2", IDM_TONES2 // , CHECKED
+        MENUITEM "&Tone3", IDM_TONES3 // , CHECKED
+        MENUITEM "&Tone4", IDM_TONES4 // , CHECKED
+        MENUITEM "&Tone5", IDM_TONES5 //, CHECKED
+        MENUITEM "&Tone6", IDM_TONES6 // , CHECKED
+        MENUITEM "&Tone7", IDM_TONES7 // , CHECKED
+        MENUITEM "&Tone8", IDM_TONES8 // , CHECKED
     END
 END

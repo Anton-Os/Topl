@@ -32,7 +32,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
 void Traversal_Demo::init(){
     speed = TRAVERSAL_SPEED;
 
-    Topl_Program::camera.setProjMatrix(Projection(PROJECTION_Perspective, 3.0F).genProjMatrix());
+    Topl_Program::camera.setProjMatrix(Topl_Projection(PROJECTION_Perspective, 3.0F).genProjMatrix());
 
     Platform::keyControl.addHandler(std::bind(&Traversal_Demo::onAnyKey, this, std::placeholders::_1));
 

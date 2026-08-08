@@ -1,13 +1,9 @@
 #include "Topl_Factory.hpp"
 
-#ifdef TOPL_ENABLE_AUDIO
-#include <miniaudio/miniaudio.h>
-#endif
-
 #include "meshes/Geo_Surface.hpp"
 
-#include "Idle_Shader.hpp"
-#include "Advance_Shader.hpp"
+#include "idle/Idle_Shader.hpp"
+#include "advance/Advance_Shader.hpp"
 
 // OpenGL Test Renderer
 #ifndef __ANDROID__
@@ -89,7 +85,7 @@ struct Hello_Renderer_VK : public Topl_Renderer_VK {
 	}
 
 	VK::Pipeline pipeline;
-	Idle_VertexShader vertexShader = Idle_VertexShader("spirv/Idle_Vertex.glsl.spv");
-	Idle_PixelShader pixelShader = Idle_PixelShader("spirv/Idle_Frag.glsl.spv");
+	Idle_VertexShader vertexShader = Idle_VertexShader("_spirv/Idle_Vertex.glsl.spv");
+	Idle_PixelShader pixelShader = Idle_PixelShader("_spirv/Idle_Frag.glsl.spv");
 };
 #endif

@@ -176,7 +176,7 @@ void Topl_Program::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
                             case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
                             case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
-                            case 7: Topl_Factory::switchPipeline(_renderer, _canvasPipeline); break;
+                            case 7: Topl_Factory::switchPipeline(_renderer, _drawPipeline); break;
                             case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
                             case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
                         }
@@ -263,7 +263,7 @@ void Topl_Program::_onAnyKey(keyboard_t k){
                 case '4': Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
                 case '5': Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
                 case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
-                case '7': Topl_Factory::switchPipeline(_renderer, _canvasPipeline/*_geomPipeline */); break;
+                case '7': Topl_Factory::switchPipeline(_renderer, _drawPipeline/*_geomPipeline */); break;
                 case '8': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
                 case '9': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
             }
@@ -290,10 +290,14 @@ void Topl_Program::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> c
 #ifdef TOPL_ENABLE_AUDIO
 void Topl_Program::menuSelect(unsigned short menuID) {
     switch (menuID) {
-    case 201: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
-    case 202: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
-    case 203: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
-    case 204: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
+    case 201: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;
+    case 202: play(std::string(AUDIO_DIR) + "80hz-sine-freqies.mp3"); break;
+    case 203: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
+    case 204: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
+    case 205: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
+    case 206: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
+    case 207: play(std::string(AUDIO_DIR) + "800hz-sine-freqies.mp3"); break;
+    case 208: play(std::string(AUDIO_DIR) + "1000hz-sine-freqies.mp3"); break;
     default: std::cout << "Menu ID: " << std::to_string(menuID) << std::endl;
     }
 }

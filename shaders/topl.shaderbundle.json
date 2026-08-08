@@ -1,66 +1,66 @@
 {
     "Idle_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Idle_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Idle_Vertex.glsl"
     },
     "Idle_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Idle_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Idle_Frag.glsl"
     },
     "Colorcode_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Colorcode_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Colorcode_Vertex.glsl"
     },
     "Colorcode_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Colorcode_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Colorcode_Frag.glsl"
     },
     "Textured_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Textured_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Textured_Vertex.glsl"
     },
     "Textured_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Textured_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Textured_Frag.glsl"
     },
     "Spectral_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Spectral_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Spectral_Vertex.glsl"
     },
     "Spectral_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Spectral_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Spectral_Frag.glsl"
     },
     "Beams_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Beams_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Beams_Vertex.glsl"
     },
     "Beams_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Beams_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Beams_Frag.glsl"
     },
     "Effect_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Effect_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Effect_Vertex.glsl"
     },
     "Effect_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Effect_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Effect_Frag.glsl"
     },
-    "Canvas_Vertex": {
+    "Draw_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Canvas_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Draw_Vertex.glsl"
     },
-    "Canvas_Frag": {
+    "Draw_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Canvas_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Draw_Frag.glsl"
     },
     "Pattern_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/glsl/vertex/Pattern_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Pattern_Vertex.glsl"
     },
     "Pattern_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/glsl/pixel/Pattern_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Pattern_Frag.glsl"
     }
 }
