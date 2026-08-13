@@ -32,9 +32,9 @@ struct VS_OUTPUT {
 	float3 vertex_color : COLOR;
 	float3 texcoord: TEXCOORD;
 	float3 tangent: TANGENT;
-	uint nearest_idx: INDEX0;
-	uint second_idx : INDEX1; // second closest control point
-	uint farthest_idx : INDEX2; // furthest distance control point
+	uint near_idx: INDEX0;
+	uint sec_idx : INDEX1; // second closest control point
+	uint far_idx : INDEX2; // furthest distance control point
 };
 
 float3 getCtrlPt(uint index){
@@ -90,9 +90,9 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 		else ctrlPos *= change;
 	} */
 
-	output.nearest_idx = calcNearestIndex(ctrlPos);
-	output.second_idx = calcSecondIndex(ctrlPos);
-	output.farthest_idx = calcFarthestIndex(ctrlPos);
-	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearestPoint, 1.0), output.pos) * 10));
+	output.near_idx = calcNearestIndex(ctrlPos);
+	output.sec_idx = calcSecondIndex(ctrlPos);
+	output.far_idx = calcFarthestIndex(ctrlPos);
+	// else output.vertex_color = // getRandColor(floor(distance(float4(output.nearPoint, 1.0), output.pos) * 10));
 	return output;
 }

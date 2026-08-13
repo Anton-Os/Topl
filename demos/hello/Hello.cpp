@@ -4,9 +4,9 @@
 
 #include "Hello.hpp"
 
-#define TARGET_BACKEND BACKEND_GL4
+// #define TARGET_BACKEND BACKEND_GL4
 // #define TARGET_BACKEND BACKEND_DX11
-// #define TARGET_BACKEND BACKEND_VK
+#define TARGET_BACKEND BACKEND_VK
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -18,6 +18,11 @@ static Geo_Actor actor = Geo_Actor((Geo_Mesh*)&triangle);
 std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 
 static Topl_Scene scene = Topl_Scene();
+
+#ifdef TOPL_ENABLE_AUDIO
+ma_engine audioEngine;
+ma_decoder audioDecoder;
+#endif
 
 static bool background_input_call(std::string& input) {
 	std::getline(std::cin, input);
@@ -40,6 +45,27 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
         << " | Average: " << frameTotal / frameCount << std::endl;
 }
 
+static int audioPlaybackTest(std::string audioFileName) {
+#ifdef TOPL_ENABLE_AUDIO // Audio Playback Support
+	ma_result result;
+
+	result = ma_engine_init(NULL, &audioEngine);
+	if (result != MA_SUCCESS) return -1; // error
+
+	std::string soundFilePath = std::string(AUDIO_DIR) + audioFileName;
+#ifdef _WIN32
+	std::replace(soundFilePath.begin(), soundFilePath.end(), '/', '\\');
+#endif
+	static unsigned long long audioFramesRead;
+	static unsigned audioFrameCount = 4096;
+	static std::vector<float> audioData(audioFrameCount, 0.0);
+	result = ma_engine_play_sound(&audioEngine, soundFilePath.c_str(), NULL);
+	result = ma_decoder_init_file(soundFilePath.c_str(), NULL, &audioDecoder);
+	result = ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), audioFrameCount, &audioFramesRead);
+	if (result != MA_SUCCESS) return -2; // error
+#endif
+}
+
 MAIN_ENTRY {
 	std::cout << "Creating platform" << std::endl;
 #ifndef __ANDROID__
@@ -52,13 +78,13 @@ MAIN_ENTRY {
         platform.awaitWindow(); // waiting for window on Android
 #endif
     std::cout << "Creating backend" << std::endl;
-#if TARGET_BACKEND==BACKEND_GL4
-	Hello_Renderer_GL4* renderer = new Hello_Renderer_GL4(platform.getContext());
-#elif defined(_WIN32) && TARGET_BACKEND==BACKEND_DX11
-	Hello_Renderer_DX11* renderer = new Hello_Renderer_DX11(platform.getContext());
-#elif defined(TOPL_ENABLE_VULKAN) && TARGET_BACKEND==BACKEND_VK
-	Hello_Renderer_VK* renderer = new Hello_Renderer_VK(platform.getContext());
-#endif
+	BACKEND_Target backendTarget = TARGET_BACKEND;
+	Topl_Renderer* renderer = nullptr;
+	if(backendTarget == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getContext());
+	else if(backendTarget == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getContext());
+	else if(backendTarget == BACKEND_VK) renderer = new Hello_Renderer_VK(platform.getContext());
+	
+	if (renderer == nullptr) return -1; // renderer is null
 
 	Timer_Persist _ticker;
 	double frameTotal = 0.0;
@@ -71,26 +97,11 @@ MAIN_ENTRY {
 	
 	std::thread backgroundThread;
 	std::string commandArgs = "";
-
-#ifdef TOPL_ENABLE_AUDIO // Audio Playback Support
-	ma_result result;
-	ma_engine audioEngine;
-	ma_decoder audioDecoder;
-
-	result = ma_engine_init(NULL, &audioEngine);
-	if (result != MA_SUCCESS) return -1;
-
-	std::string soundFilePath = std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3";
-#ifdef _WIN32
-	std::replace(soundFilePath.begin(), soundFilePath.end(), '/', '\\');
+#ifdef TOPL_ENABLE_AUDIO
+	audioPlaybackTest("200hz-sine-freqies.mp3");
 #endif
-	result = ma_engine_play_sound(&audioEngine, soundFilePath.c_str(), NULL);
-	if (result != MA_SUCCESS) return -1;
-#endif
-
 	std::cout << "Rendering loop" << std::endl;
-	while(platform.handleEvents()){
-		
+	while (platform.handleEvents()) {
 		if (!backgroundThread.joinable() && commandArgs.empty()) {
 			commandArgs = "PLACEHOLDER";
 			// backgroundThread = std::thread(background_empty_call);
@@ -106,18 +117,17 @@ MAIN_ENTRY {
 		renderer->dispatch(&calcPoints);
 		renderer->setDrawPipeline(true);
 #endif
-        renderer->update(&actor);
+		renderer->update(&actor);
 		renderer->draw(&actor);
 		double f3 = _ticker.getRelMillisecs();
 		renderer->present();
-        double f4 = _ticker.getRelMillisecs();
-        // logFrameRate(f1, f2, f3, f4);
+		double f4 = _ticker.getRelMillisecs();
+		// logFrameRate(f1, f2, f3, f4);
 	}
 
 #ifdef TOPL_ENABLE_AUDIO
 	ma_engine_uninit(&audioEngine); // Audio Cleanup
 #endif
-
     if(renderer != nullptr) delete(renderer);
 	// return 0;
 }

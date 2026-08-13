@@ -32,14 +32,14 @@ protected:
 	float _alphaVal = 1.0f;
 };
 
-struct Colorcode_VertexShader_GL4 : public Colorcode_VertexShader {
-	Colorcode_VertexShader_GL4() : Colorcode_VertexShader(genPrefix_glsl() + "colorcode/" + "Vertex.glsl") {}
-	Colorcode_VertexShader_GL4(unsigned mode) : Colorcode_VertexShader(genPrefix_glsl() + "colorcode/" + "Vertex.glsl", mode) {}
+struct Colorcode_VertexShader_GL4 : public Topl_Shader_GL4, Colorcode_VertexShader {
+	Colorcode_VertexShader_GL4() : Topl_Shader_GL4(), Colorcode_VertexShader("_glsl/colorcode/Vertex.glsl") {}
+	Colorcode_VertexShader_GL4(unsigned mode) : Topl_Shader_GL4(), Colorcode_VertexShader("_glsl/colorcode/Vertex.glsl", mode) {}
 };
 
-struct Colorcode_VertexShader_DX11 : public Colorcode_VertexShader {
-	Colorcode_VertexShader_DX11() : Colorcode_VertexShader(genPrefix_hlsl() + "colorcode/" + "Vertex.hlsl") {}
-	Colorcode_VertexShader_DX11(unsigned mode) : Colorcode_VertexShader(genPrefix_hlsl() + "colorcode/" + "Vertex.hlsl", mode) {}
+struct Colorcode_VertexShader_DX11 : public Topl_Shader_DX11, Colorcode_VertexShader {
+	Colorcode_VertexShader_DX11() : Topl_Shader_DX11(), Colorcode_VertexShader("_hlsl/colorcode/Vertex.hlsl") {}
+	Colorcode_VertexShader_DX11(unsigned mode) : Topl_Shader_DX11(), Colorcode_VertexShader("_hlsl/colorcode/Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -49,10 +49,10 @@ struct Colorcode_PixelShader : public Topl_Shader {
 	Colorcode_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name){ }
 };
 
-struct Colorcode_PixelShader_GL4 : public Colorcode_PixelShader {
-	Colorcode_PixelShader_GL4() : Colorcode_PixelShader(genPrefix_glsl() + "colorcode/" + "Frag.glsl") {}
+struct Colorcode_PixelShader_GL4 : public Topl_Shader_GL4, Colorcode_PixelShader {
+	Colorcode_PixelShader_GL4() : Topl_Shader_GL4(), Colorcode_PixelShader("_glsl/colorcode/Frag.glsl") {}
 };
 
-struct Colorcode_PixelShader_DX11 : public Colorcode_PixelShader {
-	Colorcode_PixelShader_DX11() : Colorcode_PixelShader(genPrefix_hlsl() + "colorcode/" + "Pixel.hlsl") {}
+struct Colorcode_PixelShader_DX11 : public Topl_Shader_DX11, Colorcode_PixelShader {
+	Colorcode_PixelShader_DX11() : Topl_Shader_DX11(), Colorcode_PixelShader("_hlsl/colorcode/Pixel.hlsl"){}
 };

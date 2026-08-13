@@ -288,7 +288,7 @@ void Topl_Program::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> c
 }
 
 #ifdef TOPL_ENABLE_AUDIO
-void Topl_Program::menuSelect(unsigned short menuID) {
+void Topl_Program::menuSelect(unsigned short menuID) { // TODO: Add menu input for all the supported UI elements
     switch (menuID) {
     case 201: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;
     case 202: play(std::string(AUDIO_DIR) + "80hz-sine-freqies.mp3"); break;

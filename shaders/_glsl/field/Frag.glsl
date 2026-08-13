@@ -51,19 +51,9 @@ void main() {
 	if(mode >= 0) target = vertex_pos;
 	else target = pos;
 
-	uint m = abs(mode) / 10;
+	uint m = abs(mode);
 	uint target_idx = near_index;
 	vec3 ctrlPoint = ctrlPoints[target_idx];
-
-	/* if(abs(mode) >= 1000){
-		vec3 change = vec3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
-
-		if(floor(mode / 1000) == 1) target += change;
-		else if(floor(mode / 1000) == 2) target -= change;
-		else target *= change;
-	} */
-
-	// for(uint r = 0; r < (abs(mode) / 1000) + 1; r++){
 	vec3 relCoord = ctrlPoint - target;
 	uint indices[3] = { near_index, second_index, far_index };
 	
@@ -79,7 +69,6 @@ void main() {
 	else target = vec3(length(relCoord), length(relCoord), length(relCoord));
 
 	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);
-	// }
 #ifdef INCLUDE_TEXTURES
 	color_final *= modalTex(abs(mode / 100), texcoord);
 #endif

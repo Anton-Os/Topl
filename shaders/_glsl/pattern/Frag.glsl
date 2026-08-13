@@ -1,6 +1,5 @@
 #version 440
 
-
 #include "Common.glsl"
 
 #include "Pixel.glsl"

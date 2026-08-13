@@ -160,7 +160,7 @@ void Geo_Mesh::tesselate(unsigned short tessCount){ // TODO: Include Tesselation
 }
 
 void Geo_Mesh::setInstances(std::initializer_list<Mat4x4> matrices){
-    _instanceCount = matrices.size();
+    _instanceCount = matrices.size(); // TODO: Make sure this fits within desired limits
     // if (_instanceData != nullptr) free(_instanceData);
     if (_instanceData == nullptr) { // testing
         _instanceData = (Mat4x4*)malloc(matrices.size() * sizeof(Mat4x4));

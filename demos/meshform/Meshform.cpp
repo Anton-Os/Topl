@@ -1,7 +1,7 @@
 #include "Meshform.hpp"
 
 static bool isRotating = true;
-static bool isMoving = true;
+static bool isMoving = false;
 
 // Class Functions
 

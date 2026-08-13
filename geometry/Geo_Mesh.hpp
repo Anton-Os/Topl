@@ -13,7 +13,7 @@
 #define DEFAULT_Z 0.0f // default depth value for objects
 
 #define RADIUS_SIZE(radius) (radius * 0.7071f) // multiplies radius by screen units
-#define MAX_INSTANCES 26 // one for each surrounding element in a recursive mesh
+#define MAX_INSTANCES 16 // one for each surrounding element in a recursive mesh
 #define ANGLE_OFFSET(segments) ((3.141592653 * 2) / segments)
 #define ANGLE_START(segments) ((segments % 2 == 0) ? (3.141592653 / segments) : (0.0f))
 

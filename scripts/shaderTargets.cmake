@@ -1,13 +1,13 @@
 file(GLOB_RECURSE glsl_shaders ${SHADERS_DIR}/_glsl/*.glsl)
 add_custom_target(GL4_SHADERS SOURCES ${glsl_shaders})
 add_dependencies(GL4_SHADERS GL4_ENGINE)
-set_target_properties(GL4_SHADERS PROPERTIES FOLDER "GL4_TARGETS")
+set_target_properties(GL4_SHADERS PROPERTIES FOLDER "Engines/GL4_TARGETS")
 
 if(WIN32)
 	file(GLOB_RECURSE hlsl_shaders ${SHADERS_DIR}/_hlsl/*.hlsl)
 	add_custom_target(DX11_SHADERS SOURCES ${hlsl_shaders})
 	add_dependencies(DX11_SHADERS DX11_ENGINE)
-	set_target_properties(DX11_SHADERS PROPERTIES FOLDER "DX11_TARGETS")
+	set_target_properties(DX11_SHADERS PROPERTIES FOLDER "Engines/DX11_TARGETS")
 endif()
 
 if(VK_FOUND) # comiling shaders for vulkan
