@@ -118,12 +118,18 @@ protected:
 	void embed(const std::string& embedTag, const std::string& embedStr){ _embedMap.insert({ embedTag, embedStr }); }
 };
 
-class Topl_Shader_GL4 : public Topl_Shader {
-	// TODO: Include prefix and embeddings for shader blocks
+struct Topl_Shader_GL4 : public Topl_Shader {
+	Topl_Shader_GL4() : Topl_Shader() {
+		embed("Block_Data", "vec3 offset;\nvec3 rotation;\nvec3 scale;");
+		embed("Scene_Data", "int mode;\nfloat4 cam_pos;\nfloat4 look_pos;\nmat4 projMatrix;");
+	}
 };
 
-class Topl_Shader_DX11 : public Topl_Shader {
-	// TODO: Include prefix and embeddings for shader blocks
+struct Topl_Shader_DX11 : public Topl_Shader {
+	Topl_Shader_DX11() : Topl_Shader() {
+		embed("Block_Data", "float3 offset;\nfloat3 rotation;\nfloat3 scale;");
+		embed("Scene_Data", "int mode;\nfloat4 cam_pos;\nfloat4 look_pos;\nfloat4x4 projMatrix;");
+	}
 };
 
 // Entry shader contains inputs and functionality to pass uniform blocks

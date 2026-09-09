@@ -1,0 +1,63 @@
+#version 440
+
+#define INCLUDE_BLOCK
+#define IGNORE_INPUTS
+
+#include "Common.glsl"
+
+#include "Pixel.glsl"
+
+// Values
+
+layout(std140, binding = 1) uniform SceneBlock{
+	int mode;
+	vec4 cam_pos;
+	vec3 look_pos;
+	mat4 projMatrix;
+
+	vec3 texScroll; // texture coordinate scrolling
+	vec4 texScale; // texture coordinate scaling
+
+	vec3 lightPos;
+	vec3 lightVal;
+};
+
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec3 vertex_pos;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec3 texcoord;
+
+layout(location = 0) out vec4 color_final;
+
+// Main
+
+vec3 cloud_effect(vec3 texcoord, float angle){
+	return vec3(abs(sin(texcoord.x + angle)), abs(cos(texcoord.y + angle)), abs(tan(texcoord.z + angle)));
+}
+
+void main() {
+	uvec4 modes = getModes(mode);
+	uint t = modes[1];
+	uint intensity = modes[2] + 1;
+	float a = 1.0 / intensity;
+
+	vec3 target = normal;
+	if(mode < 0) target = vertex_pos; // set target conditionally
+
+	vec3 texVals[8];
+#ifdef INCLUDE_TEXTURES
+	for(int v = 0; v < 8; v++) texVals[v] = vec3(modalTex((abs(mode) + v) % 8, texcoord));
+#else
+	// for(int t = 0; t < 8; t++) texVals[t] = smoothstep(vec3(getRandColor(uint(abs(mode) + 1) * (t + 1))), vec3(getStepColor(uint(abs(mode) + 1) * (t + 1))), target);
+	for(int v = 0; v < 8; v++) texVals[v] = cloud_effect(texcoord * (t + 1), float(abs(mode) * (PI / 8) * v));
+#endif
+	color_final = vec4(texVals[0], a);
+	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;
+	vec3 ambient = ambientColor * (0.25 + (0.05 * intensity));
+	vec3 diffuseColor = (lightVal + texVals[(2 + t) % 8]) / 2;
+	vec3 diffuse = diffuseColor * getDiffuse(lightPos - range_effect(texVals[(3 + t) % 8]), (target - offset) - range_effect(texVals[(4 + t) % 8])) * 0.5 * intensity;
+	vec3 specColor = (lightVal + texVals[(5 + t) % 8]) / 2;
+	vec3 specular = specColor * getSpecular(lightPos - range_effect(texVals[(6 + t) % 8]), vec3(cam_pos), target - range_effect(texVals[(7 + t) % 8]), float(1 + intensity));
+
+	color_final *= vec4(ambient + diffuse + specular, 1.0f); // all lighting
+}

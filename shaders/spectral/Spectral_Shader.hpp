@@ -29,13 +29,13 @@ protected:
 };
 
 struct Spectral_VertexShader_GL4 : public Spectral_VertexShader {
-	Spectral_VertexShader_GL4() : Spectral_VertexShader(genPrefix_glsl() + "spectral/" + "Vertex.glsl") {}
-	Spectral_VertexShader_GL4(unsigned mode) : Spectral_VertexShader(genPrefix_glsl() + "spectral/" + "Vertex.glsl", mode) {}
+	Spectral_VertexShader_GL4() : Spectral_VertexShader(std::string("spectral/glsl/") + "Vertex.glsl") {}
+	Spectral_VertexShader_GL4(unsigned mode) : Spectral_VertexShader(std::string("spectral/glsl/") + "Vertex.glsl", mode) {}
 };
 
 struct Spectral_VertexShader_DX11 : public Spectral_VertexShader {
-	Spectral_VertexShader_DX11() : Spectral_VertexShader(genPrefix_hlsl() + "spectral/" + "Vertex.hlsl") {}
-	Spectral_VertexShader_DX11(unsigned mode) : Spectral_VertexShader(genPrefix_hlsl() + "spectral/" + "Vertex.hlsl", mode) {}
+	Spectral_VertexShader_DX11() : Spectral_VertexShader(std::string("spectral/hlsl/") + "Vertex.hlsl") {}
+	Spectral_VertexShader_DX11(unsigned mode) : Spectral_VertexShader(std::string("spectral/hlsl/") + "Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -46,9 +46,9 @@ struct Spectral_PixelShader : public Topl_Shader {
 };
 
 struct Spectral_PixelShader_GL4 : public Spectral_PixelShader {
-	Spectral_PixelShader_GL4() : Spectral_PixelShader(genPrefix_glsl() + "spectral/" + "Frag.glsl") {}
+	Spectral_PixelShader_GL4() : Spectral_PixelShader(std::string("spectral/glsl/") + "Frag.glsl") {}
 };
 
 struct Spectral_PixelShader_DX11 : public Spectral_PixelShader {
-	Spectral_PixelShader_DX11() : Spectral_PixelShader(genPrefix_hlsl() + "spectral/" + "Pixel.hlsl") {}
+	Spectral_PixelShader_DX11() : Spectral_PixelShader(std::string("spectral/hlsl/") + "Pixel.hlsl") {}
 };
