@@ -1,0 +1,455 @@
+#include "Topl_Demo.hpp"
+
+#ifdef TOPL_ENABLE_AUDIO
+// #define static static inline
+/* #include <kissfft/kiss_fft.c> // includes source for kissfft
+#include <kissfft/kiss_fftr.c> // includes source for kissfft */
+// #undef static
+#endif
+
+#define MOV_BTN_CASES case 0: case 1: case 2: case 3: case 4: case 5
+#define ROT_BTN_CASES case 6: case 7: case 8: case 9: case 10: case 11
+#define SIZ_BTN_CASES case 12: case 13: case 14: case 15: case 16: case 17
+
+Topl_Timeline Topl_Demo::timeline = Topl_Timeline();
+Vec3f Topl_Demo::cursorPos = { 0.0F, 0.0F, 0.0F };
+float Topl_Demo::speed = 0.25F; // 0.1F
+
+unsigned Topl_Demo::shaderMode = 0;
+unsigned short Topl_Demo::mode = 0;
+Topl_EntryShader* Topl_Demo::activeShader = nullptr;
+bool Topl_Demo::isCtrl_keys = true;
+bool Topl_Demo::isCtrl_shader = true;
+bool Topl_Demo::isCtrl_input = false;
+std::string Topl_Demo::userInput = "";
+
+unsigned Topl_Demo::pickerColor = 0;
+unsigned Topl_Demo::lastPickerColor = 0;
+Vec3f Topl_Demo::pickerCoord = { 0.0F, 0.0F, 0.0F };
+Vec3f Topl_Demo::lastPickerCoord = { 0.0F, 0.0F, 0.0F };
+Geo_Actor* Topl_Demo::pickerObj = NO_PICKER_OBJ;
+Geo_Actor* Topl_Demo::lastPickerObj = NO_PICKER_OBJ;
+#ifdef TOPL_ENABLE_TEXTURES
+Rasteron_Queue* Topl_Demo::cachedFrames = NULL;
+#endif
+
+Topl_Camera Topl_Demo::camera = Topl_Camera();
+Topl_Pipeline* Topl_Demo::_savedPipeline = nullptr;
+
+void Topl_Demo::_backgroundCallback(MOUSE_Event event, Geo_Actor* actor){
+	std::cout << "BACKGROUND: Actor is " << actor->getName() << std::endl;
+    Input_TracerPath lastPath = Platform::mouseControl.getTracerPaths()->back();
+    if(lastPath.stepsCount % MAX_PATH_STEPS > 2){ 
+        unsigned short steps = lastPath.stepsCount % MAX_PATH_STEPS;
+        Vec2f cursorVec = Vec2f({ lastPath.steps[steps - 1].first - lastPath.steps[steps - 2].first, lastPath.steps[steps - 1].second - lastPath.steps[steps - 2].second  });
+        if(cursorVec.len() > 0.005 && cursorVec.len() < 0.25){ // Are thses contraints valid?
+            if(event == MOUSE_LeftBtn_Drag || event == MOUSE_LeftBtn_Press){ 
+                Topl_Demo::camera.updatePos({ cursorVec[0], cursorVec[1], 0.0F });
+                _camPos = *camera.getPos(); 
+            }
+            else if(event == MOUSE_RightBtn_Drag || event == MOUSE_RightBtn_Press){ 
+                Topl_Demo::camera.updateRot({ cursorVec[0], cursorVec[1], 0.0F });
+                _camRot = *camera.getRot(); 
+            }
+        }
+    }
+}
+
+void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
+    static PROJECTION_Type projType = PROJECTION_None; // Projection(PROJECTION_None, 1.0F);
+    static float projX = 1.0F, projY = 1.0F, projZ = 1.0F;
+    static Vec3f pivot = *Topl_Demo::camera.getRot();
+
+    std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
+    Geo_Billboard* billboard = nullptr;
+    for(unsigned o = 0; o < PROGRAM_BILLBOARDS; o++) 
+        if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
+            std::cout << "Selected billboard at index " << std::to_string(o) << std::endl;
+            billboard = _overlays.billboards[o];
+            // billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f })); // moving when something is dragged
+            for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
+                if(actor == billboard->getGeoActor(p)){
+#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
+                    billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
+                    billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
+                    if(o == PROGRAM_Params) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
+                    else if(o == PROGRAM_Sculpt){
+                        _background.mesh = &_background.meshes[p];
+                        if(isEnable_background) createBackground(nullptr);
+                    }
+                    else if(o == PROGRAM_Paint){ 
+                        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
+                        for(unsigned t = 0; t < 9; t++){
+                            unsigned i = (p < 8) ? p : (rand() % 8);
+                            unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
+                            unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
+                            switch(i) {
+                                case 0: _overlays.textures[t] = Topl_Sampler_Gradient((SIDE_Type)(rand() % 5), r1, r2); break; // random gradients
+                                case 1: _overlays.textures[t] = Topl_Sampler_2D(linedImgOp(size, r1, r2, (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
+                                case 2: _overlays.textures[t] = Topl_Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 })); break; // lines
+                                case 3: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }); break; // basic noise
+                                case 4: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1); break; // octave noise
+                                case 5: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 })); break; // tiled noise
+                                case 6: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // added noise
+                                case 7: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // subtracted noise
+                                default: _overlays.textures[t] = Topl_Sampler_File(_overlays.scene.texImgPaths[t]);
+                            }
+                            if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
+                            else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
+                        }
+                        unsigned volumeColor = RAND_COLOR();
+                        for (unsigned s = 0; s < _background.volume.getDepth(); s++) {
+                            Rasteron_Image* sliceImg = solidImgOp({ 256, 256 }, blend_colors(volumeColor, color_invert(volumeColor), (1.0 / _background.volume.getDepth()) * s)); // resizeImgOp({ 256, 256 }, _overlays.textures[0].getImage());
+                            _background.volume.addSlice(sliceImg, s);
+                            RASTERON_DEALLOC(sliceImg);
+                        }
+                        _renderer->texturizeScene(&_background.scene);
+                        _renderer->texturizeScene(&_overlays.scene);
+                    } else if(o == PROGRAM_Media)
+                        switch(p){
+                            case 3: timeline.dynamic_ticker.setTime(TIMELINE_START); break;
+                            case 4: timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; break;
+                            case 5: timeline.dynamic_ticker.setTime(TIMELINE_END); break;
+                        }
+                    else if(o == PROGRAM_Timeline) timeline.dynamic_ticker.setTime(pickerCoord[0]);
+                    else if(o == PROGRAM_Scene){
+                        unsigned short s = PROGRAM_SUBMENUS - 1 - p;
+                        float m = 0.1;
+                        switch(s){
+                            // case 0: case 1: case 2: pivot = pivot + Vec3f({ (s == 0)? m : 0.0F, (s == 1)? m : 0.0F, (s == 2)? m : 0.0F }); break;
+                            case 0: projX *= 1.25; break; case 1: projY *= 1.25; break; case 2: projZ *= 1.25; break;
+                            case 3: projType = PROJECTION_Orthographic; break;
+                            case 4: projType = PROJECTION_Perspective; break;
+                            case 5: projType = PROJECTION_Hyperspace; break;
+                            case 6: projX *= 0.75; break; case 7: projY *= 0.75; break; case 8: projZ *= 0.75; break;
+                            // case 6: case 7: case 8: pivot = pivot + Vec3f({ (s == 6)? m : 0.0F, (s == 7)? m : 0.0F, (s == 8)? m : 0.0F });
+                        }
+                        Topl_Demo::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos()));
+                        // Topl_Demo::camera.setRot(pivot);
+                        std::cout << "Camera position is " << Topl_Demo::camera.getPos()->toString() 
+                            << ", rotation is " << Topl_Demo::camera.getRot()->toString() << std::endl
+                            << "Camera projection is " << Topl_Demo::camera.getProjMatrix()->toString() << std::endl;
+                    }
+                    else if(o == PROGRAM_Object){
+                        if(Topl_Demo::lastPickerObj != nullptr){
+                            switch(p){
+                                MOV_BTN_CASES: if(positions_map.find(lastPickerObj) == positions_map.end()) positions_map.insert({ lastPickerObj, *lastPickerObj->getPos() }); break;
+                                ROT_BTN_CASES: if(rotations_map.find(lastPickerObj) == rotations_map.end()) rotations_map.insert({ lastPickerObj, *lastPickerObj->getRot() }); break;
+                                SIZ_BTN_CASES: if(scales_map.find(lastPickerObj) == scales_map.end()) scales_map.insert({ lastPickerObj, *lastPickerObj->getSize() }); break;
+                            }
+
+                            switch(p){
+                                case 0: Topl_Demo::lastPickerObj->updatePos(Vec3f({ Topl_Demo::speed, 0.0F, 0.0F })); break;
+                                case 1: Topl_Demo::lastPickerObj->updatePos(Vec3f({ -Topl_Demo::speed, 0.0F, 0.0F })); break;
+                                case 2: Topl_Demo::lastPickerObj->updatePos(Vec3f({ 0.0F, Topl_Demo::speed, 0.0F })); break;
+                                case 3: Topl_Demo::lastPickerObj->updatePos(Vec3f({ 0.0F, -Topl_Demo::speed, 0.0F })); break;
+                                case 4: Topl_Demo::lastPickerObj->updatePos(Vec3f({ 0.0F, 0.0F, Topl_Demo::speed })); break;
+                                case 5: Topl_Demo::lastPickerObj->updatePos(Vec3f({ 0.0F, 0.0F, -Topl_Demo::speed })); break;
+                                case 6: Topl_Demo::lastPickerObj->updateRot(Vec3f({ Topl_Demo::speed, 0.0F, 0.0F })); break;
+                                case 7: Topl_Demo::lastPickerObj->updateRot(Vec3f({ -Topl_Demo::speed, 0.0F, 0.0F })); break;
+                                case 8: Topl_Demo::lastPickerObj->updateRot(Vec3f({ 0.0F, Topl_Demo::speed, 0.0F })); break;
+                                case 9: Topl_Demo::lastPickerObj->updateRot(Vec3f({ 0.0F, -Topl_Demo::speed, 0.0F })); break;
+                                case 10: Topl_Demo::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, Topl_Demo::speed })); break;
+                                case 11: Topl_Demo::lastPickerObj->updateRot(Vec3f({ 0.0F, 0.0F, -Topl_Demo::speed })); break;
+                                /* case 12: Topl_Demo::lastPickerObj->updateSize(Vec3f({Topl_Demo::speed, 0.0F, 0.0F})); break;
+                                case 13: Topl_Demo::lastPickerObj->updateSize(Vec3f({ -Topl_Demo::speed, 0.0F, 0.0F })); break;
+                                case 14: Topl_Demo::lastPickerObj->updateSize(Vec3f({ 0.0F, Topl_Demo::speed, 0.0F })); break;
+                                case 15: Topl_Demo::lastPickerObj->updateSize(Vec3f({ 0.0F, -Topl_Demo::speed, 0.0F })); break;
+                                case 16: Topl_Demo::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, Topl_Demo::speed })); break;
+                                case 17: Topl_Demo::lastPickerObj->updateSize(Vec3f({ 0.0F, 0.0F, -Topl_Demo::speed })); break; */
+                                default: std::cout << std::to_string(p) << " billboard pane action from " << billboard->getPrefix() << std::endl;
+                            }
+
+                            switch(p){
+                                MOV_BTN_CASES: timeline.addSequence(&positions_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getPos())); break;
+                                ROT_BTN_CASES: timeline.addSequence(&rotations_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getRot())); break;
+                                SIZ_BTN_CASES: timeline.addSequence(&scales_map[lastPickerObj], std::make_pair(TIMELINE_FORETELL * 2, *lastPickerObj->getSize())); break;
+                            }
+                        }
+                    }
+                    else if(o == PROGRAM_Shaders){
+                        switch (9 - p) {
+                            case 0: Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
+                            case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
+                            case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
+                            case 3: Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
+                            case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
+                            case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
+                            case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+                            case 7: Topl_Factory::switchPipeline(_renderer, _drawPipeline); break;
+                            case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
+                            case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
+                        }
+                        _savedPipeline = _renderer->getPipeline();
+                    }
+                    onOverlayUpdate((PROGRAM_Menu)o, PROGRAM_SUBMENUS - 1 - p);
+#endif
+                }
+            }
+        }
+    _renderer->texturizeScene(&_overlays.scene);
+}
+
+void Topl_Demo::getInput(){
+    std::getline(std::cin, userInput);
+    std::cout << "Input received from thread: " << userInput << std::endl;
+    // TODO: Parse user input here
+    userInput = ""; // erasing data
+}
+
+void Topl_Demo::_onAnyKey(keyboard_t k){
+    std::string commandArgs;
+    // std::cout << "Key is " << std::to_string(k) << std::endl;
+    if (isspace(k) && k != 0x0D) {
+        isEnable_overlays = !isEnable_overlays;
+        // for(unsigned b = 0; b < PROGRAM_BILLBOARDS; b++) _overlays.billboards[b]->toggleShow();
+        timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; // Topl_Demo::userInput += (isalpha(k))? tolower(k) : k;
+    }
+    else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
+    else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
+    else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
+    else if (k == '`' && isEnable_console) {
+        std::cout << "Begin console thread!" << std::endl;
+        if(!backgroundThread.joinable()) backgroundThread = std::thread(&Topl_Demo::getInput, this); // thread is spawned here but conditionally joined in Runner loop
+    }
+#ifdef TOPL_ENABLE_TEXTURES
+    else if(k == TOPL_SCREENCAP_KEY && isEnable_screencap) {
+        Topl_Sampler_2D frameImg = _renderer->frame();
+        static unsigned frameNum = 1;
+        char nameBuff[128];
+        snprintf(nameBuff, 128, "%s-%d.bmp", _platform->getWindowName(), frameNum);
+        writeFileImageRaw(nameBuff, IMG_Bmp, frameImg.getImage()->height, frameImg.getImage()->width, frameImg.getImage()->data);
+        // queue_addImg(cachedFrames, frameImg.getImage(), 0); // index % cachedFrames->frameCount); // TODO: Encode video queue
+        // std::cout << "cachedFrames image at " << std::to_string(index) << " is " << queue_getImg(cachedFrames, index)->name << std::endl;
+        frameNum++;
+    }
+#endif
+    if(Topl_Demo::isCtrl_keys && isalpha(k) && k != TOPL_LEFT_ARROW && k != TOPL_UP_ARROW && k != TOPL_DOWN_ARROW && k != TOPL_RIGHT_ARROW){
+        switch(tolower(k)){ // TODO: Add same logic for picked object?
+            case 'w': Topl_Demo::camera.updatePos({ 0.0, Topl_Demo::speed, 0.0 }); break;
+            case 's': Topl_Demo::camera.updatePos({ 0.0, -Topl_Demo::speed, 0.0 }); break;
+            case 'a': Topl_Demo::camera.updatePos({ -Topl_Demo::speed, 0.0, 0.0 }); break;
+            case 'd': Topl_Demo::camera.updatePos({ Topl_Demo::speed, 0.0, 0.0 }); break;
+            case 'c': Topl_Demo::camera.updatePos({ 0.0F, 0.0, -Topl_Demo::speed }); break;
+            case 'v': Topl_Demo::camera.updatePos({ 0.0F, 0.0, Topl_Demo::speed }); break;
+            case 'q': Topl_Demo::camera.updateRot({ -Topl_Demo::speed, 0.0, 0.0 }); break;
+            case 'e': Topl_Demo::camera.updateRot({ Topl_Demo::speed, 0.0, 0.0 }); break;
+            case 'r': Topl_Demo::camera.updateRot({ 0.0F, -Topl_Demo::speed, 0.0 }); break;
+            case 'f': Topl_Demo::camera.updateRot({ 0.0F, Topl_Demo::speed, 0.0 }); break;
+            case 't': Topl_Demo::camera.updateRot({ 0.0F, 0.0, -Topl_Demo::speed }); break;
+            case 'g': Topl_Demo::camera.updateRot({ 0.0F, 0.0, Topl_Demo::speed }); break;
+            case 'z': Topl_Demo::camera.setZoom(*Topl_Demo::camera.getZoom() * (1.0F + Topl_Demo::speed * 0.15F)); break;
+            case 'x': Topl_Demo::camera.setZoom(*Topl_Demo::camera.getZoom() * (1.0F - Topl_Demo::speed * 0.15F)); break;
+        }
+
+        if(tolower(k) == 'w' || tolower(k) == 's' || tolower(k) == 'a' || tolower(k) == 'd' || tolower(k) == 'x' || tolower(k) == 'v' || tolower(k) == 'c')
+            Topl_Demo::timeline.addSequence(&_camPos, std::make_pair(TIMELINE_FORETELL, *(Topl_Demo::camera.getPos())));
+        else if(tolower(k) == 'q' || tolower(k) == 'e' || tolower(k) == 'r' || tolower(k) == 'f' || tolower(k) == 't' || tolower(k) == 'g')
+            Topl_Demo::timeline.addSequence(&_camRot, std::make_pair(TIMELINE_FORETELL, *(Topl_Demo::camera.getRot())));
+        // else if(tolower(k) == 'z' || tolower(k) == 'c')
+        //    Topl_Demo::timeline.addSequence(&_camZoom, std::make_pair(TIMELINE_FORETELL, *(Topl_Demo::camera.getZoom())));
+    }
+    if(Topl_Demo::isCtrl_shader){
+        if (k == TOPL_LEFT_ARROW) Topl_Demo::shaderMode--;
+        else if (k == TOPL_UP_ARROW) Topl_Demo::shaderMode += (Topl_Demo::shaderMode > 0) ? 100 : -100;
+        else if (k == TOPL_RIGHT_ARROW) Topl_Demo::shaderMode++;
+        else if (k == TOPL_DOWN_ARROW) Topl_Demo::shaderMode *= -1;
+        else if(isdigit(k)){
+            switch(tolower(k)){ // use the menuMode parameter
+                case '0': Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
+                case '1': Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
+                case '2': Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
+                case '3': Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
+                case '4': Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
+                case '5': Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
+                case '6': Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+                case '7': Topl_Factory::switchPipeline(_renderer, _drawPipeline/*_geomPipeline */); break;
+                case '8': Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
+                case '9': Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
+            }
+        }
+
+        if(k == TOPL_LEFT_ARROW || k == TOPL_UP_ARROW || k == TOPL_DOWN_ARROW || k == TOPL_RIGHT_ARROW || k == '-' || k == '_' || k == '+' || k == '='){
+            setShadersMode(Topl_Demo::shaderMode);
+            unsigned shaderConsoleMode = (Topl_Demo::shaderMode > 0)? Topl_Demo::shaderMode : Topl_Demo::shaderMode * -1;
+            std::cout << "Shader mode is " << ((Topl_Demo::shaderMode < 0)? "-" : "") << std::to_string(shaderConsoleMode) << std::endl;
+        }
+    }
+}
+
+void Topl_Demo::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> cursor){
+    float x = cursor.first; float y = cursor.second;
+
+    if(!Topl_Demo::isCtrl_input) Topl_Demo::userInput.clear();
+    Topl_Demo::cursorPos = { x, y, 0.0F };
+
+    if(Topl_Demo::pickerObj != nullptr) Topl_Demo::lastPickerColor = Topl_Demo::pickerColor;
+    Topl_Demo::lastPickerCoord = Topl_Demo::pickerCoord;
+}
+
+#ifdef TOPL_ENABLE_AUDIO
+/* void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for all the supported UI elements
+    switch (menuID) {
+    case 201: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;
+    case 202: play(std::string(AUDIO_DIR) + "80hz-sine-freqies.mp3"); break;
+    case 203: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
+    case 204: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
+    case 205: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
+    case 206: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
+    case 207: play(std::string(AUDIO_DIR) + "800hz-sine-freqies.mp3"); break;
+    case 208: play(std::string(AUDIO_DIR) + "1000hz-sine-freqies.mp3"); break;
+    default: std::cout << "Menu ID: " << std::to_string(menuID) << std::endl;
+    }
+}
+
+void Topl_Demo::play(std::string audioPathStr) {
+    static unsigned long long audioFramesRead;
+    if(audioData.empty()) audioData.assign(PROGRAM_AUDIO_FRAMES, 0.0F);
+    if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
+    if(ma_decoder_init_file(audioPathStr.c_str(), NULL, &audioDecoder) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio decoder failed to initialize");
+    if(ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), PROGRAM_AUDIO_FRAMES, &audioFramesRead) != MA_SUCCESS);
+    kiss_fftr(fftConfig, audioData.data(), fftOutput);
+    ma_decoder_uninit(&audioDecoder);
+} */
+#endif 
+
+#ifndef __ANDROID__
+void Topl_Demo::setup(const char* execPath, const char* name) {
+    _platform = new Platform(execPath, name);
+    _platform->createWindow(TOPL_WIN_WIDTH, TOPL_WIN_HEIGHT);
+#else
+void Topl_Demo::setup(android_app * app) {
+    _platform = new Platform(app);
+    while (_platform->getParentWindow() == nullptr && _platform->handleEvents() && !app->destroyRequested)
+        _platform->awaitWindow(); // waiting for window on Android
+#endif
+    srand(time(NULL));
+
+    _renderer = Topl_Factory::genRenderer(_backend, _platform);
+    // _renderer->setCamera(&Topl_Demo::camera);
+    _renderer->setDrawMode(DRAW_Triangles);
+
+    Platform::keyControl.addHandler(std::bind(&Topl_Demo::_onAnyKey, this, std::placeholders::_1));
+    Platform::mouseControl.addHandler(std::bind(&Topl_Demo::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
+#ifdef TOPL_ENABLE_AUDIO
+    /* Platform::onMenuSelect = std::bind(&Topl_Demo::menuSelect, this, std::placeholders::_1);
+    if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize"); */
+#endif
+
+    setPipelines();
+    _renderer->buildScene(&_editor.scene);
+#ifdef TOPL_ENABLE_TEXTURES
+    if (isEnable_background) createBackground(&_background.image);
+    if (isEnable_overlays) createOverlays(0.85);
+    _editor.nameActor.updateSize({ (float)_editor.nameActor.getName().length(), 0.0F, 0.0F });
+#if RASTERON_ENABLE_FONT
+    _editor.nameImg = Topl_Sampler_Text({ _editor.fontPath.c_str(), "000000", 0xFF111111, 0xFFEEEEEE });
+    _editor.scene.addTexture(_editor.nameActor.getName(), &_editor.nameImg);
+#endif
+    _renderer->texturizeScene(&_editor.scene);
+
+    ImageSize frameSize = { TOPL_WIN_HEIGHT, TOPL_WIN_WIDTH };
+    Topl_Demo::cachedFrames = RASTERON_QUEUE_ALLOC("frames", frameSize, CACHED_FRAME_COUNT);
+#else
+    if (isEnable_background) createBackground(nullptr);
+#endif
+}
+
+void Topl_Demo::createBackground(Topl_Sampler_2D* backgroundTex){
+    _background.actor.setPos({ 0.0F, 0.0F, -1.0F });
+    if(_background.mesh->getTessLevel() < PROGRAM_BK_TESS) _background.mesh->tesselate(PROGRAM_BK_TESS);
+    _background.actor.setMesh(_background.mesh);
+    if(_background.actor.pickFunc == nullptr) _background.actor.pickFunc = std::bind(&Topl_Demo::_backgroundCallback, this, std::placeholders::_1, std::placeholders::_2);
+#ifdef TOPL_ENABLE_TEXTURES
+    if(backgroundTex != nullptr){
+        _background.scene.addTexture("program_background", backgroundTex);
+        for(unsigned t = 1; t < 8; t++) _background.scene.addTexture(std::to_string(t), backgroundTex);
+        _background.scene.addVolumeTex("program_background", &_background.volume);
+    }
+#endif
+    _renderer->buildScene(&_background.scene);
+    _renderer->texturizeScene(&_background.scene);
+}
+
+void Topl_Demo::createOverlays(double size){
+    _overlays.billboard_appbar.scale({ 1.5F * 0.66, 0.15F * 0.75F, 1.0F });
+    _overlays.billboard_appbar.shift({ 0.0F, 0.9F, 0.0F });
+    _overlays.billboard_camera.scale({ 1.5F * 0.66, 0.15F * 0.75F, 1.0F });
+    _overlays.billboard_camera.shift({ 0.0F, 0.97F, 0.0F });
+    _overlays.billboard_timeline.scale({ 1.5F * 0.66F, 0.15F * 0.75, 1.0F });
+    _overlays.billboard_timeline.shift({ 0.15F, -0.97F, 0.0F });
+    _overlays.billboard_sculpt.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
+    _overlays.billboard_sculpt.shift({ -0.975F, 0.0F, 0.0F });
+    _overlays.billboard_paint.scale({ 0.12F * 0.75F, 1.15F * 0.75F, 1.0F });
+    _overlays.billboard_paint.shift({ 0.975F, 0.0F, 0.0F });
+    _overlays.billboard_media.scale({ 0.3F, 0.108F, 1.0F });
+    _overlays.billboard_media.shift({ -0.187F, -0.968F, 0.0F });
+    _overlays.billboard_object.shift({ 0.0F, -0.845F, 0.0F });
+    _overlays.billboard_object.toggleShow(false);
+    _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
+    _overlays.billboard_shader.toggleShow(false);
+#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
+    _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
+    for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
+        _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);
+        _overlays.billboard_camera.overlay(b, (b > 2 && b < 6)? (Topl_Sampler_UI*)&_overlays.cameraButtons[5 - b] : (b < 3)? (Topl_Sampler_UI*)&_overlays.plusButton : (Topl_Sampler_UI*)&_overlays.minusButton);
+        _overlays.billboard_sculpt.overlay(b, &_overlays.sculptButtons[b]);
+        _overlays.billboard_paint.overlay(b, &_overlays.paintButtons[b]);
+        _overlays.billboard_shader.overlay(b, &_overlays.pipelineButtons[b]);
+        if(b < _overlays.billboard_media.getActorCount() - 1) _overlays.billboard_media.overlay(b, (b <= 2)? (Topl_Sampler_UI*)&_overlays.mediaButtons[b] : (Topl_Sampler_UI*)&_overlays.mediaLabels[b - 3]);
+    }
+    for(unsigned b = 0; b < _overlays.billboard_object.getActorCount() - 1; b++) // _overlays.billboard_object.overlay(b, (b % 2 == 0)? &_overlays.plusButton : &_overlays.minusButton);
+        switch(14 - b){
+            case 0: case 5: case 10: _overlays.billboard_object.overlay(b, &_overlays.axisLabels[b / 5]); break;
+            case 1: case 6: case 11: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
+            case 2: case 7: case 12: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
+            case 3: case 8: case 13: _overlays.billboard_object.overlay(b, &_overlays.minusButton); break;
+            case 4: case 9: case 14: _overlays.billboard_object.overlay(b, &_overlays.plusButton); break;
+        }
+#endif
+    // _overlays.billboard_object.expandHorz(std::make_pair(0, 1), 1);
+    // _texVShader.setParams(_overlays.billboard_object.getGeoActor(5), { 1, 0.0, VEC_3F_ZERO, VEC_3F_ONES });
+
+    for(unsigned short o = 0; o < PROGRAM_BILLBOARDS; o++){
+        //if(o < PROGRAM_Timeline) _overlays.billboards[o]->scale({ ((o != PROGRAM_Object)? 0.5F : 0.715F) * (float)size, 0.33F * (float)size, 1.0F });
+        if (o != PROGRAM_Timeline && o != PROGRAM_Media) {
+            _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updatePos({ 0.0F, 0.01F, 0.0F });
+            if (o < PROGRAM_Sculpt) _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->updateSize({ 0.0F, (o < PROGRAM_Timeline) ? 0.015F : 0.045F, 0.0F });
+        }
+        _overlays.billboards[o]->getGeoActor(_overlays.billboards[o]->getActorCount() - 1)->pickFunc = std::bind(&Topl_Demo::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
+#ifdef TOPL_ENABLE_TEXTURES
+        for(unsigned e = 0; e < _overlays.billboards[o]->getActorCount(); e++)
+            if(e != _overlays.billboards[o]->getActorCount() - 1)
+                _overlays.billboards[o]->getGeoActor(e)->pickFunc = std::bind(&Topl_Demo::_overlayCallback, this, std::placeholders::_1, std::placeholders::_2);
+            else _overlays.billboards[o]->getGeoActor(e)->updateSize({ 0.01F, 0.01F, 0.0F });
+#endif
+    }
+
+    _renderer->buildScene(&_overlays.scene);
+    _renderer->texturizeScene(&_overlays.scene);
+}
+
+void Topl_Demo::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, int mode){
+    if(pipeline != nullptr){
+        Topl_Factory::switchPipeline(_renderer, pipeline);
+        setShadersMode(mode);
+    }
+
+    // _renderer->setDrawMode(DRAW_Triangles);
+    _renderer->updateScene(scene);
+    _renderer->drawScene(scene);
+}
+
+void Topl_Demo::cleanup() {
+#ifdef TOPL_ENABLE_TEXTURES
+#if RASTERON_ENABLE_FONT
+    cleanupFreeType();
+#endif
+#endif
+#ifdef TOPL_ENABLE_AUDIO
+    /* ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
+    kiss_fft_free(&fftConfig); */
+#endif
+	delete(_renderer);
+	delete(_platform);
+}

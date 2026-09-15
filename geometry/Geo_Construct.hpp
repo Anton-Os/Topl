@@ -5,7 +5,7 @@
 
 #include "Geo_Mesh.hpp"
 
-#include "scene/Topl_Scene.hpp"
+#include "Topl_Scene.hpp"
 
 // Tree
 

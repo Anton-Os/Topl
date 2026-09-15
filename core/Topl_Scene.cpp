@@ -1,0 +1,116 @@
+#include "Topl_Scene.hpp"
+
+void Topl_Scene::addGeometry(Geo_Actor* actor) {
+	for(unsigned a = 0; a < _geoActors.size(); a++)
+		if(_geoActors[a]->getName() == actor->getName()){
+			_geoActors[a] = actor; // overwrite geometry
+			return;
+		}
+	_geoActors.push_back(actor); // add new geometry
+}
+
+void Topl_Scene::addGeometry(const std::string& name, Geo_Actor* actor) {
+	actor->setName(name);
+	addGeometry(actor);
+}
+
+Geo_Actor* Topl_Scene::getPickActor(unsigned color){
+	for(std::vector<Geo_Actor*>::iterator actor = _geoActors.begin(); actor < _geoActors.end(); actor++)
+		if(((*actor)->getId() & 0x000000FF) == (color & 0x000000FF)) return *actor; // is this accurate?
+	return nullptr; // no actor found
+}
+
+actor_cptr Topl_Scene::getGeoActor(unsigned index) const {
+	if (index < _geoActors.size()) return _geoActors.at(index);
+	else return nullptr;
+}
+
+actor_cptr Topl_Scene::getGeoActor(const std::string& name) const {
+	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if((*actor)->getName() == name) return *actor;
+	return nullptr; // Error
+}
+
+/* light_cptr Topl_Scene::getLight(unsigned index) const {
+	if(index > _lights.size()) return nullptr;
+	else return _lights.at(index);
+} */
+
+void Topl_Scene::removeActor(const std::string& name){
+	Geo_Actor* actor = nullptr;
+	for(std::vector<Geo_Actor*>::const_iterator a = _geoActors.cbegin(); a < _geoActors.cend(); a++)
+		if((*a)->getName() == name) actor = *a;
+
+	_pickerCallbackMap.erase(actor);
+#ifdef TOPL_ENABLE_PHYSICS
+	_physicsMap.erase(actor);
+#endif
+#ifdef TOPL_ENABLE_TEXTURES
+	_textureMap.erase(actor);
+	_arrayTexMap.erase(actor);
+	_volumeTexMap.erase(actor);
+#endif
+    static_cast<void>(std::remove(_geoActors.begin(), _geoActors.end(), actor));
+}
+
+#ifdef TOPL_ENABLE_TEXTURES
+
+void Topl_Scene::addTexture(const std::string& name, const Topl_Sampler_2D* image) {
+    if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+		_textures[(char)name[0] - '0' - 1].setImage(image->getImage());
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if (name == (*actor)->getName()) {
+			_textureMap.erase(*actor);
+			_textureMap.insert({ *actor, image });
+		}
+	_isTextured = true;
+}
+
+const Topl_Sampler_2D* Topl_Scene::getTexture(const std::string& name) const {
+	if(name == "1" || name == "2" || name == "3" || name == "4" || name == "5" || name == "6" || name == "7")
+		return &_textures[(char)name[0] - '0' - 1]; // unbound texture
+	else if(_textureMap.empty()) return nullptr; // no textures available
+	auto texture_it = std::find_if(
+		_textureMap.begin(), _textureMap.end(),
+		[name](const std::pair<Geo_Actor*, const Topl_Sampler_2D*>& p){ return p.first->getName() == name; }
+	);
+	return (texture_it != _textureMap.end())? texture_it->second : nullptr;
+}
+
+void Topl_Scene::addArrayTex(const std::string& name, const Topl_Sampler_Array* arrayTex) {
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if (name == (*actor)->getName()) {
+			_arrayTexMap.erase(*actor);
+			_arrayTexMap.insert({ *actor, arrayTex });
+		}
+	_isTextured = true;
+}
+
+const Topl_Sampler_Array* Topl_Scene::getArrayTex(const std::string& name) const {
+	if(_arrayTexMap.empty()) return nullptr; // no textures available
+	auto arrayTex_it = std::find_if(
+		_arrayTexMap.begin(), _arrayTexMap.end(),
+		[name](const std::pair<Geo_Actor*, const Topl_Sampler_Array*>& p){ return p.first->getName() == name; }
+	);
+	return (arrayTex_it != _arrayTexMap.end())? arrayTex_it->second : nullptr;
+}
+
+void Topl_Scene::addVolumeTex(const std::string& name, const Topl_Sampler_3D* volumeTexTex) {
+	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
+		if (name == (*actor)->getName()) {
+			_volumeTexMap.erase(*actor);
+			_volumeTexMap.insert({ *actor, volumeTexTex });
+		}
+	_isTextured = true;
+}
+
+const Topl_Sampler_3D* Topl_Scene::getVolumeTex(const std::string& name) const {
+	if(_volumeTexMap.empty()) return nullptr; // no textures available
+	auto volumeTex_it = std::find_if(
+		_volumeTexMap.begin(), _volumeTexMap.end(),
+		[name](const std::pair<Geo_Actor*, const Topl_Sampler_3D*>& p){ return p.first->getName() == name; }
+	);
+	return (volumeTex_it != _volumeTexMap.end())? volumeTex_it->second : nullptr;
+}
+
+#endif

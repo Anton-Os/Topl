@@ -1,0 +1,73 @@
+#include "Geo_Construct.hpp"
+#include "meshes/Geo_Orboid.hpp"
+#include "meshes/Geo_Freeform.hpp"
+
+#include "Topl_Demo.hpp"
+
+#define MESHFORM_SIZE 0.5
+#define MESHFORM_TESS 1
+#define MESHFORM_INDEX 0
+#define MESHFORM_AMOUNT 0.25F
+#define MESHFORM_INC 1.15F // 1.01
+#define MESHFORM_DEC 0.9F // 0.99
+#define MESHFORM_CURVE 0.1F // 0.005F
+
+#define MESHFORM_GRADIENT 0
+#define MESHFORM_LINES 1
+#define MESHFORM_CHECKER 2
+#define MESHFORM_NOISE 3
+
+#include "Meshform_Functions.h"
+
+struct Meshform_Demo : public Topl_Demo {
+    Meshform_Demo(const char* execPath) : Topl_Demo(execPath, "Meshform"){}
+    Meshform_Demo(const char* execPath, BACKEND_Target backend) : Topl_Demo(execPath, "Meshform", backend){}
+
+    void init() override;
+    void preloop() override {
+        Topl_Demo::preloop();
+#ifdef TOPL_ENABLE_TEXTURES
+        colorPicker(&scene);
+#endif
+    }
+    void loop(double frameTime) override;
+
+    Geo_Orb* orbs[4][3] = {
+        { new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE), new Geo_TrigOrb(MESHFORM_SIZE) },
+        { new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE), new Geo_QuadOrb(MESHFORM_SIZE) },
+        { new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE), new Geo_HexOrb(MESHFORM_SIZE) },
+        { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
+    };
+    Geo_Freeform* freeforms[4] = {
+        // new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
+        //new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 20 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 10 }), spawn_randTrigs),
+        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }), spawn_randTrigs)
+    };
+    Geo_Torus* toruses[3] = {
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 20, 20})),
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 10, 10})),
+        new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 80, 80})),
+    };
+
+    Geo_Actor orbActors[3][4] = {
+        { orbs[0][0], orbs[1][0], orbs[2][0], orbs[3][0] },
+        { orbs[0][1], orbs[1][1], orbs[2][1], orbs[3][1] },
+        { orbs[0][2], orbs[1][2], orbs[2][2], orbs[3][2] }
+    };
+    Geo_Actor freeformActors[4] = { Geo_Actor(freeforms[0]), Geo_Actor(freeforms[1]), Geo_Actor(freeforms[2]), Geo_Actor(freeforms[3]) };
+    Geo_Actor torusActors[3] = { Geo_Actor(toruses[0]), Geo_Actor(toruses[1]), Geo_Actor(toruses[2]) };
+#ifdef TOPL_ENABLE_TEXTURES
+    Topl_Sampler_3D volume = Topl_Sampler_3D(256);
+#endif
+private:
+    void onAnyKey(keyboard_t key);
+    void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex) override;
+#ifdef TOPL_ENABLE_TEXTURES
+    void genTex3D(unsigned short mode, unsigned color1, unsigned color2);
+#endif
+
+    Topl_Scene scene = PROGRAM_SCENE;
+} *Meshform;

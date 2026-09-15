@@ -15,17 +15,13 @@ list(APPEND support_src
 )
 
 list(APPEND core_src
-    core/Topl_Factory.cpp
-    core/renderer/Topl_Renderer.cpp
+    core/Topl_Renderer.cpp
+    core/Topl_Scene.cpp
     core/Topl_Timeline.cpp
-    core/_program/Topl_Program.cpp # TODO: move this?
-    core/_program/Topl_Program_Runner.cpp # TODO: move this?
-    core/_program/Topl_Program_Pipelines.cpp # TODO: move this?
-    core/scene/Topl_Scene.cpp
 )
 
 if(SUPPORT_PHYSICS)
-    list(APPEND core_src core/scene/Topl_Physics.cpp)
+    list(APPEND core_src core/Topl_Scene_Physics.cpp)
 endif()
 
 add_library(CORELIB # SHARED # Core Library

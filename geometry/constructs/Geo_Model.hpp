@@ -12,7 +12,7 @@
 #include "Geo_Construct.hpp"
 
 #ifdef TOPL_ENABLE_TEXTURES
-unsigned linedSampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
+unsigned linedTopl_Sampler_callback(double x, double y){ return (cos(y * 20) < 0.5)? 0xAA00FF00 : 0xAAFF00FF; }
 #endif
 
 class Geo_Model3D : public Geo_Construct<Geo_Model3D> {
@@ -51,8 +51,8 @@ public:
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
 #ifdef TOPL_ENABLE_TEXTURES
-                _nodeSampler_map.insert({ _geoNodes[n], Sampler_2D() });
-                _nodeSampler_map.at(_geoNodes[n]) = Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
+                _nodeTopl_Sampler_map.insert({ _geoNodes[n], Topl_Sampler_2D() });
+                _nodeTopl_Sampler_map.at(_geoNodes[n]) = Topl_Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
             }
         }
@@ -62,14 +62,14 @@ public:
         for (unsigned n = 0; n < _geoNodes.size(); n++) {
                 scene->addGeometry(getPrefix() + _geoActors[n].getName(), _geoNodes[n]);
 #ifdef TOPL_ENABLE_TEXTURES
-                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeSampler_map.at(_geoNodes[n]));
+                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeTopl_Sampler_map.at(_geoNodes[n]));
 #endif
         }
     }
 
     unsigned getActorCount() const { return _geoNodes.size(); }
     // Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
-	Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeSampler_map[_geoNodes[i]] : nullptr; }
+	Topl_Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeTopl_Sampler_map[_geoNodes[i]] : nullptr; }
     
     void shift(Vec3f vec) { // replace Geo_Construct shift()
 		for (std::vector<Geo_Node*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
@@ -80,7 +80,7 @@ public:
     }
 protected:
 	std::vector<Geo_Node*> _geoNodes; // geometry nodes only
-    std::map<const Geo_Node*, Sampler_2D> _nodeSampler_map; // child backgrounds
+    std::map<const Geo_Node*, Topl_Sampler_2D> _nodeTopl_Sampler_map; // child backgrounds
 	// TODO: include animation and other relevant data
 private:
     Geo_Node** _nodes = nullptr; // all nodes data

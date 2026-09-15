@@ -35,11 +35,11 @@
 #endif */
 #if ON
 #ifndef TOPL_ENABLE_AUDIO // ensures only one audio library is enabled
-    #include <miniaudio/miniaudio.h> // Audio Library
-    #include <kissfft/kiss_fft.h> // FFT Library
-    #include <kissfft/kiss_fftr.h> // FFT Library
-#endif
+    // #include <miniaudio/miniaudio.h> // Audio Library
+    // #include <kissfft/kiss_fft.h> // FFT Library
+    // #include <kissfft/kiss_fftr.h> // FFT Library
 #define TOPL_ENABLE_AUDIO
+#endif
 #endif
 
 

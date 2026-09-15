@@ -95,7 +95,7 @@ public:
         _geoActors.resize(PUPPET_PARTS);
 #ifdef TOPL_ENABLE_TEXTURES
         for(unsigned p = 0; p < PUPPET_PARTS; p++){
-            spriteImgs[p] = Sampler_File(spriteImgPaths[p].c_str());
+            spriteImgs[p] = Topl_Sampler_File(spriteImgPaths[p].c_str());
             sprites[p] = loadSprite(spriteImgs[p].getImage());
             float width = bounds_getWidth(sprites[p]->bounds); float height = bounds_getHeight(sprites[p]->bounds);
             quads[p].scale({ width, height, 0.0f });
@@ -125,7 +125,7 @@ protected:
     puppetSpritePaths spriteImgPaths;
     Geo_Quad2D quads[PUPPET_PARTS];
 #ifdef TOPL_ENABLE_TEXTURES  
-    Sampler_2D spriteImgs[PUPPET_PARTS];
+    Topl_Sampler_2D spriteImgs[PUPPET_PARTS];
     Rasteron_Sprite* sprites[PUPPET_PARTS];
 #endif
 };

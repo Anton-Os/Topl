@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "scene/Topl_Scene.hpp"
+#include "Topl_Scene.hpp"
 
 enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval, SHDR_Compute };
 
