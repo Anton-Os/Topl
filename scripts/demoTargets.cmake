@@ -18,13 +18,13 @@ list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidosco
 list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Animatrix Genesis Traversal Cubegate)
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support geometry shaders demos demos/legacy)
+    target_include_directories(${target} PRIVATE core support geometry shaders demos demos/legacy ${CMAKE_SOURCE_DIR})
     target_link_libraries(${target} PRIVATE CORELIB RTLIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")
     endif()
-    set_target_properties(${target} PROPERTIES FOLDER "Starters Demos")
+    set_target_properties(${target} PROPERTIES FOLDER "Legacy Demos")
 endforeach()
 
 if(SUPPORT_AUDIO)

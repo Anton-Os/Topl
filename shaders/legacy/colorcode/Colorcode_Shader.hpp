@@ -33,13 +33,13 @@ protected:
 };
 
 struct Colorcode_VertexShader_GL4 : public Topl_Shader_GL4, Colorcode_VertexShader {
-	Colorcode_VertexShader_GL4() : Topl_Shader_GL4(), Colorcode_VertexShader("colorcode/glsl/Vertex.glsl") {}
-	Colorcode_VertexShader_GL4(unsigned mode) : Topl_Shader_GL4(), Colorcode_VertexShader("colorcode/glsl/Vertex.glsl", mode) {}
+	Colorcode_VertexShader_GL4() : Topl_Shader_GL4(), Colorcode_VertexShader("legacy/colorcode/glsl/Vertex.glsl") {}
+	Colorcode_VertexShader_GL4(unsigned mode) : Topl_Shader_GL4(), Colorcode_VertexShader("legacy/colorcode/glsl/Vertex.glsl", mode) {}
 };
 
 struct Colorcode_VertexShader_DX11 : public Topl_Shader_DX11, Colorcode_VertexShader {
-	Colorcode_VertexShader_DX11() : Topl_Shader_DX11(), Colorcode_VertexShader("colorcode/hlsl/Vertex.hlsl") {}
-	Colorcode_VertexShader_DX11(unsigned mode) : Topl_Shader_DX11(), Colorcode_VertexShader("colorcode/hlsl/Vertex.hlsl", mode) {}
+	Colorcode_VertexShader_DX11() : Topl_Shader_DX11(), Colorcode_VertexShader("legacy/colorcode/hlsl/Vertex.hlsl") {}
+	Colorcode_VertexShader_DX11(unsigned mode) : Topl_Shader_DX11(), Colorcode_VertexShader("legacy/colorcode/hlsl/Vertex.hlsl", mode) {}
 };
 
 // Pixel Shaders
@@ -50,9 +50,9 @@ struct Colorcode_PixelShader : public Topl_Shader {
 };
 
 struct Colorcode_PixelShader_GL4 : public Topl_Shader_GL4, Colorcode_PixelShader {
-	Colorcode_PixelShader_GL4() : Topl_Shader_GL4(), Colorcode_PixelShader("colorcode/glsl/Frag.glsl") { /* std::cout << "embeddings size is " << std::to_string(_embedMap.size()) << std::endl; */ }
+	Colorcode_PixelShader_GL4() : Topl_Shader_GL4(), Colorcode_PixelShader("legacy/colorcode/glsl/Frag.glsl") { /* std::cout << "embeddings size is " << std::to_string(_embedMap.size()) << std::endl; */ }
 };
 
 struct Colorcode_PixelShader_DX11 : public Topl_Shader_DX11, Colorcode_PixelShader {
-	Colorcode_PixelShader_DX11() : Topl_Shader_DX11(), Colorcode_PixelShader("colorcode/hlsl/Pixel.hlsl"){ /* std::cout << "embeddings size is " << std::to_string(_embedMap.size()) << std::endl; */ }
+	Colorcode_PixelShader_DX11() : Topl_Shader_DX11(), Colorcode_PixelShader("legacy/colorcode/hlsl/Pixel.hlsl"){ /* std::cout << "embeddings size is " << std::to_string(_embedMap.size()) << std::endl; */ }
 };

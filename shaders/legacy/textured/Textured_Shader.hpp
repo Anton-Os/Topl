@@ -74,11 +74,11 @@ private:
 };
 
 struct Textured_VertexShader_GL4 : public Textured_VertexShader {
-	Textured_VertexShader_GL4() : Textured_VertexShader(std::string("textured/glsl/") + "Vertex.glsl") {}
+	Textured_VertexShader_GL4() : Textured_VertexShader(std::string("legacy/textured/glsl/") + "Vertex.glsl") {}
 };
 
 struct Textured_VertexShader_DX11 : public Textured_VertexShader {
-	Textured_VertexShader_DX11() : Textured_VertexShader(std::string("textured/hlsl/") + "Vertex.hlsl") {}
+	Textured_VertexShader_DX11() : Textured_VertexShader(std::string("legacy/textured/hlsl/") + "Vertex.hlsl") {}
 };
 
 // Pixel Shaders
@@ -89,9 +89,9 @@ struct Textured_PixelShader : public Topl_Shader {
 };
 
 struct Textured_PixelShader_GL4 : public Textured_PixelShader {
-	Textured_PixelShader_GL4() : Textured_PixelShader(std::string("textured/glsl/") + "Frag.glsl") {}
+	Textured_PixelShader_GL4() : Textured_PixelShader(std::string("legacy/textured/glsl/") + "Frag.glsl") {}
 };
 
 struct Textured_PixelShader_DX11 : public Textured_PixelShader {
-	Textured_PixelShader_DX11() : Textured_PixelShader(std::string("textured/hlsl/") + "Pixel.hlsl") { }
+	Textured_PixelShader_DX11() : Textured_PixelShader(std::string("legacy/textured/hlsl/") + "Pixel.hlsl") { }
 };

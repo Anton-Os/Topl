@@ -3,21 +3,12 @@
 #include "Topl_Factory.hpp"
 #include "Topl_Timeline.hpp"
 
-#include "colorcode/Colorcode_Shader.hpp"
-#include "textured/Textured_Shader.hpp"
-#include "beams/Beams_Shader.hpp"
-#include "spectral/Spectral_Shader.hpp"
-#include "effect/Effect_Shader.hpp"
-#include "draw/Draw_Shader.hpp"
-#include "field/Field_Shader.hpp"
-#include "pattern/Pattern_Shader.hpp"
-#include "advanced/Advance_Shader.hpp"
-
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
-
 #include "constructs/Geo_Billboards.hpp"
+
+#include "legacy/All_Pipelines.h"
 
 #define NO_PICKER_OBJ nullptr
 #define CACHED_FRAME_COUNT 60

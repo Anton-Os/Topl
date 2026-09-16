@@ -55,13 +55,13 @@ protected:
 };
 
 struct Draw_VertexShader_GL4 : public Draw_VertexShader {
-    Draw_VertexShader_GL4() : Draw_VertexShader(std::string("draw/glsl/") + "Vertex.glsl"){}
-	Draw_VertexShader_GL4(unsigned mode) : Draw_VertexShader(std::string("draw/glsl/") + "Vertex.glsl", mode){}
+    Draw_VertexShader_GL4() : Draw_VertexShader(std::string("legacy/draw/glsl/") + "Vertex.glsl"){}
+	Draw_VertexShader_GL4(unsigned mode) : Draw_VertexShader(std::string("legacy/draw/glsl/") + "Vertex.glsl", mode){}
 };
 
 struct Draw_VertexShader_DX11 : public Draw_VertexShader {
-    Draw_VertexShader_DX11() : Draw_VertexShader(std::string("draw/hlsl/") + "Vertex.hlsl"){}
-	Draw_VertexShader_DX11(unsigned mode) : Draw_VertexShader(std::string("draw/hlsl/") + "Vertex.hlsl", mode){}
+    Draw_VertexShader_DX11() : Draw_VertexShader(std::string("legacy/draw/hlsl/") + "Vertex.hlsl"){}
+	Draw_VertexShader_DX11(unsigned mode) : Draw_VertexShader(std::string("legacy/draw/hlsl/") + "Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
@@ -72,9 +72,9 @@ struct Draw_PixelShader : public Topl_Shader {
 };
 
 struct Draw_PixelShader_GL4 : public Draw_PixelShader {
-	Draw_PixelShader_GL4() : Draw_PixelShader(std::string("draw/glsl/") + "Frag.glsl") { }
+	Draw_PixelShader_GL4() : Draw_PixelShader(std::string("legacy/draw/glsl/") + "Frag.glsl") { }
 };
 
 struct Draw_PixelShader_DX11 : public Draw_PixelShader {
-	Draw_PixelShader_DX11() : Draw_PixelShader(std::string("draw/hlsl/") + "Pixel.hlsl") { }
+	Draw_PixelShader_DX11() : Draw_PixelShader(std::string("legacy/draw/hlsl/") + "Pixel.hlsl") { }
 };

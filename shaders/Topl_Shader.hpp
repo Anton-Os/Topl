@@ -74,6 +74,7 @@ public:
 			}
 
 			if(includeStr.substr(includeStr.size() - 4) == "glsl" || includeStr.substr(includeStr.size() - 4) == "hlsl"){ // read from file
+				// TODO: This needs to be replaced with a more robust file path system that can handle relative paths, causes bug now
 				if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
 				else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
 				includeSrc = readFile(includeStr.c_str());
@@ -82,7 +83,7 @@ public:
 				includeSrc = _embedMap.at(includeStr); // read from entry
 				// std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
 			}
-
+			std::cout << "Include string is\n " << includeStr << std::endl;
 			shaderSrc.replace(startOffset, includeOffset + 1 - startOffset, includeSrc);
 		}
 		return shaderSrc;

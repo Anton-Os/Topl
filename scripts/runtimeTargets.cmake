@@ -11,7 +11,7 @@ add_library(RTLIB # Legacy Runtime Library
 # )
 # add_library(AVRTLIB # Audio-Visual Runtime Library
     # demos/Topl_Factory.cpp
-    # demos/audiovisual/Topl_AudioVisual_Demo.cpp
+    # demos/audiovisual/Topl_VisualAudio_Demo.cpp
 # )
 
 target_include_directories(RTLIB PRIVATE core support geometry shaders demos)
