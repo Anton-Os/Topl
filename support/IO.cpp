@@ -40,6 +40,11 @@ std::string readUserInput() {
     return user_input;
 }
 
+bool getFileExists(const char* source) {
+    std::ifstream file(source);
+    return file.good();
+}
+
 std::string getParentDir(const char* str){
     const char* strEnd = str + strlen(str); // Traverse to the end of the string
     while(strEnd != str && nullptr == strchr("\\/", *(--strEnd)));

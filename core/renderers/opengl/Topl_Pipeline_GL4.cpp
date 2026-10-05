@@ -105,7 +105,7 @@ void Topl_Renderer_GL4::genPipeline(GL4::Pipeline* pipeline, entry_shader_cptr v
 	
 	if(blockCount > 0) glUniformBlockBinding(_pipeline->shaderProg, RENDER_BLOCK_BINDING, RENDER_BLOCK_BINDING); // enables render block
 	if(blockCount > 1) glUniformBlockBinding(_pipeline->shaderProg, SCENE_BLOCK_BINDING, SCENE_BLOCK_BINDING); // enables scene block
-	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, EXT_BLOCK_BINDING, EXT_BLOCK_BINDING); // enables extended block
+	if(blockCount > 2) glUniformBlockBinding(_pipeline->shaderProg, MESH_BLOCK_BINDING, MESH_BLOCK_BINDING); // enables extended block
 }
 
 void Topl_Renderer_GL4::linkShaders(GL4::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){

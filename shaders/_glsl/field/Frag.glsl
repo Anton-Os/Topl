@@ -1,7 +1,7 @@
 #version 440
 
 #define IGNORE_INPUTS
-// #define INCLUDE_EXTBLOCK
+// #define INCLUDE_MESHBLOCK
 
 #define FIELD_SIZE 0.025
 

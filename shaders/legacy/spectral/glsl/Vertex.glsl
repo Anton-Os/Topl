@@ -36,7 +36,7 @@ void main() {
 	normal_out = getRotMatrix(rotation) * normal_in;
 	pos_out = vec3(gl_Position.x, gl_Position.y, gl_Position.z);
 	texcoord_out = (texcoord_in + vec3(texScroll)) * vec3(texScale);
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif
 }

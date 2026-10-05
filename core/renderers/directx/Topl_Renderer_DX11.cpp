@@ -345,7 +345,7 @@ void Topl_Renderer_DX11::draw(const Geo_Actor* actor) {
 		// Data & Buffer Updates
 
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) setConstBufferData(_blockBufferMap.at(renderID).buffer, RENDER_BLOCK_BINDING);
-		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) setConstBufferData(_extBlockBufferMap.at(renderID).buffer, EXT_BLOCK_BINDING);
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) setConstBufferData(_extBlockBufferMap.at(renderID).buffer, MESH_BLOCK_BINDING);
 
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end())
 			_deviceCtx->IASetVertexBuffers(0, 1, &_vertexBufferMap.at(renderID).buffer, &_vertexStride, &_vertexOffset);

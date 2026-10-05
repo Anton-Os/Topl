@@ -1,0 +1,59 @@
+#define IDI_ICON 1
+
+#define IDC_MENU 100
+#define NEW 101
+#define LOAD 102
+
+#define CAMERA 200
+#define CAMERA1 201
+#define CAMERA2 202
+#define CAMERA3 203
+#define CAMERA4 204
+#define CAMERA5 205
+#define CAMERA6 206
+
+#define PIPELINE 300
+#define PIPELINE1 301
+#define PIPELINE2 302
+#define PIPELINE3 303
+#define PIPELINE4 304
+#define PIPELINE5 305
+#define PIPELINE6 306
+#define PIPELINE7 307
+#define PIPELINE8 308
+#define PIPELINE9 309
+#define PIPELINE10 310
+
+#define SHAPES 400
+#define SHAPES1 401
+#define SHAPES2 402
+#define SHAPES3 403 
+#define SHAPES4 404
+#define SHAPES5 405
+#define SHAPES6 406
+#define SHAPES7 407 
+#define SHAPES8 408
+#define SHAPES9 409
+
+#define SAMPLERS 500
+#define SAMPLERS1 501
+#define SAMPLERS2 502
+#define SAMPLERS3 503 
+#define SAMPLERS4 504
+#define SAMPLERS5 505
+#define SAMPLERS6 506
+#define SAMPLERS7 507 
+#define SAMPLERS8 508
+#define SAMPLERS9 509
+
+#define SOUNDS 600
+#define SOUNDS1 601
+#define SOUNDS2 602
+#define SOUNDS3 603 
+#define SOUNDS4 604
+#define SOUNDS5 605
+#define SOUNDS6 606
+#define SOUNDS7 607 
+#define SOUNDS8 608
+#define SOUNDS9 609
+

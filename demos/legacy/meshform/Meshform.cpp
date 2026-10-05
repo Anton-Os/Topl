@@ -2,6 +2,7 @@
 
 static bool isRotating = true;
 static bool isMoving = false;
+static bool isPulsing = true;
 
 // Class Functions
 
@@ -138,8 +139,8 @@ void Meshform_Demo::loop(double frameTime){
         for (unsigned m = 0; m < 3; m++) {
             torusActors[m].updateRot({ 0.0F, 0.0F, (float)frameTime * 0.0000001F * (m + 1)});
             for (unsigned a = 0; a < 4; a++) {
-                Vec3f rotationVec = VEC_3F_RAND * 0.001;
-                orbActors[m][a].updateRot(rotationVec * (float)pow(2.0, m)); // change the rotation rate of constituents
+                Vec3f rotationVec = VEC_3F_RAND * Vec3f({ 0.0F, 0.0F, 0.001 });
+                orbActors[m][a].updateRot(rotationVec * (float)pow(2.0, a)); // change the rotation rate of constituents
                 if(m == 0) freeformActors[a].updateRot(rotationVec); // only one rotation necessary
             }
         }
@@ -148,7 +149,12 @@ void Meshform_Demo::loop(double frameTime){
             freeformActors[a].setPos({ freeformActors[a].getPos()->data[0], freeformActors[a].getPos()->data[1], (float)sin(totalTime * 0.0000003F) });
             for(unsigned o = 0; o < 3; o++) orbActors[o][a].setPos({ orbActors[o][a].getPos()->data[0], orbActors[o][a].getPos()->data[1], (float)cos(totalTime * 0.0000003F)});
         }
-
+    if (isPulsing)
+        for (unsigned m = 0; m < 3; m++)
+            for (unsigned a = 0; a < 4; a++) {
+                float s = (sin(totalTime * (m + 1) * 0.0000005F) * 0.33F) + 0.66F;
+                orbActors[m][a].setSize({ s, s, s });
+            }
 
     // torus->drawMode = DRAW_Lines;
 #ifdef TOPL_ENABLE_TEXTURES
@@ -157,6 +163,7 @@ void Meshform_Demo::loop(double frameTime){
     _texVShader.setAntialiasing(0.005F, 5);
 #endif
     _renderer->setDrawMode(DRAW_Triangles);
+
     _renderer->updateScene(&scene);
     _renderer->drawScene(&scene);
 
@@ -164,7 +171,7 @@ void Meshform_Demo::loop(double frameTime){
 }
 
 MAIN_ENTRY {
-    Meshform = new Meshform_Demo(argv[0], BACKEND_GL4);
+    Meshform = new Meshform_Demo(argv[0]);
     Meshform->run();
 
     delete(Meshform);

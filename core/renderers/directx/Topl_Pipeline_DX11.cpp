@@ -119,14 +119,14 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 	// Vertex Shader
     if(vertexShader != nullptr){
         if(!DX11::compileShader(vertexShader->getFileSource(), "vs_5_0", &pipeline->vsBlob)) return;
-        hr = _device->CreateVertexShader(pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(), NULL, &pipeline->vertexShader);
+		if(pipeline->vsBlob != nullptr) hr = _device->CreateVertexShader(pipeline->vsBlob->GetBufferPointer(), pipeline->vsBlob->GetBufferSize(), NULL, &pipeline->vertexShader);
         if (FAILED(hr)) { pipeline->isReady = false; return; }
     }
 
 	// Pixel Shader
     if(pixelShader != nullptr){
         if (!DX11::compileShader(pixelShader->getFileSource(), "ps_5_0", &pipeline->psBlob)) return;
-        hr = _device->CreatePixelShader(pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),NULL, &pipeline->pixelShader);
+		if (pipeline->psBlob != nullptr)  hr = _device->CreatePixelShader(pipeline->psBlob->GetBufferPointer(), pipeline->psBlob->GetBufferSize(),NULL, &pipeline->pixelShader);
         if (FAILED(hr)) { pipeline->isReady = false; return; }
     }
 
@@ -138,28 +138,28 @@ void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr
 	// Geometry Shader
 	if (geomShader != shaders.end()) { // optional stage
 		if (!DX11::compileShader((*geomShader)->getFileSource(), "gs_5_0", &pipeline->gsBlob)) return;
-		hr = _device->CreateGeometryShader(pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(), NULL, &pipeline->geomShader);
+		if (pipeline->gsBlob != nullptr) hr = _device->CreateGeometryShader(pipeline->gsBlob->GetBufferPointer(), pipeline->gsBlob->GetBufferSize(), NULL, &pipeline->geomShader);
 		if (FAILED(hr)) { pipeline->isReady = false; return; }
 	}
 
 	// Hull Shader
 	if (hullShader != shaders.end()) { // optional stage
 		if (!DX11::compileShader((*hullShader)->getFileSource(), "hs_5_0", &pipeline->hsBlob)) return;
-		hr = _device->CreateHullShader( pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(), NULL, &pipeline->hullShader);
+		if (pipeline->hsBlob != nullptr) hr = _device->CreateHullShader( pipeline->hsBlob->GetBufferPointer(), pipeline->hsBlob->GetBufferSize(), NULL, &pipeline->hullShader);
 		if (FAILED(hr)) { pipeline->isReady = false; return; }
 	}
 
 	// Domain Shader
 	if (domainShader != shaders.end()) { // optional stage
 		if (!DX11::compileShader((*domainShader)->getFileSource(), "ds_5_0", &pipeline->dsBlob)) return;
-		hr = _device->CreateDomainShader(pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(), NULL, &pipeline->domainShader);
+		if (pipeline->dsBlob != nullptr) hr = _device->CreateDomainShader(pipeline->dsBlob->GetBufferPointer(), pipeline->dsBlob->GetBufferSize(), NULL, &pipeline->domainShader);
 		if (FAILED(hr)) { pipeline->isReady = false; return; }
 	}
 
 	// Compute Shader
 	if (computeShader != shaders.end()) { // optional stage
 		if (!DX11::compileShader((*computeShader)->getFileSource(), "cs_5_0", &pipeline->csBlob)) return;
-		hr = _device->CreateComputeShader(pipeline->csBlob->GetBufferPointer(), pipeline->csBlob->GetBufferSize(), NULL, &pipeline->computeShader);
+		if (pipeline->csBlob != nullptr) hr = _device->CreateComputeShader(pipeline->csBlob->GetBufferPointer(), pipeline->csBlob->GetBufferSize(), NULL, &pipeline->computeShader);
 		if (FAILED(hr)) { pipeline->isReady = false; return; }
 	}
 

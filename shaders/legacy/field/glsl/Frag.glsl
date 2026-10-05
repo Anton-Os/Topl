@@ -1,7 +1,7 @@
 #version 440
 
 #define IGNORE_INPUTS
-// #define INCLUDE_EXTBLOCK
+// #define INCLUDE_MESHBLOCK
 
 #define FIELD_SIZE 0.025
 
@@ -60,12 +60,12 @@ void main() {
 	if(m % 10 == 1) target = field1(ctrlPoint, target);  
 	else if(m % 10 == 2) target = field2(ctrlPoint, target);
 	else if(m % 10 == 3) target = field3(ctrlPoint, target);
-	else if(m % 10 == 4) target = field4(target_idx, target);  
-	else if(m % 10 == 5) target = field7(target_idx, target);
-	else if(m % 10 == 6) target = field8(target_idx, target);
-	else if(m % 10 == 7) target = field9(target_idx, target);
-	else if(m % 10 == 8) target = field10(target_idx, target);
-	else if(m % 10 == 9) target = field12(ctrlPoint, target, vec3(vertex_color));
+	else if(m % 10 == 4) target = field4(ctrlPoint, target);
+	else if(m % 10 == 5) target = field5(ctrlPoint, target);
+	else if(m % 10 == 6) target = field6(ctrlPoint, target);
+	else if(m % 10 == 7) target = field7(ctrlPoint, target);
+	else if(m % 10 == 8) target = field8(ctrlPoint, target);
+	else if(m % 10 == 9) target = field9(ctrlPoint, target);
 	else target = vec3(length(relCoord), length(relCoord), length(relCoord));
 
 	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);

@@ -80,7 +80,7 @@ struct Topl_Viewport {
 #define RENDER_BLOCK_BINDING 1 // uniform block binding to for geometry updates
 #define SCENE_BLOCK_BINDING 0 // uniform block binding to for updates
 #endif
-#define EXT_BLOCK_BINDING 2 // uniform block for extended functionality and geometry
+#define MESH_BLOCK_BINDING 2 // uniform block for extended functionality and geometry
 
 #define ALL_SCENES nullptr // works for updating everything
 #define MAX_RENDERID 256 * 256 // * 256

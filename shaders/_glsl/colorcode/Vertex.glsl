@@ -2,7 +2,7 @@
 
 #define INCLUDE_INPUTS
 #define INCLUDE_SCENEBLOCK
-// #define INCLUDE_EXTBLOCK
+// #define INCLUDE_MESHBLOCK
 
 #include "Common.glsl"
 
@@ -37,7 +37,7 @@ void main() {
 	else vert_color_out = vec4(0.0F, 0.0f, 0.0F, 0.1F); 
 	normal_out = getRotMatrix(rotation) * normal_in;
 	tangent_out = tangent_in;
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif
 }

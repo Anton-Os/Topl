@@ -1,7 +1,7 @@
 // Values
 
 #define IGNORE_INPUTS
-#define INCLUDE_EXTBLOCK
+#define INCLUDE_MESHBLOCK
 
 #define STAGE_TESS_EVAL
 

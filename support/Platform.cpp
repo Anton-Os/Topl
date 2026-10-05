@@ -44,27 +44,27 @@ LRESULT handleMenu_win32(WPARAM wParam){
 	static std::string popupTitleText;
 
 	switch(LOWORD(wParam)){
-		case IDM_NEW: 
+		case NEW: 
 			Platform::openFileDialog(false); // Testing
 			// if(Platform::onFileChoose != nullptr) Platform::onFileChoose(false, "../"); // TODO: Include real path
 			logMessage("Menu command: New");
 			break;
-		case IDM_LOAD: 
+		case LOAD: 
 			Platform::openFileDialog(true); // Testing
 			// if(Platform::onFileChoose != nullptr) Platform::onFileChoose(true, "../"); // TODO: Include real path
 			logMessage("Menu command: Load\n"); 
 			break;
-		/* case IDM_TONES1: popupTitleText = "Sound1";	break;
-		case IDM_TONES2: popupTitleText = "Sound2"; break;
-		case IDM_TONES3: popupTitleText = "Sound3"; break;
-		case IDM_TONES4: popupTitleText = "Sound4"; break; */
+		/* case SOUNDS1: popupTitleText = "Sound1";	break;
+		case SOUNDS2: popupTitleText = "Sound2"; break;
+		case SOUNDS3: popupTitleText = "Sound3"; break;
+		case SOUNDS4: popupTitleText = "Sound4"; break; */
 		default: break;
-		// case IDM_FI_CLOSE: logMessage("File close command"); break;
+		// case FI_CLOSE: logMessage("File close command"); break;
 	}
 	// if(Platform::onMenuSelect != nullptr) Platform::onMenuSelect(LOWORD(wParam));
 	Platform::onMenuSelect(LOWORD(wParam));
 
-	/* if(LOWORD(wParam) == IDM_TONES1 || LOWORD(wParam) == IDM_TONES2 || LOWORD(wParam) == IDM_TONES3 || LOWORD(wParam) == IDM_TONES4){ // Menu Interaction
+	/* if(LOWORD(wParam) == SOUNDS1 || LOWORD(wParam) == SOUNDS2 || LOWORD(wParam) == SOUNDS3 || LOWORD(wParam) == SOUNDS4){ // Menu Interaction
 		logMessage("Menu command: " + popupTitleText + "\n");
 		
 		popupWindow = CreateWindow( // TODO: Remove menu?

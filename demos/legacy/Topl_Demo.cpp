@@ -2,8 +2,8 @@
 
 #ifdef TOPL_ENABLE_AUDIO
 // #define static static inline
-/* #include <kissfft/kiss_fft.c> // includes source for kissfft
-#include <kissfft/kiss_fftr.c> // includes source for kissfft */
+// #include <kissfft/kiss_fft.c> // includes source for kissfft
+// #include <kissfft/kiss_fftr.c> // includes source for kissfft */
 // #undef static
 #endif
 
@@ -72,40 +72,11 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
 #if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
-                    if(o == PROGRAM_Params) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
-                    else if(o == PROGRAM_Sculpt){
-                        _background.mesh = &_background.meshes[p];
-                        if(isEnable_background) createBackground(nullptr);
-                    }
-                    else if(o == PROGRAM_Paint){ 
-                        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
-                        for(unsigned t = 0; t < 9; t++){
-                            unsigned i = (p < 8) ? p : (rand() % 8);
-                            unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
-                            unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
-                            switch(i) {
-                                case 0: _overlays.textures[t] = Topl_Sampler_Gradient((SIDE_Type)(rand() % 5), r1, r2); break; // random gradients
-                                case 1: _overlays.textures[t] = Topl_Sampler_2D(linedImgOp(size, r1, r2, (rand() % 10) + 10, (rand() % 2 == 0)? 0.0 : 1.0)); break; // lines
-                                case 2: _overlays.textures[t] = Topl_Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 })); break; // lines
-                                case 3: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }); break; // basic noise
-                                case 4: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1); break; // octave noise
-                                case 5: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 })); break; // tiled noise
-                                case 6: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // added noise
-                                case 7: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // subtracted noise
-                                default: _overlays.textures[t] = Topl_Sampler_File(_overlays.scene.texImgPaths[t]);
-                            }
-                            if(t == 0) _background.scene.addTexture(&_overlays.textures[t]);
-                            else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
-                        }
-                        unsigned volumeColor = RAND_COLOR();
-                        for (unsigned s = 0; s < _background.volume.getDepth(); s++) {
-                            Rasteron_Image* sliceImg = solidImgOp({ 256, 256 }, blend_colors(volumeColor, color_invert(volumeColor), (1.0 / _background.volume.getDepth()) * s)); // resizeImgOp({ 256, 256 }, _overlays.textures[0].getImage());
-                            _background.volume.addSlice(sliceImg, s);
-                            RASTERON_DEALLOC(sliceImg);
-                        }
-                        _renderer->texturizeScene(&_background.scene);
-                        _renderer->texturizeScene(&_overlays.scene);
-                    } else if(o == PROGRAM_Media)
+                    if (o == PROGRAM_Params) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
+                    else if (o == PROGRAM_Shaders) menuSelect(PIPELINE + p + 1);
+                    else if (o == PROGRAM_Sculpt) menuSelect(SHAPES + p + 1);
+                    else if (o == PROGRAM_Paint) menuSelect(SAMPLERS + p + 1);
+                    else if(o == PROGRAM_Media)
                         switch(p){
                             case 3: timeline.dynamic_ticker.setTime(TIMELINE_START); break;
                             case 4: timeline.dynamic_ticker.isPaused = !timeline.dynamic_ticker.isPaused; break;
@@ -167,21 +138,6 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             }
                         }
                     }
-                    else if(o == PROGRAM_Shaders){
-                        switch (9 - p) {
-                            case 0: Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
-                            case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
-                            case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
-                            case 3: Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
-                            case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
-                            case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
-                            case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
-                            case 7: Topl_Factory::switchPipeline(_renderer, _drawPipeline); break;
-                            case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
-                            case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
-                        }
-                        _savedPipeline = _renderer->getPipeline();
-                    }
                     onOverlayUpdate((PROGRAM_Menu)o, PROGRAM_SUBMENUS - 1 - p);
 #endif
                 }
@@ -190,12 +146,12 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     _renderer->texturizeScene(&_overlays.scene);
 }
 
-void Topl_Demo::getInput(){
+/* void Topl_Demo::getInput() {
     std::getline(std::cin, userInput);
     std::cout << "Input received from thread: " << userInput << std::endl;
     // TODO: Parse user input here
     userInput = ""; // erasing data
-}
+} */
 
 void Topl_Demo::_onAnyKey(keyboard_t k){
     std::string commandArgs;
@@ -208,10 +164,10 @@ void Topl_Demo::_onAnyKey(keyboard_t k){
     else if (isspace(k) && k == 0x0D) isEnable_background = !isEnable_background;
     else if (k == ',') menuMode = (menuMode != PROGRAM_Media) ? (PROGRAM_Menu)(((int)menuMode - 1) % 8) : PROGRAM_Paint; // ensure 0 indexing works
     else if (k == '.') menuMode = (PROGRAM_Menu)(((int)menuMode + 1) % 8);
-    else if (k == '`' && isEnable_console) {
+    /* else if (k == '`' && isEnable_console) {
         std::cout << "Begin console thread!" << std::endl;
         if(!backgroundThread.joinable()) backgroundThread = std::thread(&Topl_Demo::getInput, this); // thread is spawned here but conditionally joined in Runner loop
-    }
+    } */
 #ifdef TOPL_ENABLE_TEXTURES
     else if(k == TOPL_SCREENCAP_KEY && isEnable_screencap) {
         Topl_Sampler_2D frameImg = _renderer->frame();
@@ -287,30 +243,89 @@ void Topl_Demo::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> curs
     Topl_Demo::lastPickerCoord = Topl_Demo::pickerCoord;
 }
 
-#ifdef TOPL_ENABLE_AUDIO
-/* void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for all the supported UI elements
+
+void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for all the supported UI elements
     switch (menuID) {
-    case 201: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;
-    case 202: play(std::string(AUDIO_DIR) + "80hz-sine-freqies.mp3"); break;
-    case 203: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
-    case 204: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
-    case 205: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
-    case 206: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
-    case 207: play(std::string(AUDIO_DIR) + "800hz-sine-freqies.mp3"); break;
-    case 208: play(std::string(AUDIO_DIR) + "1000hz-sine-freqies.mp3"); break;
+    case PIPELINE1: case PIPELINE2: case PIPELINE3: case PIPELINE4: case PIPELINE5: case PIPELINE6: case PIPELINE7: case PIPELINE8: case PIPELINE9:
+        switch (menuID - PIPELINE - 1) {
+            case 0: Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
+            case 1: Topl_Factory::switchPipeline(_renderer, _texPipeline); break;
+            case 2: Topl_Factory::switchPipeline(_renderer, _beamsPipeline); break;
+            case 3: Topl_Factory::switchPipeline(_renderer, _materialPipeline); break;
+            case 4: Topl_Factory::switchPipeline(_renderer, _fieldPipeline); break;
+            case 5: Topl_Factory::switchPipeline(_renderer, _patternPipeline); break;
+            case 6: Topl_Factory::switchPipeline(_renderer, _effectPipeline); break;
+            case 7: Topl_Factory::switchPipeline(_renderer, _drawPipeline); break;
+            case 8: Topl_Factory::switchPipeline(_renderer, _geomPipeline); break; // switch to drawing patch mode?
+            case 9: Topl_Factory::switchPipeline(_renderer, _tessPipeline); break; // switch to drawing patch mode?
+        }
+        _savedPipeline = _renderer->getPipeline();
+        onOverlayUpdate(PROGRAM_Shaders, menuID - PIPELINE - 1);
+        break;
+    case SHAPES1: case SHAPES2: case SHAPES3: case SHAPES4: case SHAPES5: case SHAPES6: case SHAPES7: case SHAPES8: case SHAPES9:
+        _background.mesh = &_background.meshes[menuID - SHAPES - 1];
+        if (isEnable_background) createBackground(nullptr);
+        onOverlayUpdate(PROGRAM_Sculpt, menuID - SHAPES - 1);
+        break;
+#ifdef TOPL_ENABLE_TEXTURES
+    case SAMPLERS1: case SAMPLERS2: case SAMPLERS3: case SAMPLERS4: case SAMPLERS5: case SAMPLERS6: case SAMPLERS7: case SAMPLERS8: case SAMPLERS9:
+        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
+        for (unsigned t = 0; t < 9; t++) {
+            unsigned i = (p < 8) ? p : (rand() % 8);
+            unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
+            unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
+            switch (i) {
+            case 0: _overlays.textures[t] = Topl_Sampler_Gradient((SIDE_Type)(rand() % 5), r1, r2); break; // random gradients
+            case 1: _overlays.textures[t] = Topl_Sampler_2D(linedImgOp(size, r1, r2, (rand() % 10) + 10, (rand() % 2 == 0) ? 0.0 : 1.0)); break; // lines
+            case 2: _overlays.textures[t] = Topl_Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 })); break; // lines
+            case 3: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }); break; // basic noise
+            case 4: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1); break; // octave noise
+            case 5: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 })); break; // tiled noise
+            case 6: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // added noise
+            case 7: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // subtracted noise
+            default: _overlays.textures[t] = Topl_Sampler_File(_overlays.scene.texImgPaths[t]);
+            }
+            if (t == 0) _background.scene.addTexture(&_overlays.textures[t]);
+            else _overlays.scene.addTexture(std::to_string(t + 1), &_overlays.textures[t]);
+        }
+        unsigned volumeColor = RAND_COLOR();
+        for (unsigned s = 0; s < _background.volume.getDepth(); s++) {
+            Rasteron_Image* sliceImg = solidImgOp({ 256, 256 }, blend_colors(volumeColor, color_invert(volumeColor), (1.0 / _background.volume.getDepth()) * s)); // resizeImgOp({ 256, 256 }, _overlays.textures[0].getImage());
+            _background.volume.addSlice(sliceImg, s);
+            RASTERON_DEALLOC(sliceImg);
+        }
+        _renderer->texturizeScene(&_background.scene);
+        _renderer->texturizeScene(&_overlays.scene);
+        onOverlayUpdate(PROGRAM_Paint, menuID - SAMPLERS - 1);
+        break;
+#endif
+#ifdef TOPL_ENABLE_AUDIO
+    case SOUNDS1: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;
+    case SOUNDS2: play(std::string(AUDIO_DIR) + "80hz-sine-freqies.mp3"); break;
+    case SOUNDS3: play(std::string(AUDIO_DIR) + "100hz-sine-freqies.mp3"); break;
+    case SOUNDS4: play(std::string(AUDIO_DIR) + "200hz-sine-freqies.mp3"); break;
+    case SOUNDS5: play(std::string(AUDIO_DIR) + "300hz-sine-freqies.mp3"); break;
+    case SOUNDS6: play(std::string(AUDIO_DIR) + "500hz-sine-freqies.mp3"); break;
+    case SOUNDS7: play(std::string(AUDIO_DIR) + "800hz-sine-freqies.mp3"); break;
+    case SOUNDS8: play(std::string(AUDIO_DIR) + "1000hz-sine-freqies.mp3"); break;
+    case SOUNDS9: play(std::string(AUDIO_DIR) + "2000hz-sine-freqies.mp3"); break;
+    // case SOUNDS9: play(std::string(AUDIO_DIR) + "3000hz-sine-freqies.mp3"); break;
+    // TODO: Include other menu options here here
     default: std::cout << "Menu ID: " << std::to_string(menuID) << std::endl;
     }
+#endif
 }
-
+#ifdef TOPL_ENABLE_AUDIO
 void Topl_Demo::play(std::string audioPathStr) {
-    static unsigned long long audioFramesRead;
+    /* static unsigned long long audioFramesRead;
     if(audioData.empty()) audioData.assign(PROGRAM_AUDIO_FRAMES, 0.0F);
     if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
     if(ma_decoder_init_file(audioPathStr.c_str(), NULL, &audioDecoder) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio decoder failed to initialize");
     if(ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), PROGRAM_AUDIO_FRAMES, &audioFramesRead) != MA_SUCCESS);
     kiss_fftr(fftConfig, audioData.data(), fftOutput);
-    ma_decoder_uninit(&audioDecoder);
-} */
+    ma_decoder_uninit(&audioDecoder); */
+    std::cout << "Playing sound " << audioPathStr << std::endl;
+}
 #endif 
 
 #ifndef __ANDROID__
@@ -331,9 +346,9 @@ void Topl_Demo::setup(android_app * app) {
 
     Platform::keyControl.addHandler(std::bind(&Topl_Demo::_onAnyKey, this, std::placeholders::_1));
     Platform::mouseControl.addHandler(std::bind(&Topl_Demo::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
+    Platform::onMenuSelect = std::bind(&Topl_Demo::menuSelect, this, std::placeholders::_1);
 #ifdef TOPL_ENABLE_AUDIO
-    /* Platform::onMenuSelect = std::bind(&Topl_Demo::menuSelect, this, std::placeholders::_1);
-    if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize"); */
+    // if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
 #endif
 
     setPipelines();

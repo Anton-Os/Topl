@@ -308,7 +308,7 @@ void Topl_Renderer_GL4::draw(const Geo_Actor* actor) {
 		if(_vertexBufferMap.find(renderID) != _vertexBufferMap.end()) glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferMap.at(renderID).buffer);
 		if(_indexBufferMap.find(renderID) != _indexBufferMap.end()) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferMap.at(renderID).buffer);
 		if(_blockBufferMap.find(renderID) != _blockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, RENDER_BLOCK_BINDING, _blockBufferMap.at(renderID).buffer);
-		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, EXT_BLOCK_BINDING, _extBlockBufferMap.at(renderID).buffer);
+		if(_extBlockBufferMap.find(renderID) != _extBlockBufferMap.end()) glBindBufferBase(GL_UNIFORM_BUFFER, MESH_BLOCK_BINDING, _extBlockBufferMap.at(renderID).buffer);
 		if(_storageBufferMap.find(renderID) != _storageBufferMap.end()) glBindBufferBase(GL_SHADER_STORAGE_BLOCK, RENDER_BLOCK_BINDING, _storageBufferMap.at(renderID).buffer);
 
 		// Texture Updates 

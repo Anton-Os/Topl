@@ -107,7 +107,7 @@ float4 getVertex(float3 input, float3 translation, float3 degrees, float4 size){
 }
 
 float4 getVertexInstance(float3 input, float3 translation, float3 degrees, float4 size, uint instanceID){
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 	if(instanceID > 0 && instanceID < MAX_INSTANCES) 
 		if(nonZeroMatrix(instanceData[instanceID]))
 			return mul(instanceData[instanceID], getVertex(input, translation, degrees, size));

@@ -1,4 +1,4 @@
-#define INCLUDE_EXTBLOCK
+#define INCLUDE_MESHBLOCK
 
 #include "Common.hlsl"
 

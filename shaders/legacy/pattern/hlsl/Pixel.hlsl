@@ -1,4 +1,4 @@
-#define INCLUDE_EXTBLOCK
+#define INCLUDE_MESHBLOCK
 #define IGNORE_INPUTS
 
 #define PATTERN_SIZE 0.025
@@ -39,19 +39,19 @@ struct PS_INPUT {
 
 #include "pattern/Pattern.hlsl"
 
-float4 pattern_effect(float3 coords, int m, float t){
-#include <Custom_Pattern>
+float4 pattern_effect(float3 coords, uint m, double a){
+	float3 origin = float3(cursorPos, distance(cursorPos, coords));
 	if(coords.x == 0 && coords.y == 0 && coords.z == 0) return float4(0, 0, 0, 0.0); // returns transparent if coords are zeroed out by Custom_Pattern
-	else if(m % 10 == 1) return float4(pattern1(coords, t), 1.0);
-	else if(m % 10 == 2) return float4(pattern2(coords, t), 1.0);
-	else if(m % 10 == 3) return float4(pattern3(coords, t), 1.0);
-	else if(m % 10 == 4) return float4(pattern4(coords, t), 1.0);
-	else if(m % 10 == 5) return float4(pattern5(coords, t), 1.0);
-	else if(m % 10 == 6) return float4(pattern6(coords, t), 1.0);
-	else if(m % 10 == 7) return float4(pattern7(coords, t), 1.0);
-	else if(m % 10 == 8) return float4(pattern8(coords, t), 1.0);
-	else if(m % 10 == 9) return float4(pattern9(coords, t), 1.0);
-	else return float4(coords, 1.0);
+	else if(m % 10 == 1) return float4(pattern1(coords, origin), a);
+	else if(m % 10 == 2) return float4(pattern2(coords, origin), a);
+	else if(m % 10 == 3) return float4(pattern3(coords, origin), a);
+	else if(m % 10 == 4) return float4(pattern4(coords, origin), a);
+	else if(m % 10 == 5) return float4(pattern5(coords, origin), a);
+	else if(m % 10 == 6) return float4(pattern6(coords, origin), a);
+	else if(m % 10 == 7) return float4(pattern7(coords, origin), a);
+	else if(m % 10 == 8) return float4(pattern8(coords, origin), a);
+	else if(m % 10 == 9) return float4(pattern9(coords, origin), a);
+	else return float4(coords, a);
 }
 
 float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
@@ -67,30 +67,16 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 6) coords = getRandColor(primID);
 	else if(abs(mode) % 10 == 7) coords = (input.vertex_pos * input.texcoord) + (input.normal / input.tangent);
 	else if(abs(mode) % 10 == 8) coords = float3(pow(abs(input.vertex_pos.x), abs(input.tangent.x)), pow(abs(input.texcoord.y), abs(input.tangent.y)), pow(abs(input.normal.z), abs(input.tangent.z)));
-	else if(abs(mode) % 10 == 9) coords = float3(sin(input.pos.x * input.vertex_pos.x), cos(input.pos.y * input.vertex_color.g), tan(input.pos.z * primID));
+	else if(abs(mode) % 10 == 9) coords = float3(dot(input.normal, input.tangent), dot(input.texcoord, input.vertex_color), dot(getRandColor(primID), input.vertex_pos));
 
-	float4 srcColor = pattern_effect(coords, abs(mode), timeElapse);
-	if(mode > 0) srcColor = pattern_effect(float3(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z), abs(mode), timeElapse);
-	// if(mode > 0) srcColor = float4(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z, 1.0); // test
+	outColor = pattern_effect(coords, abs(mode / 10), abs(cos(timeElapse / 1000.0)));
+	if(mode > 0) outColor = pattern_effect(-coords, abs(mode / 10), abs(cos(timeElapse / 1000.0)));
 
-	float4 dstColor = pattern_effect(coords, abs(mode / 10), timeElapse); // srcColor;
-	if(mode < 0) dstColor = pattern_effect(float3(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z), abs(mode), timeElapse);
-	// if(mode < 0) dstColor = float4(cursorPos.x - coords.x, cursorPos.y - coords.y, sqrt(pow(cursorPos.x, 2) + pow(cursorPos.y, 2)) - coords.z, 1.0); // test
-
-	// Mixing Algorithm
-	if(abs(mode / 100) % 10 == 1) outColor = srcColor + dstColor;
-	else if(abs(mode / 100) % 10 == 2) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length((offset + coords) * 0.5)); // srcColor - dstColor;
-	else if(abs(mode / 100) % 10 == 3) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset * coords)); // srcColor * dstColor;
-	else if(abs(mode / 100) % 10 == 4) outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset / coords)); // srcColor / dstColor;
-	else if(abs(mode / 100) % 10 == 5) outColor = float4(sin(srcColor.r * dstColor.r), cos(srcColor.g * dstColor.g), tan(srcColor.b * dstColor.b), 1.0);
-	else if(abs(mode / 100) % 10 == 6) outColor = float4(pow(srcColor.r, dstColor.x), pow(srcColor.g, dstColor.y), pow(srcColor.b, dstColor.z), 1.0);
-	else if(abs(mode / 100) % 10 == 7) outColor = float4(srcColor.r + dstColor.x, srcColor.g - dstColor.g, srcColor.b * dstColor.z, 1.0);
-	else if(abs(mode / 100) % 10 == 8) outColor = float4(cross(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b)), 1.0);
-	else if(abs(mode / 100) % 10 == 9) outColor = float4(smoothstep(float3(srcColor.r, srcColor.g, srcColor.b), float3(dstColor.r, dstColor.g, dstColor.b), (mode % 100) / 100.0), 1.0);
-	else outColor = float4(smoothstep(srcColor, dstColor, cross(srcColor, dstColor)), length(offset - coords));
-
+	if(abs(mode / 100) >= 1)
+		for(uint i = 1; i <= abs(mode / 100) && i < 10; i++)
+			outColor = pattern_effect(coords * outColor.rgb, abs(mode / 10), abs(cos(timeElapse / 1000.0)));
 #ifdef INCLUDE_TEXTURES
-	outColor *= modalTex(abs(mode / 100), input.texcoord);
+	outColor *= modalTex(abs(mode / 1000), input.texcoord);
 #endif
 	return outColor;
 }

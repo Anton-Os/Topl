@@ -3,8 +3,8 @@
 #include "Topl_Shader.hpp"
 
 #define MAX_PIPELINE_STAGES 6
-#define MAX_PIPELINES 24 // limits number of unique pipelines
-#define MAX_SHADERS 24 * 6  // limits number of unique shaders
+#define MAX_PIPELINES 30 // limits number of unique pipelines
+#define MAX_SHADERS 30 * 6  // limits number of unique shaders
 
 struct Topl_Light {
 	Topl_Light(const Vec3f& p) { pos = p; } // Simple Constructor

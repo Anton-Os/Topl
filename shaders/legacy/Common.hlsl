@@ -1,3 +1,6 @@
+#include <Enable_Textures>
+// TODO: Include enable audio parameter
+
 #ifdef INCLUDE_BLOCK
 cbuffer CONST_BLOCK : register(b0) {
 	// uint actorID;
@@ -16,11 +19,10 @@ cbuffer CONST_SCENE_BLOCK : register(b1) {
 }
 #endif
 
-#ifdef INCLUDE_EXTBLOCK
-#define MAX_INSTANCES 26
+#ifdef INCLUDE_MESHBLOCK
+#define MAX_INSTANCES 26 nb
 
-cbuffer CONST_EXT_BLOCK : register(b2) { // TODO: Change this to time and audio block
-	// double time; // duration in milliseconds
+cbuffer CONST_MESH_BLOCK : register(b2) {
 	uint vertCount; // count for vertices
 	uint instCount; // count for rendering instances
 	uint drawMode; // draw mode cooresponding to primitive
@@ -31,18 +33,20 @@ cbuffer CONST_EXT_BLOCK : register(b2) { // TODO: Change this to time and audio 
 }
 #endif
 
+#ifdef INCLUDE_SEQUENCEBLOCK
+cbuffer CONST_SEQUENCE_BLOCK : register(b3) {
+	double timeFrame; // relative time frame in milliseconds
+	double timeElapse; // absolute time elapse in milliseconds
+	// TODO: Include audio data including pitch and volume at different hertz ranges
+}
+#endif
+
 #ifdef INCLUDE_DATASTREAM
 // ByteAddressBuffer feedIn : register(t9); // Buffer feedIn : register(b3) { float3[]; }
 RWByteAddressBuffer feedOut : register(u0); // RWBuffer feedOut : register(b4) { float3[]; }
 #endif
 
-#define TRACER_STEPS 16
-#define TRACER_PATHS 16
-
-#include <Enable_Textures>
-
 #ifdef INCLUDE_TEXTURES
-
 #ifndef SLICE
 #define SLICE 0.0f
 #endif
@@ -66,6 +70,9 @@ SamplerState areaSampler : register(s8);
 #define PI 3.141592653
 #define HALF_PI 1.570796327
 #define COLOR_INC 0.00390625
+
+#define TRACER_STEPS 16
+#define TRACER_PATHS 16
 
 // Functions
 

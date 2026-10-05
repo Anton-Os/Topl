@@ -1,7 +1,7 @@
 #version 440
 
 #define INCLUDE_BLOCK
-#define INCLUDE_EXTBLOCK
+#define INCLUDE_MESHBLOCK
 #define IGNORE_INPUTS
 
 #include "Common.glsl"

@@ -1,0 +1,72 @@
+#include "support_def.h"
+
+#include "resource.h"
+
+// IDI_ICON ICON DISCARDABLE "TOPL.ico"
+IDI_ICON ICON "Z:\\PROJECT\\Topl\\develop\\assets\\res\\TOPL.ico" // hard-code test
+
+IDC_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New", NEW
+        MENUITEM "&Load", LOAD
+    END
+    POPUP "&Camera"
+    BEGIN
+        MENUITEM "&Identity", CAMERA1
+        MENUITEM "&Perspective", CAMERA2
+        MENUITEM "&Orthographic", CAMERA3
+        MENUITEM "&Hyperspace", CAMERA4
+//        MENUITEM "&Halve FOV", CAMERA5
+//        MENUITEM "&Double FOV", CAMERA6
+    END
+    POPUP "&Pipelines"
+    BEGIN
+        MENUITEM "&Textured", PIPELINE1 // , CHECKED
+        MENUITEM "&Beams", PIPELINE2 // , CHECKED
+        MENUITEM "&Specular", PIPELINE3 // , CHECKED
+        MENUITEM "&Effect", PIPELINE4 //, CHECKED
+        MENUITEM "&Draw", PIPELINE5 // , CHECKED
+        MENUITEM "&Pattern", PIPELINE6 // , CHECKED
+        MENUITEM "&Field", PIPELINE7 // , CHECKED
+        MENUITEM "&Colorcode", SOUNDS8 //, CHECKED
+    END
+    POPUP "&Shapes"
+    BEGIN
+        MENUITEM "&Shape1", SHAPES1 //, CHECKED
+        MENUITEM "&Shape2", SHAPES2 // , CHECKED
+        MENUITEM "&Shape3", SHAPES3 // , CHECKED
+        MENUITEM "&Shape4", SHAPES4 // , CHECKED
+        MENUITEM "&Shape5", SHAPES5 //, CHECKED
+        MENUITEM "&Shape6", SHAPES6 // , CHECKED
+        MENUITEM "&Shape7", SHAPES7 // , CHECKED
+        MENUITEM "&Shape8", SHAPES8 // , CHECKED
+    END
+#ifdef TOPL_ENABLE_TEXTURES
+    POPUP "&Samplers"
+    BEGIN
+        MENUITEM "&Sampler1", SAMPLERS1 //, CHECKED
+        MENUITEM "&Sampler2", SAMPLERS2 // , CHECKED
+        MENUITEM "&Sampler3", SAMPLERS3 // , CHECKED
+        MENUITEM "&Sampler4", SAMPLERS4 // , CHECKED
+        MENUITEM "&Sampler5", SAMPLERS5 //, CHECKED
+        MENUITEM "&Sampler6", SAMPLERS6 // , CHECKED
+        MENUITEM "&Sampler7", SAMPLERS7 // , CHECKED
+        MENUITEM "&Sampler8", SAMPLERS8 // , CHECKED
+    END
+#endif
+#ifdef TOPL_ENABLE_AUDIO
+    POPUP "&Sounds"
+    BEGIN
+        MENUITEM "&Sound1", SOUNDS1 //, CHECKED
+        MENUITEM "&Sound2", SOUNDS2 // , CHECKED
+        MENUITEM "&Sound3", SOUNDS3 // , CHECKED
+        MENUITEM "&Sound4", SOUNDS4 // , CHECKED
+        MENUITEM "&Sound5", SOUNDS5 //, CHECKED
+        MENUITEM "&Sound6", SOUNDS6 // , CHECKED
+        MENUITEM "&Sound7", SOUNDS7 // , CHECKED
+        MENUITEM "&Sound8", SOUNDS8 // , CHECKED
+    END
+#endif
+END

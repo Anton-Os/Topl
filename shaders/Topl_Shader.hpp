@@ -5,6 +5,8 @@
 
 #include "Topl_Scene.hpp"
 
+#define MAX_SHADER_PARENT_DIRS 4 // limits searching for shader includes in parent directories
+
 enum SHDR_Type { SHDR_Vertex, SHDR_Pixel, SHDR_Geom, SHDR_TessCtrl, SHDR_TessEval, SHDR_Compute };
 
 enum SHDR_ValueType {
@@ -55,6 +57,9 @@ public:
 #ifdef TOPL_ENABLE_TEXTURES
 		embed("Enable_Textures", "#define INCLUDE_TEXTURES");
 #endif
+#ifdef TOPL_ENABLE_AUDIO
+		embed("Enable_Audio", "#define INCLUDE_AUDIO");
+#endif
 	}
 	enum SHDR_Type getType() const { return _shaderType; }
 	std::string getFilePath() const { return _shaderFilePath; }
@@ -74,15 +79,27 @@ public:
 			}
 
 			if(includeStr.substr(includeStr.size() - 4) == "glsl" || includeStr.substr(includeStr.size() - 4) == "hlsl"){ // read from file
-				// TODO: This needs to be replaced with a more robust file path system that can handle relative paths, causes bug now
 				if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
 				else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
+				// TODO: Replaces old vetting logic with code below
+				/* bool isFileExist = getFileExists(includeStr.c_str());
+				std::string shaderParentPath = _shaderFilePath.c_str();
+				std::string shaderFileName = includeStr;
+				for(unsigned t = 0; !isFileExist && t < MAX_SHADER_PARENT_DIRS; t++){ // try to find file in UP TO 3 parent directories
+					shaderParentPath = getParentDir(shaderParentPath.c_str());
+					std::cout << "Could not find file" << includeStr << ", trying to find in parent directory " << shaderParentPath << std::endl;
+					includeStr = shaderParentPath + "/" + shaderFileName;
+#ifdef _WIN32
+					std::replace(includeStr.begin(), includeStr.end(), '/', '\\');
+#endif
+					isFileExist = getFileExists(includeStr.c_str());
+				} 
+				if(isFileExist) std::cout << "File found:" << includeStr << std::endl; */
+
 				includeSrc = readFile(includeStr.c_str());
 			}
-			else if(_embedMap.find(includeStr) != _embedMap.end()){ 
-				includeSrc = _embedMap.at(includeStr); // read from entry
-				// std::cout << "includeStr is " << includeStr << ", includeSrc is " << includeSrc << std::endl;
-			}
+			else if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr); // read from entry
+			
 			std::cout << "Include string is\n " << includeStr << std::endl;
 			shaderSrc.replace(startOffset, includeOffset + 1 - startOffset, includeSrc);
 		}
@@ -178,7 +195,7 @@ public:
 		const Geo_Mesh* const mesh = (actor != nullptr)? actor->getMesh() : nullptr; // TODO: See if mesh data can be passed here
 	}
 
-	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const { // TODO: Replace this with audio or "capture" data block
+	virtual void genMeshBlock(const Geo_Mesh* const mesh, blockBytes_t* bytes) const {
 		unsigned vertexCount = mesh->getVertexCount();
 		unsigned instanceCount = mesh->getInstanceCount();
 		unsigned tessLevel = mesh->getTessLevel();
@@ -192,6 +209,15 @@ public:
 		// appendDataToBytes((uint8_t*)((actor != nullptr)? &mesh->getBounds() : &_defaultMat), sizeof(Vec3f) * 6, bytes); // bounds
 
 		if(mesh != nullptr) appendDataToBytes((uint8_t*)mesh->getInstanceData(), sizeof(Mat4x4) * mesh->getInstanceCount(), bytes);
+	}
+
+	virtual void genSequenceBlock(blockBytes_t* bytes) {
+		static Timer_Dynamic dynamic_timer = Timer_Dynamic(0.0);
+
+		double relMillisecs = dynamic_timer.getRelMillisecs();
+		double absMillisecs = dynamic_timer.getAbsMillisecs();
+
+
 	}
 
 	virtual void reset(){ _mode = DEFAULT_SHADER_MODE; }

@@ -1,6 +1,6 @@
 #version 440
 
-// #define INCLUDE_EXTBLOCK
+// #define INCLUDE_MESHBLOCK
 
 #include "Common.glsl"
 
@@ -77,7 +77,7 @@ void main() {
 	vert_pos_out = vec3(pos);
 	vert_color_out = vec4(vert_color_in, 0.5); // getStepColor(ctrl_index_out);
 	texcoord_out = texcoord_in;
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif
 }

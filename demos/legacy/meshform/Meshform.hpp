@@ -12,10 +12,10 @@
 #define MESHFORM_DEC 0.9F // 0.99
 #define MESHFORM_CURVE 0.1F // 0.005F
 
-#define MESHFORM_GRADIENT 0
-#define MESHFORM_LINES 1
-#define MESHFORM_CHECKER 2
-#define MESHFORM_NOISE 3
+#define MESHFORM_TEX_GRADIENT 0
+#define MESHFORM_TEX_LINES 1
+#define MESHFORM_TEX_CHECKER 2
+#define MESHFORM_TEX_NOISE 3
 
 #include "Meshform_Functions.h"
 

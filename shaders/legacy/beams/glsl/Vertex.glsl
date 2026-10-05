@@ -34,7 +34,7 @@ void main() {
 	vertex_pos_out = vec3(pos.x, pos.y, pos.z);
 	normal_out = getRotMatrix(rotation) * normal_in;
 	texcoord_out = texcoord_in;
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 	if(gl_InstanceID > 0 && gl_InstanceID < MAX_INSTANCES) if(nonZeroMatrix(instanceData[gl_InstanceID])) gl_Position *= instanceData[gl_InstanceID];
 #endif
 }

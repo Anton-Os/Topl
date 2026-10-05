@@ -1,5 +1,8 @@
 // #extension GL_EXT_debug_printf
 
+#include <Enable_Textures>
+// TODO: Include enable audio parameter
+
 #ifdef INCLUDE_BLOCK
 layout(std140, binding = 0) uniform Block {
 	// uint actorID;
@@ -18,7 +21,7 @@ layout(std140, binding = 1) uniform SceneBlock {
 };
 #endif
 
-#ifdef INCLUDE_EXTBLOCK
+#ifdef INCLUDE_MESHBLOCK
 #define MAX_INSTANCES 26
 
 layout(std140, binding = 2) uniform ExtBlock {
@@ -31,18 +34,20 @@ layout(std140, binding = 2) uniform ExtBlock {
 };
 #endif
 
+#ifdef INCLUDE_SEQUENCEBLOCK
+layout(std140, binding = 3) uniform SequenceBlock {
+	double timeFrame; // relative time frame in milliseconds
+	double timeElapse; // absolute time elapse in milliseconds
+	// TODO: Include audio data including pitch and volume at different hertz ranges
+};
+#endif
+
 #ifdef INCLUDE_DATASTREAM
 // layout(std140, binding = 3) readonly buffer FeedIn { vec3 data[]; };
 layout(std140, binding = 3) writeonly buffer FeedOut { vec3 data[]; };
 #endif
 
-#define TRACER_STEPS 16
-#define TRACER_PATHS 16
-
-#include <Enable_Textures>
-
 #ifdef INCLUDE_TEXTURES
-
 #ifndef SLICE
 #define SLICE 0.0f
 #endif
@@ -56,7 +61,6 @@ layout(binding = 5) uniform sampler2D tex5;
 layout(binding = 6) uniform sampler2D tex6;
 layout(binding = 7) uniform sampler2D tex7;
 layout(binding = 8) uniform sampler3D volumeTex;
-
 #endif
 
 #define TWO_PI 6.283185307
@@ -64,9 +68,10 @@ layout(binding = 8) uniform sampler3D volumeTex;
 #define HALF_PI 1.570796327
 #define COLOR_INC 0.00390625
 
-// uniform vec4 controlPoints[64];
-// uniform vec4 nearestVertex[1024];
-// Functions
+#define TRACER_STEPS 16
+#define TRACER_PATHS 16
+
+// Common Functions
 
 uvec4 getModes(int mode){
 	return uvec4(abs(mode) % 10, (abs(mode) - (abs(mode) % 10)) / 10, (abs(mode) - (abs(mode) % 100)) / 100, (abs(mode) - (abs(mode) % 1000)) / 1000);

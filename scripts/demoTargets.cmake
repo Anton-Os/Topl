@@ -4,7 +4,8 @@ if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
     target_link_libraries(CORELIB PUBLIC Rasteron)
 endif()
 
-add_executable(Hello demos/legacy/hello/Hello.cpp)
+add_executable(Hello demos/Hello.cpp)
+
 add_executable(Molecular demos/legacy/molecular/Molecular.cpp)
 add_executable(Meshform demos/legacy/meshform/Meshform.cpp)
 add_executable(Penscape demos/legacy/penscape/Penscape.cpp)

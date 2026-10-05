@@ -11,7 +11,7 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/" )
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders/" )
 if(WIN32)
     set(RESOURCE_DIR "${ASSETS_DIR}/res" CACHE PATH "Path to directory with resource.h file")
-    set(RESOURCE_FILE "${RESOURCE_DIR}/resource.rc" CACHE FILEPATH "Resource (.rc) file")
+    set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/support/resource.rc" CACHE FILEPATH "Resource (.rc) file" FORCE)
     # set(RESOURCE_ICON "${RESOURCE_DIR}/TOPL.ico" CACHE FILEPATH "Icon (.ico) file")
 endif()
 
@@ -51,27 +51,6 @@ include("scripts/installTargets.cmake") # For installation
 configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")
 
 if(NOT DEFINED IGNORE_DEMOS)
-add_executable(Hello demos/visual/hello/Hello.cpp)
-add_executable(Molecular demos/visual/molecular/Molecular.cpp)
-add_executable(Meshform demos/visual/meshform/Meshform.cpp)
-add_executable(Penscape demos/visual/penscape/Penscape.cpp)
-add_executable(Kaleidoscope demos/visual/kaleidoscope/Kaleidoscope.cpp)
-add_executable(Animatrix demos/visual/animatrix/Animatrix.cpp)
-add_executable(Genesis demos/visual/genesis/Genesis.cpp)
-add_executable(Traversal demos/visual/traversal/Traversal.cpp)
-add_executable(Cubegate demos/visual/cubegate/Cubegate.cpp)
-
-list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidoscope Animatrix Genesis)
-list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Animatrix Genesis Traversal Cubegate)
-
-foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support geometry shaders)
-    target_link_libraries(${target} PRIVATE CORELIB)
-    if(WIN32) # adding resource file to demos
-        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
-        target_sources(${target} PRIVATE "${RESOURCE_FILE}")
-    endif()
-    set_target_properties(${target} PROPERTIES FOLDER "Legacy Demos")
-    # TODO: add Audio & Visual Demos
-endforeach()
+include("scripts/runtimeTargets.cmake") # For building runtime libraries
+include("scripts/demoTargets.cmake") # For building demos
 endif()

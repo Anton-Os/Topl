@@ -39,9 +39,8 @@ public:
 
 	void run();
 #ifdef TOPL_ENABLE_AUDIO
-	/* void menuSelect(unsigned short index);
 	void play(std::string audioPathStr); // TODO: Add number of repitions
-	ma_engine audioEngine; // for playback
+	/* ma_engine audioEngine; // for playback
 	ma_decoder audioDecoder; // for analysis
 	std::vector<float> audioData; // for capture
 	kiss_fftr_cfg fftConfig = kiss_fftr_alloc(PROGRAM_AUDIO_FRAMES, false, NULL, NULL);
@@ -83,7 +82,7 @@ protected:
     virtual void loop(millisec_t frameTime) = 0;
 	virtual void postloop();
 
-	void getInput();
+	void menuSelect(unsigned short index);
 	void cleanup();
 
 	// Rendering

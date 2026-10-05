@@ -2,8 +2,14 @@
 
 #include "meshes/Geo_Surface.hpp"
 
-#include "idle/Idle_Shader.hpp"
-#include "advanced/Advance_Shader.hpp"
+#include "legacy/idle/Idle_Shader.hpp"
+#include "legacy/advanced/Advance_Shader.hpp"
+
+#ifdef TOPL_ENABLE_AUDIO
+	#include <miniaudio/miniaudio.h> // Audio Library
+	#include <kissfft/kiss_fft.h> // FFT Library
+	#include <kissfft/kiss_fftr.h> // FFT Library
+#endif
 
 // OpenGL Test Renderer
 #ifndef __ANDROID__

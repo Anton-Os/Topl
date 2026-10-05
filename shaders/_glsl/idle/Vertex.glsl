@@ -2,7 +2,7 @@
 
 #extension GL_KHR_vulkan_glsl : enable
 
-#define INCLUDE_EXTBLOCK
+#define INCLUDE_MESHBLOCK
 #define IGNORE_INPUTS
 
 #include "Common.glsl"

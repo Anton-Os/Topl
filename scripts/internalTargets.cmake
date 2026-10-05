@@ -39,7 +39,6 @@ target_include_directories(CORELIB
 )
 
 if(WIN32)
-    target_include_directories(CORELIB PRIVATE "${RESOURCE_DIR}") # resource file header
     target_sources(CORELIB PRIVATE "${RESOURCE_FILE}") # resource file compilation
 elseif(UNIX AND NOT APPLE) # Unix Specific
     target_link_libraries(CORELIB PUBLIC ${X11_LIBRARIES})

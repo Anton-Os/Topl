@@ -48,13 +48,9 @@ struct Pattern_PixelShader : public Topl_Shader {
 };
 
 struct Pattern_PixelShader_GL4 : public Pattern_PixelShader {
-	Pattern_PixelShader_GL4() : Pattern_PixelShader(std::string("legacy/pattern/glsl/") + "Frag.glsl") {
-		_embedMap.insert({ "Custom_Pattern", std::string("") }); // TODO: Add custom pattern code here
-	}
+	Pattern_PixelShader_GL4() : Pattern_PixelShader(std::string("legacy/pattern/glsl/") + "Frag.glsl") {}
 };
 
 struct Pattern_PixelShader_DX11 : public Pattern_PixelShader {
-	Pattern_PixelShader_DX11() : Pattern_PixelShader(std::string("legacy/pattern/hlsl/") + "Pixel.hlsl") {
-		_embedMap.insert({ "Custom_Pattern", std::string("") }); // TODO: Add custom pattern code here
-	}
+	Pattern_PixelShader_DX11() : Pattern_PixelShader(std::string("legacy/pattern/hlsl/") + "Pixel.hlsl") {}
 };
