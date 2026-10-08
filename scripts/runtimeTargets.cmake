@@ -1,8 +1,8 @@
 add_library(RTLIB # Legacy Runtime Library
     demos/Topl_Factory.cpp
-    demos/legacy/Topl_Demo.cpp
-    demos/legacy/Topl_Demo_Loop.cpp
-    demos/legacy/Topl_Demo_Pipelines.cpp
+    demos/Topl_Demo.cpp
+    demos/Topl_Demo_Loop.cpp
+    demos/Topl_Demo_Pipelines.cpp
 )
 
 # add_library(VSRTLIB # Visual Runtime Library

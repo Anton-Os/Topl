@@ -1,0 +1,80 @@
+#include "Platform.hpp"
+
+#include "Topl_Pipeline.hpp"
+
+#define CANVAS_MODE_DOT 0
+
+#define CANVAS_STEPS 16
+#define CANVAS_PATHS 16
+
+// Vertex Shaders
+
+struct Draw_VertexShader : public Topl_EntryShader {
+	Draw_VertexShader() : Topl_EntryShader(){}
+	Draw_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Draw_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
+
+	void genSceneBlock(const Topl_Scene* const scene, blockBytes_t* bytes) const override {
+		Vec2i screenRes = Vec2i({ width, height });
+		Vec2f cursorPos = Vec2f({ Platform::getCursorX(), Platform::getCursorY() });
+	
+		Topl_EntryShader::genSceneBlock(scene, bytes);
+		alignDataToBytes((uint8_t*)&screenRes.data[0], sizeof(screenRes), NO_PADDING, bytes);
+		alignDataToBytes((uint8_t*)&cursorPos.data[0], sizeof(cursorPos), NO_PADDING, bytes);
+		// alignDataToBytes((uint8_t*)&drawSize, sizeof(drawSize), NO_PADDING, bytes);
+
+		sendTracerData(bytes);
+	}
+
+	void setWidth(int w) { if(w > 0) width = w; }
+	void setHeight(int h) { if(h > 0) height = h; }
+protected:
+	void sendTracerData(blockBytes_t* bytes) const {
+		static Vec2f steps[CANVAS_STEPS];
+		for(unsigned short t = 0; t < CANVAS_STEPS; t++)
+			if(t < Platform::mouseControl.getTracerSteps()->size()){
+				Input_TracerStep tracerStep = (*Platform::mouseControl.getTracerSteps())[Platform::mouseControl.getTracerSteps()->size() - t - 1];
+				steps[t] = Vec2f({ tracerStep.step.first, tracerStep.step.second });
+			}
+			else steps[t] = VEC_2F_ZERO; // Vec2f({ BAD_CURSOR_POS, BAD_CURSOR_POS });
+		alignDataToBytes((uint8_t*)&steps[0], sizeof(Vec2f) * 8, NO_PADDING, bytes);
+
+		static Vec2f paths[CANVAS_PATHS];
+		for(unsigned short t = 0; t < CANVAS_PATHS; t++) paths[t] = VEC_2F_ZERO; // Vec2f({ BAD_CURSOR_POS, BAD_CURSOR_POS });
+		if(Platform::mouseControl.getTracerPaths()->size() > 0){
+			Input_TracerPath tracerPath = Platform::mouseControl.getTracerPaths()->back();
+			for(unsigned short t = 0; t < tracerPath.stepsCount && t < CANVAS_PATHS; t++)
+				paths[t] = Vec2f({ tracerPath.steps[t].first, tracerPath.steps[t].second });
+		}
+		alignDataToBytes((uint8_t*)&paths[0], sizeof(Vec2f) * 8, NO_PADDING, bytes); 
+	}
+
+	int width = TOPL_WIN_WIDTH;
+	int height = TOPL_WIN_HEIGHT;
+	double drawSize = 0.05;
+};
+
+struct Draw_VertexShader_GL4 : public Draw_VertexShader {
+    Draw_VertexShader_GL4() : Draw_VertexShader(std::string("draw/glsl/") + "Draw_Vertex.glsl"){}
+	Draw_VertexShader_GL4(unsigned mode) : Draw_VertexShader(std::string("draw/glsl/") + "Draw_Vertex.glsl", mode){}
+};
+
+struct Draw_VertexShader_DX11 : public Draw_VertexShader {
+    Draw_VertexShader_DX11() : Draw_VertexShader(std::string("draw/hlsl/") + "Draw_Vertex.hlsl"){}
+	Draw_VertexShader_DX11(unsigned mode) : Draw_VertexShader(std::string("draw/hlsl/") + "Draw_Vertex.hlsl", mode){}
+};
+
+// Pixel Shaders
+
+struct Draw_PixelShader : public Topl_Shader {
+	Draw_PixelShader() : Topl_Shader(){}
+	Draw_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
+};
+
+struct Draw_PixelShader_GL4 : public Draw_PixelShader {
+	Draw_PixelShader_GL4() : Draw_PixelShader(std::string("draw/glsl/") + "Draw_Frag.glsl") { }
+};
+
+struct Draw_PixelShader_DX11 : public Draw_PixelShader {
+	Draw_PixelShader_DX11() : Draw_PixelShader(std::string("draw/hlsl/") + "Draw_Pixel.hlsl") { }
+};

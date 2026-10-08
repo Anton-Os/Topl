@@ -39,7 +39,7 @@ BEGIN
         MENUITEM "&Draw", PIPELINE5 // , CHECKED
         MENUITEM "&Pattern", PIPELINE6 // , CHECKED
         MENUITEM "&Field", PIPELINE7 // , CHECKED
-        MENUITEM "&Colorcode", SOUNDS8 //, CHECKED
+        MENUITEM "&Color", SOUNDS8 //, CHECKED
     END
     POPUP "&Shapes"
     BEGIN
