@@ -1,12 +1,5 @@
 #include "Topl_Demo.hpp"
 
-#ifdef TOPL_ENABLE_AUDIO
-// #define static static inline
-// #include <kissfft/kiss_fft.c> // includes source for kissfft
-// #include <kissfft/kiss_fftr.c> // includes source for kissfft */
-// #undef static
-#endif
-
 #define MOV_BTN_CASES case 0: case 1: case 2: case 3: case 4: case 5
 #define ROT_BTN_CASES case 6: case 7: case 8: case 9: case 10: case 11
 #define SIZ_BTN_CASES case 12: case 13: case 14: case 15: case 16: case 17
@@ -95,7 +88,7 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
                             case 6: projX *= 0.75; break; case 7: projY *= 0.75; break; case 8: projZ *= 0.75; break;
                             // case 6: case 7: case 8: pivot = pivot + Vec3f({ (s == 6)? m : 0.0F, (s == 7)? m : 0.0F, (s == 8)? m : 0.0F });
                         }
-                        Topl_Demo::camera.setProjMatrix(Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos()));
+                        Topl_Demo::camera.setProjMatrix(Topl_Projection(projType, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos()));
                         // Topl_Demo::camera.setRot(pivot);
                         std::cout << "Camera position is " << Topl_Demo::camera.getPos()->toString() 
                             << ", rotation is " << Topl_Demo::camera.getRot()->toString() << std::endl
@@ -245,7 +238,16 @@ void Topl_Demo::_onAnyPress(enum MOUSE_Event event, std::pair<float, float> curs
 
 
 void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for all the supported UI elements
+    static float projX = 1.0F, projY = 1.0F, projZ = 1.0F; // TODO: Move to another area?
+    static PROJECTION_Type projType = PROJECTION_None;
     switch (menuID) {
+    case CAMERA1: Topl_Demo::camera.setProjMatrix(Topl_Projection(PROJECTION_None, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos())); break;
+    case CAMERA2: Topl_Demo::camera.setProjMatrix(Topl_Projection(PROJECTION_Orthographic, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos())); break;
+    case CAMERA3: Topl_Demo::camera.setProjMatrix(Topl_Projection(PROJECTION_Perspective, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos())); break;
+    case CAMERA4: Topl_Demo::camera.setProjMatrix(Topl_Projection(PROJECTION_Hyperspace, projX, projX, projY, projY, projZ, projZ).genProjMatrix(*Topl_Demo::camera.getPos())); break;
+    case FOV1: projX *= 2.0F; break; case FOV2: projX /= 2.0F; break;
+    case FOV3: projY *= 2.0F; break; case FOV4: projY /= 2.0F; break;
+    case FOV5: projZ *= 2.0F; break; case FOV6: projZ /= 2.0F; break;
     case PIPELINE1: case PIPELINE2: case PIPELINE3: case PIPELINE4: case PIPELINE5: case PIPELINE6: case PIPELINE7: case PIPELINE8: case PIPELINE9:
         switch (menuID - PIPELINE - 1) {
             case 0: Topl_Factory::switchPipeline(_renderer, _coloredPipeline); break;
@@ -317,13 +319,13 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
 }
 #ifdef TOPL_ENABLE_AUDIO
 void Topl_Demo::play(std::string audioPathStr) {
-    /* static unsigned long long audioFramesRead;
+    static unsigned long long audioFramesRead;
     if(audioData.empty()) audioData.assign(PROGRAM_AUDIO_FRAMES, 0.0F);
     if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
     if(ma_decoder_init_file(audioPathStr.c_str(), NULL, &audioDecoder) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio decoder failed to initialize");
     if(ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), PROGRAM_AUDIO_FRAMES, &audioFramesRead) != MA_SUCCESS);
-    kiss_fftr(fftConfig, audioData.data(), fftOutput);
-    ma_decoder_uninit(&audioDecoder); */
+    // kiss_fftr(fftConfig, audioData.data(), fftOutput); // TODO: Uncomment this when resolved
+    ma_decoder_uninit(&audioDecoder);
     std::cout << "Playing sound " << audioPathStr << std::endl;
 }
 #endif 
@@ -348,7 +350,7 @@ void Topl_Demo::setup(android_app * app) {
     Platform::mouseControl.addHandler(std::bind(&Topl_Demo::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
     Platform::onMenuSelect = std::bind(&Topl_Demo::menuSelect, this, std::placeholders::_1);
 #ifdef TOPL_ENABLE_AUDIO
-    // if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
+    if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
 #endif
 
     setPipelines();
@@ -462,8 +464,8 @@ void Topl_Demo::cleanup() {
 #endif
 #endif
 #ifdef TOPL_ENABLE_AUDIO
-    /* ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
-    kiss_fft_free(&fftConfig); */
+    ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
+    // kiss_fft_free(&fftConfig);
 #endif
 	delete(_renderer);
 	delete(_platform);

@@ -65,6 +65,7 @@ public:
 	std::string getFilePath() const { return _shaderFilePath; }
 	std::string getFileSource() const {
 		std::string shaderSrc = readFile(_shaderFilePath.c_str());
+		if (shaderSrc.empty()) std::cerr << "File not found " << _shaderFilePath << std::endl;
 
 		unsigned short startOffset = 0, includeOffset = 0;
 		while(shaderSrc.find("#include", startOffset) != std::string::npos){
@@ -79,28 +80,23 @@ public:
 			}
 
 			if(includeStr.substr(includeStr.size() - 4) == "glsl" || includeStr.substr(includeStr.size() - 4) == "hlsl"){ // read from file
-				if(includeStr.substr(includeStr.size() - 4) == "glsl") includeStr = SHADERS_DIR + genPrefix_glsl() + includeStr;
-				else if(includeStr.substr(includeStr.size() - 4) == "hlsl") includeStr = SHADERS_DIR + genPrefix_hlsl() + includeStr;
-				// TODO: Replaces old vetting logic with code below
-				/* bool isFileExist = getFileExists(includeStr.c_str());
+				bool isFileExist = getFileExists(includeStr.c_str());
 				std::string shaderParentPath = _shaderFilePath.c_str();
 				std::string shaderFileName = includeStr;
 				for(unsigned t = 0; !isFileExist && t < MAX_SHADER_PARENT_DIRS; t++){ // try to find file in UP TO 3 parent directories
 					shaderParentPath = getParentDir(shaderParentPath.c_str());
-					std::cout << "Could not find file" << includeStr << ", trying to find in parent directory " << shaderParentPath << std::endl;
 					includeStr = shaderParentPath + "/" + shaderFileName;
 #ifdef _WIN32
 					std::replace(includeStr.begin(), includeStr.end(), '/', '\\');
 #endif
 					isFileExist = getFileExists(includeStr.c_str());
-				} 
-				if(isFileExist) std::cout << "File found:" << includeStr << std::endl; */
+				}
 
 				includeSrc = readFile(includeStr.c_str());
 			}
 			else if(_embedMap.find(includeStr) != _embedMap.end()) includeSrc = _embedMap.at(includeStr); // read from entry
 			
-			std::cout << "Include string is\n " << includeStr << std::endl;
+			// std::cout << "Include string is\n " << includeStr << std::endl;
 			shaderSrc.replace(startOffset, includeOffset + 1 - startOffset, includeSrc);
 		}
 		return shaderSrc;

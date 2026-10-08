@@ -33,3 +33,9 @@ if(WIN32)
 elseif(UNIX AND NOT APPLE) # Unix Specific
     target_link_libraries(RTLIB PUBLIC ${X11_LIBRARIES})
 endif()
+
+if(SUPPORT_AUDIO)
+    target_include_directories(RTLIB PUBLIC ${miniaudio_h})
+    target_link_libraries(RTLIB PUBLIC ${miniaudio_lib})
+    target_include_directories(RTLIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
+endif()

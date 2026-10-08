@@ -26,7 +26,7 @@ namespace DX11 {
 	}
 
 	bool compileShader(std::string shaderText, LPCSTR shaderTarget, ID3DBlob** blob){
-		std::string tempFilePath = std::string(SHADERS_DIR) + "_hlsl/" + "Shader.hlsl";
+		std::string tempFilePath = std::string(SHADERS_DIR) + "Shader.hlsl";
 		std::replace(tempFilePath.begin(), tempFilePath.end(), '/', '\\'); // replacing forward and backward slashes
 		std::ofstream shaderFile = std::ofstream(tempFilePath.c_str(), std::ios::out);
 		if(!shaderFile.is_open()) return false;
@@ -114,7 +114,8 @@ void Topl_Renderer_DX11::setPipeline(DX11::Pipeline* pipeline) {
 void Topl_Renderer_DX11::genPipeline(DX11::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders){
 	if (pipeline == nullptr || ((vertexShader == nullptr || pixelShader == nullptr) && shaders.size() == 0))
 		return logMessage(MESSAGE_Exclaim, "Pipeline, vertex and pixel shaders cannot be null!");
-	HRESULT hr; // error checking variable
+
+	HRESULT hr = S_OK; // error checking variable
 
 	// Vertex Shader
     if(vertexShader != nullptr){

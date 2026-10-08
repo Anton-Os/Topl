@@ -3,10 +3,11 @@
 
 #include "Topl_Demo.hpp"
 
-#define KALEIDOSCOPE_Z 0.5F
-#define KALEIDOSCOPE_SLICES 256 / 4
+#define KALEIDOSCOPE_Z 0.0F
+#define KALEIDOSCOPE_SLICES 64
 #define KALEIDOSCOPE_TESS 1
 #define KALEIDOSCOPE_NAME "kaleidoscope" + std::to_string(rand() % 9999)
+#define KALEIDOSCOPE_SIZE 1.0F
 
 #include "Kaleidoscope_Construct.h"
 

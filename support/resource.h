@@ -9,8 +9,6 @@
 #define CAMERA2 202
 #define CAMERA3 203
 #define CAMERA4 204
-#define CAMERA5 205
-#define CAMERA6 206
 
 #define PIPELINE 300
 #define PIPELINE1 301
@@ -56,4 +54,12 @@
 #define SOUNDS7 607 
 #define SOUNDS8 608
 #define SOUNDS9 609
+
+#define FOV 700
+#define FOV1 701
+#define FOV2 702
+#define FOV3 703
+#define FOV4 704
+#define FOV5 705
+#define FOV6 706
 

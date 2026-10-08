@@ -3,7 +3,7 @@
 #include "resource.h"
 
 // IDI_ICON ICON DISCARDABLE "TOPL.ico"
-IDI_ICON ICON "Z:\\PROJECT\\Topl\\develop\\assets\\res\\TOPL.ico" // hard-code test
+IDI_ICON ICON "Z:\\PROJECT\\Topl\\develop\\assets\\res\\TOPL.ico" // TODO: move this away from hard-coded path
 
 IDC_MENU MENU
 BEGIN
@@ -20,6 +20,15 @@ BEGIN
         MENUITEM "&Hyperspace", CAMERA4
 //        MENUITEM "&Halve FOV", CAMERA5
 //        MENUITEM "&Double FOV", CAMERA6
+    END
+    POPUP "&FOV"
+    BEGIN
+        MENUITEM "&Expand X", FOV1
+        MENUITEM "&Contract X", FOV2
+        MENUITEM "&Expand Y", FOV3
+        MENUITEM "&Contract Y", FOV4
+        MENUITEM "&Expand Z", FOV5
+        MENUITEM "&Contract Z", FOV6
     END
     POPUP "&Pipelines"
     BEGIN

@@ -20,14 +20,16 @@ struct Kaleidoscope_Construct : public Geo_Construct<Kaleidoscope_Construct> {
         for (unsigned s = 0; s < KALEIDOSCOPE_SLICES; s++) {
             float z = KALEIDOSCOPE_Z;
 
-            Shape2D shape = { (float)rand() / (float)RAND_MAX, (minDivs == maxDivs) ? minDivs : (unsigned)(rand() % maxDivs) + minDivs };
+            float size = (KALEIDOSCOPE_SIZE / KALEIDOSCOPE_SLICES) * (s + 1);
+            // Shape2D shape = { size, (minDivs == maxDivs)? minDivs : (unsigned)(rand() % maxDivs) + minDivs };
+            Shape2D shape = { fabs(size), (minDivs == maxDivs) ? minDivs : (unsigned)(rand() % maxDivs) + minDivs};
             if (tessCount != 0) meshes[s] = new Geo_Ext2D(shape, z, (unsigned)abs(tessCount));
             else meshes[s] = new Geo_Surface(shape, z);
 
             if (tessCount <= 0) meshes[s]->tesselate(KALEIDOSCOPE_TESS);
 
             _geoActors.push_back(Geo_Actor(meshes[s]));
-            _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((2.0F / KALEIDOSCOPE_SLICES) * s) }));
+            _geoActors.back().setPos(Vec3f({ 0.0F, 0.0F, -1.0F + (float)((1.0F / KALEIDOSCOPE_SLICES) * s) }));
 
             spinFactors[s] = (((float)rand() / (float)RAND_MAX) - 0.5) * 0.025;
             sizeFactors[s] = (1.0 / KALEIDOSCOPE_SLICES) * (s + 1);

@@ -23,6 +23,12 @@
 #define PROGRAM_IS_OVERLAY true
 #define PROGRAM_AUDIO_FRAMES 4096
 
+#ifdef TOPL_ENABLE_AUDIO
+#include <miniaudio/miniaudio.h> // Audio Library
+#include <kissfft/kiss_fft.h> // FFT Library
+#include <kissfft/kiss_fftr.h> // FFT Library
+#endif
+
 class Topl_Demo {
 public:
 #ifndef __ANDROID__
@@ -40,11 +46,11 @@ public:
 	void run();
 #ifdef TOPL_ENABLE_AUDIO
 	void play(std::string audioPathStr); // TODO: Add number of repitions
-	/* ma_engine audioEngine; // for playback
+	ma_engine audioEngine; // for playback
 	ma_decoder audioDecoder; // for analysis
 	std::vector<float> audioData; // for capture
-	kiss_fftr_cfg fftConfig = kiss_fftr_alloc(PROGRAM_AUDIO_FRAMES, false, NULL, NULL);
-	kiss_fft_cpx fftOutput[PROGRAM_AUDIO_FRAMES]; */
+	// kiss_fftr_cfg fftConfig = kiss_fftr_alloc(PROGRAM_AUDIO_FRAMES, false, NULL, NULL);
+	// kiss_fft_cpx fftOutput[PROGRAM_AUDIO_FRAMES];
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
