@@ -5,11 +5,11 @@ void Topl_Demo::setPipelines(){
         _texVShader = Textured_VertexShader_GL4(); _texPShader = Textured_PixelShader_GL4();
         _beamsVShader = Beams_VertexShader_GL4(); _beamsPShader = Beams_PixelShader_GL4();
         _materialVShader = Spectral_VertexShader_GL4(); _materialPShader = Spectral_PixelShader_GL4();
-        _effectVShader = Effect_VertexShader_GL4(); _effectPShader = Effect_PixelShader_GL4();
+        _effectVShader = Fractal_VertexShader_GL4(); _effectPShader = Fractal_PixelShader_GL4();
         _drawVShader = Draw_VertexShader_GL4(); _drawPShader = Draw_PixelShader_GL4();
         _fieldVShader = Field_VertexShader_GL4(); _fieldPShader = Field_PixelShader_GL4();
         _patternVShader = Pattern_VertexShader_GL4(); _patternPShader = Pattern_PixelShader_GL4();
-        _coloredVShader = Colorcode_VertexShader_GL4(); _coloredPShader = Colorcode_PixelShader_GL4();
+        _coloredVShader = Color_VertexShader_GL4(); _coloredPShader = Color_PixelShader_GL4();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_GL4();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_GL4();
@@ -21,11 +21,11 @@ void Topl_Demo::setPipelines(){
         _texVShader = Textured_VertexShader_DX11(); _texPShader = Textured_PixelShader_DX11();
         _beamsVShader = Beams_VertexShader_DX11(); _beamsPShader = Beams_PixelShader_DX11();
         _materialVShader = Spectral_VertexShader_DX11(); _materialPShader = Spectral_PixelShader_DX11();
-        _effectVShader = Effect_VertexShader_DX11(); _effectPShader = Effect_PixelShader_DX11();
+        _effectVShader = Fractal_VertexShader_DX11(); _effectPShader = Fractal_PixelShader_DX11();
         _drawVShader = Draw_VertexShader_DX11(); _drawPShader = Draw_PixelShader_DX11();
         _fieldVShader = Field_VertexShader_DX11(); _fieldPShader = Field_PixelShader_DX11();
         _patternVShader = Pattern_VertexShader_DX11(); _patternPShader = Pattern_PixelShader_DX11();
-        _coloredVShader = Colorcode_VertexShader_DX11(); _coloredPShader = Colorcode_PixelShader_DX11();
+        _coloredVShader = Color_VertexShader_DX11(); _coloredPShader = Color_PixelShader_DX11();
         for(unsigned p = 0; p < PROGRAM_PIPELINES; p++){
             _geomShaders[p] = Advance_GeometryShader_DX11();
             _tessCtrlShaders[p] = Advance_TessCtrlShader_DX11();
@@ -61,7 +61,7 @@ void Topl_Demo::updatePipelines(){
         // _materialVShader.setLight(Topl_Light(Vec3f({ sin(timeElapse), cos(timeElapse), sin(timeElapse) + cos(timeElapse) })));
         _materialVShader.setLight(Topl_Light(Vec3f({ 0.0F, 0.0F, sin(timeElapse) })));
     } else if(_renderer->getPipeline() == _effectPipeline)
-        _effectVShader.setEffect(EFFECT_SIZE - (EFFECT_SIZE / timeElapse), ((unsigned)floor(timeElapse / 5.0) % EFFECT_ITER) + 3);
+        _effectVShader.setFractal(EFFECT_SIZE - (EFFECT_SIZE / timeElapse), ((unsigned)floor(timeElapse / 5.0) % EFFECT_ITER) + 3);
     else if(_renderer->getPipeline() == _beamsPipeline){
         Vec3f skylightColor = BEAMS_SKY_LIGHT.value * abs(sin(timeElapse));
         Vec3f flashlightColor = BEAMS_FLASH_LIGHT.value * abs(cos(timeElapse / 2));

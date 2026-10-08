@@ -10,10 +10,10 @@
 
 // Vertex Shaders
 
-struct Effect_VertexShader : public Topl_EntryShader {
-	Effect_VertexShader() : Topl_EntryShader(){}
-	Effect_VertexShader(std::string name) : Topl_EntryShader(name) { }
-	Effect_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
+struct Fractal_VertexShader : public Topl_EntryShader {
+	Fractal_VertexShader() : Topl_EntryShader(){}
+	Fractal_VertexShader(std::string name) : Topl_EntryShader(name) { }
+	Fractal_VertexShader(std::string name, unsigned mode) : Topl_EntryShader(name) { _mode = mode; }
 
 	void genActorBlock(const Geo_Actor* const actor, blockBytes_t* bytes) const override {
 		Topl_EntryShader::genActorBlock(actor, bytes);
@@ -44,27 +44,27 @@ protected:
     unsigned effectIters = EFFECT_ITER;
 };
 
-struct Effect_VertexShader_GL4 : public Effect_VertexShader {
-    Effect_VertexShader_GL4() : Effect_VertexShader(std::string("legacy/effect/glsl/") + "Effect_Vertex.glsl"){}
-	Effect_VertexShader_GL4(unsigned mode) : Effect_VertexShader(std::string("legacy/effect/glsl/") + "Effect_Vertex.glsl", mode){}
+struct Fractal_VertexShader_GL4 : public Fractal_VertexShader {
+    Fractal_VertexShader_GL4() : Fractal_VertexShader(std::string("legacy/fractal/glsl/") + "Fractal_Vertex.glsl"){}
+	Fractal_VertexShader_GL4(unsigned mode) : Fractal_VertexShader(std::string("legacy/fractal/glsl/") + "Fractal_Vertex.glsl", mode){}
 };
 
-struct Effect_VertexShader_DX11 : public Effect_VertexShader {
-    Effect_VertexShader_DX11() : Effect_VertexShader(std::string("legacy/effect/hlsl/") + "Effect_Vertex.hlsl"){}
-	Effect_VertexShader_DX11(unsigned mode) : Effect_VertexShader(std::string("legacy/effect/hlsl/") + "Effect_Vertex.hlsl", mode){}
+struct Fractal_VertexShader_DX11 : public Fractal_VertexShader {
+    Fractal_VertexShader_DX11() : Fractal_VertexShader(std::string("legacy/fractal/hlsl/") + "Fractal_Vertex.hlsl"){}
+	Fractal_VertexShader_DX11(unsigned mode) : Fractal_VertexShader(std::string("legacy/fractal/hlsl/") + "Fractal_Vertex.hlsl", mode){}
 };
 
 // Pixel Shaders
 
-struct Effect_PixelShader : public Topl_Shader {
-	Effect_PixelShader() : Topl_Shader(){}
-	Effect_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
+struct Fractal_PixelShader : public Topl_Shader {
+	Fractal_PixelShader() : Topl_Shader(){}
+	Fractal_PixelShader(std::string name) : Topl_Shader(SHDR_Pixel, name) { }
 };
 
-struct Effect_PixelShader_GL4 : public Effect_PixelShader {
-	Effect_PixelShader_GL4() : Effect_PixelShader(std::string("legacy/effect/glsl/") + "Effect_Frag.glsl") { }
+struct Fractal_PixelShader_GL4 : public Fractal_PixelShader {
+	Fractal_PixelShader_GL4() : Fractal_PixelShader(std::string("legacy/fractal/glsl/") + "Fractal_Frag.glsl") { }
 };
 
-struct Effect_PixelShader_DX11 : public Effect_PixelShader {
-	Effect_PixelShader_DX11() : Effect_PixelShader(std::string("legacy/effect/hlsl/") + "Effect_Pixel.hlsl") { }
+struct Fractal_PixelShader_DX11 : public Fractal_PixelShader {
+	Fractal_PixelShader_DX11() : Fractal_PixelShader(std::string("legacy/fractal/hlsl/") + "Fractal_Pixel.hlsl") { }
 };

@@ -7,13 +7,13 @@
         "type": "fragment",
         "file": "Topl/shaders/_glsl/pixel/Idle_Frag.glsl"
     },
-    "Colorcode_Vertex": {
+    "Color_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/_glsl/vertex/Colorcode_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Color_Vertex.glsl"
     },
-    "Colorcode_Frag": {
+    "Color_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/_glsl/pixel/Colorcode_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Color_Frag.glsl"
     },
     "Textured_Vertex": {
         "type": "vertex",
@@ -39,13 +39,13 @@
         "type": "fragment",
         "file": "Topl/shaders/_glsl/pixel/Beams_Frag.glsl"
     },
-    "Effect_Vertex": {
+    "Fractal_Vertex": {
         "type": "vertex",
-        "file": "Topl/shaders/_glsl/vertex/Effect_Vertex.glsl"
+        "file": "Topl/shaders/_glsl/vertex/Fractal_Vertex.glsl"
     },
-    "Effect_Frag": {
+    "Fractal_Frag": {
         "type": "fragment",
-        "file": "Topl/shaders/_glsl/pixel/Effect_Frag.glsl"
+        "file": "Topl/shaders/_glsl/pixel/Fractal_Frag.glsl"
     },
     "Draw_Vertex": {
         "type": "vertex",

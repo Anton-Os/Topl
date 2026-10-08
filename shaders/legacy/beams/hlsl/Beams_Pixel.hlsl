@@ -52,13 +52,13 @@ float4 main(PS_INPUT input) : SV_TARGET{
 	float cam_dist = distance(target, float3(cam_pos.x, cam_pos.y, cam_pos.z));
 #ifdef INCLUDE_TEXTURES
 	float4 texTargets[3] = { modalTex(modes[2], input.texcoord), modalTex(modes[2] + 1, input.texcoord), modalTex(modes[2] + 2, input.texcoord) };
-	float3 ambient = (texTargets[0].rgb + getAmbient_sampled(lights, intensity)) * 0.5;
-	float3 diffuse = (texTargets[1].rgb + getDiffuse_sampled(lights, target, intensity)) * 0.5;
-	float3 specular = (texTargets[2].rgb + getSpecular_sampled(lights, target, intensity)) * 0.5;
+	float3 ambient = (texTargets[0].rgb + getAmbientLight(lights, intensity)) * 0.5;
+	float3 diffuse = (texTargets[1].rgb + getDiffuseLight(lights, target, intensity)) * 0.5;
+	float3 specular = (texTargets[2].rgb + getSpecularLight(lights, target, intensity)) * 0.5;
 #else
-	float3 ambient = getAmbient_flat(lights, intensity);
-	float3 diffuse = getDiffuse_flat(lights, target, intensity);
-	float3 specular = getSpecular_flat(lights, target, intensity);
+	float3 ambient = getAmbientLight(lights, intensity);
+	float3 diffuse = getDiffuseLight(lights, target, intensity);
+	float3 specular = getSpecularLight(lights, target, intensity);
 #endif
 
 	if(modes[0] == 1) return float4(ambient, 1.0f);

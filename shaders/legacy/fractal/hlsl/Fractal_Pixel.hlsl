@@ -27,8 +27,7 @@ struct PS_INPUT {
 	float3 texcoord : TEXCOORD0;
 };
 
-#include "fractal/Effect.hlsl"
-#include "fractal/Fractal.hlsl"
+#include "Fractal.hlsl"
 
 // Main
 

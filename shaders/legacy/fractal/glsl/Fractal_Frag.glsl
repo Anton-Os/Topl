@@ -28,7 +28,7 @@ layout(location = 1) in vec3 texcoord;
 
 layout(location = 0) out vec4 color_final;
 
-#include "fractal/Fractal.glsl"
+#include "Fractal.glsl"
 
 // Main
 

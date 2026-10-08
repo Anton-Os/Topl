@@ -101,8 +101,8 @@ protected:
 	Textured_VertexShader _texVShader; Textured_PixelShader _texPShader;
 	Beams_VertexShader _beamsVShader; Beams_PixelShader _beamsPShader;
 	Spectral_VertexShader _materialVShader; Spectral_PixelShader _materialPShader;
-	Colorcode_VertexShader _coloredVShader; Colorcode_PixelShader _coloredPShader;
-	Effect_VertexShader _effectVShader; Effect_PixelShader _effectPShader;
+	Color_VertexShader _coloredVShader; Color_PixelShader _coloredPShader;
+	Fractal_VertexShader _effectVShader; Fractal_PixelShader _effectPShader;
 	Draw_VertexShader _drawVShader; Draw_PixelShader _drawPShader;
 	Field_VertexShader _fieldVShader; Field_PixelShader _fieldPShader;
 	Pattern_VertexShader _patternVShader; Pattern_PixelShader _patternPShader;
