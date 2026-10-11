@@ -17,15 +17,18 @@
     #define TOPL_ENABLE_VULKAN
 #endif
 #if ${Rasteron_FOUND} && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
-    #define TOPL_ENABLE_TEXTURES
+    #define RASTERON_ENABLE_QUEUE TRUE
+    #define RASTERON_ENABLE_SPACE TRUE
+    #define RASTERON_ENABLE_FONT TRUE
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron
+    #define TOPL_ENABLE_TEXTURES
 #endif
 #if ${Assimp_FOUND}
-    #define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
+    #define TOPL_ENABLE_MODELS
 #endif
 #if ${SUPPORT_PHYSICS}
     #define TOPL_ENABLE_PHYSICS

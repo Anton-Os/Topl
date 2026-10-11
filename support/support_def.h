@@ -1,12 +1,12 @@
 #ifndef TOPL_SUPPORT_H
 
-#define ASSETS_DIR "Z:/PROJECT/Topl/develop/assets/"
-#define FONTS_DIR "Z:/PROJECT/Topl/develop/assets/fonts/"
-#define IMAGES_DIR "Z:/PROJECT/Topl/develop/assets/images/"
-#define MODELS_DIR "Z:/PROJECT/Topl/develop/assets/models/"
-#define RESOURCE_DIR "Z:/PROJECT/Topl/develop/assets/res/"
-#define AUDIO_DIR "Z:/PROJECT/Topl/develop/assets/audio/"
-#define SHADERS_DIR "Z:/PROJECT/Topl/develop/shaders/"
+#define ASSETS_DIR "Z:/PROJECT/Topl/master/assets/"
+#define FONTS_DIR "Z:/PROJECT/Topl/master/assets/fonts/"
+#define IMAGES_DIR "Z:/PROJECT/Topl/master/assets/images/"
+#define MODELS_DIR "Z:/PROJECT/Topl/master/assets/models/"
+#define RESOURCE_DIR "Z:/PROJECT/Topl/master/assets/res/"
+#define AUDIO_DIR "Z:/PROJECT/Topl/master/assets/audio/"
+#define SHADERS_DIR "Z:/PROJECT/Topl/master/shaders/"
 
 #define TRUE 1
 #define FALSE 0
@@ -17,15 +17,18 @@
     #define TOPL_ENABLE_VULKAN
 #endif
 #if FALSE && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
-    #define TOPL_ENABLE_TEXTURES
+    #define RASTERON_ENABLE_QUEUE TRUE
+    #define RASTERON_ENABLE_SPACE TRUE
+    #define RASTERON_ENABLE_FONT TRUE
     #include "Rasteron.h" // main library for Rasteron
     #include "Loader.h" // loader library for Rasteron
+    #define TOPL_ENABLE_TEXTURES
 #endif
 #if 0
-    #define TOPL_ENABLE_MODELS
     // #include <assimp/scene.h>
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
+    #define TOPL_ENABLE_MODELS
 #endif
 #if ON
     #define TOPL_ENABLE_PHYSICS
