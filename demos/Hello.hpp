@@ -13,8 +13,8 @@
 
 // OpenGL Test Renderer
 #ifndef __ANDROID__
-struct Hello_Renderer_GL : public Topl_Renderer_GL{
-    Hello_Renderer_GL(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL(context){
+struct Hello_Renderer_GL4 : public Topl_Renderer_GL4{
+    Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_GL4(context){
         // genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
         // genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
         // genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
@@ -27,21 +27,21 @@ struct Hello_Renderer_GL : public Topl_Renderer_GL{
 
     void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &basePipeline); }
 
-	GL::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
+	GL4::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
-	Idle_VertexShader_GL vertexShader;
-	Idle_PixelShader_GL pixelShader;
-	Advance_GeometryShader_GL geomShader;
-	Advance_TessCtrlShader_GL tessCtrlShader;
-	Advance_TessEvalShader_GL tessEvalShader;
-	Advance_ComputeShader_GL computeShader;
+	Idle_VertexShader_GL4 vertexShader;
+	Idle_PixelShader_GL4 pixelShader;
+	Advance_GeometryShader_GL4 geomShader;
+	Advance_TessCtrlShader_GL4 tessCtrlShader;
+	Advance_TessEvalShader_GL4 tessEvalShader;
+	Advance_ComputeShader_GL4 computeShader;
 };
 #else
 #include <game-activity/GameActivity.cpp> // TODO: Move to a different file
 #include <game-text-input/gametextinput.cpp> // TODO: Move to a different file
 
-struct Hello_Renderer_GL : public Droidl_Renderer {
-    Hello_Renderer_GL(NATIVE_PLATFORM_CONTEXT* context) : Droidl_Renderer(context){
+struct Hello_Renderer_GL4 : public Droidl_Renderer {
+    Hello_Renderer_GL4(NATIVE_PLATFORM_CONTEXT* context) : Droidl_Renderer(context){
         genPipeline(&pipeline, &vertexShader, &pixelShader);
         setDrawMode(DRAW_Triangles);
     }
@@ -56,8 +56,8 @@ struct Hello_Renderer_GL : public Droidl_Renderer {
 #endif
 
 #ifdef _WIN32
-struct Hello_Renderer_DX : public Topl_Renderer_DX {
-	Hello_Renderer_DX(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_DX(context){
+struct Hello_Renderer_DX11 : public Topl_Renderer_DX11 {
+	Hello_Renderer_DX11(NATIVE_PLATFORM_CONTEXT* context) : Topl_Renderer_DX11(context){
 		genPipeline(&geoPipeline, &vertexShader, &pixelShader, { &geomShader });
 		genPipeline(&tessPipeline, &vertexShader, &pixelShader, { &tessCtrlShader, &tessEvalShader });
 		genPipeline(&fullPipeline, &vertexShader, &pixelShader, { &geomShader, &tessCtrlShader, &tessEvalShader });
@@ -70,14 +70,14 @@ struct Hello_Renderer_DX : public Topl_Renderer_DX {
 
     void setDrawPipeline(bool isNonCompute){ setPipeline((!isNonCompute)? &calcPipeline : &fullPipeline); }
 
-	DX::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
+	DX11::Pipeline basePipeline, geoPipeline, tessPipeline, fullPipeline, calcPipeline;
 
-	Idle_VertexShader_DX vertexShader;
-	Idle_PixelShader_DX pixelShader;
-	Advance_GeometryShader_DX geomShader;
-	Advance_TessCtrlShader_DX tessCtrlShader;
-	Advance_TessEvalShader_DX tessEvalShader;
-	Advance_ComputeShader_DX computeShader;
+	Idle_VertexShader_DX11 vertexShader;
+	Idle_PixelShader_DX11 pixelShader;
+	Advance_GeometryShader_DX11 geomShader;
+	Advance_TessCtrlShader_DX11 tessCtrlShader;
+	Advance_TessEvalShader_DX11 tessEvalShader;
+	Advance_ComputeShader_DX11 computeShader;
 };
 #endif
 

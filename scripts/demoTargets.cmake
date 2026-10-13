@@ -26,6 +26,9 @@ foreach(target IN ITEMS ${demo_targets})
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")
     endif()
     set_target_properties(${target} PROPERTIES FOLDER "Legacy Demos")
+    if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
+        target_link_libraries(${target} PUBLIC Rasteron)
+    endif()
 endforeach()
 
 if(SUPPORT_AUDIO)

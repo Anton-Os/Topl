@@ -81,7 +81,7 @@ VS_OUTPUT main(VS_INPUT input, uint vertexID : SV_VertexID, uint instanceID : SV
 	output.texcoord = input.texcoord;
 	output.tangent = input.tangent;
 
-	float3 ctrlPos = output.vertex_pos;
+	float3 ctrlPos = pos.xyz;
 	/* if(mode >= 1000){
 		float3 change = float3(sin(float(timeElapse) / 1000.0), cos(float(timeElapse) / 1000.0), tan(float(timeElapse) / 1000.0));
 

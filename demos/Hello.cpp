@@ -2,7 +2,7 @@
 #include <thread>
 #include <functional>  // for std::ref
 
-#include "Hello_Demo.hpp"
+#include "Hello.hpp"
 
 // #define TARGET_BACKEND BACKEND_GL
 // #define TARGET_BACKEND BACKEND_DX
@@ -80,8 +80,8 @@ MAIN_ENTRY {
     std::cout << "Creating backend" << std::endl;
 	BACKEND_Target backendTarget = TARGET_BACKEND;
 	Topl_Renderer* renderer = nullptr;
-	if(backendTarget == BACKEND_GL) renderer = new Hello_Renderer_GL(platform.getContext());
-	else if(backendTarget == BACKEND_DX) renderer = new Hello_Renderer_DX(platform.getContext());
+	if(backendTarget == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getContext());
+	else if(backendTarget == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getContext());
 	else if(backendTarget == BACKEND_VK) renderer = new Hello_Renderer_VK(platform.getContext());
 	
 	if (renderer == nullptr) return -1; // renderer is null

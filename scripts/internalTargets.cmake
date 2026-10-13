@@ -83,21 +83,16 @@ if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
    target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXMLd_lib} ${zlibd_lib}) # for debug build
    if(WIN32)
-        set(irrXML_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXML.lib") # locating release lib
-        set(irrXMLd_lib "${CMAKE_INSTALL_PREFIX}/lib/irrXMLd.lib") # locating debug lib
         set(zlib_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstatic.lib") # locating release lib
         set(zlibd_lib "${CMAKE_INSTALL_PREFIX}/lib/zlibstaticd.lib") # locating debug lib
-        # message("Assimp libraries zlib set to ${zlib_lib}, irrXML set to ${irrXML_lib}")
-        message("Assimp libraries zlib set to ${zlibd_lib}, irrXML set to ${irrXMLd_lib}")
-    
-        # target_link_libraries(GEOLIB PUBLIC ${irrXML_lib} ${zlib_lib}) # for release build
-        target_link_libraries(GEOLIB PUBLIC ${irrXMLd_lib} ${zlibd_lib}) # for debug build
+        message("Assimp libraries zlib set to ${zlibd_lib}") # irrXML set to ${irrXMLd_lib}")
+
+        target_link_libraries(GEOLIB PUBLIC ${zlibd_lib}) # for debug build
     elseif(UNIX AND NOT APPLE) # Unix Specific
         find_package(ZLIB)
-        find_library(irrXML_lib NAMES "irrXML" "IrrXML" PATHS ${CMAKE_INSTALL_PREFIX}/lib)
-        message("Assimp libraries zlib set to ${ZLIB_LIBRARIES}, irrXML set to ${irrXML_lib}")
+        message("Assimp libraries zlib set to ${ZLIB_LIBRARIES}") # , irrXML set to ${irrXML_lib}")
 
-        target_link_libraries(GEOLIB PUBLIC ${ZLIB_LIBRARIES} ${irrXML_lib})
+        target_link_libraries(GEOLIB PUBLIC ${ZLIB_LIBRARIES}) # ${irrXML_lib})
     endif()
 endif()
 

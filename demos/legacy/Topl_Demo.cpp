@@ -270,10 +270,10 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
         onOverlayUpdate(PROGRAM_Sculpt, menuID - SHAPES - 1);
         break;
 #ifdef TOPL_ENABLE_TEXTURES
-    case SAMPLERS1: case SAMPLERS2: case SAMPLERS3: case SAMPLERS4: case SAMPLERS5: case SAMPLERS6: case SAMPLERS7: case SAMPLERS8: case SAMPLERS9:
+    case SAMPLERS1: case SAMPLERS2: case SAMPLERS3: case SAMPLERS4: case SAMPLERS5: case SAMPLERS6: case SAMPLERS7: case SAMPLERS8: case SAMPLERS9: {
         ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
         for (unsigned t = 0; t < 9; t++) {
-            unsigned i = (p < 8) ? p : (rand() % 8);
+            unsigned i = (t < 8) ? t : (rand() % 8);
             unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
             unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
             switch (i) {
@@ -300,6 +300,7 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
         _renderer->texturizeScene(&_overlays.scene);
         onOverlayUpdate(PROGRAM_Paint, menuID - SAMPLERS - 1);
         break;
+    }
 #endif
 #ifdef TOPL_ENABLE_AUDIO
     case SOUNDS1: play(std::string(AUDIO_DIR) + "60hz-sine-freqies.mp3"); break;

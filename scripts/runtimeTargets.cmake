@@ -45,9 +45,13 @@ foreach(rt IN ITEMS ${runtimes})
     elseif(UNIX AND NOT APPLE) # Unix Specific
         target_link_libraries(${rt} PUBLIC ${X11_LIBRARIES})
     endif()
+
+    if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
+        target_link_libraries(${rt} PUBLIC Rasteron)
+    endif()
 endforeach()
 
-if(SUPPORT_AUDIO)
+if(SUPPORT_AUDIO) # Add audio support only to runtime libraries that need it
     target_include_directories(RTLIB PUBLIC ${miniaudio_h})
     target_link_libraries(RTLIB PUBLIC ${miniaudio_lib})
     target_include_directories(RTLIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)

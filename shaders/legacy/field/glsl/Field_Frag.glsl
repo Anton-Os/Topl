@@ -44,6 +44,18 @@ layout(location = 0) out vec4 color_final;
 
 #include "Field.glsl"
 
+vec3 getCtrlPtsSum(){
+	vec3 sum = vec3(0.0, 0.0, 0.0);
+	for(uint n = 0; n < 16; n++) sum += ctrlPoints[n];
+	return sum;
+}
+
+float getCtrlPtsLengths(){
+	float lengthTotal = 0.0;
+	for(uint n = 0; n < 16; n++) lengthTotal += length(ctrlPoints[n]);
+	return lengthTotal;
+}
+
 // Main
 
 void main() {
@@ -55,10 +67,10 @@ void main() {
 
 	vec3 ctrlPoint = ctrlPoints[near_index];// - ctrlPoints[second_index] - ctrlPoints[far_index];
 	switch(abs(mode) % 10){
-		case 1: ctrlPoint = ctrlPoints[near_index]; break;
+		case 1: ctrlPoint = ctrlPoints[far_index]; break;
 		case 2: ctrlPoint = ctrlPoints[second_index]; break;
-		case 3: ctrlPoint = ctrlPoints[far_index]; break;
-		case 4: ctrlPoint = ctrlPoints[near_index] + ctrlPoints[second_index] + ctrlPoints[far_index]; break;
+		case 3: ctrlPoint = getCtrlPtsSum(); break;
+		case 4: ctrlPoint *= getCtrlPtsLengths(); break;
 		case 5: ctrlPoint = ctrlPoints[near_index] * ctrlPoints[second_index] * ctrlPoints[far_index]; break;
 		case 6: ctrlPoint = ctrlPoints[near_index] - ctrlPoints[second_index] - ctrlPoints[far_index]; break;
 		case 7: ctrlPoint = ctrlPoints[near_index] + ctrlPoints[second_index] - ctrlPoints[far_index]; break;
