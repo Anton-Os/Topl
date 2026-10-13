@@ -20,7 +20,7 @@
 #define PROGRAM_BILLBOARDS 8
 #define PROGRAM_SUBMENUS 9
 #define PROGRAM_IS_BK true
-#define PROGRAM_IS_OVERLAY true
+#define PROGRAM_IS_OVERLAY true // TODO: Change to true once texture issue resolved
 #define PROGRAM_AUDIO_FRAMES 4096
 
 #ifdef TOPL_ENABLE_AUDIO
@@ -197,7 +197,7 @@ private:
 		Geo_Billboard billboard_object = Geo_Billboard("program_object", 5, 3, &scene);
 		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
 		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
-#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
+#if defined(TOPL_ENABLE_TEXTURES) && PROGRAM_IS_OVERLAY
 		std::string fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf";
 		Topl_Sampler_2D textures[9]; // for switching textures
 		Topl_Sampler_Button button = Topl_Sampler_Button();

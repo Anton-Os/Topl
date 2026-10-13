@@ -62,7 +62,7 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
             // billboard->shift(Vec3f({ tracerPathDiff.first, tracerPathDiff.second, 0.0f })); // moving when something is dragged
             for(unsigned p = 0; p < billboard->getActorCount() - 1; p++){
                 if(actor == billboard->getGeoActor(p)){
-#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
+#if defined(TOPL_ENABLE_TEXTURES) && PROGRAM_IS_OVERLAY
                     billboard->setState(p, event == MOUSE_RightBtn_Press || event == MOUSE_LeftBtn_Press);
                     billboard->setState(p, pickerCoord[0], pickerCoord[1]); // for elements that require relative offset
                     if (o == PROGRAM_Params) mode = PROGRAM_SUBMENUS - 1 - p; // onOverlayUpdate(PROGRAM_AppBar, p);
@@ -406,7 +406,7 @@ void Topl_Demo::createOverlays(double size){
     _overlays.billboard_object.toggleShow(false);
     _overlays.billboard_shader.shift({ 0.278F, -0.845F, 0.0F });
     _overlays.billboard_shader.toggleShow(false);
-#if defined(RASTERON_H) && PROGRAM_IS_OVERLAY
+#if defined(TOPL_ENABLE_TEXTURES) && PROGRAM_IS_OVERLAY
     _overlays.billboard_timeline.overlay(0, &_overlays.timeSlider);
     for(unsigned b = 0; b < PROGRAM_SUBMENUS; b++){ 
         _overlays.billboard_appbar.overlay(b, &_overlays.numberButtons[PROGRAM_SUBMENUS - 1 - b]);

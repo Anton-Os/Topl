@@ -89,7 +89,7 @@ protected:
 /* enum LAYER_Property { LAYER_Albedo = 0, LAYER_Height = 1, LAYER_Roughness = 2, LAYER_Opacity = 3, LAYER_Enviornment = 4, LAYER_Shadow = 5, LAYER_Illumination = 6, LAYER_Testing = 7, }; */
 
 struct Topl_Sampler_Array : public Topl_Sampler_2D {
-#ifndef RASTERON_H
+#ifndef TOPL_ENABLE_TEXTURES
     Topl_Sampler_Array() : Topl_Sampler_2D(){}
 #else
     Topl_Sampler_Array() : Topl_Sampler_2D(){ queue = RASTERON_QUEUE_ALLOC("arrayTex", RASTERON_SIZE(SAMPLER_HEIGHT, SAMPLER_WIDTH), 8); }
