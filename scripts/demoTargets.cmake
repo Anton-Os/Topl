@@ -38,4 +38,26 @@ if(SUPPORT_AUDIO)
 endif()
 
 
-# TODO: add Audio & Visual Demos
+# Building Modern Demos
+
+add_executable(Visualizer demos/modern/visual/Visualizer.cpp)
+add_executable(Spacetime demos/modern/spacetime/Spacetime.cpp)
+add_executable(Audiovisual demos/modern/audiovisual/Audiovisual.cpp)
+
+target_link_libraries(Visualizer PRIVATE VRTLIB)
+target_link_libraries(Spacetime PRIVATE SVRTLIB)
+target_link_libraries(Audiovisual PRIVATE AVRTLIB)
+
+list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual)
+
+foreach(target IN ITEMS ${modern_demo_targets})
+    target_include_directories(${target} PRIVATE core support geometry shaders demos demos/modern ${CMAKE_SOURCE_DIR})
+    if(WIN32) # adding resource file to demos
+        target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
+        target_sources(${target} PRIVATE "${RESOURCE_FILE}")
+    endif()
+    set_target_properties(${target} PROPERTIES FOLDER "Modern Demos")
+    if(SUPPORT_TEXTURES AND Rasteron_FOUND)
+        target_link_libraries(${target} PUBLIC Rasteron)
+    endif()
+endforeach() # audio support reaches Audiovisual through AVRTLIB

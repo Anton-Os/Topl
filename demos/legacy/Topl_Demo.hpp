@@ -32,11 +32,7 @@
 class Topl_Demo {
 public:
 #ifndef __ANDROID__
-#ifdef _WIN32
-	Topl_Demo(const char* execPath, const char* name) : _backend(BACKEND_DX11) { setup(execPath, name); } // Windows setup
-#else
-    Topl_Demo(const char* execPath, const char* name) : _backend(BACKEND_GL4) { setup(execPath, name); } // Linux setup
-#endif
+	Topl_Demo(const char* execPath, const char* name) : _backend(TOPL_DEFAULT_BACKEND) { setup(execPath, name); } // DirectX on Windows, OpenGL elsewhere
 	Topl_Demo(const char* execPath, const char* name, BACKEND_Target backend) : _backend(backend) { setup(execPath, name); } // Custom Setup
 #else
 	Topl_Demo(android_app* app)  : _backend(BACKEND_GL4){ setup(app); } // Android setup

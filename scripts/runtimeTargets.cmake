@@ -6,14 +6,17 @@ add_library(RTLIB # Legacy Demos
 )
 
 add_library(VRTLIB # Visual Runtime
+    demos/Topl_Factory.cpp
     demos/modern/Topl_Runtime.cpp
     demos/modern/visual/Topl_Visualizer.cpp
 )
 add_library(SVRTLIB # Spacetime Runtime
+    demos/Topl_Factory.cpp
     demos/modern/Topl_Runtime.cpp
     demos/modern/spacetime/Topl_Spacetime_Visualizer.cpp
 )
 add_library(AVRTLIB # Audio-Visual Runtime
+    demos/Topl_Factory.cpp
     demos/modern/Topl_Runtime.cpp
     demos/modern/audiovisual/Topl_Audio_Visualizer.cpp
 )
@@ -59,3 +62,13 @@ if(SUPPORT_AUDIO) # Add audio support only to runtime libraries that need it
     target_link_libraries(AVRTLIB PUBLIC ${miniaudio_lib})
     target_include_directories(AVRTLIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
 endif()
+
+foreach(rt IN ITEMS VRTLIB SVRTLIB AVRTLIB) # Modern runtimes carry the engine so demos only link their runtime
+    target_include_directories(${rt} PRIVATE demos/modern)
+    target_link_libraries(${rt} PUBLIC CORELIB)
+    set_target_properties(${rt} PROPERTIES CXX_STANDARD 14) # Topl_Factory.cpp uses generic lambdas
+    if(SUPPORT_AUDIO) # every modern runtime plays and analyzes audio from its bottom menu pane
+        target_include_directories(${rt} PUBLIC ${miniaudio_h})
+        target_link_libraries(${rt} PUBLIC ${miniaudio_lib})
+    endif()
+endforeach()

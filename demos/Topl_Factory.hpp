@@ -30,6 +30,13 @@ enum BACKEND_Target {
 #endif
 };
 
+// Backend used on launch: DirectX 11 on Windows, OpenGL 4 everywhere else
+#if defined(_WIN32)
+    #define TOPL_DEFAULT_BACKEND BACKEND_DX11
+#else
+    #define TOPL_DEFAULT_BACKEND BACKEND_GL4
+#endif
+
 // -----------------------------------------------------------------------------
 // Engine Config Base
 // -----------------------------------------------------------------------------

@@ -1,3 +1,7 @@
+file(GLOB_RECURSE modern_shaders ${SHADERS_DIR}/modern/*.glsl ${SHADERS_DIR}/modern/*.hlsl ${SHADERS_DIR}/modern/*.hpp ${SHADERS_DIR}/modern/*.h)
+add_custom_target(MODERN_SHADERS SOURCES ${modern_shaders}) # modern pipelines are compiled at runtime by the GL4 and DX11 engines
+set_target_properties(MODERN_SHADERS PROPERTIES FOLDER "Engines/MODERN_TARGETS")
+
 file(GLOB_RECURSE glsl_shaders ${SHADERS_DIR}/_glsl/*.glsl)
 add_custom_target(GL4_SHADERS SOURCES ${glsl_shaders})
 add_dependencies(GL4_SHADERS GL4_ENGINE)

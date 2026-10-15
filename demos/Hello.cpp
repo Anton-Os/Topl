@@ -4,9 +4,10 @@
 
 #include "Hello.hpp"
 
-// #define TARGET_BACKEND BACKEND_GL
-// #define TARGET_BACKEND BACKEND_DX
-#define TARGET_BACKEND BACKEND_VK
+// #define TARGET_BACKEND BACKEND_GL4
+// #define TARGET_BACKEND BACKEND_DX11
+// #define TARGET_BACKEND BACKEND_VK
+#define TARGET_BACKEND TOPL_DEFAULT_BACKEND // DirectX on Windows, OpenGL elsewhere
 
 #define FRAME_AVG_TIME 100
 #define FRAME_SPIKE_TIME 20
@@ -81,8 +82,12 @@ MAIN_ENTRY {
 	BACKEND_Target backendTarget = TARGET_BACKEND;
 	Topl_Renderer* renderer = nullptr;
 	if(backendTarget == BACKEND_GL4) renderer = new Hello_Renderer_GL4(platform.getContext());
+#ifdef _WIN32
 	else if(backendTarget == BACKEND_DX11) renderer = new Hello_Renderer_DX11(platform.getContext());
+#endif
+#if defined(TOPL_ENABLE_VULKAN) && !defined(__ANDROID__)
 	else if(backendTarget == BACKEND_VK) renderer = new Hello_Renderer_VK(platform.getContext());
+#endif
 	
 	if (renderer == nullptr) return -1; // renderer is null
 
