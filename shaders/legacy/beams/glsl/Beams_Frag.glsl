@@ -51,15 +51,9 @@ void main() {
     else if(modes[1] % 3 == 2){ lights[0] = lampLight; lights[1] = skyLight; lights[2] = flashLight; }
     else{ lights[0] = skyLight; lights[1] = flashLight; lights[2] = lampLight; }
 
-#ifdef INCLUDE_TEXTURES
-	vec3 ambient = getAmbientLight(lights, texcoord, intensity);
-	vec3 diffuse = getDiffuseLight(lights, target, intensity);
-	vec3 specular = getSpecularLight(lights, target, intensity);
-#else
 	vec3 ambient = getAmbientLight(lights, intensity);
 	vec3 diffuse = getDiffuseLight(lights, target, intensity);
 	vec3 specular = getSpecularLight(lights, target, intensity);
-#endif
 
 	if(modes[0]== 1) color_final = vec4(ambient, 1.0f);
 	else if(modes[0] == 2) color_final = vec4(diffuse, 1.0f);

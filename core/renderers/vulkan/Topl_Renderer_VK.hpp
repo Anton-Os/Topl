@@ -9,7 +9,7 @@ public:
 		init(context->window);
 		setViewport(&_activeViewport); // viewport creation
 		setDrawMode(DRAW_Triangles);
-        _clearColors = Vec4f({ 1.0F, 0.25F, 0.25F, 1.0F }); // red tint
+        _clearColors = Vec4f({ 0.1F, 0.0F, 0.0F, 1.0F }); // red tint
 	}
 	~Topl_Renderer_VK();
 
@@ -24,7 +24,7 @@ public:
 	Topl_Pipeline* getPipeline() override { return _pipeline; }
 	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader){ genPipeline(pipeline, vertexShader, pixelShader, {}); }
 	void genPipeline(VK::Pipeline* pipeline, entry_shader_cptr vertexShader, shader_cptr pixelShader, std::initializer_list<shader_cptr> shaders);
-    	void genComputePipeline(VK::Pipeline* pipeline, shader_cptr cShader){ if(cShader->getType() == SHDR_Compute) genPipeline(pipeline, nullptr, nullptr, { cShader }); }
+    void genComputePipeline(VK::Pipeline* pipeline, shader_cptr cShader){ if(cShader->getType() == SHDR_Compute) genPipeline(pipeline, nullptr, nullptr, { cShader }); }
 #ifdef TOPL_ENABLE_TEXTURES
 	Topl_Sampler_2D frame() override;
 #endif

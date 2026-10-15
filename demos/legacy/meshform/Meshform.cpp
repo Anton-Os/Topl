@@ -22,9 +22,9 @@ void Meshform_Demo::onAnyKey(keyboard_t key){
         // case 'k': genShapes(std::make_pair(curveTForm, incVec), std::make_pair(rigidTForm, incVec)); break;
         // case 'l': genShapes(std::make_pair(pullTForm, decVec * -1.0F), std::make_pair(pullTForm, decVec)); break;
 #ifdef TOPL_ENABLE_TEXTURES
-        case 'b': genTex3D(MESHFORM_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
-        case 'n': genTex3D(MESHFORM_LINES, RAND_COLOR(), RAND_COLOR()); break;
-        case 'm': genTex3D(MESHFORM_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
+        case 'b': genTex3D(MESHFORM_TEX_GRADIENT, RAND_COLOR(), RAND_COLOR()); break;
+        case 'n': genTex3D(MESHFORM_TEX_LINES, RAND_COLOR(), RAND_COLOR()); break;
+        case 'm': genTex3D(MESHFORM_TEX_CHECKER, RAND_COLOR(), RAND_COLOR()); break;
 #endif
     }
 
@@ -43,9 +43,9 @@ void Meshform_Demo::genTex3D(unsigned short mode, unsigned color1, unsigned colo
         if (width > 16) width = 1; if (height > 16) height = 1;
         Rasteron_Image* sliceImg;
         switch(mode){
-            case MESHFORM_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
-            case MESHFORM_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
-            case MESHFORM_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
+            case MESHFORM_TEX_LINES: sliceImg = linedImgOp({ 256, 256 }, c1, c2, width, 0.0); break;
+            case MESHFORM_TEX_CHECKER: sliceImg = checkeredImgOp({ 256, 256 }, { width, height, c1, c2 }); break;
+            case MESHFORM_TEX_NOISE: sliceImg = noiseImgOp_diff({ 256, 256 }, { width, height, c1, c2 }, 1); break;
             default: sliceImg = solidImgOp({ 256, 256 }, blend_colors(c1, c2, d / 256.0)); break;
         }
         volume.addSlice(sliceImg, d);

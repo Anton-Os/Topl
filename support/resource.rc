@@ -1,5 +1,3 @@
-#include "support_def.h"
-
 #include "resource.h"
 
 // IDI_ICON ICON DISCARDABLE "TOPL.ico"
@@ -52,7 +50,7 @@ BEGIN
         MENUITEM "&Shape7", SHAPES7 // , CHECKED
         MENUITEM "&Shape8", SHAPES8 // , CHECKED
     END
-#ifdef TOPL_ENABLE_TEXTURES
+#ifdef TOPL_ENABLE_TEXTURES // TODO: Replace this
     POPUP "&Samplers"
     BEGIN
         MENUITEM "&Sampler1", SAMPLERS1 //, CHECKED
@@ -65,7 +63,7 @@ BEGIN
         MENUITEM "&Sampler8", SAMPLERS8 // , CHECKED
     END
 #endif
-#ifdef TOPL_ENABLE_AUDIO
+#ifdef TOPL_ENABLE_AUDIO // TODO: Replace this
     POPUP "&Sounds"
     BEGIN
         MENUITEM "&Sound1", SOUNDS1 //, CHECKED

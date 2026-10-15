@@ -1,10 +1,8 @@
 #ifndef GEO_MODEL_H
 
 #ifdef TOPL_ENABLE_MODELS
-
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-
 #endif
 
 #include "meshes/Geo_Node.hpp"
@@ -35,10 +33,9 @@ public:
     }
 
     void init() override {
-        Assimp::Importer aiImporter;
         const unsigned aiFlags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType;
 
-        const aiScene* aiScene = aiImporter.ReadFile(_filePath, aiFlags);
+        const aiScene* aiScene = importer.ReadFile(_filePath, aiFlags);
 
         _nodeCount = aiScene->mRootNode->mNumChildren;
         _nodes = (Geo_Node**)malloc(_nodeCount * sizeof(Geo_Node*));
@@ -51,8 +48,8 @@ public:
                 _geoNodes.push_back(currentNode);
                 _geoActors.push_back(Geo_Actor(*currentNode)); // replace the _geoNodes member
 #ifdef TOPL_ENABLE_TEXTURES
-                _nodeTopl_Sampler_map.insert({ _geoNodes[n], Topl_Sampler_2D() });
-                _nodeTopl_Sampler_map.at(_geoNodes[n]) = Topl_Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
+                _samplerMap.insert({ _geoNodes[n], Topl_Sampler_2D() });
+                _samplerMap.at(_geoNodes[n]) = Topl_Sampler_Color(RAND_COLOR()); // .setColorImage(RAND_COLOR()); // .setImage(modelImg);
 #endif
             }
         }
@@ -62,14 +59,13 @@ public:
         for (unsigned n = 0; n < _geoNodes.size(); n++) {
                 scene->addGeometry(getPrefix() + _geoActors[n].getName(), _geoNodes[n]);
 #ifdef TOPL_ENABLE_TEXTURES
-                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_nodeTopl_Sampler_map.at(_geoNodes[n]));
+                scene->addTexture(getPrefix() + _geoActors[n].getName(), &_samplerMap.at(_geoNodes[n]));
 #endif
         }
     }
 
     unsigned getActorCount() const { return _geoNodes.size(); }
     // Geo_Actor* getGeoActor(unsigned short a){ return (Geo_Actor*)&_geoNodes[a]; }
-	Topl_Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_nodeTopl_Sampler_map[_geoNodes[i]] : nullptr; }
     
     void shift(Vec3f vec) { // replace Geo_Construct shift()
 		for (std::vector<Geo_Node*>::iterator n = _geoNodes.begin(); n != _geoNodes.end(); n++)
@@ -80,9 +76,14 @@ public:
     }
 protected:
 	std::vector<Geo_Node*> _geoNodes; // geometry nodes only
-    std::map<const Geo_Node*, Topl_Sampler_2D> _nodeTopl_Sampler_map; // child backgrounds
+#ifdef TOPL_ENABLE_TEXTURES
+    Topl_Sampler_2D* getImgAt(unsigned short i){ return (i < _geoNodes.size())? &_samplerMap[_geoNodes[i]] : nullptr; }
+    std::map<const Geo_Node*, Topl_Sampler_2D> _samplerMap; // child backgrounds
+#endif
 	// TODO: include animation and other relevant data
 private:
+    Assimp::Importer importer;
+
     Geo_Node** _nodes = nullptr; // all nodes data
     unsigned _nodeCount = 0; // all nodes count
 #else
