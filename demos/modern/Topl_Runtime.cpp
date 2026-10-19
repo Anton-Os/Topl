@@ -573,7 +573,12 @@ void Topl_Runtime::applyEdits(Geo_Actor* actor){
 }
 
 void Topl_Runtime::renderScene(Topl_Scene* scene, MODERN_Pipeline pipeline, int mode, DRAW_Mode drawMode){
-	if(scene == nullptr || pipeline >= MODERN_PIPELINE_COUNT || _pipelines[pipeline] == nullptr) return;
+	if(pipeline >= MODERN_PIPELINE_COUNT) return;
+	renderScene(scene, _pipelines[pipeline], _vertexShaders[pipeline], mode, drawMode);
+}
+
+void Topl_Runtime::renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, Modern_VertexShader* vertexShader, int mode, DRAW_Mode drawMode){
+	if(scene == nullptr || pipeline == nullptr || vertexShader == nullptr || !pipeline->isReady) return;
 
 	struct Saved { Geo_Actor* actor; Vec3f pos, rot, size; Modern_ActorProps props; };
 	std::vector<Saved> saved; // edits only last for this draw so demos keep their own values
@@ -584,8 +589,8 @@ void Topl_Runtime::renderScene(Topl_Scene* scene, MODERN_Pipeline pipeline, int 
 		applyEdits(actor);
 	}
 
-	Topl_Factory::switchPipeline(_renderer, _pipelines[pipeline]);
-	_vertexShaders[pipeline]->setMode(mode);
+	Topl_Factory::switchPipeline(_renderer, pipeline);
+	vertexShader->setMode(mode);
 	_renderer->setDrawMode(drawMode);
 	_renderer->updateScene(scene);
 	_renderer->drawScene(scene);
@@ -601,6 +606,23 @@ void Topl_Runtime::renderScene(Topl_Scene* scene, MODERN_Pipeline pipeline, int 
 void Topl_Runtime::renderSky(){ renderScene(&_screenScene, MODERN_Sky, (int)_environment); }
 
 void Topl_Runtime::renderFullscreen(MODERN_Pipeline pipeline, int mode){ renderScene(&_screenScene, pipeline, mode); }
+
+void Topl_Runtime::renderFullscreen(Topl_Pipeline* pipeline, Modern_VertexShader* vertexShader, int mode){ renderScene(&_screenScene, pipeline, vertexShader, mode); }
+
+bool Topl_Runtime::isGLSL() const {
+#ifdef _WIN32
+	return _backend != BACKEND_DX11;
+#else
+	return true;
+#endif
+}
+
+Topl_Pipeline* Topl_Runtime::genPipeline(Modern_VertexShader* vertexShader, Modern_PixelShader* pixelShader){
+	Topl_Pipeline* pipeline = Topl_Factory::genPipeline(_backend, vertexShader, pixelShader);
+	if(pipeline == nullptr || !pipeline->isReady) std::cout << "Pipeline " << vertexShader->getFilePath() << " failed to build" << std::endl;
+	Topl_Factory::switchPipeline(_renderer, _pipelines[MODERN_Lighting]); // later builds expect the default pipeline
+	return pipeline;
+}
 
 // Editing
 

@@ -69,6 +69,18 @@ enum RUNTIME_Pane { // menu panes and the actions they hold
 	PANE_COUNT = 6
 };
 
+// Vector helpers, Vec3f::normalize() keeps the engine's own scaling so demos normalize with these instead
+
+inline float runtimeDot(const Vec3f& a, const Vec3f& b){ return a.data[0] * b.data[0] + a.data[1] * b.data[1] + a.data[2] * b.data[2]; }
+inline Vec3f runtimeCross(const Vec3f& a, const Vec3f& b){
+	return Vec3f({ a.data[1] * b.data[2] - a.data[2] * b.data[1], a.data[2] * b.data[0] - a.data[0] * b.data[2], a.data[0] * b.data[1] - a.data[1] * b.data[0] });
+}
+inline Vec3f runtimeNormalize(const Vec3f& v){ float len = v.len(); return (len > 1e-8F)? v * (1.0F / len) : Vec3f({ 0.0F, 1.0F, 0.0F }); }
+inline Vec3f runtimeRotate(const Vec3f& v, const Vec3f& axis, float angle){ // rodrigues rotation around a unit axis
+	float c = (float)cos(angle), s = (float)sin(angle);
+	return v * c + runtimeCross(axis, v) * s + axis * (runtimeDot(axis, v) * (1.0F - c));
+}
+
 // Input polled directly from the OS each frame so held keys move the camera smoothly
 
 class Runtime_Input {
@@ -267,8 +279,14 @@ protected:
 
 	void buildScene(Topl_Scene* scene);
 	void renderScene(Topl_Scene* scene, MODERN_Pipeline pipeline, int mode, DRAW_Mode drawMode = DRAW_Triangles);
+	void renderScene(Topl_Scene* scene, Topl_Pipeline* pipeline, Modern_VertexShader* vertexShader, int mode, DRAW_Mode drawMode = DRAW_Triangles); // demo owned pipeline
 	void renderSky(); // fullscreen sky matching the current environment
 	void renderFullscreen(MODERN_Pipeline pipeline, int mode); // fullscreen pass such as the raymarcher
+	void renderFullscreen(Topl_Pipeline* pipeline, Modern_VertexShader* vertexShader, int mode);
+
+	// Demo owned pipelines: assign the _GL4 or _DX11 shader classes based on isGLSL(), then generate inside init()
+	bool isGLSL() const; // true when the backend compiles the glsl shader sources
+	Topl_Pipeline* genPipeline(Modern_VertexShader* vertexShader, Modern_PixelShader* pixelShader);
 	void setEnvironment(unsigned index); // 0 day, 1 cloudy, 2 night, 3 aurora
 	unsigned getEnvironment() const { return _environment; }
 

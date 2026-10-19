@@ -27,5 +27,7 @@ void main() {
 	else if(m == 3u) color = vec3(1.0 - clamp(extra.x / (max(cam_lens.w, 1.0) * 0.25), 0.0, 1.0)); // depth view
 	else color = applyFog(color, world_pos);
 
-	color_final = vec4((m >= 2u)? color : toneMap(color), albedo.a);
+	float alpha = applyTextureAlpha(albedo.a);
+	if(alpha < 0.04) discard; // transparent sprite pixels
+	color_final = vec4((m >= 2u)? color : toneMap(color), alpha);
 }

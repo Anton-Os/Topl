@@ -37,7 +37,7 @@ struct Modern_SceneState {
 struct Modern_ActorProps {
 	Modern_Float4 color = Modern_Float4(1.0F, 1.0F, 1.0F, 1.0F);
 	Modern_Float4 params;
-	Modern_Float4 tex = Modern_Float4(0.0F, 1.0F, 0.0F, 0.0F); // texture blend, tiling, scroll speed, mapping
+	Modern_Float4 tex = Modern_Float4(0.0F, 1.0F, 0.0F, 0.0F); // texture blend, tiling, scroll speed, mapping (0 mesh, 1 world XZ, 2 sprite)
 };
 
 // Vertex Shader

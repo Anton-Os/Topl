@@ -25,5 +25,7 @@ float4 main(PS_INPUT input) : SV_TARGET {
 	else if(m == 3u) color = (1.0 - saturate(input.extra.x / (max(cam_lens.w, 1.0) * 0.25))).xxx; // depth view
 	else color = applyFog(color, input.world_pos);
 
-	return float4((m >= 2u)? color : toneMap(color), albedo.a);
+	float alpha = applyTextureAlpha(albedo.a, input);
+	if(alpha < 0.04) discard; // transparent sprite pixels
+	return float4((m >= 2u)? color : toneMap(color), alpha);
 }

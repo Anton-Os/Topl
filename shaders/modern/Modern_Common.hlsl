@@ -10,7 +10,7 @@ cbuffer CONST_BLOCK : register(b0) {
 
 	float4 actor_color; // rgb tint and alpha
 	float4 actor_params; // per-actor values, meaning depends on the pipeline
-	float4 actor_tex; // x texture blend, y tiling, z scroll speed, w mapping (0 mesh coordinates, 1 world XZ)
+	float4 actor_tex; // x texture blend, y tiling, z scroll speed, w mapping (0 mesh coordinates, 1 world XZ, 2 sprite with texture alpha)
 }
 
 #ifdef INCLUDE_TEXTURES

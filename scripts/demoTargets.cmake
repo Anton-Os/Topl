@@ -20,7 +20,7 @@ list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Animatrix Gene
 
 foreach(target IN ITEMS ${demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders demos demos/legacy ${CMAKE_SOURCE_DIR})
-    target_link_libraries(${target} PRIVATE CORELIB RTLIB)
+    target_link_libraries(${target} PRIVATE CORELIB LRTLIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")
@@ -39,19 +39,23 @@ endif()
 
 
 # Building Modern Demos
+# Each demo compiles its own class next to its entry point and links the shared modern runtime
 
-add_executable(Visualizer demos/modern/visual/Visualizer.cpp)
-add_executable(Spacetime demos/modern/spacetime/Spacetime.cpp)
-add_executable(Audiovisual demos/modern/audiovisual/Audiovisual.cpp)
+add_executable(Visualizer demos/modern/visual/Visualizer.cpp demos/modern/visual/Topl_Visualizer.cpp)
+add_executable(Spacetime demos/modern/spacetime/Spacetime.cpp demos/modern/spacetime/Topl_Spacetime_Visualizer.cpp)
+add_executable(Audiovisual demos/modern/audiovisual/Audiovisual.cpp demos/modern/audiovisual/Topl_Audio_Visualizer.cpp)
+add_executable(Ragdolls demos/modern/ragdolls/Ragdolls.cpp demos/modern/ragdolls/Topl_Ragdolls.cpp)
+add_executable(Audiostream demos/modern/audiostream/Audiostream.cpp demos/modern/audiostream/Topl_Audiostream.cpp)
+add_executable(Fractile demos/modern/fractile/Fractile.cpp demos/modern/fractile/Topl_Fractile.cpp)
+add_executable(Torspin demos/modern/torspin/Torspin.cpp demos/modern/torspin/Topl_Torspin.cpp)
+add_executable(Planetos demos/modern/planetos/Planetos.cpp demos/modern/planetos/Topl_Planetos.cpp)
 
-target_link_libraries(Visualizer PRIVATE VRTLIB)
-target_link_libraries(Spacetime PRIVATE SVRTLIB)
-target_link_libraries(Audiovisual PRIVATE AVRTLIB)
-
-list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual)
+list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual Ragdolls Audiostream Fractile Torspin Planetos)
 
 foreach(target IN ITEMS ${modern_demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders demos demos/modern ${CMAKE_SOURCE_DIR})
+    target_link_libraries(${target} PRIVATE MRTLIB)
+    set_target_properties(${target} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
         target_sources(${target} PRIVATE "${RESOURCE_FILE}")
@@ -60,4 +64,4 @@ foreach(target IN ITEMS ${modern_demo_targets})
     if(SUPPORT_TEXTURES AND Rasteron_FOUND)
         target_link_libraries(${target} PUBLIC Rasteron)
     endif()
-endforeach() # audio support reaches Audiovisual through AVRTLIB
+endforeach() # audio support reaches every modern demo through MRTLIB

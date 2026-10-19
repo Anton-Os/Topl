@@ -80,11 +80,20 @@ vec4 getActorColor(){ return actor_color; } // tint assigned per actor from Mode
 
 vec3 applyTexture(vec3 albedo){ // blends the actor texture over a color, actor_tex.x of 0 leaves it untouched
 #ifdef INCLUDE_TEXTURES
-	vec2 uv = (actor_tex.w > 0.5)? world_pos.xz * 0.25 : texcoord.xy;
+	vec2 uv = (actor_tex.w > 0.5 && actor_tex.w < 1.5)? world_pos.xz * 0.25 : texcoord.xy;
 	uv = uv * ((actor_tex.y > 0.0)? actor_tex.y : 1.0) + vec2(getTime() * actor_tex.z, 0.0);
 	vec3 texColor = pow(texture(baseTex, uv).rgb, vec3(2.2)); // texture is stored in gamma space
 	return mix(albedo, texColor * (0.35 + albedo * 0.65), clamp(actor_tex.x, 0.0, 1.0));
 #else
 	return albedo;
+#endif
+}
+
+float applyTextureAlpha(float alpha){ // sprites (actor_tex.w of 2) take their coverage from the texture alpha
+#ifdef INCLUDE_TEXTURES
+	float coverage = texture(baseTex, texcoord.xy).a; // sampled outside the branch to keep derivatives valid
+	return (actor_tex.w > 1.5)? alpha * coverage : alpha;
+#else
+	return alpha;
 #endif
 }

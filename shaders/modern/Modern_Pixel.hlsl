@@ -79,11 +79,20 @@ float4 getActorColor(){ return actor_color; } // tint assigned per actor from Mo
 
 float3 applyTexture(float3 albedo, PS_INPUT input){ // blends the actor texture over a color, actor_tex.x of 0 leaves it untouched
 #ifdef INCLUDE_TEXTURES
-	float2 uv = (actor_tex.w > 0.5)? input.world_pos.xz * 0.25 : input.texcoord.xy;
+	float2 uv = (actor_tex.w > 0.5 && actor_tex.w < 1.5)? input.world_pos.xz * 0.25 : input.texcoord.xy;
 	uv = uv * ((actor_tex.y > 0.0)? actor_tex.y : 1.0) + float2(getTime() * actor_tex.z, 0.0);
 	float3 texColor = pow(abs(baseTex.Sample(baseSampler, uv).rgb), 2.2); // texture is stored in gamma space
 	return lerp(albedo, texColor * (0.35 + albedo * 0.65), saturate(actor_tex.x));
 #else
 	return albedo;
+#endif
+}
+
+float applyTextureAlpha(float alpha, PS_INPUT input){ // sprites (actor_tex.w of 2) take their coverage from the texture alpha
+#ifdef INCLUDE_TEXTURES
+	float coverage = baseTex.Sample(baseSampler, input.texcoord.xy).a; // sampled outside the branch to keep derivatives valid
+	return (actor_tex.w > 1.5)? alpha * coverage : alpha;
+#else
+	return alpha;
 #endif
 }

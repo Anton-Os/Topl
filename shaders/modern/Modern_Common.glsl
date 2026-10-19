@@ -10,7 +10,7 @@ layout(std140, binding = 0) uniform Block {
 
 	vec4 actor_color; // rgb tint and alpha
 	vec4 actor_params; // per-actor values, meaning depends on the pipeline
-	vec4 actor_tex; // x texture blend, y tiling, z scroll speed, w mapping (0 mesh coordinates, 1 world XZ)
+	vec4 actor_tex; // x texture blend, y tiling, z scroll speed, w mapping (0 mesh coordinates, 1 world XZ, 2 sprite with texture alpha)
 };
 
 #ifdef INCLUDE_TEXTURES

@@ -1,41 +1,25 @@
-add_library(RTLIB # Legacy Demos
+# Runtime Libraries
+# LRTLIB carries everything the legacy demos in demos/legacy need, MRTLIB carries the shared modern runtime
+# (Topl_Runtime.hpp and Topl_Runtime.cpp) that every demo in demos/modern builds on
+
+add_library(LRTLIB # Legacy Runtime
     demos/Topl_Factory.cpp
     demos/legacy/Topl_Demo.cpp
     demos/legacy/Topl_Demo_Loop.cpp
     demos/legacy/Topl_Demo_Pipelines.cpp
 )
 
-add_library(VRTLIB # Visual Runtime
+add_library(MRTLIB # Modern Runtime
     demos/Topl_Factory.cpp
     demos/modern/Topl_Runtime.cpp
-    demos/modern/visual/Topl_Visualizer.cpp
-)
-add_library(SVRTLIB # Spacetime Runtime
-    demos/Topl_Factory.cpp
-    demos/modern/Topl_Runtime.cpp
-    demos/modern/spacetime/Topl_Spacetime_Visualizer.cpp
-)
-add_library(AVRTLIB # Audio-Visual Runtime
-    demos/Topl_Factory.cpp
-    demos/modern/Topl_Runtime.cpp
-    demos/modern/audiovisual/Topl_Audio_Visualizer.cpp
 )
 
-list(APPEND runtimes
-    RTLIB
-    VRTLIB
-    SVRTLIB
-    AVRTLIB
-)
+list(APPEND runtimes LRTLIB MRTLIB)
 
 foreach(rt IN ITEMS ${runtimes})
     target_include_directories(${rt} PRIVATE core support geometry shaders demos)
-    set_target_properties(${rt} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
+    set_target_properties(${rt} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON) # Topl_Factory.cpp uses generic lambdas
     set_target_properties(${rt} PROPERTIES FOLDER "Runtime Libraries")
-    if(WIN32) # adding resource file to demos
-        target_include_directories(${rt} PRIVATE "${RESOURCE_DIR}")
-        target_sources(${rt} PRIVATE "${RESOURCE_FILE}")
-    endif()
     target_link_libraries(${rt} PUBLIC GLEW_lib)
     if(Vulkan_FOUND)
         target_include_directories(${rt} PUBLIC ${Vulkan_INCLUDE_DIRS})
@@ -52,23 +36,14 @@ foreach(rt IN ITEMS ${runtimes})
     if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
         target_link_libraries(${rt} PUBLIC Rasteron)
     endif()
-endforeach()
 
-if(SUPPORT_AUDIO) # Add audio support only to runtime libraries that need it
-    target_include_directories(RTLIB PUBLIC ${miniaudio_h})
-    target_link_libraries(RTLIB PUBLIC ${miniaudio_lib})
-    target_include_directories(RTLIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
-    target_include_directories(AVRTLIB PUBLIC ${miniaudio_h})
-    target_link_libraries(AVRTLIB PUBLIC ${miniaudio_lib})
-    target_include_directories(AVRTLIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
-endif()
-
-foreach(rt IN ITEMS VRTLIB SVRTLIB AVRTLIB) # Modern runtimes carry the engine so demos only link their runtime
-    target_include_directories(${rt} PRIVATE demos/modern)
-    target_link_libraries(${rt} PUBLIC CORELIB)
-    set_target_properties(${rt} PROPERTIES CXX_STANDARD 14) # Topl_Factory.cpp uses generic lambdas
-    if(SUPPORT_AUDIO) # every modern runtime plays and analyzes audio from its bottom menu pane
+    if(SUPPORT_AUDIO) # legacy demos and every modern demo play or capture audio
         target_include_directories(${rt} PUBLIC ${miniaudio_h})
         target_link_libraries(${rt} PUBLIC ${miniaudio_lib})
+        target_include_directories(${rt} PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
     endif()
 endforeach()
+
+# The modern runtime carries the engine so modern demos only link MRTLIB
+target_include_directories(MRTLIB PRIVATE demos/modern)
+target_link_libraries(MRTLIB PUBLIC CORELIB)
