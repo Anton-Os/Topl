@@ -4,8 +4,9 @@ std::map<Vec3f*, std::map<millisec_t, Vec3f>> Topl_Timeline::vec3f_map = std::ma
 std::map<float*, std::map<millisec_t, float>> Topl_Timeline::float_map = std::map<float*, std::map<millisec_t, float>>();
 std::map<double*, std::map<millisec_t, double>> Topl_Timeline::double_map = std::map<double*, std::map<millisec_t, double>>();
 
-template<typename T> 
-void Topl_Timeline::updateSequence(T map, millisec_t time){
+template<typename T>
+void Topl_Timeline::updateSequence(T map, millisec_t m){
+    auto& storage = TimelineStorage<T>::map;
 	for (auto& entry : storage) {
         T* var = entry.first;
         auto& seq = entry.second;

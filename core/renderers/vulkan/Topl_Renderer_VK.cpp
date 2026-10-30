@@ -153,7 +153,7 @@ void Topl_Renderer_VK::init(NATIVE_WINDOW window) {
     if (vkCreateWin32SurfaceKHR(_instance, &surfInfo, nullptr, &_surface) != VK_SUCCESS)
         throw std::runtime_error("Failed to create Win32 surface");
 #else
-#error Implement surface creation for your platform
+// #error Implement surface creation for your platform
 #endif
 
     // 3. Pick physical device

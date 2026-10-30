@@ -7,6 +7,8 @@
 
 // System Definitions
 
+#include "resource.h"
+
 #define GLEW_STATIC
 #ifndef __ANDROID__
     #define MAIN_ENTRY int main(int argc, char** argv)
@@ -60,8 +62,6 @@
     #include <io.h> // for files
     #define F_OK 0
     #define access _access
-
-    #include "resource.h"
 
     #define NATIVE_WINDOW HWND
     #define NATIVE_BITMAP BITMAP

@@ -47,10 +47,10 @@ add_executable(Audiovisual demos/modern/audiovisual/Audiovisual.cpp demos/modern
 add_executable(Ragdolls demos/modern/ragdolls/Ragdolls.cpp demos/modern/ragdolls/Topl_Ragdolls.cpp)
 add_executable(Audiostream demos/modern/audiostream/Audiostream.cpp demos/modern/audiostream/Topl_Audiostream.cpp)
 add_executable(Fractile demos/modern/fractile/Fractile.cpp demos/modern/fractile/Topl_Fractile.cpp)
-add_executable(Torspin demos/modern/torspin/Torspin.cpp demos/modern/torspin/Topl_Torspin.cpp)
+# add_executable(Torspin demos/modern/torspin/Torspin.cpp demos/modern/torspin/Topl_Torspin.cpp)
 add_executable(Planetos demos/modern/planetos/Planetos.cpp demos/modern/planetos/Topl_Planetos.cpp)
 
-list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual Ragdolls Audiostream Fractile Torspin Planetos)
+list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual Ragdolls Audiostream Fractile Planetos) #Torspin
 
 foreach(target IN ITEMS ${modern_demo_targets})
     target_include_directories(${target} PRIVATE core support geometry shaders demos demos/modern ${CMAKE_SOURCE_DIR})

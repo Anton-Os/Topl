@@ -314,10 +314,11 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
     case SOUNDS9: play(std::string(AUDIO_DIR) + "2000hz-sine-freqies.mp3"); break;
     // case SOUNDS9: play(std::string(AUDIO_DIR) + "3000hz-sine-freqies.mp3"); break;
     // TODO: Include other menu options here here
+#endif
     default: std::cout << "Menu ID: " << std::to_string(menuID) << std::endl;
     }
-#endif
 }
+
 #ifdef TOPL_ENABLE_AUDIO
 void Topl_Demo::play(std::string audioPathStr) {
     static unsigned long long audioFramesRead;

@@ -1,6 +1,7 @@
 #ifndef TOPL_TIMELINE_H
 
 #include <map>
+#include <algorithm>
 
 #include "Timer.hpp"
 #include "maths/Vector.h"
