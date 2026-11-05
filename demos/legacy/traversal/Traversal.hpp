@@ -68,7 +68,7 @@ private:
 #ifdef TOPL_ENABLE_TEXTURES
     std::vector<Topl_Sampler_2D*> sliceTextures;
     Topl_Sampler_2D sceneTextures[MAX_TEX_BINDINGS] = {
-        Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords), Topl_Sampler_Map(skewCoords)
+        Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords), Topl_Sampler_Map(doorwayCoords)
     };
 #endif
     Topl_Scene scene = PROGRAM_SCENE;

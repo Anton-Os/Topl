@@ -23,7 +23,7 @@ void Traversal_Demo::onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex
         }
 #ifdef TOPL_ENABLE_TEXTURES
     else if (menu == PROGRAM_Paint) {
-        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Topl_Sampler_Map(skewCoords); // TODO: Modify this with different doorways
+        for (unsigned t = 0; t < MAX_TEX_BINDINGS; t++) sceneTextures[t] = Topl_Sampler_Map(doorwayCoords); // TODO: Modify this with different doorways
         _renderer->texturizeScene(&scene);
     }
 #endif
@@ -67,7 +67,7 @@ void Traversal_Demo::init(){
             std::string sliceName = std::string("slice") + std::to_string(c + 1) + "_" + std::to_string(s + 1);
             scene.addGeometry(sliceName, sliceActorPtrs[c][s]);
 #ifdef TOPL_ENABLE_TEXTURES
-            sliceTextures.push_back(new Topl_Sampler_Map(skewCoords));
+            sliceTextures.push_back(new Topl_Sampler_Map(doorwayCoords));
             scene.addTexture(sliceName, sliceTextures.back());
 #endif
         }
@@ -83,7 +83,7 @@ void Traversal_Demo::init(){
 void Traversal_Demo::loop(double frameTime){
     static double totalTime = 0.0;
 
-    Topl_Demo::camera.setPos({ 0.0F, 0.01F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH * 0.5F });
+    Topl_Demo::camera.setPos({ 0.0F, 0.01F, sinf((float)totalTime * speed) * TRAVERSAL_DEPTH / 3.0F });
     Topl_Demo::camera.setRot({ (sinf((float)totalTime * speed) > 0.0)? MATH_PI : -MATH_PI * 2, 0.0F, 0.0F });
 
     if(isRotating)

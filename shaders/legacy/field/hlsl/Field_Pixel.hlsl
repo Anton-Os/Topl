@@ -61,31 +61,34 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 
 	float3 target = input.vertex_pos;
 	if(mode < 0) target = input.texcoord;
- 	
-	float3 ctrlPt = ctrlPoints[input.near_idx];
-	if(abs(mode) % 10 == 1) ctrlPt = ctrlPoints[input.far_idx];
-	else if(abs(mode) % 10 == 2) ctrlPt = ctrlPoints[input.sec_idx];
+ 	float3 nearPt = ctrlPoints[input.near_idx];
+	float3 secPt = ctrlPoints[input.sec_idx];
+	float3 farPt = ctrlPoints[input.far_idx];
+
+	float3 ctrlPt = nearPt;
+	if(abs(mode) % 10 == 1) ctrlPt = farPt;
+	else if(abs(mode) % 10 == 2) ctrlPt = secPt;
 	else if(abs(mode) % 10 == 3) ctrlPt = getCtrlPtsSum();
 	else if(abs(mode) % 10 == 4) ctrlPt *= getCtrlPtsLengths();
-	else if(abs(mode) % 10 == 5) ctrlPt += ctrlPoints[input.sec_idx] - ctrlPoints[input.far_idx];
-	else if(abs(mode) % 10 == 6) ctrlPt *= ctrlPoints[input.sec_idx] * ctrlPoints[input.far_idx];
-	else if(abs(mode) % 10 == 7) ctrlPt = smoothstep(ctrlPt, ctrlPoints[input.sec_idx], ctrlPoints[input.far_idx]);
-	else if(abs(mode) % 10 == 8) ctrlPt = lerp(ctrlPt, ctrlPoints[input.sec_idx], length(ctrlPoints[input.far_idx]));
-	else if(abs(mode) % 10 == 9) ctrlPt = cross(ctrlPt, ctrlPoints[input.sec_idx]);
+	else if(abs(mode) % 10 == 5) ctrlPt += secPt - farPt;
+	else if(abs(mode) % 10 == 6) ctrlPt *= secPt * farPt;
+	else if(abs(mode) % 10 == 7) ctrlPt = smoothstep(ctrlPt, secPt, farPt);
+	else if(abs(mode) % 10 == 8) ctrlPt = lerp(ctrlPt, secPt, length(farPt));
+	else if(abs(mode) % 10 == 9) ctrlPt = cross(ctrlPt, secPt);
 	float3 relCoord = ctrlPt - target;
 
 	uint m = abs(mode) / 10;
-	if(m % 10 == 1) outColor = field1(ctrlPt, target * target);
-	else if(m % 10 == 2) outColor = field2(ctrlPt, target * target);
-	else if(m % 10 == 3) outColor = field3(ctrlPt, target * target);
-	else if(m % 10 == 4) outColor = field4(ctrlPt, target * target);
-	else if(m % 10 == 5) outColor = field5(ctrlPt, target * target);
-	else if(m % 10 == 6) outColor = field6(ctrlPt, target * target);
-	else if(m % 10 == 7) outColor = field7(ctrlPt, target * target);
-	else if(m % 10 == 8) outColor = field8(ctrlPt, target * target);
-	else if(m % 10 == 9) outColor = field9(ctrlPt, target * target);
+	if(m % 10 == 1) outColor = field1(ctrlPt, target);
+	else if(m % 10 == 2) outColor = field2(ctrlPt, target);
+	else if(m % 10 == 3) outColor = field3(ctrlPt, target);
+	else if(m % 10 == 4) outColor = field4(ctrlPt, target);
+	else if(m % 10 == 5) outColor = field5(ctrlPt, target);
+	else if(m % 10 == 6) outColor = field6(ctrlPt, target);
+	else if(m % 10 == 7) outColor = field7(ctrlPt, secPt, farPt, target);
+	else if(m % 10 == 8) outColor = field8(ctrlPt, secPt, farPt, target);
+	else if(m % 10 == 9) outColor = field9(ctrlPt, secPt, farPt, target);
 	// else if(m >= 800 && m < 900) outColor = float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
-	else outColor = float4(length(relCoord), length(relCoord * 2), length(relCoord * 3), 1.0);
+	else outColor = float4(length(relCoord), length(relCoord), length(relCoord), 1.0);
 
 	outColor = float4(abs(outColor.r) - floor(outColor.r), abs(outColor.g) - floor(outColor.g), abs(outColor.b) - floor(outColor.b), outColor.a); // clamp
 #ifdef INCLUDE_TEXTURES

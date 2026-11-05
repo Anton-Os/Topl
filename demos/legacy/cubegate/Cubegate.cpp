@@ -78,10 +78,13 @@ void Cubegate_Demo::loop(double frameTime) {
     static float t = 0.0F;
     float f = (float)frameTime * 0.00000001F;
 
-    for (unsigned c = 0; c < CUBEGATE_COUNT; c++) { //cubeGates[c].rotate({ (c % 3 == 2)? f : 0.0f , (c % 3 == 1)? f : 0.0f , (c % 3 == 0)? f : 0.0f });
-        float scaleFactor = cos(t * (c + 1)) * ((CUBEGATE_COUNT - c) * 0.1F);
-        cubeGates[c].rotate({ 0.0f, 0.0f, f });
-        cubeGates[c].scale(Vec3f({ 1.0F + scaleFactor, 1.0F + scaleFactor, 1.0F + scaleFactor }));
+    for (unsigned r = 0; r < CUBEGATE_RECURSIONS; r++) {
+        for (unsigned c = 0; c < CUBEGATE_COUNT; c++) { //cubeGates[c].rotate({ (c % 3 == 2)? f : 0.0f , (c % 3 == 1)? f : 0.0f , (c % 3 == 0)? f : 0.0f });
+            float scaleFactor = cos(t * (c + 1)) * ((CUBEGATE_COUNT - c) * 0.1F);
+            cubeGates[c].rotate({ 0.0f, 0.0f, f });
+            cubeGates[c].scale(Vec3f({ 1.0F + scaleFactor, 1.0F + scaleFactor, 1.0F + scaleFactor }) * (float)(r + 1));
+        }
+        renderScene(&scene);
     }
 
     /* renderScene(&worldScenes[0], _coloredPipeline, Topl_Demo::shaderMode);
@@ -91,7 +94,6 @@ void Cubegate_Demo::loop(double frameTime) {
     renderScene(&worldScenes[4], _materialPipeline, Topl_Demo::shaderMode);
     renderScene(&worldScenes[5], _effectPipeline, Topl_Demo::shaderMode); */
 
-    renderScene(&scene);
     t += f;
 }
 

@@ -62,21 +62,24 @@ void main() {
 	vec3 target;
 	if(mode >= 0) target = vertex_pos;
 	else target = pos;
+	vec3 nearPt = ctrlPoints[near_index];
+	vec3 secPt = ctrlPoints[second_index];
+	vec3 farPt = ctrlPoints[far_index];
 
 	// Control point selection
 
-	vec3 ctrlPoint = ctrlPoints[near_index];// - ctrlPoints[second_index] - ctrlPoints[far_index];
+	vec3 ctrlPoint = nearPt;// - secPt - farPt;
 	switch(abs(mode) % 10){
-		case 1: ctrlPoint = ctrlPoints[far_index]; break;
-		case 2: ctrlPoint = ctrlPoints[second_index]; break;
+		case 1: ctrlPoint = farPt; break;
+		case 2: ctrlPoint = secPt; break;
 		case 3: ctrlPoint = getCtrlPtsSum(); break;
 		case 4: ctrlPoint *= getCtrlPtsLengths(); break;
-		case 5: ctrlPoint = ctrlPoints[near_index] * ctrlPoints[second_index] * ctrlPoints[far_index]; break;
-		case 6: ctrlPoint = ctrlPoints[near_index] - ctrlPoints[second_index] - ctrlPoints[far_index]; break;
-		case 7: ctrlPoint = ctrlPoints[near_index] + ctrlPoints[second_index] - ctrlPoints[far_index]; break;
-		case 8: ctrlPoint = ctrlPoints[near_index] - ctrlPoints[second_index] * ctrlPoints[far_index]; break;
-		case 9: ctrlPoint = smoothstep(ctrlPoints[near_index], ctrlPoints[second_index], ctrlPoints[far_index]); break;
-		default: ctrlPoint = ctrlPoints[near_index]; break;
+		case 5: ctrlPoint = nearPt * secPt * farPt; break;
+		case 6: ctrlPoint = nearPt - secPt - farPt; break;
+		case 7: ctrlPoint = nearPt + secPt - farPt; break;
+		case 8: ctrlPoint = nearPt - secPt * farPt; break;
+		case 9: ctrlPoint = smoothstep(nearPt, secPt, farPt); break;
+		default: ctrlPoint = nearPt; break;
 	}
 
 	// Algorithm selection
@@ -89,9 +92,9 @@ void main() {
 	else if(m % 10 == 4) target = field4(ctrlPoint, target);  
 	else if(m % 10 == 5) target = field5(ctrlPoint, target);
 	else if(m % 10 == 6) target = field6(ctrlPoint, target);
-	else if(m % 10 == 7) target = field7(ctrlPoint, target);
-	else if(m % 10 == 8) target = field8(ctrlPoint, target);
-	else if(m % 10 == 9) target = field9(ctrlPoint, target);
+	else if(m % 10 == 7) target = field7(ctrlPoint, secPt, farPt, target);
+	else if(m % 10 == 8) target = field8(ctrlPoint, secPt, farPt, target);
+	else if(m % 10 == 9) target = field9(ctrlPoint, secPt, farPt, target);
 	else target = vec3(length(relCoord) / 2, length(relCoord) / 2, length(relCoord) / 2);
 
 	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);

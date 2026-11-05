@@ -39,18 +39,20 @@ struct PS_INPUT {
 
 // Main
 
-float4 pattern_effect(float3 coords, uint m, double a){
-	float3 origin = float3(cursorPos, distance(cursorPos, coords));
+float4 pattern(float3 coords, uint m, double a){
+	double t = timeElapse / 1000.0; // convert milliseconds to seconds
+	uint p = (abs(mode / 100) % 10) + 1;
+	float3 origin = offset + float3(cursorPos, distance(cursorPos, coords));
 	if(coords.x == 0 && coords.y == 0 && coords.z == 0) return float4(0, 0, 0, 0.0); // returns transparent if coords are zeroed out by Custom_Pattern
-	else if(m % 10 == 1) return float4(pattern1(coords, origin), a);
-	else if(m % 10 == 2) return float4(pattern2(coords, origin), a);
-	else if(m % 10 == 3) return float4(pattern3(coords, origin), a);
-	else if(m % 10 == 4) return float4(pattern4(coords, origin), a);
-	else if(m % 10 == 5) return float4(pattern5(coords, origin), a);
-	else if(m % 10 == 6) return float4(pattern6(coords, origin), a);
-	else if(m % 10 == 7) return float4(pattern7(coords, origin), a);
-	else if(m % 10 == 8) return float4(pattern8(coords, origin), a);
-	else if(m % 10 == 9) return float4(pattern9(coords, origin), a);
+	else if(m % 10 == 1) return float4(pattern1(coords, origin, 3), a);
+	else if(m % 10 == 2) return float4(pattern2(coords, origin, 3), a);
+	else if(m % 10 == 3) return float4(pattern3(coords, origin, 3), a);
+	else if(m % 10 == 4) return float4(pattern4(coords, origin, 3, 3), a);
+	else if(m % 10 == 5) return float4(pattern5(coords, origin, 3, 3), a);
+	else if(m % 10 == 6) return float4(pattern6(coords, origin, 3, 3), a);
+	else if(m % 10 == 7) return float4(pattern7(coords, origin, p, t), a);
+	else if(m % 10 == 8) return float4(pattern8(coords, origin, p, t), a);
+	else if(m % 10 == 9) return float4(pattern9(coords, origin, p, t), a);
 	else return float4(coords, a);
 }
 
@@ -69,12 +71,12 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	else if(abs(mode) % 10 == 8) coords = float3(pow(abs(input.vertex_pos.x), abs(input.tangent.x)), pow(abs(input.texcoord.y), abs(input.tangent.y)), pow(abs(input.normal.z), abs(input.tangent.z)));
 	else if(abs(mode) % 10 == 9) coords = float3(dot(input.normal, input.tangent), dot(input.texcoord, input.vertex_color), dot(getRandColor(primID), input.vertex_pos));
 
-	outColor = pattern_effect(coords, abs(mode / 10), 1.0);
-	if(mode > 0) outColor = pattern_effect(-coords, abs(mode / 10), 1.0);
+	outColor = pattern(coords, abs(mode / 10), 1.0);
+	if(mode > 0) outColor = pattern(-coords, abs(mode / 10), 1.0);
 
-	if(abs(mode / 100) >= 1)
+	/* if(abs(mode / 100) >= 1)
 		for(uint i = 1; i <= abs(mode / 100) && i < 10; i++)
-			outColor = pattern_effect(coords * outColor.rgb, abs(mode / 10), 1.0);
+			outColor = pattern(coords * outColor.rgb, abs(mode / 10), 1.0); */
 #ifdef INCLUDE_TEXTURES
 	outColor *= modalTex(abs(mode / 1000), input.texcoord);
 #endif

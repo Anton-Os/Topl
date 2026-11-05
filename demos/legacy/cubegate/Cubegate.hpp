@@ -5,11 +5,12 @@
 #include "Topl_Demo.hpp"
 
 #define CUBEGATE_SIZE 1.0F
+#define CUBEGATE_RECURSIONS 3
 #define CUBEGATE_ORBSIZE 0.1F
 #define CUBEGATE_FLOORSIZE 10.0F
 #define CUBEGATE_BALLS 8
 #define CUBEGATE_SCENES 6
-#define CUBEGATE_TESS 4
+#define CUBEGATE_TESS 1
 #define CUBEGATE_COUNT 9
 #define CUBEGATE_NAME "cubegate" + std::to_string(rand() % 9999)
 
