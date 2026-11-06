@@ -86,15 +86,15 @@ void main() {
 
 	uint m = abs(mode) / 10;
 	vec3 relCoord = ctrlPoint - target;
-	if(m % 10 == 1) target = field1(ctrlPoint, target);  
-	else if(m % 10 == 2) target = field2(ctrlPoint, target);
-	else if(m % 10 == 3) target = field3(ctrlPoint, target);
-	else if(m % 10 == 4) target = field4(ctrlPoint, target);  
-	else if(m % 10 == 5) target = field5(ctrlPoint, target);
-	else if(m % 10 == 6) target = field6(ctrlPoint, target);
-	else if(m % 10 == 7) target = field7(ctrlPoint, secPt, farPt, target);
-	else if(m % 10 == 8) target = field8(ctrlPoint, secPt, farPt, target);
-	else if(m % 10 == 9) target = field9(ctrlPoint, secPt, farPt, target);
+	if(m % 10 == 1) target = dist_field1(ctrlPoint, target);  
+	else if(m % 10 == 2) target = dist_field2(ctrlPoint, target);
+	else if(m % 10 == 3) target = dist_field3(ctrlPoint, target);
+	else if(m % 10 == 4) target = cross_field1(ctrlPoint, target);  
+	else if(m % 10 == 5) target = cross_field2(ctrlPoint, target);
+	else if(m % 10 == 6) target = cross_field3(ctrlPoint, target);
+	else if(m % 10 == 7) target = trig_field1(ctrlPoint, secPt, farPt, target);
+	else if(m % 10 == 8) target = trig_field2(ctrlPoint, secPt, farPt, target);
+	else if(m % 10 == 9) target = trig_field3(ctrlPoint, secPt, farPt, target);
 	else target = vec3(length(relCoord) / 2, length(relCoord) / 2, length(relCoord) / 2);
 
 	color_final = vec4(target.r - floor(target.r), target.g  - floor(target.g), target.b - floor(target.b), 1.0);

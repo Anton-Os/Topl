@@ -31,8 +31,12 @@ layout(location = 0) out vec4 color_final;
 
 // Main
 
-vec3 cloud_effect(vec3 texcoord, float angle){
-	return vec3(abs(sin(texcoord.x + angle)), abs(cos(texcoord.y + angle)), abs(tan(texcoord.z + angle)));
+vec3 clouded(vec3 texcoord, float angle){
+	return vec3(
+		abs(sin(texcoord.x + angle)), 
+		abs(cos(texcoord.y + angle)), 
+		abs(tan(texcoord.z + angle))
+	);
 }
 
 void main() {
@@ -49,7 +53,7 @@ void main() {
 	for(int v = 0; v < 8; v++) texVals[v] = vec3(modalTex((abs(mode) + v) % 8, texcoord));
 #else
 	// for(int t = 0; t < 8; t++) texVals[t] = smoothstep(vec3(getRandColor(uint(abs(mode) + 1) * (t + 1))), vec3(getStepColor(uint(abs(mode) + 1) * (t + 1))), target);
-	for(int v = 0; v < 8; v++) texVals[v] = cloud_effect(texcoord * (t + 1), float(abs(mode) * (PI / 8) * v));
+	for(int v = 0; v < 8; v++) texVals[v] = clouded(texcoord * (t + 1), float(abs(mode) * (PI / 8) * v));
 #endif
 	color_final = vec4(texVals[0], a);
 	vec3 ambientColor = (lightVal + texVals[(1 + t) % 8]) / 2;

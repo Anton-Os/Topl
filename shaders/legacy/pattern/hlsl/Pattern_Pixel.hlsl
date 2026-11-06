@@ -42,17 +42,17 @@ struct PS_INPUT {
 float4 pattern(float3 coords, uint m, double a){
 	double t = timeElapse / 1000.0; // convert milliseconds to seconds
 	uint p = (abs(mode / 100) % 10) + 1;
-	float3 origin = offset + float3(cursorPos, distance(cursorPos, coords));
+	float3 origin = offset + float3(cursorPos * p, distance(cursorPos, coords));
 	if(coords.x == 0 && coords.y == 0 && coords.z == 0) return float4(0, 0, 0, 0.0); // returns transparent if coords are zeroed out by Custom_Pattern
-	else if(m % 10 == 1) return float4(pattern1(coords, origin, 3), a);
-	else if(m % 10 == 2) return float4(pattern2(coords, origin, 3), a);
-	else if(m % 10 == 3) return float4(pattern3(coords, origin, 3), a);
-	else if(m % 10 == 4) return float4(pattern4(coords, origin, 3, 3), a);
-	else if(m % 10 == 5) return float4(pattern5(coords, origin, 3, 3), a);
-	else if(m % 10 == 6) return float4(pattern6(coords, origin, 3, 3), a);
-	else if(m % 10 == 7) return float4(pattern7(coords, origin, p, t), a);
-	else if(m % 10 == 8) return float4(pattern8(coords, origin, p, t), a);
-	else if(m % 10 == 9) return float4(pattern9(coords, origin, p, t), a);
+	else if(m % 10 == 1) return float4(loop_pattern1(coords, origin, p), a);
+	else if(m % 10 == 2) return float4(loop_pattern2(coords, origin, p), a);
+	else if(m % 10 == 3) return float4(loop_pattern3(coords, origin, p), a);
+	else if(m % 10 == 4) return float4(hatch_pattern1(coords, origin, p, p), a);
+	else if(m % 10 == 5) return float4(hatch_pattern2(coords, origin, p, p), a);
+	else if(m % 10 == 6) return float4(hatch_pattern3(coords, origin, p, p), a);
+	else if(m % 10 == 7) return float4(timed_pattern1(coords, origin, p, t), a);
+	else if(m % 10 == 8) return float4(timed_pattern2(coords, origin, p, t), a);
+	else if(m % 10 == 9) return float4(timed_pattern3(coords, origin, p, t), a);
 	else return float4(coords, a);
 }
 
@@ -73,10 +73,6 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 
 	outColor = pattern(coords, abs(mode / 10), 1.0);
 	if(mode > 0) outColor = pattern(-coords, abs(mode / 10), 1.0);
-
-	/* if(abs(mode / 100) >= 1)
-		for(uint i = 1; i <= abs(mode / 100) && i < 10; i++)
-			outColor = pattern(coords * outColor.rgb, abs(mode / 10), 1.0); */
 #ifdef INCLUDE_TEXTURES
 	outColor *= modalTex(abs(mode / 1000), input.texcoord);
 #endif

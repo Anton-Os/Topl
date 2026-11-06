@@ -1,20 +1,20 @@
 // Looping Patterns
 
-float3 pattern1(float3 coords, float3 origin, uint iters){
+float3 loop_pattern1(float3 coords, float3 origin, uint iters){
     for(uint i = 0; i < iters; i++)
         for(int l = 0; l < 3; l++)
             if(dot(coords, origin) > 0) coords[l] *= -1;
     return coords - origin;
 }
 
-float3 pattern2(float3 coords, float3 origin, uint iters){
+float3 loop_pattern2(float3 coords, float3 origin, uint iters){
     for(uint i = 0; i < iters; i++)
         for(int l = 0; l < 3; l++)
             if(dot(coords, origin) < 0) coords[l] *= origin[l];
     return coords - origin;
 }
 
-float3 pattern3(float3 coords, float3 origin, uint iters){
+float3 loop_pattern3(float3 coords, float3 origin, uint iters){
     for(uint i = 0; i < iters; i++)
         for(int l = 0; l < 3; l++)
             if(length(coords) > length(origin)) coords *= origin / length(origin);
@@ -24,19 +24,19 @@ float3 pattern3(float3 coords, float3 origin, uint iters){
 
 // Hatched Patterns
 
-float3 pattern4(float3 coords, float3 origin, uint xDiv, uint yDiv){
+float3 hatch_pattern1(float3 coords, float3 origin, uint xDiv, uint yDiv){
     float xStep = abs((coords.x - origin.x) * xDiv) - floor(abs((coords.x - origin.x) * xDiv));
     float yStep = abs((coords.y - origin.y) * yDiv) - floor(abs((coords.y - origin.y) * yDiv));
     return float3(xStep, yStep, coords.z - origin.z);
 }
 
-float3 pattern5(float3 coords, float3 origin, uint xDiv, uint yDiv){
+float3 hatch_pattern2(float3 coords, float3 origin, uint xDiv, uint yDiv){
     float xStep = abs((coords.x - origin.x) * xDiv) - floor(abs((coords.x - origin.x) * xDiv));
     float yStep = abs((coords.y - origin.y) * yDiv) - floor(abs((coords.y - origin.y) * yDiv));
     return cross(coords - origin, float3(xStep, yStep, coords.z - origin.z));
 }
 
-float3 pattern6(float3 coords, float3 origin, uint xDiv, uint yDiv){
+float3 hatch_pattern3(float3 coords, float3 origin, uint xDiv, uint yDiv){
     float xStep = abs((coords.x - origin.x) * xDiv) - floor(abs((coords.x - origin.x) * xDiv));
     float yStep = abs((coords.y - origin.y) * yDiv) - floor(abs((coords.y - origin.y) * yDiv));
     return float3(pow(coords.x - origin.x, xStep), pow(coords.y - origin.y, yStep), pow(coords.z - origin.z, dot(coords - origin, float3(xStep, yStep, coords.z - origin.z))));
@@ -44,7 +44,7 @@ float3 pattern6(float3 coords, float3 origin, uint xDiv, uint yDiv){
 
 // Timed Patterns
 
-float3 pattern7(float3 coords, float3 origin, uint p, double t){
+float3 timed_pattern1(float3 coords, float3 origin, uint p, double t){
     float tStep = abs(sin(float(t)));
 	return float3(
         sin((coords.x - origin.x) * p), 
@@ -53,7 +53,7 @@ float3 pattern7(float3 coords, float3 origin, uint p, double t){
     ) * tStep;
 }
 
-float3 pattern8(float3 coords, float3 origin, uint p, double t){
+float3 timed_pattern2(float3 coords, float3 origin, uint p, double t){
     float tStep = abs(cos(float(t)));
     return float3(
         sin((coords.x - origin.x) * p) * tStep, 
@@ -62,7 +62,7 @@ float3 pattern8(float3 coords, float3 origin, uint p, double t){
     );
 }
 
-float3 pattern9(float3 coords, float3 origin, uint p, double t){
+float3 timed_pattern3(float3 coords, float3 origin, uint p, double t){
     float tStep = abs(tan(float(t)));
 	return float3(
 		sin((coords.x / origin.y) * p) / tStep, 

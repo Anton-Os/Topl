@@ -78,15 +78,15 @@ float4 main(PS_INPUT input, uint primID : SV_PrimitiveID) : SV_TARGET{
 	float3 relCoord = ctrlPt - target;
 
 	uint m = abs(mode) / 10;
-	if(m % 10 == 1) outColor = field1(ctrlPt, target);
-	else if(m % 10 == 2) outColor = field2(ctrlPt, target);
-	else if(m % 10 == 3) outColor = field3(ctrlPt, target);
-	else if(m % 10 == 4) outColor = field4(ctrlPt, target);
-	else if(m % 10 == 5) outColor = field5(ctrlPt, target);
-	else if(m % 10 == 6) outColor = field6(ctrlPt, target);
-	else if(m % 10 == 7) outColor = field7(ctrlPt, secPt, farPt, target);
-	else if(m % 10 == 8) outColor = field8(ctrlPt, secPt, farPt, target);
-	else if(m % 10 == 9) outColor = field9(ctrlPt, secPt, farPt, target);
+	if(m % 10 == 1) outColor = dist_field1(ctrlPt, target);
+	else if(m % 10 == 2) outColor = dist_field2(ctrlPt, target);
+	else if(m % 10 == 3) outColor = dist_field3(ctrlPt, target);
+	else if(m % 10 == 4) outColor = cross_field1(ctrlPt, target);
+	else if(m % 10 == 5) outColor = cross_field2(ctrlPt, target);
+	else if(m % 10 == 6) outColor = cross_field3(ctrlPt, target);
+	else if(m % 10 == 7) outColor = trig_field1(ctrlPt, secPt, farPt, target);
+	else if(m % 10 == 8) outColor = trig_field2(ctrlPt, secPt, farPt, target);
+	else if(m % 10 == 9) outColor = trig_field3(ctrlPt, secPt, farPt, target);
 	// else if(m >= 800 && m < 900) outColor = float4(pow(relCoord.x, relCoord.y), pow(relCoord.y, relCoord.z), pow(relCoord.z, relCoord.x), 1.0);
 	else outColor = float4(length(relCoord), length(relCoord), length(relCoord), 1.0);
 

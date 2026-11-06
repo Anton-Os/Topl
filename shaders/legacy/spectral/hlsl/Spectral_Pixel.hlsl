@@ -31,16 +31,7 @@ struct PS_INPUT {
 
 // Functions
 
-float4 splash_effect(float3 texcoord, float angle){
-	/* float2 transform = float2(texcoord.x, texcoord.y);
-
-	float2x2 rotMatrix = {
-		cos(angle), -sin(angle),
-		sin(angle), cos(angle)
-	};
-
-	transform = mul(rotMatrix, transform);
-	return float4(abs(transform.x - texcoord.y), abs(transform.y - texcoord.x), length(transform) + texcoord.z, 0.5) * 2; */
+float4 splash(float3 texcoord, float angle){
 	return float4(
 		abs(sin(texcoord.x + angle)), 
 		abs(cos(texcoord.y + angle)), 
@@ -48,7 +39,6 @@ float4 splash_effect(float3 texcoord, float angle){
 		length(texcoord - float3(0.5, 0.5, 0.0))
 	);
 }
-
 
 // Main
 
@@ -68,8 +58,8 @@ float4 main(PS_INPUT input) : SV_TARGET{
 #ifdef INCLUDE_TEXTURES
 		float4 texTarget = modalTex(abs(mode) + o, input.texcoord);
 #else
-		// float4 texTarget = splash_effect(input.texcoord, abs(mode) * o * (3.141592653 / 8));
-		float4 texTarget = splash_effect(input.texcoord, abs(mode) * (3.141592653 / 16));
+		// float4 texTarget = splash(input.texcoord, abs(mode) * o * (3.141592653 / 8));
+		float4 texTarget = splash(input.texcoord, abs(mode) * (3.141592653 / 16));
 #endif
 		texVals[o] =  float3(texTarget.r, texTarget.g, texTarget.b);
 	}
