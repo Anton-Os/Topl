@@ -4,3 +4,9 @@
 [submodule "Droidl"]
 	path = Droidl
 	url = https://github.com/Anton-Os/Droidl.git
+[submodule "Geometron"]
+	path = Geometron
+	url = https://github.com/Anton-Os/Geometron.git
+[submodule "Soundscape"]
+	path = Soundscape
+	url = https://github.com/Anton-Os/Soundscape.git
