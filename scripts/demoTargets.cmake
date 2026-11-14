@@ -19,7 +19,7 @@ list(APPEND demo_targets Hello) # Sandbox Molecular Meshform Penscape Kaleidosco
 list(APPEND demo_targets Molecular Meshform Penscape Kaleidoscope Animatrix Genesis Traversal Cubegate)
 
 foreach(target IN ITEMS ${demo_targets})
-    target_include_directories(${target} PRIVATE core support geometry shaders demos demos/legacy ${CMAKE_SOURCE_DIR})
+    target_include_directories(${target} PRIVATE core support ${geometry_dirs} shaders demos demos/legacy ${CMAKE_SOURCE_DIR})
     target_link_libraries(${target} PRIVATE CORELIB LRTLIB)
     if(WIN32) # adding resource file to demos
         target_include_directories(${target} PRIVATE "${RESOURCE_DIR}")
@@ -31,11 +31,7 @@ foreach(target IN ITEMS ${demo_targets})
     endif()
 endforeach()
 
-if(SUPPORT_AUDIO)
-    target_include_directories(Hello PUBLIC ${miniaudio_h})
-    target_link_libraries(Hello PUBLIC ${miniaudio_lib})
-    target_include_directories(Hello PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
-endif()
+# audio support reaches every legacy demo through CORELIB and LRTLIB, which link the Soundscape submodule
 
 
 # Building Modern Demos
@@ -53,7 +49,7 @@ add_executable(Planetos demos/modern/planetos/Planetos.cpp demos/modern/planetos
 list(APPEND modern_demo_targets Visualizer Spacetime Audiovisual Ragdolls Audiostream Fractile Planetos) #Torspin
 
 foreach(target IN ITEMS ${modern_demo_targets})
-    target_include_directories(${target} PRIVATE core support geometry shaders demos demos/modern ${CMAKE_SOURCE_DIR})
+    target_include_directories(${target} PRIVATE core support ${geometry_dirs} shaders demos demos/modern ${CMAKE_SOURCE_DIR})
     target_link_libraries(${target} PRIVATE MRTLIB)
     set_target_properties(${target} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON)
     if(WIN32) # adding resource file to demos

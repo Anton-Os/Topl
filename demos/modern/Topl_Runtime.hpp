@@ -9,7 +9,7 @@
 #include "meshes/Geo_Volume.hpp"
 #include "meshes/Geo_Orboid.hpp"
 #include "meshes/Geo_Cone.hpp"
-#include "constructs/Geo_Billboards.hpp"
+#include "constructs/Geo_Board.hpp"
 
 #include "legacy/color/Color_Shader.hpp" // picking for the menu panes
 #include "legacy/textured/Textured_Shader.hpp" // drawing for the menu panes
@@ -18,7 +18,7 @@
 #include "resource.h" // ids from the window menu bar
 
 #ifdef TOPL_ENABLE_AUDIO
-	#include <miniaudio/miniaudio.h> // Audio Library
+	#include "Soundscape.h" // Audio Library, built from the Soundscape submodule
 #endif
 
 // Runtime shared by the modern demos: window, backend, modern pipelines, FPS camera, frame loop and the menu panes
@@ -152,7 +152,7 @@ private:
 	std::vector<Runtime_Keyframe> _keys; // sorted by time
 };
 
-// Audio playback and spectrum analysis with miniaudio, inactive without SUPPORT_AUDIO
+// Audio playback and spectrum analysis with Soundscape, inactive without SUPPORT_AUDIO
 
 class Runtime_Audio {
 public:
@@ -168,17 +168,11 @@ public:
 
 	bool analyze(float* levels, unsigned count, float minFreq, float maxFreq); // band levels from 0 to 1, false without live audio
 private:
-	static float goertzel(const float* samples, unsigned count, float freq, float sampleRate);
-
 	unsigned _track = 0;
 	bool _isPaused = false;
 	std::vector<float> _window = std::vector<float>(RUNTIME_AUDIO_WINDOW, 0.0F);
 #ifdef TOPL_ENABLE_AUDIO
-	ma_engine _engine;
-	ma_sound _sound;
-	ma_decoder _decoder;
-	bool _isEngine = false, _isSound = false, _isDecoder = false;
-	float _sampleRate = 44100.0F;
+	SdTrack* _sdTrack = nullptr; // decodes for analysis and plays through the default output device
 #endif
 };
 
@@ -235,7 +229,7 @@ struct Runtime_Overlays {
 	Runtime_Overlays();
 	~Runtime_Overlays();
 
-	Geo_Billboard* getBoard(RUNTIME_Pane pane){ return boards[pane]; }
+	Geo_Board* getBoard(RUNTIME_Pane pane){ return boards[pane]; }
 	bool isReversed(RUNTIME_Pane pane) const { return pane == PANE_Camera || pane == PANE_Object || pane == PANE_Media; } // rows count right to left
 
 	Topl_Camera camera; // identity camera keeps the panes in screen space
@@ -246,7 +240,7 @@ struct Runtime_Overlays {
 	Geo_Listboard textureList = Geo_Listboard("runtime_textures", RUNTIME_PANE_ITEMS, &scenes[PANE_Textures]);
 	Geo_Crossboard mediaRow = Geo_Crossboard("runtime_media", RUNTIME_PANE_ITEMS, &scenes[PANE_Media]);
 	Geo_Paneboard timeline = Geo_Paneboard("runtime_timeline", &scenes[PANE_Timeline]);
-	Geo_Billboard* boards[PANE_COUNT] = { &cameraRow, &objectRow, &meshList, &textureList, &mediaRow, &timeline };
+	Geo_Board* boards[PANE_COUNT] = { &cameraRow, &objectRow, &meshList, &textureList, &mediaRow, &timeline };
 
 	Topl_Sampler_Button* buttons[PANE_Timeline][RUNTIME_PANE_ITEMS]; // numbered buttons for every pane except the timeline
 	Topl_Sampler_Slider timeSlider = Topl_Sampler_Slider(MENU_XL, RUNTIME_TIMELINE_STEPS);

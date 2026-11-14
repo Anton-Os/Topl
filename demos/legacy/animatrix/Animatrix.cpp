@@ -9,7 +9,7 @@ void Animatrix_Demo::init(){
     for(unsigned p = 0; p < ANIMATRIX_PUPPETS; p++){
         puppets[p].configure(&scene2D);
         puppets[p].shift(Vec3f({ -(2.5F / ANIMATRIX_PUPPETS) + ((2.5F / ANIMATRIX_PUPPETS) * p), (p % 2 == 1)? -0.5F : 0.5F, 0.0F }));
-        // anchors.push_back(Phys_Connector(Vec3f(0.0F, 0.0F, 0.0F), *puppets[p].getGeoActor(PUPPET_Body)->getPos()));
+        // anchors.push_back(Joint(Vec3f(0.0F, 0.0F, 0.0F), *puppets[p].getGeoActor(PUPPET_Body)->getPos()));
         // scene2D.addAnchor(&anchors.back(), puppets[p].getGeoActor(PUPPET_Body)->getName(), nullptr);
     }
 #endif

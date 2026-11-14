@@ -1,13 +1,5 @@
 #ifndef TOPL_SUPPORT_H
 
-#define ASSETS_DIR "${ASSETS_DIR}"
-#define FONTS_DIR "${ASSETS_DIR}fonts/"
-#define IMAGES_DIR "${ASSETS_DIR}images/"
-#define MODELS_DIR "${ASSETS_DIR}models/"
-#define RESOURCE_DIR "${ASSETS_DIR}res/"
-#define AUDIO_DIR "${ASSETS_DIR}audio/"
-#define SHADERS_DIR "${SHADERS_DIR}"
-
 #define TRUE 1
 #define FALSE 0
 #define ON 1
@@ -17,11 +9,10 @@
     #define TOPL_ENABLE_VULKAN
 #endif
 #if ${Rasteron_FOUND} && !defined(__ANDROID__) && !defined(IGNORE_RASTER)
-    #define RASTERON_ENABLE_QUEUE TRUE
-    #define RASTERON_ENABLE_SPACE TRUE
-    #define RASTERON_ENABLE_FONT TRUE
-    #include "Rasteron.h" // main library for Rasteron
-    #include "Loader.h" // loader library for Rasteron
+    #define RASTERON_ENABLE_ANIM TRUE // queues, UI elements and animation frames
+    #define RASTERON_ENABLE_FONT TRUE // text and messages
+    #include "Rasteron.h" // image library built from the Rasteron submodule, includes the loader
+    #undef ASSETS_DIR // Rasteron has its own assets, the engine paths are defined below
     #define TOPL_ENABLE_TEXTURES
 #endif
 #if ${Assimp_FOUND}
@@ -29,21 +20,31 @@
     // #include <assimp/Importer.hpp>
     // #include <assimp/postprocess.h>
     #define TOPL_ENABLE_MODELS
+    #define GEO_ENABLE_MODELS // model support inside of Geometron constructs
 #endif
 #if ${SUPPORT_PHYSICS}
     #define TOPL_ENABLE_PHYSICS
+    #define GEO_ENABLE_PHYSICS // RigidBody and Joint support inside of Geometron constructs
 #endif
 /* #if ${SUPPORT_CUDA}
     #define TOPL_ENABLE_CUDA
 #endif */
-#if ${SUPPORT_AUDIO}
-#ifndef TOPL_ENABLE_AUDIO // ensures only one audio library is enabled
-    // #include <miniaudio/miniaudio.h> // Audio Library
-    // #include <kissfft/kiss_fft.h> // FFT Library
-    // #include <kissfft/kiss_fftr.h> // FFT Library
-#define TOPL_ENABLE_AUDIO
+#if ${Soundscape_FOUND}
+    // #include "Soundscape.h" // audio library built from the Soundscape submodule, included where audio is used
+    #define TOPL_ENABLE_AUDIO
+#if ${Soundscape_MIDI}
+    // #include "MIDI.h" // MIDI plugin of Soundscape
+    #define TOPL_ENABLE_MIDI
 #endif
 #endif
+
+#define ASSETS_DIR "${ASSETS_DIR}"
+#define FONTS_DIR "${ASSETS_DIR}fonts/"
+#define IMAGES_DIR "${ASSETS_DIR}images/"
+#define MODELS_DIR "${ASSETS_DIR}models/"
+#define RESOURCE_DIR "${ASSETS_DIR}res/"
+#define AUDIO_DIR "${ASSETS_DIR}audio/"
+#define SHADERS_DIR "${SHADERS_DIR}"
 
 
 #ifdef _WIN32

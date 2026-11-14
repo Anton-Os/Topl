@@ -14,8 +14,8 @@
 #include "samplers/Topl_Sampler_UI.h"
 
 #ifdef TOPL_ENABLE_PHYSICS
-#include "physics/Phys_Actor.h"
-#include "physics/Phys_Connector.h"
+#include "RigidBody.h"
+#include "Joint.h"
 #endif
 
 #include "Topl_Camera.hpp"
@@ -68,9 +68,9 @@ public:
 	void resolvePhysics(){ resolvePhysics(FORCE_Directional); }
 	void addForce(const std::string& name, const Vec3f& vec);
 	void addForces(const std::string& name, const Vec3f& posVec, const Vec3f& angleVec, const Vec3f& sizeVec);
-	void addPhysics(const std::string& name, Phys_Actor* physActor);
-	void addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
-	void addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
+	void addPhysics(const std::string& name, RigidBody* physActor);
+	void addLink(Joint* connector, const std::string& name1, const std::string& name2); // links 2 named geometry actors
+	void addAnchor(Joint* connector, const std::string& name, const Vec3f* pos); // anchors target named geometry object
 	void remConnector(const std::string& targetActor); // breaks all connectors associated with named geometry
 #endif
 	Topl_Camera* camera = &_defaultCamera;
@@ -86,7 +86,7 @@ private:
 #ifdef TOPL_ENABLE_PHYSICS
 	std::vector<LinkedItems> _linkedItems; // stores linked actors and connectors
 	std::vector<AnchoredItems> _anchoredItems; // stores anchored actors and connectors
-	std::map<Geo_Actor*, Phys_Actor*> _physicsMap; // associates geometry to a physics structure
+	std::map<Geo_Actor*, RigidBody*> _physicsMap; // associates geometry to a physics structure
     // std::thread _phys_thread;
 #endif
 	bool _isTextured = false; // sets to true on texture operations

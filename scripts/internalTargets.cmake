@@ -29,7 +29,7 @@ add_library(CORELIB # SHARED # Core Library
     ${core_src}
 )
 
-target_include_directories(CORELIB PRIVATE core support geometry shaders)
+target_include_directories(CORELIB PRIVATE core support ${geometry_dirs} shaders)
 set_target_properties(CORELIB PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON)
 set_target_properties(CORELIB PROPERTIES FOLDER "Libraries")
 target_include_directories(CORELIB
@@ -46,38 +46,41 @@ endif()
 
 if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
     target_link_libraries(CORELIB PUBLIC Rasteron)
+    add_dependencies(CORELIB Rasteron_Source) # submodule builds first
 endif()
 
-if(SUPPORT_AUDIO)
-    target_include_directories(CORELIB PRIVATE ${miniaudio_h})
-    target_link_libraries(CORELIB PUBLIC ${miniaudio_lib})
-    target_include_directories(CORELIB PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src) # for header only build
+if(SUPPORT_AUDIO AND Soundscape_FOUND) # linking CORELIB to Soundscape
+    target_include_directories(CORELIB PUBLIC ${Soundscape_INCLUDE_DIRS})
+    target_link_libraries(CORELIB PUBLIC ${Soundscape_LIBRARIES})
+    add_dependencies(CORELIB Soundscape_Source) # submodule builds first
 endif()
 endif() # IGORE_NATIVELIBS
 
 # -------------- Geometry Library ------------- #
 
-list(APPEND geometry_src
-	# meshes
-    geometry/Geo_Vertex.cpp
-    geometry/Geo_Mesh.cpp
-    geometry/meshes/Geo_Surface.cpp
-    geometry/meshes/Geo_Volume.cpp
-    geometry/meshes/Geo_Cone.cpp
-    geometry/meshes/Geo_Orboid.cpp
-    geometry/meshes/Geo_Freeform.cpp
+# Meshes, constructs, maths and physics come from the Geometron submodule, GEOLIB is compiled from its sources
+# Headers inside of Geometron pick up the engine once core and support are included, such as Topl_Scene and Controls
+
+file(GLOB geometry_src
+    ${GEOMETRON_DIR}/core/*.cpp
+    ${GEOMETRON_DIR}/core/meshes/*.cpp
+    ${GEOMETRON_DIR}/plugin/form/*.cpp # freeform, voxel, composite, and recursive meshes
 )
 if(SUPPORT_MODELS AND Assimp_FOUND)
-    list(APPEND geometry_src geometry/meshes/Geo_Node.cpp)
+    file(GLOB geometry_model_src ${GEOMETRON_DIR}/plugin/model/*.cpp) # importing and exporting with Assimp
+    list(APPEND geometry_src ${geometry_model_src})
 endif()
 
 add_library(GEOLIB SHARED ${geometry_src}) # Geometry Library
-target_include_directories(GEOLIB PRIVATE core support geometry shaders)
+target_include_directories(GEOLIB PRIVATE core support ${geometry_dirs} shaders)
 set_target_properties(GEOLIB PROPERTIES FOLDER "Libraries")
 target_include_directories(GEOLIB INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Topl>
 )
+if(TARGET ASSIMP)
+    add_dependencies(GEOLIB ASSIMP) # dependency builds first
+endif()
 
 if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
    # target_link_libraries(GEOLIB PUBLIC assimp::assimp ${irrXML_lib} ${zlib_lib}) # for release build
@@ -96,4 +99,8 @@ if(SUPPORT_MODELS AND Assimp_FOUND) # linking targets to Assimp
     endif()
 endif()
 
-
+if(WIN32 AND SUPPORT_MODELS AND Assimp_FOUND) # copies the Assimp runtime library next to GEOLIB, where the demos run from
+    add_custom_command(TARGET GEOLIB POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:assimp::assimp> $<TARGET_FILE_DIR:GEOLIB>
+    )
+endif()

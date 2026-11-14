@@ -205,12 +205,7 @@ bool Runtime_Sequence::sample(double time, Runtime_FPSCamera* camera) const {
 
 // Audio
 
-Runtime_Audio::~Runtime_Audio(){
-	stop();
-#ifdef TOPL_ENABLE_AUDIO
-	if(_isEngine) ma_engine_uninit(&_engine);
-#endif
-}
+Runtime_Audio::~Runtime_Audio(){ stop(); }
 
 const char* Runtime_Audio::getTrackName(unsigned track){ return audioTracks[track % RUNTIME_TRACKS]; }
 
@@ -224,7 +219,7 @@ bool Runtime_Audio::isAvailable() const {
 
 bool Runtime_Audio::isPlaying() const {
 #ifdef TOPL_ENABLE_AUDIO
-	return _isSound && !_isPaused;
+	return _sdTrack != nullptr && !_isPaused;
 #else
 	return false;
 #endif
@@ -233,22 +228,16 @@ bool Runtime_Audio::isPlaying() const {
 bool Runtime_Audio::play(unsigned track){
 #ifdef TOPL_ENABLE_AUDIO
 	stop();
-	if(!_isEngine) _isEngine = ma_engine_init(NULL, &_engine) == MA_SUCCESS;
-	if(!_isEngine){ logMessage(MESSAGE_Exclaim, "Audio engine failed to initialize"); return false; }
 
 	std::string path = std::string(AUDIO_DIR) + audioTracks[track % RUNTIME_TRACKS];
-#ifdef _WIN32
-	std::replace(path.begin(), path.end(), '/', '\\');
-#endif
-	_isSound = ma_sound_init_from_file(&_engine, path.c_str(), 0, NULL, NULL, &_sound) == MA_SUCCESS;
-	if(!_isSound){ logMessage(MESSAGE_Exclaim, "Audio file failed to load"); return false; }
-	ma_sound_set_looping(&_sound, MA_TRUE);
-	ma_sound_start(&_sound);
+	_sdTrack = SdTrack_open(path.c_str()); // mono floats at the native sample rate
+	if(_sdTrack == nullptr){ logMessage(MESSAGE_Exclaim, "Audio file failed to load"); return false; }
+	if(!SdTrack_play(_sdTrack, true)){ // looping
+		logMessage(MESSAGE_Exclaim, "Audio engine failed to initialize");
+		stop();
+		return false;
+	}
 	_isPaused = false;
-
-	ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 1, 0); // mono floats at the native sample rate
-	_isDecoder = ma_decoder_init_file(path.c_str(), &config, &_decoder) == MA_SUCCESS;
-	if(_isDecoder) _sampleRate = (float)_decoder.outputSampleRate;
 
 	_track = track % RUNTIME_TRACKS;
 	std::cout << "Playing " << audioTracks[_track] << std::endl;
@@ -261,51 +250,28 @@ bool Runtime_Audio::play(unsigned track){
 
 void Runtime_Audio::stop(){
 #ifdef TOPL_ENABLE_AUDIO
-	if(_isSound){ ma_sound_uninit(&_sound); _isSound = false; }
-	if(_isDecoder){ ma_decoder_uninit(&_decoder); _isDecoder = false; }
+	if(_sdTrack != nullptr){ SdTrack_close(_sdTrack); _sdTrack = nullptr; }
 #endif
 	_isPaused = false;
 }
 
 void Runtime_Audio::setPaused(bool isPaused){
 #ifdef TOPL_ENABLE_AUDIO
-	if(_isSound && isPaused != _isPaused){
-		if(isPaused) ma_sound_stop(&_sound);
-		else ma_sound_start(&_sound);
-	}
+	if(_sdTrack != nullptr) SdTrack_setPaused(_sdTrack, isPaused);
 #endif
 	_isPaused = isPaused;
 }
 
-float Runtime_Audio::goertzel(const float* samples, unsigned count, float freq, float sampleRate){
-	float coeff = 2.0F * (float)cos(2.0 * MATH_PI * freq / sampleRate);
-	float s1 = 0.0F, s2 = 0.0F;
-	for(unsigned n = 0; n < count; n++){
-		float window = 0.5F - 0.5F * (float)cos(2.0 * MATH_PI * n / (count - 1)); // hann window
-		float s = samples[n] * window + coeff * s1 - s2;
-		s2 = s1; s1 = s;
-	}
-	float power = s1 * s1 + s2 * s2 - coeff * s1 * s2;
-	return (power > 0.0F)? (float)sqrt(power) / (count * 0.25F) : 0.0F; // amplitude normalized for the window
-}
-
 bool Runtime_Audio::analyze(float* levels, unsigned count, float minFreq, float maxFreq){
 #ifdef TOPL_ENABLE_AUDIO
-	if(!_isSound || !_isDecoder || _isPaused || count == 0) return false;
+	if(_sdTrack == nullptr || _isPaused || count == 0) return false;
+	if(!SdTrack_listen(_sdTrack, _window.data(), RUNTIME_AUDIO_WINDOW)) return false; // the samples currently being heard
 
-	ma_uint64 cursor = 0; // read the samples currently being heard
-	ma_sound_get_cursor_in_pcm_frames(&_sound, &cursor);
-	ma_uint64 start = (cursor > RUNTIME_AUDIO_WINDOW)? cursor - RUNTIME_AUDIO_WINDOW : 0;
-	ma_uint64 framesRead = 0;
-	if(ma_decoder_seek_to_pcm_frame(&_decoder, start) == MA_SUCCESS)
-		ma_decoder_read_pcm_frames(&_decoder, _window.data(), RUNTIME_AUDIO_WINDOW, &framesRead);
-	for(ma_uint64 s = framesRead; s < RUNTIME_AUDIO_WINDOW; s++) _window[(size_t)s] = 0.0F;
-
+	float sampleRate = SdTrack_getSampleRate(_sdTrack);
 	for(unsigned b = 0; b < count; b++){
-		float freq = minFreq * (float)pow(maxFreq / minFreq, (count > 1)? (float)b / (float)(count - 1) : 0.0F); // log spaced bands
-		float amp = goertzel(_window.data(), RUNTIME_AUDIO_WINDOW, freq, _sampleRate);
-		float level = (20.0F * (float)log10(amp + 1e-6F) + 60.0F) / 60.0F; // -60 dB to 0 dB maps to 0 to 1
-		levels[b] = (level < 0.0F)? 0.0F : (level > 1.0F)? 1.0F : level;
+		float freq = SdBand_getFreq(b, count, minFreq, maxFreq); // log spaced bands
+		float amp = SdBand_goertzel(_window.data(), RUNTIME_AUDIO_WINDOW, freq, sampleRate);
+		levels[b] = SdSignal_getLevel(amp, -60.0F, 0.0F); // -60 dB to 0 dB maps to 0 to 1
 	}
 	return true;
 #else
@@ -828,7 +794,7 @@ void Topl_Runtime::createOverlays(){
 
 	Topl_Factory::switchPipeline(_renderer, _texPipeline);
 	for(unsigned p = 0; p < PANE_COUNT; p++){
-		Geo_Billboard* board = o.boards[p];
+		Geo_Board* board = o.boards[p];
 		board->getGeoActor(board->getActorCount() - 1)->updateSize({ 0.01F, 0.01F, 0.0F }); // border around the panes
 		_renderer->buildScene(&o.scenes[p]);
 		_renderer->texturizeScene(&o.scenes[p]);
@@ -872,7 +838,7 @@ bool Topl_Runtime::pickOverlays(){
 		Geo_Actor* actor = _overlays.scenes[p].getPickActor(color);
 		if(actor == nullptr || actor->getName().find(_overlays.boards[p]->getPrefix()) == std::string::npos) continue;
 
-		Geo_Billboard* board = _overlays.boards[p];
+		Geo_Board* board = _overlays.boards[p];
 		for(unsigned short c = 0; c < board->getActorCount() - 1; c++)
 			if(board->getGeoActor(c) == actor){
 				pressPane((RUNTIME_Pane)p, c);
@@ -921,16 +887,15 @@ void Topl_Runtime::genTexture(unsigned index){
 	if(index == 0 || index >= RUNTIME_TEXTURES) return;
 	if(_isTextureMade[index] && index != RUNTIME_TEXTURES - 1) return; // the random image is chosen again every time
 
-	ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
 	unsigned color1 = (RAND_COLOR() & 0xFFFFFF) + 0xFF000000;
 	unsigned color2 = (RAND_COLOR() & 0xFFFFFF) + 0xFF000000;
 	switch(index){
-		case 1: _textures[index] = Topl_Sampler_2D(checkeredImgOp(size, { 8, 8, color1, color2 })); break;
-		case 2: _textures[index] = Topl_Sampler_2D(linedImgOp(size, color1, color2, 16, 0.0)); break;
+		case 1: _textures[index] = Topl_Sampler_Checker(8, color1, color2); break;
+		case 2: _textures[index] = Topl_Sampler_Lines(color1, color2, 16); break;
 		case 3: _textures[index] = Topl_Sampler_Gradient(SIDE_Radial, color1, color2); break;
 		case 4: _textures[index] = Topl_Sampler_Noise({ 16, 16, color1, color2 }); break;
 		case 5: _textures[index] = Topl_Sampler_Noise({ 8, 8, color1, color2 }, (unsigned)4); break;
-		case 6: _textures[index] = Topl_Sampler_2D(noiseImgOp_tiled(size, { 16, 16, color1, color2 })); break;
+		case 6: _textures[index] = Topl_Sampler_Noise({ 16, 16, color1, color2 }, NOISE_Tiled); break;
 		case 7: _textures[index] = Topl_Sampler_File(_pickScene.texImgPaths[0]); break;
 		default: _textures[index] = Topl_Sampler_File(_pickScene.texImgPaths[rand() % MAX_TEX_BINDINGS]);
 	}

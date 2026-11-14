@@ -47,7 +47,7 @@ void Topl_Ragdolls::placePose(Ragdoll_Body* body, Vec3f origin, float tilt){
 		Vec3f turned = Vec3f({ c * offset.data[0] - s * offset.data[1], s * offset.data[0] + c * offset.data[1], offset.data[2] }); // leans around z
 		Geo_Actor* actor = body->puppet->getGeoActor(p);
 		actor->setPos(origin + turned);
-		Phys_Actor* phys = body->puppet->getPhysActor(p);
+		RigidBody* phys = body->puppet->getPhysActor(p);
 		if(phys != nullptr) phys->velocity = Vec3f({ 0.0F, 0.0F, 0.0F });
 	}
 }
@@ -158,7 +158,7 @@ void Topl_Ragdolls::setStiffness(RAGDOLL_Stiffness stiffness){
 	_stiffness = stiffness;
 	for(auto b = _bodies.begin(); b != _bodies.end(); b++)
 		for(unsigned l = 0; l < PUPPET_LINKS + 1; l++){
-			Phys_Connector* link = b->puppet->getPhysLink(l);
+			Joint* link = b->puppet->getPhysLink(l);
 			if(link != nullptr) link->kVal = stiffnessValues[stiffness];
 		}
 	std::cout << stiffnessNames[stiffness] << std::endl;
@@ -172,7 +172,7 @@ void Topl_Ragdolls::collide(Ragdoll_Body* body){
 
 	for(unsigned p = 0; p < PUPPET_PARTS; p++){
 		Geo_Actor* actor = body->puppet->getGeoActor(p);
-		Phys_Actor* phys = body->puppet->getPhysActor(p);
+		RigidBody* phys = body->puppet->getPhysActor(p);
 		if(phys == nullptr) continue;
 		Vec3f pos = *actor->getPos();
 		Vec3f& vel = phys->velocity;
@@ -249,7 +249,7 @@ void Topl_Ragdolls::stepPhysics(double frameSecs){
 	for(auto b = _bodies.begin(); b != _bodies.end(); b++)
 		for(unsigned p = 0; p < PUPPET_PARTS; p++){
 			const Geo_Actor* actor = b->puppet->getGeoActor(p);
-			Phys_Actor* phys = b->puppet->getPhysActor(p);
+			RigidBody* phys = b->puppet->getPhysActor(p);
 			float mass = (float)phys->mass;
 			Vec3f force = Vec3f({ 0.0F, -RAGDOLL_GRAVITY * mass * _gravityScale, 0.0F });
 			if(_isWind) force = force + Vec3f({ (0.7F + 0.5F * (float)sin(t * 0.5F + p)) * mass * 6.0F, 0.0F, (float)sin(t * 0.3F) * mass * 2.0F });
@@ -336,7 +336,7 @@ void Topl_Ragdolls::onPress(RUNTIME_Key key){
 			for(auto b = _bodies.begin(); b != _bodies.end(); b++)
 				for(unsigned p = 0; p < PUPPET_PARTS; p++)
 					if(target == nullptr || (target == &(*b) && part == p)){
-						Phys_Actor* phys = b->puppet->getPhysActor(p);
+						RigidBody* phys = b->puppet->getPhysActor(p);
 						phys->velocity = phys->velocity + ((target == nullptr)? kick * 0.5F : kick);
 					}
 			break;

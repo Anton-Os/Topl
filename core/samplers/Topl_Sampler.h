@@ -129,7 +129,7 @@ struct Topl_Sampler_3D : public Topl_Sampler_Target {
 #ifdef TOPL_ENABLE_TEXTURES
     Topl_Sampler_3D(unsigned s) : width(s), height(s), depth(s), Topl_Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Matching Lengths
     Topl_Sampler_3D(unsigned w, unsigned h, unsigned z) : width(w), height(h), depth(z), Topl_Sampler_Target(TEX_3D){ setData(SAMPLER_COLOR_QUEUE); } // Custom Lengths
-    Topl_Sampler_3D(Rasteron_Queue* q) : width(queue_getImg(queue, 0)->width), height(queue_getImg(queue, 0)->height), depth(queue->frameCount), Topl_Sampler_Target(TEX_3D){
+    Topl_Sampler_3D(Rasteron_Queue* q) : width(queue_getImg(q, 0)->width), height(queue_getImg(q, 0)->height), depth(q->frameCount), Topl_Sampler_Target(TEX_3D){
 		assert(width == height);
 		setData(q);
 	}

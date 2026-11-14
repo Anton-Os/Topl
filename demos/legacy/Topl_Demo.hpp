@@ -6,7 +6,7 @@
 #include "meshes/Geo_Surface.hpp"
 #include "meshes/Geo_Cone.hpp"
 #include "meshes/Geo_Volume.hpp"
-#include "constructs/Geo_Billboards.hpp"
+#include "constructs/Geo_Board.hpp"
 
 #include "legacy/Legacy_Pipelines.h"
 
@@ -24,9 +24,7 @@
 #define PROGRAM_AUDIO_FRAMES 4096
 
 #ifdef TOPL_ENABLE_AUDIO
-#include <miniaudio/miniaudio.h> // Audio Library
-#include <kissfft/kiss_fft.h> // FFT Library
-#include <kissfft/kiss_fftr.h> // FFT Library
+#include "Soundscape.h" // Audio Library, built from the Soundscape submodule
 #endif
 
 class Topl_Demo {
@@ -42,11 +40,10 @@ public:
 	void run();
 #ifdef TOPL_ENABLE_AUDIO
 	void play(std::string audioPathStr); // TODO: Add number of repitions
-	ma_engine audioEngine; // for playback
-	ma_decoder audioDecoder; // for analysis
+	std::vector<SdTrack*> audioTracks; // for playback and analysis, tracks are closed once they finish
 	std::vector<float> audioData; // for capture
-	// kiss_fftr_cfg fftConfig = kiss_fftr_alloc(PROGRAM_AUDIO_FRAMES, false, NULL, NULL);
-	// kiss_fft_cpx fftOutput[PROGRAM_AUDIO_FRAMES];
+	SdBands audioBands = SdBands(); // band levels of the track played last
+	// SdSpectrum* audioSpectrum = SdSpectrum_alloc(PROGRAM_AUDIO_FRAMES); // TODO: Use for analysis with FFT
 #endif
 #ifdef TOPL_ENABLE_TEXTURES
 	bool checkPicker(Geo_Actor* actor){ return pickerObj->getId() == actor->getId(); }
@@ -190,9 +187,9 @@ private:
 		Geo_Listboard billboard_paint = Geo_Listboard("program_paint_bar", 9, &scene);
 		Geo_Paneboard billboard_timeline = Geo_Paneboard("program_timeline", &scene);
 		Geo_Crossboard billboard_media = Geo_Crossboard("program_media", 3, &scene);
-		Geo_Billboard billboard_object = Geo_Billboard("program_object", 5, 3, &scene);
-		Geo_Billboard billboard_shader = Geo_Billboard("program_shader", 3, 3, &scene);
-		Geo_Billboard* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
+		Geo_Board billboard_object = Geo_Board("program_object", 5, 3, &scene);
+		Geo_Board billboard_shader = Geo_Board("program_shader", 3, 3, &scene);
+		Geo_Board* billboards[PROGRAM_BILLBOARDS] = { &billboard_media, &billboard_object, &billboard_shader, &billboard_timeline, &billboard_camera, &billboard_appbar, &billboard_sculpt, &billboard_paint, };
 #if defined(TOPL_ENABLE_TEXTURES) && PROGRAM_IS_OVERLAY
 		std::string fontPath = std::string(FONTS_DIR) + "Raleway-Regular.ttf";
 		Topl_Sampler_2D textures[9]; // for switching textures

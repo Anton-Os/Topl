@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "Timer.hpp"
-#include "maths/Vector.h"
+#include "Vector.h"
 
 // #define MAX_TIMELINE_ATTRIBS 2056
 #define TIMELINE_START 0.0 // 0 millisecs will always be start

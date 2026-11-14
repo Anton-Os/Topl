@@ -10,9 +10,11 @@ file(GLOB image_assets ${ASSETS_DIR}/images/*.png ${ASSETS_DIR}/images/*.bmp ${A
 if(Rasteron_FOUND)
     message(STATUS "Performing batch texture and image generation...")
 
-    find_file(texTool_exec "texTool" "texTool.exe" PATHS "${Rasteron_Install_Path}/bin")
-    find_file(drawTool_exec "drawTool" "drawTool.exe" PATHS "${Rasteron_Install_Path}/bin")
-    find_file(simTool_exec "simTool" "simTool.exe" PATHS "${Rasteron_Install_Path}/bin")
+    # tools are built alongside the Rasteron submodule, see submoduleTargets.cmake
+    set(rasteron_tool_dirs "${Rasteron_BINARY_DIR}" "${Rasteron_BINARY_DIR}/Debug" "${Rasteron_BINARY_DIR}/Release")
+    find_file(texTool_exec "TexTool" "TexTool.exe" PATHS ${rasteron_tool_dirs} NO_DEFAULT_PATH)
+    find_file(drawTool_exec "DrawTool" "DrawTool.exe" PATHS ${rasteron_tool_dirs} NO_DEFAULT_PATH)
+    find_file(simTool_exec "SimTool" "SimTool.exe" PATHS ${rasteron_tool_dirs} NO_DEFAULT_PATH)
 
     # TODO: Dynamically generate textures
 endif()

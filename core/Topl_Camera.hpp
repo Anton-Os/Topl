@@ -1,5 +1,5 @@
-#include "maths/Vector.h"
-#include "maths/Matrix.h"
+#include "Vector.h"
+#include "Matrix.h"
 
 // Projection
 

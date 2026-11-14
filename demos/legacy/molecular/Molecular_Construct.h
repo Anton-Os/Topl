@@ -67,10 +67,10 @@ struct Molecular_Construct : Geo_Construct<Molecular_Construct> {
         for(unsigned m = 1; m < _geoActors.size(); m++) {
             scene->addGeometry(&_geoActors[m]);
             /* if (_geoActors[m].getName().find("line") == std::string::npos) {
-                // _physActors.push_back(Phys_Actor());
+                // _physActors.push_back(RigidBody());
                 scene->addPhysics(_geoActors[m].getName(), &_physActors[m]);
                 if(_geoActors[m].getName().find("sub") == std::string::npos) {
-                    _links.push_back(Phys_Connector(*_geoActors[m].getPos(), *_geoActors.front().getPos()));
+                    _links.push_back(Joint(*_geoActors[m].getPos(), *_geoActors.front().getPos()));
                     scene->addLink(&_links[m - 1], getPrefix() + "node" + std::to_string(m), getPrefix() + "hub");
                 } 
             } */

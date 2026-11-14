@@ -21,8 +21,7 @@ std::vector<Vec3f> calcPoints(1, VEC_3F_ONES);
 static Topl_Scene scene = Topl_Scene();
 
 #ifdef TOPL_ENABLE_AUDIO
-ma_engine audioEngine;
-ma_decoder audioDecoder;
+static SdTrack* audioTrack = nullptr;
 #endif
 
 static bool background_input_call(std::string& input) {
@@ -48,23 +47,16 @@ static void logFrameRate(double f1, double f2, double f3, double f4){
 
 static int audioPlaybackTest(std::string audioFileName) {
 #ifdef TOPL_ENABLE_AUDIO // Audio Playback Support
-	ma_result result;
-
-	result = ma_engine_init(NULL, &audioEngine);
-	if (result != MA_SUCCESS) return -1; // error
-
 	std::string soundFilePath = std::string(AUDIO_DIR) + audioFileName;
-#ifdef _WIN32
-	std::replace(soundFilePath.begin(), soundFilePath.end(), '/', '\\');
-#endif
-	static unsigned long long audioFramesRead;
+	audioTrack = SdTrack_open(soundFilePath.c_str());
+	if (audioTrack == nullptr) return -1; // error
+
 	static unsigned audioFrameCount = 4096;
 	static std::vector<float> audioData(audioFrameCount, 0.0);
-	result = ma_engine_play_sound(&audioEngine, soundFilePath.c_str(), NULL);
-	result = ma_decoder_init_file(soundFilePath.c_str(), NULL, &audioDecoder);
-	result = ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), audioFrameCount, &audioFramesRead);
-	if (result != MA_SUCCESS) return -2; // error
+	if (SdTrack_read(audioTrack, 0, audioData.data(), audioFrameCount) == 0) return -2; // error
+	if (!SdTrack_play(audioTrack, false)) return -3; // error
 #endif
+	return 0;
 }
 
 MAIN_ENTRY {
@@ -131,7 +123,7 @@ MAIN_ENTRY {
 	}
 
 #ifdef TOPL_ENABLE_AUDIO
-	ma_engine_uninit(&audioEngine); // Audio Cleanup
+	SdTrack_close(audioTrack); // Audio Cleanup
 #endif
     if(renderer != nullptr) delete(renderer);
 	// return 0;

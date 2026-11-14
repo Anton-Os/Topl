@@ -30,7 +30,7 @@ struct Molecular_Demo : public Topl_Demo {
           Molecular_Construct(8, 4), Molecular_Construct(9, 4), Molecular_Construct(10, 4), }
     };
 
-    Phys_Connector construct_links[MOLECULAR_CONSTRUCTS - 1];
+    Joint construct_links[MOLECULAR_CONSTRUCTS - 1];
 private:
     void onAnyKey(keyboard_t key);
     void onOverlayUpdate(PROGRAM_Menu menu, unsigned short paneIndex);

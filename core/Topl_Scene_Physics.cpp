@@ -3,7 +3,7 @@
 #ifdef TOPL_ENABLE_PHYSICS
 
 // recomputes connector attributes
-static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, const Vec3f& pos2){
+static void calcConnectorAttrib(Joint* connector, const Vec3f& pos1, const Vec3f& pos2){
 	Vec3f linkDiff = Vec3f(pos1) - Vec3f(pos2);
 	connector->length = linkDiff.len();
 	// if(connector->restLength < 0.0) connector->restLength = connector->length; // if bad rest length then fix
@@ -16,7 +16,7 @@ static void calcConnectorAttrib(Phys_Connector* connector, const Vec3f& pos1, co
 
 // Scene Dynamics
 
-void Topl_Scene::addPhysics(const std::string& name, Phys_Actor* physActor) {
+void Topl_Scene::addPhysics(const std::string& name, RigidBody* physActor) {
 	for(std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if(name == (*actor)->getName()){
 			_physicsMap.erase(*actor);
@@ -34,7 +34,7 @@ void Topl_Scene::addForces(const std::string& name, const Vec3f& posVec, const V
             if (_physicsMap.find(*actor) == _physicsMap.end())
                 return logMessage(MESSAGE_Exclaim, "Could not locate physics actor for object: " + name);
 
-            Phys_Actor* physActor = _physicsMap.find(*actor)->second;
+            RigidBody* physActor = _physicsMap.find(*actor)->second;
             if(!posVec.isZero()) physActor->addForce(FORCE_Directional, posVec);
             if(!angleVec.isZero()){
                 physActor->addForce(FORCE_Angular, angleVec);
@@ -48,7 +48,7 @@ void Topl_Scene::addForces(const std::string& name, const Vec3f& posVec, const V
         }
 }
 
-void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, const std::string& name2) {
+void Topl_Scene::addLink(Joint* connector, const std::string& name1, const std::string& name2) {
 	const Geo_Actor* link1 = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name1 == (*actor)->getName()) link1 = *actor;
@@ -62,7 +62,7 @@ void Topl_Scene::addLink(Phys_Connector* connector, const std::string& name1, co
 	_linkedItems.push_back({ connector, std::make_pair(link1, link2)}); // add new link
 }
 
-void Topl_Scene::addAnchor(Phys_Connector* connector, const std::string& name, const Vec3f* pos) {
+void Topl_Scene::addAnchor(Joint* connector, const std::string& name, const Vec3f* pos) {
 	const Geo_Actor* targetActor = nullptr;
 	for (std::vector<Geo_Actor*>::const_iterator actor = _geoActors.cbegin(); actor < _geoActors.cend(); actor++)
 		if (name == (*actor)->getName()) targetActor = *actor;
@@ -88,14 +88,14 @@ void Topl_Scene::resolvePhysics(FORCE_Type type) {
     // Resolve Link Connections // TODO: Run in a thread
 	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<LinkedItems>::iterator link = _linkedItems.begin(); link != _linkedItems.end(); link++){
-		Phys_Connector* connector = link->connector;
+		Joint* connector = link->connector;
 		const Geo_Actor* linkItem1 = link->linkedItems.first;
 		const Geo_Actor* linkItem2 = link->linkedItems.second;
 
 		calcConnectorAttrib(connector, *linkItem1->getPos(), *linkItem2->getPos());
 
         // Forces acting by length displacement
-		if(fabs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // No forces unless threshhold exceeded!
+		if(fabs(connector->length - connector->restLength) > JOINT_LEN_THRESH){ // No forces unless threshhold exceeded!
 			// determines direction of force for first geometry link
 			Vec3f force1 = (connector->length < connector->restLength)
 				? *linkItem1->getPos() - connector->centerPoint // length is shorter, push outward
@@ -121,22 +121,22 @@ void Topl_Scene::resolvePhysics(FORCE_Type type) {
 			const Vec3f forceAngle1 = connector->restAngleVecN1 - connector->angleVecN1;
 			const Vec3f forceAngle2 = connector->restAngleVecN2 - connector->angleVecN2;
 
-			addForce(linkItem1->getName(), forceAngle1 * CONNECTOR_ANGLE_SCALE);
-			addForce(linkItem2->getName(), forceAngle2 * CONNECTOR_ANGLE_SCALE);
+			addForce(linkItem1->getName(), forceAngle1 * JOINT_ANGLE_SCALE);
+			addForce(linkItem2->getName(), forceAngle2 * JOINT_ANGLE_SCALE);
 		}
 	}
 
     // Resolve Anchor Connections // TODO: Run in a thread
 	if(elapseSecs < PHYS_CALC_THRESH) // adding threshhold value
 	for(std::vector<AnchoredItems>::iterator anchor = _anchoredItems.begin(); anchor != _anchoredItems.end(); anchor++){
-		Phys_Connector* connector = anchor->connector;
+		Joint* connector = anchor->connector;
 		const Geo_Actor* actor = anchor->anchoredItems.first;
 		const Vec3f* anchorPos = anchor->anchoredItems.second;
 
 		calcConnectorAttrib(connector, *actor->getPos(), *anchorPos);
 
 		// Forces acting by length displacement
-		if(fabs(connector->length - connector->restLength) > CONNECTOR_LEN_THRESH){ // no forces act unless threshhold exceeded!
+		if(fabs(connector->length - connector->restLength) > JOINT_LEN_THRESH){ // no forces act unless threshhold exceeded!
 			// determines direction of force
 			Vec3f force = (connector->length < connector->restLength)
 				? *actor->getPos() - connector->centerPoint // length is shorter, push outward
@@ -151,14 +151,14 @@ void Topl_Scene::resolvePhysics(FORCE_Type type) {
 	
 		if (connector->restAngleVecN1 != connector->angleVecN1 && connector->restAngleVecN2 != connector->angleVecN2) {
 			const Vec3f forceAngle = connector->restAngleVecN1 - connector->angleVecN1;
-			addForce(actor->getName(), forceAngle * CONNECTOR_ANGLE_SCALE);
+			addForce(actor->getName(), forceAngle * JOINT_ANGLE_SCALE);
 		}
 	}
 
     // Resolve All Forces // TODO: Run in a thread
-	for (std::map<Geo_Actor*, Phys_Actor*>::iterator m = _physicsMap.begin(); m != _physicsMap.end(); m++) {
+	for (std::map<Geo_Actor*, RigidBody*>::iterator m = _physicsMap.begin(); m != _physicsMap.end(); m++) {
 		Geo_Actor* geoActor = m->first;
-		Phys_Actor* physActor = m->second;
+		RigidBody* physActor = m->second;
 
         if (physActor->actingForceCount > 0){
 			for (unsigned forceIndex = 0; forceIndex < physActor->actingForceCount; forceIndex++) {

@@ -6,9 +6,7 @@
 #include "legacy/advanced/Advance_Shader.hpp"
 
 #ifdef TOPL_ENABLE_AUDIO
-	#include <miniaudio/miniaudio.h> // Audio Library
-	#include <kissfft/kiss_fft.h> // FFT Library
-	#include <kissfft/kiss_fftr.h> // FFT Library
+	#include "Soundscape.h" // Audio Library, built from the Soundscape submodule
 #endif
 
 // OpenGL Test Renderer

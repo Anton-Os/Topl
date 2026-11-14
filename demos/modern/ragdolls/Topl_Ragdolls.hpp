@@ -1,6 +1,6 @@
 #include "../Topl_Runtime.hpp"
 
-#include "constructs/Geo_Puppet.hpp"
+#include "Geo_Puppet.hpp"
 
 // Ragdolls: puppets from Geo_Puppet held together by the spring connectors in support/physics.
 // 3D puppets are built from engine meshes and tumble around an arena, a marionette hangs from a swinging anchor,
@@ -56,7 +56,7 @@ private:
 
 	// Marionette
 	Vec3f _anchorPoint = Vec3f({ 0.0F, 6.0F, 4.0F });
-	Phys_Connector _anchorLink;
+	Joint _anchorLink;
 	Geo_Actor _anchorActor;
 	Topl_Scene _propScene = Topl_Scene(&camera);
 

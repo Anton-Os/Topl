@@ -54,7 +54,7 @@ void Topl_Demo::_overlayCallback(MOUSE_Event event, Geo_Actor* actor){
     static Vec3f pivot = *Topl_Demo::camera.getRot();
 
     std::pair<float, float> tracerPathDiff = Platform::mouseControl.getLastPathDiff();
-    Geo_Billboard* billboard = nullptr;
+    Geo_Board* billboard = nullptr;
     for(unsigned o = 0; o < PROGRAM_BILLBOARDS; o++) 
         if(actor->getName().find(_overlays.billboards[o]->getPrefix()) != std::string::npos){
             std::cout << "Selected billboard at index " << std::to_string(o) << std::endl;
@@ -271,20 +271,21 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
         break;
 #ifdef TOPL_ENABLE_TEXTURES
     case SAMPLERS1: case SAMPLERS2: case SAMPLERS3: case SAMPLERS4: case SAMPLERS5: case SAMPLERS6: case SAMPLERS7: case SAMPLERS8: case SAMPLERS9: {
-        ImageSize size = { SAMPLER_WIDTH, SAMPLER_HEIGHT };
         for (unsigned t = 0; t < 9; t++) {
             unsigned i = (t < 8) ? t : (rand() % 8);
             unsigned r1 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
             unsigned r2 = (RAND_COLOR() & 0xFFFFFF) + 0x88000000;
+            ColorGrid grid = { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 };
+            unsigned short octaves = (rand() % 4) + 1;
             switch (i) {
             case 0: _overlays.textures[t] = Topl_Sampler_Gradient((SIDE_Type)(rand() % 5), r1, r2); break; // random gradients
-            case 1: _overlays.textures[t] = Topl_Sampler_2D(linedImgOp(size, r1, r2, (rand() % 10) + 10, (rand() % 2 == 0) ? 0.0 : 1.0)); break; // lines
-            case 2: _overlays.textures[t] = Topl_Sampler_2D(checkeredImgOp(size, { (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 })); break; // lines
-            case 3: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }); break; // basic noise
-            case 4: _overlays.textures[t] = Topl_Sampler_Noise({ (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1); break; // octave noise
-            case 5: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_tiled(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 })); break; // tiled noise
-            case 6: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_add(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // added noise
-            case 7: _overlays.textures[t] = Topl_Sampler_2D(noiseImgOp_diff(size, { (unsigned)pow(2, t + 1), (unsigned)pow(2, t + 1), r1, r2 }, (rand() % 4) + 1)); break; // subtracted noise
+            case 1: _overlays.textures[t] = Topl_Sampler_Lines(r1, r2, (rand() % 10) + 10, rand() % 2 == 1); break; // lines
+            case 2: _overlays.textures[t] = Topl_Sampler_Checker({ (unsigned)(rand() % 15) + 5, (unsigned)(rand() % 15) + 5, r1, r2 }); break; // checkers
+            case 3: _overlays.textures[t] = Topl_Sampler_Noise(grid); break; // basic noise
+            case 4: _overlays.textures[t] = Topl_Sampler_Noise(grid, (unsigned)octaves); break; // octave noise
+            case 5: _overlays.textures[t] = Topl_Sampler_Noise(grid, NOISE_Tiled); break; // tiled noise
+            case 6: _overlays.textures[t] = Topl_Sampler_Noise(grid, octaves, NOISE_Added); break; // added noise
+            case 7: _overlays.textures[t] = Topl_Sampler_Noise(grid, octaves, NOISE_Subtracted); break; // subtracted noise
             default: _overlays.textures[t] = Topl_Sampler_File(_overlays.scene.texImgPaths[t]);
             }
             if (t == 0) _background.scene.addTexture(&_overlays.textures[t]);
@@ -321,13 +322,23 @@ void Topl_Demo::menuSelect(unsigned short menuID) { // TODO: Add menu input for 
 
 #ifdef TOPL_ENABLE_AUDIO
 void Topl_Demo::play(std::string audioPathStr) {
-    static unsigned long long audioFramesRead;
+    for(std::vector<SdTrack*>::iterator t = audioTracks.begin(); t != audioTracks.end();) // tracks that have finished are closed
+        if(!SdTrack_isPlaying(*t)){ SdTrack_close(*t); t = audioTracks.erase(t); }
+        else t++;
+
+    SdTrack* track = SdTrack_open(audioPathStr.c_str());
+    if(track == nullptr) return logMessage(MESSAGE_Exclaim, "audio track failed to open");
+
     if(audioData.empty()) audioData.assign(PROGRAM_AUDIO_FRAMES, 0.0F);
-    if(ma_engine_play_sound(&audioEngine, audioPathStr.c_str(), NULL) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to play sound");
-    if(ma_decoder_init_file(audioPathStr.c_str(), NULL, &audioDecoder) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio decoder failed to initialize");
-    if(ma_decoder_read_pcm_frames(&audioDecoder, audioData.data(), PROGRAM_AUDIO_FRAMES, &audioFramesRead) != MA_SUCCESS);
-    // kiss_fftr(fftConfig, audioData.data(), fftOutput); // TODO: Uncomment this when resolved
-    ma_decoder_uninit(&audioDecoder);
+    SdTrack_read(track, 0, audioData.data(), PROGRAM_AUDIO_FRAMES); // mono samples from the start of the track
+    SdBands_init(&audioBands, SD_BANDS, SD_MIN_FREQ, SD_MAX_FREQ);
+    SdBands_process(&audioBands, audioData.data(), PROGRAM_AUDIO_FRAMES, SdTrack_getSampleRate(track), 0.0);
+
+    if(!SdTrack_play(track, false)){
+        SdTrack_close(track);
+        return logMessage(MESSAGE_Exclaim, "audio track failed to play sound");
+    }
+    audioTracks.push_back(track);
     std::cout << "Playing sound " << audioPathStr << std::endl;
 }
 #endif 
@@ -351,10 +362,6 @@ void Topl_Demo::setup(android_app * app) {
     Platform::keyControl.addHandler(std::bind(&Topl_Demo::_onAnyKey, this, std::placeholders::_1));
     Platform::mouseControl.addHandler(std::bind(&Topl_Demo::_onAnyPress, this, std::placeholders::_1, std::placeholders::_2));
     Platform::onMenuSelect = std::bind(&Topl_Demo::menuSelect, this, std::placeholders::_1);
-#ifdef TOPL_ENABLE_AUDIO
-    if (ma_engine_init(NULL, &audioEngine) != MA_SUCCESS) return logMessage(MESSAGE_Exclaim, "audio engine failed to initialize");
-#endif
-
     setPipelines();
     _renderer->buildScene(&_editor.scene);
 #ifdef TOPL_ENABLE_TEXTURES
@@ -466,8 +473,8 @@ void Topl_Demo::cleanup() {
 #endif
 #endif
 #ifdef TOPL_ENABLE_AUDIO
-    ma_engine_uninit(&audioEngine); // TODO: Move to a different area?
-    // kiss_fft_free(&fftConfig);
+    for(unsigned t = 0; t < audioTracks.size(); t++) SdTrack_close(audioTracks[t]); // TODO: Move to a different area?
+    audioTracks.clear();
 #endif
 	delete(_renderer);
 	delete(_platform);

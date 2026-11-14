@@ -1,6 +1,6 @@
 #include "Geo_Construct.hpp"
 #include "meshes/Geo_Orboid.hpp"
-#include "meshes/Geo_Freeform.hpp"
+#include "form/Geo_Forms.hpp"
 
 #include "Topl_Demo.hpp"
 
@@ -39,12 +39,12 @@ struct Meshform_Demo : public Topl_Demo {
         { new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE), new Geo_DecOrb(MESHFORM_SIZE) }
     };
     Geo_Freeform* freeforms[4] = {
-        // new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 })),
-        //new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }))
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 10 }), spawn_randTrigs),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 10, 10, 20 }), spawn_randTrigs),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 10 }), spawn_randTrigs),
-        new Geo_Freeform(ShapeFreeform({ MESHFORM_SIZE, 20, 20, 20 }), spawn_randTrigs)
+        // new Geo_Freeform(Form({ MESHFORM_SIZE, 5, 5, 5 })), new Geo_Freeform(Form({ MESHFORM_SIZE, 10, 10, 10 })),
+        //new Geo_Freeform(Form({ MESHFORM_SIZE, 15, 15, 15 })), new Geo_Freeform(Form({ MESHFORM_SIZE, 20, 20, 20 }))
+        new Geo_Freeform(Form({ MESHFORM_SIZE, 10, 10, 10 }), spawn_randTrigs),
+        new Geo_Freeform(Form({ MESHFORM_SIZE, 10, 10, 20 }), spawn_randTrigs),
+        new Geo_Freeform(Form({ MESHFORM_SIZE, 20, 20, 10 }), spawn_randTrigs),
+        new Geo_Freeform(Form({ MESHFORM_SIZE, 20, 20, 20 }), spawn_randTrigs)
     };
     Geo_Torus* toruses[3] = {
         new Geo_Torus(MESHFORM_SIZE, Shape3D({ MESHFORM_SIZE / 2.0F, 20, 20})),

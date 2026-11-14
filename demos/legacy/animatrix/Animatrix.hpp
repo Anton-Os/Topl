@@ -1,7 +1,7 @@
 #include "meshes/Geo_Volume.hpp"
-#include "constructs/Geo_Puppet.hpp"
+#include "Geo_Puppet.hpp"
 #ifdef TOPL_ENABLE_MODELS
-#include "constructs/Geo_Model.hpp"
+#include "model/Geo_Model.hpp"
 #endif
 
 #include "Topl_Demo.hpp"
@@ -38,7 +38,7 @@ private:
       Geo_Puppet2D("puppet2", puppetAssetPaths[1]), // ghost
       Geo_Puppet2D("puppet3", puppetAssetPaths[2])  // demon
     };
-    std::vector<Phys_Connector> anchors;
+    std::vector<Joint> anchors;
 #endif
 
     Geo_Mesh floorMesh = Geo_Quad3D(1.0, ANIMATRIX_FLOOR_SIZE);

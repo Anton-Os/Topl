@@ -17,7 +17,7 @@ add_library(MRTLIB # Modern Runtime
 list(APPEND runtimes LRTLIB MRTLIB)
 
 foreach(rt IN ITEMS ${runtimes})
-    target_include_directories(${rt} PRIVATE core support geometry shaders demos)
+    target_include_directories(${rt} PRIVATE core support ${geometry_dirs} shaders demos)
     set_target_properties(${rt} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS ON) # Topl_Factory.cpp uses generic lambdas
     set_target_properties(${rt} PROPERTIES FOLDER "Runtime Libraries")
     target_link_libraries(${rt} PUBLIC GLEW_lib)
@@ -35,12 +35,13 @@ foreach(rt IN ITEMS ${runtimes})
 
     if(SUPPORT_TEXTURES AND Rasteron_FOUND) # linking CORELIB to Rasteron
         target_link_libraries(${rt} PUBLIC Rasteron)
+        add_dependencies(${rt} Rasteron_Source) # submodule builds first
     endif()
 
-    if(SUPPORT_AUDIO) # legacy demos and every modern demo play or capture audio
-        target_include_directories(${rt} PUBLIC ${miniaudio_h})
-        target_link_libraries(${rt} PUBLIC ${miniaudio_lib})
-        target_include_directories(${rt} PUBLIC ${EXTERNAL_PROJ_DIR}/kissfft/src)
+    if(SUPPORT_AUDIO AND Soundscape_FOUND) # legacy demos and every modern demo play or capture audio through Soundscape
+        target_include_directories(${rt} PUBLIC ${Soundscape_INCLUDE_DIRS})
+        target_link_libraries(${rt} PUBLIC ${Soundscape_LIBRARIES})
+        add_dependencies(${rt} Soundscape_Source) # submodule builds first
     endif()
 endforeach()
 

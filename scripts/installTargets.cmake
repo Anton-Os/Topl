@@ -18,7 +18,9 @@ install(TARGETS ${installTargets}
 file(GLOB_RECURSE interfaceHeaders 
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/*.h
+    ${GEOMETRON_DIR}/core/*.h
+    ${GEOMETRON_DIR}/plugin/*.h
+    ${GEOMETRON_DIR}/support/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.h
 )
 

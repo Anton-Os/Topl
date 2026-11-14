@@ -6,108 +6,25 @@ static const float ringRadii[STREAM_RINGS] = { 2.0F, 3.4F, 4.8F, 6.4F, 8.2F };
 static const float ringSizes[STREAM_RINGS] = { 0.42F, 0.38F, 0.4F, 0.36F, 0.34F };
 static const unsigned foldOptions[3] = { 4, 6, 12 };
 
-static float clamp01(float x){ return (x < 0.0F)? 0.0F : (x > 1.0F)? 1.0F : x; }
-
-static float goertzel(const float* samples, unsigned count, float freq, float sampleRate){
-	float coeff = 2.0F * (float)cos(2.0 * MATH_PI * freq / sampleRate);
-	float s1 = 0.0F, s2 = 0.0F;
-	for(unsigned n = 0; n < count; n++){
-		float window = 0.5F - 0.5F * (float)cos(2.0 * MATH_PI * n / (count - 1)); // hann window
-		float s = samples[n] * window + coeff * s1 - s2;
-		s2 = s1; s1 = s;
-	}
-	float power = s1 * s1 + s2 * s2 - coeff * s1 * s2;
-	return (power > 0.0F)? (float)sqrt(power) / (count * 0.25F) : 0.0F;
-}
-
-// Capture
-
-#ifdef TOPL_ENABLE_AUDIO
-void Stream_Capture::onData(ma_device* device, void* output, const void* input, ma_uint32 frameCount){ // runs on the device thread
-	Stream_Capture* capture = (Stream_Capture*)device->pUserData;
-	const float* samples = (const float*)input;
-	if(capture == nullptr || samples == nullptr) return;
-
-	unsigned long long written = capture->_written.load(std::memory_order_relaxed);
-	for(ma_uint32 s = 0; s < frameCount; s++) capture->_ring[(size_t)((written + s) & (STREAM_RING_BUFFER - 1))] = samples[s];
-	capture->_written.store(written + frameCount, std::memory_order_release);
-	(void)output;
-}
-#endif
-
-unsigned Stream_Capture::getDeviceCount(){
-#ifdef TOPL_ENABLE_AUDIO
-	if(!_isContext) _isContext = ma_context_init(NULL, 0, NULL, &_context) == MA_SUCCESS;
-	if(!_isContext) return 0;
-	ma_device_info* playbackInfos = nullptr;
-	ma_uint32 playbackCount = 0;
-	if(ma_context_get_devices(&_context, &playbackInfos, &playbackCount, &_captureInfos, &_captureCount) != MA_SUCCESS) _captureCount = 0;
-	return _captureCount;
-#else
-	return 0;
-#endif
-}
-
-std::string Stream_Capture::getDeviceName(unsigned deviceIndex){
-#ifdef TOPL_ENABLE_AUDIO
-	if(getDeviceCount() == 0) return "default device";
-	return std::string(_captureInfos[deviceIndex % _captureCount].name);
-#else
-	return "no audio support";
-#endif
-}
-
-bool Stream_Capture::start(STREAM_Source source, unsigned deviceIndex){
-#ifdef TOPL_ENABLE_AUDIO
-	stop();
-	if(source == STREAM_Synth) return false;
-	unsigned count = getDeviceCount();
-	if(!_isContext) return false;
-
-	ma_device_config config = ma_device_config_init((source == STREAM_Loopback)? ma_device_type_loopback : ma_device_type_capture);
-	config.capture.format = ma_format_f32;
-	config.capture.channels = 1; // miniaudio mixes the input down to mono
-	config.sampleRate = 0; // native rate of the device
-	config.dataCallback = onData;
-	config.pUserData = this;
-	if(source == STREAM_Microphone && count > 0) config.capture.pDeviceID = &_captureInfos[deviceIndex % count].id;
-
-	if(ma_device_init(&_context, &config, &_device) != MA_SUCCESS) return false;
-	_isDevice = true;
-	_sampleRate = (_device.sampleRate > 0)? (float)_device.sampleRate : 48000.0F;
-	_written.store(0);
-	if(ma_device_start(&_device) != MA_SUCCESS){ stop(); return false; }
-	return true;
-#else
-	return false;
-#endif
-}
-
-void Stream_Capture::stop(){
-#ifdef TOPL_ENABLE_AUDIO
-	if(_isDevice) ma_device_uninit(&_device);
-#endif
-	_isDevice = false;
-}
-
-void Stream_Capture::close(){
-#ifdef TOPL_ENABLE_AUDIO
-	if(_isContext) ma_context_uninit(&_context);
-#endif
-	_isContext = false;
-}
-
-bool Stream_Capture::read(float* samples, unsigned count) const {
-	unsigned long long written = _written.load(std::memory_order_acquire);
-	if(!_isDevice || written == 0) return false;
-	for(unsigned s = 0; s < count; s++){
-		unsigned long long back = count - s; // samples before the newest one
-		samples[s] = (back <= written)? _ring[(size_t)((written - back) & (STREAM_RING_BUFFER - 1))] : 0.0F;
-	}
-	return true;
-}
-
 // Analysis
+
+#ifdef TOPL_ENABLE_AUDIO
+Topl_Audiostream::~Topl_Audiostream(){ SdStream_free(_stream); } // stops the capture device
+
+void Topl_Audiostream::analyze(double frameSecs){
+	if(SdStream_isActive(_stream) && SdStream_read(_stream, _window.data(), STREAM_WINDOW))
+		SdBands_process(&_bands, _window.data(), STREAM_WINDOW, SdStream_getSampleRate(_stream), frameSecs); // rooms and microphones differ, so levels sit above the noise floor
+	else SdBands_synthesize(&_bands, elapsed, frameSecs);
+
+	for(unsigned b = 0; b < STREAM_BANDS; b++) _levels[b] = _bands.levels[b]; // fast attack, smooth release
+	_bass = _bands.bass; _mids = _bands.mids; _treble = _bands.treble;
+	_loudness = _bands.loudness;
+	_beat = _bands.beat;
+}
+#else
+Topl_Audiostream::~Topl_Audiostream(){ }
+
+static float clamp01(float x){ return (x < 0.0F)? 0.0F : (x > 1.0F)? 1.0F : x; }
 
 void Topl_Audiostream::synthesize(float* levels){
 	float t = (float)elapsed;
@@ -120,39 +37,28 @@ void Topl_Audiostream::synthesize(float* levels){
 	}
 }
 
-void Topl_Audiostream::analyze(double frameSecs){
-	float dt = (float)frameSecs;
+void Topl_Audiostream::analyze(double frameSecs){ // without Soundscape the stream is always synthesized
 	float raw[STREAM_BANDS];
-	bool isLive = _capture.isActive() && _capture.read(_window.data(), STREAM_WINDOW);
-
-	if(isLive){
-		double sum = 0.0;
-		for(unsigned s = 0; s < STREAM_WINDOW; s++) sum += _window[s] * _window[s];
-		float rms = (float)sqrt(sum / STREAM_WINDOW);
-		_loudness = clamp01((20.0F * (float)log10(rms + 1e-6F) + 60.0F) / 50.0F);
-
-		for(unsigned b = 0; b < STREAM_BANDS; b++){
-			float freq = STREAM_MIN_FREQ * (float)pow(STREAM_MAX_FREQ / STREAM_MIN_FREQ, (float)b / (STREAM_BANDS - 1)); // log spaced bands
-			float amp = goertzel(_window.data(), STREAM_WINDOW, freq, _capture.getSampleRate());
-			float level = clamp01((20.0F * (float)log10(amp + 1e-7F) + 70.0F) / 60.0F); // -70 dB to -10 dB
-			_floors[b] = (level < _floors[b])? level : _floors[b] + dt * 0.04F; // floor drops at once and rises slowly
-			raw[b] = clamp01((level - _floors[b]) * 2.5F); // rooms and microphones differ, so levels sit above the noise floor
-		}
-	} else {
-		synthesize(raw);
-		_loudness = 0.0F;
-		for(unsigned b = 0; b < STREAM_BANDS; b++) _loudness += raw[b] / STREAM_BANDS;
-	}
+	synthesize(raw);
+	_loudness = 0.0F;
+	for(unsigned b = 0; b < STREAM_BANDS; b++) _loudness += raw[b] / STREAM_BANDS;
 
 	float decay = (float)exp(-frameSecs * 6.0); // fast attack, smooth release
 	for(unsigned b = 0; b < STREAM_BANDS; b++) _levels[b] = (raw[b] > _levels[b] * decay)? raw[b] : _levels[b] * decay;
 
-	float bass = (_levels[0] + _levels[1] + _levels[2] + _levels[3]) * 0.25F;
-	_bassAverage += (bass - _bassAverage) * (1.0F - (float)exp(-frameSecs * 2.0));
-	_beatCooldown -= dt;
-	if(bass > _bassAverage * 1.3F + 0.08F && _beatCooldown <= 0.0F){ _beat = 1.0F; _beatCooldown = 0.22F; }
+	_bass = 0.0F; _mids = 0.0F; _treble = 0.0F;
+	for(unsigned b = 0; b < STREAM_BANDS; b++){
+		if(b < 4) _bass += _levels[b] * 0.25F;
+		else if(b < 10) _mids += _levels[b] / 6.0F;
+		else _treble += _levels[b] / (STREAM_BANDS - 10);
+	}
+
+	_bassAverage += (_bass - _bassAverage) * (1.0F - (float)exp(-frameSecs * 2.0));
+	_beatCooldown -= (float)frameSecs;
+	if(_bass > _bassAverage * 1.3F + 0.08F && _beatCooldown <= 0.0F){ _beat = 1.0F; _beatCooldown = 0.22F; }
 	_beat *= (float)exp(-frameSecs * 5.0);
 }
+#endif
 
 // Mandala
 
@@ -194,8 +100,7 @@ void Topl_Audiostream::arrange(double frameSecs){
 		}
 	}
 
-	float bass = (_levels[0] + _levels[1] + _levels[2] + _levels[3]) * 0.25F;
-	float coreSize = 1.2F + bass * 0.7F + _beat * 0.3F;
+	float coreSize = 1.2F + _bass * 0.7F + _beat * 0.3F;
 	_coreActor.setSize({ coreSize, coreSize, coreSize });
 	_coreActor.setRot({ t * 0.2F, t * 0.15F, t * 0.3F });
 	for(unsigned h = 0; h < 2; h++){
@@ -208,18 +113,23 @@ void Topl_Audiostream::arrange(double frameSecs){
 
 void Topl_Audiostream::setSource(STREAM_Source source){
 	_source = source;
-	bool isLive = (source != STREAM_Synth) && _capture.start(source, _deviceIndex);
-	if(source == STREAM_Synth) _capture.stop();
-	for(unsigned b = 0; b < STREAM_BANDS; b++) _floors[b] = 1.0F;
+	bool isLive = false;
+#ifdef TOPL_ENABLE_AUDIO
+	isLive = (source != STREAM_Synth) && SdStream_start(_stream, (SD_StreamSource)source, _deviceIndex); // device index applies to microphones
+	if(source == STREAM_Synth) SdStream_stop(_stream);
+	SdBands_setAdaptive(&_bands, true); // noise floors start over for the new source
+#endif
 
 	if(isLive){
+#ifdef TOPL_ENABLE_AUDIO
 		std::cout << "Streaming from " << sourceNames[source];
-		if(source == STREAM_Microphone) std::cout << ": " << _capture.getDeviceName(_deviceIndex);
-		std::cout << " at " << (int)_capture.getSampleRate() << " Hz" << std::endl;
+		if(source == STREAM_Microphone) std::cout << ": " << SdStream_getDeviceName(_stream, _deviceIndex);
+		std::cout << " at " << (int)SdStream_getSampleRate(_stream) << " Hz" << std::endl;
+#endif
 	} else {
 		if(source != STREAM_Synth){
 			std::cout << sourceNames[source] << " is unavailable";
-			if(!_capture.isActive() && source == STREAM_Loopback) std::cout << " (loopback needs WASAPI on Windows)";
+			if(source == STREAM_Loopback) std::cout << " (loopback needs WASAPI on Windows)";
 #ifndef TOPL_ENABLE_AUDIO
 			std::cout << " (enable SUPPORT_AUDIO)";
 #endif
@@ -258,6 +168,9 @@ void Topl_Audiostream::init(){
 	for(unsigned p = 0; p < STREAM_PETALS; p++) addEditable(&_petals[p], &_mandalaScene);
 	addEditable(&_coreActor, &_coreScene);
 
+#ifdef TOPL_ENABLE_AUDIO
+	SdBands_init(&_bands, STREAM_BANDS, STREAM_MIN_FREQ, STREAM_MAX_FREQ);
+#endif
 	setSource(STREAM_Microphone); // falls back to the synthesized stream without a capture device
 }
 
@@ -265,7 +178,10 @@ void Topl_Audiostream::onPress(RUNTIME_Key key){
 	switch(key){
 		case KEY_1: setSource(STREAM_Microphone); break;
 		case KEY_2: {
-			unsigned count = _capture.getDeviceCount();
+			unsigned count = 0;
+#ifdef TOPL_ENABLE_AUDIO
+			count = SdStream_getDeviceCount(_stream);
+#endif
 			_deviceIndex = (count > 0)? (_deviceIndex + 1) % count : 0;
 			setSource(STREAM_Microphone);
 			break;
@@ -301,12 +217,8 @@ void Topl_Audiostream::loop(double frameSecs){
 	analyze(frameSecs);
 	arrange(frameSecs);
 
-	float bass = (_levels[0] + _levels[1] + _levels[2] + _levels[3]) * 0.25F;
-	float mids = 0.0F, treble = 0.0F;
-	for(unsigned b = 4; b < 10; b++) mids += _levels[b] / 6.0F;
-	for(unsigned b = 10; b < STREAM_BANDS; b++) treble += _levels[b] / (STREAM_BANDS - 10);
 	_spectrumVShader.setBands(_levels, STREAM_BANDS);
-	_spectrumVShader.setSummary(bass, mids, treble, (_loudness + _beat) * 0.5F);
+	_spectrumVShader.setSummary(_bass, _mids, _treble, (_loudness + _beat) * 0.5F);
 
 	renderSky();
 	renderScene(&_coreScene, MODERN_Spectrum, shaderMode);
